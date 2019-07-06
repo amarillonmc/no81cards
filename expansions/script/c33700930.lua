@@ -1,0 +1,71 @@
+--坠天的希望
+function c33700930.initial_effect(c)
+	--activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e1) 
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DRAW)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_PHASE+PHASE_END)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetCountLimit(1)
+	e3:SetCondition(function(e,tp) return Duel.GetTurnPlayer()==tp end)
+	e3:SetOperation(c33700930.aop)
+	c:RegisterEffect(e3)   
+end
+function c33700930.aop(e,tp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local ct=Duel.GetMatchingGroupCount(c33700930.cfilter,tp,LOCATION_ONFIELD,0,nil)
+	if ct>=3 then Duel.SendtoGrave(c,REASON_EFFECT) end
+	if ct<=2 then 
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e2:SetTargetRange(LOCATION_MZONE,0)
+		e2:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
+		e2:SetValue(1)
+		Duel.RegisterEffect(e2,tp)
+	end
+	if ct<=1 then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e2:SetTargetRange(LOCATION_ONFIELD,0)
+		e2:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
+		e2:SetValue(1)
+		Duel.RegisterEffect(e2,tp)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CHANGE_DAMAGE)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(1,0)
+		e1:SetValue(0)
+		e1:SetOwnerPlayer(tp)
+		e1:SetLabel(Duel.GetTurnCount())
+		e1:SetCondition(function(e) return Duel.GetFieldGroupCount(e:GetOwnerPlayer(),LOCATION_HAND,0)<Duel.GetFieldGroupCount(1-e:GetOwnerPlayer(),LOCATION_HAND,0) and Duel.GetTurnCount()~=e:GetLabel() end)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e1,tp)
+		local e3=e1:Clone()
+		e3:SetCode(EFFECT_NO_EFFECT_DAMAGE)
+		e3:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e3,tp)
+	end
+	if ct==0 then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_DRAW_COUNT)
+		e1:SetTargetRange(1,0)
+		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
+		e1:SetValue(2)
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function c33700930.cfilter(c)
+	return c:IsFacedown() or not c:IsCode(33700930)
+end

@@ -1,0 +1,36 @@
+--青之峡谷 ～沉没的梦迹～
+function c33700903.initial_effect(c)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	c:RegisterEffect(e1)
+	--discard limit
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e5:SetRange(LOCATION_SZONE)
+	e5:SetTargetRange(1,1)
+	e5:SetCode(EFFECT_CANNOT_DISCARD_HAND)
+	e5:SetValue(1)
+	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetCode(EFFECT_CANNOT_TO_GRAVE)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetTargetRange(LOCATION_HAND,LOCATION_HAND)
+	e6:SetValue(1)
+	c:RegisterEffect(e6)
+	--disable
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetTargetRange(LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED)
+	e2:SetTarget(c33700903.disable)
+	e2:SetCode(EFFECT_DISABLE)
+	c:RegisterEffect(e2)
+end
+function c33700903.disable(e,c)
+	return not c:IsType(TYPE_MONSTER)
+end
