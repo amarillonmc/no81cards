@@ -1,6 +1,5 @@
 --动物朋友 槌蛇
 function c33700074.initial_effect(c)
-	--c:EnableUnsummonable()
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

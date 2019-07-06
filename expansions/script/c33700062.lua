@@ -1,6 +1,5 @@
 --动物朋友 PPP×动物饼干
 function c33700062.initial_effect(c)
-	 c:EnableUnsummonable()
  --special summon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
