@@ -125,7 +125,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)~=0 then
 		c:CompleteProcedure()
-		local lp=rscost[e]
+		local lp=rscost.costinfo[e]
 		if not lp or lp<1000 or not c:IsType(TYPE_XYZ) then return end
 		local ct=math.floor(lp/1000)
 		local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_DECK,0,nil)

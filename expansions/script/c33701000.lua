@@ -5,8 +5,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,nil,2)
-	local e1=rsef.FV_CANNOT_BE_TARGET(c,"battle",nil,cm.cfilter,{LOCATION_MZONE,LOCATION_MZONE },cm.con)
-	local e3=rsef.FV_CANNOT_BE_TARGET(c,"effect",nil,cm.cfilter,{LOCATION_MZONE,LOCATION_MZONE },cm.con)
+	local e1,e3=rsef.FV_CANNOT_BE_TARGET(c,"battle,effect",nil,cm.cfilter,{LOCATION_MZONE,LOCATION_MZONE },cm.con)
 	--effect gain
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
