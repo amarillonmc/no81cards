@@ -171,6 +171,16 @@ function tama.tamas_getSubElements(c)
 	end
 	return {}
 end
+function tama.tamas_checkElementsHasElement(codes,element)
+	local i=1
+	if codes~=nil and #codes~=0 then
+		while codes[i] do
+			if codes[i][1]==element then return true end
+			i=i+1
+		end
+	end
+	return false
+end
 function tama.tamas_decreaseElements(codes,reduce)
 	local i=1
 	local toReduce=tama.DeepCopy(codes)
@@ -192,11 +202,15 @@ function tama.tamas_increaseElements(codes,add)
 		local i=1
 		while toAdd[i] do
 			local j=1
+			local h=true
 			while add[j] do
 				if toAdd[i][1]==add[j][1] then
 					toAdd[i][2]=toAdd[i][2]+add[j][2]
 				end
 				j=j+1
+			end
+			if not h then
+				table.insert(toAdd,add[j])
 			end
 			i=i+1
 		end

@@ -3,17 +3,21 @@ local m=13254038
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
-	--discard deck
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_DECKDES,CATEGORY_DRAW)
-	e1:SetCode(EVENT_PHASE+PHASE_END)
-	e1:SetRange(LOCATION_SZONE)
-	e1:SetCountLimit(1)
-	e1:SetTarget(cm.distg)
-	e1:SetOperation(cm.disop)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
+	--discard deck
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_DECKDES,CATEGORY_DRAW)
+	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCountLimit(1)
+	e2:SetTarget(cm.distg)
+	e2:SetOperation(cm.disop)
+	c:RegisterEffect(e2)
 	
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)

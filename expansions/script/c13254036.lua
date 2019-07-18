@@ -33,10 +33,22 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetValue(cm.aclimit)
 	e3:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e3,tp)
+	--cannot trigger
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_CANNOT_TRIGGER)
+	e4:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e4:SetTargetRange(0,LOCATION_ONFIELD)
+	e4:SetTarget(cm.distg)
+	e4:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e4,tp)
 end
 function cm.aclimit(e,re,tp)
 	local loc=re:GetHandler():GetLocation()
 	return (loc==LOCATION_GRAVE or loc==LOCATION_HAND or (loc==LOCATION_ONFIELD and re:GetHandler():IsFacedown())) and not re:GetHandler():IsImmuneToEffect(e)
+end
+function cm.distg(e,c)
+	return c:IsFacedown()
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{13254036,2}}
