@@ -34,7 +34,7 @@ function cm.tdfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(cm.thfilter,tp,0,LOCATION_DECK,1,nil,c)
 end
 function cm.thfilter(c,tc)
-	return c:IsSetCard(0x3356) and c:IsType(TYPE_MONSTER) and tama.tamas_checkElementsEmpty(tama.tamas_getElements(c) and tama.tamas_checkCardElementsGreater(tc,c) and c:IsAbleToHand()
+	return c:IsSetCard(0x3356) and c:IsType(TYPE_MONSTER) and tama.tamas_checkElementsEmpty(tama.tamas_getElements(c)) and tama.tamas_checkCardElementsGreater(tc,c) and c:IsAbleToHand()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end

@@ -30,6 +30,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_ACTIVATE)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCost(cm.cost2)
+	e3:SetTarget(cm.target2)
 	e3:SetOperation(cm.operation2)
 	c:RegisterEffect(e3)
 	
@@ -58,7 +59,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(sg,tp,2,REASON_EFFECT)
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254032,2},{13254034,1}}
+	local el={{13254032,1},{13254034,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 
