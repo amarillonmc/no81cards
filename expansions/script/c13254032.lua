@@ -92,7 +92,7 @@ function cm.setfilter1(c,e,tp)
 	return not c:IsType(TYPE_MONSTER) and ((c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and c:IsSSetable())
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_GRAVE) and cm.setfilter(chkc) end
+	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_GRAVE) and cm.setfilter(chkc,e,tp) end
 	if chk==0 then return 
 		(not Duel.IsExistingMatchingCard(cm.setfilter1,tp,0,LOCATION_GRAVE,1,nil,e,tp) or Duel.IsPlayerAffectedByEffect(tp,59822133))
 		and Duel.IsExistingTarget(cm.setfilter,tp,0,LOCATION_GRAVE,2,nil,e,tp) 
@@ -104,7 +104,7 @@ function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		Duel.SelectTarget(tp,cm.setfilter1,tp,LOCATION_GRAVE,0,1,1,nil)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectTarget(tp,cm.setfilter,tp,LOCATION_GRAVE,0,ft,ft,nil)
+	local g=Duel.SelectTarget(tp,cm.setfilter,tp,LOCATION_GRAVE,0,ft,ft,nil,e,tp)
 	local sg=g:Filter(Card.IsType,nil,TYPE_MONSTER)
 	local cat=e:GetCategory()
 	if sg:GetCount()>0 then

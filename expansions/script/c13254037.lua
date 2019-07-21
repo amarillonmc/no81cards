@@ -94,7 +94,7 @@ function cm.smop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254031,1},{13254031,2},{13254033,1},{13254034,1},{13254035,1},{13254036,1}}
+	local el={{13254031,1},{13254032,1},{13254033,1},{13254034,1},{13254035,1},{13254036,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 

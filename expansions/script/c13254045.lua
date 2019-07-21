@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.tdfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(cm.tdfilter,tp,0,LOCATION_DECK,1,nil,c)
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(cm.thfilter,tp,0,LOCATION_DECK,1,nil,c)
 end
 function cm.thfilter(c,tc)
 	return c:IsSetCard(0x3356) and c:IsType(TYPE_MONSTER) and tama.tamas_checkElementsEmpty(tama.tamas_getElements(c) and tama.tamas_checkCardElementsGreater(tc,c) and c:IsAbleToHand()
@@ -66,7 +66,9 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter1,tp,LOCATION_HAND,0,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,cm.tdfilter1,tp,LOCATION_HAND,0,1,2,nil)
+	Duel.ConfirmCards(1-tp,g)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
+	e:SetLabel(g:GetCount())
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
