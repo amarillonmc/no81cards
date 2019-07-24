@@ -68,6 +68,12 @@ function tama.cosmicFighters_getFormation(c)
 	og:AddCard(c)
 	return og
 end
+function tama.cosmicFighters_equipGetFormation(c)
+	local ec=c:GetEquipTarget()
+	if not ec then return nil end
+	local f=tama.cosmicFighters_getFormation(ec)
+	return f
+end
 function tama.cosmicFighters_isInFormation(c)
 	local og=tama.cosmicFighters_getFormation(c)
 	return og:IsContains(c)
@@ -157,7 +163,22 @@ function tama.tamas_getElements(c)
 	end
 	return {}
 end
+function tama.tamas_getTargetTable(c,str)
+	local mt=tama.load_metatable(c:GetOriginalCode())
+	if mt==nil or type(mt[c])~="table" then return nil end
+	local eflist=mt[c]
+	local i=1
+	while eflist[i] do
+		if eflist[i]==str then
+			i=i+1
+			return eflist[i]
+		end
+		i=i+1
+	end
+	return nil
+end
 function tama.tamas_getSubElements(c)
+	--[[
 	local mt=tama.load_metatable(c:GetOriginalCode())
 	if mt==nil or type(mt[c])~="table" then return {} end
 	local eflist=mt[c]
@@ -169,7 +190,10 @@ function tama.tamas_getSubElements(c)
 		end
 		i=i+1
 	end
-	return {}
+	return {}]]
+	local codes=tama.tamas_getTargetTable(c,"tama_sub_elements")
+	if codes==nil then return {} end
+	return codes
 end
 function tama.tamas_checkElementsHasElement(codes,element)
 	local i=1
@@ -272,7 +296,7 @@ function tama.tamas_checkContainElements(codes,check)
 		local j=1
 		local accept=false
 		while codes[j] do
-			if not check[i][1]==codes[j][1] then
+			if check[i][1]==codes[j][1] then
 				accept=true
 			end
 			j=j+1
@@ -395,6 +419,19 @@ function tama.tamas_groupHasGroup(g1,g2)
 	while tc do
 		if not g1:IsContains(tc) then
 			has=false
+			break
+		end
+		tc=g2:GetNext()
+	end
+	return has
+end
+function tama.tamas_groupHasGroupCard(g1,g2)
+	local has=false
+	if g2:GetCount()==0 then return false end
+	local tc=g2:GetFirst()
+	while tc do
+		if not g1:IsContains(tc) then
+			has=true
 			break
 		end
 		tc=g2:GetNext()
