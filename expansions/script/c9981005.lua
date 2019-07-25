@@ -22,7 +22,7 @@ function c9981005.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9981005.filter(c)
-	return c:IsSetCard(0x3bc1) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x5bc1) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c9981005.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981005.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -37,7 +37,7 @@ function c9981005.op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9981005.rfilter(c)
-	return (c:IsRace(RACE_AQUA) or (c:IsSetCard(0x3bc1) and c:IsType(TYPE_MONSTER))) and c:IsAbleToRemoveAsCost()
+	return (c:IsRace(RACE_AQUA) or (c:IsSetCard(0x5bc1) and c:IsType(TYPE_MONSTER))) and c:IsAbleToRemoveAsCost()
 end
 function c9981005.hspcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981005.rfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,e:GetHandler()) end

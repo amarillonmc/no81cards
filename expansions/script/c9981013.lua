@@ -58,7 +58,7 @@ function c9981013.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9981013.filter1(c)
-	return c:IsSetCard(0x3bc1)
+	return c:IsSetCard(0x5bc1)
 end
 function c9981013.dircon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetOverlayGroup():IsExists(c9981013.filter1,1,nil)

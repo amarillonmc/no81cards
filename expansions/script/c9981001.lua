@@ -27,7 +27,7 @@ function c9981001.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9981001.matfilter(c)
-	return c:IsLinkSetCard(0x3bc1) and not c:IsLinkCode(9981001)
+	return c:IsLinkSetCard(0x5bc1) and not c:IsLinkCode(9981001)
 end
 function c9981001.splimit(e,c,sump,sumtype,sumpos,targetp)
 	return not c:IsRace(RACE_AQUA)
@@ -40,7 +40,7 @@ function c9981001.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,c9981001.cfilter,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9981001.spfilter(c,e,tp,zone)
-	return c:IsSetCard(0x3bc1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE,tp,zone)
+	return c:IsSetCard(0x5bc1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE,tp,zone)
 end
 function c9981001.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local zone=bit.band(e:GetHandler():GetLinkedZone(tp),0x1f)

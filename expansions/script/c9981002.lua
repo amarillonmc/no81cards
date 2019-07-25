@@ -29,7 +29,7 @@ function c9981002.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9981002.filter(c,e,tp)
-	return c:IsSetCard(0x3bc1) and c:GetCode()~=9981002 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x5bc1) and c:GetCode()~=9981002 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9981002.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c9981002.filter(chkc,e,tp) end
@@ -46,7 +46,7 @@ function c9981002.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c9981002.tgfilter(c)
-	return c:IsSetCard(0x3bc1) and c:IsType(TYPE_MONSTER) and c:GetCode()~=9981002 and c:IsAbleToGrave()
+	return c:IsSetCard(0x5bc1) and c:IsType(TYPE_MONSTER) and c:GetCode()~=9981002 and c:IsAbleToGrave()
 end
 function c9981002.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981002.tgfilter,tp,LOCATION_DECK,0,1,nil) end

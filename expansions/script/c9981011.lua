@@ -1,7 +1,7 @@
 --湛樱花吹雪-诹访子
 function c9981011.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bc1),3,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5bc1),3,2)
 	c:EnableReviveLimit()
 	--equip
 	local e1=Effect.CreateEffect(c)
@@ -98,7 +98,7 @@ function c9981011.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c9981011.tgfilter(c)
-	return c:IsSetCard(0x3bc1) and c:IsAbleToGrave()
+	return c:IsSetCard(0x5bc1) and c:IsAbleToGrave()
 end
 function c9981011.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981011.tgfilter,tp,LOCATION_DECK,0,1,nil) end

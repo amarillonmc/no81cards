@@ -56,10 +56,10 @@ function c9981009.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c9981009.eqlimit(e,c)
-	return c:IsSetCard(0x3bc1)
+	return c:IsSetCard(0x5bc1)
 end
 function c9981009.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3bc1)
+	return c:IsFaceup() and c:IsSetCard(0x5bc1)
 end
 function c9981009.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9981009.filter(chkc) end
@@ -97,7 +97,7 @@ function c9981009.valcon(e,re,r,rp)
 	return bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0
 end
 function c9981009.thfilter(c)
-	return c:IsSetCard(0x3bc1) and c:IsType(TYPE_MONSTER) and c:GetCode()~=9981009 and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x5bc1) and c:IsType(TYPE_MONSTER) and c:GetCode()~=9981009 and c:IsAbleToRemoveAsCost()
 end
 function c9981009.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981009.thfilter,tp,LOCATION_GRAVE,0,1,nil) end

@@ -13,7 +13,7 @@ function c9981007.initial_effect(c)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3bc1))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x5bc1))
 	e2:SetValue(200)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
@@ -33,7 +33,7 @@ function c9981007.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c9981007.filter(c)
-	return c:IsSetCard(0x3bc1) and c:IsType(TYPE_MONSTER)  and c:IsAbleToHand()
+	return c:IsSetCard(0x5bc1) and c:IsType(TYPE_MONSTER)  and c:IsAbleToHand()
 end
 function c9981007.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
@@ -51,11 +51,11 @@ function c9981007.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9981007.filter(c,e,tp)
 	local rk=c:GetRank()
-	return c:IsType(TYPE_XYZ) and c:IsFaceup() and c:IsSetCard(0x3bc1) 
+	return c:IsType(TYPE_XYZ) and c:IsFaceup() and c:IsSetCard(0x5bc1) 
 		and Duel.IsExistingMatchingCard(c9981007.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,rk)
 end
 function c9981007.spfilter(c,e,tp,rk)
-	return c:IsType(TYPE_XYZ) and c:GetRank()==rk+1 and c:IsSetCard(0x3bc1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_XYZ) and c:GetRank()==rk+1 and c:IsSetCard(0x5bc1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9981007.chkfilter(c,tc)
 	local rk=tc:GetRank()

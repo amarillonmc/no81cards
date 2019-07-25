@@ -48,7 +48,7 @@ function c9981003.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9981003.filter(c,e,tp)
 	local rk=c:GetRank()
-	return c:IsType(TYPE_XYZ) and c:IsFaceup() and c:IsSetCard(0x3bc1) 
+	return c:IsType(TYPE_XYZ) and c:IsFaceup() and c:IsSetCard(0x5bc1) 
 		and Duel.IsExistingMatchingCard(c9981003.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,rk)
 end
 function c9981003.spfilter(c,e,tp,rk)

@@ -22,7 +22,7 @@ function c9981008.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9981008.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3bc1)
+	return c:IsFaceup() and c:IsSetCard(0x5bc1)
 end
 function c9981008.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsAbleToHand() end
@@ -44,7 +44,7 @@ function c9981008.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
 end
 function c9981008.thfilter(c)
-	 return c:IsFaceup() and c:IsSetCard(0x3bc1) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	 return c:IsFaceup() and c:IsSetCard(0x5bc1) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9981008.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and c9981008.filter(chkc) end

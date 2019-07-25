@@ -34,7 +34,7 @@ function c9981014.initial_effect(c)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3bc1))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x5bc1))
 	e2:SetValue(300)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
@@ -52,7 +52,7 @@ function c9981014.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c9981014.filter(c,e,tp)
-	return c:IsSetCard(0x3bc1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x5bc1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9981014.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9981014.filter(chkc,e,tp) end
@@ -120,7 +120,7 @@ function c9981014.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c9981014.tgfilter(c)
-	return c:IsSetCard(0x3bc1) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0x5bc1) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c9981014.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981014.tgfilter,tp,LOCATION_DECK,0,1,nil) end

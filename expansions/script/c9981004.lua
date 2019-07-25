@@ -6,7 +6,7 @@ function c9981004.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3bc1))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x5bc1))
 	e2:SetValue(800)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
@@ -30,7 +30,7 @@ function c9981004.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c9981004.spfilter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x3bc1) and not c:IsCode(9981004) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceup() and c:IsSetCard(0x5bc1) and not c:IsCode(9981004) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9981004.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c9981004.spfilter(chkc,e,tp) end

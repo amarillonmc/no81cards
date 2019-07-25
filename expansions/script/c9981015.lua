@@ -1,7 +1,7 @@
 --赤口大人-诹访子
 function c9981015.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bc1),aux.NonTuner(Card.IsAttribute,ATTRIBUTE_WATER),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5bc1),aux.NonTuner(Card.IsAttribute,ATTRIBUTE_WATER),1)
 	c:EnableReviveLimit()
 	--tograve
 	local e1=Effect.CreateEffect(c)
@@ -38,7 +38,7 @@ function c9981015.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SYNCHRO
 end
 function c9981015.filter(c,ec)
-	return c:IsSetCard(0x3bc1) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0x5bc1) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c9981015.target(e,tp,eg,ep,ev,re,r,rp,chk)
    if chk==0 then return Duel.IsExistingMatchingCard(c9981015.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -66,7 +66,7 @@ function c9981015.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function c9981015.atkfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3bc1)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5bc1)
 end
 function c9981015.value(e,c)
 	return Duel.GetMatchingGroupCount(c9981015.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,0,nil)*300

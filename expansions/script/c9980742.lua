@@ -12,49 +12,49 @@ function c9980742.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1)
-	e2:SetCost(c9980742.cost)
-	e2:SetTarget(c9980742.target)
-	e2:SetOperation(c9980742.operation)
+	e2:SetCost(c9980742.thcost)
+	e2:SetTarget(c9980742.thtg)
+	e2:SetOperation(c9980742.thop)
 	c:RegisterEffect(e2)
-	--spsummon
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9980742,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,9980742)
-	e2:SetTarget(c9980742.sptg)
-	e2:SetOperation(c9980742.spop)
-	c:RegisterEffect(e2)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9980742,0))
+	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_SZONE)
+	e1:SetCountLimit(1,9980742)
+	e1:SetTarget(c9980742.sptg)
+	e1:SetOperation(c9980742.spop)
+	c:RegisterEffect(e1)
 end
-function c9980742.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9980742.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
-function c9980742.filter(c)
+function c9980742.thfilter(c)
 	return c:IsSetCard(0xabcc) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function c9980742.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9980742.filter,tp,LOCATION_DECK,0,1,nil) end
+function c9980742.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9980742.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c9980742.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9980742.thop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9980742.filter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c9980742.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function c9980742.filter0(c)
-	return c:IsAbleToRemove()
+	return c:IsOnField() and c:IsAbleToRemove()
 end
 function c9980742.filter1(c,e)
-	return c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
+	return c:IsOnField() and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function c9980742.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsSetCard(0xabcc)
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0xabcc) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c9980742.filter3(c)
@@ -64,7 +64,7 @@ function c9980742.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp):Filter(c9980742.filter0,nil)
-		local mg2=Duel.GetMatchingGroup(c9980742.filter3,tp,LOCATION_MZONE+LOCATION_HAND+LOCATION_GRAVE,0,nil)
+		local mg2=Duel.GetMatchingGroup(c9980742.filter3,tp,LOCATION_GRAVE,0,nil)
 		mg1:Merge(mg2)
 		local res=Duel.IsExistingMatchingCard(c9980742.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		if not res then
@@ -79,11 +79,12 @@ function c9980742.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_ONFIELD+LOCATION_GRAVE)
 end
 function c9980742.spop(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c9980742.filter1,nil,e)
-	local mg2=Duel.GetMatchingGroup(c9980742.filter3,tp,LOCATION_MZONE+LOCATION_HAND+LOCATION_GRAVE,0,nil)
+	local mg2=Duel.GetMatchingGroup(c9980742.filter3,tp,LOCATION_GRAVE,0,nil)
 	mg1:Merge(mg2)
 	local sg1=Duel.GetMatchingGroup(c9980742.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 	local mg3=nil

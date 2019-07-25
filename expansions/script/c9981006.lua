@@ -31,7 +31,7 @@ function c9981006.spcon(e,c)
 		and Duel.IsExistingMatchingCard(c9981006.filter0,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
 function c9981006.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3bc1) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x5bc1) and c:IsType(TYPE_MONSTER)
 end
 function c9981006.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9981006.cfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -41,7 +41,7 @@ function c9981006.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),c,nil,1,REASON_COST)
 end
 function c9981006.filter(c)
-	 return c:IsSetCard(0x3bc1) and c:IsType(TYPE_MONSTER) and c:GetCode()~=9981006 and (c:IsAbleToHand() or c:IsAbleToGrave())
+	 return c:IsSetCard(0x5bc1) and c:IsType(TYPE_MONSTER) and c:GetCode()~=9981006 and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function c9981006.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981006.filter,tp,LOCATION_DECK,0,1,nil) end
