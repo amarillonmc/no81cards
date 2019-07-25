@@ -60,7 +60,7 @@ function tama.cosmicFighters_optionFilter(c)
 end
 function tama.cosmicFighters_getOptions(c)
 	local og=c:GetCardTarget()
-	local g=og:Filter(tama.optionFilter,nil)
+	local g=og:Filter(tama.cosmicFighters_optionFilter,nil)
 	return g
 end
 function tama.cosmicFighters_getFormation(c)
@@ -223,18 +223,22 @@ end
 function tama.tamas_increaseElements(codes,add)
 	local toAdd=tama.DeepCopy(codes)
 	if #toAdd>0 then
+		if not tama.tamas_checkContainElements(toAdd,add) then
+			local i=1
+			while add[i] do
+				if not tama.tamas_checkElementsHasElement(toAdd,add[i]) then
+					table.insert(toAdd,{add[i][1],0})
+				end
+			end
+		end
 		local i=1
 		while toAdd[i] do
 			local j=1
-			local h=true
 			while add[j] do
 				if toAdd[i][1]==add[j][1] then
 					toAdd[i][2]=toAdd[i][2]+add[j][2]
 				end
 				j=j+1
-			end
-			if not h then
-				table.insert(toAdd,add[j])
 			end
 			i=i+1
 		end
@@ -307,11 +311,24 @@ function tama.tamas_checkContainElements(codes,check)
 	end
 	return contain
 end
+--some elements are equal or lower than 0
 function tama.tamas_checkElementsEmpty(codes)
 	local i=1
 	local empty=true
 	while codes[i] do
 		if codes[i][2]>0 then
+			empty=false
+		end
+		i=i+1
+	end
+	return empty
+end
+--some elements are lower than 0
+function tama.tamas_checkElementsLowerEmpty(codes)
+	local i=1
+	local empty=true
+	while codes[i] do
+		if codes[i][2]>=0 then
 			empty=false
 		end
 		i=i+1
@@ -657,7 +674,7 @@ function tama.tamas_checkElementsGreater(codes,subCodes,targetCodes)
 			elements=tama.tamas_increaseElements(elements,{subCodes[i]})
 		end
 		elements=tama.tamas_decreaseElements(elements,targetCodes)
-		if tama.tamas_checkContainElements(elements,targetCodes) and not tama.tamas_checkElementsEmpty(elements) then
+		if tama.tamas_checkContainElements(elements,targetCodes) and not tama.tamas_checkElementsLowerEmpty(elements) then
 			greater=true
 		end
 	until (not subCodes[i] or greater)

@@ -33,9 +33,9 @@ function cm.filter2(c)
 	return c:IsSetCard(0x356) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsPlayerCanDiscardDeck(tp,3) then return end
-	Duel.ConfirmDecktop(tp,3)
-	local g=Duel.GetDecktopGroup(tp,3)
+	if not Duel.IsPlayerCanDiscardDeck(tp,5) then return end
+	Duel.ConfirmDecktop(tp,5)
+	local g=Duel.GetDecktopGroup(tp,5)
 	local sg=g:Filter(cm.filter,nil)
 	if sg:GetCount()<=0 then return end
 	Duel.DisableShuffleCheck()
@@ -43,17 +43,17 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local sg1=Duel.GetOperatedGroup()
 	local sg2=sg1:Clone()
 	if sg1:GetCount()>0 then
-		if sg1:GetSum(tama.tamas_getElementCount,13254033)>0 and Duel.IsPlayerCanDiscardDeck(tp,2) then
+		if sg1:GetSum(tama.tamas_getElementCount,13254033)>0 and Duel.IsPlayerCanDiscardDeck(tp,3) then
 			Duel.BreakEffect()
 			Duel.ShuffleDeck(tp)
-			Duel.DiscardDeck(tp,2,REASON_EFFECT)
+			Duel.DiscardDeck(tp,3,REASON_EFFECT)
 			sg2:Merge(Duel.GetOperatedGroup())
 		end
-		if sg1:GetSum(tama.tamas_getElementCount,13254031)>0 and Duel.IsPlayerCanDraw(tp,1) then
+		if sg1:GetSum(tama.tamas_getElementCount,13254031)>0 and Duel.IsPlayerCanDraw(tp,2) then
 			Duel.BreakEffect()
-			Duel.Draw(tp,1,REASON_EFFECT)
+			Duel.Draw(tp,2,REASON_EFFECT)
 			Duel.ShuffleHand(tp)
-			Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
+			Duel.DiscardHand(tp,aux.TRUE,2,2,REASON_EFFECT+REASON_DISCARD)
 			sg2:Merge(Duel.GetOperatedGroup())
 		end
 		if sg1:GetSum(tama.tamas_getElementCount,13254036)>0 and sg2:IsExists(cm.filter2,1,nil) then

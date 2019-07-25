@@ -31,7 +31,6 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_ACTIVATE)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCost(cm.cost2)
-	e3:SetTarget(cm.target2)
 	e3:SetOperation(cm.operation2)
 	c:RegisterEffect(e3)
 	

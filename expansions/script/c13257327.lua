@@ -1,5 +1,5 @@
 --超时空战斗机-银银河战机
-local m=13254027
+local m=13257327
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
@@ -207,13 +207,13 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	if not (t1 or t2) then return end
 	local op=0
 	if t1 or t2 then
-		local m={}
-		local n={}
+		local m1={}
+		local n1={}
 		local ct=1
-		if t1 then m[ct]=aux.Stringid(m,2) n[ct]=1 ct=ct+1 end
-		if t2 then m[ct]=aux.Stringid(m,3) n[ct]=2 ct=ct+1 end
-		local sp=Duel.SelectOption(tp,table.unpack(m))
-		op=n[sp+1]
+		if t1 then m1[ct]=aux.Stringid(m,2) n1[ct]=1 ct=ct+1 end
+		if t2 then m1[ct]=aux.Stringid(m,3) n1[ct]=2 ct=ct+1 end
+		local sp=Duel.SelectOption(tp,table.unpack(m1))
+		op=n1[sp+1]
 	end
 	if op==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)

@@ -77,14 +77,14 @@ function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return t1 or t2 end
 	local op=0
 	if t1 or t2 or t3 then
-		local m={}
-		local n={}
+		local m1={}
+		local n1={}
 		local ct=1
-		if t1 then m[ct]=aux.Stringid(m,2) n[ct]=1 ct=ct+1 end
-		if t2 then m[ct]=aux.Stringid(m,3) n[ct]=2 ct=ct+1 end
-		if t3 then m[ct]=aux.Stringid(m,4) n[ct]=3 ct=ct+1 end
-		local sp=Duel.SelectOption(tp,table.unpack(m))
-		op=n[sp+1]
+		if t1 then m1[ct]=aux.Stringid(m,2) n1[ct]=1 ct=ct+1 end
+		if t2 then m1[ct]=aux.Stringid(m,3) n1[ct]=2 ct=ct+1 end
+		if t3 then m1[ct]=aux.Stringid(m,4) n1[ct]=3 ct=ct+1 end
+		local sp=Duel.SelectOption(tp,table.unpack(m1))
+		op=n1[sp+1]
 	end
 	e:SetLabel(op)
 	if op==1 then
@@ -153,8 +153,8 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 		e6:SetCondition(cm.tokendes)
 		e6:SetReset(RESET_EVENT+0xfe0000)
 		token:RegisterEffect(e6,true)
-		Duel.SpecialSummonComplete()
 		c:SetCardTarget(token)
+		Duel.SpecialSummonComplete()
 	elseif e:GetLabel()==3 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
@@ -186,7 +186,7 @@ function cm.tokenatt(e,c)
 	return e:GetOwner():GetAttribute()
 end
 function cm.tokendes(e)
-	return not e:GetOwner():IsHasCardTarget(e:GetHandler())
+	return not e:GetOwner():GetCardTarget():IsContains(e:GetHandler())
 end
 function cm.tdfilter(c,ec,tp)
 	return c:IsSetCard(0x352) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and ((c:CheckEquipTarget(ec) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or c:IsAbleToExtra())

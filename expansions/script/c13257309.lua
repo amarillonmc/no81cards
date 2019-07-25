@@ -54,7 +54,7 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return 
+	if chk==0 then
 		local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())
 		return f and tama.tamas_groupHasGroupCard(eg,f) 
 	end
@@ -106,7 +106,7 @@ function cm.aclimit(e,re,tp)
 end
 function cm.actcon(e)
 	local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())
-	return f and f:IsContains(Duel.GetAttacker()) or f:IsContains(Duel.GetAttackTarget())
+	return f and ((Duel.GetAttacker() and f:IsContains(Duel.GetAttacker())) or (Duel.GetAttackTarget() and f:IsContains(Duel.GetAttackTarget())))
 end
 function cm.target(e,c)
 	local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())

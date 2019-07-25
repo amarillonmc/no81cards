@@ -1,5 +1,5 @@
 --超时空修复胶囊
-local m=13254031
+local m=13257331
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)

@@ -1,5 +1,5 @@
 --超时空能量胶囊
-local m=13254029
+local m=13257329
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
@@ -38,7 +38,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.Hint(12,0,aux.Stringid(m,7))
 		local tep=tc:GetControler()
-		local PCe=tama.tamas_getTargetTable(c,"power_capsule")
+		local PCe=tama.tamas_getTargetTable(tc,"power_capsule")
 		if PCe then
 			local cost=PCe:GetCost()
 			local target=PCe:GetTarget()

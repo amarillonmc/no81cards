@@ -46,7 +46,7 @@ function cm.filter(c,ft)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if ft1<-1 then return false end
+	if ft1<-1 then return end
 	local ft=ft1
 	if ft1<=1 then 
 		ft1=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
@@ -57,9 +57,9 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft1=1 end
 	local i=1
 	local sg=Group.CreateGroup()
-	while i<=ft1 do
+	while i<=ft1 and Duel.GetMatchingGroupCount(cm.filter,tp,LOCATION_ONFIELD,0,sg,ft) do
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g1=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,nil,ft)
+		local g1=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,sg,ft)
 		if g1:GetFirst():IsLocation(LOCATION_ONFIELD) then
 			ft=ft-1
 		end
