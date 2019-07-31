@@ -1,11 +1,5 @@
 --平成骑士AgitΩ
 function c9980431.initial_effect(c)
-	--act in hand
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	e2:SetCondition(c9980431.handcon)
-	c:RegisterEffect(e2)
 	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9980431,1))
@@ -14,6 +8,7 @@ function c9980431.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_BATTLE_START+TIMING_END_PHASE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCondition(c9980431.handcon)
 	e2:SetTarget(c9980431.destg)
 	e2:SetOperation(c9980431.desop)
 	c:RegisterEffect(e2)

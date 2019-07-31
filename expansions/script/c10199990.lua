@@ -935,16 +935,29 @@ end
 rsef.QO_OPPONENT_TURN=rsef.RegisterOPTurn
 --Effect: Register Condition, Cost, Target and Operation 
 function rsef.RegisterSolve(e,con,cost,tg,op)
+	local code=e:GetOwner():GetCode()
 	if con then
+		if type(con)~="function" then
+			Debug.Message(code .. " RegisterSolve con must be function")
+		end
 		e:SetCondition(con)
 	end
 	if cost then
+		if type(cost)~="function" then
+			Debug.Message(code .. " RegisterSolve cost must be function")
+		end
 		e:SetCost(cost)
 	end
 	if tg then
+		if type(tg)~="function" then
+			Debug.Message(code .. " RegisterSolve tg must be function")
+		end
 		e:SetTarget(tg)
 	end
 	if op then
+		if type(op)~="function" then
+			Debug.Message(code .. " RegisterSolve op must be function")
+		end
 		e:SetOperation(op)
 	end
 end
@@ -1295,7 +1308,7 @@ function rsval.spconfe(e,se,sp,st)
 end
 --value: SummonConditionValue - can only be special summoned by self effects
 function rsval.spcons(e,se,sp,st)
-	return se:GetHandler()==e:GetHandler() and not se:IsHasProperty(EFFECT_FLAG_UNCOPYABLE)
+	return se:GetHandler()==e:GetHandler() and se:IsHasType(EFFECT_TYPE_ACTIONS) 
 end
 --value: reason by battle or card effects
 function rsval.indbae(string1,string2)
@@ -1975,7 +1988,7 @@ function rscost.lpcost2(lp,max,islabel)
 		if chk==0 then return Duel.CheckLPCost(tp,lp) end
 		local costmaxlp=math.floor(maxlp/lp)
 		local t={}
-		for i=1,m do
+		for i=1,costmaxlp do
 			t[i]=i*lp
 		end
 		local cost=Duel.AnnounceNumber(tp,table.unpack(t))
@@ -2450,17 +2463,24 @@ function rscf.SetSpecialSummonProduce(cardtbl,range,con,op,desctbl,ctlimittbl,re
 	local tc1,tc2,ignore=rsef.GetRegisterCard(cardtbl)
 	if not desctbl then desctbl=rshint.spproc end
 	local flag=not tc2:IsSummonableCard() and "uc,cd" or "uc" 
-	local e1=rsef.Register(cardtbl,EFFECT_TYPE_FIELD,EFFECT_SPSUMMON_PROC,desctbl,ctlimittbl,nil,flag,range,con,nil,nil,op,nil,nil,nil,resettbl)
+	local e1=rsef.Register(cardtbl,EFFECT_TYPE_FIELD,EFFECT_SPSUMMON_PROC,desctbl,ctlimittbl,nil,flag,range,rscf.SetSpecialSummonProduce_con(con),nil,nil,op,nil,nil,nil,resettbl)
 	return e1
 end
 rssf.SetSpecialSummonProduce=rscf.SetSpecialSummonProduce
+function rscf.SetSpecialSummonProduce_con(con)
+	return function(e,c)
+		if c==nil then return true end
+		local tp=c:GetControler()
+		return con(e,c,tp)
+	end
+end
 --Card/Summon effect: Is monster can normal or special summon
 function rscf.SetSummonCondition(cardtbl,isnsable,sumvalue,iseffectspsum,resettbl)
 	local tc1,tc2,ignore=rsef.GetRegisterCard(cardtbl)
 	if tc2:IsStatus(STATUS_COPYING_EFFECT) then return end
 	if not isnsable then
 		if iseffectspsum or (sumvalue and sumvalue==rsval.spcons) then
-			tc2:EnableUnsummonable()
+			--tc2:EnableUnsummonable()
 		else
 			tc2:EnableReviveLimit()
 		end
@@ -2809,6 +2829,7 @@ function rsef.ChangeFunction_Synchro()
 end
 function rscf.SynMixCheckGoal2(tp,sg,minc,ct,syncard,sg1,smat,gc)
 	local g=rsgf.Mix2(sg,sg1)
+	if syncard.rssyncheckfun and not syncard.rssyncheckfun(g,syncard,tp) then return false end
 	local f=Card.GetLevel
 	local f2=Card.GetSynchroLevel
 	local darktunerg=g:Filter(Card.IsType,nil,TYPE_TUNER)
@@ -2883,6 +2904,15 @@ function rscf.AddSynchroMixProcedure_ChangeTunerLevel(c,f1,lv,f2,f3,f4,minc,maxc
 	return e1
 end
 rssf.AddSynchroMixProcedure_ChangeTunerLevel=rscf.AddSynchroMixProcedure_ChangeTunerLevel
+function rscf.AddSynchroMixProcedure_CheckMaterial(c,f1,f2,f3,f4,minc,maxc,extrafilter)
+	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
+	local mt=getmetatable(c)
+	mt.rssyncheckfun=extrafilter
+	rsef.ChangeFunction_Synchro()
+	local e1=rscf.AddSynchroMixProcedure(c,f1,f2,f3,f4,minc,maxc)
+	return e1
+end
+rssf.AddSynchroMixProcedure_CheckMaterial=rscf.AddSynchroMixProcedure_CheckMaterial
 --Card effect: Set field info
 function rscf.SetFieldInfo(c)
 	local seq=c:IsOnField() and c:GetSequence() or c:GetPreviousSequence()
@@ -2980,6 +3010,39 @@ function rscf.FilterFaceUp(f,...)
 	return  function(target)
 				return f(target,table.unpack(ext_params)) and target:IsFaceup()
 			end
+end
+--Card function: Get same type base set
+function rscf.GetSameType_Base(c,waystring,type1,...)
+	local gettypefun=Card.GetType
+	if waystring=="previous" 
+		then gettypefun=Card.GetPreviousTypeOnField 
+	elseif waystring=="original" 
+		then gettypefun=Card.GetOriginalType
+	end
+	local typelist= type1 and {type1,...} or { TYPE_MONSTER,TYPE_SPELL,TYPE_TRAP } 
+	local typetotal=0
+	local typetotallist={}
+	for _,ctype in pairs(typelist) do
+		if gettypefun(c)&ctype==ctype then
+			typetotal=typetotal|ctype
+			if not rsof.Table_List(typetotallist,ctype) then
+				table.insert(typetotallist,ctype) 
+			end
+		end
+	end
+	return typetotal,typetotallist
+end
+--Card function: Get same type 
+function rscf.GetSameType(c,...)
+	return rscf.GetSameType_Base(c,nil,...)
+end
+--Card function: Get same previous type 
+function rscf.GetPreviousSameType(c,...)
+	return rscf.GetSameType_Base(c,"previous",...)
+end
+--Card function: Get same original type 
+function rscf.GetOriginalSameType(c,...)
+	return rscf.GetSameType_Base(c,"original",...)
 end
 -------------#########RSV Other Function#######-----------------
 --split the string, ues "," as delimiter
@@ -3192,6 +3255,10 @@ function cm.initial_effect(c)
 		"rssk"  =   "Shinkansen"
 		"rsan"  =   "Arknights"
 		"rsnm"  =   "Nightmare"
+		"rsdt"  =   "DarkTale"
+		"rseee" =   "EEE"
+		"rshr"  =   "HarmonicRhythm"
+		"rsik"  =   "InfernalKnight"
 				}--]]   
 end
 end

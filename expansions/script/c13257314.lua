@@ -1,4 +1,4 @@
---超时空武装 主炮-电波之鞭
+--超时空武装 主武-电波之鞭
 local m=13257314
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)

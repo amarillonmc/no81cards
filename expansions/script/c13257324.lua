@@ -1,4 +1,4 @@
---超时空武装 副炮-双向导弹
+--超时空武装 副武-双向导弹
 local m=13257324
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)

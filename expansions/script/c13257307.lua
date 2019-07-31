@@ -1,4 +1,4 @@
---超时空武装 主炮-旋风镭射
+--超时空武装 主武-旋风镭射
 local m=13257307
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)

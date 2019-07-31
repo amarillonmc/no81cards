@@ -1,4 +1,4 @@
---超时空武装 主炮-幻影镭射
+--超时空武装 主武-幻影镭射
 local m=13257313
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)

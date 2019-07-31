@@ -1,4 +1,4 @@
---超时空武装 主炮-波纹镭射
+--超时空武装 主武-波纹镭射
 local m=13257308
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)

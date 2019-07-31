@@ -53,8 +53,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(11,0,aux.Stringid(m,7))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
-		local tc=g:GetFirst()
-		if tc then
+		if g:GetCount()>0 then
+			local tc=g:GetFirst()
 			Duel.Equip(tp,tc,c)
 		end
 		local a=Duel.GetAttacker()
@@ -102,8 +102,8 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or c:IsFacedown() or not c:IsRelateToEffect(e) then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
-		local tc=g:GetFirst()
-		if tc then
+		if g:GetCount()>0 then
+			local tc=g:GetFirst()
 			Duel.Equip(tp,tc,c)
 		end
 	elseif e:GetLabel()==2 then

@@ -24,14 +24,20 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)]]
 	
 end
-function cm.filter(c)
-	return c:IsFaceup() and tama.tamas_getTargetTable(c,"power_capsule")
+function cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
+	local tep=c:GetControler()
+	local target=PCe:GetTarget()
+	return not target or target(PCe,tep,eg,ep,ev,re,r,rp,0)
+end
+function cm.filter(c,eg,ep,ev,re,r,rp)
+	local PCe=tama.tamas_getTargetTable(c,"power_capsule")
+	return c:IsFaceup() and PCe and cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and cm.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,nil) end
+	if chkc then return chkc:IsOnField() and cm.filter(chkc,eg,ep,ev,re,r,rp) end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,nil,eg,ep,ev,re,r,rp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil,eg,ep,ev,re,r,rp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -39,14 +45,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(12,0,aux.Stringid(m,7))
 		local tep=tc:GetControler()
 		local PCe=tama.tamas_getTargetTable(tc,"power_capsule")
-		if PCe then
-			local cost=PCe:GetCost()
+		if PCe and cm.canActivate(tc,PCe,eg,ep,ev,re,r,rp) then
+			--local cost=PCe:GetCost()
 			local target=PCe:GetTarget()
 			local operation=PCe:GetOperation()
 			Duel.ClearTargetCard()
 			e:SetProperty(PCe:GetProperty())
 			tc:CreateEffectRelation(PCe)
-			if cost then cost(PCe,tep,eg,ep,ev,re,r,rp,1) end
+			--if cost then cost(PCe,tep,eg,ep,ev,re,r,rp,1) end
 			if target then target(PCe,tep,eg,ep,ev,re,r,rp,1) end
 			if operation then operation(PCe,tep,eg,ep,ev,re,r,rp) end
 			tc:ReleaseEffectRelation(PCe)

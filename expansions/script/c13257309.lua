@@ -1,4 +1,4 @@
---超时空武装 主炮-干扰镭射
+--超时空武装 主武-干扰镭射
 local m=13257309
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
@@ -59,12 +59,12 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 		return f and tama.tamas_groupHasGroupCard(eg,f) 
 	end
 	local ec=eg:GetFirst()
-	e:SetTargetCard(ec)
+	Duel.SetTargetCard(ec)
 	local g=ec:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local ec=e:GetFirstTarget()
+	local ec=Duel.GetFirstTarget()
 	if not e:GetHandler():IsRelateToEffect(e) or not ec:IsRelateToEffect(e) then return end
 	local g=ec:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
 	tc=g:GetFirst()

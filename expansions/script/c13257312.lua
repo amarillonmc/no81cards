@@ -1,4 +1,4 @@
---超时空武装 主炮-重力炮
+--超时空武装 主武-重力炮
 local m=13257312
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)

@@ -78,7 +78,7 @@ function c9980422.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsAbleToGraveAsCost,1,1,REASON_COST)
 end
 function c9980422.desfilter(c)
-	return c:IsFaceup()
+	return c:IsType(TYPE_MONSTER)
 end
 function c9980422.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and c9980422.desfilter(chkc) end

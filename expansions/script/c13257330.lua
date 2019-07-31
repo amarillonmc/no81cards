@@ -48,7 +48,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetChainLimit(cm.chlimit)
 end
 function cm.chlimit(e,ep,tp)
-	return e:IsActiveType(TYPE_MONSTER)
+	return not e:IsActiveType(TYPE_MONSTER)
 end
 function cm.desfilter(c)
 	return c:IsFaceup() and (c:GetAttack()==0 or (c:GetDefense()==0 and not c:IsType(TYPE_LINK)))
@@ -78,7 +78,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x351) and c:IsCanAddCounter(0x351,1)
+	return c:IsFaceup() and c:IsCanAddCounter(0x351,1)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and cm.filter(chkc) end

@@ -1,4 +1,4 @@
---超时空武装 副炮-烈性炸弹
+--超时空武装 副武-烈性炸弹
 local m=13257323
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)

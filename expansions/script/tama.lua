@@ -447,7 +447,7 @@ function tama.tamas_groupHasGroupCard(g1,g2)
 	if g2:GetCount()==0 then return false end
 	local tc=g2:GetFirst()
 	while tc do
-		if not g1:IsContains(tc) then
+		if g1:IsContains(tc) then
 			has=true
 			break
 		end

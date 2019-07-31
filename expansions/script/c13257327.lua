@@ -184,7 +184,7 @@ function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x3352) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
 end
 function cm.tdfilter(c)
-	return c:IsAbleToDeckAsCost()
+	return c:IsAbleToDeckAsCost() or c:IsAbleToExtraAsCost()
 end
 function cm.pccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local eq=e:GetHandler():GetEquipGroup()
@@ -218,8 +218,8 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	if op==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
-		local tc=g:GetFirst()
-		if tc then
+		if g:GetCount()>0 then
+			local tc=g:GetFirst()
 			Duel.Equip(tp,tc,c)
 		end
 	elseif op==2 then
