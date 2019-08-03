@@ -110,7 +110,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_SKIP_M1)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
-	if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_MAIN1 then
+	if Duel.GetTurnPlayer()==tp then
 		e1:SetLabel(Duel.GetTurnCount())
 		e1:SetCondition(cm.skipcon)
 		e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)
@@ -123,7 +123,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_SKIP_M1)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(0,1)
-	if Duel.GetTurnPlayer()~=tp and Duel.GetCurrentPhase()==PHASE_MAIN1 then
+	if Duel.GetTurnPlayer()~=tp then
 		e2:SetLabel(Duel.GetTurnCount())
 		e2:SetCondition(cm.skipcon)
 		e2:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,2)

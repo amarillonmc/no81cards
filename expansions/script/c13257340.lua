@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
 	e2:SetOperation(cm.acop1)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
@@ -174,8 +175,8 @@ function cm.filter2(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetCounter(0x351)>=10 end
-	e:GetHandler():RemoveCounter(tp,0x351,10,REASON_COST)
+	if chk==0 then return e:GetHandler():GetCounter(0x351)>=5 end
+	e:GetHandler():RemoveCounter(tp,0x351,5,REASON_COST)
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(filter2,tp,0,LOCATION_ONFIELD,1,nil) end

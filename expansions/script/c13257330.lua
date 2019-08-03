@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetHintTiming(0,0x1e0)
 	e1:SetTarget(cm.destg)
 	e1:SetOperation(cm.desop)
@@ -44,7 +45,8 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	--if chk==0 then return c13257336.check(Duel.GetAttacker(),tp) or c13257336.check(Duel.GetAttackTarget(),tp) end
 	if chkc==0 then return chkc:IsOnField() and cm.pcfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(cm.pcfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE) end
-	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,cm.pcfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetChainLimit(cm.chlimit)
 end
 function cm.chlimit(e,ep,tp)

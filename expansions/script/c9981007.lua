@@ -32,12 +32,12 @@ function c9981007.initial_effect(c)
 	e2:SetOperation(c9981007.spop)
 	c:RegisterEffect(e2) 
 end
-function c9981007.filter(c)
+function c9981007.thfilter(c)
 	return c:IsSetCard(0x5bc1) and c:IsType(TYPE_MONSTER)  and c:IsAbleToHand()
 end
 function c9981007.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local g=Duel.GetMatchingGroup(c9981007.filter,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetMatchingGroup(c9981007.thfilter,tp,LOCATION_DECK,0,nil)
 	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9981007,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)

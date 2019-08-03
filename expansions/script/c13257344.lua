@@ -75,11 +75,17 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e4)
 end
 function cm.desfilter(c,e)
-	return e:GetHandler():GetAttack()>c:GetAttack()
+	return e:GetHandler():GetAttack()>=c:GetAttack()
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil,e)
 	Duel.Destroy(sg,REASON_EFFECT)
+end
+function cm.pcfilter(c,tp)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp
+end
+function cm.pccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.pcfilter,1,nil,1-tp)
 end
 function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanAddCounter(0x351,1) end
