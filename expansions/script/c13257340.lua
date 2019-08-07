@@ -244,6 +244,14 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 			tc=g:GetNext()
 		end
 	end
+	local e4=Effect.CreateEffect(e:GetHandler())
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCode(EFFECT_IMMUNE_EFFECT)
+	e4:SetValue(cm.efilter)
+	e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
+	e:GetHandler():RegisterEffect(e4)
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(11,0,aux.Stringid(m,7))

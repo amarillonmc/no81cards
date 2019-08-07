@@ -25,16 +25,6 @@ function c9980424.initial_effect(c)
 	e4:SetCode(EFFECT_DESTROY_SUBSTITUTE)
 	e4:SetValue(1)
 	c:RegisterEffect(e4)
-	--to hand
-	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_TOHAND)
-	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e5:SetProperty(EFFECT_FLAG_DELAY)
-	e5:SetCode(EVENT_TO_GRAVE)
-	e5:SetCondition(c9980424.thcon2)
-	e5:SetTarget(c9980424.thtg2)
-	e5:SetOperation(c9980424.thop2)
-	c:RegisterEffect(e5)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -98,22 +88,4 @@ function c9980424.eqop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9980424.eqlimit(e,c)
 	return c:IsRace(RACE_WARRIOR)
-end
-function c9980424.thcon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
-end
-function c9980424.thfilter2(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5bca) and c:IsAbleToHand()
-end
-function c9980424.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9980424.thfilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler()) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
-end
-function c9980424.thop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9980424.thfilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,e:GetHandler())
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
 end

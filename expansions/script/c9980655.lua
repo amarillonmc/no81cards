@@ -3,12 +3,6 @@ function c9980655.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,c9980655.lcheck)
 	c:EnableReviveLimit()
-	--splimit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_SPSUMMON_COST)
-	e1:SetCost(c9980655.spcost)
-	c:RegisterEffect(e1)
 	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -54,10 +48,6 @@ function c9980655.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 end 
 function c9980655.lcheck(g)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0xbca)
-end
-function c9980655.spcost(e,c,tp,st)
-	if bit.band(st,SUMMON_TYPE_LINK)~=SUMMON_TYPE_LINK then return true end
-	return Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c9980655.atkval(e,c)
 	return c:GetLinkedGroupCount()*500

@@ -1,7 +1,7 @@
 --AgitΩ·燃烧形态
 function c9980427.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5bca),8,3)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5bca),8,2)
 	c:EnableReviveLimit()
 	--destroy
 	local e1=Effect.CreateEffect(c)

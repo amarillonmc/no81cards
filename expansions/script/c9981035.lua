@@ -55,6 +55,13 @@ function c9981035.initial_effect(c)
 	e1:SetTarget(c9981035.target)
 	e1:SetOperation(c9981035.operation)
 	c:RegisterEffect(e1)
+	--reduce
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_PRE_BATTLE_DAMAGE)
+	e3:SetCondition(c9981035.rdcon)
+	e3:SetOperation(c9981035.rdop)
+	c:RegisterEffect(e3)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -73,6 +80,12 @@ function c9981035.splimit(e,se,sp,st)
 		return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 	end
 	return true
+end
+function c9981035.rdcon(e,tp,eg,ep,ev,re,r,rp)
+	return ep~=tp
+end
+function c9981035.rdop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ChangeBattleDamage(ep,ev/2)
 end
 function c9981035.ffilter(c)
 	return c:IsFusionType(TYPE_FUSION) and c:IsSetCard(0xdd)

@@ -34,7 +34,6 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetCountLimit(1)
 	e4:SetCost(cm.bombcost)
-	e4:SetTarget(cm.bombtg)
 	e4:SetOperation(cm.bombop)
 	c:RegisterEffect(e4)
 	local e11=Effect.CreateEffect(c)
@@ -103,17 +102,6 @@ end
 function cm.desfilter(c,ec)
 	return ec:GetColumnGroup():IsContains(c)
 end
-function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local e4=Effect.CreateEffect(e:GetHandler())
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EFFECT_IMMUNE_EFFECT)
-	e4:SetValue(cm.efilter)
-	e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
-	e:GetHandler():RegisterEffect(e4)
-end
 function cm.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
@@ -153,6 +141,14 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(g1,REASON_EFFECT)
 		end
 	end
+	local e4=Effect.CreateEffect(e:GetHandler())
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCode(EFFECT_IMMUNE_EFFECT)
+	e4:SetValue(cm.efilter)
+	e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
+	e:GetHandler():RegisterEffect(e4)
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(11,0,aux.Stringid(m,7))

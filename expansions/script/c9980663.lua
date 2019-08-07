@@ -52,7 +52,7 @@ function c9980663.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980663,1))
 end 
 function c9980663.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c9980663.thfilter(c)
 	return c:IsSetCard(0x9bcd,0x3bcd) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()

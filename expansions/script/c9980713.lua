@@ -8,6 +8,7 @@ function c9980713.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9980713)
+	e1:SetCondition(c9980713.handcon)
 	e1:SetCost(c9980713.cost)
 	e1:SetTarget(c9980713.target)
 	e1:SetOperation(c9980713.activate)
@@ -22,6 +23,9 @@ end
 function c9980713.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980713,0))
 end 
+function c9980713.handcon(e)
+	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
+end
 function c9980713.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
@@ -29,9 +33,9 @@ end
 function c9980713.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc~=c end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function c9980713.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -57,7 +61,7 @@ function c9980713.activate(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e3:SetTargetRange(1,0)
 		e3:SetValue(c9980713.val)
-		e3:SetLabelObject(tc1)
+		e3:SetLabelObject(tc)
 		e3:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e3,tp)
 	end

@@ -49,6 +49,13 @@ function c9981033.initial_effect(c)
 	e4:SetTarget(c9981033.sptg)
 	e4:SetOperation(c9981033.spop)
 	c:RegisterEffect(e4)
+	--reduce
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_PRE_BATTLE_DAMAGE)
+	e3:SetCondition(c9981033.rdcon)
+	e3:SetOperation(c9981033.rdop)
+	c:RegisterEffect(e3)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -64,6 +71,12 @@ function c9981033.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 end 
 function c9981033.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
+end
+function c9981033.rdcon(e,tp,eg,ep,ev,re,r,rp)
+	return ep~=tp
+end
+function c9981033.rdop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ChangeBattleDamage(ep,ev/2)
 end
 function c9981033.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

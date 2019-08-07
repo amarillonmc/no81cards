@@ -524,7 +524,7 @@ end
 --Quick Effect No Force: Base set
 function rsef.QO(cardtbl,code,desctbl,ctlimittbl,cate,flag,range,con,cost,tg,op,timingtbl,resettbl)
 	if not code then code=EVENT_FREE_CHAIN end
-	if not timingtbl and code==EVENT_FREE_CHAIN then timingtbl={0,TIMINGS_CHECK_MONSTER } end
+	if not timingtbl and code==EVENT_FREE_CHAIN then timingtbl={0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE } end
 	return rsef.Register(cardtbl,EFFECT_TYPE_QUICK_O,code,desctbl,ctlimittbl,cate,flag,range,con,cost,tg,op,nil,nil,timingtbl,resettbl)
 end 
 --Quick Effect: negate effect/activation/summon/spsummon
@@ -3259,6 +3259,7 @@ function cm.initial_effect(c)
 		"rseee" =   "EEE"
 		"rshr"  =   "HarmonicRhythm"
 		"rsik"  =   "InfernalKnight"
+		"rsvw"  =   "VirusWrom"
 				}--]]   
 end
 end

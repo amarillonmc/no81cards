@@ -72,8 +72,7 @@ function c9980728.atkop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 end
 function c9980728.reccon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return ep~=tp and c:GetFlagEffect(9980728)~=0
+   return rp==1-tp and e:GetHandler():GetFlagEffect(9980728)>0
 end
 function c9980728.recop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,500,REASON_EFFECT)

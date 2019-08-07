@@ -1,0 +1,76 @@
+--静谧沼泽
+function c10150042.initial_effect(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e1)
+	--extra summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(10150042,1))
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+	e2:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x50))
+	c:RegisterEffect(e2) 
+	--add counter
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_COUNTER)
+	e3:SetDescription(aux.Stringid(10150042,0))
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	e3:SetTarget(c10150042.cttg)
+	e3:SetOperation(c10150042.ctop)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e4)
+	local e5=e3:Clone()
+	e5:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+	c:RegisterEffect(e5)  
+	--des
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetCode(EFFECT_SELF_DESTROY)
+	e6:SetRange(LOCATION_FZONE)
+	e6:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e6:SetTarget(c10150042.tg)
+	--c:RegisterEffect(e6)
+	--disable
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD)
+	e7:SetCode(EFFECT_DISABLE)
+	e7:SetRange(LOCATION_FZONE)
+	e7:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e7:SetTarget(c10150042.tg)
+	c:RegisterEffect(e7) 
+	local e8=e7:Clone()
+	e8:SetCode(EFFECT_CANNOT_ATTACK) 
+	c:RegisterEffect(e8)	 
+	local e9=e7:Clone()
+	e9:SetCode(EFFECT_SET_ATTACK) 
+	e9:SetValue(0)
+	c:RegisterEffect(e9) 
+	local e10=e7:Clone()
+	e10:SetCode(EFFECT_SET_DEFENSE) 
+	e10:SetValue(0)
+	c:RegisterEffect(e10)   
+end
+function c10150042.tg(e,c)
+	return c:IsFaceup() and c:GetCounter(0x1009)>=3 and not c:IsSetCard(0x50)
+end
+
+function c10150042.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+end
+
+function c10150042.ctop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local tc=g:GetFirst()
+	while tc do
+		tc:AddCounter(0x1009,1)
+		tc=g:GetNext()
+	end
+end
