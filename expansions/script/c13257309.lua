@@ -90,7 +90,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.BreakEffect()
 	Duel.ChangePosition(ec,POS_FACEUP_DEFENSE)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(aux.Stringid(m,1)) then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 		local nseq=0
 		if s==1 then nseq=0

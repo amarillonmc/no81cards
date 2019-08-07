@@ -52,6 +52,7 @@ function c9980676.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c9980676.thop(e,tp,eg,ep,ev,re,r,rp,chk)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tg=Duel.GetFirstMatchingCard(c9980676.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 	if tg then
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
