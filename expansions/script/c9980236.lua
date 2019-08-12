@@ -128,20 +128,24 @@ function c9980236.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
+function c9980236.tdfilter1(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP)
+end
 function c9980236.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_SZONE+LOCATION_GRAVE)>0 end
-	local sg=Duel.GetFieldGroup(tp,0,LOCATION_SZONE+LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9980236.tdfilter1,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,c) end
+	local sg=Duel.GetMatchingGroup(c9980236.tdfilter1,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,c)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,sg:GetCount(),0,0)
 end
 function c9980236.desop(e,tp,eg,ep,ev,re,r,rp)
+	local sg=Duel.GetMatchingGroup(c9980236.tdfilter1,tp,0,LOCATION_SZONE+LOCATION_GRAVE,nil)
 	local c=e:GetHandler()
-	local sg=Duel.GetFieldGroup(tp,0,LOCATION_SZONE+LOCATION_GRAVE)
-	local ct=Duel.SendtoDeck(sg,REASON_EFFECT)
-	if ct>0 and c:IsFaceup() and c:IsRelateToEffect(e) then
+	if sg:GetCount()>0 then
+	Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
+	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(ct*200)
+		e1:SetValue(sg:GetCount()*200)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
 	end

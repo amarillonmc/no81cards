@@ -61,10 +61,10 @@ function c9980707.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9980707.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.GetFirstMatchingCard(c9980707.filter,tp,LOCATION_DECK,0,nil)
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+	local g=Duel.GetFirstMatchingCard(c9980707.filter,tp,LOCATION_DECK,0,nil)
+	 if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function c9980707.spcon(e,tp,eg,ep,ev,re,r,rp)

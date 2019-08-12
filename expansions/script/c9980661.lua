@@ -67,7 +67,10 @@ function c9980661.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsFaceup() then
 		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-		local val=g:GetSum(Card.GetRank)*200+g:GetSum(Card.GetLevel)*100+g:GetSum(Card.GetLink)*300
+		local val1=g:GetSum(Card.GetRank)*200
+		local val2=g:GetSum(Card.GetLevel)*100
+		local val3=g:GetSum(Card.GetLink)*300
+		local val=val1+val2+val3
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
