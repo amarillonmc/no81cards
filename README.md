@@ -27,14 +27,14 @@
 
 Clone-Modify-Push-PR！
 
-1. 先clone本repo
+1. 先Fork本repo，然后clone你的那个repo
 
 2. 将你的卡片cdb内容整合进``no81.cdb``，而后将卡图数据和脚本数据也放入对应目录。
 
 
 2.5.如果你想给自己的卡添加召唤词，请按照格式修改``dialogues-custom.json``，但修改格式错误将会导致你的修改全部被退回。 
 
-3. 将你的更改Push到你刚才clone下的repo中。
+3. 将你的更改Commit并Push到你刚才clone下的repo中。
 
 4. 发一个PR，然后交叉手指祈祷你的卡能过。
 
