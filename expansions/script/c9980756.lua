@@ -1,5 +1,6 @@
 --风都侦探W-炽热王牌
 function c9980756.initial_effect(c)
+	c:SetUniqueOnField(1,0,aux.FilterBoolFunction(Card.IsType,TYPE_FUSION),LOCATION_MZONE)
 	 --fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2(c,9980747,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9bc1),true,true)
@@ -19,12 +20,14 @@ function c9980756.initial_effect(c)
 	e3:SetCode(EFFECT_UPDATE_ATTACK)
 	e3:SetValue(c9980756.atkup)
 	c:RegisterEffect(e3)
-	--extra att
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_EXTRA_ATTACK)
-	e3:SetValue(1)
-	c:RegisterEffect(e3)
+	 --attack twice
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
+	e4:SetValue(1)
+	c:RegisterEffect(e4)
 	--To hand
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOHAND)

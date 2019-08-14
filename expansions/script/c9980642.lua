@@ -21,22 +21,22 @@ function c9980642.initial_effect(c)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,9980642)
-	e1:SetCondition(c9980642.spcon)
 	e1:SetTarget(c9980642.sptg)
 	e1:SetOperation(c9980642.spop)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2)
-	--lv change
-	local e2=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9980642,2))
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetTarget(c9980642.lvtg)
-	e2:SetOperation(c9980642.lvop)
+	c:RegisterEffect(e2) 
+	--activate from hand
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
+	e1:SetRange(LOCATION_ONFIELD)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x9bca,0x9bcd))
+	e1:SetTargetRange(LOCATION_HAND,0)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	c:RegisterEffect(e2)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
@@ -74,12 +74,6 @@ function c9980642.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetValue(1900)
 	a:RegisterEffect(e1)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980642,4))
-end
-function c9980642.ctfilter(c)
-	return c:IsSummonType(SUMMON_TYPE_SPECIAL)
-end
-function c9980642.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9980642.ctfilter,tp,0,LOCATION_MZONE,1,nil)
 end
 function c9980642.filter(c,e,tp)
 	return c:IsSetCard(0x9bcd,0x9bca) and c:IsType(TYPE_TUNER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -119,28 +113,4 @@ function c9980642.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9980642.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsRace(RACE_WARRIOR) and c:IsLocation(LOCATION_EXTRA)
-end
-function c9980642.lvfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x9bcd,0x9bca) and c:IsType(TYPE_MONSTER) and c:GetLevel()>0
-end
-function c9980642.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9980642.lvfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9980642.lvfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectTarget(tp,c9980642.lvfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	local lv=g:GetFirst():GetLevel()
-	Duel.Hint(HINT_SELECTMSG,tp,HINGMSG_LVRANK)
-	e:SetLabel(Duel.AnnounceLevel(tp,1,8,lv))
-end
-function c9980642.lvop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CHANGE_LEVEL)
-		e1:SetValue(e:GetLabel())
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-	end
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980642,4))
 end

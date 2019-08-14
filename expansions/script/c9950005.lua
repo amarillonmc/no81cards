@@ -23,12 +23,16 @@ function c9950005.initial_effect(c)
 	e1:SetOperation(c9950005.thop)
 	c:RegisterEffect(e1)
 end
-function c9950005.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsSetCard(0xba1) and c:IsPreviousLocation(LOCATION_ONFIELD)
+function c9950005.filter(c)
+	return c:IsFaceup() and c:IsSetCard(0xba1) 
 end
-function c9950005.spfilter2(c,e,tp)
-	return c:IsSetCard(0xba2) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c9950005.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	if c==nil then return true end
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9950005.filter,c:GetControler(),LOCATION_MZONE,0,1,nil)
+end
+function c9950005.spfilter2(c,e,tp,mc)
+	return c:IsSetCard(0xba2) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function c9950005.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCountFromEx(tp)>0

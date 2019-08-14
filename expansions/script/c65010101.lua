@@ -1,58 +1,91 @@
---八岐大狐
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
-local m=65010101
-local cm=_G["c"..m]
-function cm.initial_effect(c)
-	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)
-	local e1=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,0},{1,m},"dr","de,dsp",rscon.sumtype("link"),nil,cm.drtg,cm.drop)
-	local e2=rsef.SV_IMMUNE_EFFECT(c,cm.val)
-	local e3=rsef.QO(c,EVENT_CHAINING,{m,1},1,"res,neg,des","dcal,dsp",LOCATION_MZONE,rscon.negcon(0),nil,cm.negtg,cm.negop)
+--『星光歌剧』台本-轮回Revue
+function c65010101.initial_effect(c)
+	--Activate
+	local e0=Effect.CreateEffect(c)
+	e0:SetCategory(CATEGORY_SUMMON)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e0)
+	--token&summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN+CATEGORY_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_SZONE)
+	e1:SetCountLimit(1,65010101)
+	e1:SetCondition(c65010101.con)
+	e1:SetCost(c65010101.cost)
+	e1:SetTarget(c65010101.tg)
+	e1:SetOperation(c65010101.op)
+	c:RegisterEffect(e1)
+	--draw!
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c65010101.drtg)
+	e2:SetOperation(c65010101.drop)
+	c:RegisterEffect(e2)
 end
-function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()  
-	local lg=c:GetLinkedGroup()
-	if chk==0 then return lg:IsExists(Card.IsReleasable,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+function c65010101.drfil(c)
+	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+end
+function c65010101.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return c65010101.drfil(chkc) and chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) end
+	if chk==0 then return Duel.IsExistingTarget(c65010101.drfil,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsPlayerCanDraw(tp) end
+	local g=Duel.SelectTarget(tp,c65010101.drfil,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,0,0,tp,1)
+end
+function c65010101.drop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
+		Duel.ShuffleDeck(tp)
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_MZONE)
 end
-function cm.negop(e,tp,eg,ep,ev,re,r,rp)
-	local c=rscf.GetRelationThisCard(e)
-	if not c then return end
-	local lg=c:GetLinkedGroup()
-	if #lg<=0 then return end
-	rsof.SelectHint(tp,"res")
-	local rg=lg:FilterSelect(tp,Card.IsReleasable,1,1,nil)
-	if #rg<=0 or Duel.Release(rg,REASON_EFFECT)<=0 or not Duel.NegateActivation(ev) then return end
-	if re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT)
+function c65010101.con(e,tp,eg,ep,ev,re,r,rp)
+	local tn=Duel.GetTurnPlayer()
+	local ph=Duel.GetCurrentPhase()
+	return tn~=tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2 or (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE))
+end
+function c65010101.costfil(c)
+	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsAbleToHandAsCost()
+end
+function c65010101.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c65010101.costfil,tp,LOCATION_MZONE,0,1,nil) end
+	local g=Duel.SelectMatchingCard(tp,c65010101.costfil,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SendtoHand(g,nil,REASON_COST)
+end
+function c65010101.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,65010103,0,0x4011,1000,2800,8,RACE_FAIRY,ATTRIBUTE_DARK) end
+	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
+end
+function c65010101.filter(c)
+	return c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)
+end
+function c65010101.op(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,65010103,0,0x4011,1000,2800,8,RACE_FAIRY,ATTRIBUTE_DARK) or not e:GetHandler():IsRelateToEffect(e) then return end
+	local token=Duel.CreateToken(tp,65010103)
+	if Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c65010101.filter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(65010101,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+		local g=Duel.SelectMatchingCard(tp,c65010101.filter,tp,LOCATION_HAND,0,1,1,nil)
+		local tc=g:GetFirst()
+	if tc then
+		local s1=tc:IsSummonable(true,nil,1)
+		local s2=tc:IsMSetable(true,nil,1)
+		if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
+			Duel.Summon(tp,tc,true,nil,1)
+		else
+			Duel.MSet(tp,tc,true,nil,1)
+		end
 	end
-end
-function cm.val(e,re)
-	return rsval.imoe(e,re) and re:IsActiveType(TYPE_MONSTER)
-end
-function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=e:GetHandler():GetLink()
-	local matct=e:GetHandler():GetMaterialCount()
-	local hct=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
-	if chk==0 then return ct and ct>0 and Duel.IsPlayerCanDraw(tp,ct) and hct+ct>=matct end
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
-end
-function cm.drop(e,tp)
-	local c=rscf.GetRelationThisCard(e)
-	if not c then return end
-	local ct=c:GetLink()
-	local matct=e:GetHandler():GetMaterialCount()
-	if not ct or ct==0 or Duel.Draw(tp,ct,REASON_EFFECT)<=0 then return end
-	local hct=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
-	if hct<matct then return end
-	Duel.ShuffleHand(tp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,matct,matct,nil)
-	if #g>0 then
-		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
 end

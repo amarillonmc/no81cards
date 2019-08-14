@@ -1,5 +1,6 @@
 --风都侦探W-疾风扳机
 function c9980760.initial_effect(c)
+	c:SetUniqueOnField(1,0,aux.FilterBoolFunction(Card.IsType,TYPE_FUSION),LOCATION_MZONE)
 	  --fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x3bc2),aux.FilterBoolFunction(Card.IsFusionSetCard,0x9bc1),true,true)
