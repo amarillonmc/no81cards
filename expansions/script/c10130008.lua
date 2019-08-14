@@ -22,5 +22,5 @@ function cm.con2(e,tp)
 	return Duel.IsExistingMatchingCard(cm.cfilter2,tp,LOCATION_MZONE,0,2,nil)
 end
 function cm.tg(e,c)
-	return c:IsSetCard(0xa336) and c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsSetCard(0xa336) or c:IsFacedown()
 end
