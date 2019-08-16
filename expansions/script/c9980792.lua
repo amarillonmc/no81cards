@@ -1,7 +1,7 @@
 --欲望战士OOO·魂联组
 function c9980792.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xabc1),2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xabc1),2,99)
 	c:EnableReviveLimit()
 	--code
 	local e1=Effect.CreateEffect(c)

@@ -68,6 +68,6 @@ function c10128006.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,c10128006.spfilter,tp,LOCATION_DECK,0,1,1,nil,tp,rc:GetCode()):GetFirst()
 	tc:AddMonsterAttribute(TYPE_EFFECT,ATTRIBUTE_EARTH,RACE_ZOMBIE,1,0,0)
 	Duel.SpecialSummonStep(tc,1,tp,tp,true,false,POS_FACEUP)
-	tc:AddMonsterAttributeComplete()
+	--tc:AddMonsterAttributeComplete()
 	Duel.SpecialSummonComplete()
 end

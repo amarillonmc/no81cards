@@ -1,6 +1,6 @@
 --刻刻帝-喰时之城
 function c33400100.initial_effect(c)
-	 c:EnableCounterPermit(0x334f)
+	 c:EnableCounterPermit(0x34f)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -36,7 +36,7 @@ end
 function c33400100.counter(e,tp,eg,ep,ev,re,r,rp)
 	local ct=eg:FilterCount(c33400100.cfilter,nil)
 	if ct>0 then
-		e:GetHandler():AddCounter(0x334f,ct,true)
+		e:GetHandler():AddCounter(0x34f,ct,true)
 	end
 end
 function c33400100.cfilter(c)

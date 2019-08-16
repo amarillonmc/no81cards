@@ -200,11 +200,11 @@ end
 function c33400033.valcon(e,re,r,rp)
 	return r==REASON_BATTLE
 end
-function c33400033.op3(e,tp,eg,ep,ev,re,r,rp)		
+function c33400033.op3(e,tp,eg,ep,ev,re,r,rp)	   
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 			Duel.SelectTarget(tp,c33400033.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
 			local tc=Duel.GetFirstTarget()
-			tc:AddCounter(0x334f,2)
+			tc:AddCounter(0x34f,2)
 			local e3_1=Effect.CreateEffect(e:GetHandler())
 			e3_1:SetType(EFFECT_TYPE_SINGLE)
 			e3_1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -218,7 +218,7 @@ function c33400033.efilter3_1(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
 function c33400033.filter(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x334f,2)
+	return c:IsFaceup() and c:IsCanAddCounter(0x34f,2)
 end
 --e6
 function c33400033.thfilter(c)
@@ -248,5 +248,5 @@ function c33400033.disop(e,tp,eg,ep,ev,re,r,rp)
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	 Duel.SelectTarget(tp,c33400033.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	 local tc=Duel.GetFirstTarget()
-	 tc:AddCounter(0x334f,2)
+	 tc:AddCounter(0x34f,2)
 end

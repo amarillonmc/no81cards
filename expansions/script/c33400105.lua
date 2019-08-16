@@ -14,8 +14,8 @@ function c33400105.filter1(c)
 	return c:IsSetCard(0x3341) or c:IsSetCard(0x3340)
 end
 function c33400105.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,LOCATION_DECK)>0  and Duel.IsCanRemoveCounter(tp,1,0,0x334f,2,REASON_COST) end
-	local ct=Duel.GetCounter(tp,LOCATION_ONFIELD,0,0x334f)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,LOCATION_DECK)>0  and Duel.IsCanRemoveCounter(tp,1,0,0x34f,2,REASON_COST) end
+	local ct=Duel.GetCounter(tp,LOCATION_ONFIELD,0,0x34f)
 	local b1=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
 	local b2=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
 	if chk==0 then return b1 or b2 end
@@ -24,22 +24,22 @@ function c33400105.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		  if Duel.IsExistingMatchingCard(c33400105.filter1,tp,LOCATION_GRAVE,0,3,nil) then
 			op=Duel.SelectOption(tp,aux.Stringid(33400105,0),aux.Stringid(33400105,1),aux.Stringid(33400105,2))
 			Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-			if op==2 then Duel.RemoveCounter(tp,1,0,0x1003,4,REASON_COST)
-			else Duel.RemoveCounter(tp,1,0,0x334f,2,REASON_COST) 
+			if op==2 then Duel.RemoveCounter(tp,1,0,0x34f,4,REASON_COST)
+			else Duel.RemoveCounter(tp,1,0,0x34f,2,REASON_COST) 
 			end
 		  else
 			 op=Duel.SelectOption(tp,aux.Stringid(33400105,0),aux.Stringid(33400105,1))
 			 Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-			 Duel.RemoveCounter(tp,1,0,0x334f,2,REASON_COST)
+			 Duel.RemoveCounter(tp,1,0,0x34f,2,REASON_COST)
 		  end
 	elseif b1 then
 		op=Duel.SelectOption(tp,aux.Stringid(33400105,0))
 		Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-		Duel.RemoveCounter(tp,1,0,0x334f,2,REASON_COST)
+		Duel.RemoveCounter(tp,1,0,0x34f,2,REASON_COST)
 	else
 		op=Duel.SelectOption(tp,aux.Stringid(33400105,1))+1
 		Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-		Duel.RemoveCounter(tp,1,0,0x334f,2,REASON_COST)
+		Duel.RemoveCounter(tp,1,0,0x34f,2,REASON_COST)
 	end
 	e:SetLabel(op)
 end
@@ -76,7 +76,7 @@ function c33400105.activate(e,tp,eg,ep,ev,re,r,rp)
 		  Duel.ShuffleHand(tp)
 		  Duel.SortDecktop(tp,1-tp,cm2-1)
 		  else Duel.SortDecktop(tp,1-tp,cm2) 
-		  end						
+		  end					   
 	end
 end
 function c33400105.filter(c)

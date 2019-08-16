@@ -37,6 +37,8 @@ function c33400009.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetLabel(2)
+	e3:SetCost(c33400009.cost)
 	e3:SetTarget(c33400009.destg)
 	e3:SetOperation(c33400009.desop)
 	c:RegisterEffect(e3)
@@ -49,9 +51,9 @@ function c33400009.afilter(c)
 end
 function c33400009.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetLabel()
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x334f,ct,REASON_COST) end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,ct,REASON_COST) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x334f,ct,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
 end
 function c33400009.cfilter(c,lg)
 	return  lg:IsContains(c)

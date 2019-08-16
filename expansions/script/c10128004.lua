@@ -44,7 +44,7 @@ function c10128004.spop(e,tp,eg,ep,ev,re,r,rp)
 	for rc in aux.Next(g) do
 		rc:AddMonsterAttribute(TYPE_EFFECT,ATTRIBUTE_WIND,RACE_INSECT,1,0,0)
 		Duel.SpecialSummonStep(rc,1,tp,tp,true,false,POS_FACEUP)
-		rc:AddMonsterAttributeComplete()
+		--rc:AddMonsterAttributeComplete()
 	end
 	Duel.SpecialSummonComplete()
 end

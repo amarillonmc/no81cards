@@ -1,6 +1,6 @@
 --时崎狂三---献身者
 function c33400003.initial_effect(c)
-	 c:EnableCounterPermit(0x334f)
+	 c:EnableCounterPermit(0x34f)
 	--counter
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_COUNTER)
@@ -84,10 +84,10 @@ end
 --e1
 function c33400003.addct(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x334f)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x34f)
 end
 function c33400003.addc(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x334f,2)
+		e:GetHandler():AddCounter(0x34f,2)
 	end
 end

@@ -16,9 +16,9 @@ function c33400104.initial_effect(c)
 end
 function c33400104.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetLabel()
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x334f,ct,REASON_COST) end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,ct,REASON_COST) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x334f,ct,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
 end
 function c33400104.cfilter(c,tp)
 	return  c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp and c:IsPreviousPosition(POS_FACEUP)

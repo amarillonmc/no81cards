@@ -1,5 +1,6 @@
 --时崎狂三 无言之影
 function c33400005.initial_effect(c)
+	c:EnableCounterPermit(0x34f)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -51,11 +52,11 @@ end
 --e2
 function c33400005.addct(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x334f)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x34f)
 end
 function c33400005.addc(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x334f,2)
+		e:GetHandler():AddCounter(0x34f,2)
 	end
 end
 function c33400005.filter(c)

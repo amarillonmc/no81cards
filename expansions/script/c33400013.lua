@@ -48,19 +48,19 @@ function c33400013.activate3(e,tp,eg,ep,ev,re,r,rp)
 end
 --e2
 function c33400013.filter(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x334f,4)
+	return c:IsFaceup() and c:IsCanAddCounter(0x34f,4)
 end
 function c33400013.addct(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and c33400013.filter(chkc) end
 	if chk==0 then return true end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c33400013.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,4,0,0x334f)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,4,0,0x34f)
 end
 function c33400013.addc(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		tc:AddCounter(0x334f,4)
+		tc:AddCounter(0x34f,4)
 	end
 end
 --e1

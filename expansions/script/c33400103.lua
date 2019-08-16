@@ -25,14 +25,14 @@ function c33400103.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local sc=Duel.GetMatchingGroupCount(c33400103.cfilter,tp,LOCATION_MZONE,0,nil)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and c33400102.filter(chkc) end
 	if chk==0 then return sc>0 and Duel.IsExistingTarget(c33400102.filter,tp,LOCATION_MZONE,LOCATION_MZONE,-1,nil) end
-	local cn=Duel.GetCounter(tp,1,0,0x334f)
+	local cn=Duel.GetCounter(tp,1,0,0x34f)
 	local lvt={}
 	for i=1,7 do
 	 if i<=cn and i<=sc then lvt[i]=i  end 
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33400103,1))
 	local sc1=Duel.AnnounceNumber(tp,table.unpack(lvt))
-	Duel.RemoveCounter(tp,1,0,0x334f,sc1,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,sc1,REASON_COST)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,c33400103.filter,tp,LOCATION_MZONE,LOCATION_MZONE,sc1,sc1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_LVCHANGE,g,g:GetCount(),0,0)

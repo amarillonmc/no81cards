@@ -16,18 +16,18 @@ function c33400106.cfilter(c,e,tp)
 end
 function c33400106.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return  Duel.IsExistingTarget(c33400106.cfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)
-	and Duel.IsCanRemoveCounter(tp,1,0,0x334f,2,REASON_COST)
+	and Duel.IsCanRemoveCounter(tp,1,0,0x34f,2,REASON_COST)
 	end
 	local sc=Duel.GetMatchingGroupCount(c33400106.cfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
 	if chk==0 then return sc>0  end
-	local cn=Duel.GetCounter(tp,1,0,0x334f)
+	local cn=Duel.GetCounter(tp,1,0,0x34f)
 	local lvt={}
 	for i=1,2 do
 	 if (i*2)<=cn and i<=sc then lvt[i]=i  end 
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33400106,1))
 	local sc1=Duel.AnnounceNumber(tp,table.unpack(lvt))
-	Duel.RemoveCounter(tp,1,0,0x334f,sc1*2,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,sc1*2,REASON_COST)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c33400106.cfilter,tp,LOCATION_GRAVE,0,sc1,sc1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,g:GetCount(),0,0)

@@ -1,5 +1,6 @@
 --踏过无尽尸体的觉悟
 function c33400117.initial_effect(c)
+	c:EnableCounterPermit(0x34f)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33400117,0))
@@ -49,6 +50,6 @@ function c33400117.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
-		e:GetHandler():AddCounter(0x334f,2)
+		e:GetHandler():AddCounter(0x34f,2)
 	end
 end

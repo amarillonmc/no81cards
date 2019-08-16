@@ -66,9 +66,9 @@ end
 
 function c33400008.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetLabel()
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x334f,ct,REASON_COST) end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,ct,REASON_COST) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x334f,ct,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
 end
 function c33400008.condition(e,tp,eg,ep,ev,re,r,rp)
 	return re  and re:IsActiveType(TYPE_QUICKPLAY) and re:GetHandler():IsSetCard(0x3340) and rp==tp and e:GetHandler():GetFlagEffect(1)>0

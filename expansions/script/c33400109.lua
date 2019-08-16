@@ -12,9 +12,9 @@ function c33400109.initial_effect(c)
 end
 function c33400109.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetLabel()
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x334f,ct,REASON_COST) end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,ct,REASON_COST) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x334f,ct,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
 end
 function c33400109.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_SZONE+LOCATION_MZONE):Filter(Card.IsFacedown,nil)

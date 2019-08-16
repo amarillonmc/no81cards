@@ -46,11 +46,11 @@ function c33400007.sumval(e,c)
 end
 function c33400007.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) 
-	and Duel.IsCanRemoveCounter(tp,1,0,0x334f,ct,REASON_COST)
+	and Duel.IsCanRemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
 	end
 	local ct=e:GetLabel()
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x334f,ct,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c33400007.thfilter(c)

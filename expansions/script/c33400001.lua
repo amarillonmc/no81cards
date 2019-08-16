@@ -1,6 +1,6 @@
 --时崎狂三---惜时
 function c33400001.initial_effect(c)
-	 c:EnableCounterPermit(0x334f)
+   c:EnableCounterPermit(0x34f)
 	--counter
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_COUNTER)
@@ -39,17 +39,17 @@ function c33400001.costfilter(c)
 end
 function c33400001.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetLabel()
-	if chk==0 then return Duel.IsExistingMatchingCard(c33400001.costfilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsCanRemoveCounter(tp,1,0,0x334f,ct,REASON_COST) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c33400001.costfilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsCanRemoveCounter(tp,1,0,0x34f,ct,REASON_COST) end
 	Duel.DiscardHand(tp,c33400001.costfilter,1,1,REASON_DISCARD+REASON_COST)	
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x334f,ct,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
 end
 function c33400001.addct(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x334f)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x34f)
 end
 function c33400001.addc(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x334f,2)
+		e:GetHandler():AddCounter(0x34f,2)
 	end
 end

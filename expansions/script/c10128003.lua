@@ -63,6 +63,6 @@ function c10128003.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=sg:Select(tp,1,1,nil):GetFirst()
 	tc:AddMonsterAttribute(TYPE_EFFECT,ATTRIBUTE_FIRE,RACE_SPELLCASTER,1,0,0)
 	Duel.SpecialSummonStep(tc,1,tp,tp,true,false,POS_FACEUP)
-	tc:AddMonsterAttributeComplete()
+	--tc:AddMonsterAttributeComplete()
 	Duel.SpecialSummonComplete()
 end

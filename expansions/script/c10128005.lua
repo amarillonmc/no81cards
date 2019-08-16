@@ -41,7 +41,7 @@ function c10128005.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not tc:IsRelateToEffect(e) or tc:IsFacedown() or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,tc:GetCode(),0x6336,0x21,0,0,1,RACE_PLANT,ATTRIBUTE_LIGHT) then return end
 	tc:AddMonsterAttribute(TYPE_EFFECT,ATTRIBUTE_LIGHT,RACE_PLANT,1,0,0)
 	Duel.SpecialSummonStep(tc,1,tp,tp,true,false,POS_FACEUP)
-	tc:AddMonsterAttributeComplete()
+	--tc:AddMonsterAttributeComplete()
 	Duel.SpecialSummonComplete()
 end
 function c10128005.spfilter(c,e,tp)

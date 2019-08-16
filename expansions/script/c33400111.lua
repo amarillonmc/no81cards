@@ -12,9 +12,9 @@ function c33400111.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c33400111.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return  Duel.IsCanRemoveCounter(tp,1,0,0x334f,11,REASON_COST) end
+	if chk==0 then return  Duel.IsCanRemoveCounter(tp,1,0,0x34f,11,REASON_COST) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x334f,11,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,11,REASON_COST)
 end
 function c33400111.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3341)

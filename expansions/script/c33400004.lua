@@ -1,5 +1,6 @@
 --时崎狂三 中二
 function c33400004.initial_effect(c)
+	c:EnableCounterPermit(0x34f)
 	--special summon from grave
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33400004,0))
@@ -71,9 +72,9 @@ end
 --e1
 function c33400004.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetLabel()
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x334f,ct,REASON_COST) end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,ct,REASON_COST) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x334f,ct,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
 end
 function c33400004.spfilter(c,e,tp)
 	return  c:IsSetCard(0x3341) and  c:IsCanBeSpecialSummoned(e,0,tp,false,false)

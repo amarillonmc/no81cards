@@ -102,7 +102,7 @@ end
 function c9980783.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980783,3))
 	end
 end

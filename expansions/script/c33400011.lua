@@ -1,6 +1,7 @@
 --时崎狂三 婚纱
 function c33400011.initial_effect(c)
 	 c:EnableReviveLimit()
+	 c:EnableCounterPermit(0x34f)
 	--special summon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -39,19 +40,19 @@ function c33400011.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c33400011.filter(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x334f,6)
+	return c:IsFaceup() and c:IsCanAddCounter(0x34f,6)
 end
 function c33400011.addct(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and c33400011.filter(chkc) end
 	if chk==0 then return true end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c33400011.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,6,0,0x334f)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,6,0,0x34f)
 end
 function c33400011.addc(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		tc:AddCounter(0x334f,6)
+		tc:AddCounter(0x34f,6)
 	end
 end
 function c33400011.etarget(e,c)

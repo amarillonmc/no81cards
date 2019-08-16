@@ -73,7 +73,7 @@ end
 function c9980768.hdop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	Duel.ConfirmCards(tp,g)
-	local sg=g:Filter(Card.IsSetCard,nil,TYPE_TUNER)
+	local sg=g:Filter(Card.IsType,nil,TYPE_TUNER)
 	if sg:GetCount()>0 then
 		local atk=0
 		Duel.SendtoGrave(sg,REASON_EFFECT)
