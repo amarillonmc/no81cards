@@ -4,7 +4,7 @@ local m=33700940
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,cm.ffilter,2,true)
+	aux.AddFusionProcFunRep(c,cm.ffilter,9,true)
 	local e1=rscf.SetSpecialSummonProduce(c,LOCATION_EXTRA,cm.con,cm.op)
 	local f1=function(tp,re,rp)
 		return tp~=rp
