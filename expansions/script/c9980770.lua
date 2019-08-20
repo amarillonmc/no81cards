@@ -57,7 +57,9 @@ function c9980770.cfilter(c)
 end
 function c9980770.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9980770.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
-	Duel.DiscardHand(tp,c9980770.cfilter,1,1,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9980770.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9980770.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

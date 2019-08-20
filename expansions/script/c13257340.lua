@@ -87,12 +87,16 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetCountLimit(val)
+	e1:SetCondition(cm.discon)
 	e1:SetOperation(cm.disop)
 	Duel.RegisterEffect(e1,tp)
 end
+function cm.discon(e,tp,eg,ep,ev,re,r,rp)
+	return ep~=tp
+end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if ep~=tp and eg:GetCount()>0 then
+	if eg:GetCount()>0 then
 		local tc=eg:GetFirst()
 		while tc do
 			if not tc:IsImmuneToEffect(e) then

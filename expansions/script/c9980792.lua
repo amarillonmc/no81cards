@@ -89,7 +89,7 @@ function c9980792.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	 if chk==0 then return Duel.IsExistingMatchingCard(c9980792.cfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c9980792.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST))
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c9980792.spfilter(c,e,mc,tp)
 	return c:IsSetCard(0xabc1) and c:IsType(TYPE_FUSION) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,Group.FromCards(c,mc))>0
