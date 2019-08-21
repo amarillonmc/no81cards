@@ -81,15 +81,16 @@ end
 function c9980765.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
 end
-function c9980765.cfilter(c)
-	return c:IsSetCard(0x9bc1) and c:IsAbleToGraveAsCost()
+function c9980765.costfilter(c)
+	return c:IsSetCard(0x9bc1) and c:IsDiscardable()
 end
 function c9980765.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9980765.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
-	Duel.DiscardHand(tp,c9980765.cfilter,1,1,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9980835.costfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,c9980835.costfilter,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9980765.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ct=Duel.GetMatchingGroupCount(Card.IsSetCard,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,0x9bc1)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
@@ -97,14 +98,12 @@ function c9980765.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(1)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	if c:IsRelateToEffect(e) then
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		e2:SetValue(c9980765.raval)
-		c:RegisterEffect(e2)
-	end
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e2:SetValue(ct+1)
+	Duel.RegisterEffect(e2)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CHANGE_DAMAGE)
@@ -114,9 +113,6 @@ function c9980765.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980765,3))
-end
-function c9980765.raval(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsSetCard,c:GetControler(),LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_ONFIELD,0,nil,0x9bc1)
 end
 function c9980765.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

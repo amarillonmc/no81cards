@@ -39,6 +39,7 @@ function c9981030.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981030,0))
 	end
 end
 function c9981030.thfilter(c)
@@ -56,5 +57,6 @@ function c9981030.thop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981030,0))
 	end
 end

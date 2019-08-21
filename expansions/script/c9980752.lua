@@ -21,7 +21,6 @@ function c9980752.initial_effect(c)
 	e2:SetDescription(aux.Stringid(9980752,0))
 	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1,9980752)
 	e2:SetTarget(c9980752.thtg)
@@ -43,7 +42,7 @@ function c9980752.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980752,2))
 end 
 function c9980752.thfilter(c)
-	return c:IsSetCard(0x9bc1) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsSetCard(0x9bc1) and c:IsAbleToHand()
 end
 function c9980752.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c9980752.thfilter(c) end

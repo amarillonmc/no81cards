@@ -48,19 +48,26 @@ function c9980572.rmfilter(c)
 end
 function c9980572.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(9980572)==0
-		and Duel.IsExistingTarget(c9980572.rmfilter,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(c9980572.rmfilter,tp,0,LOCATION_MZONE,1,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),1-tp,LOCATION_MZONE)
+		and Duel.IsExistingMatchingCard(c9980572.rmfilter,tp,0,LOCATION_MZONE,1,nil) end
+	local g=Duel.GetMatchingGroup(c9980572.rmfilter,tp,0,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 	Duel.SetChainLimit(c9980572.chlimit)
 end
 function c9980572.chlimit(e,ep,tp)
 	return tp==ep
 end
 function c9980572.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(c9980572.rmfilter,tp,0,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
+		if og:GetCount()>0 and c:IsRelateToEffect(e) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+			local sg=og:Select(tp,1,1,nil)
+			Duel.Overlay(c,sg)
+		end
 	end
 end
 function c9980572.cfilter(c)

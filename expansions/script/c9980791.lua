@@ -59,18 +59,18 @@ function c9980791.initial_effect(c)
 	e2:SetTarget(c9980791.sptg)
 	e2:SetOperation(c9980791.spop)
 	c:RegisterEffect(e2)
-	--negate
+	--disable
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9980791,1))
-	e2:SetCategory(CATEGORY_NEGATE)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e2:SetDescription(aux.Stringid(9980791,3))
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_NEGATE+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetCondition(c9980791.negcon)
-	e2:SetTarget(c9980791.negtg)
-	e2:SetOperation(c9980791.negop)
+	e2:SetCondition(c9980791.discon)
+	e2:SetTarget(c9980791.distg)
+	e2:SetOperation(c9980791.disop)
 	c:RegisterEffect(e2)
 end
 function c9980791.sumsuc(e,tp,eg,ep,ev,re,r,rp)
@@ -119,14 +119,29 @@ function c9980791.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 end
-function c9980791.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetActivateLocation()==LOCATION_GRAVE+LOCATION_ONFIELD and Duel.IsChainNegatable(ev)
+function c9980791.discon(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
+		and e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,16195942)
 end
-function c9980791.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9980791.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	end
 end
-function c9980791.negop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateActivation(ev)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980791,3))
+function c9980791.spfilter2(c,e,tp)
+	return c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c9980791.disop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)>0 then
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9980791.spfilter2),tp,LOCATION_GRAVE,0,nil,e,tp)
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9980791,4)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		end
+	end
 end

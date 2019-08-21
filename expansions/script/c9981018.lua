@@ -6,7 +6,7 @@ function c9981018.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetCode(EFFECT_CHANGE_CODE)
 	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e1:SetValue(30208479)
+	e1:SetValue(38033121)
 	c:RegisterEffect(e1)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -31,7 +31,19 @@ function c9981018.initial_effect(c)
 	e2:SetTarget(c9981018.thtg)
 	e2:SetOperation(c9981018.thop)
 	c:RegisterEffect(e2)
+	--spsummon bgm
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e8:SetOperation(c9981018.sumsuc)
+	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e9)
 end
+function c9981018.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981018,0))
+end 
 function c9981018.spcfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x10a2) and c:IsLevelAbove(5) and c:IsAbleToHandAsCost()
 end

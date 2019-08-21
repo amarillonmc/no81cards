@@ -94,8 +94,7 @@ if not RealSclVersion then
 	rsef.rsvalinfo={} --value for inside series, inside type etc.
 	rscost.costinfo={} --Cost information 
 	rsef.targetlist={}  --target group list
-	rsef.attachinfo={}  --Effect information for attach effect
-	rsef.effectinfo={} --Effect information 
+	rsef.effectinfo={}  --Effect information
 	--[[
 	c.rssynlv --No level synchro monster's level
 	c.rsnlritlv --No level ritual monster's level
@@ -524,7 +523,7 @@ end
 --Quick Effect No Force: Base set
 function rsef.QO(cardtbl,code,desctbl,ctlimittbl,cate,flag,range,con,cost,tg,op,timingtbl,resettbl)
 	if not code then code=EVENT_FREE_CHAIN end
-	if not timingtbl and code==EVENT_FREE_CHAIN then timingtbl={0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE } end
+	if not timingtbl and code==EVENT_FREE_CHAIN then timingtbl={0,TIMINGS_CHECK_MONSTER } end
 	return rsef.Register(cardtbl,EFFECT_TYPE_QUICK_O,code,desctbl,ctlimittbl,cate,flag,range,con,cost,tg,op,nil,nil,timingtbl,resettbl)
 end 
 --Quick Effect: negate effect/activation/summon/spsummon
@@ -602,7 +601,7 @@ function rsef.FC_AttachEffect(cardtbl,attachtime,desctbl1,ctlimittbl,flag,range,
 	if flag2&EFFECT_FLAG_NO_TURN_RESET~=0 then
 		e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	end
-	rsef.attachinfo[e1]=e2
+	rsef.effectinfo[e1]=e2
 	local reset,resetct=0,0
 	if resettbl then 
 		reset,resetct=rsef.RegisterReset(nil,resettbl,true) 
@@ -641,20 +640,20 @@ function rsef.FC_AttachEffect_resetinfo(e,tp,eg,ep,ev,re,r,rp)
 			return 
 		end
 	end 
-	rsef.attachinfo[ev]=baseop
+	rsef.effectinfo[ev]=baseop
 end
 function rsef.ChangeChainOperation2(chainev,changeop,ischange)
 	rsef.ChangeChainOperation(chainev,changeop)
 	if not ischange then
-		rsef.attachinfo[chainev]=changeop
+		rsef.effectinfo[chainev]=changeop
 	end
 end
 function rsef.GetOperation(e,chainev)
-	return rsef.attachinfo[chainev]
+	return rsef.effectinfo[chainev]
 end
 function rsef.FC_AttachEffect_setcon(e)
 	local tp=e:GetHandlerPlayer()
-	local te=rsef.attachinfo[e]
+	local te=rsef.effectinfo[e]
 	te:SetCondition(aux.TRUE)
 	local bool=te:IsActivatable(tp)
 	te:SetCondition(aux.FALSE)
@@ -747,7 +746,7 @@ function rsef.FC_AttachEffect_geteffect(parameterlistcheck,parameterlistsolve,at
 			rsef.FC_AttachEffect_Operation_Solve(parameterlistsolve,effect,attachlisttotal)
 		end
 		table.insert(attachlist,effect)
-		local te=rsef.attachinfo[effect]
+		local te=rsef.effectinfo[effect]
 		te:UseCountLimit(tp,1)
 		local g2=rsef.FC_AttachEffect_getgroup(parameterlistcheck,cardlist,attachtime)
 	until (ct>1 and #g2<=0) or (ct>1 and not Duel.SelectYesNo(tp,aux.Stringid(m,11))) 
@@ -935,29 +934,16 @@ end
 rsef.QO_OPPONENT_TURN=rsef.RegisterOPTurn
 --Effect: Register Condition, Cost, Target and Operation 
 function rsef.RegisterSolve(e,con,cost,tg,op)
-	local code=e:GetOwner():GetCode()
 	if con then
-		if type(con)~="function" then
-			Debug.Message(code .. " RegisterSolve con must be function")
-		end
 		e:SetCondition(con)
 	end
 	if cost then
-		if type(cost)~="function" then
-			Debug.Message(code .. " RegisterSolve cost must be function")
-		end
 		e:SetCost(cost)
 	end
 	if tg then
-		if type(tg)~="function" then
-			Debug.Message(code .. " RegisterSolve tg must be function")
-		end
 		e:SetTarget(tg)
 	end
 	if op then
-		if type(op)~="function" then
-			Debug.Message(code .. " RegisterSolve op must be function")
-		end
 		e:SetOperation(op)
 	end
 end
@@ -1308,7 +1294,7 @@ function rsval.spconfe(e,se,sp,st)
 end
 --value: SummonConditionValue - can only be special summoned by self effects
 function rsval.spcons(e,se,sp,st)
-	return se:GetHandler()==e:GetHandler() and se:IsHasType(EFFECT_TYPE_ACTIONS) 
+	return se:GetHandler()==e:GetHandler() and not se:IsHasProperty(EFFECT_FLAG_UNCOPYABLE)
 end
 --value: reason by battle or card effects
 function rsval.indbae(string1,string2)
@@ -1397,19 +1383,13 @@ function rstg.disnegtg(disorneg,waystring)
 	end
 end
 function rstg.distg(waystring)
-	return function(...)
-		return rstg.disnegtg("dis",waystring)(...)
-	end
+	rstg.disnegtg("dis",waystring)
 end
 function rstg.negtg(waystring)
-	return function(...)
-		return rstg.disnegtg("neg",waystring)(...)
-	end
+	rstg.disnegtg("neg",waystring)
 end
 function rstg.negsumtg(waystring)
-	return function(...)
-		return rstg.disnegtg("sum",waystring)(...)
-	end
+	rstg.disnegtg("sum",waystring)
 end
 --Target function: Get target attributes
 function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,targetlist)
@@ -1963,17 +1943,16 @@ end
 --cost: Pay LP
 function rscost.lpcost(lp,isdirectly,islabel)
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
-		local clp=lp
-		if type(lp)=="boolean" then clp=math.floor(Duel.GetLP(tp)/2) end
-		if isdirectly then clp=Duel.GetLP(tp)-clp end
+		if type(lp)=="boolean" then lp=math.floor(Duel.GetLP(tp)/2) end
+		if isdirectly then lp=Duel.GetLP(tp)-lp end
 		if type(islabel)=="nil" and isdirectly then islabel=true end
 		if chk==0 then 
-			return clp>0 and Duel.CheckLPCost(tp,clp)
+			return lp>0 and Duel.CheckLPCost(tp,lp)
 		end
-		Duel.PayLPCost(tp,clp)   
-		rscost.costinfo[e]=clp
+		Duel.PayLPCost(tp,lp)   
+		rscost.costinfo[e]=lp
 		if islabel then
-			e:SetLabel(clp)
+			e:SetLabel(lp)
 		end
 	end
 end
@@ -1988,7 +1967,7 @@ function rscost.lpcost2(lp,max,islabel)
 		if chk==0 then return Duel.CheckLPCost(tp,lp) end
 		local costmaxlp=math.floor(maxlp/lp)
 		local t={}
-		for i=1,costmaxlp do
+		for i=1,m do
 			t[i]=i*lp
 		end
 		local cost=Duel.AnnounceNumber(tp,table.unpack(t))
@@ -2092,14 +2071,10 @@ function rscon.disnegcon(disorneg,filterfun,playerfun)
 	end 
 end
 function rscon.discon(filterfun,playerfun)
-	return function(...)
-		return rscon.disnegcon("dis",filterfun,playerfun)(...)
-	end
+	rscon.disnegcon("dis",filterfun,playerfun)
 end
 function rscon.negcon(filterfun,playerfun)
-	return function(...)
-		return rscon.disnegcon("neg",filterfun,playerfun)(...)
-	end
+	rscon.disnegcon("neg",filterfun,playerfun)
 end
 --Condition: Is exisit matching card
 function rscon.excardfilter(filter,varlist,e,tp,eg,ep,ev,re,r,rp)
@@ -2188,19 +2163,13 @@ function rsop.disnegop(disorneg,waystring)
 	end
 end
 function rsop.disop(waystring)
-	return function(...)
-		return rsop.disnegop("dis",waystring)(...)
-	end
+	return rsop.disnegop("dis",waystring)
 end
 function rsop.negop(waystring)
-	return function(...)
-		return rsop.disnegop("neg",waystring)(...)
-	end
+	return rsop.disnegop("neg",waystring)
 end
 function rsop.negsumop(waystring)
-	return function(...)
-		return rsop.disnegop("sum",waystring)(...)
-	end
+	return rsop.disnegop("sum",waystring)
 end
 --Operation: Equip 
 function rsop.eqop(e,eqc,eqtc,pos,opside)
@@ -2386,19 +2355,15 @@ function rsgf.GetSurroundingGroup2(seq,loc,cp,contains)
 	return sg
 end
 --Group effect: get adjacent group
-function rsgf.GetAdjacentGroup(c,contains)
-	return rsgf.GetAdjacentGroup2(c:GetSequence(),c:GetLocation(),c:GetControler(),contains)
-end 
---Group effect: get adjacent group (use sequence)
-function rsgf.GetAdjacentGroup2(seq,loc,tp,contains)
+function rsgf.GetAdjacentGroup(c)
 	local g=Group.CreateGroup()
+	local seq=c:GetSequence()
 	if seq>0 and seq<5 then
-		rsgf.Mix(g,Duel.GetFieldCard(tp,loc,seq-1))
+		rsgf.Mix(g,Duel.GetFieldCard(c:GetControler(),c:GetLocation(),seq-1))
 	end
 	if seq<4 then
-		rsgf.Mix(g,Duel.GetFieldCard(tp,loc,seq+1))
+		rsgf.Mix(g,Duel.GetFieldCard(c:GetControler(),c:GetLocation(),seq+1))
 	end
-	if contains then rsgf.Mix(g,Duel.GetFieldCard(tp,loc,seq)) end
 	return g
 end
 --Group effect: Get Target Group for Operations
@@ -2462,25 +2427,19 @@ end
 function rscf.SetSpecialSummonProduce(cardtbl,range,con,op,desctbl,ctlimittbl,resettbl)
 	local tc1,tc2,ignore=rsef.GetRegisterCard(cardtbl)
 	if not desctbl then desctbl=rshint.spproc end
-	local flag=not tc2:IsSummonableCard() and "uc,cd" or "uc" 
-	local e1=rsef.Register(cardtbl,EFFECT_TYPE_FIELD,EFFECT_SPSUMMON_PROC,desctbl,ctlimittbl,nil,flag,range,rscf.SetSpecialSummonProduce_con(con),nil,nil,op,nil,nil,nil,resettbl)
+	local flag="uc" 
+	if not tc2:IsSummonableCard() then flag="uc,cd" end
+	local e1=rsef.Register(cardtbl,EFFECT_TYPE_FIELD,EFFECT_SPSUMMON_PROC,desctbl,ctlimittbl,nil,flag,range,con,nil,nil,op,nil,nil,nil,resettbl)
 	return e1
 end
 rssf.SetSpecialSummonProduce=rscf.SetSpecialSummonProduce
-function rscf.SetSpecialSummonProduce_con(con)
-	return function(e,c)
-		if c==nil then return true end
-		local tp=c:GetControler()
-		return con(e,c,tp)
-	end
-end
 --Card/Summon effect: Is monster can normal or special summon
 function rscf.SetSummonCondition(cardtbl,isnsable,sumvalue,iseffectspsum,resettbl)
 	local tc1,tc2,ignore=rsef.GetRegisterCard(cardtbl)
 	if tc2:IsStatus(STATUS_COPYING_EFFECT) then return end
 	if not isnsable then
-		if iseffectspsum or (sumvalue and sumvalue==rsval.spcons) then
-			--tc2:EnableUnsummonable()
+		if iseffectspsum then
+			tc2:EnableUnsummonable()
 		else
 			tc2:EnableReviveLimit()
 		end
@@ -2829,7 +2788,6 @@ function rsef.ChangeFunction_Synchro()
 end
 function rscf.SynMixCheckGoal2(tp,sg,minc,ct,syncard,sg1,smat,gc)
 	local g=rsgf.Mix2(sg,sg1)
-	if syncard.rssyncheckfun and not syncard.rssyncheckfun(g,syncard,tp) then return false end
 	local f=Card.GetLevel
 	local f2=Card.GetSynchroLevel
 	local darktunerg=g:Filter(Card.IsType,nil,TYPE_TUNER)
@@ -2904,15 +2862,6 @@ function rscf.AddSynchroMixProcedure_ChangeTunerLevel(c,f1,lv,f2,f3,f4,minc,maxc
 	return e1
 end
 rssf.AddSynchroMixProcedure_ChangeTunerLevel=rscf.AddSynchroMixProcedure_ChangeTunerLevel
-function rscf.AddSynchroMixProcedure_CheckMaterial(c,f1,f2,f3,f4,minc,maxc,extrafilter)
-	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
-	local mt=getmetatable(c)
-	mt.rssyncheckfun=extrafilter
-	rsef.ChangeFunction_Synchro()
-	local e1=rscf.AddSynchroMixProcedure(c,f1,f2,f3,f4,minc,maxc)
-	return e1
-end
-rssf.AddSynchroMixProcedure_CheckMaterial=rscf.AddSynchroMixProcedure_CheckMaterial
 --Card effect: Set field info
 function rscf.SetFieldInfo(c)
 	local seq=c:IsOnField() and c:GetSequence() or c:GetPreviousSequence()
@@ -3010,39 +2959,6 @@ function rscf.FilterFaceUp(f,...)
 	return  function(target)
 				return f(target,table.unpack(ext_params)) and target:IsFaceup()
 			end
-end
---Card function: Get same type base set
-function rscf.GetSameType_Base(c,waystring,type1,...)
-	local gettypefun=Card.GetType
-	if waystring=="previous" 
-		then gettypefun=Card.GetPreviousTypeOnField 
-	elseif waystring=="original" 
-		then gettypefun=Card.GetOriginalType
-	end
-	local typelist= type1 and {type1,...} or { TYPE_MONSTER,TYPE_SPELL,TYPE_TRAP } 
-	local typetotal=0
-	local typetotallist={}
-	for _,ctype in pairs(typelist) do
-		if gettypefun(c)&ctype==ctype then
-			typetotal=typetotal|ctype
-			if not rsof.Table_List(typetotallist,ctype) then
-				table.insert(typetotallist,ctype) 
-			end
-		end
-	end
-	return typetotal,typetotallist
-end
---Card function: Get same type 
-function rscf.GetSameType(c,...)
-	return rscf.GetSameType_Base(c,nil,...)
-end
---Card function: Get same previous type 
-function rscf.GetPreviousSameType(c,...)
-	return rscf.GetSameType_Base(c,"previous",...)
-end
---Card function: Get same original type 
-function rscf.GetOriginalSameType(c,...)
-	return rscf.GetSameType_Base(c,"original",...)
 end
 -------------#########RSV Other Function#######-----------------
 --split the string, ues "," as delimiter
@@ -3234,17 +3150,13 @@ function cm.initial_effect(c)
 		"rsos"  =   "OracleSmith"
 		"rssp"  =   "StellarPearl"
 		--"rsgd"  =   "GhostdomDragon"
-		"rsed"  =   "EpicDragon"
 				}--]]
 
 --  "Series Others" 
   --[[rsv.Series2={
-		"rsve"  =   "Voison"
-		"rsneov"=   "Neons"
-		"tfrsv" =   "T.Fairies"
-		"rsss"  =   "StarSpirit"
 		"rssg"  =   "SexGun"
 		"rslap" =   "Lapin"
+		"rsss"  =   "StarSpirit"
 		"rslrd" =   "LifeDeathRoundDance"
 		"rsps"  =   "PseudoSoul"
 		"rslf"  =   "LittleFox"
@@ -3253,13 +3165,6 @@ function cm.initial_effect(c)
 		"rspq"  =   "PhantomQuantum"
 		"rsphh" =   "PhantomThievesOfHearts"
 		"rssk"  =   "Shinkansen"
-		"rsan"  =   "Arknights"
-		"rsnm"  =   "Nightmare"
-		"rsdt"  =   "DarkTale"
-		"rseee" =   "EEE"
-		"rshr"  =   "HarmonicRhythm"
-		"rsik"  =   "InfernalKnight"
-		"rsvw"  =   "VirusWrom"
 				}--]]   
 end
 end

@@ -31,8 +31,20 @@ function c9981023.initial_effect(c)
 	e4:SetTarget(c9981023.sptg)
 	e4:SetOperation(c9981023.spop)
 	c:RegisterEffect(e4)
+	--spsummon bgm
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e8:SetOperation(c9981023.sumsuc)
+	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e9)
 end
 c9981023.card_code_list={46986414,38033121}
+function c9981023.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981023,2))
+end 
 function c9981023.cfilter(c)
 	return c:IsSetCard(0x10a2) and c:IsAbleToRemoveAsCost()
 end
@@ -44,7 +56,7 @@ function c9981023.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9981023.thfilter(c)
 	return (aux.IsCodeListed(c,46986414) or aux.IsCodeListed(c,38033121))
-		and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsCode(9981023) and c:IsAbleToHand()
+		and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c9981023.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981023.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -76,5 +88,6 @@ function c9981023.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981023,2))
 	end
 end

@@ -8,7 +8,7 @@ function c9980783.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EFFECT_CANNOT_ATTACK)
-	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e3:SetTargetRange(0,LOCATION_MZONE)
 	e3:SetTarget(c9980783.antarget)
 	c:RegisterEffect(e3)
 	--negate

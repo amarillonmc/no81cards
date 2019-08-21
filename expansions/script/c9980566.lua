@@ -38,7 +38,7 @@ function c9980566.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetCondition(c9980566.atkcon)
-	e1:SetValue(1000)
+	e1:SetValue(1300)
 	c:RegisterEffect(e1)
 	--draw
 	local e2=Effect.CreateEffect(c)

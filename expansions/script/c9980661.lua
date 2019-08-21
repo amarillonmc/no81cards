@@ -25,7 +25,6 @@ function c9980661.initial_effect(c)
 	e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(c9980661.atkcon)
-	e1:SetCost(c9980661.atkcost)
 	e1:SetOperation(c9980661.atkop)
 	c:RegisterEffect(e1)
 	--handes
@@ -57,24 +56,18 @@ function c9980661.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c==Duel.GetAttacker() or c==Duel.GetAttackTarget()
 end
-function c9980661.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) and c:GetFlagEffect(9980661)==0 end
-	c:RemoveOverlayCard(tp,1,1,REASON_COST)
-	c:RegisterFlagEffect(9980661,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
-end
 function c9980661.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsFaceup() then
 		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-		local val1=g:GetSum(Card.GetRank)*200
-		local val2=g:GetSum(Card.GetLevel)*100
-		local val3=g:GetSum(Card.GetLink)*300
-		local val=val1+val2+val3
+		local atk1=g:GetSum(Card.GetRank)*200
+		local atk2=g:GetSum(Card.GetLevel)*100
+		local atk3=g:GetSum(Card.GetLink)*300
+		local atk=atk1+atk2+atk3
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(val)
+		e1:SetValue(atk)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
 		c:RegisterEffect(e1)
 	end

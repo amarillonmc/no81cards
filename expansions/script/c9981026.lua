@@ -37,6 +37,18 @@ function c9981026.initial_effect(c)
 	e1:SetTarget(c9981026.sctarg)
 	e1:SetOperation(c9981026.scop)
 	c:RegisterEffect(e1)
+	--spsummon bgm
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e8:SetOperation(c9981026.sumsuc)
+	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e9)
+end
+function c9981026.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981026,1))
 end
 function c9981026.spfilter(c,e,tp)
 	return c:IsSetCard(0x3b) and c:IsLevelBelow(7) and not c:IsCode(9981026) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

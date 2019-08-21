@@ -32,7 +32,7 @@ function c10122017.initial_effect(c)
 	e3:SetCountLimit(1,10122017)
 	e3:SetHintTiming(0,0x1e0)
 	e3:SetCondition(c10122017.con2)
-	e3:SetTarget(rsul.TokenTg)
+	e3:SetTarget(rsul.TokenTg(1))
 	e3:SetOperation(rsul.TokenOp(c10122017.op,true))
 	c:RegisterEffect(e3) 
 	--immue  
@@ -65,6 +65,6 @@ function c10122017.tgfilter(c)
 	return c:IsFaceup() and c:IsCode(10122011)
 end
 function c10122017.op(c,tc)
-	rsef.SV_CANNOT_BE_MATERIAL(c,"link",1,nil,rsreset.est_pend,nil,{m,2})
-	rsef.SV_LIMIT(c,"ress",1,nil,rsreset.est,nil,{m,1})
+	rsef.SV_CANNOT_BE_MATERIAL(c,"link",1,nil,rsreset.est_pend,nil,{10122017,2})
+	rsef.SV_LIMIT(c,"ress",1,nil,rsreset.est,nil,{10122017,1})
 end

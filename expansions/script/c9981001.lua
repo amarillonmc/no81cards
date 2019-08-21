@@ -3,15 +3,6 @@ function c9981001.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,c9981001.matfilter,1,1)
 	c:EnableReviveLimit()
-	--splimit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c9981001.splimit)
-	c:RegisterEffect(e1)
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9981001,0))
@@ -27,9 +18,6 @@ function c9981001.initial_effect(c)
 end
 function c9981001.matfilter(c)
 	return c:IsLinkSetCard(0x5bc1) and not c:IsLinkCode(9981001)
-end
-function c9981001.splimit(e,c,sump,sumtype,sumpos,targetp)
-	return not c:IsRace(RACE_AQUA)
 end
 function c9981001.cfilter(c)
 	return c:IsRace(RACE_AQUA) and c:IsDiscardable()

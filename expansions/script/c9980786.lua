@@ -170,7 +170,7 @@ function c9980786.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(500)
 		tc:RegisterEffect(e2)
 		local code=tc:GetCode()
-		local reset_flag=RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END
+		local reset_flag=RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2
 		c:CopyEffect(code, reset_flag, 1)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)

@@ -39,6 +39,7 @@ function c9981031.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c9981031.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981031,0))
 	end
 end
 function c9981031.filter0(c)
@@ -109,4 +110,5 @@ function c9981031.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		tc:CompleteProcedure()
 	end
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981031,0))
 end

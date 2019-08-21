@@ -66,12 +66,9 @@ function c9980751.seqop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.MoveSequence(tc,nseq)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980751,2))
 end
-function c9980751.cfilter(c)
-	return c:IsSetCard(0x9bc1) and c:IsDiscardable()
-end
 function c9980751.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9980751.cfilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,c9980751.cfilter,1,1,REASON_COST+REASON_DISCARD)
+	 if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9980751.filter(c)
 	return c:IsSetCard(0x3bc2) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()

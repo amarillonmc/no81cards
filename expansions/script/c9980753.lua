@@ -1,6 +1,5 @@
 --风都侦探W-疾风王牌
 function c9980753.initial_effect(c)
-	 c:SetUniqueOnField(1,0,aux.FilterBoolFunction(Card.IsType,TYPE_FUSION),LOCATION_MZONE)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2(c,9980746,9980747,true,true)
@@ -113,7 +112,7 @@ function c9980753.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9980753.thfilter(c)
-	return c:IsSetCard(0x9bc1) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsSetCard(0x9bc1) and c:IsAbleToHand()
 end
 function c9980753.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c9980753.thfilter(chkc) end

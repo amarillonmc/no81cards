@@ -47,8 +47,8 @@ function c9980746.activate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980746,0))
 	end
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980746,0))
 end
 function c9980746.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3bc2)

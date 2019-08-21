@@ -105,27 +105,29 @@ function c9980654.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9980654.spfilter(c,e,tp)
-	return c:IsSetCard(0xbca) and c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,0,tp,true,true,POS_FACEUP_ATTACK)
+	return c:IsSetCard(0x9bcd) and c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c9980654.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9980654.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA+LOCATION_GRAVE)
+	if e:GetHandler():GetMutualLinkedGroupCount()>0 then
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
+		e:SetLabel(1)
+	else
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		e:SetLabel(0)
+	end
 end
 function c9980654.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	if Duel.GetLocationCountFromEx(tp)<=0 then return end
+	 if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9980654.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp)
-	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,true,true,POS_FACEUP_ATTACK) then
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-		e3:SetValue(1)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e3)
+	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)~=0
+		and e:GetLabel()==1 and Duel.IsPlayerCanDraw(tp,2)
+		and Duel.SelectYesNo(tp,aux.Stringid(9980654,4)) then
+		Duel.BreakEffect()
+		Duel.ShuffleDeck(tp)
+		Duel.Draw(tp,2,REASON_EFFECT)
 	end
-	Duel.SpecialSummonComplete()
 end

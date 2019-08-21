@@ -58,11 +58,11 @@ function c9980784.matcheck(e,c)
 	c:RegisterEffect(e1)
 end
 function c9980784.costfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xabc1)
+	return c:IsSetCard(0xabc1)
 end
 function c9980784.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c9980784.costfilter,1,e:GetHandler()) end
-	local rg=Duel.SelectReleaseGroup(tp,c9980784.costfilter,1,1,e:GetHandler())
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9980784.costfilter,1,e:GetHandler()) end
+	local rg=Duel.SelectReleaseGroupEx(tp,c9980784.costfilter,1,1,e:GetHandler())
 	e:SetLabel(rg:GetFirst():GetAttack())
 	Duel.Release(rg,REASON_COST)
 end

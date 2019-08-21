@@ -50,7 +50,7 @@ function c9980793.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980793,1))
 end
 function c9980793.filter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3bcf) and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xabc1) and c:IsAbleToGraveAsCost()
 end
 function c9980793.spcon(e,c)
 	if c==nil then return true end

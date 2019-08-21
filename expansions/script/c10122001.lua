@@ -3,34 +3,13 @@ local m=10122001
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
 if not rsv.Utoland then
-   rsv.Utoland={}
-   rsul=rsv.Utoland
-function rsul.SpecialOrPlaceBool(tp,rc)
-	local szone1,szone2=0,1
-	if rc and rc:IsLocation(LOCATION_SZONE) then
-	   szone1= rc and -1 or 0
-	   szone2= rc and 0 or 1
-	end
-	local b1=(not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetMZoneCount(tp,rc)>1 and Duel.IsPlayerCanSpecialSummonMonster(tp,10122011,0xc333,0x4011,0,0,1,RACE_SPELLCASTER,ATTRIBUTE_DARK))
-	local b2=(Duel.IsPlayerAffectedByEffect(tp,10122021) and Duel.GetLocationCount(tp,LOCATION_SZONE)>szone2)
-	local a1=(Duel.GetMZoneCount(tp,rc)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,10122011,0xc333,0x4011,0,0,1,RACE_SPELLCASTER,ATTRIBUTE_DARK))
-	local a2=(Duel.IsPlayerAffectedByEffect(tp,10122021) and Duel.GetLocationCount(tp,LOCATION_SZONE)>szone1)
-	local b3=(a1 and a2)
-	return b1,b2,b3,a1,a2
-end
+	rsv.Utoland={}
+	rsul=rsv.Utoland
+rsul.hint={0,TIMINGS_CHECK_MONSTER+TIMING_CHAIN_END+TIMING_END_PHASE }
 function rsul.GraveDestroyActivateEffect(c,code)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(10122001,8))
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetHintTiming(0,0x1e0+TIMING_CHAIN_END)
-	e1:SetCountLimit(1,code)
+	local e1=rsef.QO(c,nil,{m,8},{1,code},nil,nil,LOCATION_GRAVE,nil,rscost.cost(Card.IsAbleToHandAsCost,"th"),rsul.gdtg,rsul.gdop,rsul.hint)
 	e1:SetLabel(code)
-	e1:SetTarget(rsul.gdtg)
-	e1:SetOperation(rsul.gdop)
-	c:RegisterEffect(e1)
+	return e1
 end
 function rsul.gdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
@@ -51,18 +30,9 @@ function rsul.gdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function rsul.ToHandActivateEffect(c,code)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(10122001,8))
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetRange(LOCATION_FZONE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,0x1e0+TIMING_CHAIN_END)
-	e1:SetCountLimit(1,code)
+	local e1=rsef.QO(c,nil,{m,8},{1,code},nil,nil,LOCATION_FZONE,nil,rscost.cost(Card.IsAbleToHandAsCost,"th"),rsul.thtg,rsul.thop,rsul.hint)
 	e1:SetLabel(code)
-	e1:SetCost(rsul.thcost)
-	e1:SetTarget(rsul.thtg)
-	e1:SetOperation(rsul.thop)
-	c:RegisterEffect(e1)
+	return e1
 end
 function rsul.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -80,7 +50,7 @@ function rsul.thfilter(c,tp,code)
 end
 function rsul.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(10122001,7))
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,7))
 	local tc=Duel.SelectMatchingCard(tp,rsul.thfilter,tp,LOCATION_HAND,0,1,1,nil,tp,e:GetLabel()):GetFirst()
 	if tc then
 	   local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
@@ -96,39 +66,110 @@ function rsul.thop(e,tp,eg,ep,ev,re,r,rp)
 	   Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 	end
 end
-function rsul.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToHandAsCost() end
-	Duel.SendtoHand(c,nil,REASON_COST)
+function rsul.SpecialOrPlaceBool(tp,tc,ct,maxct)
+	if not ct then ct=1 end
+	if not maxct then maxct=ct end
+	if type(maxct)=="function" then maxct=math.min(maxct(tp),ct) end
+	local szonect=Duel.IsPlayerAffectedByEffect(tp,10122021) and Duel.GetLocationCount(tp,LOCATION_SZONE) or 0
+	if szonect>0 and tc and tc:IsLocation(LOCATION_SZONE) then szonect=szonect+1 end
+	local mzonect=not tc and Duel.GetLocationCount(tp,LOCATION_MZONE) or Duel.GetMZoneCount(tp,tc)
+	if not Duel.IsPlayerCanSpecialSummonMonster(tp,10122011,0xc333,0x4011,0,0,1,RACE_SPELLCASTER,ATTRIBUTE_DARK) then mzonect=0 end
+	if mzonect>0 and Duel.IsPlayerAffectedByEffect(tp,59822133) then mzonect=1 end
+	return mzonect+szonect>=ct,mzonect,szonect
 end
-function rsul.TokenTg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	and Duel.IsPlayerCanSpecialSummonMonster(tp,10122011,0xc333,0x4011,0,0,1,RACE_SPELLCASTER,ATTRIBUTE_DARK)) or (Duel.IsPlayerAffectedByEffect(tp,10122021) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) end
-	   Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-	   Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
+function rsul.TokenTg(ct,maxct)
+	if not ct then ct=1 end
+	return function(e,tp,eg,ep,ev,re,r,rp,chk)
+		if chk==0 then return rsul.SpecialOrPlaceBool(tp,nil,ct,maxct) end
+		Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,ct,0,0)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,ct,0,0)
+	end
 end
-function rsul.TokenOp(op,ignore)
+--[[ "useless because move to szone cannot directly point zone"
+function rsul.TokenOp(op,ignore,ct,maxct)
 	return function(e,tp,eg,ep,ev,re,r,rp)
-	   local c=e:GetHandler()
-	   if (not ignore and not c:IsRelateToEffect(e)) then return end
-	   local b1=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,10122011,0xc333,0x4011,0,0,1,RACE_SPELLCASTER,ATTRIBUTE_DARK))
-	   local b2=(Duel.IsPlayerAffectedByEffect(tp,10122021) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
-	   if not b1 and not b2 then return end
-	   local token=Duel.CreateToken(tp,10122011)
-	   local sel=rsof.SelectOption(tp,b1,aux.Stringid(10122021,0),b2,aux.Stringid(10122021,1),true)
-	   if sel==1 and Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)<=0 then return end
-	   if sel==2 and Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
-		  local e1=Effect.CreateEffect(c)
-		  e1:SetCode(EFFECT_CHANGE_TYPE)
-		  e1:SetType(EFFECT_TYPE_SINGLE)
-		  e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		  e1:SetReset(rsreset.est-RESET_TURN_SET)
-		  e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-		  token:RegisterEffect(e1,true)
-		  rsul.TokenSpellOp(c,token)
-	   else return
-	   end
-	   op({e:GetHandler(),token},e)
+		local c=e:GetHandler()
+		if (not ignore and not c:IsRelateToEffect(e)) then return end
+		if not ct then ct=1 end
+		if not maxct then maxct=ct end
+		if type(maxct)=="function" then maxct=math.min(maxct(tp),ct) end
+		local bool,mzonect,szonect=rsul.SpecialOrPlaceBool(tp,nil,ct)
+		if not bool then return end
+		local complete=false
+		for i=1,maxct do
+			if mzonect+szonect<=0 or (i>1 and not Duel.SelectYesNo(tp,aux.Stringid(10122016,1))) then break end
+			local zone=0
+			local token=Duel.CreateToken(tp,10122011) 
+			local loc=LOCATION_MZONE+LOCATION_SZONE 
+			if mzonect<=0 then loc=loc-LOCATION_MZONE end
+			if szonect<=0 then loc=loc-LOCATION_SZONE end
+			local spzone=Duel.SelectDisableField(tp,1,0,loc,0)
+			if spzone<=0x10 then
+				if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)>0 then 
+					complete=true
+					mzonect=mzonect-1
+					op({e:GetHandler(),token},e)
+				end
+			else
+				Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+				szonect=szonect-1
+				local e1=Effect.CreateEffect(c)
+				e1:SetCode(EFFECT_CHANGE_TYPE)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetReset(rsreset.est-RESET_TURN_SET)
+				e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+				token:RegisterEffect(e1,true)
+				rsul.TokenSpellOp(c,token)
+			end
+		end
+		if complete then
+			Duel.SpecialSummonComplete()
+		end
+	end 
+end--]]
+function rsul.TokenOp(op,ignore,ct,maxct)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+		local c=e:GetHandler()
+		if (not ignore and not c:IsRelateToEffect(e)) then return end
+		if not op then op=rsul.basetkop end
+		if not ct then ct=1 end
+		if not maxct then maxct=ct end
+		local bool,mzonect,szonect=rsul.SpecialOrPlaceBool(tp,nil,ct)
+		if not bool then return end
+		local complete=false
+		for i=1,maxct do
+			if mzonect+szonect<=0 then break end
+			local zone=0
+			local token=Duel.CreateToken(tp,10122011) 
+			local b1=mzonect>0
+			local b2=szonect>0
+			local b3=i>ct
+			local sel=rsof.SelectOption(tp,b3,{m,5},b1,{10122021,0},b2,{10122021,1},true)
+			if sel==1 then
+				break
+			elseif sel==2 then
+				if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP) then 
+					complete=true
+					mzonect=mzonect-1
+					op({e:GetHandler(),token},e)
+				end
+			else
+				Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+				szonect=szonect-1
+				local e1=Effect.CreateEffect(c)
+				e1:SetCode(EFFECT_CHANGE_TYPE)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetReset(rsreset.est-RESET_TURN_SET)
+				e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+				token:RegisterEffect(e1,true)
+				rsul.TokenSpellOp(c,token)
+			end
+		end
+		if complete then
+			Duel.SpecialSummonComplete()
+		end
 	end 
 end
 function rsul.TokenSpellOp(c,tc)
@@ -137,7 +178,7 @@ function rsul.TokenSpellOp(c,tc)
 	e0:SetRange(LOCATION_SZONE)
 	e0:SetTargetRange(LOCATION_MZONE,0)
 	e0:SetReset(rsreset.est)
-	e0:SetDescription(aux.Stringid(10122001,1))
+	e0:SetDescription(aux.Stringid(m,1))
 	e0:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 	e0:SetTarget(function(e,sc)
 	   return e:GetHandler():GetColumnGroup():Filter(Card.IsControler,nil,tp):IsContains(sc)
@@ -175,39 +216,21 @@ function rsul.TokenSpellOp(c,tc)
 	end)
 	tc:RegisterEffect(e3)
 end
+function rsul.basetkop(c,e)
+	rsef.SV_INDESTRUCTABLE(c,"battle",1,nil,rsreset.est,nil,{m,3})
+	rsef.SV_LIMIT(c,"ress",1,nil,rsreset.est,nil,{m,6})
+end
+function rsul.advtkop(c,e)
+	rsef.SV_INDESTRUCTABLE(c,"ct",rsval.indbae("battle"),nil,rsreset.est,nil,{m,1},1)
+	rsef.SV_LIMIT(c,"ress",1,nil,rsreset.est,nil,{m,4})
+end
 -------
 end
 if cm then
 function cm.initial_effect(c)
-	rsef.ACT(c)
-	rsul.ToHandActivateEffect(c,m)
-	--spsummon
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOKEN+CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetRange(LOCATION_FZONE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1)
-	e1:SetHintTiming(0,0x1e0)
-	e1:SetCost(cm.tkcost)
-	e1:SetTarget(rsul.TokenTg)
-	e1:SetOperation(rsul.TokenOp(cm.op))
-	c:RegisterEffect(e1)   
-end
-function cm.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,500) end
-	Duel.PayLPCost(tp,500)
-end
-function cm.op(c,tc)
-	rsef.SV_INDESTRUCTABLE(c,"battle",1,nil,rsreset.est,nil,{m,3})
-	rsef.SV_LIMIT(c,"ress",1,nil,rsreset.est,nil,{m,6})
-end
-function cm.val1(e,re,r,rp)
-	return bit.band(r,REASON_EFFECT)~=0
-end
-function cm.val2(e,re,r,rp)
-	return bit.band(r,REASON_BATTLE)~=0
+	local e1=rsef.ACT(c)
+	local e2=rsul.ToHandActivateEffect(c,m)
+	local e3=rsef.QO(c,nil,{m,0},1,"tk,sp",nil,LOCATION_FZONE,nil,rscost.lpcost(500),rsul.TokenTg(1),rsul.TokenOp(),rsul.hint)  
 end
 ------
 end

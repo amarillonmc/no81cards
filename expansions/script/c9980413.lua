@@ -76,11 +76,8 @@ end
 function c9980413.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980413,2))
 end 
-function c9980413.filter(c,e,tp)
-	return c:IsType(TYPE_FUSION) and c:IsAbleToRemoveAsCost()
-end
 function c9980413.sprfilter(c)
-	return c9980413.filter(c,e,tp) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xbca) 
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xbca) and c:IsType(TYPE_FUSION+TYPE_XYZ+TYPE_LINK+TYPE_SYNCHRO+TYPE_RITUAL) and c:IsAbleToRemoveAsCost()
 end
 function c9980413.sprcon(e,c)
 	if c==nil then return true end
