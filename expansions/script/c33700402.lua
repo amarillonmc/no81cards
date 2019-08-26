@@ -44,5 +44,5 @@ function c33700402.skipcon(e)
 	return Duel.GetTurnPlayer()~=e:GetHandlerPlayer()
 end
 function c33700402.handcon(e)
-	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_HAND,0)<=Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_ONFIELD)
+	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_HAND,0)<Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_ONFIELD)
 end

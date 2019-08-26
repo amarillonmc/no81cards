@@ -46,6 +46,9 @@ end
 function c9980782.ffilter(c)
 	return c:IsSetCard(0x3bcf) and c:IsFusionAttribute(ATTRIBUTE_WATER)
 end
+function c9980782.desfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP)
+end
 function c9980782.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9980782.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(c9980782.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)

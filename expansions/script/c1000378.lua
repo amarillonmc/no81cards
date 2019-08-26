@@ -30,7 +30,7 @@ function c1000378.tg(e,c)
 	return lv>0 and lv<=10 and c:GetBaseDefense()==0
 end
 function c1000378.spfilter(c,e,tp,ft)
-	return c:IsSetCard(0xc200) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+	return c:IsSetCard(0xc200) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c1000378.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
