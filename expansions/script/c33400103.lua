@@ -20,7 +20,7 @@ function c33400103.filter(c)
 end
 function c33400103.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return  Duel.IsExistingTarget(c33400103.cfilter,tp,LOCATION_MZONE,0,1,nil)
-	and Duel.IsCanRemoveCounter(tp,1,0,0x1003,1,REASON_COST)
+	and Duel.IsCanRemoveCounter(tp,1,0,0x34f,1,REASON_COST)
 	end
 	local sc=Duel.GetMatchingGroupCount(c33400103.cfilter,tp,LOCATION_MZONE,0,nil)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and c33400102.filter(chkc) end

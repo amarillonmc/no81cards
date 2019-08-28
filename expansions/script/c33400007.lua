@@ -45,10 +45,10 @@ function c33400007.sumval(e,c)
 		return 0,sumzone,relzone
 end
 function c33400007.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ct=e:GetLabel()
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) 
 	and Duel.IsCanRemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
-	end
-	local ct=e:GetLabel()
+	end   
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)

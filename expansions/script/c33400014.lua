@@ -1,7 +1,7 @@
 --时崎狂三 奇袭
 function c33400014.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3341),8,2)
+	aux.AddXyzProcedure(c,nil,8,2,nil,nil,99)
 	c:EnableReviveLimit()
 	 --direct attack
 	local e1=Effect.CreateEffect(c)

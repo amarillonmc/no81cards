@@ -88,7 +88,7 @@ function c33400008.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33400008.mfilter(c)
-	return c:IsLinkSetCard(0x3341)
+   return c:IsLinkSetCard(0x3341)
 end
 function c33400008.afilter(c)
 	return c:IsSetCard(0x3340) and c:IsType(TYPE_QUICKPLAY)
