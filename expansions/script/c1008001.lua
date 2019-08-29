@@ -63,7 +63,7 @@ function c1008001.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetLabelObject():IsAbleToDeck()
 end
 function c1008001.dfilter(c)
-	return c:IsDestructable() and not ((c:IsSetCard(0xf9) or c:IsSetCard(0xf5)) and c:IsFaceup())
+	return c:IsDestructable() and not ((c:IsSetCard(0x320e) or c:IsSetCard(0x520e)) and c:IsFaceup())
 end
 function c1008001.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
@@ -84,7 +84,7 @@ function c1008001.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c1008001.sfilter(c,e,tp)
-	return c:IsSetCard(0xf9) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(1008001)
+	return c:IsSetCard(0x320e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(1008001)
 end
 function c1008001.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -101,12 +101,12 @@ function c1008001.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c1008001.vfilter(c,e,tp)
 	return (c:IsCode(1008014) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1)
-	or ((c:IsSetCard(0xf9)and c:GetCode()~=1008014) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) 
+	or ((c:IsSetCard(0x320e)and c:GetCode()~=1008014) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) 
 	and c:GetFlagEffect(10080011)==0 and c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:GetCode()~=1008001
 end
 function c1008001.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) (chkc:IsCode(1008014) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1)
-	or ((chkc:IsSetCard(0xf9)and chkc:GetCode()~=1008014) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) 
+	or ((chkc:IsSetCard(0x320e)and chkc:GetCode()~=1008014) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) 
 	and chkc:GetFlagEffect(10080011)==0 and chkc:IsFaceup() and chkc:IsType(TYPE_MONSTER) and chkc:GetCode()~=1008001 end
 	if chk==0 then return Duel.IsExistingTarget(c1008001.vfilter,tp,LOCATION_MZONE,0,1,nil,e,tp) end
 	local g=Duel.SelectTarget(tp,c1008001.vfilter,tp,LOCATION_MZONE,0,1,1,nil)
@@ -114,7 +114,7 @@ end
 function c1008001.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if (tc:IsCode(1008014) and Duel.GetLocationCount(tp,LOCATION_MZONE)<2)
-	or ((tc:IsSetCard(0xf9)and tc:GetCode()~=1008014) and Duel.GetLocationCount(tp,LOCATION_SZONE)<1) then return false end
+	or ((tc:IsSetCard(0x320e)and tc:GetCode()~=1008014) and Duel.GetLocationCount(tp,LOCATION_SZONE)<1) then return false end
 	if tc:IsFaceup() then
 		Duel.RaiseSingleEvent(tc,1008001,e,0,0,0,0)
 	end
