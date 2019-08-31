@@ -71,7 +71,7 @@ function c9980847.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980847,8))
 end
 function c9980847.ffilter(c,fc,sub,mg,sg)
-	return c:IsFusionSetCard(0x5bc2) and (not sg or not sg:Filter(Card.IsFusionSetCard,nil,0x5bc2):IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()))
+	return c:IsType(TYPE_MONSTER) and c:IsFusionSetCard(0x5bc2) and (not sg or not sg:Filter(Card.IsFusionSetCard,nil,0x5bc2):IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()))
 end
 function c9980847.atkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x5bc2)

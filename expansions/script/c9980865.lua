@@ -1,7 +1,7 @@
 --装甲骑士铠武·极武装
 function c9980865.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc2),aux.FilterBoolFunction(Card.IsCode,9980865),1,1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc2),aux.FilterBoolFunction(Card.IsCode,9980864),1,1)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e0=Effect.CreateEffect(c)

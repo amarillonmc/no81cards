@@ -28,7 +28,7 @@ function cm.filter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=2
-	if e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1
+	if e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,2,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>ft end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)

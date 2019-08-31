@@ -36,8 +36,8 @@ function c9910025.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		ct=ct+1
 	end
-	if rt>=2 and Duel.IsExistingMatchingCard(c9910025.rpfilter,tp,LOCATION_HAND,0,1,1,nil,tp) then
-		if not Duel.SelectYesNo(tp,aux.Stringid(9910025,1)) then return end
+	if rt>=2 and Duel.IsExistingMatchingCard(c9910025.rpfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
+		and Duel.SelectYesNo(tp,aux.Stringid(9910025,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910025,0))
 		local g=Duel.SelectMatchingCard(tp,c9910025.rpfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
 		if g:GetCount()==0 then return end
@@ -77,7 +77,7 @@ function c9910025.target(e,tp,eg,ep,ev,re,r,rp,chk)
 			b2=false
 		end
 		ct=ct-1
-	until ct==0 or off<2
+	until ct==0 or off<3
 	e:SetLabel(sel)
 	if bit.band(sel,1)~=0 then
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)

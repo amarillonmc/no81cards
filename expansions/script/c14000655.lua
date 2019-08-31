@@ -10,13 +10,13 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD)
 	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.tg)
-	e1:SetOperation(cm.op)
+	e1:SetTarget(cm.sumtg)
+	e1:SetOperation(cm.sumop)
 	c:RegisterEffect(e1)
 end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) or c:IsAbleToRemove() or Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,LOCATION_ONFIELD) end
+	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) or c:IsAbleToRemove() or Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,LOCATION_ONFIELD)
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
