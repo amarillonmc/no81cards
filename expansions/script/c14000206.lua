@@ -39,7 +39,7 @@ cm.lvdncount=5
 cm.lvdn={14000201,14000202,14000203,14000204,14000205}
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c,ec=e:GetHandler(),eg:GetFirst()
-	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or ec:IsLocation(LOCATION_SZONE)) and (ec:IsControler(tp) or (ec:IsAbleToChangeControler() and not ec:IsLocation(LOCATION_SZONE))) and c:GetFlagEffect(14000205)~=0 and re:GetHandler()~=c and not c:IsStatus(STATUS_BATTLE_DESTROYED) and ec:GetEquipTarget()~=c end
+	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or ec:IsLocation(LOCATION_SZONE)) and (ec:IsControler(tp) or ec:IsAbleToChangeControler() or ec:IsLocation(LOCATION_SZONE)) and c:GetFlagEffect(14000205)~=0 and re:GetHandler()~=c and not c:IsStatus(STATUS_BATTLE_DESTROYED) and ec:GetEquipTarget()~=c end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,eg,1,0,0)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
