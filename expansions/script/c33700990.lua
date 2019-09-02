@@ -197,6 +197,17 @@ function rsss.acop(e,tp,eg,ep,ev,re,r,rp)
 	   if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 	   Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 	end
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetTarget(rsss.splimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+end
+function rsss.splimit(e,c)
+	return not c:IsSetCard(0x144d)
 end
 function rsss.CounterFunction(c)
 	c:EnableCounterPermit(0x1a)

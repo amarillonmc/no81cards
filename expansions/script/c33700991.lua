@@ -38,18 +38,26 @@ function cm.fun(rc)
 	return e1
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLP(tp)>=1000 end
-	Duel.Damage(tp,1000,REASON_COST)
+	if chk==0 then return Duel.GetLP(tp)>=1200 end
+	Duel.Damage(tp,1200,REASON_COST)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(1000)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,1-tp,3)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Damage(p,d,REASON_EFFECT)
+	 Duel.DiscardDeck(1-tp,3,REASON_EFFECT)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetTarget(cm.splimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.splimit(e,c)
+	return not c:IsSetCard(0x144d)
 end
 function cm.damcon(e,tp,eg)
 	local st=e:GetHandler():GetSummonType()

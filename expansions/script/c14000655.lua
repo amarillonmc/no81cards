@@ -42,7 +42,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 		if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		end
-	elseif d==6 then
+	elseif dc==6 then
 		if c:IsRelateToEffect(e) then
 			Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
 		end

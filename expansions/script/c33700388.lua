@@ -94,7 +94,7 @@ function c33700388.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoGrave(g,REASON_EFFECT)
 end
 function c33700388.con4(e)
-	return e:GetLabel()>=8000
+	return e:GetLabel()>=16000
 end
 function c33700388.con3(e)
 	return e:GetLabel()>=5000
