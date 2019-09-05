@@ -13,7 +13,7 @@ function c9980886.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_EQUIP)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetValue(1200)
+	e2:SetValue(1000)
 	c:RegisterEffect(e2)
 	--equip limit
 	local e3=Effect.CreateEffect(c)

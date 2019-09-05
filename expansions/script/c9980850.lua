@@ -46,7 +46,7 @@ function c9980850.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c9980850.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980850,1))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980850,0))
 end
 function c9980850.disfilter(c)
 	return aux.disfilter1(c) and c:GetSummonLocation()==LOCATION_EXTRA

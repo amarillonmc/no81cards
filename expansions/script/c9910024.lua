@@ -28,10 +28,9 @@ function c9910024.cosfilter(c)
 		and (not c:IsLocation(LOCATION_MZONE) or c:IsFaceup())
 end
 function c9910024.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return (not e:GetHandler():IsLocation(LOCATION_HAND)
+		or Duel.IsExistingMatchingCard(c9910024.cosfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)) end
 	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
-		if not Duel.IsExistingMatchingCard(c9910024.cosfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) 
-		then return false end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local c=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910024.cosfilter),tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil):GetFirst()
 		local lab=c:GetLocation()

@@ -76,7 +76,7 @@ function c9980851.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c9980851.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980851,1))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980851,0))
 end
 function c9980851.sprfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x5bc2) and c:IsType(TYPE_PENDULUM) and c:IsAbleToRemoveAsCost()
@@ -150,5 +150,5 @@ function c9980851.aclimit(e,re,tp)
 	return false
 end
 function c9980851.setlimit(e,c,tp)
-	return c:IsType(TYPE_FIELD) and not Duel.GetFieldCard(tp,LOCATION_SZONE,5) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4
+	return c:IsType(TYPE_FIELD) and not Duel.GetFieldCard(tp,LOCATION_SZONE,3) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>3
 end

@@ -4,7 +4,6 @@ function c9980847.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.EnablePendulumAttribute(c,false)
 	aux.AddFusionProcCodeFun(c,9980845,c9980847.ffilter,4,true,true)
-	aux.AddContactFusionProcedure(c,Card.IsAbleToDeckOrExtraAsCost,LOCATION_ONFIELD+LOCATION_GRAVE,0,aux.tdcfop(c))
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

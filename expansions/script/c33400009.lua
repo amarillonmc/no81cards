@@ -1,7 +1,7 @@
 --时崎狂三-暗影之主
 function c33400009.initial_effect(c)
 	 --link summon
-	aux.AddLinkProcedure(c,c33400009.mfilter,2)
+	 aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x341),2,99,c33400009.lcheck)
 	c:EnableReviveLimit()
 	 --activate from hand
 	local e1=Effect.CreateEffect(c)
@@ -43,8 +43,8 @@ function c33400009.initial_effect(c)
 	e3:SetOperation(c33400009.desop)
 	c:RegisterEffect(e3)
 end
-function c33400009.mfilter(c)
-	return c:IsLinkSetCard(0x3341)
+function c33400009.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3341)
 end
 function c33400009.afilter(c)
 	return c:IsSetCard(0x3340) and c:IsType(TYPE_QUICKPLAY)

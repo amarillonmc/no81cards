@@ -14,12 +14,16 @@ function c9980837.initial_effect(c)
 	e1:SetTarget(c9980837.thtg)
 	e1:SetOperation(c9980837.thop)
 	c:RegisterEffect(e1)
-	--Activate
-	local e1=aux.AddRitualProcGreater2Code2(c,c9980837.ritual_filter,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,c9980837.mfilter)
+   --Activate
+	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9980837,5))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
+	e1:SetTarget(c9980837.target)
+	e1:SetOperation(c9980837.operation)
+	c:RegisterEffect(e1)
 	--tohand
 	local e8=Effect.CreateEffect(c)
 	e8:SetDescription(aux.Stringid(9980837,1))
@@ -78,11 +82,59 @@ function c9980837.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c9980837.ritual_filter(c)
-	return c:IsType(TYPE_RITUAL) and c:IsSetCard(0x5bc2)
+function c9980837.exfilter0(c)
+	return c:IsSetCard(0x5bc2) and c:IsLevelAbove(1) and c:IsAbleToGrave()
 end
-function c9980837.mfilter(c)
-	return c:IsType(TYPE_MONSTER)
+function c9980837.filter(c,e,tp)
+	return c:IsSetCard(0x5bc2)
+end
+function c9980837.cfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_RITUAL) 
+end
+function c9980837.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsType,nil,TYPE_MONSTER)
+		local sg=nil
+		if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>1 or Duel.IsExistingMatchingCard(c9980837.cfilter,tp,LOCATION_MZONE,0,1,nil) then
+			sg=Duel.GetMatchingGroup(c9980837.exfilter0,tp,LOCATION_DECK,0,nil)
+		end
+		return Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,c9980837.filter,e,tp,mg,sg,Card.GetLevel,"Greater")
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+end
+function c9980837.operation(e,tp,eg,ep,ev,re,r,rp)
+	local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsType,nil,TYPE_PENDULUM)
+	local sg=nil
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>1 or Duel.IsExistingMatchingCard(c9980837.cfilter,tp,LOCATION_MZONE,0,1,nil)then
+		sg=Duel.GetMatchingGroup(c9980837.exfilter0,tp,LOCATION_DECK,0,nil)
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(aux.RitualUltimateFilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,c9980837.filter,e,tp,mg,sg,Card.GetLevel,"Greater")
+	local tc=tg:GetFirst()
+	if tc then
+		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
+		if sg then
+			mg:Merge(sg)
+		end
+		if tc.mat_filter then
+			mg=mg:Filter(tc.mat_filter,tc,tp)
+		else
+			mg:RemoveCard(tc)
+		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
+		local mat=mg:SelectSubGroup(tp,aux.RitualCheck,false,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater")
+		aux.GCheckAdditional=nil
+		if not mat or mat:GetCount()==0 then return end
+		tc:SetMaterial(mat)
+		local mat2=mat:Filter(Card.IsLocation,nil,LOCATION_DECK)
+		mat:Sub(mat2)
+		Duel.ReleaseRitualMaterial(mat)
+		Duel.SendtoGrave(mat2,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
+		Duel.BreakEffect()
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+		tc:CompleteProcedure()
+	end
 end
 function c9980837.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsAbleToHand() end

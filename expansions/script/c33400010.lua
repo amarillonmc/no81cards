@@ -1,7 +1,7 @@
 --时崎狂三-梦魇
 function c33400010.initial_effect(c)
 	 --link summon
-	aux.AddLinkProcedure(c,c33400010.mfilter,2)
+   aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x341),3,99,c33400010.lcheck)
 	c:EnableReviveLimit()
 	 --activate from hand
 	local e1=Effect.CreateEffect(c)
@@ -59,8 +59,8 @@ function c33400010.initial_effect(c)
 	e5:SetLabelObject(e4)
 	c:RegisterEffect(e5)
 end
-function c33400010.mfilter(c)
-	return c:IsLinkSetCard(0x3341)
+function c33400010.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3341)
 end
 function c33400010.afilter(c)
 	return c:IsSetCard(0x3340) and c:IsType(TYPE_QUICKPLAY)

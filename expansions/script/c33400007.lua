@@ -1,7 +1,7 @@
 --时崎狂三-祈福
 function c33400007.initial_effect(c)
 	 --link summon
-	aux.AddLinkProcedure(c,c33400007.mfilter,2)
+	aux.AddLinkProcedure(c,nil,2,2,c33400007.lcheck)
 	c:EnableReviveLimit()
 	 --activate from hand
 	local e1=Effect.CreateEffect(c)
@@ -33,8 +33,8 @@ function c33400007.initial_effect(c)
 	e3:SetOperation(c33400007.thop)
 	c:RegisterEffect(e3)
 end
-function c33400007.mfilter(c)
-	return c:IsLinkSetCard(0x3341)
+function c33400007.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3341)
 end
 function c33400007.afilter(c)
 	return c:IsSetCard(0x3340) and c:IsType(TYPE_QUICKPLAY)

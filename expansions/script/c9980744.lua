@@ -52,7 +52,7 @@ function c9980744.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980744,0))
 end
 function c9980744.mfilter(c)
-	return c:IsLevelAbove(8) and c:IsLinkSetCard(0xbca) and not c:IsLinkType(TYPE_TOKEN)
+	return c:IsLevelAbove(5) and c:IsLinkSetCard(0xbca) and not c:IsLinkType(TYPE_TOKEN)
 end
 function c9980744.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_HAND,0,1,nil) end

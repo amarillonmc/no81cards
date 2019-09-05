@@ -56,6 +56,7 @@ function c9980845.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1)
 	e1:SetCondition(c9980845.descon)
 	e1:SetTarget(c9980845.destg1)
 	e1:SetOperation(c9980845.desop1)
@@ -104,7 +105,6 @@ end
 function c9980845.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or Duel.Destroy(c,REASON_EFFECT)==0 then return end
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local a=g:GetFirst()
 	local b=g:GetNext()

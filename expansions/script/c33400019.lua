@@ -74,7 +74,7 @@ function c33400019.addc(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33400019.spfilter(c)
-	return (c:IsType(TYPE_LINK) and c:IsLinkBelow(2) and c:IsSetCard(0x341)) or (c:IsSetCard(0x3341) and c:IsType(TYPE_FUSION)) or c:IsSetCard(0xc342) or c:GetSummonLocation()~=LOCATION_EXTRA 
+	return not(c:IsType(TYPE_LINK) and c:IsLinkAbove(3) and c:GetSummonType()==SUMMON_TYPE_LINK)
 end
 function c33400019.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(33400019+20000,tp,ACTIVITY_SPSUMMON)==0 end
@@ -87,8 +87,8 @@ function c33400019.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetTarget(c33400019.splimit2)
 	Duel.RegisterEffect(e1,tp)
 end
-function c33400019.splimit2(e,c)
-	return not ((c:IsType(TYPE_LINK) and c:IsLinkBelow(2) and c:IsSetCard(0x341)) or (c:IsSetCard(0x3341) and c:IsType(TYPE_FUSION)) or c:IsSetCard(0xc342)) and c:IsLocation(LOCATION_EXTRA)
+function c33400019.splimit2(e,c,tp,sumtp,sumpos)
+	return  c:IsType(TYPE_LINK) and c:IsLinkAbove(3)  and bit.band(sumtp,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK
 end
 function c33400019.cfilter(c,tp)
 	return  c:IsPreviousLocation(LOCATION_ONFIELD) and  c:GetPreviousControler()==tp

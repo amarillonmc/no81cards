@@ -3,13 +3,15 @@ function c9980876.initial_effect(c)
 	 --synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
-	 --special summon success
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetOperation(c9980876.lpop)
-	c:RegisterEffect(e3)
-	c:EnableReviveLimit()
+	--lp
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e6:SetCode(EVENT_PHASE+PHASE_BATTLE)
+	e6:SetCountLimit(1)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCondition(c9980876.lpcon)
+	e6:SetOperation(c9980876.lpop)
+	c:RegisterEffect(e6)
 	--activate limit
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9980876,0))
@@ -32,24 +34,11 @@ end
 function c9980876.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980876,0))
 end
+function c9980876.lpcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetBattledGroupCount()>0 or e:GetHandler():GetAttackedCount()>0
+end
 function c9980876.lpop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9980876,1))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
-	e1:SetReset(RESET_EVENT+0x2fe0000+RESET_PHASE+PHASE_STANDBY)
-	e1:SetCondition(c9980876.lpc)
-	e1:SetOperation(c9980876.lpcop)
-	c:RegisterEffect(e1)
-end
-function c9980876.lpc(e,tp,eg,ep,ev,re,r,rp)
-	return tp~=Duel.GetTurnPlayer()
-end
-function c9980876.lpcop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SetLP(1-tp,Duel.GetLP(1-tp)/2)
+	Duel.SetLP(1-tp,math.ceil(Duel.GetLP(1-tp)/2))
 end
 function c9980876.spfilter(c)
 	return c:IsSetCard(0xbca) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()

@@ -25,6 +25,7 @@ function c33400017.initial_effect(c)
 	e3:SetOperation(c33400017.setop)
 	c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(33400017+10000,ACTIVITY_SPSUMMON,c33400017.setcfilter)
+
 	--draw
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_DRAW)
@@ -63,7 +64,7 @@ function c33400017.addc(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33400017.setcfilter(c)
-	return (c:IsType(TYPE_LINK) and c:IsLinkBelow(2) and c:IsSetCard(0x341)) or (c:IsSetCard(0x3341) and c:IsType(TYPE_FUSION)) or c:GetSummonLocation()~=LOCATION_EXTRA 
+	return not (c:IsType(TYPE_LINK) and c:IsLinkAbove(3) and c:GetSummonType()==SUMMON_TYPE_LINK) 
 end
 function c33400017.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return  Duel.IsCanRemoveCounter(tp,1,0,0x34f,2,REASON_COST) and Duel.GetCustomActivityCount(33400017+10000,tp,ACTIVITY_SPSUMMON)==0 end
@@ -78,8 +79,8 @@ function c33400017.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetTarget(c33400017.splimit2)
 	Duel.RegisterEffect(e1,tp)
 end
-function c33400017.splimit2(e,c)
-	return not ((c:IsType(TYPE_LINK) and c:IsLinkBelow(2) and c:IsSetCard(0x341)) or (c:IsSetCard(0x3341) and c:IsType(TYPE_FUSION))) and c:IsLocation(LOCATION_EXTRA)
+function c33400017.splimit2(e,c,tp,sumtp,sumpos)
+	return c:IsType(TYPE_LINK) and c:IsLinkAbove(3) and bit.band(sumtp,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK
 end
 function c33400017.setfilter(c)
 	return c:IsSetCard(0x3340) and (c:IsType(TYPE_TRAP) or c:IsType(TYPE_SPELL)) and c:IsSSetable()

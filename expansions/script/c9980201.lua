@@ -35,11 +35,11 @@ function c9980201.splimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xbc8) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c9980201.costfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0xbc8)
+	return c:IsRace(RACE_CYBERSE) and Duel.GetMZoneCount(tp,c)>0
 end
 function c9980201.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c9980201.costfilter,1,nil,tp) end
-	local g=Duel.SelectReleaseGroup(tp,c9980201.costfilter,1,1,nil,tp)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,c9980201.costfilter,1,nil,tp,e:GetHandler()) end
+	local g=Duel.SelectReleaseGroup(tp,c9980201.costfilter,1,1,nil,tp,e:GetHandler())
 	Duel.Release(g,REASON_COST)
 end
 function c9980201.filter(c)
