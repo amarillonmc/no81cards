@@ -1,9 +1,9 @@
 --竹林组·妹红球
 function c9950017.initial_effect(c)
-	--spsummon
+	 --spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9950017,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e1:SetCode(EVENT_TO_GRAVE)
 	e1:SetCountLimit(1,9950017)
@@ -39,24 +39,24 @@ function c9950017.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsReason(REASON_EFFECT) and c:IsReason(REASON_DESTROY)
 end
-function c9950017.filter(c,e,tp)
-	return c:IsSetCard(0xba1,0xba2) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c9950017.cfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xba1,0xba2) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function c9950017.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950017.cfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c9950017.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9950017.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		Duel.SpecialSummonComplete()
+	 Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9950017,2))
+	local g=Duel.SelectMatchingCard(tp,c9950017.cfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		local tc=g:GetFirst()
+		if tc and tc:IsAbleToHand() and (not tc:IsAbleToGrave() or Duel.SelectOption(tp,1190,1191)==0) then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		else
+			Duel.SendtoGrave(tc,REASON_EFFECT)
+		end
 	end
 end

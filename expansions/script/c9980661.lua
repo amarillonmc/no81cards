@@ -25,6 +25,7 @@ function c9980661.initial_effect(c)
 	e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(c9980661.atkcon)
+	e1:SetCost(c9980661.atkcost)
 	e1:SetOperation(c9980661.atkop)
 	c:RegisterEffect(e1)
 	--handes
@@ -52,9 +53,20 @@ function c9980661.cfilter(c)
 	return (c:IsFusionCode(9980644,9980525) or c:IsFusionSetCard(0x9bcd,0x3bca) and c:IsType(TYPE_MONSTER))
 		and c:IsAbleToDeckOrExtraAsCost()
 end
+function c9980661.cfilter2(c)
+	return c:IsFusionSetCard(0x9bcd,0x3bca) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+end
 function c9980661.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c==Duel.GetAttacker() or c==Duel.GetAttackTarget()
+end
+function c9980661.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():GetFlagEffect(9980661)==0
+		and Duel.IsExistingMatchingCard(c9980661.cfilter2,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9980661.cfilter2,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
+	e:GetHandler():RegisterFlagEffect(9980661,RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
 end
 function c9980661.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

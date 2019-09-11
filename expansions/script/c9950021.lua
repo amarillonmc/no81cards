@@ -34,13 +34,13 @@ end
 function c9950021.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
-function c9950021.cfilter(c)
+function c9950021.cfilter2(c)
 	return c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
 end
 function c9950021.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9950021.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950021.cfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9950021.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c9950021.cfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 	e:SetLabelObject(g:GetFirst())
 end

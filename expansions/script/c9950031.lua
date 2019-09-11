@@ -1,6 +1,6 @@
 --苍死神
 function c9950031.initial_effect(c)
-	--fusion material
+	 --fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFun(c,9950000,aux.FilterBoolFunction(Card.IsFusionSetCard,0xba1,0xba2),4,true,true)
 	aux.EnablePendulumAttribute(c,false)
@@ -31,6 +31,14 @@ function c9950031.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(c9950031.atkval)
 	c:RegisterEffect(e2)
+	--immune spell
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(c9950031.efilter)
+	c:RegisterEffect(e1)
 	 --negate
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -49,6 +57,7 @@ function c9950031.initial_effect(c)
 	--pendulum
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(9950031,0))
+	e6:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e6:SetCode(EVENT_DESTROYED)
 	e6:SetProperty(EFFECT_FLAG_DELAY)
@@ -68,6 +77,9 @@ function c9950031.initial_effect(c)
 end
 function c9950031.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950031,1))
+end
+function c9950031.efilter(e,te)
+	return te:IsActiveType(TYPE_MONSTER) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
 end
 function c9950031.distg(e,c)
 	return c==e:GetHandler():GetBattleTarget()
@@ -134,13 +146,21 @@ function c9950031.pencon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and c:IsPreviousLocation(LOCATION_MZONE) and c:IsFaceup()
 end
+function c9950031.filter(c)
+	return c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+end
 function c9950031.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
+	if chk==0 then return  Duel.IsExistingMatchingCard(c9950031.filter,tp,LOCATION_DECK,0,1,nil) and Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9950031.penop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return false end
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9950031.filter,tp,LOCATION_DECK,0,1,1,nil)
+	if c:IsRelateToEffect(e) and g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950031,1))
 	end

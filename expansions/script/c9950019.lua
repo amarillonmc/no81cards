@@ -1,8 +1,8 @@
 --竹林组·妹红球&慧音球
 function c9950019.initial_effect(c)
-	--link summon
+	--synchro summon
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xba1,0xba2),2,2)
 	 --special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -64,11 +64,11 @@ function c9950019.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9950019.sprfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,2,nil)
+		and Duel.IsExistingMatchingCard(c9950019.sprfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,nil)
 end
 function c9950019.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9950019.sprfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c9950019.sprfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,2,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c9950019.spfilter2(c,e,tp)

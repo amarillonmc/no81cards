@@ -44,3 +44,16 @@ Clone-Modify-Push-PR！
 
 ## 其他 ##
 This area is intentionally left blank.
+
+
+# Instruction for YGOTC Members #
+... ...
+
+## How to add cards to our server ##
+It's as easy as A-B-C-D-E!
+
+Fork-Clone-Modify-Push-PR!
+
+Remember: You need to merge and commit your cdbs as ``no81_EN.cdb`` for better management purposes. 
+
+If the above means nosense to you, then join the [Discord Server](https://discord.gg/KS7GkyQ), and we'll handle the rest.

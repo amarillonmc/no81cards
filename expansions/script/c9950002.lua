@@ -1,11 +1,10 @@
---竹林组·温暖的火焰
+--竹林组·温暖之炎
 function c9950002.initial_effect(c)
 	--destory
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,9950002+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c9950002.target)
 	e1:SetOperation(c9950002.activate)
 	c:RegisterEffect(e1)

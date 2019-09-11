@@ -1,6 +1,6 @@
 --竹林组·藤原妹红
 function c9950000.initial_effect(c)
-	--search monster
+	 --search monster
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9950000,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DESTROY)
@@ -44,15 +44,18 @@ end
 function c9950000.filter(c,e,tp)
 	return c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_MONSTER) and not c:IsCode(9950000) and c:IsAbleToHand()
 end
+function c9950000.desfilter(c,e,tp)
+	return c:IsSetCard(0xba1,0xba2) 
+end
 function c9950000.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950000.filter,tp,LOCATION_DECK,0,1,nil,e,tp)
-		and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
+		and Duel.IsExistingMatchingCard(c9950000.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9950000.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	local dg=Duel.SelectMatchingCard(tp,c9950000.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
 	if dg:GetCount()==0 then return end
 	if Duel.Destroy(dg,REASON_EFFECT)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
