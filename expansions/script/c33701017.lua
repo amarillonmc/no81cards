@@ -47,16 +47,23 @@ function s.spcon(e, tp, eg, ep, ev, re, r, rp)
     return Duel.GetTurnPlayer() == tp and ns + ss == 0
 end
 function s.spfilter(c)
-    return c:IsSetCard(0x144e) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost() and
-        (c:IsLocation(LOCATION_HAND) or aux.SpElimFilter(c, true))
+    return c:IsSetCard(0x144e) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+end
+function s.MZFilter(c, tp)
+    return c:IsLocation(LOCATION_MZONE) and c:GetSequence() < 5 and c:IsControler(tp)
+end
+function s.ChkfMMZ(sumcount)
+    return function(sg, e, tp, mg)
+        return sg:FilterCount(s.MZFilter, nil, tp) + Duel.GetLocationCount(tp, LOCATION_MZONE) >= sumcount
+    end
 end
 function s.spcost(e, tp, eg, ep, ev, re, r, rp, chk)
-    local rg = Duel.GetMatchingGroup(s.spfilter, tp, LOCATION_HAND + LOCATION_MZONE + LOCATION_GRAVE, 0, e:GetHandler())
+    local rg = Duel.GetMatchingGroup(s.spfilter, tp, LOCATION_HAND + LOCATION_GRAVE, 0, e:GetHandler())
     if chk == 0 then
         return Duel.GetLocationCount(tp, LOCATION_MZONE) > -2 and #rg > 1 and
-            aux.SelectUnselectGroup(rg, e, tp, 2, 2, aux.ChkfMMZ(1), 0)
+            aux.SelectUnselectGroup(rg, e, tp, 2, 2, s.ChkfMMZ(1), 0)
     end
-    local g = aux.SelectUnselectGroup(rg, e, tp, 2, 2, aux.ChkfMMZ(1), 1, tp, HINTMSG_REMOVE)
+    local g = aux.SelectUnselectGroup(rg, e, tp, 2, 2, s.ChkfMMZ(1), 1, tp, HINTMSG_REMOVE)
     Duel.Remove(g, POS_FACEUP, REASON_COST)
 end
 function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
