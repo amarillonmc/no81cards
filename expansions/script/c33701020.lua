@@ -5,7 +5,7 @@ local s = c33701020
 local id = 33701020
 function s.initial_effect(c)
     c:EnableReviveLimit()
-    aux.AddFusionProcMixN(c, true, true, s.ffilter, 3)
+    aux.AddFusionProcFunRep(c, aux.FilterBoolFunction(Card.IsFusionSetCard, 0x144e), 3, false)
     --special summon self
     local e1 = Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(id, 0))
@@ -29,9 +29,6 @@ function s.initial_effect(c)
     e2:SetTarget(s.tgtg)
     e2:SetOperation(s.tgop)
     c:RegisterEffect(e2)
-end
-function s.ffilter(c, fc, sumtype, tp, sub, mg, sg)
-    return c:IsFusionSetCard(0x144e)
 end
 function s.spcon(e, tp, eg, ep, ev, re, r, rp)
     local ct = Duel.GetActivityCount(tp, ACTIVITY_BATTLE_PHASE)
