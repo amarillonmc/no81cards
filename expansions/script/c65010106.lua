@@ -18,7 +18,7 @@ function c65010106.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c65010106.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 
 end
 function c65010106.filter(c)
-	return c:IsSetCard(0x9da0) and c:IsAbleToHand()
+	return c:IsSetCard(0x9da0) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c65010106.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65010106.filter,tp,LOCATION_DECK,0,1,nil) end

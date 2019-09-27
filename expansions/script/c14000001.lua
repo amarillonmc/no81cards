@@ -5,6 +5,7 @@ if not Chrono then
 	Chrono=Chrono or {}
 	chrb=Chrono
 	function chrb.dire(c,direbool,t)
+		local code=c:GetOriginalCodeRule()
 		--direct attack
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -18,6 +19,9 @@ if not Chrono then
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_BATTLE_DAMAGE_TO_EFFECT)
+			if code==14000019 then
+				e2:SetCondition(chrb.soulcon)
+			end
 			c:RegisterEffect(e2)
 		else
 			--damage change
@@ -97,6 +101,9 @@ if not Chrono then
 	end
 	function chrb.con1(e,tp,eg,ep,ev,re,r,rp)
 		return ep~=tp and bit.band(r,REASON_EFFECT)~=0 and chrb.CHRB(re:GetHandler())
+	end
+	function chrb.soulcon(e,c)
+		return Duel.GetFlagEffect(e:GetHandlerPlayer(),14000000)==0
 	end
 	function chrb.dircon(e)
 		return e:GetHandler():GetColumnGroupCount()==0

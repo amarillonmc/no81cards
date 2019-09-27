@@ -44,11 +44,11 @@ function c9980260.initial_effect(c)
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e8:SetOperation(c9980725.sumsuc)
+	e8:SetOperation(c9980260.sumsuc)
 	c:RegisterEffect(e8)
 end
-function c9980725.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980725,3))
+function c9980260.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980260,3))
 end
 function c9980260.thfilter(c)
 	return c:IsSetCard(0x3bcc) and c:IsAbleToHand()
@@ -76,7 +76,7 @@ function c9980260.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980725,3))
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980260,3))
 	end
 end
 function c9980260.cfilter(c,tp)

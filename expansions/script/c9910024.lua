@@ -30,25 +30,39 @@ end
 function c9910024.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (not e:GetHandler():IsLocation(LOCATION_HAND)
 		or Duel.IsExistingMatchingCard(c9910024.cosfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)) end
-	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
+	local c=e:GetHandler()
+	if c:IsStatus(STATUS_ACT_FROM_HAND) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local c=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910024.cosfilter),tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil):GetFirst()
-		local lab=c:GetLocation()
-		if Duel.Remove(c,POS_FACEUP,REASON_COST+REASON_TEMPORARY)~=0 then
-			local e1=Effect.CreateEffect(e:GetHandler())
+		local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910024.cosfilter),tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil):GetFirst()
+		local fid=c:GetFieldID()
+		local lab=tc:GetLocation()
+		if Duel.Remove(tc,POS_FACEUP,REASON_COST+REASON_TEMPORARY)~=0 then
+			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_PHASE+PHASE_END)
 			e1:SetReset(RESET_PHASE+PHASE_END)
-			e1:SetLabel(lab)
-			e1:SetLabelObject(c)
+			e1:SetLabel(fid*9910024+lab)
+			e1:SetLabelObject(tc)
 			e1:SetCountLimit(1)
+			e1:SetCondition(c9910024.retcon)
 			e1:SetOperation(c9910024.retop)
 			Duel.RegisterEffect(e1,tp)
+			tc:RegisterFlagEffect(9910024,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
 		end
 	end
 end
+function c9910024.retcon(e,tp,eg,ep,ev,re,r,rp)
+	local fid,tmp2=math.modf(e:GetLabel()/9910024)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(9910024)==fid then
+		return true
+	else
+		e:Reset()
+		return false
+	end
+end
 function c9910024.retop(e,tp,eg,ep,ev,re,r,rp)
-	local lab=e:GetLabel()
+	local lab=e:GetLabel()%9910024
 	local tc=e:GetLabelObject()
 	if lab==LOCATION_MZONE then
 		Duel.ReturnToField(tc)

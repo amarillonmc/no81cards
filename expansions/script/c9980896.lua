@@ -1,7 +1,7 @@
 --疾速骑士Drive-特殊型号
 function c9980896.initial_effect(c)
 	 c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,c9980896.matfilter1,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9bc2),2,true,true)
+	aux.AddFusionProcCodeFun(c,c9980896.matfilter1,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9bc2),3,true,true)
 	--attack all
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)

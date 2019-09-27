@@ -22,7 +22,6 @@ function c9980252.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_TO_HAND)
-	e1:SetCountLimit(1,9980252)
 	e1:SetCondition(c9980252.spcon2)
 	e1:SetTarget(c9980252.sptg)
 	e1:SetOperation(c9980252.spop)
@@ -32,7 +31,7 @@ function c9980252.initial_effect(c)
 	e1:SetDescription(aux.Stringid(9980252,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,99802520)
 	e1:SetTarget(c9980252.sptg2)
 	e1:SetOperation(c9980252.spop2)
@@ -52,8 +51,7 @@ function c9980252.splimit(e,se,sp,st)
 end
 function c9980252.spcon(e,c)
 	if c==nil then return true end
-	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0
-		and Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_MZONE)>0
+	return  Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_MZONE)>0
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c9980252.spcon2(e,tp,eg,ep,ev,re,r,rp)

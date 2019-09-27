@@ -24,7 +24,7 @@ function cm.winop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EVENT_PHASE+PHASE_BATTLE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetOperation(cm.winop1)
@@ -32,6 +32,6 @@ function cm.winop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 end
 function cm.winop1(e,tp,eg,ep,ev,re,r,rp)
-	local WIN_REASON_CHRONO_BLADE=0x24
-	Duel.Win(tp,WIN_REASON_CHRONO_BLADE)
+	Duel.Hint(HINT_CARD,0,m)
+	Duel.Damage(1-tp,10000,REASON_EFFECT)
 end

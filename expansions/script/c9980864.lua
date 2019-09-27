@@ -36,7 +36,6 @@ function c9980864.initial_effect(c)
 	e8:SetCode(EFFECT_CANNOT_BP)
 	e8:SetRange(LOCATION_MZONE)
 	e8:SetTargetRange(0,1)
-	e8:SetCondition(c9980864.bpcon)
 	c:RegisterEffect(e8)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
@@ -72,7 +71,4 @@ function c9980864.desop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980864,2))
-end
-function c9980864.bpcon(e)
-	return e:GetHandler():IsPosition(POS_FACEUP_DEFENSE)
 end

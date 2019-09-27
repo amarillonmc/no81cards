@@ -29,9 +29,10 @@ function c9981116.initial_effect(c)
 	e3:SetDescription(aux.Stringid(9981116,0))
 	e3:SetCategory(CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e3:SetCode(EVENT_PHASE+PHASE_END,2)
+	e3:SetCode(EVENT_PHASE+PHASE_END)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
+	e3:SetCondition(c9981116.reccon)
 	e3:SetTarget(c9981116.rettg)
 	e3:SetOperation(c9981116.retop)
 	c:RegisterEffect(e3)
@@ -76,6 +77,9 @@ function c9981116.tdop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(g,nil,1,REASON_EFFECT)
 	end
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981116,1))
+end
+function c9981116.reccon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()~=tp
 end
 function c9981116.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToExtra() end

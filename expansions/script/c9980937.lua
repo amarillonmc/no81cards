@@ -15,15 +15,16 @@ function c9980937.initial_effect(c)
 	e2:SetCode(EFFECT_SPIRIT_MAYNOT_RETURN)
 	e2:SetRange(LOCATION_SZONE)
 	c:RegisterEffect(e2)
-	--spsummon
+	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9980937,1))
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetTarget(c9980937.sptg)
-	e1:SetOperation(c9980937.spop)
+	e1:SetCountLimit(1,9980937)
+	e1:SetTarget(c9980937.drtg)
+	e1:SetOperation(c9980937.drop)
 	c:RegisterEffect(e1)
 	--equip
 	local e1=Effect.CreateEffect(c)
@@ -53,6 +54,22 @@ function c9980937.initial_effect(c)
 end
 function c9980937.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980937,2))
+end
+function c9980937.tgfilter(c)
+	return c:IsSetCard(0xcbc2) and not c:IsCode(9980937) and c:IsAbleToGrave()
+end
+function c9980937.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
+		and Duel.IsExistingMatchingCard(c9980937.tgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c9980937.drop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9980937.tgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 and g:GetFirst():IsLocation(LOCATION_GRAVE) then
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
 end
 function c9980937.filter(c)
 	return c:IsFaceup() and c:IsSetCard(0xcbc2)
@@ -91,21 +108,4 @@ function c9980937.eqop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9980937.eqlimit(e,c)
 	return c:IsSetCard(0xcbc2)
-end
-function c9980937.filter2(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0xcbc2) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP_DEFENSE)
-end
-function c9980937.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(tp) and c9980937.filter2(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c9980937.filter2,tp,LOCATION_SZONE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c9980937.filter2,tp,LOCATION_SZONE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-end
-function c9980937.spop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP_DEFENSE)
-	end
 end

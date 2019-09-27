@@ -7,6 +7,16 @@ function c9980254.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(c9980254.splimit)
 	c:RegisterEffect(e1)
+	--search
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9980254,0))
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCost(c9980254.thcost)
+	e1:SetTarget(c9980254.thtg2)
+	e1:SetOperation(c9980254.thop2)
+	c:RegisterEffect(e1)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND)
@@ -44,6 +54,25 @@ function c9980254.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9980254.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)
+end
+function c9980254.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
+end
+function c9980254.thfilter2(c)
+	return c:IsCode(4064256) and c:IsAbleToHand()
+end
+function c9980254.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9980254.thfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+end
+function c9980254.thop2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tg=Duel.GetFirstMatchingCard(c9980254.thfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	if tg then
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
+	end
 end
 function c9980254.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttacker():GetControler()~=tp

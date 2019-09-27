@@ -40,7 +40,7 @@ function c9950012.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950012,0))
 end
 function c9950012.filter1(c)
-	return c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0xba1) and c:IsType(TYPE_MONSTER)
 end
 function c9950012.filter2(c)
 	return c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
@@ -49,13 +49,13 @@ function c9950012.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950012.filter1,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_DECK,0,1,nil)
 		and Duel.IsExistingMatchingCard(c9950012.filter2,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9950012.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,c9950012.filter1,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c9950012.filter1,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c9950012.filter2,tp,LOCATION_DECK,0,1,1,nil)

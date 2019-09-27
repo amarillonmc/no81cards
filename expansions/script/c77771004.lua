@@ -14,7 +14,7 @@ function c77771004.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-    e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_TO_HAND)
 	e2:SetCondition(c77771004.spcon)
 	e2:SetTarget(c77771004.sptg)
@@ -63,10 +63,12 @@ function c77771004.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0
 		and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(77771004,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg=g:Select(tp,1,3,nil)		
+		local sg=g:Select(tp,1,1,nil)	  
 		Duel.HintSelection(sg)
-		Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
-		Duel.ShuffleDeck(tp)
+		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
+		local tg=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_DECK)
+		if tg:IsExists(Card.IsControler,1,nil,tp) then Duel.ShuffleDeck(tp) end
+		if tg:IsExists(Card.IsControler,1,nil,1-tp) then Duel.ShuffleDeck(1-tp) end
 		Duel.BreakEffect()
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end

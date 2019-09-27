@@ -4,6 +4,7 @@ function c65010099.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
+	e1:SetCondition(c65010099.condition)
 	e1:SetOperation(c65010099.activate)
 	c:RegisterEffect(e1)
 	--act in hand
@@ -12,6 +13,9 @@ function c65010099.initial_effect(c)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(c65010099.handcon)
 	c:RegisterEffect(e2)
+end
+function c65010099.condition(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
 end
 function c65010099.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

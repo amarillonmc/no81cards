@@ -52,7 +52,7 @@ function c9981124.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c9981124.spfilter1(c,e,tp)
-	return c:IsSetCard(0x5bc3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x5bc3,0xabcc) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9981124.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -71,7 +71,7 @@ function c9981124.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function c9981124.spfilter(c,e,tp)
-	return c:IsSetCard(0x5bc3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x5bc3,0xabcc) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9981124.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

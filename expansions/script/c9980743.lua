@@ -50,7 +50,7 @@ function c9980743.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9980743.thfilter(c)
-	return c:IsSetCard(0xabcc) and c:IsType(TYPE_MONSTER)  and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsSetCard(0xabcc) and c:IsType(TYPE_MONSTER)  and c:IsAbleToHand()
 end
 function c9980743.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c9980743.thfilter(c) end

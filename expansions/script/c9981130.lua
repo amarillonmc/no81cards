@@ -131,6 +131,6 @@ function c9981130.hvcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function c9981130.hvop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SetLP(tp,math.ceil(Duel.GetLP(1-tp)/2))
+	Duel.SetLP(1-tp,math.ceil(Duel.GetLP(1-tp)/2))
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981130,1))
 end

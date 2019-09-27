@@ -90,12 +90,7 @@ function cm.lkop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 		local tc=Duel.GetFirstMatchingCard(cm.profilter,tp,LOCATION_EXTRA,0,nil,e,tp)
 		if not tc then return end
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then
-			Duel.SendtoGrave(tc,REASON_EFFECT)
-			tc:CompleteProcedure()
-		else
-			Duel.SpecialSummon(tc,SUMMON_TYPE_LINK,tp,tp,false,false,POS_FACEUP)
-			tc:CompleteProcedure()
-		end
+		Duel.SpecialSummon(tc,SUMMON_TYPE_LINK,tp,tp,false,false,POS_FACEUP)
+		tc:CompleteProcedure()
 	end
 end

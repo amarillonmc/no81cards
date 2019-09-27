@@ -43,7 +43,7 @@ function c9981119.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981119,0))
 end
 function c9981119.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5bc3) and c:GetCode()~=9981119
+	return c:IsFaceup() and c:IsSetCard(0x5bc3,0xabcc) and c:GetCode()~=9981119
 end
 function c9981119.spcon(e,c)
 	if c==nil then return true end
