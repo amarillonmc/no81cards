@@ -34,7 +34,7 @@ function c9981173.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981173,0))
 end
 function c9981173.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c9981173.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

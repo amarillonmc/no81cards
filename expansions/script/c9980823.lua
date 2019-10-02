@@ -8,14 +8,21 @@ function c9980823.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(aux.FALSE)
 	c:RegisterEffect(e1)
-	--special summon
+	--special summon rule
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e2:SetCondition(c9980823.spcon)
-	e2:SetOperation(c9980823.spop)
+	e2:SetCountLimit(1,9980823)
+	e2:SetCondition(c9980823.sprcon)
+	e2:SetTarget(c9980823.sprtg)
+	e2:SetOperation(c9980823.sprop)
+	c:RegisterEffect(e2)
+	--pierce
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_PIERCE)
 	c:RegisterEffect(e2)
 	--search
 	local e2=Effect.CreateEffect(c)
@@ -37,6 +44,21 @@ function c9980823.initial_effect(c)
 	e1:SetTarget(c9980823.eqtg)
 	e1:SetOperation(c9980823.eqop)
 	c:RegisterEffect(e1)
+	--attack thrice
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(4)
+	c:RegisterEffect(e3)
+	--indes
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e4:SetCondition(c9980823.indcon)
+	e4:SetValue(1)
+	c:RegisterEffect(e4)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -50,13 +72,35 @@ end
 function c9980823.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980823,2))
 end 
-function c9980823.spcon(e,c)
-	if c==nil then return true end
-	return Duel.CheckReleaseGroup(c:GetControler(),Card.IsCode,1,nil,9980823)
+function c9980823.indcon(e)
+	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
 end
-function c9980823.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectReleaseGroup(c:GetControler(),Card.IsCode,1,1,nil,9980823)
-	Duel.Release(g,REASON_COST)
+function c9980823.sprfilter(c)
+	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsSetCard(0x9bcd) and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0 and c:IsAbleToGraveAsCost()
+end
+function c9980823.fselect(g,tp)
+	return Duel.GetMZoneCount(tp,g)>0
+end
+function c9980823.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(c9980823.sprfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
+	return g:CheckSubGroup(c9980823.fselect,2,2,tp)
+end
+function c9980823.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(c9980823.sprfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local sg=g:SelectSubGroup(tp,c9980823.fselect,true,2,2,tp)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function c9980823.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.SendtoGrave(g,REASON_COST)
+	g:DeleteGroup()
 end
 function c9980823.thfilter(c)
 	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x9bcd) and c:IsAbleToHand()
@@ -103,6 +147,16 @@ function c9980823.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e2:SetValue(1000)
 		tc:RegisterEffect(e2)
+		local code=tc:GetCode()
+		local reset_flag=RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END
+		c:CopyEffect(code, reset_flag, 1)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(reset_flag)
+		e1:SetCode(EFFECT_CHANGE_CODE)
+		e1:SetValue(code)
+		c:RegisterEffect(e1)
 	end
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980823,3))
 end

@@ -30,6 +30,18 @@ function c9950036.initial_effect(c)
 	e2:SetTarget(c9950036.thtg)
 	e2:SetOperation(c9950036.thop)
 	c:RegisterEffect(e2)
+	--destroy
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(9950036,1))
+	e4:SetCategory(CATEGORY_DESTROY)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e4:SetCode(EVENT_PHASE+PHASE_END)
+	e4:SetRange(LOCATION_FZONE)
+	e4:SetCountLimit(1)
+	e4:SetCondition(c9950036.descon)
+	e4:SetTarget(c9950036.destg)
+	e4:SetOperation(c9950036.desop)
+	c:RegisterEffect(e4)
 end
 function c9950036.desfilter(c)
 	return c:IsFaceup() and (c:IsLevelBelow(8) or c:IsRankBelow(8) or c:IsLinkBelow(2))
@@ -127,5 +139,17 @@ function c9950036.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg)
 		end
+	end
+end
+function c9950036.descon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
+end
+function c9950036.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
+end
+function c9950036.desop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsRelateToEffect(e) then
+		Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 	end
 end

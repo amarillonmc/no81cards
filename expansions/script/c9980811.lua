@@ -1,5 +1,14 @@
 --假面骑士部·Fourze-基本状态
 function c9980811.initial_effect(c)
+   --special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,9980811)
+	e1:SetCondition(c9980811.hspcon)
+	c:RegisterEffect(e1)
 	 --spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9980811,0))
@@ -33,6 +42,11 @@ function c9980811.initial_effect(c)
 end
 function c9980811.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980811,2))
+end
+function c9980811.hspcon(e,c)
+	if c==nil then return true end
+	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0
+		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c9980811.spfilter(c,e,tp)
 	return c:IsSetCard(0xcbc1) and not c:IsCode(9980811) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

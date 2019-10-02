@@ -1,6 +1,16 @@
 --自由佣兵的最强传说·蕾蒂
 function c9950038.initial_effect(c)
 	c:EnableReviveLimit()
+	--
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9950038,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RELEASE)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCountLimit(1,9950038)
+	e1:SetTarget(c9950038.tg1)
+	e1:SetOperation(c9950038.op1)
+	c:RegisterEffect(e1)
 	--attribute
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -19,15 +29,6 @@ function c9950038.initial_effect(c)
 	e1:SetCountLimit(1)
 	e1:SetTarget(c9950038.target)
 	e1:SetOperation(c9950038.operation)
-	c:RegisterEffect(e1)
-	--destroy
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9950038,1))
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DAMAGE)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_BATTLE_START)
-	e1:SetTarget(c9950038.destg)
-	e1:SetOperation(c9950038.desop)
 	c:RegisterEffect(e1)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -79,26 +80,6 @@ end
 function c9950038.efilter(e,re)
 	return e:GetHandler()~=re:GetOwner() and re:IsAttribute(ATTRIBUTE_WATER)
 end
-function c9950038.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local tc=Duel.GetAttacker()
-	if tc==c then tc=Duel.GetAttackTarget() end
-	if chk==0 then return tc and tc:IsFaceup() and tc:IsAttribute(ATTRIBUTE_WATER) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,tc,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,tc:GetAttack())
-end
-function c9950038.desop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetAttacker()
-	if tc==c then tc=Duel.GetAttackTarget() end
-	if tc:IsRelateToBattle() and tc:IsAttribute(ATTRIBUTE_WATER) then
-		local atk=tc:GetAttack()
-		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 then
-			Duel.Damage(1-tp,atk,REASON_EFFECT)
-			Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950038,3))
-		end
-	end
-end
 function c9950038.chcon(e,tp,eg,ep,ev,re,r,rp)
 	local d=Duel.GetAttackTarget()
 	return d:IsFaceup() and d:IsControler(tp) and d:IsSetCard(0xba1,0xba3)
@@ -133,5 +114,52 @@ function c9950038.chop(e,tp,eg,ep,ev,re,r,rp)
 		local e3=e2:Clone()
 		a:RegisterEffect(e3)
 		Duel.CalculateDamage(a,tc)
+	end
+end
+function c9950038.tfilter1(c,tp,mg,rc)
+	if c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5 then
+		Duel.SetSelectedCard(c)
+		return mg:CheckWithSumGreater(Card.GetRitualLevel,4,rc)
+	else return false end
+end
+function c9950038.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then
+		local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsCanBeRitualMaterial,c,c)
+		local ft=Duel.GetMZoneCount(tp)
+		if not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
+		if ft>0 then
+			return mg:CheckWithSumGreater(Card.GetRitualLevel,4,c)
+		else
+			return mg:IsExists(c9950038.tfilter1,1,nil,tp,mg,c)
+		end
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+end
+function c9950038.op1(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetHandler()
+	local mg=Duel.GetRitualMaterial(tp)
+	local ft=Duel.GetMZoneCount(tp)
+	if tc then
+		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
+		local mat=nil
+		if ft>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			mat=mg:SelectWithSumGreater(tp,Card.GetRitualLevel,10,tc)
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			mat=mg:FilterSelect(tp,c9950038.tfilter1,1,1,nil,tp,mg,tc)
+			Duel.SetSelectedCard(mat)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			local mat2=mg:SelectWithSumGreater(tp,Card.GetRitualLevel,10,tc)
+			mat:Merge(mat2)
+		end
+		tc:SetMaterial(mat)
+		Duel.ReleaseRitualMaterial(mat)
+		e:SetLabel(mat:GetCount())
+		if not tc:IsRelateToEffect(e) then return end
+		Duel.BreakEffect()
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+		tc:CompleteProcedure()
 	end
 end

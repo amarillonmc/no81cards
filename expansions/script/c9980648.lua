@@ -83,6 +83,16 @@ function c9980648.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e2:SetValue(500)
 		tc:RegisterEffect(e2)
+		local code=tc:GetCode()
+		local reset_flag=RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END
+		c:CopyEffect(code, reset_flag, 1)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(reset_flag)
+		e1:SetCode(EFFECT_CHANGE_CODE)
+		e1:SetValue(code)
+		c:RegisterEffect(e1)
 	end
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980648,4))
 end

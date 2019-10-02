@@ -74,7 +74,7 @@ function c9981186.cfilter2(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c9981186.filter(c,e,tp,lv)
-	return c:IsSetCard(0xbca) and c:IsType(TYPE_NORMAL) and c:IsLevelBelow(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xbca) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9981186.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

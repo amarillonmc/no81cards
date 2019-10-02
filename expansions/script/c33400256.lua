@@ -41,11 +41,13 @@ function c33400256.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(g4,nil,REASON_EFFECT)
 	end
 	if tc:IsCode(ac) then 
-	   if Duel.SelectYesNo(tp,aux.Stringid(33400256,0)) and Duel.IsExistingTarget(c33400256.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) then 
+	   if  Duel.IsExistingTarget(c33400256.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) then 
+		   if Duel.SelectYesNo(tp,aux.Stringid(33400256,0)) then
 		   local tc1=Duel.SelectTarget(tp,c33400256.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 		   local tc2=tc1:GetFirst()
 		   Duel.SpecialSummonStep(tc2,0,tp,tp,false,false,POS_FACEUP)
 		   Duel.SpecialSummonComplete()
+		   end
 	   end
 	   if tc:IsSetCard(0x341) and Duel.SelectYesNo(tp,aux.Stringid(33400256,1))then 
 		Duel.SendtoGrave(tc,REASON_EFFECT)
