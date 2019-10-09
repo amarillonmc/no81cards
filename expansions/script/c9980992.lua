@@ -61,7 +61,7 @@ function c9980992.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980992,1))
 end
 function c9980992.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3bc3) and c:IsType(TYPE_XYZ) and c:IsRank(6)
+	return c:IsFaceup() and c:IsSetCard(0x3bc3) and c:IsType(TYPE_XYZ) and c:IsRank(8)
 end
 function c9980992.val(e,c)
 	return Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_MZONE)*500

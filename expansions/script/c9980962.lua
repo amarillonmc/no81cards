@@ -84,41 +84,6 @@ function c9980962.spop(e,tp,eg,ep,ev,re,r,rp)
 	if ct>0 and (ct==1 or not Duel.IsPlayerAffectedByEffect(tp,59822133)) then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
-	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTarget(c9980962.splimit)
-	Duel.RegisterEffect(e1,tp)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL+EFFECT_CANNOT_BE_LINK_MATERIAL)
-	e2:SetTargetRange(0x7f,0x7f)
-	e2:SetTarget(c9980962.splimtg_target)
-	e2:SetValue(c9980962.splimtg_value)
-	e2:SetOwnerPlayer(tp)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(9980962)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetTargetRange(1,0)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
-end
-function c9980962.splimtg_target(e,c)
-	return not c:IsSetCard(0x3bc3)
-end
-function c9980962.splimtg_value(e,c)
-	if not c then return false end
-	return c:GetControler()==e:GetOwnerPlayer()
-end
-function c9980962.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return sumtype~=SUMMON_TYPE_XYZ+SUMMON_TYPE_LINK
 end
 function c9980962.rfilter(c,tp)
 	local lv=c:GetLevel()

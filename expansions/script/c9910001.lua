@@ -1,71 +1,106 @@
---翱翔之折纸使
+--我我我我我少女
 function c9910001.initial_effect(c)
-	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
-	c:EnableReviveLimit()
-	--battle indes
+	--spsummon
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCountLimit(1,9910001)
+	e1:SetTarget(c9910001.sptg)
+	e1:SetOperation(c9910001.spop)
+	c:RegisterEffect(e1)
+	--atkup
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9910001,1))
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetCountLimit(1,99100010)
+	e2:SetCondition(c9910001.atkcon)
+	e2:SetTarget(c9910001.atktg)
+	e2:SetOperation(c9910001.atkop)
+	c:RegisterEffect(e2)
+	--effect gain
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_BE_MATERIAL)
+	e2:SetCondition(c9910001.efcon)
+	e2:SetOperation(c9910001.efop)
+	c:RegisterEffect(e2)
+end
+function c9910001.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x54) and c:IsLevelAbove(1) 
+end
+function c9910001.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910001.cfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910001.cfilter,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
+		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,c9910001.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c9910001.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
+	if c:IsRelateToEffect(e) then
+		if Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_LEVEL)
+			e1:SetValue(tc:GetLevel())
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+			c:RegisterEffect(e1)
+			Duel.SpecialSummonComplete()
+		end
+	end
+end
+function c9910001.efcon(e,tp,eg,ep,ev,re,r,rp)
+	return r==REASON_XYZ
+end
+function c9910001.efop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local rc=c:GetReasonCard()
+	local e1=Effect.CreateEffect(rc)
+	e1:SetDescription(aux.Stringid(9910001,1))
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e1:SetCondition(c9910001.condtion)
 	e1:SetValue(1)
-	c:RegisterEffect(e1)
-	--immune
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_IMMUNE_EFFECT)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c9910001.condtion)
-	e2:SetValue(c9910001.efilter)
-	c:RegisterEffect(e2)
-	--to hand
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9910001,0))
-	e3:SetCategory(CATEGORY_TOHAND)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,9910001)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCondition(c9910001.thcon)
-	e3:SetOperation(c9910001.thop)
-	c:RegisterEffect(e3)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	rc:RegisterEffect(e1,true)
+	if not rc:IsType(TYPE_EFFECT) then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_ADD_TYPE)
+		e2:SetValue(TYPE_EFFECT)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		rc:RegisterEffect(e2,true)
+	end
 end
-function c9910001.mfilter(c)
-	return not c:IsType(TYPE_PENDULUM)
-end
-function c9910001.condtion(e)
+function c9910001.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local mg=c:GetMaterial()
-	return c:IsSummonType(SUMMON_TYPE_SYNCHRO) and mg:GetCount()>0 and not mg:IsExists(c9910001.mfilter,1,nil)
+	return c:IsReason(REASON_COST) and re:IsHasType(0x7e0) and re:IsActiveType(TYPE_MONSTER)
+		and c:IsPreviousLocation(LOCATION_OVERLAY)
 end
-function c9910001.efilter(e,te)
-	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:IsActiveType(TYPE_MONSTER)
+function c9910001.thfilter(c)
+	return c:IsSetCard(0x54) and c:IsLevel(4) and c:IsAbleToHand()
 end
-function c9910001.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0
+function c9910001.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+   if chk==0 then return Duel.IsExistingMatchingCard(c9910001.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c9910001.thfilter(c,g)
-	return c:IsAbleToHand() and g:IsContains(c)
-end
-function c9910001.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or c:IsControler(1-tp) or c:IsImmuneToEffect(e) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-	local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
-	local nseq=math.log(s,2)
-	Duel.MoveSequence(c,nseq)
-	local tg=c:GetColumnGroup()
-	tg:AddCard(c)
-	local g=Duel.GetMatchingGroup(c9910001.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tg)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910001,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.BreakEffect()
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+function c9910001.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9910001.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end

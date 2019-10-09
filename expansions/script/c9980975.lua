@@ -78,7 +78,7 @@ function c9980975.defval(e,c)
 	return g:GetSum(Card.GetRank)*300
 end
 function c9980975.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3bc3) and c:IsType(TYPE_XYZ) and c:IsRank(8)
+	return c:IsFaceup() and c:IsSetCard(0x3bc3) and c:IsType(TYPE_XYZ) and c:IsRank(11)
 end
 function c9980975.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

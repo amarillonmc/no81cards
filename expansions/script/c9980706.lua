@@ -101,7 +101,6 @@ function c9980706.atkop2(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 		e1:SetValue(0)
 		tc:RegisterEffect(e1)
-		if c:IsRelateToEffect(e) and c:IsFaceup() then
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -110,7 +109,6 @@ function c9980706.atkop2(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetValue(atk)
 			c:RegisterEffect(e2)
 		end
-	end
 end
 function c9980706.cfilter(c,tp)
 	return c:IsCode(9980706) and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)

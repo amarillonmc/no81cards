@@ -66,7 +66,7 @@ function c9980968.cfilter(c)
 	return c:IsSetCard(0x95) and c:IsType(TYPE_SPELL) and c:IsDiscardable()
 end
 function c9980968.ovfilter(c)
-	return c:IsFaceup() and c:IsRankBelow(4) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsSetCard(0x3bc3) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and c:IsRankBelow(8)  and c:IsSetCard(0x3bc3) and c:IsType(TYPE_XYZ)
 end
 function c9980968.xyzop(e,tp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9980968.cfilter,tp,LOCATION_HAND,0,1,nil) end

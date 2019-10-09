@@ -91,6 +91,15 @@ function c9950041.initial_effect(c)
 	local e9=e8:Clone()
 	e9:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e9)
+	--Attach
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9950041,1))
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_BATTLE_DESTROYING)
+	e2:SetCondition(c9950041.xyzcon)
+	e2:SetTarget(c9950041.xyztg)
+	e2:SetOperation(c9950041.xyzop)
+	c:RegisterEffect(e2)
 end
 function c9950041.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950041,2))
@@ -142,4 +151,24 @@ function c9950041.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9950041.rmfilter,tp,0,LOCATION_ONFIELD,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950041,2))
+end
+function c9950041.xyzcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=c:GetBattleTarget()
+	if not c:IsRelateToBattle() or c:IsFacedown() then return false end
+	e:SetLabelObject(tc)
+	return tc:IsLocation(LOCATION_GRAVE) and tc:IsType(TYPE_MONSTER) and tc:IsReason(REASON_BATTLE)
+end
+function c9950041.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) end
+	local tc=e:GetLabelObject()
+	Duel.SetTargetCard(tc)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,tc,1,0,0)
+end
+function c9950041.xyzop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) then
+		Duel.Overlay(c,tc)
+	end
 end

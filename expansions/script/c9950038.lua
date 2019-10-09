@@ -78,7 +78,7 @@ function c9950038.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950038,3))
 end
 function c9950038.efilter(e,re)
-	return e:GetHandler()~=re:GetOwner() and re:IsAttribute(ATTRIBUTE_WATER)
+	return e:GetHandler()~=re:GetOwner() and c:IsAttribute(ATTRIBUTE_WATER)
 end
 function c9950038.chcon(e,tp,eg,ep,ev,re,r,rp)
 	local d=Duel.GetAttackTarget()
@@ -119,7 +119,7 @@ end
 function c9950038.tfilter1(c,tp,mg,rc)
 	if c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5 then
 		Duel.SetSelectedCard(c)
-		return mg:CheckWithSumGreater(Card.GetRitualLevel,4,rc)
+		return mg:CheckWithSumGreater(Card.GetRitualLevel,10,rc)
 	else return false end
 end
 function c9950038.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -129,7 +129,7 @@ function c9950038.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 		local ft=Duel.GetMZoneCount(tp)
 		if not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
 		if ft>0 then
-			return mg:CheckWithSumGreater(Card.GetRitualLevel,4,c)
+			return mg:CheckWithSumGreater(Card.GetRitualLevel,10,c)
 		else
 			return mg:IsExists(c9950038.tfilter1,1,nil,tp,mg,c)
 		end

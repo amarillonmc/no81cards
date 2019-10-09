@@ -21,6 +21,14 @@ function c9950010.initial_effect(c)
 	e1:SetTarget(c9950010.target)
 	e1:SetOperation(c9950010.operation)
 	c:RegisterEffect(e1)
+	--destroy replace
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EFFECT_DESTROY_REPLACE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTarget(c9950010.reptg)
+	c:RegisterEffect(e2)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -74,4 +82,12 @@ function c9950010.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9950010.climit(e,lp,tp)
 	return lp==tp or not e:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function c9950010.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE) and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
+	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
+		c:RemoveOverlayCard(tp,1,1,REASON_EFFECT)
+		return true
+	else return false end
 end

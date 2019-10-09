@@ -8,6 +8,12 @@ function c9980703.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e3:SetValue(9980706)
 	c:RegisterEffect(e3)
+	--extra summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetOperation(c9980703.sumop)
+	c:RegisterEffect(e1)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9980703,0))
@@ -46,6 +52,19 @@ c9980703.card_code_list={9980706}
 function c9980703.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980703,0))
 end
+function c9980703.sumop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,9980703)~=0 then return end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(9980703,0))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3bc1))
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	Duel.RegisterFlagEffect(tp,9980703,RESET_PHASE+PHASE_END,0,1)
+end
+
 function c9980703.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

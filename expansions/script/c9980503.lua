@@ -32,6 +32,16 @@ function c9980503.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_PIERCE)
 	c:RegisterEffect(e2)
+	 --search
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9980503,3))
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,9980503)
+	e1:SetTarget(c9980503.stg)
+	e1:SetOperation(c9980503.sop)
+	c:RegisterEffect(e1)
 	--attack thrice
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9980503,0))
@@ -131,5 +141,20 @@ function c9980503.penop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	end
+end
+function c9980503.sfilter(c)
+	return c:IsCode(9980512) and c:IsAbleToHand()
+end
+function c9980503.stg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
+end
+function c9980503.sop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9980503.sfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end

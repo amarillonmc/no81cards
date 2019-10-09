@@ -40,7 +40,7 @@ function c9950042.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950042,0))
 end
 function c9950042.filter1(c)
-	return c:IsSetCard(0xba1) and c:IsType(TYPE_MONSTER)
+	return c:IsRace(RACE_ZOMBIE)
 end
 function c9950042.filter2(c)
 	return c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()

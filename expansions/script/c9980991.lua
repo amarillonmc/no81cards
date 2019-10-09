@@ -57,7 +57,7 @@ function c9980991.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980991,1))
 end
 function c9980991.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3bc3) and c:IsType(TYPE_XYZ) and c:IsRank(6)
+	return c:IsFaceup() and c:IsSetCard(0x3bc3) and c:IsType(TYPE_XYZ) and c:IsRank(8)
 end
 function c9980991.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and chkc:IsFaceup() end
