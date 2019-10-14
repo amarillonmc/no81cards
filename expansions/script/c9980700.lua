@@ -33,13 +33,13 @@ function c9980700.initial_effect(c)
 	e2:SetOperation(c9980700.seqop)
 	c:RegisterEffect(e2)
 end
-function c9980700.filter(c)
+function c9980700.filter2(c)
 	return c:IsFaceup() and c:IsSetCard(0xbc8) and c:GetCode()~=9980700
 end
 function c9980700.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and
-		Duel.IsExistingMatchingCard(c9980700.filter,c:GetControler(),LOCATION_MZONE,0,1,nil)
+		Duel.IsExistingMatchingCard(c9980700.filter2,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
 function c9980700.condition(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
