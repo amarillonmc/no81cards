@@ -18,7 +18,7 @@ function c9910031.initial_effect(c)
 	e2:SetDescription(aux.Stringid(9910031,4))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_CUSTOM+12289247)
+	e2:SetCode(EVENT_CUSTOM+9910031)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCondition(c9910031.spcon)
@@ -33,6 +33,16 @@ function c9910031.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetValue(ATTRIBUTE_DARK)
 	c:RegisterEffect(e3)
+	if not c9910031.global_check then
+		c9910031.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_DESTROYED)
+		ge1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+		ge1:SetCondition(c9910031.regcon)
+		ge1:SetOperation(c9910031.regop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
 function c9910031.rpcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
@@ -68,8 +78,23 @@ function c9910031.rpop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
+function c9910031.spcfilter(c,tp)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT)
+		and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_ONFIELD)
+end
+function c9910031.regcon(e,tp,eg,ep,ev,re,r,rp)
+	local v=0
+	if eg:IsExists(c9910031.spcfilter,1,nil,tp) then v=v+1 end
+	if eg:IsExists(c9910031.spcfilter,1,nil,1-tp) then v=v+2 end
+	if v==0 then return false end
+	e:SetLabel(v)
+	return true
+end
+function c9910031.regop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+9910031,re,r,rp,ep,e:GetLabel())
+end
 function c9910031.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return ev==tp or ev==PLAYER_ALL
+	return ev==1 or ev==3
 end
 function c9910031.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

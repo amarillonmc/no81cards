@@ -1,30 +1,30 @@
---战车道少女·铃木贵子
-function c9910115.initial_effect(c)
+--战车道少女·松本里子
+function c9910123.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,9910115)
-	e1:SetCost(c9910115.spcost)
-	e1:SetTarget(c9910115.sptg)
-	e1:SetOperation(c9910115.spop)
+	e1:SetCountLimit(1,9910123)
+	e1:SetCost(c9910123.spcost)
+	e1:SetTarget(c9910123.sptg)
+	e1:SetOperation(c9910123.spop)
 	c:RegisterEffect(e1)
-	--atkup
+	--draw
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910115,1))
-	e2:SetCategory(CATEGORY_ATKCHANGE)
+	e2:SetDescription(aux.Stringid(9910123,1))
+	e2:SetCategory(CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_BATTLE_DAMAGE)
-	e2:SetCondition(c9910115.atkcon)
-	e2:SetTarget(c9910115.atktg)
-	e2:SetOperation(c9910115.atkop)
+	e2:SetCondition(c9910123.drcon)
+	e2:SetTarget(c9910123.drtg)
+	e2:SetOperation(c9910123.drop)
 	c:RegisterEffect(e2)
 end
-function c9910115.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910123.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
-function c9910115.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910123.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -32,10 +32,10 @@ function c9910115.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and c:IsAbleToDeck() end
 end
-function c9910115.tgfilter(c)
-	return c:IsFaceup() and c:IsAbleToGrave()
+function c9910123.tgfilter(c)
+	return c:IsFacedown() and c:IsAbleToGrave()
 end
-function c9910115.spop(e,tp,eg,ep,ev,re,r,rp)
+function c9910123.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
 	Duel.ConfirmDecktop(tp,1)
@@ -57,8 +57,8 @@ function c9910115.spop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		if not c:IsRelateToEffect(e) then return end
 		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
-		local g=Duel.GetMatchingGroup(c9910115.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910115,0)) then
+		local g=Duel.GetMatchingGroup(c9910123.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910123,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.BreakEffect()
@@ -66,24 +66,20 @@ function c9910115.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c9910115.atkcon(e,tp,eg,ep,ev,re,r,rp)
+function c9910123.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp
 end
-function c9910115.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetOverlayCount(tp,1,1)>1 end
+function c9910123.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_EFFECT) and Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-function c9910115.atkop(e,tp,eg,ep,ev,re,r,rp)
+function c9910123.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) and c:RemoveOverlayCard(tp,1,1,REASON_EFFECT) then
-		local ct=Duel.GetOverlayCount(tp,1,1)
-		if ct>0 then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(ct*300)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-			c:RegisterEffect(e1)
-		end
+	if c:IsRelateToEffect(e) and c:RemoveOverlayCard(tp,1,1,REASON_EFFECT) then
+		Duel.Draw(p,d,REASON_EFFECT)
 	end
 end

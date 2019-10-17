@@ -57,6 +57,7 @@ end
 function c9910117.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0
 		and Duel.IsExistingMatchingCard(c9910117.cfilter,tp,0,LOCATION_ONFIELD,1,nil,tp) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c9910117.gyfilter(c,g)
 	return g:IsContains(c)

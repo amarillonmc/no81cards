@@ -41,20 +41,20 @@ function c9910024.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_PHASE+PHASE_END)
 			e1:SetReset(RESET_PHASE+PHASE_END)
-			e1:SetLabel(fid*9910024+lab)
+			e1:SetLabel(fid)
 			e1:SetLabelObject(tc)
 			e1:SetCountLimit(1)
 			e1:SetCondition(c9910024.retcon)
 			e1:SetOperation(c9910024.retop)
 			Duel.RegisterEffect(e1,tp)
 			tc:RegisterFlagEffect(9910024,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
+			tc:RegisterFlagEffect(9910035,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,lab)
 		end
 	end
 end
 function c9910024.retcon(e,tp,eg,ep,ev,re,r,rp)
-	local fid,tmp2=math.modf(e:GetLabel()/9910024)
 	local tc=e:GetLabelObject()
-	if tc:GetFlagEffectLabel(9910024)==fid then
+	if tc:GetFlagEffectLabel(9910024)==e:GetLabel() then
 		return true
 	else
 		e:Reset()
@@ -62,8 +62,8 @@ function c9910024.retcon(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910024.retop(e,tp,eg,ep,ev,re,r,rp)
-	local lab=e:GetLabel()%9910024
 	local tc=e:GetLabelObject()
+	local lab=tc:GetFlagEffectLabel(9910035)
 	if lab==LOCATION_MZONE then
 		Duel.ReturnToField(tc)
 	end

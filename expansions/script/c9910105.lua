@@ -32,6 +32,7 @@ function c9910105.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		and (Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
 		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9910105.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp))) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c9910105.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

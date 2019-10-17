@@ -33,7 +33,7 @@ function c9980652.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c9980652.thfilter(c)
-	return c:IsCode(9980637,9980636) and c:IsAbleToHand()
+	return c:IsSetCard(0x9bcd) and c:IsLevelAbove(9) and c:IsAbleToHand()
 end
 function c9980652.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end

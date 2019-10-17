@@ -46,6 +46,7 @@ function c9910112.imtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910112.ctfilter(chkc,tp) and chkc~=e:GetHandler() end
 	if chk==0 then return Duel.IsExistingTarget(c9910112.ctfilter,tp,LOCATION_MZONE,0,1,c,tp) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c9910112.ctfilter,tp,LOCATION_MZONE,0,1,1,c,tp)
 end

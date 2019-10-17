@@ -29,7 +29,7 @@ function Zcd.XyzCondition(f,lv,minc,maxc,alterf,desc,op)
 				end
 				if (not min or min<=1) and mg:IsExists(Zcd.XyzAlterFilter,minc,nil,alterf,c,e,tp,op) then
 					local ssg=mg:Filter(Zcd.XyzAlterFilter,nil,alterf,c,e,tp,op)
-					if ssg:IsExists(Zcd.MFilter,1,nil) then return true end
+					if ssg:IsExists(Zcd.MFilter,1,nil,c,tp) then return true end
 				end
 				local minc=minc
 				local maxc=maxc
@@ -65,13 +65,13 @@ function Zcd.XyzTarget(f,lv,minc,maxc,alterf,desc,op)
 				local ssg=nil
 				if (not min or min<=1) and mg:IsExists(Zcd.XyzAlterFilter,minc,nil,alterf,c,e,tp,op) then
 					ssg=mg:Filter(Zcd.XyzAlterFilter,nil,alterf,c,e,tp,op)
-					b2=ssg:IsExists(Zcd.MFilter,1,nil)
+					b2=ssg:IsExists(Zcd.MFilter,1,nil,c,tp)
 				end
 				local g=nil
 				if b2 and (not b1 or Duel.SelectYesNo(tp,desc)) then
 					e:SetLabel(1)
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-					g=ssg:FilterSelect(tp,Zcd.MFilter,1,1,nil)
+					g=ssg:FilterSelect(tp,Zcd.MFilter,1,1,nil,c,tp)
 					local tc=g:GetFirst()
 					mg:RemoveCard(tc)
 					local g2=mg:FilterSelect(tp,Zcd.XyzAlterFilter,minc-1,maxc-1,nil,alterf,c,e,tp,op)
@@ -120,9 +120,9 @@ end
 function Zcd.XyzAlterFilter(c,alterf,xyzc,e,tp,op)
 	return alterf(c)
 		and (c:IsCanBeXyzMaterial(xyzc) or ((bit.band(c:GetOriginalType(),TYPE_SPELL)~=0 or bit.band(c:GetOriginalType(),TYPE_TRAP)~=0) and not c:IsType(TYPE_MONSTER)))
-		and Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0
 		and Auxiliary.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and (not op or op(e,tp,0,c))
 end
-function Zcd.MFilter(c)
+function Zcd.MFilter(c,xyzc,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x952)
+		and Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0
 end

@@ -36,7 +36,6 @@ function c9980663.initial_effect(c)
 	e2:SetDescription(aux.Stringid(9980663,0))
 	e2:SetCountLimit(1,99806630)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCost(c9980663.descost)
 	e2:SetTarget(c9980663.destg)
 	e2:SetOperation(c9980663.desop)
 	c:RegisterEffect(e2)
@@ -61,16 +60,6 @@ function c9980663.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
-end
-function c9980663.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetActivityCount(tp,ACTIVITY_BATTLE_PHASE)==0 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_BP)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 end
 function c9980663.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) end

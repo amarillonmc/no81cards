@@ -14,12 +14,6 @@ function c9981192.initial_effect(c)
 	e1:SetTarget(c9981192.thtg)
 	e1:SetOperation(c9981192.thop)
 	c:RegisterEffect(e1)
-	--spsummon
-	local e3=aux.AddRitualProcEqual2(c,c9981192.ritual_filter,LOCATION_HAND+LOCATION_DECK,nil,c9981192.mfilter1,c9981192.mfilter2)
-	e3:SetDescription(aux.Stringid(9981192,1))
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetCountLimit(1)
-	e3:SetRange(LOCATION_MZONE)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9981192,2))
@@ -30,11 +24,16 @@ function c9981192.initial_effect(c)
 	e1:SetTarget(c9981192.destg)
 	e1:SetOperation(c9981192.desop)
 	c:RegisterEffect(e1)
-	--ritual material
+	--tohand
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_EXTRA_RITUAL_MATERIAL)
-	e3:SetValue(c9981192.mtval)
+	e3:SetDescription(aux.Stringid(9981192,1))
+	e3:SetCategory(CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetRange(LOCATION_HAND)
+	e3:SetCost(c9981192.thcost)
+	e3:SetTarget(c9981192.thtg2)
+	e3:SetOperation(c9981192.thop2)
 	c:RegisterEffect(e3)
 	--damage
 	local e1=Effect.CreateEffect(c)
@@ -81,18 +80,6 @@ function c9981192.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c9981192.ritual_filter(c)
-	return c:IsType(TYPE_RITUAL) and c:IsSetCard(0x5bc2,0x9bcd)
-end
-function c9981192.mfilter1(c)
-	return c:IsSetCard(0x5bc2,0x9bcd)
-end
-function c9981192.mfilter2(c,e,tp)
-	return c~=e:GetHandler()
-end
-function c9981192.mtval(e,c)
-	return c:IsSetCard(0x5bc2,0x9bcd)
-end
 function c9981192.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end
 	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
@@ -116,4 +103,24 @@ function c9981192.operation(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981192,4))
+end
+function c9981192.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsDiscardable() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
+end
+function c9981192.thfilter2(c)
+	return c:IsSetCard(0x5bc2,0x9bcd) and not c:IsCode(9981192) and c:IsAbleToHand()
+end
+function c9981192.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9981192.thfilter2(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9981192.thfilter2,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectTarget(tp,c9981192.thfilter2,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+end
+function c9981192.thop2(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	end
 end

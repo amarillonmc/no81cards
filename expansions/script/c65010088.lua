@@ -34,7 +34,8 @@ function c65010088.refil(c)
 	return c:IsAbleToRemoveAsCost() and c:IsSetCard(0x9da0)
 end
 function c65010088.sumcon(e,c)
-	local tp=e:GetHandler():GetControler()
+	if c==nil then return true end
+	local tp=c:GetControler()
 	return Duel.IsExistingMatchingCard(c65010088.refil,tp,LOCATION_EXTRA,0,1,nil)
 end
 function c65010088.sumop(e,tp,eg,ep,ev,re,r,rp,c)

@@ -19,6 +19,7 @@ function c9910108.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetLabelObject(c)
 	e2:SetCost(c9910108.descost)
 	e2:SetTarget(c9910108.destg)
 	e2:SetOperation(c9910108.desop)
@@ -32,10 +33,12 @@ function c9910108.spfilter(c,e,tp)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910108.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and e:GetHandler():IsAbleToDeck()
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and c:IsAbleToDeck()
 		and Duel.IsExistingMatchingCard(c9910108.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 end
 function c9910108.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -45,8 +48,8 @@ function c9910108.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
 	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		if not tc:IsForbidden() then
+		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
+			and not tc:IsForbidden() then
 			Duel.DisableShuffleCheck()
 			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local e1=Effect.CreateEffect(c)
@@ -65,13 +68,26 @@ function c9910108.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 		Duel.ShuffleDeck(tp)
+		if not c:IsRelateToEffect(e) then return end
 		Duel.BreakEffect()
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end
 function c9910108.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	local c=e:GetLabelObject()
+	local g=e:GetHandler():GetOverlayGroup()
+	if not g:IsContains(c) then return false end
+	g:RemoveCard(c)
+	if g:GetCount()==0 or (g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910108,1))) then
+		Duel.SendtoGrave(c,REASON_COST)
+	elseif Duel.SelectYesNo(tp,aux.Stringid(9910108,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
+		local tg=g:Select(tp,1,1,nil)
+		if tg:GetCount()>0 then
+			Duel.SendtoGrave(tg,REASON_COST)
+		end
+	else e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST) end
 end
 function c9910108.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsFaceup() end

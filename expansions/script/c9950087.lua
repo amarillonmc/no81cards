@@ -24,19 +24,6 @@ function c9950087.initial_effect(c)
 	e1:SetTarget(c9950087.thtg)
 	e1:SetOperation(c9950087.thop)
 	c:RegisterEffect(e1)
-	--copy
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9950087,3))
-	e2:SetCategory(CATEGORY_REMOVE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetTarget(c9950087.target)
-	e2:SetOperation(c9950087.operation)
-	c:RegisterEffect(e2)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -68,39 +55,5 @@ function c9950087.thop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-	end
-end
-function c9950087.cpfilter(c)
-	return c:IsSetCard(0x3ba5) and c:IsType(TYPE_XYZ) and c:IsAbleToRemove()
-end
-function c9950087.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:GetLocation()==LOCATION_GRAVE+LOCATION_EXTRA and c9950087.cpfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9950087.cpfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,c9950087.cpfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,PLAYER_ALL,LOCATION_GRAVE+LOCATION_EXTRA)
-end
-function c9950087.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) then
-		if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=1 then return end
-		local code=tc:GetCode()
-		local reset_flag=RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END
-		c:CopyEffect(code, reset_flag, 1)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(reset_flag)
-		e1:SetCode(EFFECT_CHANGE_CODE)
-		e1:SetValue(code)
-		c:RegisterEffect(e1)
-	local e1=Effect.CreateEffect(c)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	e1:SetValue(1000)
-	c:RegisterEffect(e1)
 	end
 end

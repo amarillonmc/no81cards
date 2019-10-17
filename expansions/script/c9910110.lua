@@ -31,6 +31,7 @@ function c9910110.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and c:IsAbleToDeck()
 		and Duel.IsExistingMatchingCard(c9910110.tgfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -42,8 +43,8 @@ function c9910110.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
 	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		if not tc:IsForbidden() then
+		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
+			and not tc:IsForbidden() then
 			Duel.DisableShuffleCheck()
 			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local e1=Effect.CreateEffect(c)
@@ -62,6 +63,7 @@ function c9910110.spop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:GetFirst()
 		if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
 			Duel.ShuffleDeck(tp)
+			if not c:IsRelateToEffect(e) then return end
 			Duel.BreakEffect()
 			Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 		end
@@ -79,6 +81,7 @@ function c9910110.xmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910110.xmfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910110.xmfilter,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_GRAVE,0,1,nil,0x952) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,c9910110.xmfilter,tp,LOCATION_MZONE,0,1,1,nil)
 end

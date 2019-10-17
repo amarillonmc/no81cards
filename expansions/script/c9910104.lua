@@ -28,10 +28,12 @@ function c9910104.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
 function c9910104.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and e:GetHandler():IsAbleToDeck() end
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and c:IsAbleToDeck() end
 end
 function c9910104.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -40,8 +42,8 @@ function c9910104.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
 	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		if not tc:IsForbidden() then
+		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
+			and not tc:IsForbidden() then
 			Duel.DisableShuffleCheck()
 			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local e1=Effect.CreateEffect(c)
@@ -54,6 +56,7 @@ function c9910104.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	else
 		Duel.Recover(tp,1000,REASON_EFFECT)
+		if not c:IsRelateToEffect(e) then return end
 		Duel.BreakEffect()
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
@@ -68,6 +71,7 @@ end
 function c9910104.postg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(c9910104.posfilter,1,nil,nil,tp) end
 	Duel.SetTargetCard(eg)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,eg,eg:GetCount(),0,0)
 end
 function c9910104.posop(e,tp,eg,ep,ev,re,r,rp)
