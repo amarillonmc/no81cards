@@ -46,12 +46,23 @@ function c9950118.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c9950118.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9950118.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
+	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetTarget(c9950118.atktg)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e3,tp)
+end
+function c9950118.atktg(e,c)
+	return not c:IsSetCard(0xba5,0xbc8)
 end
 function c9950118.tdfilter(c)
 	return c:IsSetCard(0xba5,0xbc8) and c:IsLevelBelow(8) and c:IsAbleToDeck()

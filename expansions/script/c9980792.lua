@@ -26,9 +26,8 @@ function c9980792.initial_effect(c)
 	e1:SetDescription(aux.Stringid(9980792,1))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCountLimit(1)
+	e1:SetCountLimit(1,9980792)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCost(c9980792.spcost)
 	e1:SetTarget(c9980792.sptg)
 	e1:SetOperation(c9980792.spop)
 	c:RegisterEffect(e1)
@@ -82,27 +81,25 @@ function c9980792.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,e:GetHandler())
 	else e:SetLabel(1) end
 end
-function c9980792.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xabc1) and c:IsAbleToRemoveAsCost()
+function c9980792.tgfilter(c,tp)
+	return c:IsFaceup() and c:IsSetCard(0xabc1) and Duel.GetLocationCountFromEx(tp,tp,c)>0
 end
-function c9980792.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	 if chk==0 then return Duel.IsExistingMatchingCard(c9980792.cfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9980792.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-end
-function c9980792.spfilter(c,e,mc,tp)
-	return c:IsSetCard(0xabc1) and c:IsType(TYPE_FUSION) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,Group.FromCards(c,mc))>0
+function c9980792.spfilter(c,e,tp,ec)
+	return c:IsSetCard(0xabc1) and c:IsType(TYPE_FUSION) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) 
 end
 function c9980792.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9980792.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9980792.tgfilter,tp,LOCATION_MZONE,0,1,nil,tp)
+		and Duel.IsExistingMatchingCard(c9980792.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c9980792.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCountFromEx(tp)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9980792.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local tg=Duel.SelectMatchingCard(tp,c9980792.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
+	local tc=tg:GetFirst()
+	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,c9980792.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
 	end
 end
+

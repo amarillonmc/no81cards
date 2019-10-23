@@ -9,7 +9,7 @@ function c9950067.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,9950067)
+	e1:SetCountLimit(1,9950067+EFFECT_COUNT_CODE_DUEL)
 	e1:SetCondition(c9950067.spcon)
 	c:RegisterEffect(e1)
 	--draw
@@ -19,7 +19,7 @@ function c9950067.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetCountLimit(19950067)
+	e3:SetCountLimit(1,9950067)
 	e3:SetCost(c9950067.drcost)
 	e3:SetTarget(c9950067.drtg)
 	e3:SetOperation(c9950067.drop)
@@ -85,12 +85,12 @@ function c9950067.spfilter(c,e,tp)
 	return c:IsCode(9950074) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c9950067.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCountFromEx(tp)>0
 		and Duel.IsExistingMatchingCard(c9950067.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c9950067.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or Duel.GetLocationCountFromEx(tp)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9950067.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then

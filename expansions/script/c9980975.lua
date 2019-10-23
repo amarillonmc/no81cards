@@ -113,6 +113,12 @@ function c9980975.negop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980975,3))
+	if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_DRAW then
+		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN,2)
+	else
+		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
+	end
+	Duel.RegisterEffect(e1,tp)
 end
 function c9980975.aclimit(e,re,tp)
 	return re:GetHandler():IsOnField()

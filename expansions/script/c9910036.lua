@@ -146,7 +146,7 @@ function c9910036.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if bit.band(sel,4)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,c9910036.filter3,tp,LOCATION_MZONE,LOCATION_SZONE,1,1,c)
+		local g=Duel.SelectMatchingCard(tp,c9910036.filter3,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,c)
 		if g:GetCount()>0 then
 			Duel.HintSelection(g)
 			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
@@ -154,7 +154,7 @@ function c9910036.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if bit.band(sel,8)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,c9910036.filter4,tp,LOCATION_MZONE,LOCATION_SZONE,1,1,c)
+		local g=Duel.SelectMatchingCard(tp,c9910036.filter4,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,c)
 		if g:GetCount()>0 then
 			Duel.HintSelection(g)
 			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)

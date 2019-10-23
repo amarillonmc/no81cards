@@ -31,7 +31,6 @@ function c9910117.initial_effect(c)
 end
 function c9910117.xyzfilter(c)
 	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
-		and c:GetLevel()==5
 end
 function c9910117.discon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsDefensePos() and re:GetHandler()==e:GetHandler()

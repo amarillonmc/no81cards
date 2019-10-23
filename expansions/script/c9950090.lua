@@ -94,7 +94,7 @@ function c9950090.adval(e,c)
 	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_REMOVED,LOCATION_REMOVED)*1000
 end
 function c9950090.condition(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and re:IsActiveType(TYPE_TUNER) and Duel.IsChainNegatable(ev)
+	return ep~=tp and not re:IsActiveType(TYPE_TUNER) and Duel.IsChainNegatable(ev)
 end
 function c9950090.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

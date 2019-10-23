@@ -47,7 +47,7 @@ function c30000047.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function c30000047.filter(c)
-	return c:IsSetCard(0x920) and c:IsAbleToHand() and not c:IsCode(30000047)
+	return c:IsAbleToHand() and c:IsSetCard(0x920) and c:IsFaceup() and not c:IsCode(30000047)
 end
 
 function c30000047.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -65,11 +65,16 @@ function c30000047.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
+function c30000047.filter0(c)
+	return c:IsFaceup() and c:IsAbleToDeck()
+end
+
 function c30000047.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	 if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c30000047.filter0(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c30000047.filter0,tp,LOCATION_REMOVED,0,3,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectTarget(tp,c30000047.filter0,tp,LOCATION_REMOVED,0,3,3,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
 
 function c30000047.filter1(c,tp)
@@ -77,15 +82,21 @@ function c30000047.filter1(c,tp)
 end
 
 function c30000047.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	if not tg or tg:FilterCount(Card.IsRelateToEffect,nil,e)~=3 then return end
+	Duel.SendtoDeck(tg,nil,0,REASON_EFFECT)
+	local g=Duel.GetOperatedGroup()
+	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+	if ct==3 then
+		Duel.BreakEffect()
 	if Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)==0 and Duel.SelectYesNo(tp,aux.Stringid(30000047,1)) then
-			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c30000047.filter1),tp,LOCATION_REMOVED,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+end
 end
 end

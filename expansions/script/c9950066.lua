@@ -9,7 +9,7 @@ function c9950066.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,9950066)
+	e1:SetCountLimit(1,9950066+EFFECT_COUNT_CODE_DUEL)
 	e1:SetCondition(c9950066.spcon)
 	c:RegisterEffect(e1)
 	--flip
@@ -75,12 +75,12 @@ function c9950066.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9950066.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9950066.filter(c,tohand)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0xba5)
 		and (c:IsAbleToGrave() or (tohand and c:IsAbleToHand()))
 end
 function c9950066.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	 if chk==0 then
-		local tohand=Duel.IsEnvironment(9950103)
+		local tohand=Duel.IsEnvironment(9950103) 
 		return Duel.IsExistingMatchingCard(c9950066.filter,tp,LOCATION_DECK,0,1,nil,tohand)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)

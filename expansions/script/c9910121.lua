@@ -28,7 +28,7 @@ function c9910121.initial_effect(c)
 end
 function c9910121.xyzfilter(c)
 	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
-		and c:GetLevel()==5 and c:IsRace(RACE_MACHINE)
+		and c:IsRace(RACE_MACHINE)
 end
 function c9910121.ttcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER)

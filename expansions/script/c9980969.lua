@@ -121,4 +121,15 @@ function c9980969.rmop(e,tp,eg,ep,ev,re,r,rp)
 	g:Merge(g2)
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
    Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980969,1))
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_SKIP_DP)
+	e1:SetTargetRange(1,0)
+	if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_DRAW then
+		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN,2)
+	else
+		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
+	end
+	Duel.RegisterEffect(e1,tp)
 end

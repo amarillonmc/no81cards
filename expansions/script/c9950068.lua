@@ -9,7 +9,7 @@ function c9950068.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,9950068)
+	e1:SetCountLimit(1,9950068+EFFECT_COUNT_CODE_DUEL)
 	e1:SetCondition(c9950068.spcon)
 	c:RegisterEffect(e1)
 	 --aclimit
@@ -65,7 +65,7 @@ function c9950068.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end 
 function c9950068.aclimit(e,re,tp)
-	return re:IsHasType(TYPE_MONSTER)
+	return re:IsActiveType(TYPE_MONSTER)
 end
 function c9950068.atktg(e,c)
 	return c~=e:GetHandler()

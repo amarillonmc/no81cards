@@ -16,6 +16,7 @@ function c9910101.initial_effect(c)
 	e2:SetCategory(CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_IGNITION)
 	e2:SetCountLimit(1)
+	e2:SetLabelObject(c)
 	e2:SetCost(c9910101.drcost)
 	e2:SetTarget(c9910101.drtg)
 	e2:SetOperation(c9910101.drop)
@@ -41,8 +42,8 @@ function c9910101.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
 	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		if not tc:IsForbidden() then
+		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
+			and not tc:IsForbidden() then
 			Duel.DisableShuffleCheck()
 			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local e1=Effect.CreateEffect(c)
@@ -67,10 +68,23 @@ function c9910101.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910101.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	local c=e:GetLabelObject()
+	local g=e:GetHandler():GetOverlayGroup()
+	if not g:IsContains(c) then return false end
+	g:RemoveCard(c)
+	if g:GetCount()==0 or (g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910101,1))) then
+		Duel.SendtoGrave(c,REASON_COST)
+	elseif Duel.SelectYesNo(tp,aux.Stringid(9910101,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
+		local tg=g:Select(tp,1,1,nil)
+		if tg:GetCount()>0 then
+			Duel.SendtoGrave(tg,REASON_COST)
+		end
+	else e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST) end
 end
 function c9910101.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)

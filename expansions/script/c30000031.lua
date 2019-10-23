@@ -12,7 +12,7 @@ function c30000031.initial_effect(c)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCost(c30000031.cost)
-	e1:SetCountLimit(1,30000031)
+	e1:SetCountLimit(1)
 	e1:SetCondition(c30000031.spcon1)
 	e1:SetTarget(c30000031.lktg)
 	e1:SetOperation(c30000031.lkop)
@@ -83,9 +83,9 @@ function c30000031.filter2(c)
 end
 
 function c30000031.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c30000031.filter2,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_REASON_TOFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c30000031.filter2,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c30000031.filter2,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_REMOVED,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c30000031.filter2,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 

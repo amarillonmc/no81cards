@@ -8,8 +8,8 @@ function c9950076.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,9950076)
 	e1:SetCost(c9950076.cost)
-	e1:SetTarget(c9950076.target)
-	e1:SetOperation(c9950076.operation)
+	e1:SetTarget(c9950076.sptg)
+	e1:SetOperation(c9950076.spop)
 	c:RegisterEffect(e1)
 end
 function c9950076.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -17,31 +17,25 @@ function c9950076.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
-function c9950076.cfilter(c,e,tp,ft)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xba5) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+function c9950076.filter(c,e,tp,ft)
+	return c:IsSetCard(0xba5) and c:GetCode()~=9950076 and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
-function c9950076.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		return Duel.IsExistingMatchingCard(c9950076.cfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,ft,e,tp)
-	end
-end
-function c9950076.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9950076.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	Duel.Hint(HINT_SELECTMSG,tp,0)
-	local g=Duel.SelectMatchingCard(tp,c9950076.cfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,ft,e,tp)
-	if g:GetCount()>0 then
-		local th=g:GetFirst():IsAbleToHand()
-		local sp=ft>0 and g:GetFirst():IsCanBeSpecialSummoned(e,0,tp,false,false)
-		local op=0
-		if th and sp then op=Duel.SelectOption(tp,1190,1152)
-		elseif th then op=0
-		else op=1 end
-		if op==0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950076.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp,ft) end
+end
+function c9950076.spop(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c9950076.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp,ft)
+	local tc=g:GetFirst()
+	if tc then
+		if ft>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+			and (not tc:IsAbleToHand() or Duel.SelectOption(tp,1190,1152)==1) then
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		else
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
 		end
 	end
 end

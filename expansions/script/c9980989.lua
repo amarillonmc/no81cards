@@ -128,6 +128,12 @@ function c9980989.negop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	Duel.Destroy(g,REASON_EFFECT)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980989,1))
+	if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_DRAW then
+		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN,2)
+	else
+		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
+	end
+	Duel.RegisterEffect(e1,tp)
 end
 function c9980989.mtfilter(c,e)
 	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and not c:IsType(TYPE_TOKEN) and c:IsSetCard(0x3bc3) and not c:IsImmuneToEffect(e)

@@ -6,7 +6,7 @@ function c9950049.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e1:SetCountLimit(1,9950049)
+	e1:SetCountLimit(1,9950049+EFFECT_COUNT_CODE_DUEL)
 	e1:SetCondition(c9950049.spcon)
 	c:RegisterEffect(e1)
 	--tograve

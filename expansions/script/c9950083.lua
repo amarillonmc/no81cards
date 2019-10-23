@@ -6,7 +6,7 @@ function c9950083.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_GRAVE+LOCATION_HAND)
-	e1:SetCountLimit(1,9950083)
+	e1:SetCountLimit(1,9950083+EFFECT_COUNT_CODE_DUEL)
 	e1:SetCondition(c9950083.spcon)
 	c:RegisterEffect(e1)
 	--search

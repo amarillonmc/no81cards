@@ -14,15 +14,16 @@ function c9910104.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910104,0))
 	e2:SetCategory(CATEGORY_POSITION)
-	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCountLimit(1)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetLabelObject(c)
 	e2:SetCost(c9910104.poscost)
 	e2:SetTarget(c9910104.postg)
 	e2:SetOperation(c9910104.posop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e3)
 end
 function c9910104.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
@@ -63,18 +64,34 @@ function c9910104.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910104.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	local c=e:GetLabelObject()
+	local g=e:GetHandler():GetOverlayGroup()
+	if not g:IsContains(c) then return false end
+	g:RemoveCard(c)
+	if g:GetCount()==0 or (g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910104,1))) then
+		Duel.SendtoGrave(c,REASON_COST)
+	elseif Duel.SelectYesNo(tp,aux.Stringid(9910104,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
+		local tg=g:Select(tp,1,1,nil)
+		if tg:GetCount()>0 then
+			Duel.SendtoGrave(tg,REASON_COST)
+		end
+	else e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST) end
 end
-function c9910104.posfilter(c,e,tp)
-	return c:IsFaceup() and c:GetSummonPlayer()~=tp and c:IsCanTurnSet() and (not e or c:IsRelateToEffect(e))
+function c9910104.posfilter(c)
+	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function c9910104.postg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(c9910104.posfilter,1,nil,nil,tp) end
-	Duel.SetTargetCard(eg)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9910104.posfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910104.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local g=Duel.SelectTarget(tp,c9910104.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,eg,eg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
 end
 function c9910104.posop(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(c9910104.posfilter,nil,e,tp)
-	Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() then
+		Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+	end
 end

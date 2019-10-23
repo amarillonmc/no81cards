@@ -1,0 +1,70 @@
+--fate·牛若丸〔Assassin〕
+function c9950149.initial_effect(c)
+	 --link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xba5),2,2)
+	c:EnableReviveLimit()
+	--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9950149,0))
+	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,9950149)
+	e1:SetCondition(c9950149.drcon2)
+	e1:SetTarget(c9950149.drtg)
+	e1:SetOperation(c9950149.drop)
+	c:RegisterEffect(e1)
+	--draw
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCountLimit(1,99501490)
+	e2:SetCondition(c9950149.drcon)
+	e2:SetTarget(c9950149.drtg)
+	e2:SetOperation(c9950149.drop)
+	c:RegisterEffect(e2)
+	--draw(battle)
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DRAW)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_BATTLE_DESTROYING)
+	e3:SetCountLimit(1)
+	e3:SetCondition(aux.bdocon)
+	e3:SetTarget(c9950149.drtg)
+	e3:SetOperation(c9950149.drop)
+	c:RegisterEffect(e3)
+	--spsummon bgm
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e8:SetOperation(c9950149.sumsuc)
+	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e9)
+end
+function c9950149.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950149,0))
+end
+function c9950149.drcon2(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+end
+function c9950149.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xba5)
+end
+function c9950149.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c9950149.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler())
+end
+function c9950149.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c9950149.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
+end

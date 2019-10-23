@@ -1,8 +1,8 @@
 --终焉邪魂 魔化战士 塞拉克
 function c30000049.initial_effect(c)
-	aux.AddLinkProcedure(c,c30000049.mfilter,2)
+	aux.AddLinkProcedure(c,nil,2,2,c30000049.lcheck)
 	c:EnableReviveLimit()
-	--immune effect
+	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_DESTROY_REPLACE)
@@ -37,11 +37,10 @@ function c30000049.initial_effect(c)
 	e5:SetTarget(c30000049.tgtg2)
 	e5:SetOperation(c30000049.tgop2)
 	c:RegisterEffect(e5)
-	
 end
 	
-function c30000049.mfilter(c)
-	return c:IsAttackAbove(2400) 
+function c30000049.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x920) and g:IsExists(Card.IsAttackAbove,2,nil,2400)
 end
 
 function c30000049.spcon1(e,tp,eg,ep,ev,re,r,rp)

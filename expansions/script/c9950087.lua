@@ -1,8 +1,8 @@
 --第六天魔王·织田信长「Avenger·I」
 function c9950087.initial_effect(c)
-	c:EnableReviveLimit()
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsType,TYPE_XYZ+TYPE_FUSION+TYPE_SYNCHRO),1,1)
+	aux.AddLinkProcedure(c,c9950087.mfilter,1,1)
+	c:EnableReviveLimit()
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9950087,0))
@@ -10,7 +10,7 @@ function c9950087.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,9950087)
+	e1:SetCountLimit(1,9950087+EFFECT_COUNT_CODE_DUEL)
 	e1:SetCondition(c9950087.spcon)
 	c:RegisterEffect(e1)
 	--search
@@ -36,6 +36,9 @@ function c9950087.initial_effect(c)
 end
 function c9950087.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950087,2))
+end
+function c9950087.mfilter(c)
+	return c:IsType(TYPE_FUSION+TYPE_XYZ+TYPE_SYNCHRO) and c:IsLinkSetCard(0xba5)
 end
 function c9950087.spcon(e,c)
 	if c==nil then return true end

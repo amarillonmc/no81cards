@@ -27,9 +27,9 @@ function Zcd.XyzCondition(f,lv,minc,maxc,alterf,desc,op)
 				else
 					mg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
 				end
-				if (not min or min<=1) and mg:IsExists(Zcd.XyzAlterFilter,minc,nil,alterf,c,e,tp,op) then
-					local ssg=mg:Filter(Zcd.XyzAlterFilter,nil,alterf,c,e,tp,op)
-					if ssg:IsExists(Zcd.MFilter,1,nil,c,tp) then return true end
+				if (not min or min<=1) and mg:IsExists(Zcd.XyzAlterFilter,minc,nil,alterf,c,e,tp,op,lv) then
+					local ssg=mg:Filter(Zcd.XyzAlterFilter,nil,alterf,c,e,tp,op,lv)
+					if ssg:IsExists(Zcd.MFilter1,1,nil) and ssg:IsExists(Zcd.MFilter2,1,nil,c,tp) then return true end
 				end
 				local minc=minc
 				local maxc=maxc
@@ -63,18 +63,27 @@ function Zcd.XyzTarget(f,lv,minc,maxc,alterf,desc,op)
 				local b1=ct<minc and Duel.CheckXyzMaterial(c,f,lv,minc,maxc,og)
 				local b2=nil
 				local ssg=nil
-				if (not min or min<=1) and mg:IsExists(Zcd.XyzAlterFilter,minc,nil,alterf,c,e,tp,op) then
-					ssg=mg:Filter(Zcd.XyzAlterFilter,nil,alterf,c,e,tp,op)
-					b2=ssg:IsExists(Zcd.MFilter,1,nil,c,tp)
+				if (not min or min<=1) and mg:IsExists(Zcd.XyzAlterFilter,minc,nil,alterf,c,e,tp,op,lv) then
+					ssg=mg:Filter(Zcd.XyzAlterFilter,nil,alterf,c,e,tp,op,lv)
+					b2=ssg:IsExists(Zcd.MFilter1,1,nil) and ssg:IsExists(Zcd.MFilter2,1,nil,c,tp)
 				end
-				local g=nil
+				local g=Group.CreateGroup()
 				if b2 and (not b1 or Duel.SelectYesNo(tp,desc)) then
 					e:SetLabel(1)
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-					g=ssg:FilterSelect(tp,Zcd.MFilter,1,1,nil,c,tp)
-					local tc=g:GetFirst()
-					mg:RemoveCard(tc)
-					local g2=mg:FilterSelect(tp,Zcd.XyzAlterFilter,minc-1,maxc-1,nil,alterf,c,e,tp,op)
+					tsg=ssg:FilterSelect(tp,Zcd.MFilter1,1,1,nil)
+					local tc1=tsg:GetFirst()
+					g:AddCard(tc1)
+					ssg:RemoveCard(tc1)
+					local flagct=1
+					if not Zcd.MFilter2(tc1,c,tp) then
+						tsg=ssg:FilterSelect(tp,Zcd.MFilter2,1,1,nil,c,tp)
+						local tc2=tsg:GetFirst()
+						g:AddCard(tc2)
+						ssg:RemoveCard(tc2)
+						flagct=2
+					end
+					local g2=ssg:FilterSelect(tp,Zcd.XyzAlterFilter,minc-flagct,maxc-flagct,nil,alterf,c,e,tp,op,lv)
 					g:Merge(g2)
 					if op then op(e,tp,1,g:GetFirst()) end
 				else
@@ -117,12 +126,15 @@ function Zcd.XyzOperation(f,lv,minc,maxc,alterf,desc,op)
 				end
 			end
 end
-function Zcd.XyzAlterFilter(c,alterf,xyzc,e,tp,op)
+function Zcd.XyzAlterFilter(c,alterf,xyzc,e,tp,op,lv)
 	return alterf(c)
-		and (c:IsCanBeXyzMaterial(xyzc) or ((bit.band(c:GetOriginalType(),TYPE_SPELL)~=0 or bit.band(c:GetOriginalType(),TYPE_TRAP)~=0) and not c:IsType(TYPE_MONSTER)))
+		and c:IsCanBeXyzMaterial(xyzc)
 		and Auxiliary.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and (not op or op(e,tp,0,c))
+		and c:IsXyzLevel(xyzc,lv)
 end
-function Zcd.MFilter(c,xyzc,tp)
+function Zcd.MFilter1(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x952)
-		and Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0
+end
+function Zcd.MFilter2(c,xyzc,tp)
+	return Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0
 end

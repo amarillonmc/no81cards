@@ -9,7 +9,7 @@ function c9950050.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_GRAVE)
+	e1:SetRange(LOCATION_GRAVE+EFFECT_COUNT_CODE_DUEL)
 	e1:SetCondition(c9950050.spcon)
 	c:RegisterEffect(e1)
 	--tohand
@@ -35,7 +35,7 @@ function c9950050.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c9950050.matfilter(c)
-	return c:IsLevelBelow(4) and c:IsLinkRace(RACE_WARRIOR)
+	return c:IsLevelBelow(4) and c:IsSetCard(0xba5) and c:IsLinkRace(RACE_WARRIOR)
 end
 function c9950050.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950050,2))

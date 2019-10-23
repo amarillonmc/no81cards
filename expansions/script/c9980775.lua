@@ -50,10 +50,10 @@ function c9980775.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9980775.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.GetFirstMatchingCard(c9980775.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+	local g=Duel.SelectMatchingCard(tp,c9980775.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function c9980775.attg(e,tp,eg,ep,ev,re,r,rp,chk)
