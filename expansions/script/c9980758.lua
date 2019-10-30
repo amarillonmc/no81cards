@@ -1,6 +1,6 @@
 --风都侦探W-疾风金属
 function c9980758.initial_effect(c)
-	c:SetUniqueOnField(1,0,aux.FilterBoolFunction(Card.IsType,TYPE_FUSION),LOCATION_MZONE)
+	c:SetUniqueOnField(1,0,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WIND),LOCATION_MZONE)
 	  --fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2(c,9980746,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9bc1),true,true)

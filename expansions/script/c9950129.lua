@@ -42,19 +42,19 @@ end
 function c9950129.atktg(e,c)
 	return c:IsSetCard(0x9ba5)
 end
-function c9950129.filter(c,e,sp)
+function c9950129.filter2(c,e,sp)
 	return c:IsSetCard(0x9ba5) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,sp,false,false)
 end
 function c9950129.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9950129.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+		and Duel.IsExistingMatchingCard(c9950129.filter2,tp,LOCATION_HAND,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function c9950129.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9950129.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c9950129.filter2,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end

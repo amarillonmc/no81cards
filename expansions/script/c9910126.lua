@@ -1,6 +1,7 @@
 --战车道整备仓库
 function c9910126.initial_effect(c)
 	--link summon
+	c:SetSPSummonOnce(9910126)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsType,TYPE_XYZ),1,1)
 	--special summon
@@ -10,7 +11,7 @@ function c9910126.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,9910126)
+	e1:SetCountLimit(1)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetTarget(c9910126.sptg)
 	e1:SetOperation(c9910126.spop)

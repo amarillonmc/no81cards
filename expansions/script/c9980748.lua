@@ -87,7 +87,7 @@ function c9980748.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetActivityCount(tp,ACTIVITY_NORMALSUMMON)==0 end
 end
 function c9980748.filter(c,e,tp)
-	return c:IsSetCard(0x3bc2) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	return c:IsSetCard(0x3bc2) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function c9980748.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9980748.filter(chkc,e,tp) end

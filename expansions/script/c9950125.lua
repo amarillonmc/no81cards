@@ -65,19 +65,14 @@ function c9950125.spfilter(c,e,tp)
 	return c:IsCode(9950126) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950125.atktg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c9950125.atkop2(e,tp,eg,ep,ev,re,r,rp)
-	 local dg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
-	if dg:GetCount()>0 and Duel.Destroy(dg,REASON_EFFECT)>0 then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9950125.spfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
-	end
 end

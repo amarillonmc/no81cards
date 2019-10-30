@@ -10,6 +10,16 @@ function c9980770.initial_effect(c)
 	e1:SetTarget(c9980770.thtg)
 	e1:SetOperation(c9980770.thop)
 	c:RegisterEffect(e1)
+	--atkup
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9980770,0))
+	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(2)
+	e1:SetCost(c9980770.cost)
+	e1:SetOperation(c9980770.operation)
+	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -77,5 +87,25 @@ function c9980770.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
 		e1:SetValue(LOCATION_REMOVED)
 		c:RegisterEffect(e1,true)
+	end
+end
+function c9980770.cfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+end
+function c9980770.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9980770.cfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c9980770.cfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function c9980770.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsFaceup() and c:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(500)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END,2)
+		c:RegisterEffect(e1)
 	end
 end

@@ -2,7 +2,7 @@
 function c9910014.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,c9910014.ffilter,2,false)
+	aux.AddFusionProcFunRep(c,c9910014.ffilter,2,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_MZONE,0,Duel.Remove,POS_FACEUP,REASON_COST+REASON_FUSION+REASON_MATERIAL):SetValue(1)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
@@ -47,8 +47,7 @@ function c9910014.ffilter(c)
 		and c:GetSummonLocation()==LOCATION_EXTRA
 end
 function c9910014.splimit(e,se,sp,st)
-	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
-		or st&SUMMON_TYPE_FUSION==SUMMON_TYPE_FUSION
+	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION 
 end
 function c9910014.mfilter(c)
 	return not c:IsType(TYPE_PENDULUM)
@@ -78,15 +77,14 @@ function c9910014.opdisable(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,0,nil)
 	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,1-tp,LOCATION_HAND,0,nil)
-	if not c:IsFaceup() or not c:IsRelateToEffect(e) or g1:GetCount()==0 or g2:GetCount()==0
-		or Duel.GetCurrentChain()~=ev+1 or c:IsStatus(STATUS_BATTLE_DESTROYED) then return
-	end
-	Duel.NegateActivation(ev)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg1=g1:Select(tp,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
 	local sg2=g2:Select(1-tp,1,1,nil)
 	sg1:Merge(sg2)
 	Duel.HintSelection(sg1)
-	Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)
+	if Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)~=2 then return end
+	if not c:IsFaceup() or not c:IsRelateToEffect(e)
+		or Duel.GetCurrentChain()~=ev+1 or c:IsStatus(STATUS_BATTLE_DESTROYED) then return end
+	Duel.NegateActivation(ev)
 end

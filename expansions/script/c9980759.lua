@@ -1,6 +1,6 @@
 --风都侦探W-月神金属
 function c9980759.initial_effect(c)
-	c:SetUniqueOnField(1,0,aux.FilterBoolFunction(Card.IsType,TYPE_FUSION),LOCATION_MZONE)
+	c:SetUniqueOnField(1,0,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_EARTH),LOCATION_MZONE)
 	c:SetSPSummonOnce(9980759)
 	--fusion material
 	c:EnableReviveLimit()

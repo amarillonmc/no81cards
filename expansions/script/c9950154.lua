@@ -30,7 +30,6 @@ function c9950154.initial_effect(c)
 	e3:SetTarget(c9950154.sptg2)
 	e3:SetOperation(c9950154.spop2)
 	c:RegisterEffect(e3)
-	Duel.AddCustomActivityCounter(9950154,ACTIVITY_SPSUMMON,c9950154.counterfilter)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -48,12 +47,12 @@ function c9950154.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
-function c9950154.filter(c,tp)
+function c9950154.filter2(c,tp)
 	return c:IsFaceup() and c:GetSummonPlayer()~=tp and c:IsCanTurnSet()
 end
 function c9950154.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(c9950154.filter,1,nil,tp) end
-	local g=eg:Filter(c9950154.filter,nil,tp)
+	if chk==0 then return eg:IsExists(c9950154.filter2,1,nil,tp) end
+	local g=eg:Filter(c9950154.filter2,nil,tp)
 	Duel.SetTargetCard(g)
 end
 function c9950154.target2(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -77,7 +76,6 @@ function c9950154.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9950154.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(9950154,tp,ACTIVITY_SPSUMMON)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)

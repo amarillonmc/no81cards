@@ -2,15 +2,15 @@
 function c9980663.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,c9980663.ffilter,2,false)
-	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE,0,Duel.Release,REASON_COST+REASON_FUSION+REASON_MATERIAL)
-   --spsummon condition
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(aux.fuslimit)
-	c:RegisterEffect(e1)
+	aux.AddFusionProcFunRep(c,c9980663.ffilter,2,true)
+	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE,0,Duel.Release,REASON_COST)
+	--spsummon condition
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c9980663.splimit)
+	c:RegisterEffect(e0)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -39,6 +39,9 @@ function c9980663.initial_effect(c)
 	e2:SetTarget(c9980663.destg)
 	e2:SetOperation(c9980663.desop)
 	c:RegisterEffect(e2)
+end
+function c9980663.splimit(e,se,sp,st)
+	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
 function c9980663.ffilter(c)
 	return c:IsFusionSetCard(0x9bcd,0x3bcd) and c:IsType(TYPE_MONSTER)

@@ -64,7 +64,7 @@ function c9980772.scop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9980772.thfilter(c)
-	return c:IsSetCard(0x9bc1) and c:IsAbleToHand()
+	return (c:IsSetCard(0x9bc1) or c:IsCode(9980773))and c:IsAbleToHand()
 end
 function c9980772.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler())

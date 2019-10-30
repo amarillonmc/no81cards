@@ -1,9 +1,9 @@
 --终焉邪魂 暗尸
 function c30000027.initial_effect(c)
 	--link summon
+	aux.AddLinkProcedure(c,c30000027.matfilter,1,1)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x920),1,1)
-	--link summon
+	--atkup
 	 local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(30000027,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -27,7 +27,9 @@ function c30000027.initial_effect(c)
 	e7:SetOperation(c30000027.activate)
 	c:RegisterEffect(e7)
 end
-
+function c30000027.matfilter(c)
+	return c:IsLinkSetCard(0x920) and c:IsLinkAbove(2)
+end
 function c30000027.con0(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end

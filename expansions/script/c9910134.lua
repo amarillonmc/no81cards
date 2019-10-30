@@ -47,13 +47,9 @@ function c9910134.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(nil,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
 	if c:GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0x952) and g:GetCount()>0 then
 		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
 		local sg=g:Select(1-tp,1,1,nil)
 		Duel.HintSelection(sg)
-		local sc=sg:GetFirst()
-		local osg=sc:GetOverlayGroup()
-		if osg:GetCount()>0 then
-			Duel.SendtoGrave(osg,REASON_RULE)
-		end
-		Duel.Overlay(c,Group.FromCards(sc))
+		Duel.SendtoGrave(sg,REASON_RULE)
 	end
 end

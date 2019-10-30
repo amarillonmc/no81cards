@@ -27,6 +27,7 @@ function cm.xyzop(e,tp)
 		if #og>0 then
 			Duel.SendtoGrave(og,REASON_RULE)
 		end
+		tc:CancelToGrave()
 		Duel.Overlay(c,Group.FromCards(tc))
 	end
 end

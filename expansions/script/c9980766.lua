@@ -55,7 +55,7 @@ function c9980766.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980766,1))
 end
 function c9980766.spfilter(c)
-	return c:IsCode(9980765) and c:IsAbleToRemoveAsCost() and (not c:IsLocation(LOCATION_MZONE) or c:IsFaceup())
+	return (c:IsCode(9980765) or(c:IsSetCard(0x3bc2) and c:IsType(TYPE_MONSTER)))and c:IsAbleToRemoveAsCost() and (not c:IsLocation(LOCATION_MZONE) or c:IsFaceup())
 end
 function c9980766.hspcon(e,c)
 	if c==nil then return true end
@@ -96,7 +96,7 @@ function c9980766.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9980766.spfilter2(c,e,tp)
-	return c:IsSetCard(0x3bc2) and c:IsLevelBelow(6) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3bc2) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c9980766.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c9980766.spfilter2(chkc,e,tp) end
@@ -109,6 +109,6 @@ end
 function c9980766.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
 	end
 end
