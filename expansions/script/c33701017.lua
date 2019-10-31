@@ -61,9 +61,10 @@ function s.spcost(e, tp, eg, ep, ev, re, r, rp, chk)
     local rg = Duel.GetMatchingGroup(s.spfilter, tp, LOCATION_HAND + LOCATION_GRAVE, 0, e:GetHandler())
     if chk == 0 then
         return Duel.GetLocationCount(tp, LOCATION_MZONE) > -2 and #rg > 1 and
-            aux.SelectUnselectGroup(rg, e, tp, 2, 2, s.ChkfMMZ(1), 0)
+            rg:CheckSubGroup(s.ChkfMMZ(1), 2, 2, tp) 
     end
-    local g = aux.SelectUnselectGroup(rg, e, tp, 2, 2, s.ChkfMMZ(1), 1, tp, HINTMSG_REMOVE)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+    local g = rg:SelectSubGroup(s.ChkfMMZ(1), tp, 2, 2, tp)
     Duel.Remove(g, POS_FACEUP, REASON_COST)
 end
 function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)

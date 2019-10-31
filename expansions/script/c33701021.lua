@@ -33,16 +33,14 @@ end
 function s.tgfilter(c)
     return c:IsSetCard(0x144e) and c:IsAbleToGrave()
 end
-function s.rescon(sg, e, tp, mg)
-    return sg:GetClassCount(Card.GetCode) == #sg
-end
 function s.activate(e, tp, eg, ep, ev, re, r, rp)
     if not e:GetHandler():IsRelateToEffect(e) then
         return
     end
     local g = Duel.GetMatchingGroup(s.tgfilter, tp, LOCATION_DECK, 0, nil)
-    if aux.SelectUnselectGroup(g, e, tp, 1, 3, s.rescon, 0) and Duel.SelectYesNo(tp, aux.Stringid(id, 0)) then
-        local dg = aux.SelectUnselectGroup(g, e, tp, 1, 3, s.rescon, 1, tp, HINTMSG_TOGRAVE)
+    if g:CheckSubGroup(aux.dncheck, 1, 3) and Duel.SelectYesNo(tp, aux.Stringid(id, 0)) then
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+        local dg = g:SelectSubGroup(aux.dncheck, tp, 1, 3)
         Duel.SendtoGrave(dg, REASON_EFFECT)
     end
 end

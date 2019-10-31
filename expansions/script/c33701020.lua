@@ -62,19 +62,17 @@ end
 function s.tgfilter(c)
     return c:IsSetCard(0x144e) and c:IsAbleToGrave()
 end
-function s.rescon(sg, e, tp, mg)
-    return sg:GetClassCount(Card.GetCode) == #sg
-end
 function s.tgtg(e, tp, eg, ep, ev, re, r, rp, chk)
     local g = Duel.GetMatchingGroup(s.tgfilter, tp, LOCATION_DECK, 0, nil)
     if chk == 0 then
-        return aux.SelectUnselectGroup(g, e, tp, 1, 4, s.rescon, chk)
+        return g:CheckSubGroup(aux.dncheck, 1, 4)
     end
     Duel.SetOperationInfo(0, CATEGORY_TOGRAVE, g, 1, 0, 0)
 end
 function s.tgop(e, tp, eg, ep, ev, re, r, rp)
     local g = Duel.GetMatchingGroup(s.tgfilter, tp, LOCATION_DECK, 0, nil, e, tp)
-    local dg = aux.SelectUnselectGroup(g, e, tp, 1, 4, s.rescon, 1, tp, HINTMSG_TOGRAVE)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+    local dg = g:SelectSubGroup(aux.dncheck, tp, 1, 4)
     if #dg > 0 then
         local ct = Duel.SendtoGrave(dg, REASON_EFFECT)
         if ct > 0 and Duel.Recover(tp, ct * 1000, REASON_EFFECT) > 0 then
