@@ -8,9 +8,10 @@ function c9910034.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	e1:SetCountLimit(1)
 	e1:SetCondition(c9910034.condtion)
-	e1:SetValue(1)
+	e1:SetValue(c9910034.valcon)
 	c:RegisterEffect(e1)
 	--immune
 	local e2=Effect.CreateEffect(c)
@@ -41,6 +42,9 @@ function c9910034.condtion(e)
 	local c=e:GetHandler()
 	local mg=c:GetMaterial()
 	return c:IsSummonType(SUMMON_TYPE_SYNCHRO) and mg:GetCount()>0 and not mg:IsExists(c9910034.mfilter,1,nil)
+end
+function c9910034.valcon(e,re,r,rp)
+	return bit.band(r,REASON_BATTLE)~=0
 end
 function c9910034.efilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:IsActiveType(TYPE_MONSTER)

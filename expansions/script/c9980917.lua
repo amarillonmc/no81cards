@@ -16,10 +16,10 @@ function c9980917.initial_effect(c)
 	e1:SetDescription(aux.Stringid(9980917,1))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
 	e1:SetCondition(c9980917.atkcon)
-	e1:SetCost(c9980917.atkcost)
-	e1:SetOperation(c9980917.atkop)
+	e1:SetTarget(c9980917.target)
+	e1:SetOperation(c9980917.operation)
 	c:RegisterEffect(e1)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
@@ -59,26 +59,32 @@ function c9980917.rmop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c9980917.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetAttackTarget()
-	if not tc then return false end
-	if tc:IsControler(1-tp) then tc=Duel.GetAttacker() end
-	e:SetLabelObject(tc)
-	return tc and tc:IsRelateToBattle() and tc:IsSetCard(0x4) 
-end
 function c9980917.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+	if chk==0 then return e:GetHandler():IsReleasable() end
+	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function c9980917.atkop(e,tp,eg,ep,ev,re,r,rp)
+function c9980917.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local a=Duel.GetAttacker()
+	local d=Duel.GetAttackTarget()
+	if a:IsControler(1-tp) then a=d end
+	if chk==0 then return d and a:IsSetCard(0x4) end
+	e:SetLabelObject(a)
+end
+function c9980917.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	if tc:IsFaceup() and tc:IsRelateToBattle() then
+	if tc:IsRelateToBattle() and tc:IsFaceup() then
+		local atk=tc:GetBaseAttack()
+		local def=tc:GetBaseDefense()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e1:SetValue(atk*2)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
-		e1:SetValue(tc:GetAttack()*2)
 		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
+		e2:SetValue(def*2)
+		tc:RegisterEffect(e2)
 	end
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980917,3))
+Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980917,3))
 end

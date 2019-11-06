@@ -73,7 +73,7 @@ function c9981195.cfilter(c)
 		and c:IsAbleToDeckOrExtraAsCost()
 end
 function c9981195.filter(c,e,tp,ec)
-	return c:IsType(TYPE_EQUIP) and c:IsCanBeEffectTarget(e) and c:CheckUniqueOnField(tp) and c:CheckEquipTarget(ec)
+	return (c:IsType(TYPE_EQUIP) or c:IsSetCard(0x9bcd)) and c:IsCanBeEffectTarget(e) and c:CheckUniqueOnField(tp) and c:CheckEquipTarget(ec)
 end
 function c9981195.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c9981195.filter(chkc,e,tp,e:GetHandler()) end
@@ -127,7 +127,7 @@ function c9981195.discon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function c9981195.disfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_EQUIP) and c:IsAbleToGraveAsCost()
+	return c:IsFaceup() and  (c:IsType(TYPE_EQUIP) or c:IsSetCard(0x9bcd))  and c:IsAbleToGraveAsCost()
 end
 function c9981195.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981195.disfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end

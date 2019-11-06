@@ -43,7 +43,6 @@ function c9981201.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetCountLimit(1,9981201)
-	e2:SetCondition(c9981201.damcon)
 	e2:SetTarget(c9981201.damtg2)
 	e2:SetOperation(c9981201.damop2)
 	c:RegisterEffect(e2)
@@ -116,10 +115,6 @@ function c9981201.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981201,3))
-end
-function c9981201.damcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and c:IsSummonType(SUMMON_TYPE_LINK) and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function c9981201.damfilter(c,e,tp)
 	return c:IsSetCard(0x9bcd,0x5bc3) and c:IsLinkBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

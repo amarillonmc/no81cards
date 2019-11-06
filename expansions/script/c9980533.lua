@@ -18,6 +18,15 @@ function c9980533.initial_effect(c)
 	 local e5=e4:Clone()
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e5)
+   --summon success
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_SUMMON_SUCCESS)
+	e4:SetOperation(c9980533.sumsuc2)
+	c:RegisterEffect(e4)
+	 local e5=e4:Clone()
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e5)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9980533,0))
@@ -55,5 +64,7 @@ function c9980533.genchainlm(c)
 end
 function c9980533.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetChainLimitTillChainEnd(c9980533.genchainlm(e:GetHandler()))
+end
+function c9980533.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980533,1))
 end

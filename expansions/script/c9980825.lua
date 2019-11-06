@@ -98,7 +98,7 @@ function c9980825.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9980825.thfilter(c)
-	return c:IsSetCard(0x9bc1,,0x9bcd) and c:IsAbleToHand()
+	return c:IsSetCard(0x9bc1,0x9bcd) and c:IsAbleToHand()
 end
 function c9980825.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c9980825.thfilter(chkc) end

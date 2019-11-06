@@ -2,7 +2,7 @@
 require("expansions/script/c9910106")
 function c9910141.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,nil,5,3,c9910141.xyzfilter,aux.Stringid(9910141,0),99)
+	Zcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),5,3,c9910141.xyzfilter,aux.Stringid(9910141,0),99)
 	c:EnableReviveLimit()
 	--material
 	local e1=Effect.CreateEffect(c)
@@ -20,30 +20,31 @@ function c9910141.initial_effect(c)
 	--immune
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910141,2))
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_DAMAGE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCost(c9910141.imcost1)
-	e2:SetTarget(c9910141.imtarget1)
-	e2:SetOperation(c9910141.imop1)
+	e2:SetCondition(c9910141.imcon)
+	e2:SetCost(c9910141.imcost)
+	e2:SetTarget(c9910141.imtg)
+	e2:SetOperation(c9910141.imop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetDescription(aux.Stringid(9910141,3))
-	e3:SetCost(c9910141.imcost2)
-	e3:SetTarget(c9910141.imtarget2)
-	e3:SetOperation(c9910141.imop2)
-	c:RegisterEffect(e3)
 end
 function c9910141.xyzfilter(c)
 	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+		and c:IsRace(RACE_MACHINE)
+end
+function c9910141.cfilter(c)
+	return c:IsRace(RACE_MACHINE) and c:IsType(TYPE_XYZ) and c:IsAbleToRemoveAsCost()
 end
 function c9910141.xmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910141.cfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c9910141.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c9910141.xmfilter(c,tp)
-	return c:IsFaceup() and not c:IsType(TYPE_TOKEN) and (c:IsControler(tp) or c:IsAbleToChangeControler())
+	return not c:IsType(TYPE_TOKEN) and (c:IsControler(tp) or c:IsAbleToChangeControler())
 end
 function c9910141.xmtarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -67,29 +68,20 @@ function c9910141.xmoperation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Overlay(c,Group.FromCards(tc))
 	end
 end
-function c9910141.imcost1(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910141.imcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
+end
+function c9910141.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c9910141.imcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
-end
-function c9910141.imtarget1(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910141.imtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:GetFlagEffect(9910141)<=1 end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	c:RegisterFlagEffect(9910141,RESET_CHAIN,0,1)
 end
-function c9910141.imtarget2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(9910141)<=1
-		and Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0 end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	c:RegisterFlagEffect(9910141,RESET_CHAIN,0,1)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
-end
-function c9910141.imop1(e,tp,eg,ep,ev,re,r,rp)
+function c9910141.imop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsFaceup() then
 		local e1=Effect.CreateEffect(c)
@@ -98,24 +90,7 @@ function c9910141.imop1(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(c9910141.efilter)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		c:RegisterEffect(e1)
-	end
-end
-function c9910141.imop2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsFaceup() then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetValue(c9910141.efilter)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
-		c:RegisterEffect(e1)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.BreakEffect()
-			Duel.HintSelection(g)
-			Duel.Destroy(g,REASON_EFFECT)
-		end
+		Duel.Damage(1-tp,1000,REASON_EFFECT)
 	end
 end
 function c9910141.efilter(e,re)

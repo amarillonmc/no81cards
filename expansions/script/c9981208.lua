@@ -33,7 +33,6 @@ function c9981208.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,9981208)
-	e1:SetCondition(c9981208.condition)
 	e1:SetTarget(c9981208.target)
 	e1:SetOperation(c9981208.operation)
 	c:RegisterEffect(e1)
@@ -63,9 +62,6 @@ c9981208.card_code_list={9980400}
 function c9981208.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981208,0))
 end 
-function c9981208.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
-end
 function c9981208.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end
 	if chk==0 then return true end
@@ -75,7 +71,7 @@ function c9981208.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if tc and tc:IsAbleToRemove() then
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,tc,1,0,0)
 		if tc:IsFaceup() and tc:IsType(TYPE_MONSTER) then
-			Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,3000)
+			Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,4000)
 		end
 	end
 end
@@ -84,7 +80,7 @@ function c9981208.operation(e,tp,eg,ep,ev,re,r,rp)
 	if tc and tc:IsRelateToEffect(e) then
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		if tc:IsLocation(LOCATION_REMOVED) and tc:IsType(TYPE_MONSTER) then
-			Duel.Damage(1-tp,3000,REASON_EFFECT)
+			Duel.Damage(1-tp,4000,REASON_EFFECT)
 		end
 	end
 end
