@@ -25,7 +25,6 @@ function c9950108.initial_effect(c)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetCondition(c9950108.con)
 	e1:SetValue(600)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
@@ -71,9 +70,6 @@ function c9950108.initial_effect(c)
 end
 function c9950108.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950108,0))
-end
-function c9950108.con(e)
-	return e:GetHandler():GetFlagEffect(9950108)~=0
 end
 function c9950108.distg(e,c)
 	return c==e:GetHandler():GetBattleTarget()

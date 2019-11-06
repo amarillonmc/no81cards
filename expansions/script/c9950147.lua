@@ -56,7 +56,7 @@ function c9950147.remop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		if tc:atk>0 and tc:IsType(TYPE_MONSTER) then
-		local atk=Duel.GetAttacker():GetAttack()
+		local atk=tc:GetAttack()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)

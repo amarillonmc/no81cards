@@ -44,7 +44,7 @@ function c9981538.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
 end
 function c9981538.filter(c)
-	return c:IsSetCard(0x128) and c:IsFaceup() and not c:IsHasEffect(EFFECT_EXTRA_ATTACK)
+	return c:IsSetCard(0x3bc2) and c:IsFaceup() and not c:IsHasEffect(EFFECT_EXTRA_ATTACK)
 end
 function c9981538.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and chkc:IsFaceup() end

@@ -29,6 +29,13 @@ function c9950110.initial_effect(c)
 	e1:SetTarget(c9950110.sptg)
 	e1:SetOperation(c9950110.spop)
 	c:RegisterEffect(e1)
+	--destroy
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetOperation(c9950110.desop)
+	e2:SetLabelObject(e1)
+	c:RegisterEffect(e2)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetCode(EVENT_BATTLE_DESTROYING)

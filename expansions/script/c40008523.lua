@@ -39,9 +39,7 @@ end
 function c40008523.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
-function c40008523.lcheck(g,lc)
-	return g:IsExists(Card.IsSetCard,1,nil,0x62)
-end
+
 function c40008523.atklimit(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -154,10 +152,10 @@ end
 function c40008523.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c40008523.filter,tp,LOCATION_DECK,0,4,4,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
+	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
+		Duel.ShuffleHand(tp)
 		Duel.BreakEffect()
-		Duel.DiscardHand(p,nil,3,3,REASON_EFFECT+REASON_DISCARD)
+		Duel.DiscardHand(tp,nil,3,3,REASON_EFFECT+REASON_DISCARD)
 	end
 end
