@@ -101,7 +101,7 @@ function c40008874.setop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40008874.pencon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsReason(REASON_COST) and re:IsHasType(0x7e0)
+	return e:GetHandler():IsReason(REASON_COST) and re:IsHasType(0xdf1d)
 		and not re:GetHandler():IsCode(40008874)
 end
 function c40008874.pentg(e,tp,eg,ep,ev,re,r,rp,chk)

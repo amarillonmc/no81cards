@@ -26,7 +26,7 @@ function c9950203.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950203,4))
 end
 function c9950203.filter(c)
-	return c:IsSetCard(0xcba5) and c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
+	return c:IsSetCard(0xcba5) and c:IsType(TYPE_MONSTER) and c:GetCode()~=9950167 and c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
 end
 function c9950203.condition2(e,tp,eg,ep,ev,re,r,rp)
 	local tn=Duel.GetTurnPlayer()

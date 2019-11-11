@@ -46,7 +46,7 @@ function c9950194.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950194,0))
 end
 function c9950194.filter(c)
-	return c:IsFaceup() and c:IsRace(RACE_DRAGON)
+	return c:IsFaceup() and c:IsSetCard(0xba5)
 end
 function c9950194.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

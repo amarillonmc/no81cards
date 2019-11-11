@@ -69,7 +69,7 @@ function c9950255.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g1,POS_FACEUP,REASON_COST)
 end
 function c9950255.spfilter(c,e,tp)
-	return c:IsSetCard(0xba5,0xbc8) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsSetCard(0xba5,0xbc8) and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c9950255.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

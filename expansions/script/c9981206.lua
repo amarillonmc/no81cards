@@ -48,8 +48,8 @@ function c9981206.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,99812061)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetTarget(c9981206.target)
-	e1:SetOperation(c9981206.operation)
+	e1:SetTarget(c9981206.target2)
+	e1:SetOperation(c9981206.operation2)
 	c:RegisterEffect(e1)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
@@ -129,14 +129,14 @@ end
 function c9981206.filter(c)
 	return c:IsFaceup() and c:IsSetCard(0x9bcd) and c:IsAbleToRemove()
 end
-function c9981206.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9981206.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9981206.filter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9981206.filter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,c9981206.filter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
-function c9981206.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9981206.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.Remove(tc,tc:GetPosition(),REASON_EFFECT+REASON_TEMPORARY)~=0 then
 		local e1=Effect.CreateEffect(e:GetHandler())

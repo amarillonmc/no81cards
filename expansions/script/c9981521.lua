@@ -21,7 +21,7 @@ function c9981521.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c9981521.atkcon)
+	e2:SetCondition(c9981521.atkcon2)
 	e2:SetValue(c9981521.atkval)
 	c:RegisterEffect(e2)
 	--multi attack
@@ -88,7 +88,7 @@ function c9981521.ctop(e,tp,eg,ep,ev,re,r,rp)
 		c:AddCounter(0x52,ct)
 	end
 end
-function c9981521.atkcon(e,tp,eg,ep,ev,re,r,rp)
+function c9981521.atkcon2(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
