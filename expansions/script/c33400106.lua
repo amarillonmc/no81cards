@@ -21,13 +21,12 @@ function c33400106.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local sc=Duel.GetMatchingGroupCount(c33400106.cfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
 	if chk==0 then return sc>0  end
 	local cn=Duel.GetCounter(tp,1,0,0x34f)
-	local lvt={}
-	for i=1,2 do
-	 if (i*2)<=cn and i<=sc then lvt[i]=i  end 
-	end
+	local lvt={} 
+	 if cn>=2 and sc>=1 then lvt[1]=1	end
+	 if cn>=2 and sc>=2 and Duel.GetFlagEffect(tp,33400101)>=2 then lvt[2]=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33400106,1))
 	local sc1=Duel.AnnounceNumber(tp,table.unpack(lvt))
-	Duel.RemoveCounter(tp,1,0,0x34f,sc1*2,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,2,REASON_COST)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c33400106.cfilter,tp,LOCATION_GRAVE,0,sc1,sc1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,g:GetCount(),0,0)
@@ -57,16 +56,6 @@ function c33400106.activate(e,tp,eg,ep,ev,re,r,rp)
 	 end
 	end
 	Duel.SpecialSummonComplete()
-	 if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
-	local e4=Effect.CreateEffect(e:GetHandler())
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetTargetRange(1,0)
-	e4:SetTarget(c33400106.splimit)
-	e4:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e4,tp)
-end
-function c33400106.splimit(e,c)
-	return not c:IsSetCard(0x341)
+   Duel.RegisterFlagEffect(tp,33400101,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
+   
 end

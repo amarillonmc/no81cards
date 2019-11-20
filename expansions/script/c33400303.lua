@@ -24,7 +24,7 @@ function c33400303.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c33400303.matfilter(c)
-	return c:IsLinkType(TYPE_RITUAL) and c:IsLinkType(TYPE_MONSTER)
+	return  c:IsLinkType(TYPE_MONSTER) and c:IsSetCard(0x5341)
 end
 function c33400303.rlevel(e,c)
 	local lv=e:GetHandler():GetLevel()
@@ -34,7 +34,7 @@ function c33400303.rlevel(e,c)
 	else return lv end
 end
 function c33400303.cpfilter(c)
-	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_SPELL)  and c:CheckActivateEffect(false,true,false)~=nil
+	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_SPELL)  and c:IsSetCard(0x5341) and c:CheckActivateEffect(false,true,false)~=nil
 end
 function c33400303.cptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then

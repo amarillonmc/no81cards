@@ -21,7 +21,7 @@ function c33400360.initial_effect(c)
 	e4:SetCode(EVENT_BATTLE_DESTROYED)
 	e4:SetProperty(EFFECT_FLAG_BOTH_SIDE)
 	e4:SetRange(LOCATION_FZONE)
-	e4:SetCountLimit(1,33400360)
+	e4:SetCountLimit(1,33400360+10000)
 	e4:SetCondition(c33400360.cacon)
 	e4:SetOperation(c33400360.caop)
 	c:RegisterEffect(e4)
@@ -40,11 +40,12 @@ function c33400360.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c33400360.costfilter(c)
-	return c:IsSetCard(0x5341) and c:IsDiscardable()
+	return c:IsSetCard(0x5341) and c:IsReleasableByEffect()
 end
 function c33400360.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33400360.costfilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,c33400360.costfilter,1,1,REASON_DISCARD+REASON_COST)	
+	local g=Duel.SelectMatchingCard(tp,c33400360.costfilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.Release(g,REASON_COST) 
 end
 function c33400360.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

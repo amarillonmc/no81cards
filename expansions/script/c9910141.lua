@@ -9,7 +9,6 @@ function c9910141.initial_effect(c)
 	e1:SetDescription(aux.Stringid(9910141,1))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -46,20 +45,20 @@ end
 function c9910141.xmfilter(c,tp)
 	return not c:IsType(TYPE_TOKEN) and (c:IsControler(tp) or c:IsAbleToChangeControler())
 end
-function c9910141.xmtarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9910141.xmtarget(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsOnField() and c9910141.xmfilter(chkc) end
 	if chk==0 then return c:GetFlagEffect(9910141)<=1
-		and Duel.IsExistingTarget(c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp)
+		and Duel.IsExistingMatchingCard(c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	c:RegisterFlagEffect(9910141,RESET_CHAIN,0,1)
 end
 function c9910141.xmoperation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD)
+	local g=Duel.SelectMatchingCard(tp,c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp)
+	if g:GetCount()>0 then
+		Duel.HintSelection(g)
+		local tc=g:GetFirst()
 		local og=tc:GetOverlayGroup()
 		if og:GetCount()>0 then
 			Duel.SendtoGrave(og,REASON_RULE)

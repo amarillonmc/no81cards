@@ -50,6 +50,7 @@ function c33400107.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e2,tp)
 		end
 	end
+   Duel.RegisterFlagEffect(tp,33400101,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 end
 function c33400107.filter1(c)
 	return c:IsSetCard(0x3341) or c:IsSetCard(0x3340)

@@ -21,8 +21,8 @@ function c9950143.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
 	e3:SetCountLimit(1,9950143)
-	e3:SetTarget(c9950143.target1)
-	e3:SetOperation(c9950143.operation1)
+	e3:SetTarget(c9950143.target)
+	e3:SetOperation(c9950143.operation)
 	c:RegisterEffect(e3)
 	--negate
 	local e1=Effect.CreateEffect(c)
@@ -33,9 +33,9 @@ function c9950143.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetCondition(c9950143.condition2)
-	e1:SetTarget(c9950143.target2)
-	e1:SetOperation(c9950143.operation2)
+	e1:SetCondition(c9950143.condition)
+	e1:SetTarget(c9950143.target)
+	e1:SetOperation(c9950143.operation)
 	c:RegisterEffect(e1)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
@@ -53,7 +53,7 @@ end
 function c9950143.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950143,0))
 end
-function c9950143.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9950143.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and aux.disfilter1(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
@@ -61,7 +61,7 @@ function c9950143.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-function c9950143.operation1(e,tp,eg,ep,ev,re,r,rp)
+function c9950143.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if ((tc:IsFaceup() and not tc:IsDisabled()) or tc:IsType(TYPE_TRAPMONSTER)) and tc:IsRelateToEffect(e) then
@@ -104,17 +104,17 @@ function c9950143.operation1(e,tp,eg,ep,ev,re,r,rp)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950143,0))
 end
-function c9950143.condition2(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9950143.condition(e,tp,eg,ep,ev,re,r,rp,chk)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
 	return ep~=tp and loc==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
 		and re:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL)
 end
-function c9950143.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9950143.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-function c9950143.operation2(e,tp,eg,ep,ev,re,r,rp)
+function c9950143.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateActivation(ev)
 	Duel.BreakEffect()
 	Duel.Draw(tp,1,REASON_EFFECT)

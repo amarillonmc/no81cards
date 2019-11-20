@@ -41,10 +41,23 @@ function c33400361.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		e1:SetValue(800)
-		tc:RegisterEffect(e1)	
+		e1:SetValue(1000)
+		tc:RegisterEffect(e1)  
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_IMMUNE_EFFECT)
+		e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e3:SetRange(LOCATION_MZONE)
+		e3:SetValue(c33400361.efilter)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e3:SetOwnerPlayer(tp)
+		tc:RegisterEffect(e3) 
 	end
 end
+function c33400361.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+end
+
 function c33400361.thfilter1(c)
 	return  c:IsAbleToHand() and c:IsSetCard(0x5341) and c:IsType(TYPE_MONSTER)
 end

@@ -43,6 +43,7 @@ function c33400108.activate(e,tp,eg,ep,ev,re,r,rp)
 		 e1:SetReset(RESET_PHASE+PHASE_END)
 		 Duel.RegisterEffect(e1,tp)
 	end
+   Duel.RegisterFlagEffect(tp,33400101,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 end
 function c33400108.splimit(e,c)
 	return not c:IsSetCard(0x341)

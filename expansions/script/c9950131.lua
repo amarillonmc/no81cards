@@ -16,8 +16,8 @@ function c9950131.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,9950131)
-	e3:SetTarget(c9950131.drawtg)
-	e3:SetOperation(c9950131.drawop)
+	e3:SetTarget(c9950131.drtg)
+	e3:SetOperation(c9950131.drop)
 	c:RegisterEffect(e3)
 	--tribute summon
 	local e3=Effect.CreateEffect(c)
@@ -57,12 +57,12 @@ end
 function c9950131.filter2(c)
 	return c:IsSetCard(0x9ba5) 
 end
-function c9950131.drawtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9950131.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
 		and Duel.IsExistingMatchingCard(c9950131.filter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-function c9950131.drawop(e,tp,eg,ep,ev,re,r,rp)
+function c9950131.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9950131.filter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()

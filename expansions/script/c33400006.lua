@@ -53,21 +53,20 @@ function c33400006.thfilter2(c,e,tp)
 end
 function c33400006.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil)
-		and Duel.IsExistingTarget(c33400006.thfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g1=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
+	if chk==0 then return  Duel.IsExistingTarget(c33400006.thfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g2=Duel.SelectTarget(tp,c33400006.thfilter2,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g2,1,0,0)
 end
 function c33400006.thop2(e,tp,eg,ep,ev,re,r,rp)
-	local ex,g1=Duel.GetOperationInfo(0,CATEGORY_DESTROY)
 	local ex,g2=Duel.GetOperationInfo(0,CATEGORY_SPECIAL_SUMMON)
-	local tc1=g1:GetFirst()
 	local tc2=g2:GetFirst()
-	if tc1:IsRelateToEffect(e) and tc2:IsRelateToEffect(e) and Duel.Destroy(tc1,REASON_EFFECT)~=0 then
-		Duel.SpecialSummon(tc2,0,tp,tp,false,false,POS_FACEUP)
+	if  tc2:IsRelateToEffect(e)  then
+		if Duel.SpecialSummon(tc2,0,tp,tp,false,false,POS_FACEUP)~=0 then 
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local tc1=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_MZONE,0,1,1,nil)
+		Duel.Destroy(tc1,REASON_EFFECT)
+		end
 	end
 end

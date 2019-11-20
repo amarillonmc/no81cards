@@ -95,6 +95,7 @@ function c9910059.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsSSetable() then
 		if Duel.ChangePosition(c,POS_FACEDOWN)~=1 then return end
+		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end

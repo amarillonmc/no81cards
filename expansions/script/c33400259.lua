@@ -19,10 +19,10 @@ function c33400259.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c33400259.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x7342)
+	return c:IsFaceup() and c:IsSetCard(0x6342)
 end
 function c33400259.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c33400259.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)	
+	return Duel.IsExistingMatchingCard(c33400259.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)  
 		and Duel.IsChainNegatable(ev)
 end
 function c33400259.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -39,13 +39,16 @@ function c33400259.operation(e,tp,eg,ep,ev,re,r,rp)
 		 Duel.Damage(1-tp,500,REASON_EFFECT)  
 		 if Duel.SelectYesNo(tp,aux.Stringid(33400259,0))  then
 		   Duel.NegateEffect(ev)
+			if re:GetHandler():IsRelateToEffect(re) then 
+			   Duel.Destroy(eg,REASON_EFFECT)
+			end
 		 end
 	end
 	if tc:IsCode(ac) then 
-		 Duel.Damage(1-tp,500,REASON_EFFECT)  
+		 Duel.Damage(1-tp,1000,REASON_EFFECT)  
 		 if Duel.SelectYesNo(tp,aux.Stringid(33400259,1)) and Duel.IsExistingTarget(c33400259.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) then 
 			 local g3=Duel.SelectTarget(tp,c33400259.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-			 Duel.SendtoHand(g3,nil,REASON_EFFECT)	 
+			 Duel.SendtoHand(g3,nil,REASON_EFFECT)   
 		 end
 		 if tc:IsSetCard(0x341) and Duel.SelectYesNo(tp,aux.Stringid(33400259,2))then 
 		 Duel.SendtoGrave(tc,REASON_EFFECT)
@@ -54,7 +57,7 @@ function c33400259.operation(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end
 function c33400259.thfilter(c)
-	return c:IsSetCard(0x7342) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x6342) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c33400259.operation2(e,tp,eg,ep,ev,re,r,rp)
 		local cm=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)

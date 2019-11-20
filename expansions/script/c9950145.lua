@@ -7,6 +7,7 @@ function c9950145.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCountLimit(1,9950145)
 	e1:SetTarget(c9950145.target)
 	e1:SetOperation(c9950145.operation)
 	c:RegisterEffect(e1)
@@ -37,7 +38,7 @@ function c9950145.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950145,0))
 end
 function c9950145.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_WARRIOR) and c:IsAbleToGrave()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xba5) and c:IsAbleToGrave()
 end
 function c9950145.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950145.tgfilter,tp,LOCATION_DECK,0,1,nil) end

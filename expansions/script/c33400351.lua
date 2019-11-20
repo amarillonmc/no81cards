@@ -1,6 +1,8 @@
 --魔王-暴虐公
 function c33400351.initial_effect(c)
 	  c:SetUniqueOnField(1,0,33400351)  
+c33400351.dfc_front_side=33400350
+c33400351.dfc_back_side=33400351
 	--ATK UP
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(33400351,0))
@@ -44,6 +46,15 @@ function c33400351.initial_effect(c)
 	e4:SetTarget(c33400351.changetg)
 	e4:SetOperation(c33400351.changeop)
 	c:RegisterEffect(e4)
+	 --back
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e9:SetCode(EVENT_ADJUST)
+	e9:SetRange(LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_HAND+LOCATION_EXTRA)
+	e9:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e9:SetCondition(c33400351.backon)
+	e9:SetOperation(c33400351.backop)
+	c:RegisterEffect(e9)
 end
 function c33400351.filter(c)
 	return c:IsFaceup() and c:IsSetCard(0x5341)
@@ -103,4 +114,17 @@ function c33400351.changeop(e,tp,eg,ep,ev,re,r,rp,chk)
 	if not c:IsRelateToEffect(e) or c:IsFacedown() or c:IsImmuneToEffect(e) then return end
 	c:SetEntityCode(33400350,true)
 	c:ReplaceEffect(33400350,0,0)
+end
+
+function c33400351.backon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c.dfc_front_side and c:GetOriginalCode()==c.dfc_back_side
+end
+function c33400351.backop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tcode=c.dfc_front_side
+	c:SetEntityCode(tcode)
+	Duel.ConfirmCards(tp,Group.FromCards(c))
+	Duel.ConfirmCards(1-tp,Group.FromCards(c))
+	c:ReplaceEffect(tcode,0,0)
 end

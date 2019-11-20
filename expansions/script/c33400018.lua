@@ -30,7 +30,7 @@ function c33400018.initial_effect(c)
 	e2:SetOperation(c33400018.addc)
 	c:RegisterEffect(e2)
 	Duel.AddCustomActivityCounter(33400018,ACTIVITY_SPSUMMON,c33400018.counterfilter)
-	local e3=e1:Clone()
+	local e3=e2:Clone()
 	e3:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 	--to hand   

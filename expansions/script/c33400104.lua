@@ -50,18 +50,18 @@ function c33400104.operation(e,tp,eg,ep,ev,re,r,rp)
 	local sg=eg:Filter(c33400104.spfilter2,nil,e,tp)
 	if ft<sg:GetCount() then return end
 	local ct=Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-	if ct==0 then return end
-	if ct>0 then 
-	local dg=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-		if dg:GetCount()>0 and Duel.GetMatchingGroupCount(c33400104.ss,tp,LOCATION_GRAVE,0,nil)>=3 and Duel.SelectYesNo(tp,aux.Stringid(33400104,0)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local sg1=dg:Select(tp,1,1,nil)
-			Duel.HintSelection(sg1)
-			Duel.Destroy(sg1,REASON_EFFECT)
+	Duel.SpecialSummonComplete()
+	local  tg=Duel.GetMatchingGroup(c33400104.thfilter,tp,LOCATION_GRAVE,0,nil)
+	if tg  and Duel.GetFlagEffect(tp,33400101)>=2 then
+		if Duel.SelectYesNo(tp,aux.Stringid(33400104,0)) then 
+		local tc1=tg:Select(tp,1,1,nil)
+		Duel.SendtoHand(tc1,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc1)
 		end
-   end
+	end 
+	Duel.RegisterFlagEffect(tp,33400101,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 end
-function c33400104.ss(c)
-	return c:IsSetCard(0x3341) or c:IsSetCard(0x3340)
+function c33400104.thfilter(c)
+	return c:IsSetCard(0x3340) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand()
+	and not c:IsCode(33400104)
 end

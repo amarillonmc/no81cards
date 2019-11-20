@@ -42,6 +42,7 @@ function c33400109.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(sg1)
 			Duel.Destroy(sg1,REASON_EFFECT)
 		end
+   Duel.RegisterFlagEffect(tp,33400101,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 end
 function c33400109.effcon(e)
 	return not Duel.IsExistingMatchingCard(Card.IsFacedown,e:GetHandlerPlayer(),LOCATION_SZONE,0,1,nil)

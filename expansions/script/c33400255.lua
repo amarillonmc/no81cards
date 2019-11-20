@@ -38,8 +38,8 @@ function c33400255.activate(e,tp,eg,ep,ev,re,r,rp)
 		if g1:IsExists(c33400255.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(33400255,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND) 
 			local g2=g1:SelectSubGroup(tp,c33400255.check,false,1,3)
-			Duel.DisableShuffleCheck()			 
-			Duel.SendtoHand(g2,nil,REASON_EFFECT)			
+			Duel.DisableShuffleCheck()		   
+			Duel.SendtoHand(g2,nil,REASON_EFFECT)		   
 			Duel.ConfirmCards(1-tp,g2)
 			Duel.ShuffleHand(tp)
 			Duel.SortDecktop(tp,tp,gm+2-g2:GetCount())
@@ -64,25 +64,25 @@ function c33400255.check(g,c)
 	end
 end
 function c33400255.check1(c)
-	 return c:IsSetCard(0x7342) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	 return c:IsSetCard(0x6342) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c33400255.check2(c)
-	 return c:IsSetCard(0x7342) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	 return c:IsSetCard(0x6342) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function c33400255.check3(c)
-	 return c:IsSetCard(0x7342) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+	 return c:IsSetCard(0x6342) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
 end
 function c33400255.thfilter(c)
-	return c:IsSetCard(0x7342) and c:IsAbleToHand()
+	return c:IsSetCard(0x6342) and c:IsAbleToHand()
 end
 function c33400255.thfilter1(c)
-	return c:IsSetCard(0x7342) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x6342) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c33400255.thfilter2(c)
-	return c:IsSetCard(0x7342) and c:IsAbleToHand() and c:IsType(TYPE_SPELL)
+	return c:IsSetCard(0x6342) and c:IsAbleToHand() and c:IsType(TYPE_SPELL)
 end
 function c33400255.thfilter3(c)
-	return c:IsSetCard(0x7342) and c:IsAbleToHand() and c:IsType(TYPE_TRAP)
+	return c:IsSetCard(0x6342) and c:IsAbleToHand() and c:IsType(TYPE_TRAP)
 end
 function c33400255.dmcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttacker():IsControler(1-tp) and Duel.GetAttackTarget()==nil

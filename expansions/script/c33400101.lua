@@ -43,4 +43,5 @@ function c33400101.activate(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e4)
 	end
+   Duel.RegisterFlagEffect(tp,33400101,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 end

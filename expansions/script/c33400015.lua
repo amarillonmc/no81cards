@@ -22,7 +22,6 @@ function c33400015.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,33400015+10000)
-	e2:SetLabel(2)
 	e2:SetCost(c33400015.spcost2)
 	e2:SetTarget(c33400015.sptg2)
 	e2:SetOperation(c33400015.spop2)
@@ -60,11 +59,14 @@ function c33400015.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33400015.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=e:GetLabel()
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,ct,REASON_COST) and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	local ft=0
+	if e:GetHandler():GetFlagEffect(33401301)>0 then ft=1 end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,2,REASON_COST) and ((ft==1) or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)) end   
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,2,REASON_COST)
+	if ft==0 then 
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	end
 end
 function c33400015.spfilter2(c,e,tp)
 	return c:IsSetCard(0x3341) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)

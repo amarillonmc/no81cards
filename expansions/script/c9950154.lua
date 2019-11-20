@@ -25,8 +25,7 @@ function c9950154.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,42790072)
-	e3:SetCost(c9950154.spcost)
+	e3:SetCountLimit(1,9950154)
 	e3:SetTarget(c9950154.sptg2)
 	e3:SetOperation(c9950154.spop2)
 	c:RegisterEffect(e3)
@@ -75,16 +74,6 @@ function c9950154.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c9950154.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c9950154.splimit)
-	Duel.RegisterEffect(e1,tp)
-end
 function c9950154.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsSetCard(0xba5)
 end
@@ -103,4 +92,12 @@ function c9950154.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c9950154.splimit)
+	Duel.RegisterEffect(e1,tp)
 end

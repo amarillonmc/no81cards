@@ -37,14 +37,10 @@ function c33400033.initial_effect(c)
 	--Equip Okatana
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_SUMMON_SUCCESS)
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCondition(c33400033.Eqcon1)
 	e4:SetOperation(c33400033.Eqop1)
 	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e5)
 	--negate
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(33400033,0))
@@ -140,10 +136,6 @@ end
 function c33400033.chainlm(e,rp,tp)
 	return tp==rp
 end
-function c33400033.Eqcon1(e,tp,eg,ep,ev,re,r,rp)
-	if not re then return true end
-	return not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS)
-end
 function c33400033.Eqop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsLocation(LOCATION_MZONE) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
@@ -200,7 +192,7 @@ end
 function c33400033.valcon(e,re,r,rp)
 	return r==REASON_BATTLE
 end
-function c33400033.op3(e,tp,eg,ep,ev,re,r,rp)	   
+function c33400033.op3(e,tp,eg,ep,ev,re,r,rp)	  
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 			Duel.SelectTarget(tp,c33400033.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
 			local tc=Duel.GetFirstTarget()

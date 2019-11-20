@@ -33,21 +33,43 @@ end
 function c33400111.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
 	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)   
-   local dg=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-		if dg:GetCount()>0 and  Duel.SelectYesNo(tp,aux.Stringid(33400111,0)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local sg1=dg:Select(tp,1,1,nil)
-			Duel.HintSelection(sg1)
-			Duel.SendtoGrave(sg1,REASON_EFFECT)
+	if Duel.IsExistingMatchingCard(aux.disfilter1,tp,0,LOCATION_ONFIELD,1,nil) then 
+		local g=Duel.GetMatchingGroup(aux.disfilter1,tp,0,LOCATION_ONFIELD,nil)
+		local tc=g:GetFirst()
+		if not tc then return end
+		local c=e:GetHandler()
+		while tc do
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,2)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,2)
+			tc:RegisterEffect(e2)
+			if tc:IsType(TYPE_TRAPMONSTER) then
+				local e3=Effect.CreateEffect(c)
+				e3:SetType(EFFECT_TYPE_SINGLE)
+				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,2)
+				tc:RegisterEffect(e3)
+			end
+			tc=g:GetNext()
 		end
-	local dg2=Duel.GetMatchingGroup(c33400111.filter,tp,LOCATION_REMOVED,0,nil,e,tp)
-	   if Duel.GetMatchingGroupCount(c33400111.ss,tp,LOCATION_GRAVE,0,nil)>=3 and  dg2:GetCount()>0  and Duel.SelectYesNo(tp,aux.Stringid(33400111,1)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg2=dg2:Select(tp,1,1,nil)
-			Duel.HintSelection(sg2)
-			Duel.SpecialSummon(sg2,0,tp,tp,false,false,POS_FACEUP)
-	  end
+   end 
+	local tg=Duel.GetMatchingGroup(c33400111.thfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,nil)
+	if tg and Duel.SelectYesNo(tp,aux.Stringid(33400111,0)) and Duel.GetFlagEffect(tp,33400101)>=2 then
+	 tc1=tg:Select(tp,1,2,nil)
+	 Duel.SendtoHand(tc1,nil,REASON_EFFECT)
+	 Duel.ConfirmCards(1-tp,tc1)
+	end
+	Duel.RegisterFlagEffect(tp,33400101,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
+end
+function c33400111.thfilter(c)
+	return c:IsSetCard(0x3340) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand()
+   and not c:IsCode(33400111)
 end
 function c33400111.filter(c,e,tp)
 	return c:IsSetCard(0x341) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

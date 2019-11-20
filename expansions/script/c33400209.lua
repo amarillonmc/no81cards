@@ -47,8 +47,12 @@ function c33400209.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33400209.dmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)   
+	 local ft=0
+	if e:GetHandler():GetFlagEffect(33401301)>0 then ft=1 end
+	if chk==0 then return  ((ft==1) or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)) end   
+	if ft==0 then 
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	end
 end
 function c33400209.dmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
@@ -75,13 +79,13 @@ function c33400209.dmop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e2:SetCode(EVENT_CHAINING)
 			e2:SetReset(RESET_PHASE+PHASE_END)
-			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)		
+			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)	  
 			e2:SetOperation(c33400209.regop)
 			Duel.RegisterEffect(e2,tp)
 			local e3=Effect.CreateEffect(e:GetHandler())
 			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e3:SetCode(EVENT_CHAIN_SOLVED)
-			e3:SetReset(RESET_PHASE+PHASE_END)	 
+			e3:SetReset(RESET_PHASE+PHASE_END)   
 			e3:SetCondition(c33400209.damcon)
 			e3:SetOperation(c33400209.damop)
 			Duel.RegisterEffect(e3,tp)

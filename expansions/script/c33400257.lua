@@ -26,8 +26,11 @@ function c33400257.refilter(c)
 	return (c:IsSetCard(0x341) or c:IsSetCard(0x340)) and c:IsReleasable()
 end
 function c33400257.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c33400257.refilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler(),e,tp) and Duel.IsExistingMatchingCard(c33400257.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	local g=Duel.SelectMatchingCard(tp,c33400257.refilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local loc=LOCATION_ONFIELD
+	if ft==0 then loc=LOCATION_MZONE end
+	if chk==0 then return Duel.IsExistingMatchingCard(c33400257.refilter,tp,loc,0,1,e:GetHandler(),e,tp) and Duel.IsExistingMatchingCard(c33400257.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	local g=Duel.SelectMatchingCard(tp,c33400257.refilter,tp,loc,0,1,1,e:GetHandler())
 	Duel.Release(g,REASON_COST)
 end
 function c33400257.filter(c,e,tp)
@@ -47,7 +50,7 @@ function c33400257.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33400257.nefilter(c,tp)
-	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0x7342)
+	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0x6342)
 end
 function c33400257.condition(e,tp,eg,ep,ev,re,r,rp)
 	if rp~=1-tp or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end

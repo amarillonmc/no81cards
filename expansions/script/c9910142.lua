@@ -2,97 +2,74 @@
 function c9910142.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_EQUIP)
+	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DISABLE)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CONTINUOUS_TARGET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCost(c9910142.cost)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_DAMAGE_STEP)
+	e1:SetCondition(c9910142.condition)
 	e1:SetTarget(c9910142.target)
-	e1:SetOperation(c9910142.operation)
+	e1:SetOperation(c9910142.tgop)
 	c:RegisterEffect(e1)
-end
-function c9910142.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local c=e:GetHandler()
-	local cid=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_REMAIN_FIELD)
-	e1:SetProperty(EFFECT_FLAG_OATH)
-	e1:SetReset(RESET_CHAIN)
-	c:RegisterEffect(e1)
+	--atk down
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_DISABLED)
-	e2:SetOperation(c9910142.tgop)
-	e2:SetLabel(cid)
-	e2:SetReset(RESET_CHAIN)
-	Duel.RegisterEffect(e2,tp)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_UPDATE_ATTACK)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e2:SetTarget(aux.ctg)
+	e2:SetValue(-1500)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e3)
+	--disable
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_DISABLE)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e4:SetTarget(aux.ctg)
+	c:RegisterEffect(e4)
+	--destroy
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e5:SetRange(LOCATION_SZONE)
+	e5:SetCode(EVENT_LEAVE_FIELD)
+	e5:SetCondition(c9910142.descon)
+	e5:SetOperation(c9910142.desop)
+	c:RegisterEffect(e5)
+	--disable spsummon
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(9910142,0))
+	e6:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_SPSUMMON)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetCountLimit(1)
+	e6:SetCondition(c9910142.discon)
+	e6:SetCost(c9910142.discost)
+	e6:SetTarget(c9910142.distg)
+	e6:SetOperation(c9910142.disop)
+	c:RegisterEffect(e6)
 end
-function c9910142.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local cid=Duel.GetChainInfo(ev,CHAININFO_CHAIN_ID)
-	if cid~=e:GetLabel() then return end
-	if e:GetOwner():IsRelateToChain(ev) then
-		e:GetOwner():CancelToGrave(false)
-	end
+function c9910142.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
 function c9910142.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
 end
 function c9910142.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c9910142.filter(chkc) end
-	if chk==0 then return e:IsHasType(EFFECT_TYPE_ACTIVATE)
-		and Duel.IsExistingTarget(c9910142.filter,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+	if chk==0 then return Duel.IsExistingTarget(c9910142.filter,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c9910142.filter,tp,0,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
-function c9910142.eqlimit(e,c)
-	return c:GetControler()~=e:GetHandlerPlayer() and c:IsType(TYPE_EFFECT)
-end
-function c9910142.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9910142.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsLocation(LOCATION_SZONE) then return end
-	if not c:IsRelateToEffect(e) or c:IsStatus(STATUS_LEAVE_CONFIRMED) then return end
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsType(TYPE_MONSTER) then
-		if not Duel.Equip(tp,c,tc) then return end
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_EQUIP)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(-1500)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_UPDATE_DEFENSE)
-		c:RegisterEffect(e2)
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_EQUIP)
-		e3:SetCode(EFFECT_DISABLE)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e3)
-		local e4=Effect.CreateEffect(c)
-		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetCode(EFFECT_EQUIP_LIMIT)
-		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e4:SetValue(c9910142.eqlimit)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e4)
-		--disable spsummon
-		local e11=Effect.CreateEffect(c)
-		e11:SetDescription(aux.Stringid(9910142,0))
-		e11:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
-		e11:SetType(EFFECT_TYPE_QUICK_O)
-		e11:SetCode(EVENT_SPSUMMON)
-		e11:SetRange(LOCATION_SZONE)
-		e11:SetCountLimit(1)
-		e11:SetCondition(c9910142.discon)
-		e11:SetCost(c9910142.discost)
-		e11:SetTarget(c9910142.distg)
-		e11:SetOperation(c9910142.disop)
-		e11:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e11)
+	if c:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsRelateToEffect(e) then
 		--cannot be material
 		local e5=Effect.CreateEffect(c)
 		e5:SetType(EFFECT_TYPE_SINGLE)
@@ -118,12 +95,21 @@ function c9910142.operation(e,tp,eg,ep,ev,re,r,rp)
 		local e10=e5:Clone()
 		e10:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 		tc:RegisterEffect(e10)
-	else
-		c:CancelToGrave(false)
+		c:SetCardTarget(tc)
+		--workaround
+		Duel.AdjustInstantly(c)
 	end
 end
 function c9910142.fuslimit(e,c,sumtype)
 	return sumtype==SUMMON_TYPE_FUSION
+end
+function c9910142.descon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=c:GetFirstCardTarget()
+	return tc and eg:IsContains(tc)
+end
+function c9910142.desop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 end
 function c9910142.discon(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=ep and Duel.GetCurrentChain()==0

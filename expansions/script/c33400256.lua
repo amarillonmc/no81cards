@@ -56,7 +56,7 @@ function c33400256.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33400256.spfilter(c,e,tp)
-	return c:IsSetCard(0x7342) and c:IsType(TYPE_MONSTER) and  c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x6342) and c:IsType(TYPE_MONSTER) and  c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c33400256.operation2(e,tp,eg,ep,ev,re,r,rp)
 		local cm=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)

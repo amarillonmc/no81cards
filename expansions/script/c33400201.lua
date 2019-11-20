@@ -56,7 +56,7 @@ function c33400201.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function c33400201.thfilter1(c)
-	return c:IsSetCard(0x7342) and c:IsAbleToHand()
+	return c:IsSetCard(0x6342) and c:IsAbleToHand()
 end
 function c33400201.thop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,3)

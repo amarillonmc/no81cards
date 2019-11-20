@@ -1,6 +1,5 @@
 --时崎狂三---时之战士
 function c33400008.initial_effect(c)
-	  --link summon
 	aux.AddLinkProcedure(c,c33400008.mfilter,2)
 	c:EnableReviveLimit()
 		--activate from hand
@@ -88,7 +87,7 @@ function c33400008.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33400008.mfilter(c)
-   return c:IsLinkSetCard(0x341)
+	return c:IsLinkSetCard(0x341)
 end
 function c33400008.afilter(c)
 	return c:IsSetCard(0x3340) and c:IsType(TYPE_QUICKPLAY)

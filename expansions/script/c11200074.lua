@@ -1,5 +1,6 @@
 --铃仙
 function c11200074.initial_effect(c)
+	c:EnableReviveLimit()
 --
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1164)

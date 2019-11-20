@@ -1,7 +1,7 @@
 --时崎狂三 奇袭
 function c33400014.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,8,2,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3341),8,2)
 	c:EnableReviveLimit()
 	 --direct attack
 	local e1=Effect.CreateEffect(c)
@@ -38,11 +38,14 @@ function c33400014.dacon(e)
 	return e:GetHandler():GetOverlayCount()>0
 end
 function c33400014.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=e:GetLabel()
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,ct,REASON_COST) and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+local ft=0
+	if e:GetHandler():GetFlagEffect(33401301)>0 then ft=1 end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,2,REASON_COST) and  ((ft==1) or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x34f,2,REASON_COST)
+	if ft==0 then 
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	end
 end
 function c33400014.imop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

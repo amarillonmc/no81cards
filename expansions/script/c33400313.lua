@@ -34,8 +34,12 @@ function c33400313.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3343) and c:IsType(TYPE_RITUAL)
 end
 function c33400313.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	  local ft=0
+	if e:GetHandler():GetFlagEffect(33401301)>0 then ft=1 end
+	if chk==0 then return  ((ft==1) or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)) end   
+	if ft==0 then 
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	end
 end
 function c33400313.filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -74,7 +78,7 @@ function c33400313.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e3)
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetCode(EFFECT_SET_DEFENSE)		
+		e4:SetCode(EFFECT_SET_DEFENSE)	  
 		e4:SetValue(0)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e4)
@@ -101,7 +105,7 @@ function c33400313.olop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33400313,3))
 	local g=Duel.SelectMatchingCard(tp,c33400313.olfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then	 
+	if c:IsRelateToEffect(e) then	
 		if g:GetCount()>0 then
 			Duel.Overlay(c,g)
 		end

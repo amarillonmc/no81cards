@@ -46,6 +46,7 @@ end
 --e5
 function c33400003.con5(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not re then return end
 	if r&REASON_LINK~=0 or c:IsReason(REASON_BATTLE)  or c:IsReason(REASON_MATERIAL) then return end 
 	return  re:GetOwner():IsSetCard(0x3341) or re:GetOwner():IsSetCard(0x3340)  
 end

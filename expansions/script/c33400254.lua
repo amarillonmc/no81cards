@@ -70,7 +70,7 @@ function c33400254.filter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c33400254.thfilter(c)
-	return c:IsSetCard(0x7342) and c:IsAbleToHand()
+	return c:IsSetCard(0x6342) and c:IsAbleToHand()
 end
 function c33400254.operation2(e,tp,eg,ep,ev,re,r,rp)
 		local cm=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)

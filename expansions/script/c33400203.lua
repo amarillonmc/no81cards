@@ -2,7 +2,6 @@
 function c33400203.initial_effect(c)
 	--send to grave
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(33400203,0))
 	e1:SetCategory(CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
@@ -11,19 +10,14 @@ function c33400203.initial_effect(c)
 	e1:SetTarget(c33400203.target)
 	e1:SetOperation(c33400203.operation)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
-	c:RegisterEffect(e2)
 	local e3=e1:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 	 --special summon
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(33400203,0))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetHintTiming(0,TIMING_END_PHASE)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1,33400203+10000)
 	e4:SetCost(c33400203.spcost1)
@@ -32,7 +26,7 @@ function c33400203.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c33400203.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x341) and c:IsAbleToGrave()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6342) and c:IsAbleToGrave()
 end
 function c33400203.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33400203.tgfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -50,16 +44,25 @@ function c33400203.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c33400203.spfilter1(c,e,tp,ec)
-	return c:IsSetCard(0x7342) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x6342) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c33400203.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33400203.spfilter1,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
 function c33400203.spop1(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c33400203.spfilter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT}
+	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
+	 Duel.ConfirmDecktop(tp,1)
+	local g=Duel.GetDecktopGroup(tp,1)
+	local tc=g:GetFirst() 
+	if tc:IsCode(ac) then 
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local g=Duel.SelectMatchingCard(tp,c33400203.spfilter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+			if g:GetCount()>0 then
+				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+			end
 	end
+	
 end

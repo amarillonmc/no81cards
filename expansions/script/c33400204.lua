@@ -23,7 +23,7 @@ function c33400204.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c33400204.thfilter(c,tp)
-	return c:IsSetCard(0x7342)  and (c:IsAbleToGrave() or not c:IsForbidden()) and (c:GetType()==0x20004 or c:GetType()==0x20002)
+	return c:IsSetCard(0x6342)  and (c:IsAbleToGrave() or not c:IsForbidden()) and (c:GetType()==0x20004 or c:GetType()==0x20002)
 end
 function c33400204.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33400204.thfilter,tp,LOCATION_DECK,0,1,nil,tp) end
@@ -47,7 +47,7 @@ function c33400204.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33400204.tdfilter(c)
-	return c:IsSetCard(0x7342) and c:IsAbleToDeck()
+	return c:IsSetCard(0x6342) and c:IsAbleToDeck()
 end
 function c33400204.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c33400204.tdfilter(chkc) end

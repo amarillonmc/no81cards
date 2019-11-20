@@ -59,6 +59,7 @@ function c33400110.activate(e,tp,eg,ep,ev,re,r,rp)
 				 sc=g:GetNext()
 			end
 		end
+   Duel.RegisterFlagEffect(tp,33400101,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 end
 function c33400110.distg(e,c)
 	local tc=e:GetLabelObject()

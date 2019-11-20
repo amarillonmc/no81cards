@@ -50,26 +50,26 @@ function c33400220.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e5:SetProperty(EFFECT_FLAG_DELAY)
-	e5:SetCondition(c33400220.Eqcon1)
 	e5:SetOperation(c33400220.Eqop1)
 	c:RegisterEffect(e5)
 end
 function c33400220.mfilter(c,xyzc)
-	return c:IsXyzType(TYPE_XYZ) and  c:IsSetCard(0x341)
+	return c:IsXyzType(TYPE_XYZ) and  c:IsSetCard(0x341) and c:IsRankAbove(6)
 end
 function c33400220.xyzcheck(g)
-	return g:GetClassCount(Card.GetRank)>=2
+	return  g:IsExists(Card.IsSetCard,1,nil,0x6342)
 end
 function c33400220.cfilter(c)
-	return c:IsSetCard(0x341)  and  c:IsType(TYPE_XYZ) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x341)  and  c:IsType(TYPE_XYZ) and c:IsAbleToRemoveAsCost() and c:IsRankAbove(6)
 end
 function c33400220.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x341) 
 end
 function c33400220.xyzop(e,tp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c33400220.cfilter,tp,LOCATION_GRAVE,0,5,nil) end
-	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c33400220.cfilter,tp,LOCATION_GRAVE,0,5,5,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c33400220.cfilter,tp,LOCATION_GRAVE,0,2,nil) end
+	 local g1=Duel.GetMatchingGroup(c33400220.cfilter,tp,LOCATION_GRAVE,0,nil)
+	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE) 
+	local g=g1:SelectSubGroup(tp,c33400220.xyzcheck,false,2,99)	 
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c33400220.macon(e,tp,eg,ep,ev,re,r,rp)
@@ -91,8 +91,12 @@ function c33400220.maop(e,tp,eg,ep,ev,re,r,rp)
 		end
 end
 function c33400220.dmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)   
+	local ft=0
+	if e:GetHandler():GetFlagEffect(33401301)>0 then ft=1 end
+	if chk==0 then return ((ft==1) or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)) end
+	if ft==0 then 
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	end
 end
 function c33400220.dmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc2=e:GetHandler()  
@@ -177,10 +181,6 @@ function c33400220.operation2(e,tp,eg,ep,ev,re,r,rp)
 		  Duel.SortDecktop(tp,1-tp,cm2)
 end
 --e5
-function c33400220.Eqcon1(e,tp,eg,ep,ev,re,r,rp)
-	if not re then return true end
-	return not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS)
-end
 function c33400220.Eqop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsLocation(LOCATION_MZONE) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then

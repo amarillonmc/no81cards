@@ -1,9 +1,9 @@
 --时崎狂三-暗影之主
 function c33400009.initial_effect(c)
-	 --link summon
-	 aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x341),2,99,c33400009.lcheck)
+	--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x341),2,99,c33400009.lcheck)
 	c:EnableReviveLimit()
-	 --activate from hand
+	--activate from hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_QP_ACT_IN_NTPHAND)

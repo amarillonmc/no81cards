@@ -17,7 +17,7 @@ function c33700905.initial_effect(c)
 	--act limit
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetRange(LOCATION_MZONE)
+	e3:SetRange(LOCATION_SZONE)
 	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e3:SetTargetRange(1,1)

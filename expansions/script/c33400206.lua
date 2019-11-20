@@ -26,13 +26,13 @@ function c33400206.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c33400206.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x7342)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x6342)
 end
 function c33400206.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c33400206.thfilter(c)
-	return c:IsSetCard(0x7342) and c:IsAbleToHand()
+	return c:IsSetCard(0x6342) and c:IsAbleToHand()
 end
 function c33400206.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33400206.thfilter,tp,LOCATION_DECK,0,1,nil) end

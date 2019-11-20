@@ -40,7 +40,7 @@ function c33400258.datg(e,c)
 end
 function c33400258.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=eg:GetFirst()
-	return ep~=tp and rc:IsControler(tp) and rc:IsSetCard(0x7342)
+	return ep~=tp and rc:IsControler(tp) and rc:IsSetCard(0x6342)
 end
 function c33400258.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and chkc:IsAbleToGrave() end
@@ -52,7 +52,7 @@ end
 function c33400258.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and  tc:IsType(TYPE_MONSTER)  then		   
+		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and  tc:IsType(TYPE_MONSTER)  then		
 				Duel.Damage(1-tp,tc:GetBaseAttack()/2,REASON_EFFECT)		   
 		end
 	end

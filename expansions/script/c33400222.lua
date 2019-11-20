@@ -173,7 +173,7 @@ function c33400222.indct(e,re,r,rp)
 	else return 0 end
 end
 function c33400222.refilter(c)
-	return c:IsSetCard(0x7342)  and c:IsReleasable()
+	return c:IsSetCard(0x6342)  and c:IsReleasable()
 end
 function c33400222.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33400222.refilter,tp,LOCATION_ONFIELD,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
@@ -218,19 +218,19 @@ function c33400222.filter(c,e,tp)
 end
 function c33400222.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and eg:IsExists(c33400222.filter,1,nil,nil,tp)
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,33400224,0x341+0x7342,0x4011,1000,1000,4,RACE_SPELLCASTER,ATTRIBUTE_DARK) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,33400224,0x341+0x6342,0x4011,1000,1000,4,RACE_SPELLCASTER,ATTRIBUTE_DARK) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 end
 function c33400222.tkop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,33400224,0x7342,0x4011,1000,1000,4,RACE_SPELLCASTER,ATTRIBUTE_DARK) then return end
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,33400224,0x6342,0x4011,1000,1000,4,RACE_SPELLCASTER,ATTRIBUTE_DARK) then return end
 	local token=Duel.CreateToken(tp,33400224)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 end
 
 function c33400222.cfilter2(c)
-	return c:IsSetCard(0x7342)
+	return c:IsSetCard(0x6342)
 end
 function c33400222.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,c33400222.cfilter2,1,nil) and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
@@ -267,5 +267,5 @@ function c33400222.activate(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e3)
 		end 
 	Duel.BreakEffect()
-	Duel.Destroy(tc,REASON_EFFECT)	 
+	Duel.Destroy(tc,REASON_EFFECT)   
 end

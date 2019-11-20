@@ -76,8 +76,9 @@ function c33400105.activate(e,tp,eg,ep,ev,re,r,rp)
 		  Duel.ShuffleHand(tp)
 		  Duel.SortDecktop(tp,1-tp,cm2-1)
 		  else Duel.SortDecktop(tp,1-tp,cm2) 
-		  end					   
+		  end					  
 	end
+	Duel.RegisterFlagEffect(tp,33400101,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 end
 function c33400105.filter(c)
 	return (c:IsSetCard(0x3341) or c:IsSetCard(0x3340)) and c:IsAbleToHand()

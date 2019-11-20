@@ -1,7 +1,7 @@
 --憧憬的战士 本条二亚
 function c33400208.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,nil,6,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x341),6,2)
 	c:EnableReviveLimit()
 	 --to grave
 	local e2=Effect.CreateEffect(c)
@@ -38,20 +38,29 @@ end
 function c33400208.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) end
 	if chk==0 then return Duel.IsExistingTarget(c33400208.tgft,tp,LOCATION_REMOVED,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33400208,2))
-	local g=Duel.SelectTarget(tp,c33400208.tgft,tp,LOCATION_REMOVED,0,1,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,0,0,0)
 end
 function c33400208.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local sg=tg:Filter(Card.IsRelateToEffect,nil,e)
-	if sg:GetCount()>0 then
+   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT}
+	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
+	 Duel.ConfirmDecktop(1-tp,1)
+	local g=Duel.GetDecktopGroup(1-tp,1)
+	local tc=g:GetFirst()
+	if tc:IsCode(ac) then 
+		local sg=Duel.SelectMatchingCard(tp,c33400208.tgft,tp,LOCATION_REMOVED,0,1,2,nil)
+		if sg:GetCount()>0 then
 		Duel.SendtoGrave(sg,REASON_EFFECT+REASON_RETURN)
+		end
 	end
 end
 function c33400208.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)   
+	local ft=0
+	if e:GetHandler():GetFlagEffect(33401301)>0 then ft=1 end
+	if chk==0 then return  ((ft==1) or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)) end   
+	if ft==0 then 
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	end
 end
 function c33400208.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) end
@@ -74,7 +83,7 @@ function c33400208.disop(e,tp,eg,ep,ev,re,r,rp)
 	local t2=bit.band(tc:GetType(),0x7)
 	if t1==t2  then 
 		 Duel.Damage(1-tp,500,REASON_EFFECT) 
-		 if Duel.SelectYesNo(tp,aux.Stringid(33400208,3)) then			 
+		 if Duel.SelectYesNo(tp,aux.Stringid(33400208,3)) then	   
 				local e1=Effect.CreateEffect(tc2)
 				e1:SetType(EFFECT_TYPE_FIELD)
 				e1:SetCode(EFFECT_DISABLE)
@@ -90,12 +99,12 @@ function c33400208.disop(e,tp,eg,ep,ev,re,r,rp)
 				e2:SetOperation(c33400208.disop2)
 				e2:SetLabelObject(tc1)
 				e2:SetReset(RESET_PHASE+PHASE_END)
-				Duel.RegisterEffect(e2,tp)		 
+				Duel.RegisterEffect(e2,tp)   
 		 end 
 	end
 	if tc:IsCode(ac) then 
 		  Duel.Damage(1-tp,500,REASON_EFFECT)
-		  if tc1:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(33400208,4))then		  
+		  if tc1:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(33400208,4))then	
 			  Duel.SendtoGrave(tc1,REASON_EFFECT)
 		  end
 		  

@@ -27,8 +27,11 @@ end
 function c33401200.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c33401200.cfilter,1,nil,tp)
 end
+function c33401200.cfilter2(c,tp,rp)
+	return	 c:IsSetCard(0x341) and ((rp==1-tp and c:IsReason(REASON_EFFECT) and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_ONFIELD)) or c:IsReason(REASON_BATTLE))
+end
 function c33401200.condition2(e,tp,eg,ep,ev,re,r,rp)
-	return aux.exccon(e) and eg:IsExists(c33401200.cfilter,1,nil,tp)
+	return aux.exccon(e) and eg:IsExists(c33401200.cfilter2,1,nil,tp,rp)
 end
 function c33401200.dfilter(c)
 	return c:IsSetCard(0x341) and c:IsLevelAbove(1) and c:IsAbleToGrave()
