@@ -40,6 +40,7 @@ function c9910108.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and c:IsAbleToDeck()
 		and Duel.IsExistingMatchingCard(c9910108.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_DECK)
 end
 function c9910108.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

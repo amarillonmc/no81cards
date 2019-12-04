@@ -18,8 +18,8 @@ function c9981048.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
 	e3:SetCost(c9981048.descost)
-	e3:SetTarget(c9981048.destg)
-	e3:SetOperation(c9981048.desop)
+	e3:SetTarget(c9981048.destg2)
+	e3:SetOperation(c9981048.desop2)
 	c:RegisterEffect(e3)
 	--draw
 	local e2=Effect.CreateEffect(c)
@@ -56,14 +56,14 @@ function c9981048.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	e:GetHandler():RegisterEffect(e1)
 end
-function c9981048.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9981048.destg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and c9981048.filter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9981048.filter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,c9981048.filter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-function c9981048.desop(e,tp,eg,ep,ev,re,r,rp)
+function c9981048.desop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
@@ -71,7 +71,7 @@ function c9981048.desop(e,tp,eg,ep,ev,re,r,rp)
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981048,0))
 end
 function c9981048.thfilter(c)
-	return not c:IsCode(9981048) and c:IsSetCard(0x3008) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x3008) and c:IsType(TYPE_MONSTER) and not c:IsCode(9981048) and c:IsAbleToHand()
 end
 function c9981048.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -1,5 +1,6 @@
 --SWAM-一人千面
 function c40008874.initial_effect(c)
+	c:SetUniqueOnField(1,0,40008874)
 	aux.EnablePendulumAttribute(c)
 	--splimit
 	local e0=Effect.CreateEffect(c)
