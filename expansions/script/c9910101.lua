@@ -15,8 +15,7 @@ function c9910101.initial_effect(c)
 	e2:SetDescription(aux.Stringid(9910101,0))
 	e2:SetCategory(CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_IGNITION)
-	e2:SetCountLimit(1)
-	e2:SetLabelObject(c)
+	e2:SetCountLimit(1,9910102)
 	e2:SetCost(c9910101.drcost)
 	e2:SetTarget(c9910101.drtg)
 	e2:SetOperation(c9910101.drop)
@@ -25,15 +24,16 @@ end
 function c9910101.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
-function c9910101.thfilter(c)
-	return c:IsSetCard(0x952) and c:IsAbleToHand() and not c:IsCode(9910101)
-end
 function c9910101.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and e:GetHandler():IsAbleToDeck()
-		and Duel.IsExistingMatchingCard(c9910101.thfilter,tp,LOCATION_DECK,0,1,nil) end
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and c:IsAbleToDeck() end
+end
+function c9910101.thfilter(c)
+	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910101)
 end
 function c9910101.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -55,32 +55,23 @@ function c9910101.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 		end
 	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c9910101.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()==0 then return end
-		Duel.BreakEffect()
-		if Duel.SendtoHand(g,nil,REASON_EFFECT)==0 then return end
-		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleDeck(tp)
-		Duel.BreakEffect()
-		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
+		if not c:IsRelateToEffect(e) then return end
+		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
+		if Duel.IsExistingMatchingCard(c9910101.thfilter,tp,LOCATION_DECK,0,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(9910101,1)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local g=Duel.SelectMatchingCard(tp,c9910101.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+			if #g>0 then
+				Duel.BreakEffect()
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,g)
+			end
+		end
 	end
 end
 function c9910101.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	local c=e:GetLabelObject()
-	local g=e:GetHandler():GetOverlayGroup()
-	if not g:IsContains(c) then return false end
-	g:RemoveCard(c)
-	if g:GetCount()==0 or (g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910101,1))) then
-		Duel.SendtoGrave(c,REASON_COST)
-	elseif Duel.SelectYesNo(tp,aux.Stringid(9910101,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
-		local tg=g:Select(tp,1,1,nil)
-		if tg:GetCount()>0 then
-			Duel.SendtoGrave(tg,REASON_COST)
-		end
-	else e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9910101.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

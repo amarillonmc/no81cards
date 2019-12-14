@@ -25,7 +25,7 @@ function c9910028.initial_effect(c)
 	c:RegisterEffect(e3)
 	--draw
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_DRAW)
+	e4:SetCategory(CATEGORY_HANDES+CATEGORY_DRAW)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_REMOVE)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
@@ -68,8 +68,13 @@ function c9910028.ttop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910028.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c9910028.drop(e,tp,eg,ep,ev,re,r,rp,chk)
-	Duel.Draw(tp,1,REASON_EFFECT)
+	if Duel.Draw(tp,1,REASON_EFFECT)>0 then
+		Duel.BreakEffect()
+		Duel.ShuffleHand(tp)
+		Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
+	end
 end

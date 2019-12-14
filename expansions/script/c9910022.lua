@@ -3,6 +3,13 @@ function c9910022.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,4,2,nil,nil,99)
 	c:EnableReviveLimit()
+	--xyzlimit
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	e0:SetValue(1)
+	c:RegisterEffect(e0)
 	--cannot target
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -27,7 +34,7 @@ function c9910022.initial_effect(c)
 	e3:SetCategory(CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,9910022)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e3:SetCondition(c9910022.tgcon1)
 	e3:SetCost(c9910022.cost1)
 	e3:SetTarget(c9910022.target1)
@@ -44,7 +51,7 @@ function c9910022.initial_effect(c)
 	e4:SetCategory(CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,9910022)
+	e4:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e4:SetCondition(c9910022.tgcon1)
 	e4:SetCost(c9910022.cost2)
 	e4:SetTarget(c9910022.target2)
@@ -61,7 +68,7 @@ function c9910022.initial_effect(c)
 	e5:SetCategory(CATEGORY_TOGRAVE)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1,9910022)
+	e5:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e5:SetCondition(c9910022.tgcon1)
 	e5:SetCost(c9910022.cost3)
 	e5:SetTarget(c9910022.target3)
@@ -142,16 +149,30 @@ function c9910022.target3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910022.filter3,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,nil)
 		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,nil)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,1-tp,LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,1-tp,LOCATION_ONFIELD+LOCATION_HAND)
 end
 function c9910022.operation3(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(c9910022.filter3,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
 	Duel.ConfirmCards(tp,tg)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-		Duel.SendtoGrave(g,REASON_EFFECT)
-	end
 	Duel.ShuffleHand(1-tp)
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_HAND,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
+	local opt=0
+	if g1:GetCount()>0 and g2:GetCount()>0 then
+		opt=Duel.SelectOption(tp,aux.Stringid(9910022,3),aux.Stringid(9910022,4))
+	elseif g1:GetCount()>0 then
+		opt=0
+	elseif g2:GetCount()>0 then
+		opt=1
+	else
+		return
+	end
+	local sg=nil
+	if opt==0 then
+		sg=g1:RandomSelect(tp,1)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		sg=g2:Select(tp,1,1,nil)
+	end
+	Duel.SendtoGrave(sg,REASON_EFFECT)
 end
