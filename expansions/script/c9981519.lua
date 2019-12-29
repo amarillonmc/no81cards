@@ -54,18 +54,18 @@ end
 function c9981519.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local h=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
-		return h<6 and Duel.IsPlayerCanDraw(tp,6-h)
+		return h<5 and Duel.IsPlayerCanDraw(tp,5-h)
 	end
 	local h=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(6-h)
+	Duel.SetTargetParam(5-h)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,6-h)
 end
 function c9981519.op(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local h=Duel.GetFieldGroupCount(p,LOCATION_HAND,0)
-	if h>=6 then return end
-	Duel.Draw(p,6-h,REASON_EFFECT)
+	if h>=5 then return end
+	Duel.Draw(p,5-h,REASON_EFFECT)
 end
 function c9981519.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

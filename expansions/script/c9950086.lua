@@ -111,7 +111,7 @@ function c9950086.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 then return end
 	if not Duel.IsPlayerCanSpecialSummonMonster(tp,9950075,0x3ba5,0x4011,200,200,1,RACE_WARRIOR,ATTRIBUTE_FIRE) then return end
 	for i=1,2 do
-		local token=Duel.CreateToken(tp,9950075)
+		local token=Duel.CreateToken(tp,9950075+i)
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)

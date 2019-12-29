@@ -24,6 +24,16 @@ function c9981520.initial_effect(c)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetValue(c9981520.atkval)
 	c:RegisterEffect(e5)
+ --damage
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9981520,1))
+	e2:SetCategory(CATEGORY_DAMAGE)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e2:SetCode(EVENT_BATTLED)
+	e2:SetCondition(c9981520.damcon)
+	e2:SetTarget(c9981520.damtg)
+	e2:SetOperation(c9981520.damop)
+	c:RegisterEffect(e2)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -42,7 +52,7 @@ function c9981520.atkval(e,c)
 end
 function c9981520.condition(e,tp,eg,ep,ev,re,r,rp)
 	local attr=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_ATTRIBUTE)
-	return ep~=tp and re:IsActiveType(TYPE_MONSTER) and not attr&ATTRIBUTE_LIGHT>0 and Duel.IsChainNegatable(ev)
+	return ep~=tp and re:IsActiveType(TYPE_MONSTER) and not (attr&ATTRIBUTE_LIGHT>0 or attr&ATTRIBUTE_DARK>0) and Duel.IsChainNegatable(ev)
 end
 function c9981520.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -60,4 +70,18 @@ function c9981520.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(eg,REASON_EFFECT)
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981520,1))
 	end
+end
+function c9981520.damcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetAttacker()==e:GetHandler() and Duel.GetAttackTarget()
+end
+function c9981520.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,Duel.GetAttackTarget():GetBaseAttack())
+end
+function c9981520.damop(e,tp,eg,ep,ev,re,r,rp)
+	local bc=Duel.GetAttackTarget()
+	if bc and bc:IsRelateToBattle() and bc:IsFaceup() then
+		Duel.Damage(1-tp,bc:GetBaseAttack(),REASON_EFFECT)
+	end
+ Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981520,0))
 end

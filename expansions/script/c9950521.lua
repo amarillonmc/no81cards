@@ -1,0 +1,75 @@
+--fate·原始神灵·伊修塔尔
+function c9950521.initial_effect(c)
+	--fusion material
+	c:EnableReviveLimit()
+	aux.AddFusionProcCode3(c,9950518,9950519,9950520,true,true)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_ONFIELD+LOCATION_GRAVE,0,Duel.Remove,POS_FACEUP,REASON_COST)
+	--spsummon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c9950521.splimit)
+	c:RegisterEffect(e1)
+	--untargetable
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetTargetRange(0,LOCATION_MZONE)
+	e1:SetValue(c9950521.atlimit)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e2:SetTarget(c9950521.tglimit)
+	e2:SetValue(aux.tgoval)
+	c:RegisterEffect(e2)
+	--immune
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_IMMUNE_EFFECT)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(c9950521.efilter)
+	c:RegisterEffect(e3)
+	--disable spsummon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+	e1:SetTarget(c9950521.sumlimit)
+	c:RegisterEffect(e1)
+	--spsummon bgm
+	 local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e8:SetOperation(c9950521.sumsuc)
+	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e9)
+end
+function c9950521.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950521,0))
+end
+function c9950521.splimit(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
+end
+function c9950521.atlimit(e,c)
+	return c:IsFaceup() and c:IsSetCard(0xba5) and c~=e:GetHandler()
+end
+function c9950521.tglimit(e,c)
+	return c:IsSetCard(0xba5) and c~=e:GetHandler()
+end
+function c9950521.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
+end
+function c9950521.sumlimit(e,c,sump,sumtype,sumpos,targetp)
+	return c:IsAttackAbove(1500)
+end

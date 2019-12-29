@@ -93,6 +93,13 @@ function c9981518.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Draw(p,t-s,REASON_EFFECT)
 	end
 end
+function c9981518.actcon(e)
+	local ph=Duel.GetCurrentPhase()
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+end
+function c9981518.actlimit(e,re,tp)
+	return re:IsActiveType(TYPE_MONSTER)
+end
 function c9981518.efilter(e,te)
 	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end

@@ -20,6 +20,7 @@ function c9950105.initial_effect(c)
 	e2:SetCost(c9950105.atkcost)
 	e2:SetOperation(c9950105.atkop)
 	c:RegisterEffect(e2)
+	c9950105.discard_effect=e2
 	--Damage
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(9950105,1))

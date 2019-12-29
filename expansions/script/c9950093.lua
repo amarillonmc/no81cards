@@ -12,6 +12,7 @@ function c9950093.initial_effect(c)
 	e1:SetTarget(c9950093.thtg)
 	e1:SetOperation(c9950093.thop)
 	c:RegisterEffect(e1)
+	c9950093.discard_effect=e1
 	 --summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9950093,1))

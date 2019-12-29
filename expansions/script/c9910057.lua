@@ -10,7 +10,7 @@ function c9910057.initial_effect(c)
 	c:RegisterEffect(e1)
 	--Search
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetCountLimit(1,9910057)
 	e2:SetRange(LOCATION_HAND)
@@ -19,6 +19,7 @@ function c9910057.initial_effect(c)
 	e2:SetTarget(c9910057.thtg)
 	e2:SetOperation(c9910057.thop)
 	c:RegisterEffect(e2)
+	Duel.AddCustomActivityCounter(9910057,ACTIVITY_SPSUMMON,c9910057.counterfilter)
 	--return to hand
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOHAND)
@@ -30,6 +31,9 @@ function c9910057.initial_effect(c)
 	e3:SetOperation(c9910057.operation)
 	c:RegisterEffect(e3)
 end
+function c9910057.counterfilter(c)
+	return c:IsRace(RACE_FAIRY)
+end
 function c9910057.cfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_FAIRY)
 end
@@ -37,54 +41,44 @@ function c9910057.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c9910057.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9910057.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDiscardable() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
-end
-function c9910057.thfilter(c,e,tp)
-	return c:IsAttack(0) and c:IsDefense(1000) and c:IsType(TYPE_TUNER) and c:IsAbleToHand()
-end
-function c9910057.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local g=Duel.GetMatchingGroup(c9910057.thfilter,tp,LOCATION_DECK,0,nil,e,tp)
-		g=g:Filter(Card.IsCanBeSpecialSummoned,nil,e,0,tp,false,false)
-		return g:GetClassCount(Card.GetCode)>=2
-	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c9910057.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c9910057.thfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetClassCount(Card.GetCode)>=2 then
-		local cg=Group.CreateGroup()
-		for i=1,2 do
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910057,0))
-			local sg=g:Select(tp,1,1,nil)
-			g:Remove(Card.IsCode,nil,sg:GetFirst():GetCode())
-			cg:Merge(sg)
-		end
-		Duel.ConfirmCards(1-tp,cg)
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
-		local tg=cg:RandomSelect(1-tp,1)
-		Duel.ShuffleDeck(tp)
-		local tc=tg:GetFirst()
-		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false) then
-			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-			cg:RemoveCard(tc)
-		end
-		Duel.SendtoHand(cg,nil,REASON_EFFECT)
-	end
-	local e1=Effect.CreateEffect(c)
+	if chk==0 then return Duel.GetCustomActivityCount(9910057,tp,ACTIVITY_SPSUMMON)==0
+		and e:GetHandler():IsDiscardable() end
+	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(c9910057.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c9910057.splimit(e,c)
 	return not c:IsRace(RACE_FAIRY)
+end
+function c9910057.spfilter(c,e,tp)
+	return c:IsAttack(0) and c:IsDefense(1000) and c:IsType(TYPE_TUNER)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c9910057.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local dg=Duel.GetMatchingGroup(c9910057.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
+		return dg:GetClassCount(Card.GetCode)>=3 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK)
+end
+function c9910057.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9910057.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or g:GetClassCount(Card.GetCode)<3 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local sg=g:SelectSubGroup(tp,aux.dncheck,false,3,3)
+	if #sg>0 then
+		Duel.ConfirmCards(1-tp,sg)
+		local tc=sg:RandomSelect(1-tp,1):GetFirst()
+		Duel.ConfirmCards(tp,tc)
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		Duel.ShuffleDeck(tp)
+	end
 end
 function c9910057.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToHand() end

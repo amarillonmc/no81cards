@@ -22,6 +22,7 @@ function c9950055.initial_effect(c)
 	e1:SetTarget(c9950055.destg)
 	e1:SetOperation(c9950055.desop)
 	c:RegisterEffect(e1)
+	c9950055.discard_effect=e1
 	--Damage
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(9950055,1))

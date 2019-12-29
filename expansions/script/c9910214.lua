@@ -43,8 +43,10 @@ function c9910214.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	local g1=g:Filter(Card.IsLocation,nil,LOCATION_REMOVED)
+	if g1:GetCount()==0 then return end
 	if Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		local g2=g:Filter(c9910214.filter,nil,tp)
+		if g2:GetCount()==0 then return end
 		local tc=g2:GetFirst()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)

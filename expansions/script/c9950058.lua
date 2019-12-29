@@ -21,6 +21,7 @@ function c9950058.initial_effect(c)
 	e1:SetTarget(c9950058.destg)
 	e1:SetOperation(c9950058.desop)
 	c:RegisterEffect(e1)
+	c9950058.discard_effect=e1
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)

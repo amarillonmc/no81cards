@@ -9,6 +9,17 @@ function c9981073.initial_effect(c)
 	local e9=e8:Clone()
 	e9:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e9)
+	--to hand
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9981073,1))
+	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1,9981073)
+	e1:SetCost(c9981073.thcost)
+	e1:SetTarget(c9981073.thtg)
+	e1:SetOperation(c9981073.thop)
+	c:RegisterEffect(e1)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9981073,0))
@@ -73,4 +84,28 @@ function c9981073.spop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	end
+end
+function c9981073.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
+function c9981073.thfilter(c,g)
+	return c:IsAbleToHand() and g:IsContains(c)
+end
+function c9981073.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local cg=e:GetHandler():GetColumnGroup()
+	if chk==0 then return Duel.IsExistingMatchingCard(c9981073.thfilter,tp,0,LOCATION_ONFIELD,1,nil,cg) end
+	local g=Duel.GetMatchingGroup(c9981073.thfilter,tp,0,LOCATION_ONFIELD,nil,cg)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
+end
+function c9981073.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local cg=c:GetColumnGroup()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local g=Duel.GetMatchingGroup(c9981073.thfilter,tp,0,LOCATION_ONFIELD,nil,cg)
+		if g:GetCount()>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+		end
+	end
+  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981073,0))
 end

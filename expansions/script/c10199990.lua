@@ -1,4 +1,4 @@
---version 5.30
+--version 9.22
 local m=10199990
 local cm=_G["c"..m]
 if not RealSclVersion then
@@ -10,7 +10,7 @@ if not RealSclVersion then
 	RealSclVersion.GroupFunction={}
 	rsgf=RealSclVersion.GroupFunction 
 	RealSclVersion.EffectFunction={}
-	rsef=RealSclVersion.GroupFunction 
+	rsef=RealSclVersion.EffectFunction 
 	RealSclVersion.ZoneSequenceFunction={}
 	rszsf=RealSclVersion.ZoneSequenceFunction
 	RealSclVersion.OtherFunction={}
@@ -58,10 +58,13 @@ if not RealSclVersion then
 	--rscode.ADD_SETCODE = m
 	--rscode.ADD_FUSION_SETCODE = m+1
 	--rscode.ADD_LINK_SETCODE = m+2 
-	rscode.Extra_Effect=m+100
-	rscode.Extra_Effect2=m+200
-	rscode.SummonFlag=m+300 
-	rscode.RecordSynchroFlag=m+400 
+	rscode.Extra_Effect   =   m+100
+	rscode.Extra_Effect2		=   m+200
+	rscode.SummonFlag   =   m+300 
+	rscode.Extra_Synchro_Material=  m+400 
+	rscode.Extra_Xyz_Material   =   m+401 
+  
+	rscode.Utility_Xyz_Material =   m+500
 
 	rsflag.flaglist={ EFFECT_FLAG_CARD_TARGET,EFFECT_FLAG_PLAYER_TARGET,EFFECT_FLAG_DELAY,EFFECT_FLAG_DAMAGE_STEP,EFFECT_FLAG_DAMAGE_CAL,
 	EFFECT_FLAG_IGNORE_IMMUNE,EFFECT_FLAG_SET_AVAILABLE,EFFECT_FLAG_IGNORE_RANGE,EFFECT_FLAG_SINGLE_RANGE,EFFECT_FLAG_BOTH_SIDE, 
@@ -89,22 +92,38 @@ if not RealSclVersion then
 	rshint.negsum=aux.Stringid(m+1,1) --"negate summon"
 	rshint.negsp=aux.Stringid(m+1,2) --"negate special summon"
 	rshint.darktuner=aux.Stringid(m,14) --"treat as dark tuner"
+	rshint.darksynchro=aux.Stringid(m,15) --"treat as dark synchro"
 
 	rscf.fieldinfo={} --field information for surrounding zones
 	rsef.rsvalinfo={} --value for inside series, inside type etc.
 	rscost.costinfo={} --Cost information 
 	rsef.targetlist={}  --target group list
-	rsef.effectinfo={}  --Effect information
+	rsef.attachinfo={}  --Effect information for attach effect
+ 
+
+
+	rscf.synchro_material_action={} --custom syn material's action
+	rscf.xyz_material_action={} --custom xyz material's action 
+	rssf.synchro_material_group_check=nil -- for mgchk=true
+	--rscf.xyz_material_checking={} --xyz procdure mg checking 
+	rscf.link_material_action={} --custom xyz material's action   
+
+
+	rscf.extratype=TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_PENDULUM+TYPE_LINK 
+	rscf.extratype_r=rscf.extratype + TYPE_RITUAL 
+	rscf.extratype_np=rscf.extratype - TYPE_PENDULUM 
+	rscf.extralist={ TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK }
+
 	--[[
-	c.rssynlv --No level synchro monster's level
-	c.rsnlritlv --No level ritual monster's level
+	mt.rs_synchro_level --No level synchro monster's level
+	mt.rs_ritual_level --No level ritual monster's level
 	--]]
 -----------######Quick Effect Value Effect######---------------
 --Single Val Effect: Base set
 function rsef.SV(cardtbl,code,val,range,con,resettbl,flag,desctbl,ctlimittbl)
 	local tc1,tc2=rsef.GetRegisterCard(cardtbl)
 	local flag2=rsef.GetRegisterProperty(flag)
-	local flagtbl1={ EFFECT_IMMUNE_EFFECT,EFFECT_CANNOT_BE_BATTLE_TARGET,EFFECT_CANNOT_BE_EFFECT_TARGET,EFFECT_CHANGE_CODE,EFFECT_ADD_CODE,EFFECT_CHANGE_RACE,EFFECT_ADD_RACE,EFFECT_CHANGE_ATTRIBUTE,EFFECT_ADD_ATTRIBUTE,EFFECT_UPDATE_ATTACK,EFFECT_UPDATE_DEFENSE }
+	local flagtbl1={ EFFECT_IMMUNE_EFFECT,EFFECT_CANNOT_BE_BATTLE_TARGET,EFFECT_CANNOT_BE_EFFECT_TARGET,EFFECT_CHANGE_CODE,EFFECT_ADD_CODE,EFFECT_CHANGE_RACE,EFFECT_ADD_RACE,EFFECT_CHANGE_ATTRIBUTE,EFFECT_ADD_ATTRIBUTE,EFFECT_UPDATE_ATTACK,EFFECT_UPDATE_DEFENSE,rscode.Utility_Xyz_Material,rscode.Extra_Synchro_Material,rscode.Extra_Xyz_Material,EFFECT_EXTRA_LINK_MATERIAL }
 	local flagtbl2={ EFFECT_CHANGE_LEVEL,EFFECT_CHANGE_RANK,EFFECT_UPDATE_LEVEL,EFFECT_UPDATE_RANK }
 	local tf1=rsof.Table_List(flagtbl1,code)
 	local tf2=rsof.Table_List(flagtbl2,code)
@@ -255,8 +274,8 @@ function rsef.SV_CANNOT_BE_TARGET(cardtbl,tgtbl,valtbl,con,resettbl,flag,desctbl
 end
 --Single Val Effect: Other Limit
 function rsef.SV_LIMIT(cardtbl,lotbl,valtbl,con,resettbl,flag,desctbl) 
-	local codetbl1={"dis","dise","tri","atk","atkan","datk","ress","resns","td","th","cp"}
-	local codetbl2={ EFFECT_DISABLE,EFFECT_DISABLE_EFFECT,EFFECT_CANNOT_TRIGGER,EFFECT_CANNOT_ATTACK,EFFECT_CANNOT_ATTACK_ANNOUNCE,EFFECT_CANNOT_DIRECT_ATTACK,EFFECT_UNRELEASABLE_SUM,EFFECT_UNRELEASABLE_NONSUM,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_CHANGE_POSITION }
+	local codetbl1={"dis","dise","tri","atk","atkan","datk","ress","resns","td","th","cp","cost"}
+	local codetbl2={ EFFECT_DISABLE,EFFECT_DISABLE_EFFECT,EFFECT_CANNOT_TRIGGER,EFFECT_CANNOT_ATTACK,EFFECT_CANNOT_ATTACK_ANNOUNCE,EFFECT_CANNOT_DIRECT_ATTACK,EFFECT_UNRELEASABLE_SUM,EFFECT_UNRELEASABLE_NONSUM,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_CHANGE_POSITION,EFFECT_CANNOT_USE_AS_COST }
 	local effectcodetbl,effectvaluetbl=rsof.Table_Suit(lotbl,codetbl1,codetbl2,valtbl)
 	local resulteffecttbl={}
 	local range=rsef.GetRegisterRange(cardtbl) 
@@ -279,6 +298,31 @@ function rsef.SV_REDIRECT(cardtbl,redtbl,valtbl,con,resettbl,flag,desctbl)
 		table.insert(resulteffecttbl,e1)
 	end
 	return table.unpack(resulteffecttbl)
+end
+--Single Val Effect: Extra Procedure Materials
+function rsef.SV_EXTRA_MATERIAL(cardtbl,proctbl,valtbl,con,resettbl,flag,desctbl,ctlimittbl,range)
+	local codetbl1={"syn","xyz","link"}
+	local codetbl2={ rscode.Extra_Synchro_Material,rscode.Extra_Xyz_Material,EFFECT_EXTRA_LINK_MATERIAL } 
+	range = range or LOCATION_HAND 
+	valtbl = valtbl or { aux.TRUE } 
+	local effectcodetbl,effectvaluetbl=rsof.Table_Suit(proctbl,codetbl1,codetbl2,valtbl)
+	local resulteffecttbl={}
+	for k,effectcode in ipairs(effectcodetbl) do
+		local e1=rsef.SV(cardtbl,effectcode,effectvaluetbl[k],range,con,resettbl,flag,desctbl,ctlimittbl)
+		table.insert(resulteffecttbl,e1)
+	end
+	return table.unpack(resulteffecttbl)
+end
+
+--Single Val Effect: Utility Procedure Materials
+function rsef.SV_Utility_Xyz_Material(cardtbl,val,con,resettbl,flag,desctbl,ctlimittbl,range)
+	val = val or rsef.SV_Utility_Xyz_Material_val
+	range = range or LOCATION_HAND+LOCATION_ONFIELD+LOCATION_EXTRA+LOCATION_DECK+LOCATION_GRAVE 
+	local e1=rsef.SV(cardtbl,rscode.Utility_Xyz_Material,val,range,con,resettbl,flag,desctbl,ctlimittbl)
+	return e1
+end
+function rsef.SV_Utility_Xyz_Material_val(te,xyzc,mg,tp)
+	return true,2
 end
 --Field Val Effect: Base set
 function rsef.FV(cardtbl,code,val,tg,tgrangetbl,range,con,resettbl,flag,desctbl,ctlimittbl)
@@ -462,6 +506,45 @@ function rsef.FV_REDIRECT(cardtbl,redtbl,valtbl,tg,tgrangetbl,con,resettbl,flag,
 	end
 	return table.unpack(resulteffecttbl)
 end
+--Field Val Effect: Extra Procedure Materials
+function rsef.FV_EXTRA_MATERIAL(cardtbl,proctbl,valtbl,tg,tgrangetbl,con,resettbl,flag,desctbl,ctlimittbl,range) 
+	local codetbl1={"syn","xyz","link"}
+	local codetbl2={ rscode.Extra_Synchro_Material,rscode.Extra_Xyz_Material,EFFECT_EXTRA_LINK_MATERIAL } 
+	range = range or rsef.GetRegisterRange(cardtbl) 
+	valtbl = valtbl or { aux.TRUE }
+	tgrangetbl  =   tgrangetbl or {LOCATION_HAND,0}
+	local flag2=rsef.GetRegisterProperty(flag)|EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE 
+	local effectcodetbl,effectvaluetbl=rsof.Table_Suit(proctbl,codetbl1,codetbl2,valtbl)
+	local resulteffecttbl={}
+	for k,effectcode in ipairs(effectcodetbl) do
+		local e1=rsef.FV(cardtbl,effectcode,effectvaluetbl[k],tg,tgrangetbl,range,con,resettbl,flag2,desctbl,ctlimittbl)
+		table.insert(resulteffecttbl,e1)
+	end
+	return table.unpack(resulteffecttbl)	
+end
+--Field Val Effect: Extra Procedure Materials for self
+function rsef.FV_EXTRA_MATERIAL_SELF(cardtbl,proctbl,valtbl,tg,tgrangetbl,con,resettbl,flag,desctbl,ctlimittbl) 
+	local codetbl1={"syn","xyz","link"}
+	local codetbl2={ rscode.Extra_Synchro_Material,rscode.Extra_Xyz_Material,EFFECT_EXTRA_LINK_MATERIAL } 
+	valtbl = valtbl or { function(e,c,mg) return c==e:GetHandler() end }
+	tgrangetbl  =   tgrangetbl or {LOCATION_HAND,0}
+	local flag2=rsef.GetRegisterProperty(flag)|EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE + EFFECT_FLAG_UNCOPYABLE 
+	local effectcodetbl,effectvaluetbl=rsof.Table_Suit(proctbl,codetbl1,codetbl2,valtbl)
+	local resulteffecttbl={}
+	for k,effectcode in ipairs(effectcodetbl) do
+		local e1=rsef.FV(cardtbl,effectcode,effectvaluetbl[k],tg,tgrangetbl,LOCATION_EXTRA,con,resettbl,flag2,desctbl,ctlimittbl) 
+		table.insert(resulteffecttbl,e1)
+	end
+	return table.unpack(resulteffecttbl)	 
+end
+--Field Val Effect: Utility Procedure Materials
+function rsef.FV_Utility_Xyz_Material(cardtbl,val,tg,tgrangetbl,con,resettbl,flag,desctbl,ctlimittbl,range)
+	val = val or rsef.SV_Utility_Xyz_Material_val
+	tgrangetbl  =   tgrangetbl or {LOCATION_MZONE,0}
+	range = range or rsef.GetRegisterRange(cardtbl) 
+	local e1=rsef.FV(cardtbl,rscode.Utility_Xyz_Material,val,tg,tgrangetbl,range,con,resettbl,flag2,desctbl,ctlimittbl)
+	return e1   
+end
 ----------######Quick Effect Activate Effect######---------------
 --Activate Effect: Base set
 function rsef.ACT(cardtbl,code,desctbl,ctlimittbl,cate,flag,con,cost,tg,op,timingtbl,resettbl)
@@ -523,7 +606,7 @@ end
 --Quick Effect No Force: Base set
 function rsef.QO(cardtbl,code,desctbl,ctlimittbl,cate,flag,range,con,cost,tg,op,timingtbl,resettbl)
 	if not code then code=EVENT_FREE_CHAIN end
-	if not timingtbl and code==EVENT_FREE_CHAIN then timingtbl={0,TIMINGS_CHECK_MONSTER } end
+	if not timingtbl and code==EVENT_FREE_CHAIN then timingtbl={0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE } end
 	return rsef.Register(cardtbl,EFFECT_TYPE_QUICK_O,code,desctbl,ctlimittbl,cate,flag,range,con,cost,tg,op,nil,nil,timingtbl,resettbl)
 end 
 --Quick Effect: negate effect/activation/summon/spsummon
@@ -532,7 +615,7 @@ function rsef.QO_NEGATE(cardtbl,negtype,ctlimittbl,waystring,range,con,cost,desc
 	local catelist={CATEGORY_DESTROY,CATEGORY_REMOVE,CATEGORY_TOHAND,CATEGORY_TODECK,CATEGORY_TOGRAVE,0,0}
 	local cate2=rsef.GetRegisterCategory(cate)
 	local _,_,cate3=rsof.Table_Suit(waystring,waylist,catelist)
-	if cate3>0 then
+	if cate3 and cate3>0 then
 		cate2=cate2|cate3
 	end
 	if not range then range=rsef.GetRegisterRange(cardtbl) end
@@ -576,24 +659,25 @@ function rsef.FC(cardtbl,code,desctbl,ctlimittbl,flag,range,con,op,resettbl)
 	return rsef.Register(cardtbl,EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS,code,desctbl,ctlimittbl,nil,flag,range,con,nil,nil,op,nil,nil,nil,resettbl)
 end 
 --Field Continues: Attach an extra effect when base effect is activating
-function rsef.FC_AttachEffect_Activate(cardtbl,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl)
-	return rsef.FC_AttachEffect(cardtbl,0x1,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl) 
+function rsef.FC_AttachEffect_Activate(cardtbl,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
+	return rsef.FC_AttachEffect(cardtbl,0x1,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force) 
 end
 --Field Continues: Attach an extra effect before the base effect solving
-function rsef.FC_AttachEffect_BeforeResolve(cardtbl,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl)
-	return rsef.FC_AttachEffect(cardtbl,0x2,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl) 
+function rsef.FC_AttachEffect_BeforeResolve(cardtbl,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
+	return rsef.FC_AttachEffect(cardtbl,0x2,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force) 
 end
 --Field Continues: Attach an extra effect after the base effect solving
-function rsef.FC_AttachEffect_Resolve(cardtbl,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl)
-	return rsef.FC_AttachEffect(cardtbl,0x4,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl)
+function rsef.FC_AttachEffect_Resolve(cardtbl,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
+	return rsef.FC_AttachEffect(cardtbl,0x4,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
 end
 --Field Continues: base set
 --for old version see code 10199981
-function rsef.FC_AttachEffect(cardtbl,attachtime,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl) 
+function rsef.FC_AttachEffect(cardtbl,attachtime,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force) 
 	if not range then range=rsef.GetRegisterRange(cardtbl) end
 	local c1,var2=rsef.GetRegisterCard(cardtbl)
 	local flag2=rsflag.GetRegisterProperty({flag,"ptg"})
-	local e1=rsef.FV(cardtbl,rscode.Extra_Effect,attachcon,nil,{1,0},range,rsef.FC_AttachEffect_setcon,resettbl,flag2,desctbl1) 
+	local code=not force and rscode.Extra_Effect or rscode.Extra_Effect_FORCE
+	local e1=rsef.FV(cardtbl,code,attachcon,nil,{1,0},range,rsef.FC_AttachEffect_setcon,resettbl,flag2,desctbl1) 
 	e1:SetOperation(attachop) 
 	e1:SetCategory(attachtime)
 	local e2=rsef.I(cardtbl,nil,ctlimittbl,nil,nil,range,aux.FALSE,nil,nil,nil,resettbl)
@@ -601,14 +685,14 @@ function rsef.FC_AttachEffect(cardtbl,attachtime,desctbl1,ctlimittbl,flag,range,
 	if flag2&EFFECT_FLAG_NO_TURN_RESET~=0 then
 		e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	end
-	rsef.effectinfo[e1]=e2
+	rsef.attachinfo[e1]=e2
 	local reset,resetct=0,0
 	if resettbl then 
 		reset,resetct=rsef.RegisterReset(nil,resettbl,true) 
 	end
 	local desc=not desctbl1 and 0 or rsef.RegisterDescription(nil,desctbl1,true)
 	if aux.GetValueType(var2)=="Card" then
-		var2:RegisterFlagEffect(rscode.Extra_Effect,reset,EFFECT_FLAG_CLIENT_HINT,resetct,e1:GetFieldID(),desc)
+		var2:RegisterFlagEffect(code,reset,EFFECT_FLAG_CLIENT_HINT,resetct,e1:GetFieldID(),desc)
 	end
 	if not rsef.FC_AttachEffect_Switch then
 		rsef.FC_AttachEffect_Switch=true
@@ -640,27 +724,27 @@ function rsef.FC_AttachEffect_resetinfo(e,tp,eg,ep,ev,re,r,rp)
 			return 
 		end
 	end 
-	rsef.effectinfo[ev]=baseop
+	rsef.attachinfo[ev]=baseop
 end
 function rsef.ChangeChainOperation2(chainev,changeop,ischange)
 	rsef.ChangeChainOperation(chainev,changeop)
 	if not ischange then
-		rsef.effectinfo[chainev]=changeop
+		rsef.attachinfo[chainev]=changeop
 	end
 end
 function rsef.GetOperation(e,chainev)
-	return rsef.effectinfo[chainev]
+	return rsef.attachinfo[chainev]
 end
 function rsef.FC_AttachEffect_setcon(e)
 	local tp=e:GetHandlerPlayer()
-	local te=rsef.effectinfo[e]
+	local te=rsef.attachinfo[e]
 	te:SetCondition(aux.TRUE)
 	local bool=te:IsActivatable(tp)
 	te:SetCondition(aux.FALSE)
 	return bool 
 end
 function rsef.FC_AttachEffect_changecon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,rscode.Extra_Effect)
+	return Duel.IsPlayerAffectedByEffect(tp,rscode.Extra_Effect) or Duel.IsPlayerAffectedByEffect(tp,rscode.Extra_Effect_FORCE)
 end
 function rsef.FC_AttachEffect_changeop(e,tp,eg,ep,ev,re,r,rp)
 	local parameterlistcheck={e,tp,eg,ep,ev,re,r,rp}
@@ -711,14 +795,39 @@ function rsef.FC_AttachEffect_getgroup(parameterlistcheck,cardlist,attachtime)
 end
 function rsef.FC_AttachEffect_geteffect(parameterlistcheck,parameterlistsolve,attachtime,attachlisttotal)
 	local cardlist={}
+	local attachlist={}
 	local e,tp,eg,ep,ev,re,r,rp=table.unpack(parameterlistcheck)
+	--get force effect 
+	local effectlist={Duel.IsPlayerAffectedByEffect(tp,rscode.Extra_Effect_FORCE)}
+	if #effectlist>0 then
+		for _,effect in pairs(effectlist) do
+			local con=effect:GetValue()
+			local cate=effect:GetCategory() 
+			if (not con or con(effect,tp,eg,ep,ev,re,r,rp)) and effect:GetHandlerPlayer()==e:GetOwnerPlayer() and cate==attachtime then
+				local tc=effect:GetHandler()
+				if tc:IsOnField() then
+					Duel.HintSelection(rsgf.Mix2(tc))
+				else 
+					Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+				end
+				Duel.Hint(HINT_OPSELECTED,1-tp,effect:GetDescription())
+				if attachtime~=0x1 then 
+					table.insert(attachlisttotal,effect)
+					rsef.FC_AttachEffect_Operation_Solve(parameterlistsolve,effect,attachlisttotal)
+				end
+				table.insert(attachlist,effect)
+				local te=rsef.attachinfo[effect]
+				te:UseCountLimit(tp,1)
+			end
+		end
+	end
+	--get not force
 	local g=rsef.FC_AttachEffect_getgroup(parameterlistcheck,cardlist,attachtime)
-	if #g<=0 then return {} end
+	if #g<=0 then return attachlist end
 	local hint=aux.Stringid(m,8)
 	if attachtime==0x2 then hint=aux.Stringid(m,9) end
 	if attachtime==0x4 then hint=aux.Stringid(m,10) end
-	if not Duel.SelectYesNo(tp,hint) then return {} end
-	local attachlist={}
+	if not Duel.SelectYesNo(tp,hint) then return attachlist end
 	local ct=1
 	repeat
 		ct=ct+1
@@ -740,13 +849,13 @@ function rsef.FC_AttachEffect_geteffect(parameterlistcheck,parameterlistsolve,at
 		end
 		local op=Duel.SelectOption(tp,table.unpack(hintlist))+1
 		local effect=effectlist2[op]
-		Duel.Hint(HINT_OPSELECTED,tp,effect:GetDescription())
+		--Duel.Hint(HINT_OPSELECTED,1-tp,effect:GetDescription())
 		if attachtime~=0x1 then 
 			table.insert(attachlisttotal,effect)
 			rsef.FC_AttachEffect_Operation_Solve(parameterlistsolve,effect,attachlisttotal)
 		end
 		table.insert(attachlist,effect)
-		local te=rsef.effectinfo[effect]
+		local te=rsef.attachinfo[effect]
 		te:UseCountLimit(tp,1)
 		local g2=rsef.FC_AttachEffect_getgroup(parameterlistcheck,cardlist,attachtime)
 	until (ct>1 and #g2<=0) or (ct>1 and not Duel.SelectYesNo(tp,aux.Stringid(m,11))) 
@@ -921,7 +1030,8 @@ function rsef.RegisterClone(cardtbl,e1,...)
 	end
 	local _,fid=rsef.RegisterEffect(cardtbl,e2)
 	return e2,fid
-end
+end 
+--Effect: Make Ignition Effect Become Quick Effect
 function rsef.RegisterOPTurn(cardtbl,e1,con2,timingtbl)
 	if not timingtbl then timingtbl={0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE } end
 	local e2,fid=rsef.RegisterClone(cardtbl,e1,"type",EFFECT_TYPE_QUICK_O,"code",EVENT_FREE_CHAIN,"timing",timingtbl)
@@ -932,18 +1042,92 @@ function rsef.RegisterOPTurn(cardtbl,e1,con2,timingtbl)
 	return e2,fid
 end 
 rsef.QO_OPPONENT_TURN=rsef.RegisterOPTurn
+--Effect: Mix X Effect in 1
+function rsef.RegisterMix(cardtbl,code,desctbl,ctlimittbl,catelist,flaglist,range,con,cost,e0,...)
+	local elist={e0,...}
+	desctbl=desctbl or {m+1,3}
+	code=code or e0:GetCode()
+	local e1
+	if e0:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		e1=rsef.ACT(cardtbl,code,desctbl,ctlimittbl,catelist,flaglist,con,cost,rstg.targetmix(elist))
+	elseif e0:IsHasType(EFFECT_TYPE_IGNITION) then
+		range=range or e0:GetActivateLocation()
+		e1=rsef.I(cardtbl,desctbl,ctlimittbl,catelist,flaglist,range,con,cost,rstg.targetmix(elist))
+	elseif e0:IsHasType(EFFECT_TYPE_QUICK_O) then
+		range=range or e0:GetActivateLocation()
+		e1=rsef.QO(cardtbl,code,desctbl,ctlimittbl,catelist,flaglist,range,con,cost,rstg.targetmix(elist))
+	elseif e0:IsHasType(EFFECT_TYPE_TRIGGER_O) and e0:IsHasType(EFFECT_TYPE_FIELD) then
+		range=range or e0:GetActivateLocation()
+		con=con or e0:GetCondition()
+		e1=rsef.FTO(c,code,desctbl,ctlimittbl,catelist,flaglist,range,con,cost,rstg.targetmix(elist))
+	elseif e0:IsHasType(EFFECT_TYPE_TRIGGER_O) and e0:IsHasType(EFFECT_TYPE_SINGLE) then
+		con=con or e0:GetCondition()
+		e1=rsef.STO(c,code,desctbl,ctlimittbl,catelist,flaglist,con,cost,rstg.targetmix(elist))
+	end
+	for _,e in pairs(elist) do
+		e:SetRange(0)
+	end
+	return e1
+end
+function rstg.targetmixcheck(e,tp,eg,ep,ev,re,r,rp,chk,elist)
+	local rightelist={}
+	local selectlist={}
+	for _,e0 in pairs(elist) do 
+		local con,tg,code=e0:GetCondition(),e0:GetTarget(),e0:GetCode()
+		local conres=not con or con(e,tp,eg,ep,ev,re,r,rp)
+		local tgres=not tg or tg(e,tp,eg,ep,ev,re,r,rp,chk)
+		local code=e0:GetCode()
+		local coderes= not code and true or (code==EVENT_FREE_CHAIN or Duel.CheckEvent(code))
+		if conres and tgres and coderes then 
+			table.insert(rightelist,e0)
+			table.insert(selectlist,true)
+			table.insert(selectlist,e0:GetDescription())
+		end
+	end
+	return rightelist,selectlist
+end
+function rstg.targetmix(elist)
+	return function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+		local rightelist,selectlist=rstg.targetmixcheck(e,tp,eg,ep,ev,re,r,rp,0,elist)
+		if chk==0 then 
+			return #rightelist>0
+		end
+		local op=rsof.SelectOption(tp,table.unpack(selectlist))
+		local e0=rightelist[op]
+		e:SetProperty(e0:GetProperty() or 0)
+		e:SetCategory(e0:GetCategory() or 0)
+		e:SetOperation(e0:GetOperation() or aux.TRUE)
+		e0:GetTarget()(e,tp,eg,ep,ev,re,r,rp,1)
+	end
+end
+function rsef.RegisterMix_Easy(cardtbl,ctlimittbl,con,cost,e0,...)
+	return rsef.RegisterMix(cardtbl,nil,nil,nil,nil,nil,nil,con,cost,e0,...)
+end
 --Effect: Register Condition, Cost, Target and Operation 
 function rsef.RegisterSolve(e,con,cost,tg,op)
+	local code=e:GetOwner():GetCode()
 	if con then
+		if type(con)~="function" then
+			Debug.Message(code .. " RegisterSolve con must be function")
+		end
 		e:SetCondition(con)
 	end
 	if cost then
+		if type(cost)~="function" then
+			Debug.Message(code .. " RegisterSolve cost must be function")
+		end
 		e:SetCost(cost)
 	end
 	if tg then
+		if type(tg)~="function" then
+			Debug.Message(code .. " RegisterSolve tg must be function")
+		end
 		e:SetTarget(tg)
 	end
 	if op then
+		if type(op)~="function" then
+			Debug.Message(code .. " RegisterSolve op must be function")
+		end
 		e:SetOperation(op)
 	end
 end
@@ -1233,11 +1417,7 @@ function rssf.SpecialSummonEither(ssgorc,e,sstype,ssplayer,tplayer,ignorecon,ign
 	if not zone2 then
 		zone2={[0]=0x1f,[1]=0x1f}
 	end
-	local ssg=Group.CreateGroup()
-	local t=aux.GetValueType(ssgorc)
-	if t=="Card" then ssg:AddCard(ssgorc) 
-	elseif t=="Group" then ssg:Merge(ssgorc)
-	end
+	local ssg=rsgf.Mix2(ssgorc)
 	for sscard in aux.Next(ssg) do 
 		local ava_zone=0
 		for p=0,1 do
@@ -1251,16 +1431,8 @@ function rssf.SpecialSummonEither(ssgorc,e,sstype,ssplayer,tplayer,ignorecon,ign
 			end
 		end
 		if ava_zone<=0 then return 0,nil end
-		local sel_zone=0
-		for p=0,1 do
-			if flag[p]==0 and ava_zone&(ava_zone-1)==0 then
-				sel_zone=ava_zone
-			end
-		end
-		if sel_zone==0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-			sel_zone=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x00ff00ff&(~ava_zone))
-		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+		local sel_zone=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x00ff00ff&(~ava_zone))
 		local sump=0
 		if sel_zone&0xff>0 then
 			sump=tp
@@ -1294,7 +1466,7 @@ function rsval.spconfe(e,se,sp,st)
 end
 --value: SummonConditionValue - can only be special summoned by self effects
 function rsval.spcons(e,se,sp,st)
-	return se:GetHandler()==e:GetHandler() and not se:IsHasProperty(EFFECT_FLAG_UNCOPYABLE)
+	return se:GetHandler()==e:GetHandler() and se:IsHasType(EFFECT_TYPE_ACTIONS) 
 end
 --value: reason by battle or card effects
 function rsval.indbae(string1,string2)
@@ -1341,7 +1513,7 @@ function rsval.cdisneg(filter)
 	return function(e,ct)
 		local p=e:GetHandlerPlayer()
 		local te,tp,loc=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
-		return (not filter and p==tp) or filter(p,te,tp,loc)
+		return (not filter and p==tp) or filter(e,p,te,tp,loc)
 	end
 end
 -------------#########Quick Target###########-----------------
@@ -1383,13 +1555,19 @@ function rstg.disnegtg(disorneg,waystring)
 	end
 end
 function rstg.distg(waystring)
-	rstg.disnegtg("dis",waystring)
+	return function(...)
+		return rstg.disnegtg("dis",waystring)(...)
+	end
 end
 function rstg.negtg(waystring)
-	rstg.disnegtg("neg",waystring)
+	return function(...)
+		return rstg.disnegtg("neg",waystring)(...)
+	end
 end
 function rstg.negsumtg(waystring)
-	rstg.disnegtg("sum",waystring)
+	return function(...)
+		return rstg.disnegtg("sum",waystring)(...)
+	end
 end
 --Target function: Get target attributes
 function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,targetlist)
@@ -1424,7 +1602,10 @@ function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,targetlist)
 	local loc1,loc2=targetlist[3],targetlist[4]
 	local minct,maxct=targetlist[5],targetlist[6]
 	if type(minct)=="nil" then minct=1 end
-	if type(minct)=="function" then minct=minct(e,tp,eg,ep,ev,re,r,rp) end
+	if type(minct)=="function" then 
+		minct=minct(e,tp,eg,ep,ev,re,r,rp) 
+		if minct==0 then minct=999 end
+	end
 	if not maxct then maxct=minct end 
 	if type(maxct)=="function" then maxct=maxct(e,tp,eg,ep,ev,re,r,rp) end
 	local exceptfun=targetlist[7]
@@ -1536,6 +1717,7 @@ function rstg.TargetCheck(e,tp,eg,ep,ev,re,r,rp,chk,chkc,valuetype,...)
 			if type(minct)~="number" or minct==0 then
 				minct2=1
 			end
+			if type(minct)=="number" and minct==999 then return false end
 			return targetfun(rstg.TargetFilter,tp,loc1,loc2,minct2,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,table.unpack(targetlist))
 		end
 	end
@@ -1721,6 +1903,7 @@ function rstg.TargetFilter(c,e,tp,eg,ep,ev,re,r,rp,usingg,targetvalue1,targetval
 			if type(minct)~="number" or minct==0 then
 				minct2=1
 			end
+			if type(minct)=="number" and minct==999 then return false end
 			return targetfun(rstg.TargetFilter,tp,loc1,loc2,minct2,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg2,targetvalue2,...)
 		end
 	end
@@ -1838,93 +2021,62 @@ function rsop.operationcard(corg,waystring,reason,e,tp,eg,ep,ev,re,r,rp)
 end
 --cost: remove count form self
 function rscost.rmct(cttype,ct1,ct2,issetlabel)
+	ct1=ct1 or 1
+	ct2=ct2 or ct1
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
 		local c=e:GetHandler()
-		if (type(ct1)=="boolean" and ct1) or (type(ct1)=="number" and ct1==0) then 
-		   ct1=c:GetCounter(cttype)
-		   ct2=ct1
-		end
-		if not ct1 then 
-		   ct1=1 
-		   ct2=c:GetCounter(cttype)
-		end
-		if type(ct1)=="number" and not ct2 then
-		   ct2=ct1
-		end
-		if ct2>ct1 then
-		   Debug.Message("rscost.rmct error : maxct2 > minct1")
-		   return false 
-		end
-		if chk==0 then return c:IsCanRemoveCounter(cttype,tp,ct1,REASON_COST) end
-		if ct2>ct1 then
+		local minct= (type(ct1)=="boolean" and ct1) and c:GetCounter(cttype) or ct1
+		local maxct= (type(ct2)=="boolean" and ct2) and c:GetCounter(cttype) or ct2
+		if chk==0 then return c:IsCanRemoveCounter(tp,cttype,minct,REASON_COST) end
+		if maxct>minct then
 		   local rmlist={}
-		   for i=ct1,ct2 do
+		   for i=minct,maxct do
 			   table.insert(rmlist,i)
 		   end
-		   ct1=Duel.AnnounceNumber(tp,table.unpack(rmlist))
+		   minct=Duel.AnnounceNumber(tp,table.unpack(rmlist))
 		end
-		c:RemoveCounter(tp,cttype,ct1,REASON_COST)
-		rscost.costinfo[e]=ct1
+		c:RemoveCounter(tp,cttype,minct,REASON_COST)
+		rscost.costinfo[e]=minct
 		if issetlabel then
-		   e:SetLabel(ct1)
+		   e:SetLabel(minct)
 		end
 	end
 end
 --cost: remove count form self field
-function rscost.rmct2(cttype,ct1,ct2,issetlabel)
+function rscost.rmct2(cttype,loc1,loc2,ct1,ct2,issetlabel)
+	loc1=loc1 or LOCATION_MZONE
+	loc2=loc2 or 0
+	ct1=ct1 or 1
+	ct2=ct2 or ct1
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
 		local c=e:GetHandler()
-		if (type(ct1)=="boolean" and ct1) or (type(ct1)=="number" and ct1==0) then 
-		   ct1=Duel.GetCounter(tp,1,0,cttype)
-		   ct2=ct1
-		end
-		if not ct1 then 
-		   ct1=1 
-		   ct2=Duel.GetCounter(tp,1,0,cttype)
-		end
-		if type(ct1)=="number" and not ct2 then
-		   ct2=ct1
-		end
-		if ct2>ct1 then
-		   Debug.Message("rscost.rmct error : maxct2 > minct1")
-		   return false 
-		end
-		if chk==0 then return c:IsCanRemoveCounter(cttype,tp,ct1,REASON_COST) end
-		if ct2>ct1 then
+		local minct= (type(ct1)=="boolean" and ct1) and c:GetCounter(cttype) or ct1
+		local maxct= (type(ct2)=="boolean" and ct2) and c:GetCounter(cttype) or ct2
+		if chk==0 then return Duel.IsCanRemoveCounter(tp,loc1,loc2,cttype,minct,REASON_COST) end
+		if maxct>minct then
 		   local rmlist={}
-		   for i=ct1,ct2 do
+		   for i=minct,maxct do
 			   table.insert(rmlist,i)
 		   end
-		   ct1=Duel.AnnounceNumber(tp,table.unpack(rmlist))
+		   minct=Duel.AnnounceNumber(tp,table.unpack(rmlist))
 		end
-		Duel.RemoveCounter(tp,1,0,cttype,ct1,REASON_COST)
-		rscost.costinfo[e]=ct1
+		Duel.RemoveCounter(tp,1,0,cttype,minct,REASON_COST)
+		rscost.costinfo[e]=minct
 		if issetlabel then
-		   e:SetLabel(ct1)
+		   e:SetLabel(minct)
 		end
 	end
 end
 --cost: remove overlay card form self
 function rscost.rmxyz(ct1,ct2,issetlabel)
+	ct1=ct1 or 1
+	ct2=ct2 or ct1
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
 		local c=e:GetHandler()
-		if (type(ct1)=="boolean" and ct1) or (type(ct1)=="number" and ct1==0) then 
-		   ct1=c:GetOverlayCount() 
-		   ct2=ct1
-		end
-		if not ct1 then 
-		   ct1=1 
-		   ct2=c:GetOverlayCount() 
-		end
-		if type(ct1)=="number" and not ct2 then
-		   ct2=ct1
-		end
-		if ct2>ct1 then
-		   Debug.Message("rscost.rmxyz error : maxct2 > minct1")
-		   return false 
-		end
-		if chk==0 then return c:CheckRemoveOverlayCard(tp,ct1,REASON_COST) end
-		c:RemoveOverlayCard(tp,ct1,ct2,REASON_COST)
+		local minct= (type(ct1)=="boolean" and ct1) and c:GetOverlayCount(cttype) or ct1
+		local maxct= (type(ct2)=="boolean" and ct2) and c:GetOverlayCount() or ct2
+		if chk==0 then return c:CheckRemoveOverlayCard(tp,minct,REASON_COST) end
+		c:RemoveOverlayCard(tp,minct,maxct,REASON_COST)
 		local rct=Duel.GetOperatedGroup():GetCount()
 		rscost.costinfo[e]=rct
 		if issetlabel then
@@ -1934,7 +2086,7 @@ function rscost.rmxyz(ct1,ct2,issetlabel)
 end
 --cost: if the cost is relate to the effect, use this (real cost set in the target)
 function rscost.reglabel(labelcount)
-	if not labelcount then labelcount=100 end
+	labelcount=labelcount or 100
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetLabel(labelcount)
 		return true
@@ -1943,16 +2095,16 @@ end
 --cost: Pay LP
 function rscost.lpcost(lp,isdirectly,islabel)
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if type(lp)=="boolean" then lp=math.floor(Duel.GetLP(tp)/2) end
-		if isdirectly then lp=Duel.GetLP(tp)-lp end
-		if type(islabel)=="nil" and isdirectly then islabel=true end
+		local clp=lp
+		if lp and type(lp)=="boolean" then clp=math.floor(Duel.GetLP(tp)/2) end
+		if isdirectly then clp=Duel.GetLP(tp)-clp end
 		if chk==0 then 
-			return lp>0 and Duel.CheckLPCost(tp,lp)
+			return clp>0 and Duel.CheckLPCost(tp,clp)
 		end
-		Duel.PayLPCost(tp,lp)   
-		rscost.costinfo[e]=lp
+		Duel.PayLPCost(tp,clp)   
+		rscost.costinfo[e]=clp
 		if islabel then
-			e:SetLabel(lp)
+			e:SetLabel(clp)
 		end
 	end
 end
@@ -1967,7 +2119,7 @@ function rscost.lpcost2(lp,max,islabel)
 		if chk==0 then return Duel.CheckLPCost(tp,lp) end
 		local costmaxlp=math.floor(maxlp/lp)
 		local t={}
-		for i=1,m do
+		for i=1,costmaxlp do
 			t[i]=i*lp
 		end
 		local cost=Duel.AnnounceNumber(tp,table.unpack(t))
@@ -2001,6 +2153,14 @@ function rscost.regflag(flagcode,resettbl)
 	end
 end
 -------------#########Quick Condition#######-----------------
+--Condition in Self Turn
+function rscon.turns(e)
+	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+end 
+--Condition in Oppo Turn
+function rscon.turno(e)
+	return Duel.GetTurnPlayer()~=e:GetHandlerPlayer()
+end 
 --Condition in Main Phase
 function rscon.phmp(e)
 	local phase=Duel.GetCurrentPhase()
@@ -2071,10 +2231,14 @@ function rscon.disnegcon(disorneg,filterfun,playerfun)
 	end 
 end
 function rscon.discon(filterfun,playerfun)
-	rscon.disnegcon("dis",filterfun,playerfun)
+	return function(...)
+		return rscon.disnegcon("dis",filterfun,playerfun)(...)
+	end
 end
 function rscon.negcon(filterfun,playerfun)
-	rscon.disnegcon("neg",filterfun,playerfun)
+	return function(...)
+		return rscon.disnegcon("neg",filterfun,playerfun)(...)
+	end
 end
 --Condition: Is exisit matching card
 function rscon.excardfilter(filter,varlist,e,tp,eg,ep,ev,re,r,rp)
@@ -2084,7 +2248,7 @@ function rscon.excardfilter(filter,varlist,e,tp,eg,ep,ev,re,r,rp)
 		return filter(c,table.unpack(varlist),e,tp,eg,ep,ev,re,r,rp)
 	end
 end
-function rscon.excard(filter,loc1,loc2,ct,...)
+function rscon.excard(filter,loc1,loc2,ct,exceptg,...)
 	local varlist={...}
 	return function(e,tp,eg,ep,ev,re,r,rp)
 		if not filter then filter=aux.TRUE end
@@ -2092,13 +2256,13 @@ function rscon.excard(filter,loc1,loc2,ct,...)
 		if not loc2 then loc2=0 end
 		if not ct then ct=1 end
 		if not tp then tp=e:GetHandlerPlayer() end
-		return Duel.IsExistingMatchingCard(rscon.excardfilter(filter,varlist,e,tp,eg,ep,ev,re,r,rp),tp,loc1,loc2,ct,nil)
+		return Duel.IsExistingMatchingCard(rscon.excardfilter(filter,varlist,e,tp,eg,ep,ev,re,r,rp),tp,loc1,loc2,ct,exceptg)
 	end
 end 
 -- rscon.excard + Card.IsFaceup 
-function rscon.excard2(filter,loc1,loc2,ct,...)
+function rscon.excard2(filter,loc1,loc2,ct,exceptg,...)
 	local filter2=aux.AND(filter,Card.IsFaceup)
-	return rscon.excard(filter2,loc1,loc2,ct,...)
+	return rscon.excard(filter2,loc1,loc2,ct,exceptg,...)
 end
 -------------#########Quick Operation#######-----------------
 --Quick operation: select and do operation 
@@ -2163,13 +2327,19 @@ function rsop.disnegop(disorneg,waystring)
 	end
 end
 function rsop.disop(waystring)
-	return rsop.disnegop("dis",waystring)
+	return function(...)
+		return rsop.disnegop("dis",waystring)(...)
+	end
 end
 function rsop.negop(waystring)
-	return rsop.disnegop("neg",waystring)
+	return function(...)
+		return rsop.disnegop("neg",waystring)(...)
+	end
 end
 function rsop.negsumop(waystring)
-	return rsop.disnegop("sum",waystring)
+	return function(...)
+		return rsop.disnegop("sum",waystring)(...)
+	end
 end
 --Operation: Equip 
 function rsop.eqop(e,eqc,eqtc,pos,opside)
@@ -2355,15 +2525,19 @@ function rsgf.GetSurroundingGroup2(seq,loc,cp,contains)
 	return sg
 end
 --Group effect: get adjacent group
-function rsgf.GetAdjacentGroup(c)
+function rsgf.GetAdjacentGroup(c,contains)
+	return rsgf.GetAdjacentGroup2(c:GetSequence(),c:GetLocation(),c:GetControler(),contains)
+end 
+--Group effect: get adjacent group (use sequence)
+function rsgf.GetAdjacentGroup2(seq,loc,tp,contains)
 	local g=Group.CreateGroup()
-	local seq=c:GetSequence()
 	if seq>0 and seq<5 then
-		rsgf.Mix(g,Duel.GetFieldCard(c:GetControler(),c:GetLocation(),seq-1))
+		rsgf.Mix(g,Duel.GetFieldCard(tp,loc,seq-1))
 	end
 	if seq<4 then
-		rsgf.Mix(g,Duel.GetFieldCard(c:GetControler(),c:GetLocation(),seq+1))
+		rsgf.Mix(g,Duel.GetFieldCard(tp,loc,seq+1))
 	end
+	if contains then rsgf.Mix(g,Duel.GetFieldCard(tp,loc,seq)) end
 	return g
 end
 --Group effect: Get Target Group for Operations
@@ -2427,19 +2601,25 @@ end
 function rscf.SetSpecialSummonProduce(cardtbl,range,con,op,desctbl,ctlimittbl,resettbl)
 	local tc1,tc2,ignore=rsef.GetRegisterCard(cardtbl)
 	if not desctbl then desctbl=rshint.spproc end
-	local flag="uc" 
-	if not tc2:IsSummonableCard() then flag="uc,cd" end
-	local e1=rsef.Register(cardtbl,EFFECT_TYPE_FIELD,EFFECT_SPSUMMON_PROC,desctbl,ctlimittbl,nil,flag,range,con,nil,nil,op,nil,nil,nil,resettbl)
+	local flag=not tc2:IsSummonableCard() and "uc,cd" or "uc" 
+	local e1=rsef.Register(cardtbl,EFFECT_TYPE_FIELD,EFFECT_SPSUMMON_PROC,desctbl,ctlimittbl,nil,flag,range,rscf.SetSpecialSummonProduce_con(con),nil,nil,op,nil,nil,nil,resettbl)
 	return e1
 end
 rssf.SetSpecialSummonProduce=rscf.SetSpecialSummonProduce
+function rscf.SetSpecialSummonProduce_con(con)
+	return function(e,c)
+		if c==nil then return true end
+		local tp=c:GetControler()
+		return con(e,c,tp)
+	end
+end
 --Card/Summon effect: Is monster can normal or special summon
 function rscf.SetSummonCondition(cardtbl,isnsable,sumvalue,iseffectspsum,resettbl)
 	local tc1,tc2,ignore=rsef.GetRegisterCard(cardtbl)
 	if tc2:IsStatus(STATUS_COPYING_EFFECT) then return end
 	if not isnsable then
-		if iseffectspsum then
-			tc2:EnableUnsummonable()
+		if iseffectspsum or (sumvalue and sumvalue==rsval.spcons) then
+			--tc2:EnableUnsummonable()
 		else
 			tc2:EnableReviveLimit()
 		end
@@ -2464,6 +2644,9 @@ function rscf.CheckSetCardMainSet(c,settype,series1,...)
 	elseif settype=="link" then
 		codelist={c:GetLinkCode()}
 		effectlist={c:IsHasEffect(EFFECT_ADD_LINK_SETCODE),c:IsHasEffect(EFFECT_ADD_SETCODE)} 
+	elseif settype=="org" then
+		codelist={c:GetOriginalCode()}
+		effectlist={}
 	end
 	for _,effect in pairs(effectlist) do
 		local string=rsef.rsvalinfo[effect]
@@ -2513,221 +2696,95 @@ function rscf.CheckLinkSetCard(c,series1,...)
 	return rscf.CheckSetCardMainSet(c,"link",series1,...) 
 end
 Card.CheckLinkSetCard=rscf.CheckLinkSetCard
---Card/Summon effect: Check Other Materials
-function rscf.CheckOtherMaterial(c,materialval,sc,materialfilter)
-	if c:IsForbidden() then return false end
-	if materialfilter and not materialfilter(c,sc) then return false end
-	if c:IsOnField() and c:IsFacedown() then return false end
-	local vallist1={ "fus","syn","xyz","link" }
-	local vallist2={ EFFECT_CANNOT_BE_FUSION_MATERIAL,EFFECT_CANNOT_BE_SYNCHRO_MATERIAL,EFFECT_CANNOT_BE_XYZ_MATERIAL,EFFECT_CANNOT_BE_LINK_MATERIAL }
-	local vallist3={ Card.IsCanBeFusionMaterial,Card.IsCanBeSynchroMaterial,Card.IsCanBeXyzMaterial,Card.IsCanBeLinkMaterial }
-	local effectcodelist,funlist=rsof.Table_Suit(materialval,vallist1,vallist2,vallist3)
-	if c:IsLocation(LOCATION_MZONE) then 
-		local fun=funlist[1]
-		return fun(c,sc)
-	end
-	local effectlist={c:IsHasEffect(effectcodelist[1])}
-	for _,effect in pairs(effectlist) do 
-		local value=effect:GetValue()
-		if not value or type(value)=="number" or value(c,sc) then return false end
-	end
-	return true
+--Check Built-in Link SetCode / Series
+function rscf.CheckOriginalSetCard(c,series1,...) 
+	return rscf.CheckSetCardMainSet(c,"org",series1,...)
 end
---Card/Summon effect: Set Other Link Materials
-function rscf.SetExtraLinkMaterial(c,materialfilter,loc1,loc2)
-	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
-	if not materialfilter then materialfilter=aux.TRUE end
-	if not loc1 then loc1=0 end
-	if not loc2 then loc2=LOCATION_MZONE end
-	local matfun=function(lc)
-		return Duel.GetMatchingGroup(rscf.CheckOtherMaterial,lc:GetControler(),loc1,loc2,nil,"link",lc,materialfilter)
+Card.CheckOriginalSetCard=rscf.CheckOriginalSetCard
+--Card/Summon effect:Record Summon Procedure
+function rscf.RecordSummonProcedure()
+	if rscf.RecordSummonProcedure_Switch then return end
+	rscf.RecordSummonProcedure_Switch=true
+	local f=Effect.CreateEffect
+	Effect.CreateEffect=function(c)
+		local e0=f(c)
+		local e1=Effect.GlobalEffect()
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_ADJUST)
+		e1:SetOperation(rscf.RecordSummonProcedure_Operation)
+		Duel.RegisterEffect(e1,0)
+		Effect.CreateEffect=f
+		return e0
 	end
-	local mt=getmetatable(c) 
-	mt.rslinkmatfun=matfun
-	if rscf.SetExtraLinkMaterial_Switch then return end
-	rscf.SetExtraLinkMaterial_Switch=true
-	--change function
-	rscf.GetLinkMaterials=aux.GetLinkMaterials
-	rscf.LCheckOtherMaterial=aux.LCheckOtherMaterial
-	aux.GetLinkMaterials=rscf.GetLinkMaterials2
-	aux.LCheckOtherMaterial=rscf.LCheckOtherMaterial2
 end
-rssf.SetExtraLinkMaterial=rscf.SetExtraLinkMaterial 
-function rscf.GetLinkMaterials2(tp,f,lc)
-	local mg1=rscf.GetLinkMaterials(tp,f,lc)
-	local matfun=lc.rslinkmatfun
-	if matfun then
-		local mg2=matfun(lc)
-		if #mg2>0 then mg1:Merge(mg2) end
+rscf.RecordSummonProcedure()
+function rscf.RecordSummonProcedure_Operation(e,tp)
+	local g=Duel.GetMatchingGroup(Card.IsType,0,0xff,0xff,nil,rscf.extratype)
+	local f6=aux.AddSynchroProcedure
+	local f7=aux.AddSynchroMixProcedure
+	local f8=aux.AddXyzProcedure
+	local f9=aux.AddXyzProcedureLevelFree
+	local f10=aux.AddLinkProcedure
+	aux.AddSynchroProcedure=rscf.GetBaseSynchroProduce1
+	aux.AddSynchroMixProcedure=rscf.GetBaseSynchroProduce2
+	aux.AddXyzProcedure=rscf.GetBaseXyzProduce1
+	aux.AddXyzProcedureLevelFree=rscf.GetBaseXyzProduce2
+	aux.AddLinkProcedure=rscf.GetBaseLinkProduce1
+	for tc in aux.Next(g) do
+		tc:ReplaceEffect(25236056,0)
+		local mt=getmetatable(tc)
+		if tc.initial_effect then
+			mt.initial_effect(tc)
+		end
 	end
-	return mg1
-end
-function rscf.LCheckOtherMaterial2(c,mg,lc)
-	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL)}
-	if #le==0 then return true end
-	for _,te in pairs(le) do
-		local f=te:GetValue()
-		if not f or f(te,lc,mg) then return true end
-	end
-	return false
-end
---Card/Summon effect: Set Other Xyz Materials (only for rscf.AddSpecialXyzProcedure)
-function rscf.SetExtraXyzMaterial(c,materialfilter,loc1,loc2,matop)
-	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
-	if not materialfilter then materialfilter=aux.TRUE end
-	if not loc1 then loc1=0 end
-	if not loc2 then loc2=LOCATION_MZONE end
-	local matfun=function(xyzc)
-		return Duel.GetMatchingGroup(rscf.XyzLevelFreeFilter,xyzc:GetControler(),loc1,loc2,nil,xyzc,materialfilter)
-	end
-	local mt=getmetatable(c) 
-	mt.rsxyzmatfun=matfun
-	mt.rsxyzmatop=matop
-end
-rssf.SetExtraXyzMaterial=rscf.SetExtraXyzMaterial
---Card/Summon effect: Add Special Xyz Ruel, for Diablo
-function rscf.AddXyzProcedureLevelFree_Special(c,f,gf,minc,maxc,alterf,desc,op)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(1165)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_EXTRA)
-	if alterf then
-		e1:SetCondition(Auxiliary.XyzLevelFreeCondition2(f,gf,minc,maxc,alterf,desc,op))
-		e1:SetTarget(Auxiliary.XyzLevelFreeTarget2(f,gf,minc,maxc,alterf,desc,op))
-		e1:SetOperation(Auxiliary.XyzLevelFreeOperation2(f,gf,minc,maxc,alterf,desc,op))
+	aux.AddSynchroProcedure=f6
+	aux.AddSynchroMixProcedure=f7
+	aux.AddXyzProcedure=f8
+	aux.AddXyzProcedureLevelFree=f9
+	aux.AddLinkProcedure=f10
+	e:Reset()
+end 
+function rscf.GetBaseSynchroProduce1(c,f1,f2,minc,maxc)
+	if c.dark_synchro==true then
+		rscf.AddSynchroProcedureSpecial(c,aux.NonTuner(f1),nil,nil,rscf.DarkTuner(f2),minc,maxc or minc)
 	else
-		e1:SetCondition(rscf.XyzLevelFreeCondition(f,gf,minc,maxc))
-		e1:SetTarget(rscf.XyzLevelFreeTarget(f,gf,minc,maxc))
-		e1:SetOperation(rscf.XyzLevelFreeOperation(f,gf,minc,maxc))
-	end
-	e1:SetValue(SUMMON_TYPE_XYZ)
-	c:RegisterEffect(e1)
-end
-rssf.AddXyzProcedureLevelFree_Special=rscf.AddXyzProcedureLevelFree_Special
-function rscf.XyzLevelFreeFilter(c,xyzc,f)
-	return rscf.CheckOtherMaterial(c,"xyz",xyzc,f)
-end
---[[function rscf.XyzLevelFreeFilter(c,xyzc,f)
-	return (c:IsFaceup() or not c:IsOnField()) and (c:IsCanBeXyzMaterial(xyzc) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsHasEffect(EFFECT_CANNOT_BE_XYZ_MATERIAL))) and (not f or f(c,xyzc))
-end--]]
-function rscf.XyzLevelFreeGoal(ogbase,ogextra)
-	return function(g,tp,xyzc,gf)
-		return (not gf or gf(g,xyzc,tp,ogbase,ogextra)) and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0
+		rscf.AddSynchroProcedureSpecial(c,aux.Tuner(f1),nil,nil,f2,minc,maxc or minc)
 	end
 end
---[[function rscf.XyzLevelFreeGoal(g,tp,xyzc,gf)
-	return (not gf or gf(g,xyzc,tp)) and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0
-end--]]
-function rscf.XyzLevelFreeCondition(f,gf,minct,maxct)
-	return function(e,c,og,min,max)
-		if c==nil then return true end
-		local tp=c:GetControler()
-		local og2=rsgf.Mix2(og)
-		if not og then 
-			og=Group.CreateGroup()
-			local mg1=Duel.GetMatchingGroup(Auxiliary.XyzLevelFreeFilter,tp,LOCATION_MZONE,0,nil,c,f)
-			local mg2=Group.CreateGroup()
-			if c.rsxyzmatfun then
-				mg2=c.rsxyzmatfun(c)
-			end
-			rsgf.Mix(og,mg1,mg2,mg3)
-		end
-		--change function
-		local f1=Auxiliary.XyzLevelFreeGoal
-		local f2=Auxiliary.XyzLevelFreeFilter
-		Auxiliary.XyzLevelFreeGoal=rscf.XyzLevelFreeGoal(og2,og)
-		Auxiliary.XyzLevelFreeFilter=rscf.XyzLevelFreeFilter
-		local res=Auxiliary.XyzLevelFreeCondition(f,gf,minct,maxct)(e,c,og,min,max)
-		Auxiliary.XyzLevelFreeGoal=f1
-		Auxiliary.XyzLevelFreeFilter=f2
-		return res
-	end
+function rscf.GetBaseSynchroProduce2(c,f1,f2,f3,f4,minc,maxc,gc)
+	rscf.AddSynchroProcedureSpecial(c,f1,f2,f3,f4,minc,maxc or minc,gc)
 end
-function rscf.XyzLevelFreeTarget(f,gf,minct,maxct)
-	return function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
-		if og and not min then
-			return true
-		end
-		if not min then min=1 end
-		if not max then max=999 end
-		local og2=rsgf.Mix2(og)
-		if not og then 
-			og=Group.CreateGroup()
-			local mg1=Duel.GetMatchingGroup(Auxiliary.XyzLevelFreeFilter,tp,LOCATION_MZONE,0,nil,c,f)
-			local mg2=Group.CreateGroup()
-			if c.rsxyzmatfun then
-				mg2=c.rsxyzmatfun(c)
-			end
-			rsgf.Mix(og,mg1,mg2)
-		end
-		--change function
-		local f1=Auxiliary.XyzLevelFreeGoal
-		local f2=Auxiliary.XyzLevelFreeFilter
-		Auxiliary.XyzLevelFreeGoal=rscf.XyzLevelFreeGoal(og2,og)
-		Auxiliary.XyzLevelFreeFilter=rscf.XyzLevelFreeFilter
-		local res=Auxiliary.XyzLevelFreeTarget(f,gf,minct,maxct)(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
-		Auxiliary.XyzLevelFreeGoal=f1
-		Auxiliary.XyzLevelFreeFilter=f2
-		local mat=e:GetLabelObject()
-		if #og2==0 and #og>0 and c.rsxyzmatop and mat then
-			c.rsxyzmatop(e,tp,mat)
-		end
-		return res
-	end
-end
-function rscf.XyzLevelFreeOperation(f,gf,minct,maxct)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
-				if og and not min then
-					local sg=Group.CreateGroup()
-					local tc=og:GetFirst()
-					while tc do
-						local sg1=tc:GetOverlayGroup()
-						sg:Merge(sg1)
-						tc=og:GetNext()
-					end
-					Duel.SendtoGrave(sg,REASON_RULE)
-					c:SetMaterial(og)
-					Duel.Overlay(c,og)
-				else
-					local mg=e:GetLabelObject()
-					if e:GetLabel()==1 then
-						local mg2=mg:GetFirst():GetOverlayGroup()
-						if mg2:GetCount()~=0 then
-							Duel.Overlay(c,mg2)
-						end
-					else
-						local sg=Group.CreateGroup()
-						local tc=mg:GetFirst()
-						while tc do
-							local sg1=tc:GetOverlayGroup()
-							sg:Merge(sg1)
-							tc=mg:GetNext()
-						end
-						--tranfer overlay card to the Xyz Summoned monster
-						if rscf.AddXyzProcedureLevelFree_Special_Overlay then
-							rscf.AddXyzProcedureLevelFree_Special_Overlay=false
-							Duel.Overlay(c,sg)
-						else
-							Duel.SendtoGrave(sg,REASON_RULE)
-						end
-					end
-					c:SetMaterial(mg)
-					Duel.Overlay(c,mg)
-					mg:DeleteGroup()
-					--if used hand, then shuffle hand
-					if mg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_HAND) then
-						Duel.ShuffleHand(tp)
-					end
-				end
+function rscf.XyzProcedure_TransformLv(xyzc,lv)
+	return  function(g)
+				return g:FilterCount(Card.IsXyzLevel,nil,xyzc,lv)==#g
 			end
 end
---Card/Sunnon/Aux/Effect: Auxiliary.AddSynchroMixProcedure, return effect 
-function rscf.AddSynchroMixProcedure(c,f1,f2,f3,f4,minc,maxc,gc)
-	if Duel.GetFlagEffect(0,rscode.RecordSynchroFlag)>0 then
-		local mt=getmetatable(c)
-		mt.rssynrecord={f1,f2,f3,f4,minc,maxc or 99,gc}
+function rscf.GetBaseXyzProduce1(c,f,lv,ct,alterf,desc,maxct,op)
+	rscf.AddXyzProcedureSpecial(c,f,rscf.XyzProcedure_TransformLv(c,lv),ct,maxct or ct,alterf,desc,op)
+end 
+function rscf.GetBaseXyzProduce2(c,f,gf,minc,maxc,alterf,desc,op)
+	rscf.AddXyzProcedureSpecial(c,f,gf,minc,maxc or minc,alterf,desc,op)
+end
+function rscf.GetBaseLinkProduce1(c,f,min,max,gf)
+	rscf.AddLinkProcedureSpecial(c,f,min,max,gf)
+end
+--Card/Summon function: Custom Synchro Procedure 
+rscf.AddSynchroProcedure=aux.AddSynchroProcedure
+function rscf.AddSynchroProcedureSpecial(c,f1,f2,f3,f4,minc,maxc,gc)
+	if not rscf.AddSynchroProcedureSpecial_Switch then
+		rscf.AddSynchroProcedureSpecial_Switch=true
+		rscf.GetSynMaterials	=   aux.GetSynMaterials
+		aux.GetSynMaterials  =  rscf.GetSynMaterials2
+		rscf.SynMixCheckGoal	=   aux.SynMixCheckGoal
+		aux.SynMixCheckGoal  =  rscf.SynMixCheckGoal2
+		rscf.SynMixCondition	=   aux.SynMixCondition
+		aux.SynMixCondition  =  rscf.SynMixCondition2
+		rscf.SynMixTarget   =   aux.SynMixTarget
+		aux.SynMixTarget  =  rscf.SynMixTarget2
+		rscf.SynMixFilter4  = aux.SynMixFilter4
+		aux.SynMixFilter4   = rscf.SynMixFilter42
+		rscf.SynMixOperation	=   aux.SynMixOperation
+		aux.SynMixOperation = rscf.SynMixOperation2  
 	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1164)
@@ -2735,133 +2792,548 @@ function rscf.AddSynchroMixProcedure(c,f1,f2,f3,f4,minc,maxc,gc)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetRange(LOCATION_EXTRA)
-	e1:SetCondition(Auxiliary.SynMixCondition(f1,f2,f3,f4,minc,maxc,gc))
+	e1:SetCondition(rscf.SynMixCondition2(f1,f2,f3,f4,minc,maxc,gc))
 	e1:SetTarget(Auxiliary.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc))
 	e1:SetOperation(Auxiliary.SynMixOperation(f1,f2,f3,f4,minc,maxc,gc))
 	e1:SetValue(SUMMON_TYPE_SYNCHRO)
 	c:RegisterEffect(e1)
+	if not c:IsStatus(STATUS_COPYING_EFFECT) and not c.rs_synchro_parameter then
+		local mt=getmetatable(c)
+		mt.rs_synchro_parameter={e1,f1,f2,f3,f4,minc,maxc or minc,gc}
+	end
 	return e1
 end
---Card/Sunnon/Aux/Effect: record normal synchro produce (New)
-function rscf.GetSynchroProduce(c)
-	local mt=getmetatable(c)
-	mt.rssynrecord=nil
-	rscf.RecordFunction_Synchro=aux.AddSynchroProcedure
-	rscf.RecordFunction_Synchro_Mix=aux.AddSynchroMixProcedure
-	aux.AddSynchroProcedure=rscf.RecordFunction_Synchro2
-	aux.AddSynchroMixProcedure=rscf.RecordFunction_Synchro_Mix2
-	Duel.RegisterFlagEffect(0,rscode.RecordSynchroFlag,0,0,1)
-	local cid=c:CopyEffect(c:GetOriginalCodeRule(),rsreset.est)
-	Duel.ResetFlagEffect(0,rscode.RecordSynchroFlag)
-	c:ResetEffect(cid,RESET_COPY)
-	aux.AddSynchroProcedure=rscf.RecordFunction_Synchro
-	aux.AddSynchroMixProcedure=rscf.RecordFunction_Synchro_Mix
-	if mt.rssynrecord then
-		return true,table.unpack(mt.rssynrecord)
-	else
-		return false
+--Get synchro materials, fix for special material
+function rscf.GetSynMaterials2(tp,syncard)
+	local mg1=rscf.GetSynMaterials(tp,syncard)
+	local mg2=Duel.GetMatchingGroup(rscf.ExtraSynMaterialsFilter,tp,0xff,0xff,mg1,syncard,tp)
+	if #mg2>0 then mg1:Merge(mg2) end
+	return mg1
+end
+function rscf.ExtraSynMaterialsFilter(c,sc,tp)
+	if c:IsOnField() and not c:IsFaceup() then return false end
+	return c:IsHasEffect(rscode.Extra_Synchro_Material,tp) and c:IsCanBeSynchroMaterial(sc) 
+end
+function rscf.SCheckOtherMaterial(c,mg,sc,tp)
+	local le={c:IsHasEffect(rscode.Extra_Synchro_Material,tp)}
+	if #le==0 then return true end
+	for _,te in pairs(le) do
+		local f=te:GetValue()
+		if not f or f(te,sc,mg) then return true end
 	end
+	return false
 end
-function rscf.RecordFunction_Synchro2(c,f1,f2,minct,maxct)
-	if Duel.GetFlagEffect(0,rscode.RecordSynchroFlag)>0 then
-		local mt=getmetatable(c)
-		mt.rssynrecord={aux.Tuner(f1),nil,nil,f2,minct,maxct or 99}
-	end
+function rscf.SUncompatibilityFilter(c,sg,sc,tp)
+	local mg=sg:Filter(aux.TRUE,c)
+	return not rscf.SCheckOtherMaterial(c,mg,sc,tp)
 end
-function rscf.RecordFunction_Synchro_Mix2(c,f1,f2,f3,f4,minct,maxct,gc)
-	if Duel.GetFlagEffect(0,rscode.RecordSynchroFlag)>0 then
-		local mt=getmetatable(c)
-		mt.rssynrecord={f1,f2,f3,f4,minct,maxct or 99,gc}
-	end
-end
---Card/Summon/Aux/Effect: change synchro aux function
-function rsef.ChangeFunction_Synchro()
-	if rsef.ChangeFunction_Synchro_Switch then return end
-	rsef.ChangeFunction_Synchro_Switch=true
-	--change function
-	rscf.SynMixCheckGoal=aux.SynMixCheckGoal
-	rscf.SynMixCondition=aux.SynMixCondition
-	rscf.SynMixFilter4=aux.SynMixFilter4
-	aux.SynMixCheckGoal=rscf.SynMixCheckGoal2
-	aux.SynMixCondition=rscf.SynMixCondition2
-	aux.SynMixFilter4=rscf.SynMixFilter42
-end
-function rscf.SynMixCheckGoal2(tp,sg,minc,ct,syncard,sg1,smat,gc)
-	local g=rsgf.Mix2(sg,sg1)
+function rscf.SynMixCheckGoal2(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
+	mgchk= mgchk or rssf.synchro_material_group_check
+	local mg=rsgf.Mix2(sg,sg1)
+	--step 1, check extra material
+	if mg:IsExists(rscf.SUncompatibilityFilter,1,nil,mg,syncard,tp) then return false end
+	--step 2, check material group filter function
+	if syncard.rs_synchro_material_check and not syncard.rs_synchro_material_check(mg,syncard,tp) then return false end
+	--step 3, check level fo dark_synchro and non-level_synchro 
 	local f=Card.GetLevel
-	local f2=Card.GetSynchroLevel
-	local darktunerg=g:Filter(Card.IsType,nil,TYPE_TUNER)
+	local darktunerg=mg:Filter(Card.IsType,nil,TYPE_TUNER)
 	local darktunerlv=darktunerg:GetSum(Card.GetSynchroLevel,syncard)
 	Card.GetLevel=function(sc)
 		if syncard.dark_synchro and syncard==sc then
 			return darktunerlv*2-f(sc)
 		end
-		if sc.rssynlv then return sc.rssynlv
+		if sc.rs_synchro_level then return sc.rs_synchro_level
 		else return f(sc)
 		end
 	end
-	local bool1=rscf.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc)
-	Card.GetLevel=f
-	if syncard.dark_synchro then return bool1 end
+	--step 4, check Ladian 1, use material's custom lv (if any)
+	local f2=Card.GetSynchroLevel
 	Card.GetSynchroLevel=function(sc,sc2)
-		local list=syncard.rssynf1list 
-		if list then
-			lv=syncard.rssynf1list[1]
-			exfilter=syncard.rssynf1list[2]
-			if (not exfilter or exfilter(sc,tp,sc2)) then
-				return lv
-			else 
-				return f2(sc,sc2)
+		local lvcheck=syncard.rs_synchro_ladian 
+		if type(lvcheck)=="number" then return lvcheck
+		elseif type(lvcheck)=="function" then 
+			local lv=lvcheck(sc,mg,sc2,tp)
+			if type(lv)=="number" then return lv 
+			else return f2(sc,sc2) 
 			end
-		else
-			return f2(sc,sc2)
 		end
 	end
-	local bool2=rscf.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc)
+	local bool1=rscf.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
 	Card.GetSynchroLevel=f2
+	--step 5, check Ladian 2, use material's base lv
+	local bool2=rscf.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
+	Card.GetLevel=f
 	return bool1 or bool2
 end
 function rscf.SynMixCondition2(f1,f2,f3,f4,minc,maxc,gc)
-	return function(e,c,smat,mg1)
+	return function(e,c,smat,mg1,min,max)
 		if mg1 and aux.GetValueType(mg1)~="Group" then return false end
-		return rscf.SynMixCondition(f1,f2,f3,f4,minc,maxc,gc)(e,c,smat,mg1)
+		return rscf.SynMixCondition(f1,f2,f3,f4,minc,maxc,gc)(e,c,smat,mg1,min,max)
 	end
 end
-function rscf.SynMixFilter42(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc)
-	local mt=getmetatable(syncard)
-	mt.rssynmat={c1,c2,c3,c}
-	return rscf.SynMixFilter4(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc)
+function rscf.SynMixTarget2(f1,f2,f3,f4,minc,maxc,gc)
+	return function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
+		rssf.synchro_material_group_check=nil
+		if mg1 then
+			rssf.synchro_material_group_check=true
+		end
+		return rscf.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc)(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
+	end
 end
---Card/Summon effect: set a synchro monster's level for its Synchro Summon Produce
-function rscf.AddSynchroMixProcedure_SetLevel(c,lv,f1,f2,f3,f4,minc,maxc)
+function rscf.SynMixFilter42(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc,mgchk)
+	return rscf.SynMixFilter4(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc,mgchk)
+end
+function rscf.SynMixOperation2(f1,f2,f3,f4,minct,maxc,gc)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
+				local g=e:GetLabelObject()
+				rscf.SynchroCustomOperation(g,c,e,tp)
+				g:DeleteGroup()
+			end
+end
+function rscf.SynchroCustomOperation(mg,c,e,tp)
+	c:SetMaterial(mg)  
+	rscf.SExtraMaterialCount(mg,sync,tp)
+	--case 1, Summon Effect Custom
+	if rssf.SynchroMaterialAction then
+		rssf.SynchroMaterialAction(mg,c,e,tp)
+		rssf.SynchroMaterialAction=nil
+	--case 2, Summon Procedure Custom 
+	elseif c.rs_synchro_material_action then
+		c.rs_synchro_material_action(mg,c,e,tp)
+	--case 3, Base Summon Procedure
+	else
+		Duel.SendtoGrave(mg,REASON_SYNCHRO+REASON_MATERIAL)
+	end
+end
+function rscf.SExtraMaterialCount(mg,sync,tp)
+	for tc in aux.Next(mg) do
+		local le={tc:IsHasEffect(rscode.Extra_Synchro_Material,tp)}
+		for _,te in pairs(le) do
+			local sg=mg:Filter(aux.TRUE,tc)
+			local f=te:GetValue()
+			if not f or f(te,sync,sg) then
+				te:UseCountLimit(tp)
+			end
+		end
+	end
+end
+--Card/Summon function: Special Synchro Summon Procedure
+--Force a synchro level for a synchro monster's synchro procedure
+function rscf.AddSynchroProcedureSpecial_SynchroLevel(c,lv,...)
 	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
-	local mt=getmetatable(c)
-	mt.rssynlv=lv
-	rsef.ChangeFunction_Synchro()
-	local e1=rscf.AddSynchroMixProcedure(c,f1,f2,f3,f4,minc,maxc)
+	if not c.rs_synchro_level then
+		local mt=getmetatable(c)
+		mt.rs_synchro_level=lv 
+	end
+	local e1=rscf.AddSynchroProcedureSpecial(c,...)
 	return e1
 end
-rssf.AddSynchroMixProcedure_SetLevel=rscf.AddSynchroMixProcedure_SetLevel
---Card/Summon effect: Dark Synchro Summon Produce
-function rscf.AddSynchroMixProcedure_DarkSynchro(c,f1,f2,f3,f4,minc,maxc)
+--Dark Synchro Procedure
+function rscf.AddSynchroProcedureSpecial_DarkSynchro(c,...)
 	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
-	local mt=getmetatable(c)
-	mt.dark_synchro=true
-	rsef.ChangeFunction_Synchro()
-	local e1=rscf.AddSynchroMixProcedure(c,f1,f2,f3,f4,minc,maxc)
+	if not c.dark_synchro then
+		local mt=getmetatable(c)
+		mt.dark_synchro=true
+	end
+	local e1=rscf.AddSynchroProcedureSpecial(c,...)
 	return e1
 end
-rssf.AddSynchroMixProcedure_DarkSynchro=rscf.AddSynchroMixProcedure_DarkSynchro
---Card/Summon effect: Ladian's Synchro Summon (treat tuner as another lv)
-function rscf.AddSynchroMixProcedure_ChangeTunerLevel(c,f1,lv,f2,f3,f4,minc,maxc,extrafilter)
+--Ladian's Synchro Procedure (treat tuner as another lv)
+function rscf.AddSynchroProcedureSpecial_Ladian(c,f1,lv,f2,f3,f4,minc,maxc,extrafilter)
 	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
-	local mt=getmetatable(c)
-	mt.rssynf1list={lv,extrafilter}
-	rsef.ChangeFunction_Synchro()
-	local e1=rscf.AddSynchroMixProcedure(c,f1,f2,f3,f4,minc,maxc)
+	if not c.rs_synchro_ladian then
+		local mt=getmetatable(c)
+		mt.rs_synchro_ladian={lv,extrafilter}
+	end
+	local e1=rscf.AddSynchroProcedureSpecial(c,f1,f2,f3,f4,minc,maxc)
 	return e1
 end
-rssf.AddSynchroMixProcedure_ChangeTunerLevel=rscf.AddSynchroMixProcedure_ChangeTunerLevel
+--Check Synchro Material Group for Synchro Procedure
+function rscf.AddSynchroProcedureSpecial_MaterialCheck(c,checkfilter,...)
+	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
+	if not c.rs_synchro_material_check then
+		local mt=getmetatable(c)
+		mt.rs_synchro_material_check=checkfilter
+	end
+	local e1=rscf.AddSynchroProcedureSpecial(c,...)
+	return e1
+end
+
+--Custom Synchro Materials' Action
+function rscf.AddSynchroProcedureSpecial_CustomAction(c,actionfun,...)
+	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
+	if not c.rs_synchro_material_action then
+		local mt=getmetatable(c)
+		mt.rs_synchro_material_action=actionfun
+	end
+	local e1=rscf.AddSynchroProcedureSpecial(c,...)
+	return e1
+end 
+
+--Card/Summon function: Custom Xyz Procedure 
+function rscf.AddXyzProcedureSpecial(c,f,gf,minc,maxc,alterf,desc,op)
+	if not rscf.AddXyzProcedureSpecial_Switch then
+		rscf.AddXyzProcedureSpecial_Switch=true
+		rscf.XyzLevelFreeCondition2  =  aux.XyzLevelFreeCondition2
+		aux.XyzLevelFreeCondition2  =  rscf.XyzLevelFreeCondition22
+		rscf.XyzLevelFreeTarget2  =  aux.XyzLevelFreeCondition2
+		aux.XyzLevelFreeTarget2  =  rscf.XyzLevelFreeTarget22
+		rscf.XyzLevelFreeOperation2  =  aux.XyzLevelFreeOperation2
+		aux.XyzLevelFreeOperation2  =  rscf.XyzLevelFreeOperation22
+		rscf.XyzLevelFreeGoal  =  aux.XyzLevelFreeGoal
+		rscf.XyzLevelFreeFilter =   aux.XyzLevelFreeFilter
+		aux.XyzLevelFreeFilter  =   rscf.XyzLevelFreeFilter2
+	end
+	--aux.XyzLevelFreeGoal  =  rscf.XyzLevelFreeGoal2(minc,maxc or minc)
+	alterf = alterf or aux.FALSE 
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(1165)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_EXTRA)
+	--if alterf then
+		maxc= maxc or minc
+		e1:SetCondition(rscf.XyzLevelFreeCondition22(f,gf,minc,maxc,alterf,desc,op))
+		e1:SetTarget(rscf.XyzLevelFreeTarget22(f,gf,minc,maxc,alterf,desc,op))
+		e1:SetOperation(rscf.XyzLevelFreeOperation22(f,gf,minc,maxc,alterf,desc,op))
+	--[[else
+		e1:SetCondition(Auxiliary.XyzLevelFreeCondition(f,gf,minc,maxc))
+		e1:SetTarget(Auxiliary.XyzLevelFreeTarget(f,gf,minc,maxc))
+		e1:SetOperation(Auxiliary.XyzLevelFreeOperation(f,gf,minc,maxc))--]]
+	--end
+	e1:SetValue(SUMMON_TYPE_XYZ)
+	c:RegisterEffect(e1)
+	if not c:IsStatus(STATUS_COPYING_EFFECT) and not c.rs_xyz_parameter then
+		local mt=getmetatable(c)
+		mt.rs_xyz_parameter={e1,f1,f2,f3,f4,maxc,gc}
+	end
+	return e1
+end
+function rscf.XCheckUtilityMaterial(c,mg,xyzc,tp)
+	local le={c:IsHasEffect(rscode.Utility_Xyz_Material,tp)}
+	if #le==0 then return 1,{1} end
+	local maxreduce=1
+	local reducelist={1}
+	for _,te in pairs(le) do
+		local f=te:GetValue() or aux.TRUE 
+		local bool,reduce=f(te,xyzc,mg,tp)
+		if bool then 
+			maxreduce=math.max(maxreduce,reduce or 2) 
+			table.insert(reducelist,reduce or 2)
+		end
+	end
+	return maxreduce,reducelist
+end
+function rscf.XUncompatibilityFilter(c,sg,xyzc,tp)
+	local mg=sg:Filter(aux.TRUE,c)
+	return not rscf.XCheckOtherMaterial(c,mg,xyzc,tp,sg)
+end
+function rscf.XCheckOtherMaterial(c,mg,xyzc,tp,sg)
+	local le={c:IsHasEffect(rscode.Extra_Xyz_Material,tp)}
+	if #le==0 then return true end
+	for _,te in pairs(le) do
+		local f=te:GetValue()
+		if not f or f(te,xyzc,mg,sg) then return true end
+	end
+	return false
+end
+function rscf.XyzLevelFreeFilter2(c,xyzc,f)
+	return (not c:IsOnField() or c:IsFaceup()) and c:IsCanBeXyzMaterial(xyzc) and (not f or f(c,xyzc))
+end
+function rscf.ExtraXyzMaterialsFilter(c,xyzc,tp,f)
+	if c:IsType(TYPE_TOKEN) then return false end
+	if c:IsOnField() and not c:IsFaceup() then return false end
+	return c:IsHasEffect(rscode.Extra_Xyz_Material,tp) and c:IsCanBeXyzMaterial(xyzc) and (not f or f(c))
+end
+function rscf.XyzLevelFreeGoal2(minct,maxct,og)
+	return function(g,tp,xyzc,gf)
+		--case 1, extra material check 
+		if not og and g:IsExists(rscf.XUncompatibilityFilter,1,nil,g,xyzc,tp) then return false end
+		--case 2, normal check
+		if (gf and not gf(g,og,tp,xyzc)) or Duel.GetLocationCountFromEx(tp,tp,g,xyzc)<=0 then return false end
+		--if #g<minct then return false end
+		if #g>maxct then return false end
+		--case 3, utility check, separate mg and ug for easy calculate
+		local ug=g:Filter(Card.IsHasEffect,nil,rscode.Utility_Xyz_Material,tp)
+		local mg=g:Clone()
+		mg:Sub(ug)
+		local totalreducelist={}
+		local sumlist={#mg}
+		for tc in aux.Next(ug) do 
+			local ct=0
+			local sumlist2=rsof.Table_Clone(sumlist)
+			local _,reducelist=rscf.XCheckUtilityMaterial(tc,g,xyzc,tp)
+			for i,reduce in pairs(reducelist) do 
+				ct=ct+1
+				for j,prereduce in pairs(sumlist2) do 
+					if j>1 then
+						ct=ct+1
+					end
+					sumlist[ct]=prereduce+reduce
+				end
+			end
+		end
+		for _,matct in pairs(sumlist) do
+			if matct>=minct and matct<=maxct then return true end
+		end
+		return false
+	end
+end
+function rscf.XyzLevelFreeCondition22(f,gf,minct,maxct,alterf,desc,op)
+	return  function(e,c,og,min,max)
+				if c==nil then return true end
+				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
+				local tp=c:GetControler()
+				local mg=nil
+				--other material
+				local mgextra=nil
+				if og then
+					mg=og
+				else
+					mg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+					mgextra=Duel.GetMatchingGroup(rscf.ExtraXyzMaterialsFilter,tp,0xff,0xff,mg,c,tp,f)
+				end
+				local altg=mg:Filter(Auxiliary.XyzAlterFilter,nil,alterf,c,e,tp,op):Filter(Auxiliary.MustMaterialCheck,nil,tp,EFFECT_MUST_BE_XMATERIAL)
+				if (not min or min<=1) and altg:GetCount()>0 then
+					return true
+				end
+				local minc=minct
+				local maxc=maxct
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+					--if minc>maxc then return false end
+				end
+				mg=mg:Filter(rscf.XyzLevelFreeFilter2,nil,c,f)
+				if mgextra and #mgextra>0 then mg:Merge(mgextra) end
+				local sg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+				if sg:IsExists(Auxiliary.MustMaterialCounterFilter,1,nil,mg) then return false end
+				Duel.SetSelectedCard(sg)
+				Auxiliary.GCheckAdditional=Auxiliary.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
+				--minc to 1 for utility xyz material
+				local res=mg:CheckSubGroup(rscf.XyzLevelFreeGoal2(minct,maxct,og),1,maxc,tp,c,gf)
+				Auxiliary.GCheckAdditional=nil
+				return res
+			end
+end
+function rscf.XyzLevelFreeTarget22(f,gf,minct,maxct,alterf,desc,op)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+				if og and not min then
+					return true
+				end
+				local minc=minct
+				local maxc=maxct
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+				end
+				local mg=nil
+				--other material
+				local mg3=nil
+				if og then
+					mg=og
+					mg3=og
+				else
+					mg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+					mg3=Duel.GetMatchingGroup(rscf.ExtraXyzMaterialsFilter,tp,0xff,0xff,mg,c,tp,f)
+				end
+				local sg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+				local mg2=mg:Filter(rscf.XyzLevelFreeFilter2,nil,c,f)
+				mg3:Merge(mg2)
+				--other material
+				Duel.SetSelectedCard(sg)
+				local b1=mg3:CheckSubGroup(rscf.XyzLevelFreeGoal2(minct,maxct,og),1,maxc,tp,c,gf)
+				local b2=(not min or min<=1) and mg:IsExists(Auxiliary.XyzAlterFilter,1,nil,alterf,c,e,tp,op)
+				local g=nil
+				if b2 and (not b1 or Duel.SelectYesNo(tp,desc)) then
+					e:SetLabel(1)
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+					g=mg:FilterSelect(tp,Auxiliary.XyzAlterFilter,1,1,nil,alterf,c,e,tp,op)
+					if op then op(e,tp,1,g:GetFirst()) end
+				else
+					e:SetLabel(0)
+					Duel.SetSelectedCard(sg)
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+					Auxiliary.GCheckAdditional=Auxiliary.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
+					g=mg3:SelectSubGroup(tp,rscf.XyzLevelFreeGoal2(minct,maxct,og),true,1,maxc,tp,c,gf)
+					Auxiliary.GCheckAdditional=nil
+				end
+				if g and g:GetCount()>0 then
+					g:KeepAlive()
+					e:SetLabelObject(g)
+					return true
+				else return false end
+			end
+end
+function rscf.XyzLevelFreeOperation22(f,gf,minct,maxct,alterf,desc,op)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+				if og and not min then
+					rscf.XyzCustomOperation(og,c,e,tp,false)
+				else
+					local mg=e:GetLabelObject()
+					rscf.XyzCustomOperation(mg,c,e,tp,true)
+				end
+			end
+end
+function rscf.XyzCustomOperation(mg,c,e,tp,checkog)
+	c:SetMaterial(mg)
+	if checkog then
+		rscf.XExtraMaterialCount(mg,c,tp)
+	end
+	local sg=Group.CreateGroup()
+	local tc=mg:GetFirst()
+	while tc do
+		local sg1=tc:GetOverlayGroup()
+		sg:Merge(sg1)
+	tc=mg:GetNext()
+	end 
+	--case 1, Summon Effect Custom (Book of Cain)
+	if rssf.XyzMaterialAction then
+		rssf.XyzMaterialAction(mg,sg,c,e,tp)
+		rssf.XyzMaterialAction=nil
+	--case 2, Summon Procedure Custom 
+	elseif c.rs_xyz_material_action then
+		c.rs_xyz_material_action(mg,sg,c,e,tp)
+	--case 3, Base Alterf Xyz Procedure
+	elseif e:GetLabel()==1 then
+		Duel.Overlay(c,mg)
+		if #sg>0 then
+			Duel.Overlay(c,sg)
+		end
+	--case 4, Base Normal Xyz Procedure
+	else
+		Duel.Overlay(c,mg)
+		Duel.SendtoGrave(sg,REASON_RULE)
+	end
+	--if used hand material, shuffle hand
+	if mg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_HAND) then
+		Duel.ShuffleHand(tp)	
+	end
+	mg:DeleteGroup()
+end
+function rscf.XExtraMaterialCount(mg,xyzc,tp)
+	for tc in aux.Next(mg) do
+		local le={tc:IsHasEffect(rscode.Extra_Xyz_Material,tp)}
+		for _,te in pairs(le) do
+			local sg=mg:Filter(aux.TRUE,tc)
+			local f=te:GetValue()
+			if not f or f(te,xyzc,sg,mg) then
+				te:UseCountLimit(tp)
+			end
+		end
+	end
+end
+--Card/Summon function: Special Xyz Summon Procedure
+--Custom Xyz Materials' Action
+function rscf.AddXyzProcedureSpecial_CustomAction(c,actionfun,...)
+	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
+	if not c.rs_xyz_material_action then
+		local mt=getmetatable(c)
+		mt.rs_xyz_material_action=actionfun
+	end
+	local e1=rscf.AddXyzProcedureSpecial(c,...)
+	return e1
+end
+function rscf.XyzMaterialAction(c,actionfun)
+	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
+	if not c.rs_xyz_material_action then
+		local mt=getmetatable(c)
+		mt.rs_xyz_material_action=actionfun
+	end
+end
+
+
+--Card/Summon function: Custom Link Procedure 
+function rscf.AddLinkProcedureSpecial(c,f,min,max,gf)
+	if not rscf.AddLinkProcedureSpecial_Switch then
+		rscf.AddLinkProcedureSpecial_Switch=true
+		rscf.LCheckOtherMaterial   =   aux.LCheckOtherMaterial 
+		aux.LCheckOtherMaterial =   rscf.LCheckOtherMaterial2
+		rscf.GetLinkMaterials   =   aux.GetLinkMaterials
+		aux.GetLinkMaterials	=   rscf.GetLinkMaterials2
+		rscf.LinkOperation  =  aux.LinkOperation
+		aux.LinkOperation  =  rscf.LinkOperation2
+	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(1166)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetRange(LOCATION_EXTRA)
+	if max==nil then max=c:GetLink() end
+	e1:SetCondition(Auxiliary.LinkCondition(f,min,max,gf))
+	e1:SetTarget(Auxiliary.LinkTarget(f,min,max,gf))
+	e1:SetOperation(rscf.LinkOperation2(f,min,max,gf))
+	e1:SetValue(SUMMON_TYPE_LINK)
+	c:RegisterEffect(e1)
+	if not c:IsStatus(STATUS_COPYING_EFFECT) and not c.rs_link_parameter then
+		local mt=getmetatable(c)
+		mt.rs_link_parameter={e1,f,min,max,gf}
+	end
+	return e1
+end
+function rscf.GetLinkMaterials2(tp,f,lc)
+	local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc)
+	local mg2=Duel.GetMatchingGroup(Auxiliary.LExtraFilter,tp,0xff,0xff,nil,f,lc,tp)
+	if mg2:GetCount()>0 then mg:Merge(mg2) end
+	return mg
+end
+function rscf.LinkOperation2(f,minc,maxc,gf)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,lmat,min,max)
+				local g=e:GetLabelObject()
+				rscf.LinkCustomOperation(g,c,e,tp,og)
+				g:DeleteGroup()
+			end
+end
+function rscf.LinkCustomOperation(mg,c,e,tp,checkog)
+	c:SetMaterial(mg)
+	if checkog then
+		Auxiliary.LExtraMaterialCount(mg,c,tp)
+	end
+	--case 1, Summon Effect Custom
+	if rssf.LinkMaterialAction then
+		rssf.LinkMaterialAction(mg,c,e,tp)
+		rssf.LinkMaterialAction=nil
+	--case 2, Summon Procedure Custom 
+	elseif c.rs_link_material_action then
+		c.rs_link_material_action(mg,c,e,tp)
+	--case 3, Base Summon Procedure
+	else
+		Duel.SendtoGrave(mg,REASON_LINK+REASON_MATERIAL)
+	end
+end
+--Change aux function to repair bug in multiple other material link
+function rscf.LCheckOtherMaterial2(c,mg,lc,tp)
+	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
+	if #le==0 then return true end
+	for _,te in pairs(le) do
+		local f=te:GetValue()
+		if not f or f(te,lc,mg) then return true end
+	end
+	return false
+end
+--Card/Summon function: Special Link Summon Procedure
+--Custom Link Materials' Action
+function rscf.AddLinkProcedureSpecial_CustomAction(c,actionfun,...)
+	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
+	if not c.rs_link_material_action then
+		local mt=getmetatable(c)
+		mt.rs_link_material_action=actionfun
+	end
+	local e1=rscf.AddLinkProcedureSpecial(c,...)
+	return e1
+end
+function rscf.LinkMaterialAction(c,actionfun)
+	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
+	if not c.rs_link_material_action then
+		local mt=getmetatable(c)
+		mt.rs_link_material_action=actionfun
+	end
+end
+
+
+
 --Card effect: Set field info
 function rscf.SetFieldInfo(c)
 	local seq=c:IsOnField() and c:GetSequence() or c:GetPreviousSequence()
@@ -2918,10 +3390,22 @@ function rscf.GetTargetCard(targetfilter,...)
 	else return nil
 	end
 end
+--Card effect: qucik register dark_synchro type 
+function rscf.EnableDarkSynchroAttribute(cardtbl,resettbl)
+	local c1,val2=rsef.GetRegisterCard(cardtbl)
+	if not resettbl and c1==val2 and not val2:IsStatus(STATUS_COPYING_EFFECT) and not c1.dark_synchro then 
+		local mt=getmetatable(val2) 
+		mt.dark_synchro=true
+	end
+	if resettbl then 
+		local e1=rsef.SV_ADD(cardtbl,"type","TYPE_DARKSYNCHRO",nil,resettbl,"cd,ch",rshint.darksynchro)
+		return e1
+	end
+end
 --Card effect: qucik register dark_tuner type 
 function rscf.EnableDarkTunerAttribute(cardtbl,resettbl)
 	local c1,val2=rsef.GetRegisterCard(cardtbl)
-	if not resettbl and c1==val2 and not val2:IsStatus(STATUS_COPYING_EFFECT) then 
+	if not resettbl and c1==val2 and not val2:IsStatus(STATUS_COPYING_EFFECT) and not c1.dark_tuner then 
 		local mt=getmetatable(val2) 
 		mt.dark_tuner=true
 	end
@@ -2959,6 +3443,52 @@ function rscf.FilterFaceUp(f,...)
 	return  function(target)
 				return f(target,table.unpack(ext_params)) and target:IsFaceup()
 			end
+end
+--Card filter function: Get same original type 
+function rscf.spfilter(f,...)
+	local ext_params={...}
+	return function(c,e,tp)
+		return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not f or f(c,table.unpack(ext_params),e,tp))
+	end
+end
+function rscf.spfilter2(f,...)
+	local ext_params={...}
+	return function(c,e,tp)
+		return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp)>0 or Duel.GetLocationCount(tp,LOCATION_MZONE)>0) and (not f or f(c,table.unpack(ext_params),e,tp))
+	end
+end
+--Card function: Get same type base set
+function rscf.GetSameType_Base(c,waystring,type1,...)
+	local gettypefun=Card.GetType
+	if waystring=="previous" 
+		then gettypefun=Card.GetPreviousTypeOnField 
+	elseif waystring=="original" 
+		then gettypefun=Card.GetOriginalType
+	end
+	local typelist= type1 and {type1,...} or { TYPE_MONSTER,TYPE_SPELL,TYPE_TRAP } 
+	local typetotal=0
+	local typetotallist={}
+	for _,ctype in pairs(typelist) do
+		if gettypefun(c)&ctype==ctype then
+			typetotal=typetotal|ctype
+			if not rsof.Table_List(typetotallist,ctype) then
+				table.insert(typetotallist,ctype) 
+			end
+		end
+	end
+	return typetotal,typetotallist
+end
+--Card function: Get same type 
+function rscf.GetSameType(c,...)
+	return rscf.GetSameType_Base(c,nil,...)
+end
+--Card function: Get same previous type 
+function rscf.GetPreviousSameType(c,...)
+	return rscf.GetSameType_Base(c,"previous",...)
+end
+--Card function: Get same original type 
+function rscf.GetOriginalSameType(c,...)
+	return rscf.GetSameType_Base(c,"original",...)
 end
 -------------#########RSV Other Function#######-----------------
 --split the string, ues "," as delimiter
@@ -3097,6 +3627,14 @@ function rsof.Table_Intersection(table1,table2)
 	end
 	return bool,intersectionlist
 end
+--other function: Clone Table
+function rsof.Table_Clone(list)
+	local t2 = {}
+	for k,v in pairs(list) do
+		t2[k] = v
+	end
+	return t2
+end
 --other function: N effects select 1
 function rsof.SelectOption(p,...)
 	local functionlist={...}
@@ -3134,6 +3672,105 @@ function rsof.SelectHint(p,cate)
 	local hintmsg=rsef.GetDefaultHintString(catelist,nil,nil,hintstring)
 	Duel.Hint(HINT_SELECTMSG,p,hintmsg) 
 end
+--Other function: rsxx.IsXSetX
+function rsof.IsSet(setmeta,seriesstring)
+	setmeta.IsSet=function(c)
+		return c:CheckSetCard(seriesstring)
+	end
+	setmeta.IsSetM=function(c)
+		return c:CheckSetCard(seriesstring) and c:IsType(TYPE_MONSTER)
+	end
+	setmeta.IsSetST=function(c)
+		return c:CheckSetCard(seriesstring) and c:IsType(TYPE_SPELL+TYPE_TRAP)
+	end
+	setmeta.IsLSet=function(c)
+		return c:CheckLinkSetCard(seriesstring)
+	end
+	setmeta.IsFSet=function(c)
+		return c:CheckFusionSetCard(seriesstring)
+	end
+end
+--Other function:Send to hand and confirm or hint 
+--if you don't neet confirm or hint, best use normal Duel.SendtoHand 
+function rsof.SendtoHand(corg,p,reason,noconfirm,nohint)
+	reason= reason or REASON_EFFECT 
+	local g=rsgf.Mix2(corg)
+	if #g<=0 then return 0,nil end
+	local hintg=g:Filter(Card.IsLocation,nil,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED)
+	if #hintg>0 and #hintg==#g and not nohint then
+		Duel.HintSelection(hintg)
+	end
+	local ct=Duel.SendtoHand(g,p,reason)
+	if ct>0 and #hintg~=#g and not noconfirm then
+		p=p or g:GetFirst():GetControler()
+		Duel.ConfirmCards(1-p,g)
+	end
+	return ct,Duel.GetOperatedGroup()
+end
+--Other function:Send to deck and hint 
+--if you don't neet hint, best use normal Duel.SendtoDeck
+function rsof.SendtoDeck(corg,p,seq,reason,nohint)
+	reason= reason or REASON_EFFECT 
+	local g=rsgf.Mix2(corg)
+	if #g<=0 then return 0,nil end
+	local hintg=g:Filter(Card.IsLocation,nil,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED)
+	if #hintg>0 and not nohint then
+		Duel.HintSelection(hintg)
+	end
+	local ct=Duel.SendtoDeck(g,p,seq,reason)
+	return ct,Duel.GetOperatedGroup()
+end
+--Other function:Send to grave and hint 
+--if you don't neet hint, best use normal Duel.SendtoDeck
+function rsof.SendtoGrave(corg,reason,nohint)
+	reason= reason or REASON_EFFECT 
+	local g=rsgf.Mix2(corg)
+	if #g<=0 then return 0,nil end
+	local hintg=g:Filter(Card.IsLocation,nil,LOCATION_ONFIELD+LOCATION_REMOVED)
+	if #hintg>0 and not nohint then
+		Duel.HintSelection(hintg)
+	end
+	if g:IsExists(Card.IsLocation,1,nil,LOCATION_REMOVED) then
+		reason=reason|REASON_RETURN 
+	end
+	local ct=Duel.SendtoGrave(g,reason)
+	return ct,Duel.GetOperatedGroup()
+end
+--Other function:Send to grave and hint 
+--if you don't neet hint, best use normal Duel.Destroy
+function rsof.Destroy(corg,reason,nohint)
+	reason= reason or REASON_EFFECT 
+	local g=rsgf.Mix2(corg)
+	if #g<=0 then return 0,nil end
+	local hintg=g:Filter(Card.IsLocation,nil,LOCATION_ONFIELD)
+	if #hintg>0 and not nohint then
+		Duel.HintSelection(hintg)
+	end
+	local ct=Duel.Destroy(g,reason)
+	return ct,Duel.GetOperatedGroup()
+end
+--Other function:Remove and hint 
+--if you don't neet hint, best use normal Duel.Remove
+function rsof.Remove(corg,pos,reason,nohint)
+	pos= pos or POS_FACEUP 
+	reason= reason or REASON_EFFECT 
+	local g=rsgf.Mix2(corg)
+	if #g<=0 then return 0,nil end
+	local hintg=g:Filter(Card.IsLocation,nil,LOCATION_ONFIELD+LOCATION_GRAVE)
+	if #hintg>0 and not nohint then
+		Duel.HintSelection(hintg)
+	end
+	local ct=Duel.Remove(g,pos,reason)
+	return ct,Duel.GetOperatedGroup()
+end
+--Other function: local m and cm and cm.rssetcode 
+function rsof.DefineCard(code,setcode)
+	local ccodem=_G["c"..code]
+	if setcode then
+		ccodem.rssetcode=setcode
+	end
+	return code,ccodem
+end
 -------------------E-----N-----D--------------------------
 end
 ------------########################-----------------
@@ -3150,13 +3787,18 @@ function cm.initial_effect(c)
 		"rsos"  =   "OracleSmith"
 		"rssp"  =   "StellarPearl"
 		--"rsgd"  =   "GhostdomDragon"
+		"rsed"  =   "EpicDragon"
 				}--]]
 
 --  "Series Others" 
   --[[rsv.Series2={
+		"rsve"  =   "Voison"
+		"rsneov"=   "Neons"
+		"tfrsv" =   "T.Fairies"
+		"rsfv"  =   "Fgo/Assassin"
+		"rsss"  =   "StarSpirit"
 		"rssg"  =   "SexGun"
 		"rslap" =   "Lapin"
-		"rsss"  =   "StarSpirit"
 		"rslrd" =   "LifeDeathRoundDance"
 		"rsps"  =   "PseudoSoul"
 		"rslf"  =   "LittleFox"
@@ -3165,6 +3807,15 @@ function cm.initial_effect(c)
 		"rspq"  =   "PhantomQuantum"
 		"rsphh" =   "PhantomThievesOfHearts"
 		"rssk"  =   "Shinkansen"
+		"rsan"  =   "Arknights"
+		"rsnm"  =   "Nightmare"
+		"rsdt"  =   "DarkTale"
+		"rseee" =   "EEE"
+		"rshr"  =   "HarmonicRhythm"
+		"rsik"  =   "InfernalKnight"
+		"rsvw"  =   "VirusWrom"
+		"rsia"  =   "IndolentAngel"
+		"rsod"  =   "Order"
 				}--]]   
 end
 end

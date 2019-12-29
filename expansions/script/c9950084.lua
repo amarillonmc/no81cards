@@ -24,6 +24,7 @@ function c9950084.initial_effect(c)
 	e1:SetTarget(c9950084.atktg)
 	e1:SetOperation(c9950084.atkop1)
 	c:RegisterEffect(e1)
+	c9950084.discard_effect=e1
 	--Damage
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(9950084,1))

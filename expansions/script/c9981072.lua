@@ -9,6 +9,13 @@ function c9981072.initial_effect(c)
 	local e9=e8:Clone()
 	e9:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e9)
+	--summon with no tribute
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(9981072,2))
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_SUMMON_PROC)
+	e4:SetCondition(c9981072.ntcon)
+	c:RegisterEffect(e4)
 	--remove
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(9981072,1))
@@ -35,6 +42,10 @@ function c9981072.initial_effect(c)
 end
 function c9981072.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981072,0))
+end
+function c9981072.ntcon(e,c,minc)
+	if c==nil then return true end
+	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c9981072.desfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xdd)

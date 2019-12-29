@@ -13,6 +13,7 @@ function c9950082.initial_effect(c)
 	e2:SetTarget(c9950082.thtg)
 	e2:SetOperation(c9950082.thop)
 	c:RegisterEffect(e2)
+	c9950082.discard_effect=e1
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)

@@ -1,7 +1,7 @@
 --青眼白龙-爆裂疾风弹
 function c9981074.initial_effect(c)
 	   --link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3,99,c9981074.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,c9981074.lcheck)
 	c:EnableReviveLimit()
 	--cannot be link material
 	local e3=Effect.CreateEffect(c)

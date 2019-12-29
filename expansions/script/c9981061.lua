@@ -23,8 +23,8 @@ function c9981061.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,99810610)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetTarget(c9981061.sptg)
-	e1:SetOperation(c9981061.spop)
+	e1:SetTarget(c9981061.sptg2)
+	e1:SetOperation(c9981061.spop2)
 	c:RegisterEffect(e1)
 	--special summon
 	local e3=Effect.CreateEffect(c)
@@ -74,7 +74,7 @@ end
 function c9981061.spfilter2(c,e,tp,atk)
 	return c:IsSetCard(0x8) and c:IsAttackBelow(atk) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
-function c9981061.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9981061.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local loc=0
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_DECK end
 	if Duel.GetLocationCountFromEx(tp)>0 then loc=loc+LOCATION_EXTRA end
@@ -84,7 +84,7 @@ function c9981061.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,c9981061.spfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp,loc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,loc)
 end
-function c9981061.spop(e,tp,eg,ep,ev,re,r,rp)
+function c9981061.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local loc=0
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_DECK end
 	if Duel.GetLocationCountFromEx(tp)>0 then loc=loc+LOCATION_EXTRA end
