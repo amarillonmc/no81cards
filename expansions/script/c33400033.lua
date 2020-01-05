@@ -30,9 +30,10 @@ function c33400033.initial_effect(c)
 	c:RegisterEffect(e2)
 	 --ChainLimit
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetOperation(c33400033.tgop)
+	e3:SetOperation(c33400033.chainop)
 	c:RegisterEffect(e3)
 	--Equip Okatana
 	local e4=Effect.CreateEffect(c)
@@ -120,16 +121,8 @@ end
 function c33400033.afilter(c)
 	return c:IsSetCard(0x3340) and c:IsType(TYPE_QUICKPLAY)
 end
-function c33400033.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetOperation(c33400033.actop)
-	Duel.RegisterEffect(e1,tp)  
-end
-function c33400033.actop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if  re:GetHandler():IsSetCard(0x3341) then
+function c33400033.chainop(e,tp,eg,ep,ev,re,r,rp)
+	if re:GetHandler():IsSetCard(0x3341) and ep==tp then
 		Duel.SetChainLimit(c33400033.chainlm)
 	end
 end
@@ -192,7 +185,7 @@ end
 function c33400033.valcon(e,re,r,rp)
 	return r==REASON_BATTLE
 end
-function c33400033.op3(e,tp,eg,ep,ev,re,r,rp)	  
+function c33400033.op3(e,tp,eg,ep,ev,re,r,rp)	
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 			Duel.SelectTarget(tp,c33400033.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
 			local tc=Duel.GetFirstTarget()
