@@ -1,7 +1,7 @@
 --飞电智能·Zero-One-破坏猛犸
 function c9981222.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bc9),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbc9),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--indes
 	local e2=Effect.CreateEffect(c)

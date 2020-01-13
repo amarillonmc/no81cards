@@ -23,7 +23,7 @@ function c9980834.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9980834.filter1(c,e,tp)
-	return c:IsSetCard(0xcbc1) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsRace(RACE_WARRIOR) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.IsExistingMatchingCard(c9980834.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,c:GetRank()+2)
 end
 function c9980834.filter2(c,e,tp,mc,rk)

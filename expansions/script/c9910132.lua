@@ -2,8 +2,9 @@
 function c9910132.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_POSITION+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910132)
 	e1:SetCost(c9910132.spcost)
@@ -35,14 +36,19 @@ end
 function c9910132.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
-function c9910132.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910132.filter(c)
+	return c:IsPosition(POS_FACEUP_ATTACK) and c:IsCanChangePosition() and c:IsAbleToHand()
+end
+function c9910132.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
+	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and c9910132.filter(chkc) end
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and c:IsAbleToDeck()
-		and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_MZONE,1,nil) end
+		and Duel.IsExistingTarget(c9910132.filter,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTACK)
+	local g=Duel.SelectTarget(tp,c9910132.filter,tp,0,LOCATION_MZONE,1,1,nil)
 end
 function c9910132.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -51,26 +57,18 @@ function c9910132.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
 	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
-		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
-			and not tc:IsForbidden() then
-			Duel.DisableShuffleCheck()
-			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-			local e1=Effect.CreateEffect(c)
-			e1:SetCode(EFFECT_CHANGE_TYPE)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-			e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-			tc:RegisterEffect(e1)
+		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			local sc=Duel.GetFirstTarget()
+			if sc:IsRelateToEffect(e) then
+				Duel.ChangePosition(sc,POS_FACEUP_DEFENSE)
+			end
 		end
 	else
 		if not c:IsRelateToEffect(e) then return end
 		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_MZONE,1,1,nil)
-		if sg:GetCount()>0 then
-			Duel.BreakEffect()
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		local sc=Duel.GetFirstTarget()
+		if sc:IsRelateToEffect(e) then
+			Duel.SendtoHand(sc,nil,REASON_EFFECT)
 		end
 	end
 end

@@ -40,26 +40,43 @@ function c9910216.condition(e,tp,eg,ep,ev,re,r,rp)
 		and not Duel.IsExistingMatchingCard(c9910216.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9910216.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil,tp,POS_FACEDOWN) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
 end
 function c9910216.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
-	local rs=g:RandomSelect(1-tp,1)
-	local card=rs:GetFirst()
-	if card==nil then return end
-	if Duel.Remove(card,POS_FACEDOWN,REASON_EFFECT)>0 and Duel.SelectYesNo(1-tp,aux.Stringid(9910216,0)) then
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,nil)
+	local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
+	local sg=Group.CreateGroup()
+	if g1:GetCount()>0 and ((g2:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(9910216,3))) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg1=g1:Select(tp,1,1,nil)
+		Duel.HintSelection(sg1)
+		sg:Merge(sg1)
+	end
+	if g2:GetCount()>0 and ((sg:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(9910216,4))) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg2=g2:Select(tp,1,1,nil)
+		Duel.HintSelection(sg2)
+		sg:Merge(sg2)
+	end
+	if g3:GetCount()>0 and (sg:GetCount()==0 or Duel.SelectYesNo(tp,aux.Stringid(9910216,5))) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg3=g3:RandomSelect(tp,1)
+		sg:Merge(sg3)
+	end
+	if Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)>0 and Duel.SelectYesNo(1-tp,aux.Stringid(9910216,0)) then
 		Duel.BreakEffect()
-		if not Duel.IsPlayerCanDraw(1-tp,1) then Duel.Recover(1-tp,1000,REASON_EFFECT) return end
+		if not Duel.IsPlayerCanDraw(1-tp,1) then Duel.Recover(1-tp,3000,REASON_EFFECT) return end
 		if Duel.GetCurrentChain()>2 then
 			if Duel.SelectOption(tp,aux.Stringid(9910216,1),aux.Stringid(9910216,2))==0 then
-				Duel.Recover(1-tp,1000,REASON_EFFECT)
+				Duel.Recover(1-tp,3000,REASON_EFFECT)
 			else
 				Duel.Draw(1-tp,1,REASON_EFFECT)
 			end
 		else
 			if Duel.SelectOption(1-tp,aux.Stringid(9910216,1),aux.Stringid(9910216,2))==0 then
-				Duel.Recover(1-tp,1000,REASON_EFFECT)
+				Duel.Recover(1-tp,3000,REASON_EFFECT)
 			else
 				Duel.Draw(1-tp,1,REASON_EFFECT)
 			end

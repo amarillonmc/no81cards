@@ -87,7 +87,7 @@ function c9980408.operation(e,tp,eg,ep,ev,re,r,rp)
 	if tc then
 		Duel.Equip(tp,tc,c,true)
 	end
-   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980408,3))
+   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980408,4))
 end
 function c9980408.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and aux.disfilter1(chkc) end

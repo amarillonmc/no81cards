@@ -2,7 +2,7 @@
 function c9910123.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910123)
@@ -32,9 +32,6 @@ function c9910123.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and c:IsAbleToDeck() end
 end
-function c9910123.tgfilter(c)
-	return c:IsFacedown() and c:IsAbleToGrave()
-end
 function c9910123.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
@@ -57,12 +54,13 @@ function c9910123.spop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		if not c:IsRelateToEffect(e) then return end
 		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
-		local g=Duel.GetMatchingGroup(c9910123.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+		local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_SZONE,LOCATION_SZONE,nil)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910123,0)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.BreakEffect()
-			Duel.SendtoGrave(sg,REASON_EFFECT)
+			Duel.HintSelection(sg)
+			Duel.Destroy(sg,REASON_EFFECT)
 		end
 	end
 end

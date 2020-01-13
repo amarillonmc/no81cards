@@ -22,6 +22,17 @@ function c9980820.initial_effect(c)
 	e2:SetTarget(c9980820.atktg)
 	e2:SetOperation(c9980820.atkop)
 	c:RegisterEffect(e2)
+  --To hand
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TOHAND)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e4:SetRange(LOCATION_GRAVE)
+	e4:SetCountLimit(1,9980820)
+	e4:SetCost(c9980820.thcost)
+	e4:SetTarget(c9980820.thtg2)
+	e4:SetOperation(c9980820.thop2)
+	c:RegisterEffect(e4)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -68,6 +79,28 @@ function c9980820.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980820,2))
+	end
+end
+function c9980820.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToDeckOrExtraAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
+end
+function c9980820.thfilter(c)
+	return c:IsSetCard(0xcbc1) and c:IsAbleToHand()
+end
+function c9980820.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c9980820.thfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9980820.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectTarget(tp,c9980820.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+end
+function c9980820.thop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980820,2))
 	end
 end

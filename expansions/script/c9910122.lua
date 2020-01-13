@@ -11,7 +11,7 @@ function c9910122.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to deck
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_RECOVER)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,9910122)
@@ -73,15 +73,15 @@ function c9910122.tdfilter(c)
 	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function c9910122.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910122.tdfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,tp,LOCATION_HAND+LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910122.tdfilter,tp,LOCATION_GRAVE,0,2,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,tp,LOCATION_GRAVE)
 end
 function c9910122.locfilter(c,sp)
 	return c:IsLocation(LOCATION_DECK) and c:IsControler(sp)
 end
 function c9910122.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c9910122.tdfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c9910122.tdfilter,tp,LOCATION_GRAVE,0,2,2,nil)
 	if g:GetCount()~=2 then return end
 	if Duel.SendtoDeck(g,nil,0,REASON_EFFECT)~=2 then return end
 	local ct=Duel.GetOperatedGroup():FilterCount(c9910122.locfilter,nil,tp)
@@ -90,10 +90,7 @@ function c9910122.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,1)
 	local tg=Duel.GetDecktopGroup(tp,1)
 	local tc=tg:GetFirst()
-	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
-		Duel.DisableShuffleCheck()
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
-		Duel.ShuffleHand(tp)
+	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) and tc:GetAttack()>0 then
+		Duel.Recover(tp,tc:GetAttack(),REASON_EFFECT)
 	end
 end

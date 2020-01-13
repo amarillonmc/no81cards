@@ -19,7 +19,6 @@ function c9910140.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c9910140.imcon)
 	e2:SetValue(c9910140.atkval)
 	c:RegisterEffect(e2)
 	--to deck
@@ -53,9 +52,10 @@ function c9910140.imcon(e)
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0x952)
 end
 function c9910140.imfilter(e,te)
-	return te:GetOwnerPlayer()~=e:GetHandlerPlayer()
+	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:GetOwner()~=e:GetOwner()
 end
 function c9910140.atkval(e,c)
+	if not c:GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0x952) then return 0 end
 	return c:GetOverlayCount()*400
 end
 function c9910140.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)

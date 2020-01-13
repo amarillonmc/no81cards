@@ -88,7 +88,7 @@ function c9980409.operation(e,tp,eg,ep,ev,re,r,rp)
 	if tc then
 		Duel.Equip(tp,tc,c,true)
 	end
-   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980409,2))
+   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980409,3))
 end
 function c9980409.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)

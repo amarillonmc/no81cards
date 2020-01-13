@@ -105,10 +105,10 @@ function c9980412.initial_effect(c)
 	c:RegisterEffect(e8)
 end
 function c9980412.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980412,4))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980412,5))
 end 
 function c9980412.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0xbca) and g:IsExists(Card.IsLinkType,1,nil,TYPE_FUSION)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xbca) and g:IsExists(Card.IsLinkType,1,nil,TYPE_FUSION+TYPE_LINK)
 end
 function c9980412.atkval(e,c)
 	return Duel.GetMatchingGroupCount(Card.IsType,c:GetControler(),LOCATION_GRAVE,LOCATION_GRAVE,nil,TYPE_MONSTER)*300

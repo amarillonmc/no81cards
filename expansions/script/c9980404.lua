@@ -19,7 +19,7 @@ function c9980404.initial_effect(c)
 end
 c9980404.card_code_list={9980400}
 function c9980404.filter(c)
-	return c:IsCode(9980400) and c:IsAbleToHand()
+	return ((c:IsCode(9980400)) or (aux.IsCodeListed(c,9980400) and c:IsType(TYPE_EQUIP)) and c:IsAbleToHand()
 end
 function c9980404.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9980404.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

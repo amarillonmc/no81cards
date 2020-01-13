@@ -87,7 +87,7 @@ function c9980410.operation(e,tp,eg,ep,ev,re,r,rp)
 	if tc then
 		Duel.Equip(tp,tc,c,true)
 	end
-   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980410,2))
+   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980410,3))
 end
 function c9980410.setfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()

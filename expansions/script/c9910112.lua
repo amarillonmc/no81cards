@@ -37,7 +37,7 @@ function c9910112.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910112.ctfilter(c,tp)
 	local seq=c:GetSequence()
-	if seq>4 then return false end
+	if seq>4 or not c:IsFaceup() then return false end
 	return (seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1))
 		or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1))
 end

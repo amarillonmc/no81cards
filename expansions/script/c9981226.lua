@@ -76,7 +76,6 @@ function c9981226.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-end
 function c9981226.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_SZONE,0,1,e:GetHandler()) end
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_SZONE,0,e:GetHandler())

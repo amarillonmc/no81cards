@@ -74,7 +74,7 @@ function c9980413.initial_effect(c)
 	c:RegisterEffect(e8)
 end
 function c9980413.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980413,2))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980413,4))
 end 
 function c9980413.sprfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xbca) and c:IsType(TYPE_FUSION+TYPE_XYZ+TYPE_LINK+TYPE_SYNCHRO+TYPE_RITUAL) and c:IsAbleToRemoveAsCost()

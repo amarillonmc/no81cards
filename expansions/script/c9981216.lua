@@ -1,7 +1,7 @@
 --飞电智能·Zero-One-闪耀突击蝗虫
 function c9981216.initial_effect(c)
 	 c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,9981215,aux.FilterBoolFunction(Card.IsFusionSetCard,0x5bc9),1,true,true)
+	aux.AddFusionProcCodeFun(c,9981216,aux.FilterBoolFunction(Card.IsFusionSetCard,0x5bc9),1,true,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_MZONE+LOCATION_GRAVE,0,Duel.Remove,POS_FACEUP,REASON_COST)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
@@ -51,8 +51,8 @@ function c9981216.initial_effect(c)
 	e8:SetRange(LOCATION_MZONE)
 	e8:SetCountLimit(2)
 	e8:SetCost(c9981216.tgcost)
-	e8:SetTarget(c9981215.tgtg)
-	e8:SetOperation(c9981215.tgop)
+	e8:SetTarget(c9981216.tgtg)
+	e8:SetOperation(c9981216.tgop)
 	c:RegisterEffect(e8)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
@@ -82,11 +82,11 @@ function c9981216.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,c9981216.tgfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
-function c9981215.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9981216.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE+LOCATION_HAND)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_MZONE+LOCATION_HAND)
 end
-function c9981215.tgop(e,tp,eg,ep,ev,re,r,rp)
+function c9981216.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsType,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil,TYPE_MONSTER)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
@@ -94,7 +94,7 @@ function c9981215.tgop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(sg)
 		Duel.SendtoGrave(sg,REASON_RULE)
 	end
-Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981215,1))
+Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981216,1))
 end
 function c9981216.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
