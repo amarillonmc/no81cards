@@ -1,8 +1,15 @@
 --Genm·丧尸动作玩家Lv.X-0
 function c9980988.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bc3),5,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bc3),5,2,c9980988.ovfilter,aux.Stringid(9980988,2))
 	c:EnableReviveLimit()
+--
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	e1:SetValue(1)
+	c:RegisterEffect(e1)
 	--control
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_CONTROL)
@@ -22,7 +29,7 @@ function c9980988.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_LEAVE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(99,9980990+EFFECT_COUNT_CODE_DUEL)
+	e3:SetCountLimit(99,9980988+EFFECT_COUNT_CODE_DUEL)
 	e3:SetCondition(c9980988.spcon)
 	e3:SetTarget(c9980988.sptg)
 	e3:SetOperation(c9980988.spop)
@@ -39,6 +46,9 @@ function c9980988.initial_effect(c)
 end
 function c9980988.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980988,0))
+end
+function c9980988.ovfilter(c)
+	return c:IsFaceup() and c:IsLinkAbove(3) and(c:IsSetCard(0x3bc3) and c:IsXyzType(TYPE_LINK))
 end
 function c9980988.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

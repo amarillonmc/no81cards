@@ -63,20 +63,20 @@ function c9910220.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c:IsAbleToRemoveAsCost() end
 	Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
-function c9910220.spfilter(c,e,tp)
+function c9910220.spfilter(c,e,tp,ec)
 	return c:IsLinkBelow(2) and c:IsSetCard(0x955) and not c:IsCode(9910220)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,ec,c)>0
 end
 function c9910220.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCountFromEx(tp,tp,e:GetHandler())>0
-		and Duel.IsExistingMatchingCard(c9910220.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910220.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c9910220.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCountFromEx(tp)>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c9910220.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c9910220.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,c)
+	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

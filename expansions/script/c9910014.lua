@@ -11,14 +11,15 @@ function c9910014.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(c9910014.splimit)
 	c:RegisterEffect(e1)
-	--battle indes
+	--effect indes
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	e2:SetCountLimit(1)
 	e2:SetCondition(c9910014.condtion)
-	e2:SetValue(1)
+	e2:SetValue(c9910014.valcon)
 	c:RegisterEffect(e2)
 	--immune
 	local e3=Effect.CreateEffect(c)
@@ -57,6 +58,9 @@ function c9910014.condtion(e,tp,eg,ep,ev,re,r,rp)
 	local mg=c:GetMaterial()
 	return (c:GetSummonType()==SUMMON_TYPE_SPECIAL+1 or c:IsSummonType(SUMMON_TYPE_FUSION))
 		and mg:GetCount()>0 and not mg:IsExists(c9910014.mfilter,1,nil)
+end
+function c9910014.valcon(e,re,r,rp)
+	return bit.band(r,REASON_EFFECT)~=0
 end
 function c9910014.efilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:IsActiveType(TYPE_SPELL)

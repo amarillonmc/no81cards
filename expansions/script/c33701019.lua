@@ -30,13 +30,14 @@ function s.initial_effect(c)
     e2:SetTarget(s.drtg)
     e2:SetOperation(s.drop)
     c:RegisterEffect(e2)
+	Duel.AddCustomActivityCounter(33701019,ACTIVITY_CHAIN,aux.FALSE)
 end
 function s.xcheck(g, lc, tp)
     return g:IsExists(Card.IsXyzSetCard, 1, nil, 0x144e)
 end
 function s.spcon(e, tp, eg, ep, ev, re, r, rp)
-    local ct = Duel.GetActivityCount(tp, ACTIVITY_CHAIN)
-    return Duel.GetTurnPlayer() == tp and ct == 0
+    return Duel.GetTurnPlayer() == tp
+    	and Duel.GetCustomActivityCount(33701019,tp,ACTIVITY_CHAIN)==0 
 end
 function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
     local c = e:GetHandler()

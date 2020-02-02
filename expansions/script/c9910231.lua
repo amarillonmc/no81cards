@@ -3,15 +3,6 @@ function c9910231.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_LINK),2,99,c9910231.lcheck)
 	c:EnableReviveLimit()
-	--zone limit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_MUST_USE_MZONE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(1,0)
-	e1:SetValue(c9910231.zonelimit)
-	c:RegisterEffect(e1)
 	--cannot disable spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -41,9 +32,6 @@ function c9910231.initial_effect(c)
 	e4:SetTarget(c9910231.sptg)
 	e4:SetOperation(c9910231.spop)
 	c:RegisterEffect(e4)
-end
-function c9910231.zonelimit(e)
-	return 0x1f001f | (0x600060 & ~e:GetHandler():GetLinkedZone())
 end
 function c9910231.lcheck(g)
 	return g:IsExists(Card.IsLinkMarker,1,nil,LINK_MARKER_BOTTOM)
@@ -77,10 +65,11 @@ function c9910231.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(1-tp,1,REASON_EFFECT)
 end
 function c9910231.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()==e:GetHandler():GetTurnID()+1
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+		and Duel.GetTurnCount()==e:GetHandler():GetTurnID()+1
 end
 function c9910231.spfilter(c,e,tp)
-	return c:IsType(TYPE_LINK) and c:IsLinkBelow(3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910231.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

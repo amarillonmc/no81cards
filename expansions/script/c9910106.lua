@@ -19,8 +19,6 @@ function Zcd.XyzCondition(f,lv,minc,maxc,alterf,desc,op)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
-				local ft=Duel.GetLocationCountFromEx(tp)
-				local ct=-ft
 				local mg=nil
 				if og then
 					mg=og
@@ -38,7 +36,7 @@ function Zcd.XyzCondition(f,lv,minc,maxc,alterf,desc,op)
 					if max<maxc then maxc=max end
 					if minc>maxc then return false end
 				end
-				return ct<minc and Duel.CheckXyzMaterial(c,f,lv,minc,maxc,og)
+				return Duel.CheckXyzMaterial(c,f,lv,minc,maxc,og)
 			end
 end
 function Zcd.XyzTarget(f,lv,minc,maxc,alterf,desc,op)
@@ -46,8 +44,6 @@ function Zcd.XyzTarget(f,lv,minc,maxc,alterf,desc,op)
 				if og and not min then
 					return true
 				end
-				local ft=Duel.GetLocationCountFromEx(tp)
-				local ct=-ft
 				local minc=minc
 				local maxc=maxc
 				if min then
@@ -60,7 +56,7 @@ function Zcd.XyzTarget(f,lv,minc,maxc,alterf,desc,op)
 				else
 					mg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
 				end
-				local b1=ct<minc and Duel.CheckXyzMaterial(c,f,lv,minc,maxc,og)
+				local b1=Duel.CheckXyzMaterial(c,f,lv,minc,maxc,og)
 				local b2=nil
 				local ssg=nil
 				if (not min or min<=1) and mg:IsExists(Zcd.XyzAlterFilter,minc,nil,alterf,c,e,tp,op,lv) then

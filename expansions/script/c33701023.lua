@@ -28,17 +28,36 @@ end
 function s.condition(e, tp, eg, ep, ev, re, r, rp)
     return Duel.GetTurnPlayer() ~= tp and Duel.IsAbleToEnterBP()
 end
+function s.rfilter(c,tp)
+	return c:IsSetCard(0x144e) and (c:IsControler(tp) or c:IsFaceup())
+end
+function s.fgoal(sg,tp)
+	if sg:GetCount()>0 and Duel.GetMZoneCount(tp,sg)>0 then
+		Duel.SetSelectedCard(sg)
+		return Duel.CheckReleaseGroup(tp,nil,0,nil)
+	else return false end
+end
 function s.cost(e, tp, eg, ep, ev, re, r, rp, chk)
-    if chk == 0 then
-        return Duel.CheckReleaseGroupCost(tp, Card.IsSetCard, 2, false, aux.ReleaseCheckMMZ, nil, 0x144e)
-    end
-    local g = Duel.SelectReleaseGroupCost(tp, Card.IsSetCard, 2, 2, false, aux.ReleaseCheckMMZ, nil, 0x144e)
-    Duel.Release(g, REASON_COST)
+--    if chk == 0 then
+--        return Duel.CheckReleaseGroupCost(tp, Card.IsSetCard, 2, false, aux.ReleaseCheckMMZ, nil, 0x144e)
+--    end
+--    local g = Duel.SelectReleaseGroupCost(tp, Card.IsSetCard, 2, 2, false, aux.ReleaseCheckMMZ, nil, 0x144e)
+--    Duel.Release(g, REASON_COST)
+	local rg=Duel.GetReleaseGroup(tp):Filter(s.rfilter,nil,tp)
+	if chk==0 then return rg:CheckSubGroup(s.fgoal,2,2,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=rg:SelectSubGroup(tp,s.fgoal,false,2,2,tp)
+	Duel.Release(g,REASON_COST)
 end
 function s.activate(e, tp, eg, ep, ev, re, r, rp)
     if Duel.IsChainDisablable(0) then
         local g = Duel.GetMatchingGroup(Card.IsAbleToGrave, tp, 0, LOCATION_MZONE, nil)
-        if #g > 1 and Duel.SelectYesNo(1 - tp, aux.Stringid(id, 0)) then
+        if g:GetCount()>1 then --and Duel.SelectYesNo(1 - tp, aux.Stringid(id, 0)) then
+			sel=Duel.SelectOption(1-tp,1213,1214)
+		else
+			sel=Duel.SelectOption(1-tp,1214)+1
+		end
+		if sel==0 then
             Duel.Hint(HINT_SELECTMSG, 1 - tp, HINTMSG_TOGRAVE)
             local sg = g:Select(1 - tp, 2, 2, nil)
             Duel.SendtoGrave(sg, REASON_EFFECT)
@@ -52,15 +71,13 @@ function s.tgfilter(c)
     return c:IsSetCard(0x144e) and c:IsAbleToGrave()
 end
 function s.tgtg(e, tp, eg, ep, ev, re, r, rp, chk)
-    if chk == 0 then
-        return Duel.IsExistingMatchingCard(s.tgfilter, tp, LOCATION_DECK, 0, 2, nil)
-    end
+    if chk == 0 then return Duel.IsExistingMatchingCard(s.tgfilter, tp, LOCATION_DECK, 0, 2, nil) end
     Duel.SetOperationInfo(0, CATEGORY_TOGRAVE, nil, 2, tp, LOCATION_DECK)
 end
 function s.tgop(e, tp, eg, ep, ev, re, r, rp)
     Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOGRAVE)
     local g = Duel.SelectMatchingCard(tp, s.tgfilter, tp, LOCATION_DECK, 0, 2, 2, nil)
-    if #g > 0 then
+    if g:GetCount()>0 then
         Duel.SendtoGrave(g, REASON_EFFECT)
     end
 end

@@ -71,7 +71,7 @@ function c9980993.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980993,2))
 end
 function c9980993.sprfilter(c)
-	return c:IsRankAbove(8) and c:IsSetCard(0x3bc3) and c:IsAbleToRemoveAsCost()
+	return c:IsRankAbove(4) and c:IsSetCard(0x3bc3) and c:IsAbleToRemoveAsCost()
 end
 function c9980993.sprcon(e,c)
 	if c==nil then return true end

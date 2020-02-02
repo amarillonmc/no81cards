@@ -13,14 +13,12 @@ function c9910147.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910147.confilter(c)
-	local b1=c:IsLocation(LOCATION_MZONE) and c:IsRace(RACE_MACHINE)
-	local b2=c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS and c:IsSetCard(0x952)
-		and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
-	return c:IsFaceup() and (b1 or b2)
+	return c:IsFaceup() and c:IsSetCard(0x952)
 end
 function c9910147.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9910147.confilter,tp,LOCATION_ONFIELD,0,1,nil)
-		and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
+	local t=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
+	local s=Duel.GetFieldGroupCount(tp,LOCATION_HAND+LOCATION_ONFIELD,0)
+	return Duel.IsExistingMatchingCard(c9910147.confilter,tp,LOCATION_MZONE,0,1,nil) and t>s
 end
 function c9910147.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -54,11 +52,11 @@ function c9910147.operation(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetLabel(ct)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
-	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)-Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
-	if ct>0 and Duel.IsPlayerCanDraw(tp,ct)
-		and Duel.SelectYesNo(tp,aux.Stringid(9910147,0)) then
+	local t=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
+	local s=Duel.GetFieldGroupCount(tp,LOCATION_HAND+LOCATION_ONFIELD,0)
+	if t>s and Duel.IsPlayerCanDraw(tp,t-s) and Duel.SelectYesNo(tp,aux.Stringid(9910147,0)) then
 		Duel.BreakEffect()
-		Duel.Draw(tp,ct,REASON_EFFECT)
+		Duel.Draw(tp,t-s,REASON_EFFECT)
 	end
 end
 function c9910147.sumlimit(e,c,sump,sumtype,sumpos,targetp)

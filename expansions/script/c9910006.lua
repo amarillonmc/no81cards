@@ -72,18 +72,17 @@ function c9910006.rpop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910006.scfilter1(c,e,tp,mc)
 	local mg=Group.FromCards(c,mc)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsExistingMatchingCard(c9910006.scfilter2,tp,LOCATION_EXTRA,0,1,nil,mg)
+	return c:IsCanBeSpecialSummoned(e,182,tp,false,false)
+		and Duel.IsExistingMatchingCard(c9910006.scfilter2,tp,LOCATION_EXTRA,0,1,nil,tp,mg)
 end
-function c9910006.scfilter2(c,mg)
-	return c:IsXyzSummonable(mg,2,2)
+function c9910006.scfilter2(c,tp,mg)
+	return c:IsXyzSummonable(mg,2,2) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
 function c9910006.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_PZONE) and chkc:IsControler(tp) and c9910006.scfilter1(chkc,e,tp,c) end
 	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.GetLocationCountFromEx(tp,tp,c)>0
 		and Duel.IsExistingTarget(c9910006.scfilter1,tp,LOCATION_PZONE,0,1,nil,e,tp,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c9910006.scfilter1,tp,LOCATION_PZONE,0,1,1,nil,e,tp,c)
@@ -93,7 +92,7 @@ function c9910006.scop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) or not Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then return end
+	if not tc:IsRelateToEffect(e) or not Duel.SpecialSummonStep(tc,182,tp,tp,false,false,POS_FACEUP) then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_DISABLE)
@@ -105,7 +104,6 @@ function c9910006.scop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 	if not c:IsRelateToEffect(e) then return end
 	local mg=Group.FromCards(c,tc)
-	if Duel.GetLocationCountFromEx(tp,tp,mg)<=0 then return end
 	local g=Duel.GetMatchingGroup(c9910006.scfilter2,tp,LOCATION_EXTRA,0,nil,mg)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

@@ -1,7 +1,7 @@
 --骑士时刻空我·惊异全能2000
 function c9981552.initial_effect(c)
 	 --link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xbca),3)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xbca),4,4)
 	c:EnableReviveLimit()
 	--remove
 	local e3=Effect.CreateEffect(c)
@@ -34,11 +34,6 @@ function c9981552.initial_effect(c)
 	e2:SetCondition(c9981552.atkcon)
 	e2:SetValue(2)
 	c:RegisterEffect(e2)
-	--cannot diratk
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
-	c:RegisterEffect(e3)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)

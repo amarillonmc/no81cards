@@ -13,11 +13,9 @@ function c9910142.initial_effect(c)
 	c:RegisterEffect(e1)
 	--atk down
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetType(EFFECT_TYPE_TARGET)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e2:SetTarget(aux.ctg)
 	e2:SetValue(-1500)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
@@ -25,11 +23,9 @@ function c9910142.initial_effect(c)
 	c:RegisterEffect(e3)
 	--disable
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetType(EFFECT_TYPE_TARGET)
 	e4:SetCode(EFFECT_DISABLE)
 	e4:SetRange(LOCATION_SZONE)
-	e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e4:SetTarget(aux.ctg)
 	c:RegisterEffect(e4)
 	--destroy
 	local e5=Effect.CreateEffect(c)
@@ -39,19 +35,6 @@ function c9910142.initial_effect(c)
 	e5:SetCondition(c9910142.descon)
 	e5:SetOperation(c9910142.desop)
 	c:RegisterEffect(e5)
-	--disable spsummon
-	local e6=Effect.CreateEffect(c)
-	e6:SetDescription(aux.Stringid(9910142,0))
-	e6:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
-	e6:SetType(EFFECT_TYPE_QUICK_O)
-	e6:SetCode(EVENT_SPSUMMON)
-	e6:SetRange(LOCATION_SZONE)
-	e6:SetCountLimit(1)
-	e6:SetCondition(c9910142.discon)
-	e6:SetCost(c9910142.discost)
-	e6:SetTarget(c9910142.distg)
-	e6:SetOperation(c9910142.disop)
-	c:RegisterEffect(e6)
 end
 function c9910142.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
@@ -110,27 +93,4 @@ function c9910142.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910142.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
-end
-function c9910142.discon(e,tp,eg,ep,ev,re,r,rp)
-	return tp~=ep and Duel.GetCurrentChain()==0
-end
-function c9910142.rmfilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_XYZ) and c:IsAbleToRemoveAsCost()
-		and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
-end
-function c9910142.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910142.rmfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910142.rmfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-end
-function c9910142.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
-end
-function c9910142.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateSummon(eg)
-	Duel.Destroy(eg,REASON_EFFECT)
-	e:GetHandler():RegisterFlagEffect(74892653,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end

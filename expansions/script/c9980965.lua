@@ -1,7 +1,7 @@
 --Ex-Aid·双人动作玩家Lv.XX
 function c9980965.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bc3),4,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bc3),4,2,c9980965.ovfilter,aux.Stringid(9980965,2),2,c9980965.xyzop)
 	c:EnableReviveLimit()
 	--indes
 	local e3=Effect.CreateEffect(c)
@@ -51,6 +51,13 @@ function c9980965.initial_effect(c)
 end
 function c9980965.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980965,0))
+end
+function c9980965.ovfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x3bc3) and c:IsAttackAbove(2500)
+end
+function c9980965.xyzop(e,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,9980965)==0 end
+	Duel.RegisterFlagEffect(tp,9980965,RESET_PHASE+PHASE_END,0,1)
 end
 function c9980965.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)

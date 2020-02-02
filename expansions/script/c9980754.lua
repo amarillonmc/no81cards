@@ -50,6 +50,18 @@ function c9980754.initial_effect(c)
 	e4:SetTarget(c9980754.thtg)
 	e4:SetOperation(c9980754.thop)
 	c:RegisterEffect(e4)
+ --draw
+	local e7=Effect.CreateEffect(c)
+	e7:SetDescription(aux.Stringid(9980754,2))
+	e7:SetCategory(CATEGORY_DRAW)
+	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e7:SetProperty(EFFECT_FLAG_DELAY)
+	e7:SetCode(EVENT_TO_GRAVE)
+	e7:SetCountLimit(1)
+	e7:SetCondition(c9980754.drcon)
+	e7:SetTarget(c9980754.drtg)
+	e7:SetOperation(c9980754.drop)
+	c:RegisterEffect(e7)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -120,4 +132,18 @@ function c9980754.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980754,2))
 	end
+end
+function c9980754.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+end
+function c9980754.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c9980754.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
+ Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980754,2))
 end

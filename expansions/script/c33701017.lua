@@ -22,7 +22,7 @@ function s.initial_effect(c)
     --negate
     local e2 = Effect.CreateEffect(c)
     e2:SetDescription(aux.Stringid(id, 1))
-    e2:SetCategory(CATEGORY_DISABLE)
+--	e2:SetCategory(CATEGORY_DISABLE)
     e2:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_CONTINUOUS)
     e2:SetCode(EVENT_SPSUMMON_SUCCESS)
     e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP + EFFECT_FLAG_DELAY)
@@ -49,23 +49,22 @@ end
 function s.spfilter(c)
     return c:IsSetCard(0x144e) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
-function s.MZFilter(c, tp)
-    return c:IsLocation(LOCATION_MZONE) and c:GetSequence() < 5 and c:IsControler(tp)
-end
-function s.ChkfMMZ(sumcount)
-    return function(sg, e, tp, mg)
-        return sg:FilterCount(s.MZFilter, nil, tp) + Duel.GetLocationCount(tp, LOCATION_MZONE) >= sumcount
-    end
-end
+--function s.MZFilter(c, tp)
+--    return c:IsLocation(LOCATION_MZONE) and c:GetSequence() < 5 and c:IsControler(tp)
+--end
+--function s.ChkfMMZ(sumcount)
+--    return function(sg, e, tp, mg)
+--        return sg:FilterCount(s.MZFilter, nil, tp) + Duel.GetLocationCount(tp, LOCATION_MZONE) >= sumcount
+--    end
+--end
 function s.spcost(e, tp, eg, ep, ev, re, r, rp, chk)
-    local rg = Duel.GetMatchingGroup(s.spfilter, tp, LOCATION_HAND + LOCATION_GRAVE, 0, e:GetHandler())
-    if chk == 0 then
-        return Duel.GetLocationCount(tp, LOCATION_MZONE) > -2 and #rg > 1 and
-            rg:CheckSubGroup(s.ChkfMMZ(1), 2, 2, tp) 
-    end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-    local g = rg:SelectSubGroup(s.ChkfMMZ(1), tp, 2, 2, tp)
-    Duel.Remove(g, POS_FACEUP, REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,nil) end
+--    if chk == 0 then
+--        return Duel.GetLocationCount(tp, LOCATION_MZONE) > -2 and #rg > 1 and
+--            rg:CheckSubGroup(s.ChkfMMZ(1), 2, 2, tp) 
+--    end
+	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,2,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
     local c = e:GetHandler()
@@ -76,25 +75,25 @@ function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
 end
 function s.spop(e, tp, eg, ep, ev, re, r, rp)
     local c = e:GetHandler()
-    if c:IsRelateToEffect(e) and Duel.SpecialSummon(c, 0, tp, tp, true, true, POS_FACEUP) ~= 0 then
+    if c:IsRelateToEffect(e) and Duel.SpecialSummon(c, 1, tp, tp, true, true, POS_FACEUP) ~= 0 then
         c:CompleteProcedure()
-        c:RegisterFlagEffect(id, RESET_EVENT + RESETS_STANDARD, 0, 0)
+--        c:RegisterFlagEffect(id, RESET_EVENT + RESETS_STANDARD, 0, 0)
     end
 end
 function s.negop(e, tp, eg, ep, ev, re, r, rp)
     local c = e:GetHandler()
-    if c:GetFlagEffect(id) ~= 0 then
-        local e1 = Effect.CreateEffect(c)
-        e1:SetType(EFFECT_TYPE_FIELD)
-        e1:SetCode(EFFECT_DISABLE)
-        e1:SetTargetRange(0, LOCATION_ONFIELD)
-        e1:SetTarget(s.disable)
-        e1:SetReset(RESET_PHASE + PHASE_END + RESET_OPPO_TURN)
-        Duel.RegisterEffect(e1, tp)
-    end
+    if not c:GetSummonType()==SUMMON_TYPE_SPECIAL+1 then return end
+	local e1 = Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DISABLE)
+	e1:SetTargetRange(0, LOCATION_ONFIELD)
+	e1:SetTarget(s.disable)
+	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+	e1:SetLabel(c:GetFieldID())
+	Duel.RegisterEffect(e1, tp)
 end
-function s.disable(e, c)
-    return c ~= e:GetHandler() and aux.disfilter1(c)
+function s.disable(e,c)
+    return c:GetFieldID()~=e:GetLabel() and (not c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_EFFECT) or bit.band(c:GetOriginalType(),TYPE_EFFECT)==TYPE_EFFECT))
 end
 function s.spfilter2(c, e, tp, zone)
     return c:IsSetCard(0x144e) and c:IsCanBeSpecialSummoned(e, 0, tp, false, false, POS_FACEUP, tp, zone)

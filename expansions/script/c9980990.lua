@@ -3,6 +3,13 @@ function c9980990.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
 	aux.AddXyzProcedureLevelFree(c,c9980990.mfilter,c9980990.xyzcheck,2,2,c9980990.ovfilter,aux.Stringid(9980990,1))
+--
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	e1:SetValue(1)
+	c:RegisterEffect(e1)
 	--destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9980990,0))
@@ -49,7 +56,7 @@ function c9980990.xyzcheck(g)
 	return g:GetClassCount(Card.GetRank)==1
 end
 function c9980990.ovfilter(c)
-	return c:IsFaceup() and ((c:IsSetCard(0x3bc3) and c:IsXyzType(TYPE_XYZ))or c:IsCode(9980985))
+	return c:IsFaceup() and (c:IsSetCard(0x3bc3) and c:IsXyzType(TYPE_XYZ))
 end
 function c9980990.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

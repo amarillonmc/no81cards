@@ -40,6 +40,7 @@ function c9910149.activate(e,tp,eg,ep,ev,re,r,rp)
 	tg1:Merge(tg2)
 	if tg1:GetCount()==2 and Duel.SendtoHand(tg1,nil,REASON_EFFECT)==2 then
 		Duel.ConfirmCards(1-tp,tg1)
+		Duel.ShuffleDeck(tp)
 		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
 		if sg:GetCount()==0 then return end
 		Duel.BreakEffect()

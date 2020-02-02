@@ -1,7 +1,7 @@
 --Ex-Aid·创造者玩家
 function c9980970.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bc3),10,3)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bc3),10,3,c9980970.ovfilter,aux.Stringid(9980970,4),3,c9980970.xyzop)
 	c:EnableReviveLimit()
 	--cannot target
 	local e2=Effect.CreateEffect(c)
@@ -55,6 +55,16 @@ function c9980970.initial_effect(c)
 end
 function c9980970.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980970,2))
+end
+function c9980970.cfilter(c)
+	return c:IsSetCard(0x95) and c:IsType(TYPE_SPELL) and c:IsDiscardable()
+end
+function c9980970.ovfilter(c)
+	return c:IsFaceup() and c:IsAttackAbove(4000)  and c:IsSetCard(0x3bc3) 
+end
+function c9980970.xyzop(e,tp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9980970.cfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,c9980970.cfilter,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9980970.condition(e,tp,eg,ep,ev,re,r,rp,chk)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
