@@ -204,11 +204,11 @@ function c9981284.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9981284.target3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsAttribute,tp,LOCATION_GRAVE+LOCATION_MZONE,0,nil,ATTRIBUTE_LIGHT+ATTRIBUTE_DARK+ATTRIBUTE_WATER+ATTRIBUTE_WIND+ATTRIBUTE_FIRE+ATTRIBUTE_EARTH)
-	if chk==0 then return #g>0 and (g:FilterCount(Card.IsAttribute,nil,RACE_SEASERPENT)<#g or Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,e:GetHandler())) end
+	if chk==0 then return #g>0 and (g:FilterCount(Card.IsAttribute,nil,ATTRIBUTE_DARK)<#g or Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,e:GetHandler())) end
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,g:FilterCount(Card.IsAttribute,nil,ATTRIBUTE_LIGHT)*300)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,g:FilterCount(Card.IsAttribute,nil,ATTRIBUTE_WATER)*400)
 	Duel.SetTargetPlayer(tp)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,g:FilterCount(Card.IsAttribute,tp,nil,ATTRIBUTE_EARTH),LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,g:FilterCount(Card.IsAttribute,tp,nil,ATTRIBUTE_EARTH),LOCATION_HAND)
 	Duel.SetChainLimit(c9981284.chainlm)
 end
 function c9981284.operation3(e,tp,eg,ep,ev,re,r,rp)

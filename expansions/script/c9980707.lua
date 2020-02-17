@@ -1,5 +1,6 @@
 --戈尔贡三姐妹·美杜莎lily
 function c9980707.initial_effect(c)
+  aux.AddCodeList(c,9980706)
 	 --change name
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -39,7 +40,6 @@ function c9980707.initial_effect(c)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
 end
-c9980707.card_code_list={9980706}
 function c9980707.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980707,0))
 end

@@ -21,11 +21,11 @@ function c9950136.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 end
 function c9950136.costfilter(c,e,tp)
-	return c:IsDiscardable() and c:IsSetCard(0x9ba5) and c:IsType(TYPE_MONSTER)
+	return c:IsDiscardable() and ((c:IsSetCard(0x9ba5) and c:IsType(TYPE_MONSTER)) or (c:IsLevel(7,8) and c:IsSetCard(0xba5)))
 		and Duel.IsExistingMatchingCard(c9950136.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp,c:GetCode())
 end
 function c9950136.spfilter(c,e,tp,code)
-	return c:IsSetCard(0x9ba5) and c:IsType(TYPE_MONSTER)
+	return ((c:IsSetCard(0x9ba5) and c:IsType(TYPE_MONSTER)) or (c:IsLevel(7,8) and c:IsSetCard(0xba5)))
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(code)
 end
 function c9950136.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -59,6 +59,6 @@ function c9950136.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9950136.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x9ba5)
+	return not c:IsSetCard(0xba5)
 end
 

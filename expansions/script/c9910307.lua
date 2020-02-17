@@ -39,10 +39,10 @@ end
 function c9910307.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if Duel.DiscardDeck(tp,1,REASON_EFFECT)==0 then return end
-	if Duel.IsExistingMatchingCard(c9910307.thfilter,tp,LOCATION_DECK,0,1,nil)
+	if Duel.IsExistingMatchingCard(c9910307.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910307,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c9910307.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c9910307.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 		if #g>0 then
 			Duel.BreakEffect()
 			Duel.SendtoHand(g,nil,REASON_EFFECT)

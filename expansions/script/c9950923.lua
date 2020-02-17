@@ -47,7 +47,7 @@ function c9950923.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
 function c9950923.ffilter(c)
-	return c:IsLevelAbove(5) and c:IsAttribute(ATTRIBUTE_DARK) and  c:IsSetCard(0xba5)
+	return c:IsLevelAbove(5) and c:IsSetCard(0xba5)
 end
 function c9950923.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)

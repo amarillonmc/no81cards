@@ -105,7 +105,7 @@ function c9950152.indct(e,re,r,rp)
 	else return 0 end
 end
 function c9950152.thfilter(c,tp)
-	return c:IsSetCard(0xba5) and c:GetType()==0x20002
+	return c:IsSetCard(0xba5) and c:IsType(TYPE_FIELD+TYPE_CONTINUOUS)
 		and (c:IsAbleToHand() or c:GetActivateEffect():IsActivatable(tp))
 end
 function c9950152.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

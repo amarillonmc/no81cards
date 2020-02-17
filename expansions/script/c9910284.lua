@@ -29,8 +29,8 @@ function c9910284.indtg(e,c)
 	return e:GetHandler()==c or (c:IsType(TYPE_PENDULUM) and e:GetHandler():GetLinkedGroup():IsContains(c))
 end
 function c9910284.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetDecktopGroup(tp,4)
-	if chk==0 then return g:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)>0 end
+	local g=Duel.GetDecktopGroup(1-tp,4)
+	if chk==0 then return g:GetCount()==4 and g:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_DECK)
 end
 function c9910284.operation(e,tp,eg,ep,ev,re,r,rp)

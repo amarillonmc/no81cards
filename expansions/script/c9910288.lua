@@ -7,7 +7,7 @@ function c9910288.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
-	e1:SetRange(LOCATION_SZONE)
+	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e1:SetTarget(c9910288.indtg)
 	e1:SetValue(c9910288.efilter)
@@ -54,8 +54,8 @@ function c9910288.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910288.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetDecktopGroup(tp,5)
-	if chk==0 then return g:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)>0 end
+	local g=Duel.GetDecktopGroup(1-tp,5)
+	if chk==0 then return g:GetCount()==5 and g:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_DECK)
 end
 function c9910288.operation(e,tp,eg,ep,ev,re,r,rp)

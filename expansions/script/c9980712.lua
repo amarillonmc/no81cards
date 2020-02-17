@@ -1,5 +1,6 @@
 --克律萨俄耳
 function c9980712.initial_effect(c)
+	aux.AddCodeList(c,9980706)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
@@ -51,7 +52,6 @@ function c9980712.initial_effect(c)
 	e4:SetOperation(c9980712.thop)
 	c:RegisterEffect(e4)
 end
-c9980712.card_code_list={9980706}
 function c9980712.effcon(e,c)
 	return c:IsSetCard(0x3bc1)
 end
@@ -112,7 +112,7 @@ function c9980712.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function c9980712.thop(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)

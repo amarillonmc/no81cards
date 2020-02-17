@@ -7,17 +7,17 @@ function c9950161.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,9950161+EFFECT_COUNT_CODE_DUEL)
-	e1:SetCondition(c9950161.condition)
+	e1:SetCost(c9950161.cost)
 	e1:SetTarget(c9950161.target)
 	e1:SetOperation(c9950161.activate)
 	c:RegisterEffect(e1)
 end
-function c9950161.cfilter(e,c)
-	return c:IsFaceup() and c:IsSetCard(0x9ba5) and c:IsAttackAbove(4000)
+function c9950161.cfilter2(c)
+	return c:IsSetCard(0x9ba5) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
-function c9950161.condition(e,tp,eg,ep,ev,re,r,rp)
-	 if c==nil then return true end
-	return Duel.IsExistingMatchingCard(c9950161.cfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
+function c9950161.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950161.cfilter2,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.DiscardHand(tp,c9950161.cfilter2,1,1,REASON_COST,nil)
 end
 function c9950161.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

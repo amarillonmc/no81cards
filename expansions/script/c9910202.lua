@@ -71,8 +71,10 @@ function c9910202.spfilter(c,e,tp)
 	return c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910202.disop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.NegateActivation(ev) or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return end
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	if not Duel.NegateActivation(ev) then return end
+	if tg and (tg:IsExists(Card.IsOnField,1,nil) or tg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_ONFIELD))
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9910202.spfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910202,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

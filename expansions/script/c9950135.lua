@@ -11,7 +11,7 @@ function c9950135.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9950135.filter(c)
-	return c:IsSetCard(0x9ba5) and c:IsAbleToGraveAsCost()
+	return (c:IsSetCard(0x9ba5) or (c:IsLevel(7,8) and c:IsSetCard(0xba5)))and c:IsAbleToGraveAsCost()
 end
 function c9950135.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950135.filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end

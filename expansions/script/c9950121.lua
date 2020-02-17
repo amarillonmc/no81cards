@@ -28,7 +28,7 @@ function c9950121.filter(c,e,tp)
 	return c:IsLevelBelow(2) and c:IsSetCard(0xba5,0xbc8) and not c:IsCode(9950121) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950121.costfilter(c)
-	return c:IsSetCard(0xba5,0xbc8)and c:IsType(TYPE_SPELL) and not c:IsPublic()
+	return c:IsSetCard(0xba5,0xbc8)and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsPublic()
 end
 function c9950121.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950121.costfilter,tp,LOCATION_HAND,0,1,nil) end

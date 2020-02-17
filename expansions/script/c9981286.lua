@@ -1,0 +1,116 @@
+--最佳搭配Cross-Z Blizzard
+function c9981286.initial_effect(c)
+	 --fusion material
+	c:EnableReviveLimit()
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x5bc3),aux.FilterBoolFunction(Card.IsAttackBelow,3000),true)
+  --atk
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(c9981286.atkval)
+	c:RegisterEffect(e1)
+ --destroy
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9981286,0))
+	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCost(c9981286.cost)
+	e1:SetOperation(c9981286.operation)
+	c:RegisterEffect(e1)
+ --damage
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9981286,1))
+	e3:SetCategory(CATEGORY_DAMAGE)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(EVENT_BATTLE_DESTROYING)
+	e3:SetCondition(aux.bdcon)
+	e3:SetTarget(c9981286.damtg)
+	e3:SetOperation(c9981286.damop)
+	c:RegisterEffect(e3)
+	--spsummon bgm
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e8:SetOperation(c9981286.sumsuc)
+	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e9)
+end
+function c9981286.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981286,0))
+end
+function c9981286.atkfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x5bc3)
+end
+function c9981286.atkval(e,c)
+	return Duel.GetMatchingGroupCount(c9981286.atkfilter,c:GetControler(),LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)*300
+end
+function c9981286.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsRelateToBattle() end
+	local bc=e:GetHandler():GetBattleTarget()
+	Duel.SetTargetCard(bc)
+	local dam=e:GetHandler():GetBattleTarget():GetBaseAttack()
+	if dam<0 then dam=0 end
+	Duel.SetTargetPlayer(1-tp)
+	Duel.SetTargetParam(dam)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,dam)
+end
+function c9981286.damop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Damage(p,d,REASON_EFFECT)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	local atk=tc:GetBaseAttack()
+	if c:IsRelateToBattle() and tc:IsRelateToEffect(e) and c:IsFaceup() then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_COPY_INHERIT)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(atk)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
+		c:RegisterEffect(e2)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_EXTRA_ATTACK)
+		e3:SetValue(1)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
+		c:RegisterEffect(e3)
+	end
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981286,1))
+end
+function c9981286.cfilter(c)
+	return c:IsSetCard(0x5bc3) and c:IsAbleToDeckAsCost()
+end
+function c9981286.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9981286.cfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,c9981286.cfilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.SendtoDeck(g,nil,0,REASON_COST)
+end
+function c9981286.filter(e,c)
+	return c:IsType(TYPE_EFFECT) and not c:IsSetCard(0x5bc3)
+end
+function c9981286.operation(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1:SetTarget(c9981286.filter)
+	e1:SetCode(EFFECT_DISABLE)
+	e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
+	Duel.RegisterEffect(e1,tp)
+  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981286,1))
+end

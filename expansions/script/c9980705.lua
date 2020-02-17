@@ -1,5 +1,6 @@
 --他者封印·鲜血神殿
 function c9980705.initial_effect(c)
+	aux.AddCodeList(c,9980706)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -45,7 +46,6 @@ function c9980705.initial_effect(c)
 	e6:SetOperation(c9980705.spop)
 	c:RegisterEffect(e6)
 end
-c9980705.card_code_list={9980706}
 function c9980705.atktg(e,c)
 	return not c:IsSetCard(0x3bc1)
 end
