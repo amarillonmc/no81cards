@@ -67,6 +67,7 @@ function c9950999.initial_effect(c)
 end
 function c9950999.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950999,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950999,3))
 end
 function c9950999.actcon(e)
 	local ph=Duel.GetCurrentPhase()
@@ -95,6 +96,7 @@ function c9950999.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1-tp,atk,REASON_EFFECT)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950999,0))
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9950999,1))
 end
 function c9950999.descon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -118,4 +120,5 @@ function c9950999.desop(e,tp,eg,ep,ev,re,r,rp)
 	if ct~=0 then
 		Duel.Damage(1-tp,ct*800,REASON_EFFECT)
 	end
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9950999,2))
 end

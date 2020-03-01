@@ -66,7 +66,8 @@ function c9951041.splimit(e,c,sump,sumtype,sumpos,targetp)
 	return not c:IsRace(RACE_FIEND)
 end
 function c9951041.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951041,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951041,0))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951041,2))
 end
 function c9951041.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
@@ -109,4 +110,5 @@ function c9951041.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951041,1))
 end

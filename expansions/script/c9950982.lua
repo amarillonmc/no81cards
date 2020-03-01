@@ -57,6 +57,7 @@ function c9950982.initial_effect(c)
 end
 function c9950982.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950982,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950982,2))
 end
 function c9950982.mfilter(c,xyzc)
 	return c:IsFaceup() and c:IsXyzType(TYPE_XYZ) and c:IsSetCard(0xba5)
@@ -132,4 +133,5 @@ function c9950982.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950982,0))
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9950982,3))
 end

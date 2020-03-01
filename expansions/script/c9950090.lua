@@ -63,6 +63,7 @@ function c9950090.initial_effect(c)
 end
 function c9950090.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950090,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950090,1))
 end
 function c9950090.matcheck(g)
 	return g:IsExists(Card.IsLinkCode,1,nil,9950089)
@@ -107,5 +108,6 @@ function c9950090.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950090,0))
+		Duel.Hint(HINT_SOUND,0,aux.Stringid(9950090,2))
 	end
 end

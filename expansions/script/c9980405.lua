@@ -1,5 +1,6 @@
 --青龙棍
 function c9980405.initial_effect(c)
+	aux.AddCodeList(c,9980400)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
@@ -48,7 +49,6 @@ function c9980405.initial_effect(c)
 	e3:SetOperation(c9980405.desop)
 	c:RegisterEffect(e3)
 end
-c9980405.card_code_list={9980400}
 function c9980405.eqlimit(e,c)
 	return c:IsRace(RACE_WARRIOR) or aux.IsCodeListed(c,9980400)
 end
@@ -81,8 +81,4 @@ function c9980405.desop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
-end
-function c9980405.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end

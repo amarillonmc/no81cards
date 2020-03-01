@@ -3,6 +3,7 @@ function c9980411.initial_effect(c)
 	 --synchro summon
 	aux.AddSynchroProcedure(c,c9980411.synfilter,c9980411.tfilter,1)
 	c:EnableReviveLimit()
+	aux.AddCodeList(c,9980400)
 	--remove
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9980411,2))

@@ -67,12 +67,14 @@ function c33400037.negop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoGrave(eg,REASON_EFFECT)
 		end
 	end
-	 if Duel.SelectYesNo(tp,aux.Stringid(33400037,0)) then
-	 Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33400037,3))
-	 local tg=Duel.SelectMatchingCard(tp,c33400037.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	 local tc=tg:GetFirst()
-	 tc:AddCounter(0x34f,4)
-	 end 
+	if Duel.IsExistingMatchingCard(c33400037.filter,tp,LOCATION_ONFIELD,0,1,nil) then 
+		 if Duel.SelectYesNo(tp,aux.Stringid(33400037,0)) then
+		 Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33400037,3))
+		 local tg=Duel.SelectMatchingCard(tp,c33400037.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
+		 local tc=tg:GetFirst()
+		 tc:AddCounter(0x34f,4)
+		 end 
+	end
 end
 function c33400037.filter(c)
 	return c:IsFaceup() and c:IsCanAddCounter(0x34f,4)

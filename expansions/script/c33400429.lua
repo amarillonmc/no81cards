@@ -36,7 +36,7 @@ function c33400429.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33400429.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	local des=eg:GetFirst()
 	local rc=des:GetReasonCard()
-   if (rc:IsSetCard(0x341) or(Duel.IsExistingMatchingCard(c33400429.cccfilter1,tp,LOCATION_SZONE,0,1,nil) or  Duel.IsExistingMatchingCard(c33400429.cccfilter2,tp,LOCATION_MZONE,0,1,nil) 
+   if rc and (rc:IsSetCard(0x341) or(Duel.IsExistingMatchingCard(c33400429.cccfilter1,tp,LOCATION_SZONE,0,1,nil) or  Duel.IsExistingMatchingCard(c33400429.cccfilter2,tp,LOCATION_MZONE,0,1,nil) 
 		   )) then
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_DECK)
 	else Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
@@ -65,12 +65,18 @@ function c33400429.cccfilter2(c)
 	return c:IsCode(33400425) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c33400429.cfilter2(c,tp,eg)
-	local des=eg:GetFirst()
-	local rc=des:GetReasonCard()
-	return  c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT)
+local pd=0
+	local des=eg:GetFirst() 
+	 while des do
+	  local rc=des:GetReasonCard()
+	  if  rc and pd==0 and (c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT))
 		and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_ONFIELD) 
-		and (rc:IsSetCard(0x341) or(Duel.IsExistingMatchingCard(c33400420.cccfilter1,tp,LOCATION_SZONE,0,1,nil) or  Duel.IsExistingMatchingCard(c33400420.cccfilter2,tp,LOCATION_MZONE,0,1,nil) 
+		and (rc:IsSetCard(0x341) or(Duel.IsExistingMatchingCard(c33400429.cccfilter1,tp,LOCATION_SZONE,0,1,nil) or  Duel.IsExistingMatchingCard(c33400429.cccfilter2,tp,LOCATION_MZONE,0,1,nil) 
 		   ))
+	  then pd=1 end
+		 des=eg:GetNext()
+	 end
+	return  pd==1
 end
 function c33400429.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c33400429.cfilter2,1,nil,tp,eg)

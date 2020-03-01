@@ -32,20 +32,20 @@ function c9910023.initial_effect(c)
 end
 function c9910023.tdcon1(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,9910026)
-		or not e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x951)
+		or not e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
 end
 function c9910023.tdcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,9910026)
-		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x951)
+		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
 end
 function c9910023.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x950) and not g:IsExists(Card.IsCode,1,nil,9910023)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3950) and not g:IsExists(Card.IsCode,1,nil,9910023)
 end
 function c9910023.stcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c9910023.mfilter(c)
-	return c:IsSetCard(0x950) and c:IsSummonType(SUMMON_TYPE_SPECIAL)
+	return c:IsSetCard(0x3950) and c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end
 function c9910023.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=0
@@ -91,7 +91,7 @@ function c9910023.xfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ)
 end
 function c9910023.tdfilter(c,tp)
-	return c:IsFaceup() and (c:IsSetCard(0x950) or c:IsSetCard(0x951))
+	return c:IsFaceup() and (c:IsSetCard(0x3950) or c:IsSetCard(0x5950))
 		and (c:IsAbleToDeck() or Duel.IsExistingTarget(c9910023.xfilter,tp,LOCATION_MZONE,0,1,nil))
 end
 function c9910023.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

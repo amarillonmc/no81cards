@@ -71,8 +71,8 @@ function c33401201.spcd(e,tp,eg,ep,ev,re,r,rp)
 	local b=(ct1<ct2)
 	return not Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) and b
 end
-function c33401201.cfilter(c)
-	return c:IsSetCard(0x341) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+function c33401201.cfilter(c,e,tp)
+	return c:IsSetCard(0x341) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost() and Duel.IsExistingTarget(c33401201.filter3,tp,LOCATION_GRAVE,0,1,c,e,tp)
 end
 function c33401201.splimit(e,c)
 	return not c:IsSetCard(0x341)
@@ -88,7 +88,7 @@ function c33401201.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetTarget(c33401201.splimit)
 	Duel.RegisterEffect(e1,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c33401201.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c33401201.cfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	g:AddCard(e:GetHandler())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end

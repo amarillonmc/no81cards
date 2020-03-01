@@ -53,7 +53,8 @@ function c9950979.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c9950979.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950979,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950979,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950979,1))
 end
 function c9950979.atkfilter(c)
 	return c:IsSetCard(0xba5) and c:GetAttack()>=0

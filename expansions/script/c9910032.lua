@@ -39,14 +39,14 @@ function c9910032.xyzlv(e,c,rc)
 	return 0x40000+e:GetHandler():GetLevel()
 end
 function c9910032.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,1,e:GetHandler(),0x950)
+	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,1,e:GetHandler(),0x3950)
 end
 function c9910032.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9910032.spfilter1(c,e,tp)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x950) and not c:IsCode(9910032)
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3950) and not c:IsCode(9910032)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910032.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -89,7 +89,7 @@ function c9910032.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c9910032.spfilter2(c,e,tp)
-	return c:IsSetCard(0x950) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3950) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910032.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

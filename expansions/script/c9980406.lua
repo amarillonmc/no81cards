@@ -1,5 +1,6 @@
 --天马弩
 function c9980406.initial_effect(c)
+	aux.AddCodeList(c,9980400)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
@@ -47,7 +48,6 @@ function c9980406.initial_effect(c)
 	e3:SetOperation(c9980406.desop)
 	c:RegisterEffect(e3)
 end
-c9980406.card_code_list={9980400}
 function c9980406.eqlimit(e,c)
 	return (c:IsRace(RACE_WARRIOR) or aux.IsCodeListed(c,9980400))
 end

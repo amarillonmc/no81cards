@@ -51,6 +51,7 @@ function c9950052.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9950052.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950052,1))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950052,2))
 end
 function c9950052.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
@@ -87,4 +88,5 @@ function c9950052.damop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950052,3))
 end

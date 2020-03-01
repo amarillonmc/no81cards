@@ -35,7 +35,8 @@ function c9950087.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c9950087.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950087,2))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950087,2))  
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950087,5))
 end
 function c9950087.mfilter(c)
 	return c:IsType(TYPE_FUSION+TYPE_XYZ+TYPE_SYNCHRO) and c:IsLinkSetCard(0xba5)

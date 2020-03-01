@@ -19,7 +19,7 @@ function c9950022.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9950022.filter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xba1,0xba2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3ba1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950022.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE+LOCATION_HAND+LOCATION_REMOVED) and c9950022.filter(chkc,e,tp) end
@@ -36,7 +36,7 @@ function c9950022.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9950022.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0xba1,0xba2) and c:IsLocation(LOCATION_MZONE)
+	return c:IsFaceup() and c:IsSetCard(0x3ba1) and c:IsLocation(LOCATION_MZONE)
 		and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function c9950022.reptg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -1,8 +1,14 @@
 --不朽的弹幕
 function c9950044.initial_effect(c)
-   --link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xba1,0xba2),4)
-	c:EnableReviveLimit()
+   -- c:EnableReviveLimit()
+	aux.AddFusionProcFunRep(c,c9950044.ffilter,3,true)
+	--special summon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetValue(aux.fuslimit)
+	c:RegisterEffect(e1)
 	 --attack cost
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -56,8 +62,12 @@ function c9950044.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 c9950044[0]=0
+function c9950044.ffilter(c,fc,sub,mg,sg)
+	return c:IsFusionSetCard(0x3ba1) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode()))
+end
 function c9950044.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950044,1))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950044,2))
 end
 function c9950044.handes(e,tp,eg,ep,ev,re,r,rp)
 	local loc,id=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_CHAIN_ID)

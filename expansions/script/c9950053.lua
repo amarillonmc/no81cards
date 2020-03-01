@@ -55,6 +55,7 @@ function c9950053.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9950053.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950053,1))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950053,2))
 end
 function c9950053.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
@@ -95,4 +96,5 @@ function c9950053.damop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950053,3))
 end

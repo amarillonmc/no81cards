@@ -37,6 +37,7 @@ function c9951029.initial_effect(c)
 end
 function c9951029.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951029,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951029,1))
 end
 function c9951029.matfilter(c,lc,sumtype,tp)
 	return c:IsLevelAbove(9) and c:IsLinkSetCard(0xba5)

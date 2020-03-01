@@ -44,7 +44,7 @@ function c9980452.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980452,4)) 
 end 
 function c9980452.matfilter(c)
-	return c:IsLinkRace(RACE_FAIRY) and c:IsLinkAttribute(ATTRIBUTE_LIGHT)
+	return c:IsLinkRace(RACE_FAIRY) 
 end
 function c9980452.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -1,7 +1,7 @@
 --竹林组·上白泽慧音
 function c9950026.initial_effect(c)
 	 --synchro summon
-	aux.AddSynchroProcedure(c,c9950026.tfilter,aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba1),aux.NonTuner(Card.IsSetCard,0x3ba1),1)
 	c:EnableReviveLimit()
 	--cannot be link material
 	local e3=Effect.CreateEffect(c)
@@ -77,11 +77,8 @@ end
 function c9950026.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950026,4))
 end
-function c9950026.tfilter(c)
-	return c:IsCode(9950020) 
-end
 function c9950026.thfilter2(c)
-	return c:IsSetCard(0xba1) and c:IsAbleToHand()
+	return c:IsSetCard(0x3ba1) and c:IsAbleToHand()
 end
 function c9950026.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950026.thfilter2,tp,LOCATION_DECK,0,1,nil) end
@@ -106,7 +103,7 @@ function c9950026.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and re:IsActiveType(TYPE_MONSTER) 
 end
 function c9950026.thfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xba1,0xba2) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsSetCard(0xba1) and c:IsAbleToHand()
 end
 function c9950026.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9950026.thfilter(chkc) end

@@ -15,7 +15,7 @@ function c9910042.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910042.confilter(c)
-	return c:IsFaceup() and ((c:GetSummonLocation()==LOCATION_EXTRA and c:IsRace(RACE_WARRIOR)) or c:IsSetCard(0x951))
+	return c:IsFaceup() and ((c:GetSummonLocation()==LOCATION_EXTRA and c:IsRace(RACE_WARRIOR)) or c:IsSetCard(0x5950))
 end
 function c9910042.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9910042.confilter,tp,LOCATION_ONFIELD,0,1,nil)

@@ -1,7 +1,7 @@
 --不死组·辉夜×妹红
 function c9950006.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba1,0xba2),4,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba1),4,2)
 	c:EnableReviveLimit()
 	--destroy
 	local e1=Effect.CreateEffect(c)
@@ -73,8 +73,8 @@ function c9950006.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9950006.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9950006.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
@@ -91,14 +91,14 @@ function c9950006.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950006,2))
 end
 function c9950006.atkfilter1(c,tp)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsSetCard(0xba1,0xba2) and c:GetBaseAttack()>0
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsSetCard(0xba1) and c:GetBaseAttack()>0
 		and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp
 end
 function c9950006.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c9950006.atkfilter1,1,nil,tp)
 end
 function c9950006.atkfilter2(c)
-	return c:IsFaceup() and c:IsSetCard(0xba1,0xba2)
+	return c:IsFaceup() and c:IsSetCard(0xba1)
 end
 function c9950006.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9950006.atkfilter2(chkc) end

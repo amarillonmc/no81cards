@@ -96,7 +96,7 @@ function c9910017.disop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910017.thfilter(c)
-	return c:IsSetCard(0x951) and not c:IsCode(9910017) and c:IsAbleToHand()
+	return c:IsSetCard(0x5950) and not c:IsCode(9910017) and c:IsAbleToHand()
 end
 function c9910017.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910017.thfilter,tp,LOCATION_DECK,0,1,nil) end

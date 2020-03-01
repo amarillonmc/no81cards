@@ -82,11 +82,11 @@ function c9910022.initial_effect(c)
 end
 function c9910022.tgcon1(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,9910026)
-		or not e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x951)
+		or not e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
 end
 function c9910022.tgcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,9910026)
-		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x951)
+		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
 end
 function c9910022.mfilter(c)
 	return not c:IsType(TYPE_PENDULUM)

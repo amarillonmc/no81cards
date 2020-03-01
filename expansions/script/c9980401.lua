@@ -1,6 +1,7 @@
 --假面骑士空我·初生
 function c9980401.initial_effect(c)
 	c:SetSPSummonOnce(9980401)
+	aux.AddCodeList(c,9980400)
 	--synchro limit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -44,7 +45,6 @@ function c9980401.initial_effect(c)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
 end
-c9980401.card_code_list={9980400}
 function c9980401.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980401,1))
 end

@@ -6,6 +6,7 @@ function c9910136.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,9910136+EFFECT_COUNT_CODE_OATH)
+	e1:SetCost(c9910136.cost)
 	e1:SetTarget(c9910136.target)
 	e1:SetOperation(c9910136.activate)
 	c:RegisterEffect(e1)
@@ -20,29 +21,29 @@ function c9910136.initial_effect(c)
 	e2:SetOperation(c9910136.retop)
 	c:RegisterEffect(e2)
 end
+function c9910136.costfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x952) and c:IsReleasable()
+		and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+end
+function c9910136.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910136.costfilter,tp,LOCATION_SZONE,0,1,nil) end
+	local g=Duel.SelectMatchingCard(tp,c9910136.costfilter,tp,LOCATION_SZONE,0,1,1,nil)
+	Duel.Release(g,REASON_COST)
+end
 function c9910136.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) and Duel.IsPlayerCanDraw(1-tp,2) end
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,PLAYER_ALL,2)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(2)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
 function c9910136.activate(e,tp,eg,ep,ev,re,r,rp)
-	local h1=Duel.Draw(tp,2,REASON_EFFECT)
-	local h2=Duel.Draw(1-tp,2,REASON_EFFECT)
-	if h1>0 or h2>0 then Duel.BreakEffect() end
-	if h1>0 then
-		local g1=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND,0,nil)
-		if g1:GetCount()==0 then return end
-		Duel.ShuffleHand(tp)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg1=g1:Select(tp,1,1,nil)
-		Duel.SendtoDeck(sg1,nil,0,REASON_EFFECT)
-	end
-	if h2>0 then 
-		local g2=Duel.GetMatchingGroup(Card.IsAbleToDeck,1-tp,LOCATION_HAND,0,nil)
-		if g2:GetCount()==0 then return end
-		Duel.ShuffleHand(1-tp)
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
-		local sg2=g2:Select(1-tp,1,1,nil)
-		Duel.SendtoDeck(sg2,nil,0,REASON_EFFECT)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	if Duel.Draw(p,d,REASON_EFFECT)~=2 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.BreakEffect()
+		Duel.SendtoDeck(g,nil,0,REASON_EFFECT)
 	end
 end
 function c9910136.retcost(e,tp,eg,ep,ev,re,r,rp,chk)

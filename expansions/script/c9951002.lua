@@ -54,6 +54,7 @@ function c9951002.initial_effect(c)
 end
 function c9951002.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951002,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951002,2))
 end
 function c9951002.immval(e,te)
 	return te:GetOwner()~=e:GetHandler() and te:IsActiveType(TYPE_MONSTER) and te:IsActivated()
@@ -86,6 +87,7 @@ function c9951002.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
 	end
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951002,3))
 end
 function c9951002.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -146,4 +148,5 @@ function c9951002.seqop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951002,0))
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951002,3))
 end

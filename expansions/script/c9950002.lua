@@ -31,7 +31,7 @@ function c9950002.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9950002.desfilter(c)
-	return c:IsRace(RACE_ZOMBIE) 
+	return c:IsSetCard(0x3ba1)
 end
 function c9950002.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950002.desfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
@@ -47,7 +47,7 @@ function c9950002.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9950002.costchange(e,re,rp,val)
-	if re and re:GetHandler():IsSetCard(0xba1) then
+	if re and re:GetHandler():IsSetCard(0x3ba1) then
 		return 0
 	else
 		return val

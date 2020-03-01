@@ -69,7 +69,8 @@ function c9950997.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c9950997.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950997,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950997,0))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950997,2))
 end
 function c9950997.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
@@ -110,5 +111,5 @@ function c9950997.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SSet(tp,g:GetFirst())
 		end
 	end
- Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950997,1))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950997,1))
 end

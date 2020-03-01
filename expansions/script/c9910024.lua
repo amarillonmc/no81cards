@@ -17,14 +17,14 @@ function c9910024.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910024.confilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x950)
+	return c:IsFaceup() and c:IsSetCard(0x3950)
 end
 function c9910024.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9910024.confilter,tp,LOCATION_PZONE,0,1,nil)
 		and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c9910024.cosfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x950) and c:IsAbleToRemoveAsCost()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3950) and c:IsAbleToRemoveAsCost()
 		and (not c:IsLocation(LOCATION_MZONE) or c:IsFaceup())
 end
 function c9910024.cost(e,tp,eg,ep,ev,re,r,rp,chk)

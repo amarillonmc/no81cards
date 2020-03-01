@@ -46,6 +46,7 @@ end
 c9950061.material_setcode=0x3ba5
 function c9950061.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950061,1))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950061,2))
 end
 function c9950061.spcon(e,c)
 	if c==nil then return true end
@@ -87,20 +88,6 @@ function c9950061.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetOperation(c9950061.rdop)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1,true)
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetCode(EFFECT_CHANGE_LEVEL)
-		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e4:SetValue(6)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e4,true)
-		local e5=Effect.CreateEffect(e:GetHandler())
-		e5:SetType(EFFECT_TYPE_SINGLE)
-		e5:SetCode(EFFECT_CHANGE_CODE)
-		e5:SetValue(9950070)
-		e5:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e5,true)
-			Duel.SpecialSummonComplete()
 		end
 	end
 end

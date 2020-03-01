@@ -59,6 +59,7 @@ function c9950088.initial_effect(c)
 end
 function c9950088.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950088,2))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950088,4))
 end
 function c9950088.matcheck(g)
 	return g:IsExists(Card.IsLinkCode,1,nil,9950087)
@@ -116,6 +117,7 @@ function c9950088.atop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e3,tp)
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950088,2))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950088,5))
 end
 function c9950088.aclimit(e,re,tp)
 	local c=re:GetHandler()

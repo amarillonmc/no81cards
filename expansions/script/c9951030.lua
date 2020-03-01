@@ -37,6 +37,7 @@ function c9951030.initial_effect(c)
 end
 function c9951030.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951030,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951030,1))
 end
 function c9951030.lcheck(g,lc)
 	return g:IsExists(Card.IsAttackAbove,1,nil,2300)
@@ -45,7 +46,7 @@ function c9951030.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c9951030.thfilter(c)
-	return c:IsSetCard(0xba5) and c:IsAbleToHand()
+	return c:IsSetCard(0x95) and c:IsAbleToHand()
 end
 function c9951030.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9951030.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -100,6 +101,7 @@ function c9951030.cpop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetTarget(c9951030.splimit)
 	Duel.RegisterEffect(e2,tp)
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951030,2))
 end
 function c9951030.splimit(e,c)
 	return not c:IsType(TYPE_XYZ) and c:IsLocation(LOCATION_EXTRA)

@@ -87,7 +87,7 @@ function c9910040.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910040.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local turnp=Duel.GetTurnPlayer()
-	local g=Duel.GetMatchingGroup(nil,turnp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,turnp,LOCATION_MZONE,0,nil)
 	e:SetLabel(g:GetCount())
 	if chk==0 then return g:GetCount()>0 and g:FilterCount(Card.IsReleasable,nil)==g:GetCount() end
 	Duel.Release(g,REASON_COST)

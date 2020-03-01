@@ -30,6 +30,7 @@ function c9950048.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SUMMON_SUCCESS)
 	e4:SetRange(LOCATION_MZONE)
+	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e4:SetCondition(c9950048.tgcon)
 	e4:SetCost(c9950048.tgcost)
 	e4:SetTarget(c9950048.tgtg)
@@ -50,6 +51,7 @@ function c9950048.initial_effect(c)
 end
 function c9950048.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950048,2))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950048,4))
 end
 function c9950048.spcon(e,c)
 	if c==nil then return true end

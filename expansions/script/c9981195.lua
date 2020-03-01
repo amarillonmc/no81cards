@@ -63,7 +63,7 @@ function c9981195.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981195,4))
 end
 function c9981195.ffilter(c)
-	return c:IsFusionCode(9981194,9980858) and c:IsType(TYPE_MONSTER)
+	return (c:IsFusionCode(9980858) or c:IsFusionSetCard(0x9bcd)) and c:IsType(TYPE_MONSTER)
 end
 function c9981195.ffilter2(c)
 	return c:IsFusionSetCard(0x9bcd,0x6bc2) and c:IsType(TYPE_MONSTER)

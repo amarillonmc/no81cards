@@ -53,6 +53,7 @@ function c9950068.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9950068.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950068,1))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950068,2))
 end
 function c9950068.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

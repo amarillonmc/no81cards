@@ -21,6 +21,18 @@ function c9981102.initial_effect(c)
 	e1:SetTarget(c9981102.target)
 	e1:SetOperation(c9981102.operation)
 	c:RegisterEffect(e1)
+ --to grave
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9981102,1))
+	e2:SetCategory(CATEGORY_TOGRAVE)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,9981102)
+	e2:SetCondition(aux.exccon)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c9981102.tgtg)
+	e2:SetOperation(c9981102.tgop)
+	c:RegisterEffect(e2)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -91,4 +103,19 @@ function c9981102.operation(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981102,5))
+end
+function c9981102.tgfilter(c)
+	return c:IsSetCard(0x5bc3) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+end
+function c9981102.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9981102.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function c9981102.tgop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9981102.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
+	end
+ Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981102,4))
 end

@@ -51,6 +51,7 @@ function c9950937.initial_effect(c)
 end
 function c9950937.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950937,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950937,1))
 end
 function c9950937.spcon(e,c)
 	if c==nil then return true end
@@ -102,5 +103,5 @@ function c9950937.disop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
- Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950937,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950937,2))
 end

@@ -23,7 +23,7 @@ function c9910036.filter4(c)
 	return c:IsFacedown() and c:IsAbleToRemove()
 end
 function c9910036.costfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_EQUIP) and c:IsSetCard(0x951) and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_EQUIP) and c:IsSetCard(0x5950) and c:IsAbleToGraveAsCost()
 end
 function c9910036.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

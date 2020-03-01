@@ -43,6 +43,7 @@ function c9951016.initial_effect(c)
 end
 function c9951016.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951016,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951016,3))
 end
 function c9951016.dacon(e)
 	return e:GetHandler():GetOverlayCount()>0
@@ -67,6 +68,7 @@ function c9951016.operation(e,tp,eg,ep,ev,re,r,rp)
 	else
 		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951016,4))
 end
 function c9951016.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

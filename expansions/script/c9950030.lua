@@ -79,7 +79,7 @@ function c9950030.filter1(c,e)
 	return c:IsOnField() and not c:IsImmuneToEffect(e) and c:IsAbleToRemove()
 end
 function c9950030.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_ZOMBIE) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and (c:IsRace(RACE_ZOMBIE) or c:IsSetCard(0xba1))and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c9950030.filter3(c)

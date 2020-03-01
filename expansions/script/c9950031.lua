@@ -1,9 +1,9 @@
 --苍死神
 function c9950031.initial_effect(c)
+	aux.EnablePendulumAttribute(c,false)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,9950000,aux.FilterBoolFunction(Card.IsFusionSetCard,0xba1,0xba2),4,true,true)
-	aux.EnablePendulumAttribute(c,false)
+	aux.AddFusionProcFunFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x3ba1),aux.FilterBoolFunction(Card.IsFusionSetCard,0xba1),3,true,true)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -16,7 +16,7 @@ function c9950031.initial_effect(c)
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetRange(LOCATION_SZONE)
+	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1)
 	e1:SetCondition(c9950031.condition)
 	e1:SetCost(c9950031.cost)
@@ -120,7 +120,7 @@ function c9950031.aclimit(e,re,tp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(e:GetLabel())
 end
 function c9950031.atkfilter(c)
-	return c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0xba1) and c:IsType(TYPE_MONSTER)
 end
 function c9950031.atkval(e,c)
 	return Duel.GetMatchingGroupCount(c9950031.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_HAND+LOCATION_MZONE,0,nil)*500

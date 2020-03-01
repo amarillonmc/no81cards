@@ -1,13 +1,5 @@
 --竹林组·不死之烟
 function c9950003.initial_effect(c)
-	 --code
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_CHANGE_CODE)
-	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e1:SetValue(9950000)
-	c:RegisterEffect(e1)
 	 --salvage
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9950003,0))
@@ -57,7 +49,7 @@ function c9950003.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950003,0))
 end
 function c9950003.filter(c)
-	return c:IsSetCard(0xba1,0xba2) and c:GetCode()~=9950003 and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xba1) and c:GetCode()~=9950003 and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9950003.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c9950003.filter(chkc) end

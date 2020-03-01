@@ -39,6 +39,7 @@ function c9951045.initial_effect(c)
 end
 function c9951045.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951045,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951045,1))
 end
 function c9951045.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
@@ -60,6 +61,7 @@ function c9951045.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951045,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951045,2))
 end
 function c9951045.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)

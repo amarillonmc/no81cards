@@ -49,6 +49,7 @@ end
 c9950067.material_setcode=0x3ba5
 function c9950067.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950067,1))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950067,2))
 end
 function c9950067.spcon(e,tp,eg,ep,ev,re,r,rp)  
 	local tp=e:GetHandlerPlayer()

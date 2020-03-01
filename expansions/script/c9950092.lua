@@ -66,6 +66,7 @@ function c9950092.initial_effect(c)
 end
 function c9950092.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950092,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950092,1))
 end
 function c9950092.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
@@ -87,6 +88,7 @@ function c9950092.desop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Damage(1-tp,dam,REASON_EFFECT)
 		end
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950092,2))
 end
 function c9950092.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
@@ -112,6 +114,7 @@ function c9950092.operation(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950092,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950092,2))
 end
 function c9950092.atkcon(e)
 	local ph=Duel.GetCurrentPhase()
@@ -124,6 +127,7 @@ function c9950092.disop(e,tp,eg,ep,ev,re,r,rp)
 	if bc and bc:IsType(TYPE_LINK+TYPE_XYZ+TYPE_FUSION) then
 		bc:RegisterFlagEffect(9950092,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950092,2))
 end
 function c9950092.distg(e,c)
 	return c:GetFlagEffect(9950092)~=0

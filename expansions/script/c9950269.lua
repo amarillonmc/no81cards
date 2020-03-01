@@ -1,6 +1,6 @@
 --众神遗留的爱
 function c9950269.initial_effect(c)
-	aux.AddRitualProcEqual2(c,c9950269.filter,LOCATION_DECK+LOCATION_HAND,c9950269.mfilter)
+	aux.AddRitualProcEqual2(c,c9950269.filter,LOCATION_HAND,c9950269.mfilter)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)

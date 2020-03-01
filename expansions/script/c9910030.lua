@@ -64,7 +64,7 @@ function c9910030.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function c9910030.matfilter(c)
-	return c:IsLinkSetCard(0x950) and c:GetSummonLocation()==LOCATION_EXTRA 
+	return c:IsLinkSetCard(0x3950) and c:GetSummonLocation()==LOCATION_EXTRA 
 end
 function c9910030.cncon(e)
 	return e:GetHandler():GetLinkedGroupCount()>0

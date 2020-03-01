@@ -2,10 +2,11 @@
 function c33400116.initial_effect(c)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,33400116+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c33400116.target)
 	e1:SetOperation(c33400116.activate)
 	c:RegisterEffect(e1)

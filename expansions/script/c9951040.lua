@@ -2,7 +2,7 @@
 function c9951040.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,9950978,aux.FilterBoolFunction(Card.IsFusionSetCard,0xba5),3,true,true)
+	aux.AddFusionProcCodeFun(c,9951064,aux.FilterBoolFunction(Card.IsFusionSetCard,0xba5),3,true,true)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -45,7 +45,8 @@ function c9951040.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c9951040.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951040,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951040,0))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951040,2))
 end
 function c9951040.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
@@ -105,6 +106,7 @@ function c9951040.copyop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetOperation(c9951040.rstop)
 		c:RegisterEffect(e2)
 	end
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951040,1))
 end
 function c9951040.rstop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

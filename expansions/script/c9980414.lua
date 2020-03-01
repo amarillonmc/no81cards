@@ -1,5 +1,6 @@
 --超变身
 function c9980414.initial_effect(c)
+	aux.AddCodeList(c,9980400)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -20,7 +21,6 @@ function c9980414.initial_effect(c)
 	e2:SetOperation(c9980414.spop)
 	c:RegisterEffect(e2)
 end
-c9980414.card_code_list={9980400}
 function c9980414.tgfilter(c,e,tp)
 	return Duel.IsExistingMatchingCard(c9980414.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetCode())
 end

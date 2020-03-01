@@ -62,7 +62,7 @@ function c9910009.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910009.filter(c,tp)
 	return c:IsFaceup() and Duel.GetMZoneCount(tp,c)>0
-		and (c:IsSetCard(0x950) or c:IsSetCard(0x951))
+		and (c:IsSetCard(0x3950) or c:IsSetCard(0x5950))
 end
 function c9910009.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910009.filter(chkc,tp) end

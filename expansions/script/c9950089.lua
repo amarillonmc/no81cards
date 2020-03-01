@@ -64,6 +64,7 @@ function c9950089.initial_effect(c)
 end
 function c9950089.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950089,2))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950089,5))
 end
 function c9950089.matcheck(g)
 	return g:IsExists(Card.IsLinkCode,1,nil,9950088)
@@ -105,6 +106,7 @@ function c9950089.actop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950089,2))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950089,6))
 end
 function c9950089.batop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -130,4 +132,5 @@ function c9950089.damop(e,tp,eg,ep,ev,re,r,rp)
 	if bc:IsRelateToBattle() then
 		Duel.Destroy(bc,REASON_EFFECT)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950089,6))
 end

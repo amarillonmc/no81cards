@@ -53,7 +53,7 @@ function c9950017.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsReason(REASON_EFFECT) and c:IsReason(REASON_DESTROY)
 end
 function c9950017.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xba1,0xba2) and (c:IsAbleToHand() or c:IsAbleToGrave())
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xba1) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function c9950017.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950017.cfilter,tp,LOCATION_DECK,0,1,nil) end

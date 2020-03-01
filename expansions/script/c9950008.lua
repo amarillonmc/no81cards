@@ -56,7 +56,7 @@ function c9950008.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c9950008.filter(c,e,tp)
-	return not c:IsCode(9950008) and c:IsSetCard(0xba1,0xba2) and c:IsLevel(4) and c:IsCanBeEffectTarget(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return not c:IsCode(9950008) and c:IsSetCard(0xba1) and c:IsLevel(4) and c:IsCanBeEffectTarget(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950008.xyzfilter(c,mg)
 	return c:IsXyzSummonable(mg,2,2)
@@ -103,7 +103,7 @@ function c9950008.negop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9950008.costfilter(c,tp)
-	return c:IsRace(RACE_ZOMBIE) and (c:IsControler(tp) or c:IsFaceup()) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xba1) and (c:IsControler(tp) or c:IsFaceup()) and Duel.GetMZoneCount(tp,c)>0
 end
 function c9950008.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,c9950008.costfilter,1,nil,tp)
@@ -113,7 +113,7 @@ function c9950008.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9950008.spfilter(c,e,tp)
-	return not c:IsCode(9950008) and c:IsLevelBelow(4) and c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,157,tp,false,false)
+	return not c:IsCode(9950008) and c:IsLevelBelow(4) and c:IsSetCard(0xba1) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,157,tp,false,false)
 end
 function c9950008.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -129,7 +129,7 @@ function c9950008.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9950008.matfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xba2) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and c:IsSetCard(0xba1) and c:IsType(TYPE_XYZ)
 end
 function c9950008.mattg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9950008.matfilter(chkc) end

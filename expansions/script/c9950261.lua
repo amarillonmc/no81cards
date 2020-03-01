@@ -46,14 +46,14 @@ end
 function c9950261.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetRitualMaterial(tp)
-		return Duel.IsExistingMatchingCard(c9950261.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,mg)
+		return Duel.IsExistingMatchingCard(c9950261.filter,tp,LOCATION_HAND,0,1,nil,e,tp,mg)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function c9950261.activate(e,tp,eg,ep,ev,re,r,rp)
 	local m=Duel.GetRitualMaterial(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9950261.filter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,m)
+	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9950261.filter),tp,LOCATION_HAND,0,1,1,nil,e,tp,m)
 	local tc=tg:GetFirst()
 	if tc then
 		local mg=m:Filter(Card.IsCanBeRitualMaterial,tc,tc)

@@ -19,7 +19,7 @@ function c9950255.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,99502550)
+	e1:SetCountLimit(1,9950255)
 	e1:SetCondition(aux.exccon)
 	e1:SetCost(c9950255.spcost)
 	e1:SetTarget(c9950255.sptg)
@@ -39,7 +39,7 @@ function c9950255.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950255,0))
 end
 function c9950255.thfilter(c)
-	return c:IsRace(RACE_FAIRY) and c:IsSetCard(0xba5,0xbc8) and c:IsAbleToHand() and not c:IsCode(9950255)
+	return c:IsLevelBelow(4) and c:IsRace(RACE_FAIRY) and c:IsSetCard(0xba5,0xbc8) and c:IsAbleToHand() and not c:IsCode(9950255)
 end
 function c9950255.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950255.thfilter,tp,LOCATION_DECK,0,1,nil) end

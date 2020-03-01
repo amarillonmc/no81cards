@@ -48,6 +48,7 @@ function c9951064.initial_effect(c)
 end
 function c9951064.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951064,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951064,1))
 end
 function c9951064.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
@@ -57,8 +58,8 @@ function c9951064.atkfilter(c)
 end
 function c9951064.atkval(e,c)
 	local tp=e:GetHandlerPlayer()
-	local g=Duel.GetMatchingGroup(c9951064.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE)
-	return g:GetSum(Card.GetLink)*300
+	local g=Duel.GetMatchingGroup(c9951064.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	return g:GetSum(Card.GetLevel)*300
 end
 function c9951064.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
@@ -82,5 +83,5 @@ function c9951064.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(ct*500)
 		c:RegisterEffect(e1)
 	end
- Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951064,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951064,2))
 end

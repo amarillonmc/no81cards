@@ -1,18 +1,20 @@
 --竹林组·不死之烟
 function c9950001.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba1),aux.NonTuner(Card.IsSetCard,0xba1,0xba2),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba1),aux.NonTuner(Card.IsSetCard,0x3ba1),1)
 	c:EnableReviveLimit()
-	 --code
+	  --multi attack
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_CHANGE_CODE)
-	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e1:SetValue(9950000)
+	e1:SetDescription(aux.Stringid(9950001,2))
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetCountLimit(1)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(c9950001.mtcon)
+	e1:SetOperation(c9950001.mtop)
 	c:RegisterEffect(e1)
 	--destroy
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9950001,1))
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -25,7 +27,7 @@ function c9950001.initial_effect(c)
 	c:RegisterEffect(e2)
 	--destroy and summon
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9950001,1))
+	e3:SetDescription(aux.Stringid(9950001,0))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_LEAVE_FIELD)
@@ -48,6 +50,35 @@ function c9950001.initial_effect(c)
 end
 function c9950001.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950001,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950001,3))
+end
+function c9950001.mtcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsAbleToEnterBP() and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=5
+end
+function c9950001.mtop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.ConfirmDecktop(tp,5)
+	local g=Duel.GetDecktopGroup(tp,5)
+	local ct=g:FilterCount(Card.IsSetCard,nil,0x3ba1)
+	Duel.ShuffleDeck(tp)
+	if ct>1 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_EXTRA_ATTACK)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetValue(ct-1)
+		c:RegisterEffect(e1)
+	elseif ct==0 then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_CANNOT_ATTACK)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e2)
+	end
+ Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950001,0))
+  Duel.Hint(HINT_SOUND,0,aux.Stringid(9950001,4))
 end
 function c9950001.desfilter(c)
 	return c:IsFaceup() or not c:IsOnField()
@@ -69,6 +100,8 @@ function c9950001.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local sg2=og:Select(tp,oc,oc,nil)
 	Duel.Destroy(sg2,REASON_EFFECT)
+ Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950001,0))
+  Duel.Hint(HINT_SOUND,0,aux.Stringid(9950001,4))
 end
 function c9950001.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

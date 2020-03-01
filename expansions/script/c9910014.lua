@@ -44,7 +44,7 @@ function c9910014.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c9910014.ffilter(c)
-	return c:IsFusionSetCard(0x950) and c:IsType(TYPE_MONSTER)
+	return c:IsFusionSetCard(0x3950) and c:IsType(TYPE_MONSTER)
 		and c:GetSummonLocation()==LOCATION_EXTRA
 end
 function c9910014.splimit(e,se,sp,st)
@@ -67,7 +67,7 @@ function c9910014.efilter(e,te)
 end
 function c9910014.codisable(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler()~=e:GetHandler()
-		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x951)
+		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
 end
 function c9910014.tgdisable(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

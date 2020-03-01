@@ -116,16 +116,16 @@ function c9951010.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,1000) end
 	Duel.PayLPCost(tp,1000)
 end
-function c9951010.filter(c,e,tp)
+function c9951010.filter2(c,e,tp)
 	return c:IsSetCard(0xba5) and c:IsLevel(10) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9951010.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:GetControler()==tp and chkc:GetLocation()==LOCATION_GRAVE and c9951010.filter(chkc,e,tp) end
+	if chkc then return chkc:GetControler()==tp and chkc:GetLocation()==LOCATION_GRAVE and c9951010.filter2(chkc,e,tp) end
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
-		and Duel.IsExistingTarget(c9951010.filter,tp,LOCATION_GRAVE,0,2,nil,e,tp) end
+		and Duel.IsExistingTarget(c9951010.filter2,tp,LOCATION_GRAVE,0,2,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c9951010.filter,tp,LOCATION_GRAVE,0,2,2,nil,e,tp)
+	local g=Duel.SelectTarget(tp,c9951010.filter2,tp,LOCATION_GRAVE,0,2,2,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,2,0,0)
 end
 function c9951010.spop(e,tp,eg,ep,ev,re,r,rp)

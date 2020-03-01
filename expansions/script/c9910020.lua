@@ -35,7 +35,7 @@ function c9910020.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c9910020.filter(c,e,tp)
-	return c:IsType(TYPE_PENDULUM) and c:IsFaceup() and c:IsSetCard(0x950)
+	return c:IsType(TYPE_PENDULUM) and c:IsFaceup() and c:IsSetCard(0x3950)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c9910020.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -73,7 +73,7 @@ function c9910020.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function c9910020.thfilter(c)
-	return c:IsSetCard(0x951) and not c:IsCode(9910020) and c:IsAbleToHand()
+	return c:IsSetCard(0x5950) and not c:IsCode(9910020) and c:IsAbleToHand()
 end
 function c9910020.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910020.thfilter,tp,LOCATION_DECK,0,1,nil) end

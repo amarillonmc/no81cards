@@ -49,9 +49,10 @@ function c9951004.initial_effect(c)
 end
 function c9951004.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951004,0))
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951004,2))
 end
 function c9951004.ovfilter(c)
-	return c:IsFaceup() and (c:IsSetCard(0xba5) and c:IsType(TYPE_XYZ) and c:IsRank(8)) or (c:IsSetCard(0x6ba8) and c:IsType(TYPE_LINK))
+	return c:IsFaceup() and (c:IsSetCard(0xba5) and c:IsType(TYPE_XYZ) and c:IsRank(8)) or (c:IsSetCard(0x9ba8) and c:IsType(TYPE_LINK))
 end
 function c9951004.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
@@ -74,6 +75,7 @@ function c9951004.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
 	end
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951004,3))
 end
 function c9951004.descon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -94,6 +96,7 @@ function c9951004.desop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951004,3))
 end
 function c9951004.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp
@@ -107,4 +110,5 @@ end
 function c9951004.operation(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951004,3))
 end

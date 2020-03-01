@@ -49,6 +49,7 @@ function c9950097.initial_effect(c)
 end
 function c9950097.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950097,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950097,4))
 end
 function c9950097.filter(c)
 	return c:IsSetCard(0xba5) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
@@ -72,7 +73,7 @@ function c9950097.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local dg=Duel.SelectMatchingCard(tp,c9950097.tgfilter,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.SendtoGrave(dg,REASON_EFFECT)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950097,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950097,5))
 end
 function c9950097.condition(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker()
@@ -93,7 +94,7 @@ function c9950097.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local bc=e:GetLabelObject()
 	if bc:IsRelateToBattle() then
 		Duel.Destroy(bc,REASON_EFFECT)
-		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950097,0))
+		Duel.Hint(HINT_SOUND,0,aux.Stringid(9950097,5))
 	end
 end
 function c9950097.cfilter(c)
@@ -114,6 +115,7 @@ function c9950097.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
+		Duel.Hint(HINT_SOUND,0,aux.Stringid(9950097,5))
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950097,0))
 	end
 end

@@ -35,6 +35,7 @@ function c9951069.initial_effect(c)
 end
 function c9951069.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951069,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951069,1))
 end
 function c9951069.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
@@ -54,4 +55,5 @@ function c9951069.rmop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951069,0))
+  Duel.Hint(HINT_SOUND,0,aux.Stringid(9951069,1))
 end

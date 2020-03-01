@@ -33,7 +33,7 @@ function c9910007.rpfilter(c,tp)
 		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
 end
 function c9910007.rpsfilter(c,tp)
-	return c9910007.rpfilter(c,tp) and c:IsSetCard(0x950) and not c:IsCode(9910007)
+	return c9910007.rpfilter(c,tp) and c:IsSetCard(0x3950) and not c:IsCode(9910007)
 end
 function c9910007.rptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910007.rpfilter,tp,LOCATION_HAND,0,1,nil,tp) end
@@ -61,7 +61,7 @@ function c9910007.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9910007.spfilter(c,e,tp)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x950) and not c:IsCode(9910007)
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3950) and not c:IsCode(9910007)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910007.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)

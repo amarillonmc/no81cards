@@ -38,6 +38,7 @@ function c9951031.initial_effect(c)
 end
 function c9951031.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951031,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951031,1))
 end
 function c9951031.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)

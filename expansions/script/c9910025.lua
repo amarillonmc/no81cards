@@ -12,7 +12,7 @@ function c9910025.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910025.thfilter(c)
-	return (c:IsSetCard(0x950) or c:IsSetCard(0x951)) and c:IsAbleToHand()
+	return (c:IsSetCard(0x3950) or c:IsSetCard(0x5950)) and c:IsAbleToHand()
 end
 function c9910025.rpfilter(c,tp)
 	return c:IsType(TYPE_PENDULUM) and not c:IsForbidden()

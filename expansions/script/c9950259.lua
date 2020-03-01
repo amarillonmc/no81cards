@@ -55,7 +55,7 @@ function c9950259.filter1(c,e,tp)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end
 function c9950259.filter2(c,e,tp,mc,code)
-	return c:IsAttackBelow(2200) and c:IsType(TYPE_XYZ) and c:IsSetCard(0xbc8,0xba5) and not c:IsCode(code) and mc:IsCanBeXyzMaterial(c)
+	return c:IsRankBelow(4) and c:IsType(TYPE_XYZ) and c:IsSetCard(0xbc8,0xba5) and not c:IsCode(code) and mc:IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 end
 function c9950259.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

@@ -6,7 +6,7 @@ function c9951068.initial_effect(c)
 	--disable spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_SZONE)
+	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(0,1)
@@ -35,6 +35,7 @@ function c9951068.initial_effect(c)
 end
 function c9951068.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951068,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951068,1))
 end
 function c9951068.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLevelAbove(5) or c:IsRankAbove(5) or c:IsLinkAbove(3)
@@ -87,6 +88,7 @@ function c9951068.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(c9951068.desop)
 		Duel.RegisterEffect(e1,tp)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951068,1))
 end
 function c9951068.desfilter(c,fid)
 	return c:GetFlagEffectLabel(9951068)==fid

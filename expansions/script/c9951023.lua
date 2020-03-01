@@ -55,6 +55,7 @@ function c9951023.initial_effect(c)
 end
 function c9951023.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951023,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951023,1))
 end
 function c9951023.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
@@ -76,6 +77,7 @@ function c9951023.negop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951023,0))
+  Duel.Hint(HINT_SOUND,0,aux.Stringid(9951023,2))
 end
 function c9951023.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -87,4 +89,5 @@ function c9951023.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951023,0))
+  Duel.Hint(HINT_SOUND,0,aux.Stringid(9951023,2))
 end

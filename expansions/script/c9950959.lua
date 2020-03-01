@@ -45,7 +45,8 @@ function c9950959.initial_effect(c)
 end
 c9950959.material_type=TYPE_RITUAL
 function c9950959.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950959,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950959,0))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950959,2))
 end
 function c9950959.sfilter(c)
 	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_RITUAL)
@@ -95,5 +96,5 @@ function c9950959.disop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
 	end
- Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950959,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950959,1))
 end

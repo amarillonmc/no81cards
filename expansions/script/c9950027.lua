@@ -1,49 +1,26 @@
 --虚人「无」
 function c9950027.initial_effect(c)
-	 --link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xba1,0xba2,0xbca),3)
-	c:EnableReviveLimit()
-	--code
+ --spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_CHANGE_CODE)
-	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e1:SetValue(9950000)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCondition(c9950027.spcon)
+	e1:SetTarget(c9950027.sptg)
+	e1:SetOperation(c9950027.spop)
 	c:RegisterEffect(e1)
-	--negate
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(9950027,0))
-	e4:SetCategory(CATEGORY_DISABLE)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(c9950027.discon)
-	e4:SetTarget(c9950027.distg)
-	e4:SetOperation(c9950027.disop)
-	c:RegisterEffect(e4)
-	--change battle target
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9950027,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_BE_BATTLE_TARGET)
-	e2:SetTarget(c9950027.sptg2)
-	e2:SetOperation(c9950027.spop2)
-	c:RegisterEffect(e2)
-	--destroy and summon
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9950027,2))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e3:SetCondition(c9950027.spcon)
-	e3:SetCost(c9950027.spcost)
-	e3:SetTarget(c9950027.sptg)
-	e3:SetOperation(c9950027.spop)
-	c:RegisterEffect(e3)
+	--equip
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9950027,0))
+	e1:SetCategory(CATEGORY_EQUIP)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1)
+	e1:SetCost(c9950027.eqcost)
+	e1:SetTarget(c9950027.eqtg)
+	e1:SetOperation(c9950027.eqop)
+	c:RegisterEffect(e1)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -55,75 +32,78 @@ function c9950027.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c9950027.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950027,3))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950027,0))
 end
-function c9950027.discon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return end
-	local loc,tg=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TARGET_CARDS)
-	if not tg or not tg:IsContains(c) then return false end
-	return Duel.IsChainDisablable(ev) and loc~=LOCATION_DECK
-end
-function c9950027.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-end
-function c9950027.disop(e,tp,eg,ep,ev,re,r,rp,chk)
-	Duel.NegateEffect(ev)
-end
-function c9950027.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and not c:IsCode(9950027) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c9950027.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9950027.spfilter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c9950027.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c9950027.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-end
-function c9950027.spop2(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local a=Duel.GetAttacker()
-		local ag=a:GetAttackableTarget()
-		if a:IsAttackable() and not a:IsImmuneToEffect(e) and ag:IsContains(tc) then
-			Duel.BreakEffect()
-			Duel.ChangeAttackTarget(tc)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(math.ceil(a:GetAttack()/2))
-			a:RegisterEffect(e1)
-		end
-	end
+function c9950027.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xba1) and c:IsLevelBelow(7)
 end
 function c9950027.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return ((c:IsReason(REASON_DESTROY) and c:IsReason(REASON_BATTLE+REASON_EFFECT)) or (c:GetReasonPlayer()==1-tp and c:IsReason(REASON_EFFECT)))
-		and c:IsPreviousLocation(LOCATION_ONFIELD)
-end
-function c9950027.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,800) end
-	Duel.PayLPCost(tp,800)
+	return Duel.IsExistingMatchingCard(c9950027.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9950027.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9950027.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)~=0 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(800)
-		c:RegisterEffect(e1)
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c9950027.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_CANNOT_SUMMON)
+	Duel.RegisterEffect(e2,tp)
+end
+function c9950027.splimit(e,c)
+	return not c:IsSetCard(0xba1)
+end
+function c9950027.eqcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
+function c9950027.eqfilter(c)
+	return c:IsFaceup() and c:IsAbleToChangeControler()
+end
+function c9950027.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c9950027.eqfilter(chkc) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingTarget(c9950027.eqfilter,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+	local g=Duel.SelectTarget(tp,c9950027.eqfilter,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
+end
+function c9950027.eqop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if not (tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsType(TYPE_MONSTER)) then return end
+	local atk=tc:GetTextAttack()
+	if tc:IsFacedown() or atk<0 then atk=0 end
+	if not Duel.Equip(tp,tc,c) then return end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_EQUIP)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_OWNER_RELATE)
+	e1:SetValue(atk)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_EQUIP_LIMIT)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetValue(c9950027.eqlimit)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e2)
+	tc:RegisterFlagEffect(9950027,RESET_EVENT+RESETS_STANDARD,0,1)
+  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950027,0))
+end
+function c9950027.eqlimit(e,c)
+	return e:GetOwner()==c
 end

@@ -47,7 +47,7 @@ function c9910018.rpfilter(c,tp)
 		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
 end
 function c9910018.rpsfilter(c,tp)
-	return c9910018.rpfilter(c,tp) and c:IsSetCard(0x950) and not c:IsCode(9910018)
+	return c9910018.rpfilter(c,tp) and c:IsSetCard(0x3950) and not c:IsCode(9910018)
 end
 function c9910018.rptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910018.rpfilter,tp,LOCATION_HAND,0,1,nil,tp) end
@@ -82,7 +82,7 @@ function c9910018.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910018.thfilter(c)
-	return c:IsSetCard(0x951) and c:IsAbleToHand()
+	return c:IsSetCard(0x5950) and c:IsAbleToHand()
 end
 function c9910018.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910018.thfilter,tp,LOCATION_DECK,0,1,nil) end

@@ -37,7 +37,7 @@ function c9910031.rpcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
 end
 function c9910031.rpfilter(c,e,tp)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x950) and (not c:IsForbidden()
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3950) and (not c:IsForbidden()
 		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c9910031.rptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -68,7 +68,7 @@ function c9910031.rpop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910031.cfilter(c,tp)
-	return c:IsSetCard(0x950) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsSetCard(0x3950) and Duel.GetMZoneCount(tp,c)>0
 end
 function c9910031.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,c9910031.cfilter,1,nil,tp) end

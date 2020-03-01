@@ -59,6 +59,7 @@ end
 c9950074.material_setcode=0x3ba5
 function c9950074.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950074,1))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950074,2))
 end
 function c9950074.spcon(e,tp,eg,ep,ev,re,r,rp)
 	 local tp=e:GetHandlerPlayer()
@@ -104,5 +105,6 @@ function c9950074.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
 	   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950074,1))
+	   Duel.Hint(HINT_SOUND,0,aux.Stringid(9950074,3))
 	end
 end

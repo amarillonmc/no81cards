@@ -44,6 +44,7 @@ function c9950938.initial_effect(c)
 end
 function c9950938.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950938,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950938,1))
 end
 function c9950938.spcon(e,c)
 	if c==nil then return true end

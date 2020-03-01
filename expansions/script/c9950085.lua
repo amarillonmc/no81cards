@@ -60,6 +60,7 @@ function c9950085.initial_effect(c)
 end
 function c9950085.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950085,2))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950085,5))
 end
 function c9950085.spcon(e,c)
 	if c==nil then return true end
@@ -132,6 +133,7 @@ function c9950085.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCondition(c9950085.descon)
 	e1:SetOperation(c9950085.desop)
 	Duel.RegisterEffect(e1,tp)
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9950085,6))
 end
 function c9950085.desfilter(c,fid)
 	return c:GetFlagEffectLabel(9950085)==fid
@@ -175,5 +177,6 @@ function c9950085.desop2(e,tp,eg,ep,ev,re,r,rp)
 	if tc and tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950085,2))
+		Duel.Hint(HINT_SOUND,0,aux.Stringid(9950085,6))
 	end
 end

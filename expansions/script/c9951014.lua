@@ -46,6 +46,7 @@ function c9951014.initial_effect(c)
 end
 function c9951014.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951014,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951014,1))
 end
 function c9951014.efilter(e,te)
 	return te:IsActiveType(TYPE_MONSTER) and te:GetOwner()~=e:GetOwner()
@@ -68,6 +69,7 @@ function c9951014.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1-tp,2000,REASON_EFFECT)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951014,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951014,2))
 end
 function c9951014.thfilter(c)
 	return c:IsRace(RACE_CYBERSE) and c:IsAbleToHand()
@@ -84,4 +86,5 @@ function c9951014.thop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951014,2))
 end

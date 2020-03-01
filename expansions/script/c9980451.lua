@@ -60,7 +60,7 @@ function c9980451.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980451,3)) 
 end 
 function c9980451.matfilter(c)
-	return c:IsLinkRace(RACE_FAIRY) and c:IsLinkAttribute(ATTRIBUTE_LIGHT)
+	return c:IsLinkRace(RACE_FAIRY) 
 end
 function c9980451.atkfilter(c)
 	return c:IsRace(RACE_FAIRY) or c:IsRace(RACE_WARRIOR)

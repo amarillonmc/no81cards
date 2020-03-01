@@ -27,6 +27,7 @@ function c9910029.initial_effect(c)
 	c:RegisterEffect(e3)
 	--to grave
 	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_FIELD)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCode(EVENT_PHASE+PHASE_STANDBY)
@@ -36,7 +37,7 @@ function c9910029.initial_effect(c)
 	c:RegisterEffect(e4)
 	--to hand
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(9910029,1))
+	e5:SetDescription(aux.Stringid(9910029,0))
 	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_GRAVE)
@@ -100,19 +101,20 @@ function c9910029.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if tg:GetCount()==0 then Duel.ShuffleHand(1-tp) return end
 	local sg=tg:GetMaxGroup(Card.GetLevel)
 	if sg:GetCount()>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910029,2))
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910029,1))
 		sg=sg:Select(tp,1,1,nil)
 	end
 	local tc=sg:GetFirst()
-	if tc then
-		if Duel.SpecialSummon(tc,0,1-tp,1-tp,false,false,POS_FACEUP)<=0 then
-			Duel.SendtoGrave(tc,REASON_RULE)
-		end
+	if tc and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,1-tp,false,false)
+		and (not tc:IsAbleToGrave() or Duel.SelectOption(1-tp,1152,1191)==0) then
+		Duel.SpecialSummon(tc,0,1-tp,1-tp,false,false,POS_FACEUP)
+	elseif tc:IsAbleToGrave() then
+		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end
 	Duel.ShuffleHand(1-tp)
 end
 function c9910029.thfilter(c)
-	return c:IsSetCard(0x951) and not c:IsCode(9910029) and c:IsAbleToHand()
+	return c:IsSetCard(0x5950) and not c:IsCode(9910029) and c:IsAbleToHand()
 end
 function c9910029.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910029.thfilter,tp,LOCATION_DECK,0,1,nil) end

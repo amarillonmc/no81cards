@@ -39,9 +39,10 @@ function c9951001.initial_effect(c)
 end
 function c9951001.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951001,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951001,1))
 end
 function c9951001.hdcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c9951001.hdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and chkc:IsAbleToDeck() end
@@ -75,6 +76,7 @@ function c9951001.hdop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951001,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951001,2))
 end
 function c9951001.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -117,6 +119,7 @@ function c9951001.operation(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e3)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951001,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951001,2))
 end
 function c9951001.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()

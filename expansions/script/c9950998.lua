@@ -46,6 +46,7 @@ function c9950998.initial_effect(c)
 end
 function c9950998.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950998,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950998,3))
 end
 function c9950998.mfilter(c)
 	return c:IsSetCard(0xba5) or c:IsRace(RACE_CYBERSE)
@@ -95,6 +96,7 @@ function c9950998.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTarget(c9950998.splimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950998,4))
 end
 function c9950998.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsSetCard(0xba5)
@@ -119,4 +121,5 @@ function c9950998.operation2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950998,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950998,4))
 end

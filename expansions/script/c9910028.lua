@@ -47,13 +47,13 @@ function c9910028.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
 end
 function c9910028.tttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x950,0x951)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x3950,0x5950)
 		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 end
 end
 function c9910028.ttop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910028,0))
-	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,nil,0x950,0x951)
+	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,nil,0x3950,0x5950)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.ShuffleDeck(tp)

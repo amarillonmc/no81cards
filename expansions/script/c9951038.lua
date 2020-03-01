@@ -34,6 +34,7 @@ function c9951038.initial_effect(c)
 end
 function c9951038.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951038,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951038,1))
 end
 function c9951038.con(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -48,6 +49,7 @@ function c9951038.op(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(1)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951038,2))
 end
 function c9951038.hspcon(e,tp,eg,ep,ev,re,r,rp)
 	local at=Duel.GetAttacker()

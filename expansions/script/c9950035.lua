@@ -2,18 +2,6 @@
 function c9950035.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
-	--scale
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_CHANGE_LSCALE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_PZONE)
-	e2:SetCondition(c9950035.slcon)
-	e2:SetValue(4)
-	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_CHANGE_RSCALE)
-	c:RegisterEffect(e3)
 	--change scale
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9950035,0))
@@ -43,6 +31,16 @@ function c9950035.initial_effect(c)
 	e3:SetTarget(c9950035.sptg)
 	e3:SetOperation(c9950035.spop)
 	c:RegisterEffect(e3)
+	--disable all
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(9950035,4))
+	e5:SetCategory(CATEGORY_DISABLE)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCountLimit(1)
+	e5:SetTarget(c9950035.target)
+	e5:SetOperation(c9950035.operation)
+	c:RegisterEffect(e5)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -56,11 +54,8 @@ end
 function c9950035.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950035,3))
 end
-function c9950035.slcon(e)
-	return not Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_PZONE,0,1,e:GetHandler(),0xba1,0xba2,0xba3)
-end
 function c9950035.scfilter(c,pc)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0xba1,0xba2,0xba3) and not c:IsForbidden()
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0xba1) and not c:IsForbidden()
 		and c:GetLeftScale()~=pc:GetLeftScale()
 end
 function c9950035.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -93,7 +88,7 @@ function c9950035.setcon(e,tp,eg,ep,ev,re,r,rp)
 		and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function c9950035.cfilter(c)
-	return c:IsSetCard(0xba1,0xba2,0xba3) and c:IsType(TYPE_SPELL) and c:IsSSetable()
+	return c:IsSetCard(0xba1) and c:IsType(TYPE_SPELL) and c:IsSSetable()
 end
 function c9950035.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950035.cfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -111,21 +106,44 @@ function c9950035.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_PZONE)
 end
 function c9950035.spfilter(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0xba1,0xba2,0xba3)
+	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0xba1)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950035.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCountFromEx(tp)>0
-		and Duel.IsExistingMatchingCard(c9950035.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+		and Duel.IsExistingMatchingCard(c9950035.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA+LOCATION_GRAVE)
 end
 function c9950035.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c9950035.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp)
+	local g=Duel.GetMatchingGroup(c9950035.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,nil,e,tp)
 	if Duel.GetLocationCountFromEx(tp)>0 and g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950035,3))
 	end
+end
+function c9950035.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.disfilter1,tp,0,LOCATION_MZONE,1,e:GetHandler()) end
+	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,0,LOCATION_MZONE,e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
+end
+function c9950035.operation(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,0,LOCATION_MZONE,nil)
+	local tc=g:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e2)
+		tc=g:GetNext()
+	end
+  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950035,3))
 end

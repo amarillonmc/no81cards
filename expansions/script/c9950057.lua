@@ -53,6 +53,7 @@ function c9950057.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9950057.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950057,3))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950057,4))
 end
 function c9950057.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLP(tp)<=4000 and Duel.GetAttackTarget()~=nil

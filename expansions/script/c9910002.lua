@@ -46,7 +46,7 @@ function c9910002.rpfilter(c,tp)
 		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
 end
 function c9910002.rpsfilter(c,tp)
-	return c9910002.rpfilter(c,tp) and c:IsSetCard(0x950) and not c:IsCode(9910002)
+	return c9910002.rpfilter(c,tp) and c:IsSetCard(0x3950) and not c:IsCode(9910002)
 end
 function c9910002.rptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910002.rpfilter,tp,LOCATION_HAND,0,1,nil,tp) end

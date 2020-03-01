@@ -32,11 +32,11 @@ function c9910006.initial_effect(c)
 end
 function c9910006.sccon1(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,9910026)
-		or not e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x951)
+		or not e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
 end
 function c9910006.sccon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,9910026)
-		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x951)
+		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
 end
 function c9910006.rpcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
@@ -46,7 +46,7 @@ function c9910006.rpfilter(c,tp)
 		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
 end
 function c9910006.rpsfilter(c,tp)
-	return c9910006.rpfilter(c,tp) and c:IsSetCard(0x950) and not c:IsCode(9910006)
+	return c9910006.rpfilter(c,tp) and c:IsSetCard(0x3950) and not c:IsCode(9910006)
 end
 function c9910006.rptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910006.rpfilter,tp,LOCATION_HAND,0,1,nil,tp) end

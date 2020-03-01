@@ -1,15 +1,15 @@
 --竹林组·不死鸟附体
 function c9950013.initial_effect(c)
-	--link summon
+	 --link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,c9950013.matfilter,3,3)
-	--code
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xba1),3,3)
+	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_CHANGE_CODE)
-	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e1:SetValue(9950000)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(c9950013.atkval)
 	c:RegisterEffect(e1)
 	--destroy
 	local e3=Effect.CreateEffect(c)
@@ -56,9 +56,10 @@ function c9950013.initial_effect(c)
 end
 function c9950013.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950013,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950013,2))
 end
-function c9950013.matfilter(c)
-	return c:IsLinkRace(RACE_ZOMBIE) and c:IsLinkAttribute(ATTRIBUTE_FIRE)
+function c9950013.atkval(e,c)
+	return c:GetLinkedGroupCount()*500
 end
 function c9950013.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) end
@@ -100,6 +101,7 @@ function c9950013.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCondition(c9950013.ctcon)
 		tc:RegisterEffect(e1)
 	end
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9950013,3))
 end
 function c9950013.ctcon(e)
 	local c=e:GetOwner()

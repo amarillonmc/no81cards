@@ -2,6 +2,7 @@
 function c9980403.initial_effect(c)
 	c:EnableReviveLimit()
 	c:SetUniqueOnField(1,0,9980403)
+	aux.AddCodeList(c,9980400)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -37,7 +38,6 @@ function c9980403.initial_effect(c)
 	e8:SetOperation(c9980403.sumsuc)
 	c:RegisterEffect(e8)
 end
-c9980403.card_code_list={9980400}
 function c9980403.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980403,0))
 end 

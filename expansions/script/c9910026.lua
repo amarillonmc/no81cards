@@ -48,10 +48,10 @@ function c9910026.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c9910026.eqlimit(e,c)
-	return c:IsSetCard(0x950)
+	return c:IsSetCard(0x3950)
 end
 function c9910026.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x950)
+	return c:IsFaceup() and c:IsSetCard(0x3950)
 end
 function c9910026.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:GetLocation()==LOCATION_MZONE and c9910026.filter(chkc) end
@@ -67,7 +67,7 @@ function c9910026.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910026.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x950) and c:IsAbleToGrave()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3950) and c:IsAbleToGrave()
 end
 function c9910026.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910026.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) end
@@ -92,7 +92,7 @@ function c9910026.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910026.thfilter(c)
-	return c:IsSetCard(0x951) and not c:IsCode(9910026) and c:IsAbleToHand()
+	return c:IsSetCard(0x5950) and not c:IsCode(9910026) and c:IsAbleToHand()
 end
 function c9910026.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910026.thfilter,tp,LOCATION_DECK,0,1,nil) end

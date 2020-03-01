@@ -2,7 +2,7 @@
 function c9950996.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,c9950996.matfilter,6)
+	aux.AddLinkProcedure(c,c9950996.matfilter,5)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -29,7 +29,8 @@ function c9950996.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c9950996.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950996,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950996,0))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950996,1))
 end
 function c9950996.matfilter(c)
 	return c:GetSummonLocation()==LOCATION_EXTRA and c:IsSetCard(0xba5)

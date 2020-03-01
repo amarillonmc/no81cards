@@ -5,6 +5,15 @@ function c9950009.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
+	--extra summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9950009,1))
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xba1))
+	c:RegisterEffect(e2)
 	--draw
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9950009,0))
@@ -31,7 +40,7 @@ function c9950009.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9950009.filter(c,tp)
-	return c:IsSetCard(0xba2) and c:IsControler(tp) and c:IsSummonType(SUMMON_TYPE_XYZ)
+	return c:IsSetCard(0xba1) and c:IsControler(tp) and c:IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c9950009.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c9950009.filter,1,nil,tp)
@@ -52,7 +61,7 @@ function c9950009.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function c9950009.filter1(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0xba2)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0xba1)
 		and Duel.IsExistingMatchingCard(c9950009.filter2,tp,LOCATION_MZONE,0,1,c,e)
 end
 function c9950009.filter2(c,e)

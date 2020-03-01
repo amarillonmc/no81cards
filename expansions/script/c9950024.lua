@@ -15,7 +15,7 @@ function c9950024.condition(e,tp,eg,ep,ev,re,r,rp)
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c9950024.cfilter(c)
-	return c:IsSetCard(0xba1) and not c:IsPublic()
+	return c:IsSetCard(0x3ba1) and not c:IsPublic()
 end
 function c9950024.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950024.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler())
@@ -50,26 +50,29 @@ function c9950024.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsAbleToDeck() and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_DECK+LOCATION_EXTRA)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_EXTRA)
 	end
 end
-function c9950024.spfilter(c,e,tp)
-	return c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0xba1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c9950024.spfilter(c,e,tp,mc)
+	return c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x3ba1) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false)
+		and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function c9950024.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ec=re:GetHandler()
+	if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL) then return end
 	if Duel.NegateActivation(ev) and ec:IsRelateToEffect(re) then
 		ec:CancelToGrave()
 		if Duel.SendtoDeck(ec,nil,2,REASON_EFFECT)~=0 and ec:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
 			local loc=0
 			if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_DECK end
 			if Duel.GetLocationCountFromEx(tp)>0 then loc=loc+LOCATION_EXTRA end
-			local g=Duel.GetMatchingGroup(c9950024.spfilter,tp,loc,0,nil,e,tp)
+			local g=Duel.GetMatchingGroup(c9950024.spfilter,tp,loc,0,nil,e,tp):GetFirst()
 			if loc~=0 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9950024,0)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				local sg=g:Select(tp,1,1,nil)
-				Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+				local tc=g:Select(tp,1,1,nil)
+				Duel.SpecialSummon(tc,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)
+				tc:CompleteProcedure()
 			end
 		end
 	end

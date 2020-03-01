@@ -27,6 +27,17 @@ function c9980464.initial_effect(c)
 	e3:SetTarget(c9980464.tgtg)
 	e3:SetValue(aux.tgoval)
 	c:RegisterEffect(e3)
+--search
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9980464,1))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,9980464)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c9980464.thtg)
+	e2:SetOperation(c9980464.thop)
+	c:RegisterEffect(e2)
 end
 function c9980464.filter(c)
 	return c:IsControler(tp) or c:IsAbleToChangeControler()
@@ -93,4 +104,19 @@ function c9980464.atlimit(e,c)
 end
 function c9980464.tgtg(e,c)
 	return c~=e:GetHandler()
+end
+function c9980464.thfilter(c)
+	return c:IsSetCard(0x9bca) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+end
+function c9980464.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9980464.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9980464.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9980464.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end

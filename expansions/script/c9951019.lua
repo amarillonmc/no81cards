@@ -54,6 +54,7 @@ function c9951019.initial_effect(c)
 end
 function c9951019.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951019,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951019,3))
 end
 function c9951019.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
@@ -110,6 +111,7 @@ function c9951019.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951019,4))
 end
 function c9951019.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -164,4 +166,5 @@ function c9951019.spop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951019,4))
 end

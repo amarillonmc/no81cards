@@ -12,10 +12,10 @@ function c33400012.initial_effect(c)
 	c:RegisterEffect(e0)
 	--ChainLimit
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(33400012,0))
-	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetOperation(c33400012.tgop)
+	e1:SetOperation(c33400012.chainop)
 	c:RegisterEffect(e1)
 	 --activate from hand
 	local e2=Effect.CreateEffect(c)
@@ -61,16 +61,8 @@ end
 function c33400012.afilter(c)
 	return c:IsSetCard(0x3340) and c:IsType(TYPE_QUICKPLAY)
 end
-function c33400012.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetOperation(c33400012.actop)
-	Duel.RegisterEffect(e1,tp)  
-end
-function c33400012.actop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_QUICKPLAY) and re:GetHandler():IsSetCard(0x3340) then
+function c33400012.chainop(e,tp,eg,ep,ev,re,r,rp)
+	if re:GetHandler():IsSetCard(0x3340) and re:GetHandler():IsType(TYPE_QUICKPLAY) and ep==tp then
 		Duel.SetChainLimit(c33400012.chainlm)
 	end
 end

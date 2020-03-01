@@ -58,6 +58,7 @@ function c9951000.initial_effect(c)
 end
 function c9951000.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951000,0))
+  Duel.Hint(HINT_SOUND,0,aux.Stringid(9951000,1))
 end
 function c9951000.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -79,6 +80,7 @@ function c9951000.desop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1-tp,ct*1000,REASON_EFFECT)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951000,0))
+  Duel.Hint(HINT_SOUND,0,aux.Stringid(9951000,2))
 end
 function c9951000.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -95,4 +97,5 @@ function c9951000.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.Overlay(c,Group.FromCards(tc))
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9951000,2))
 end

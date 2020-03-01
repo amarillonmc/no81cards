@@ -2,7 +2,7 @@
 function c9950012.initial_effect(c)
 	 --link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xba1,0xba2),2,2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xba1),2,2)
 	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9950012,0))
@@ -38,12 +38,13 @@ function c9950012.initial_effect(c)
 end
 function c9950012.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950012,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950012,1))
 end
 function c9950012.filter1(c)
-	return c:IsRace(RACE_ZOMBIE)
+	return c:IsSetCard(0xba1) and c:IsType(TYPE_MONSTER)
 end
 function c9950012.filter2(c)
-	return c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0xba1) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c9950012.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950012.filter1,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
@@ -63,6 +64,7 @@ function c9950012.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 			Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950012,0))
+			Duel.Hint(HINT_SOUND,0,aux.Stringid(9950012,2))
 		end
 	end
 end

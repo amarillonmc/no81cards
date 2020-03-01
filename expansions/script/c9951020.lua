@@ -57,15 +57,11 @@ function c9951020.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9951020.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local tc=Duel.GetFirstMatchingCard(c9951020.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
-	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	 local g=Duel.SelectMatchingCard(tp,c9951020.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	 if g:GetCount()>0 then 
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) 
 	end
-	Duel.SpecialSummonComplete()
 end
 function c9951020.rfilter(c)
 	return (c:IsRace(RACE_CYBERSE) or c:IsAttribute(ATTRIBUTE_WATER)) and c:IsSetCard(0xba5) and c:IsAbleToRemoveAsCost()

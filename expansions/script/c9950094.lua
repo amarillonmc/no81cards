@@ -43,6 +43,7 @@ function c9950094.initial_effect(c)
 end
 function c9950094.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950094,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950094,1))
 end
 function c9950094.matfilter(c)
 	return c:IsLinkType(TYPE_EFFECT) and c:IsLinkAttribute(ATTRIBUTE_WIND)
@@ -57,6 +58,7 @@ function c9950094.desop1(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToBattle() then
 		Duel.Destroy(tc,REASON_EFFECT)
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950094,0))
+		Duel.Hint(HINT_SOUND,0,aux.Stringid(9950094,2))
 	end
 end
 function c9950094.atkcon(e)
@@ -84,4 +86,5 @@ function c9950094.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(ct*100)
 		c:RegisterEffect(e1)
 	end
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9950094,2))
 end

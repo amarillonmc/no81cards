@@ -27,6 +27,7 @@ function c9951021.initial_effect(c)
 end
 function c9951021.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951021,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951021,2))
 end
 function c9951021.ovfilter(c)
 	return c:IsFaceup() and c:IsCode(9951014,9951016)
@@ -50,4 +51,5 @@ function c9951021.desop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.Destroy(g,REASON_EFFECT)
 	Duel.Draw(tp,ct,REASON_EFFECT)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951021,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951021,3))
 end

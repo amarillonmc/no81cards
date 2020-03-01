@@ -1,7 +1,7 @@
 --竹林组·妹红×慧音
 function c9950004.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba1),aux.NonTuner(Card.IsSetCard,0xba1,0xba2),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba1),aux.NonTuner(Card.IsSetCard,0x3ba1),1)
 	c:EnableReviveLimit()
 	--destroy all
 	local e4=Effect.CreateEffect(c)
@@ -25,6 +25,17 @@ function c9950004.initial_effect(c)
 	e3:SetTarget(c9950004.sptg)
 	e3:SetOperation(c9950004.spop)
 	c:RegisterEffect(e3)
+--spsummon
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(9950004,1))
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_GRAVE)
+	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e4:SetCost(aux.bfgcost)
+	e4:SetTarget(c9950004.sptg2)
+	e4:SetOperation(c9950004.spop2)
+	c:RegisterEffect(e4)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -74,5 +85,22 @@ function c9950004.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(1000)
 		c:RegisterEffect(e1)
+	end
+end
+function c9950004.spfilter(c,e,tp)
+	return c:IsSetCard(0xba1) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c9950004.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c9950004.spfilter(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c9950004.spfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler(),e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,c9950004.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+end
+function c9950004.spop2(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

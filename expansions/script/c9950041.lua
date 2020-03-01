@@ -1,14 +1,18 @@
 --蓬莱山辉夜·永夜返
 function c9950041.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba1,0xba2),4,2,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba1),4,3,nil,nil,99)
 	c:EnableReviveLimit()
-	--attack cost
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_ATTACK_COST)
-	e1:SetCost(c9950041.atcost)
-	c:RegisterEffect(e1)
+	 --remove material
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(9950041,1))
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e4:SetCode(EVENT_PHASE+PHASE_END)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1)
+	e4:SetTarget(c9950041.rmtg)
+	e4:SetOperation(c9950041.rmop)
+	c:RegisterEffect(e4)
 	--atklimit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -74,7 +78,8 @@ function c9950041.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9950041,1))
 	e1:SetCategory(CATEGORY_REMOVE)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
 	e1:SetCondition(c9950041.effcon)
@@ -82,6 +87,16 @@ function c9950041.initial_effect(c)
 	e1:SetTarget(c9950041.rmtg)
 	e1:SetOperation(c9950041.rmop)
 	c:RegisterEffect(e1)
+	--material
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9950041,3))
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
+	e2:SetTarget(c9950041.target)
+	e2:SetOperation(c9950041.operation)
+	c:RegisterEffect(e2)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -91,30 +106,24 @@ function c9950041.initial_effect(c)
 	local e9=e8:Clone()
 	e9:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e9)
-	--Attach
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9950041,1))
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_BATTLE_DESTROYING)
-	e2:SetCondition(c9950041.xyzcon)
-	e2:SetTarget(c9950041.xyztg)
-	e2:SetOperation(c9950041.xyzop)
-	c:RegisterEffect(e2)
 end
 function c9950041.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950041,2))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950041,4))
 end
-function c9950041.atcost(e,c,tp)
-	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DEATTACHFROM)
-	local sg=Duel.SelectMatchingCard(tp,Card.CheckRemoveOverlayCard,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp,1,REASON_COST)
-	sg:GetFirst():RemoveOverlayCard(tp,1,1,REASON_COST)
+function c9950041.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+end
+function c9950041.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	c:RemoveOverlayCard(tp,1,1,REASON_EFFECT)
 end
 function c9950041.effcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetOverlayCount()>=e:GetLabel()
 end
 function c9950041.atkval(e,c)
-	return Duel.GetOverlayCount(c:GetControler(),1,1)*300
+	return Duel.GetOverlayCount(c:GetControler(),1,1)*1000
 end
 function c9950041.atfilter(e,c)
 	return c:IsFaceup()
@@ -133,6 +142,7 @@ function c9950041.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950041,2))
+		Duel.Hint(HINT_SOUND,0,aux.Stringid(9950041,5))
 	end
 end
 function c9950041.rmfilter(c)
@@ -151,24 +161,28 @@ function c9950041.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9950041.rmfilter,tp,0,LOCATION_ONFIELD,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950041,2))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950041,6))
 end
-function c9950041.xyzcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=c:GetBattleTarget()
-	if not c:IsRelateToBattle() or c:IsFacedown() then return false end
-	e:SetLabelObject(tc)
-	return tc:IsLocation(LOCATION_GRAVE) and tc:IsType(TYPE_MONSTER) and tc:IsReason(REASON_BATTLE)
+function c9950041.filter(c)
+	return c:IsPosition(POS_FACEUP_ATTACK) and c:IsCanOverlay()
 end
-function c9950041.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) end
-	local tc=e:GetLabelObject()
-	Duel.SetTargetCard(tc)
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,tc,1,0,0)
+function c9950041.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9950041.filter(chkc) and chkc~=e:GetHandler() end
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ)
+		and Duel.IsExistingTarget(c9950041.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	Duel.SelectTarget(tp,c9950041.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,e:GetHandler())
 end
-function c9950041.xyzop(e,tp,eg,ep,ev,re,r,rp)
+function c9950041.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) then
-		Duel.Overlay(c,tc)
+	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
+		local og=tc:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+		Duel.Overlay(c,Group.FromCards(tc))
 	end
+ Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950041,2))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950041,7))
 end

@@ -56,6 +56,7 @@ function c9950056.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9950056.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950056,1))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950056,2))
 end
 function c9950056.damcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
@@ -89,4 +90,5 @@ function c9950056.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950056,1))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950056,3))
 end

@@ -116,7 +116,7 @@ function c9980455.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Release(g1,REASON_COST+REASON_FUSION+REASON_MATERIAL)
 end
 function c9980455.val(e,c)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())*300
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())*555
 end
 function c9980455.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)

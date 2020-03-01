@@ -1,6 +1,6 @@
 --快乐天·胎藏曼荼罗
 function c9950983.initial_effect(c)
-	aux.AddRitualProcGreater2Code2(c,9950978,9951039,LOCATION_HAND+LOCATION_GRAVE,nil)
+	aux.AddRitualProcGreater2Code2(c,9951064,9951039,LOCATION_HAND+LOCATION_GRAVE,nil)
 --to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9950983,1))

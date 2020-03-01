@@ -42,6 +42,7 @@ function c9950018.initial_effect(c)
 end
 function c9950018.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950018,0))
+  Duel.Hint(HINT_SOUND,0,aux.Stringid(9950018,1))
 end
 function c9950018.xyzlv(e,c,rc)
 	return 0x40000+e:GetHandler():GetLevel()
@@ -57,7 +58,7 @@ function c9950018.filter1(c,e,tp)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end
 function c9950018.filter2(c,e,tp,mc,code)
-	return c:IsType(TYPE_XYZ) and c:IsSetCard(0xba2) and not c:IsCode(code) and mc:IsCanBeXyzMaterial(c)
+	return c:IsType(TYPE_XYZ) and c:IsSetCard(0xba1) and not c:IsCode(code) and mc:IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 end
 function c9950018.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -84,6 +85,7 @@ function c9950018.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 		sc:CompleteProcedure()
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950018,2))
 end
 function c9950018.atkfilter(c,atk)
 	return c:IsFaceup() and not c:IsAttack(atk)
@@ -108,4 +110,5 @@ function c9950018.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950018,3))
 end

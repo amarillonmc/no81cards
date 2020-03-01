@@ -57,7 +57,7 @@ function c9981201.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c9981201.ffilter(c)
-	return c:IsFusionCode(9981100,9981200) and c:IsType(TYPE_MONSTER)
+	return (c:IsFusionCode(9981100) or c:IsFusionSetCard(0x9bcd)) and c:IsType(TYPE_MONSTER)
 end
 function c9981201.ffilter2(c)
 	return c:IsFusionSetCard(0x9bcd,0x5bc3) and c:IsType(TYPE_MONSTER)

@@ -1,5 +1,6 @@
 --泰坦剑
 function c9980407.initial_effect(c)
+	aux.AddCodeList(c,9980400)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
@@ -50,7 +51,6 @@ function c9980407.initial_effect(c)
 	e5:SetOperation(c9980407.damop)
 	c:RegisterEffect(e5)
 end
-c9980407.card_code_list={9980400}
 function c9980407.eqlimit(e,c)
 	return (c:IsRace(RACE_WARRIOR) or aux.IsCodeListed(c,9980400))
 end

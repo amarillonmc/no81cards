@@ -1,5 +1,6 @@
 --装甲哥莱姆
 function c9980402.initial_effect(c)
+	aux.AddCodeList(c,9980400)
 	--summon success
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9980402,0))
@@ -25,7 +26,6 @@ function c9980402.initial_effect(c)
 	e1:SetOperation(c9980402.eqop)
 	c:RegisterEffect(e1)
 end
-c9980402.card_code_list={9980400}
 function c9980402.filter(c,e,tp)
 	return c:IsCode(9980400) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

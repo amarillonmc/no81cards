@@ -1,7 +1,7 @@
 --禁忌「禁忌的游戏」
 function c9950029.initial_effect(c)
 	  --link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xba1,0xba2),4)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xba1),4)
 	c:EnableReviveLimit()
 	 --attack cost
 	local e1=Effect.CreateEffect(c)
@@ -34,7 +34,7 @@ function c9950029.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_LEAVE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,9950029)
+	e3:SetCountLimit(2,9950029)
 	e3:SetCondition(c9950029.spcon)
 	e3:SetCost(c9950029.spcost)
 	e3:SetTarget(c9950029.sptg)
@@ -58,6 +58,7 @@ end
 c9950029[0]=0
 function c9950029.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950029,1))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950029,2))
 end
 function c9950029.handes(e,tp,eg,ep,ev,re,r,rp)
 	local loc,id=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_CHAIN_ID)

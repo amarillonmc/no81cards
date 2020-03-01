@@ -1,5 +1,6 @@
 --D.A.L-时崎狂三
 function c33400033.initial_effect(c)
+c:EnableCounterPermit(0x34f)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcMix(c,false,true,c33400033.fusfilter1,c33400033.fusfilter2,c33400033.fusfilter3,c33400033.fusfilter4,c33400033.fusfilter5)
@@ -185,7 +186,7 @@ end
 function c33400033.valcon(e,re,r,rp)
 	return r==REASON_BATTLE
 end
-function c33400033.op3(e,tp,eg,ep,ev,re,r,rp)	
+function c33400033.op3(e,tp,eg,ep,ev,re,r,rp)   
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 			Duel.SelectTarget(tp,c33400033.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
 			local tc=Duel.GetFirstTarget()
@@ -227,9 +228,11 @@ function c33400033.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c33400033.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT)
-	end 
+	if  Duel.SelectYesNo(tp,aux.Stringid(33400033,6))  then
+		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+			Duel.Destroy(eg,REASON_EFFECT)
+		end 
+	end
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	 Duel.SelectTarget(tp,c33400033.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	 local tc=Duel.GetFirstTarget()

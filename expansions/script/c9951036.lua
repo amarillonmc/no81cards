@@ -1,7 +1,7 @@
 --燃烧的三神之衣·迦尔纳
 function c9951036.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba5),12,2,c9951036.ovfilter,aux.Stringid(9951036,1),2,c9951036.xycon,c9951036.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba5),12,2,c9951036.ovfilter,aux.Stringid(9951036,1),2,c9951036.xyzop)
 	c:EnableReviveLimit()
 	--negate
 	local e1=Effect.CreateEffect(c)
@@ -43,6 +43,7 @@ function c9951036.initial_effect(c)
 end
 function c9951036.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951036,0))
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951036,2))
 end
 function c9951036.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xba5) and c:IsType(TYPE_XYZ+TYPE_LINK)
@@ -50,14 +51,9 @@ end
 function c9951036.xyzfilter(c)
 	return c:IsFaceup() and c:IsAttackAbove(5000)
 end
-function c9951036.xyzcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9951036.yxzfilter,tp,0,LOCATION_MZONE,1,nil)
-end
-function c9951036.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,9951036)==0 end
+function c9951036.xyzop(e,c,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,9951036)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9951036.yxzfilter,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.RegisterFlagEffect(tp,9951036,RESET_PHASE+PHASE_END,0,1)
 end
 function c9951036.filter(c)
@@ -119,6 +115,7 @@ function c9951036.atkop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e2)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951036,0))
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951036,3))
 end
 function c9951036.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -144,4 +141,5 @@ function c9951036.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1-tp,atk,REASON_EFFECT)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951036,0))
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9951036,3))
 end

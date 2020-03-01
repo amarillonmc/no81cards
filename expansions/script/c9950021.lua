@@ -46,7 +46,7 @@ function c9950021.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
 function c9950021.cfilter2(c)
-	return c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0xba1) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
 end
 function c9950021.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950021.cfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
@@ -79,6 +79,7 @@ function c9950021.atkop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 	end
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950021,0))
+  Duel.Hint(HINT_SOUND,0,aux.Stringid(9950021,1))
 end
 function c9950021.cfilter(c,tp)
 	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==1-tp
@@ -98,7 +99,7 @@ function c9950021.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function c9950021.thfilter(c)
-	return c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xba1) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9950021.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9950021.thfilter(chkc) end
@@ -113,4 +114,5 @@ function c9950021.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950021,2))
 end

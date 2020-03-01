@@ -46,7 +46,7 @@ function c9950033.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950033,0))
 end
 function c9950033.cfilter(c)
-	return c:IsFacedown() or not c:IsSetCard(0xba1,0xba2)
+	return c:IsFacedown() or not c:IsSetCard(0xba1)
 end
 function c9950033.sprcon(e,c)
 	if c==nil then return true end
@@ -56,7 +56,7 @@ function c9950033.sprcon(e,c)
 		and not Duel.IsExistingMatchingCard(c9950033.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9950033.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xba1,0xba2)
+	return c:IsFaceup() and c:IsSetCard(0xba1)
 end
 function c9950033.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9950033.filter(chkc) end
@@ -64,7 +64,7 @@ function c9950033.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then
 		if ft<-1 then return false end
 		return e:GetHandler():IsCanBeSpecialSummoned(e,1,tp,false,false)
-			and Duel.IsExistingTarget(c9950033.filter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,2,nil)
+			and Duel.IsExistingTarget(c9950033.filter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil)
 			and (ft>0 or Duel.IsExistingTarget(c9950033.filter,tp,LOCATION_MZONE,0,-ft+1,nil))
 	end
 	local g=nil
@@ -72,7 +72,7 @@ function c9950033.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		local loc=LOCATION_ONFIELD+LOCATION_HAND
 		if ft<0 then loc=LOCATION_MZONE end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		g=Duel.SelectTarget(tp,c9950033.filter,tp,loc,0,2,2,nil)
+		g=Duel.SelectTarget(tp,c9950033.filter,tp,loc,0,1,1,nil)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		g=Duel.SelectTarget(tp,c9950033.filter,tp,LOCATION_MZONE,0,1,1,nil)
@@ -80,7 +80,7 @@ function c9950033.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		local g2=Duel.SelectTarget(tp,c9950033.filter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,g:GetFirst())
 		g:Merge(g2)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9950033.spop1(e,tp,eg,ep,ev,re,r,rp)
@@ -96,7 +96,7 @@ function c9950033.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c9950033.filter2(c)
-	return c:IsFaceup() and c:IsSetCard(0xba1,0xba2)
+	return c:IsFaceup() and c:IsSetCard(0xba1)
 end
 function c9950033.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9950033.filter2(chkc) end

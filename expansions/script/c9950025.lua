@@ -55,32 +55,33 @@ function c9950025.initial_effect(c)
 end
 function c9950025.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950025,2))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950025,3))
 end
 function c9950025.sprfilter(c)
-	return c:IsType(TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK) and c:IsSetCard(0xba1,0xba2) and c:IsAbleToRemoveAsCost()
+	return c:IsType(TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK+TYPE_FUSION+TYPE_RITUAL) and c:IsType(TYPE_MONSTER)and c:IsSetCard(0xba1) and c:IsAbleToRemoveAsCost()
 end
 function c9950025.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9950025.sprfilter,tp,LOCATION_GRAVE,0,3,nil)
+		and Duel.IsExistingMatchingCard(c9950025.sprfilter,tp,LOCATION_GRAVE,0,2,nil)
 end
 function c9950025.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9950025.sprfilter,tp,LOCATION_GRAVE,0,3,3,nil)
+	local g=Duel.SelectMatchingCard(tp,c9950025.sprfilter,tp,LOCATION_GRAVE,0,2,2,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c9950025.tdfilter(c,e,tp)
-	return c:IsSetCard(0xba1,0xba2) and c:IsAbleToDeck()
+	return c:IsSetCard(0xba1) and c:IsAbleToDeck()
 end
 function c9950025.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9950025.tdfilter(chkc) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c9950025.tdfilter(chkc) end
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(c9950025.tdfilter,tp,LOCATION_GRAVE,0,5,e:GetHandler()) end
+		and Duel.IsExistingTarget(c9950025.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c9950025.tdfilter,tp,LOCATION_GRAVE,0,5,5,e:GetHandler())
+	local g=Duel.SelectTarget(tp,c9950025.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,5,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
 function c9950025.drop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
@@ -91,6 +92,7 @@ function c9950025.drop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 	if ct>0 then
 		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
+		Duel.Draw(tp,2,REASON_EFFECT)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950025,4))
 end

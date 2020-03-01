@@ -51,7 +51,7 @@ function c9910015.rpfilter(c,tp)
 		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
 end
 function c9910015.rpsfilter(c,tp)
-	return c9910015.rpfilter(c,tp) and c:IsSetCard(0x950) and not c:IsCode(9910015)
+	return c9910015.rpfilter(c,tp) and c:IsSetCard(0x3950) and not c:IsCode(9910015)
 end
 function c9910015.rptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910015.rpfilter,tp,LOCATION_HAND,0,1,nil,tp) end
@@ -77,10 +77,10 @@ function c9910015.rpop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910015.splimit(e,c)
 	if not c then return false end
-	return not c:IsSetCard(0x950)
+	return not c:IsSetCard(0x3950)
 end
 function c9910015.thfilter(c)
-	return c:IsSetCard(0x950) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910015)
+	return c:IsSetCard(0x3950) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910015)
 end
 function c9910015.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910015.thfilter,tp,LOCATION_DECK,0,1,nil) end

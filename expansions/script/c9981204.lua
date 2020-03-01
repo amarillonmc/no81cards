@@ -5,7 +5,7 @@ function c9981204.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetRange(LOCATION_HAND+LOCATION_SZONE)
 	e1:SetCountLimit(1,9981204)
 	e1:SetCondition(c9981204.spcon)
 	e1:SetValue(1)
@@ -45,11 +45,9 @@ function c9981204.filter(c)
 end
 function c9981204.spcon(e,c)
 	if c==nil then return true end
-	return (Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0
-		and Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_MZONE)>0
-		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0) or
-		(Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and
-		Duel.IsExistingMatchingCard(c9981204.filter,c:GetControler(),LOCATION_MZONE,0,1,nil))
+	return ((Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+		and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
+		) or (Duel.IsExistingMatchingCard(c9981204.filter,tp,LOCATION_MZONE,0,1,nil))) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function c9981204.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+1

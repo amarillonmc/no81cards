@@ -45,10 +45,10 @@ function c9910011.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c9910011.eqlimit(e,c)
-	return c:IsSetCard(0x950)
+	return c:IsSetCard(0x3950)
 end
 function c9910011.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x950)
+	return c:IsFaceup() and c:IsSetCard(0x3950)
 end
 function c9910011.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:GetLocation()==LOCATION_MZONE and c9910011.filter(chkc) end
@@ -64,14 +64,14 @@ function c9910011.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910011.atkfilter(c)
-	return c:IsSetCard(0x950) and c:GetLevel()>=0
+	return c:IsSetCard(0x3950) and c:GetLevel()>=0
 end
 function c9910011.val(e)
 	local lg=Duel.GetMatchingGroup(c9910011.atkfilter,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil)
 	return lg:GetSum(Card.GetLevel)*200
 end
 function c9910011.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x950) and c:IsAbleToGrave()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3950) and c:IsAbleToGrave()
 end
 function c9910011.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910011.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) end
@@ -89,7 +89,7 @@ function c9910011.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910011.thfilter(c)
-	return c:IsSetCard(0x951) and not c:IsCode(9910011) and c:IsAbleToHand()
+	return c:IsSetCard(0x5950) and not c:IsCode(9910011) and c:IsAbleToHand()
 end
 function c9910011.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910011.thfilter,tp,LOCATION_DECK,0,1,nil) end

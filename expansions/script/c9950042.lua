@@ -1,15 +1,26 @@
 --竹林组·不死鸟之尾
 function c9950042.initial_effect(c)
-  --link summon
+	--xyz summon
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xba1),8,2,nil,nil)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xba1,0xba2),2,2)
+ --special summon (hand)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9950042,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCondition(c9950042.spcon1)
+	e1:SetTarget(c9950042.sptg1)
+	e1:SetOperation(c9950042.spop1)
+	c:RegisterEffect(e1)
 	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9950042,0))
 	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,9950042)
+	e2:SetCost(c9950042.cost)
 	e2:SetTarget(c9950042.target)
 	e2:SetOperation(c9950042.operation)
 	c:RegisterEffect(e2)
@@ -38,12 +49,36 @@ function c9950042.initial_effect(c)
 end
 function c9950042.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950042,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950042,1))
+end
+function c9950042.spcon1(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
+end
+function c9950042.spfilter1(c,e,tp)
+	return c:IsSetCard(0xba1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c9950042.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9950042.spfilter1,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+end
+function c9950042.spop1(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c9950042.spfilter1,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function c9950042.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9950042.filter1(c)
-	return c:IsRace(RACE_ZOMBIE)
+	return c:IsType(TYPE_MONSTER)
 end
 function c9950042.filter2(c)
-	return c:IsSetCard(0xba1,0xba2) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0xba1) and c:IsAbleToHand()
 end
 function c9950042.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950042.filter1,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
@@ -63,6 +98,7 @@ function c9950042.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 			Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950042,0))
+			Duel.Hint(HINT_SOUND,0,aux.Stringid(9950042,2))
 		end
 	end
 end
@@ -72,8 +108,8 @@ function c9950042.spcon(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9950042.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,800) end
-	Duel.PayLPCost(tp,800)
+	if chk==0 then return Duel.CheckLPCost(tp,500) end
+	Duel.PayLPCost(tp,500)
 end
 function c9950042.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -89,7 +125,8 @@ function c9950042.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(800)
+		e1:SetValue(1500)
 		c:RegisterEffect(e1)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950042,3))
 end
