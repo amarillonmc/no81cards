@@ -1,6 +1,6 @@
 --幽鬼熊 希洛库玛
 function c9910266.initial_effect(c)
-	c:EnableCounterPermit(0x954)
+	c:EnableCounterPermit(0x953)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -26,10 +26,10 @@ end
 function c9910266.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x954,1,REASON_COST)
+		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x953,1,REASON_COST)
 end
 function c9910266.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.RemoveCounter(tp,1,0,0x954,1,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x953,1,REASON_COST)
 end
 function c9910266.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler())
@@ -41,7 +41,7 @@ function c9910266.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
 		local sel=0
-		if c:IsCanAddCounter(0x954,2) then sel=sel+1 end
+		if c:IsCanAddCounter(0x953,2) then sel=sel+1 end
 		if c:IsCanTurnSet() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			and Duel.IsExistingMatchingCard(c9910266.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then
 			sel=sel+2
@@ -61,7 +61,7 @@ function c9910266.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(sel)
 	if sel==1 then
 		e:SetCategory(CATEGORY_COUNTER)
-		Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x954)
+		Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x953)
 	else
 		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_POSITION)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
@@ -73,7 +73,7 @@ function c9910266.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local sel=e:GetLabel()
 	if sel==1 then
 		if c:IsRelateToEffect(e) and c:IsFaceup() then
-			c:AddCounter(0x954,2)
+			c:AddCounter(0x953,2)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_IMMUNE_EFFECT)

@@ -4,8 +4,8 @@ function c40008656.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetTarget(c40008656.target)
 	e1:SetOperation(c40008656.operation)
 	c:RegisterEffect(e1)
@@ -36,7 +36,7 @@ function c40008656.initial_effect(c)
 	local e5=e4:Clone()
 	e5:SetCode(EFFECT_SET_BASE_DEFENSE)
 	e5:SetValue(c40008656.defval)
-	c:RegisterEffect(e5)
+	c:RegisterEffect(e5) 
 	--salvage
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(40008656,0))
@@ -77,12 +77,8 @@ function c40008656.actcon(e)
 	local tc=e:GetHandler():GetEquipTarget()
 	return Duel.GetAttacker()==tc or Duel.GetAttackTarget()==tc
 end
-function c40008656.adcon(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentPhase()~=PHASE_DAMAGE_CAL then return false end
-	local eqc=e:GetHandler():GetEquipTarget()
-	local a=Duel.GetAttacker()
-	local d=Duel.GetAttackTarget()
-	return d and (a==eqc or d==eqc)
+function c40008656.adcon(e)
+	return Duel.GetTurnPlayer()~=tp
 end
 function c40008656.atkval(e,c)
 	return c:GetBaseAttack()*2

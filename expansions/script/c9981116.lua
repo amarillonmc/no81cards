@@ -1,7 +1,7 @@
 --试验搭配Build·金兔银龙形态
 function c9981116.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5bc3),aux.FilterBoolFunction(Card.IsCode,9981119),1,1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5bc3),aux.FilterBoolFunction(Card.IsRace,RACE_DRAGON),1,1)
 	c:EnableReviveLimit()
 	--indes
 	local e2=Effect.CreateEffect(c)
@@ -84,8 +84,11 @@ end
 function c9981116.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToExtra() end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c9981116.retop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) or e:GetHandler():IsFacedown() then return end
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_EFFECT)
+	Duel.BreakEffect()
+	Duel.Draw(tp,1,REASON_EFFECT)
 end

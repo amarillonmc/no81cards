@@ -20,6 +20,15 @@ function c9981132.initial_effect(c)
 	e1:SetTarget(c9981132.sptg)
 	e1:SetOperation(c9981132.spop)
 	c:RegisterEffect(e1)
+ local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_SUMMON)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetRange(LOCATION_HAND)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_CHAIN_END+TIMING_END_PHASE)
+	e3:SetCost(c9981132.sumcost)
+	e3:SetTarget(c9981132.sumtg)
+	e3:SetOperation(c9981132.sumop)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -73,5 +82,19 @@ function c9981132.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9981132.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0x5bc3)
+	return not c:IsSetCard(0xbca)
+end
+function c9981132.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetFlagEffect(tp,9981132)==0 end
+	Duel.RegisterFlagEffect(tp,9981132,RESET_CHAIN,0,1)
+end
+function c9981132.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsSummonable(false,nil) or e:GetHandler():IsMSetable(false,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
+end
+function c9981132.sumop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	Duel.Summon(tp,c,true,nil)
 end

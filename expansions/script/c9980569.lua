@@ -44,7 +44,7 @@ function c9980569.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980569,1))
 end
 function c9980569.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xcbca) and (c:IsRank(4) and c:GetOverlayCount()==0) or c:IsType(TYPE_LINK)
+	return c:IsFaceup() and (c:IsSetCard(0xbca) and c:IsRankBelow(4) and c:GetOverlayCount()==0) or (c:IsType(TYPE_LINK) and c:IsSetCard(0xcbca))
 end
 function c9980569.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

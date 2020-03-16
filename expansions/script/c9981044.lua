@@ -1,5 +1,6 @@
 --魔术派对
 function c9981044.initial_effect(c)
+	aux.AddCodeList(c,46986414,38033121)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -27,9 +28,8 @@ function c9981044.initial_effect(c)
 	e2:SetOperation(c9981044.atkop)
 	c:RegisterEffect(e2)
 end
-c9981044.card_code_list={46986414,38033121}
 function c9981044.spfilter(c,e,tp)
-	return c:IsCode(6986414,38033121) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsCode(46986414,38033121) or (c:IsLevelBelow(4) and c:IsRace(RACE_SPELLCASTER)))and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9981044.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

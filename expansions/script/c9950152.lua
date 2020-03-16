@@ -98,6 +98,7 @@ function c9950152.initial_effect(c)
 end
 function c9950152.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950152,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950152,3))
 end
 function c9950152.indct(e,re,r,rp)
 	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then
@@ -156,6 +157,7 @@ function c9950152.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(tc:GetBaseDefense()*2)
 		tc:RegisterEffect(e2)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950152,4))
 end
 function c9950152.indtg(e,c)
 	return e:GetHandler():GetLinkedGroup():IsContains(c) and c:IsSetCard(0xba5)

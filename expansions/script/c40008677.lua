@@ -36,6 +36,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetRange(LOCATION_FZONE)
 	e1:SetTargetRange(1,0)
+	e1:SetCondition(cm.atkcon)
 	e1:SetTarget(cm.splimit)
 	c:RegisterEffect(e1)
 	--activate from hand
@@ -119,6 +120,13 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.eftg(e,c)
 	return c:IsSetCard(0xf14) and c:IsType(TYPE_QUICKPLAY)
+end
+function cm.atkfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xf14) and c:IsType(TYPE_MONSTER)
+end
+function cm.atkcon(e)
+	local c=e:GetHandler()
+	return Duel.IsExistingMatchingCard(cm.atkfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp)
 	return not c:IsRace(RACE_DRAGON)

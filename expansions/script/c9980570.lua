@@ -1,7 +1,7 @@
 --MRS甲斗-超越形态
 function c9980570.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xcbca),8,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),8,2)
 	c:EnableReviveLimit()
 	--banish extra
 	local e1=Effect.CreateEffect(c)

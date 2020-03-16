@@ -43,18 +43,18 @@ function c9910261.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(e:GetLabelObject(),tp,REASON_EFFECT)
 end
 function c9910261.ctfilter(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x954,3)
+	return c:IsFaceup() and c:IsCanAddCounter(0x953,3)
 end
 function c9910261.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910261.ctfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910261.ctfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,c9910261.ctfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,3,0,0x954)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,3,0,0x953)
 end
 function c9910261.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		tc:AddCounter(0x954,3)
+		tc:AddCounter(0x953,3)
 	end
 end

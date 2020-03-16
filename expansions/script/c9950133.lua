@@ -17,7 +17,6 @@ function c9950133.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetCountLimit(1,9950133)
-	e2:SetCondition(c9950133.thcon)
 	e2:SetTarget(c9950133.thtg)
 	e2:SetOperation(c9950133.thop)
 	c:RegisterEffect(e2)
@@ -50,9 +49,6 @@ function c9950133.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,1,tp,tp,false,false,POS_FACEUP)
-end
-function c9950133.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+1
 end
 function c9950133.thfilter(c)
 	return c:IsSetCard(0xba5) and c:IsLevelAbove(8) and c:IsAbleToHand()

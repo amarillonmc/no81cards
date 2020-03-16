@@ -1,6 +1,6 @@
 --幽鬼街
 function c9910251.initial_effect(c)
-	c:EnableCounterPermit(0x954)
+	c:EnableCounterPermit(0x953)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DICE+CATEGORY_COUNTER)
@@ -32,14 +32,14 @@ function c9910251.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9910251.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanAddCounter(tp,0x954,6,e:GetHandler()) end
+	if chk==0 then return Duel.IsCanAddCounter(tp,0x953,6,e:GetHandler()) end
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 function c9910251.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local d=Duel.TossDice(tp,1)
 	if c:IsRelateToEffect(e) then
-		c:AddCounter(0x954,d)
+		c:AddCounter(0x953,d)
 	end
 end
 function c9910251.thcon(e,tp,eg,ep,ev,re,r,rp)
@@ -66,15 +66,15 @@ function c9910251.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function c9910251.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanAddCounter(0x954,6) end
+	if chk==0 then return e:GetHandler():IsCanAddCounter(0x953,6) end
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 function c9910251.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local d=Duel.TossDice(tp,1)
 	if not c:IsRelateToEffect(e) then return end
-	c:AddCounter(0x954,d)
-	if Duel.GetCounter(e:GetHandlerPlayer(),1,0,0x954)<13 then return end
+	c:AddCounter(0x953,d)
+	if Duel.GetCounter(e:GetHandlerPlayer(),1,0,0x953)<13 then return end
 	Duel.BreakEffect()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

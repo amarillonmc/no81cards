@@ -70,6 +70,7 @@ function c9950108.initial_effect(c)
 end
 function c9950108.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950108,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950108,3))
 end
 function c9950108.distg(e,c)
 	return c==e:GetHandler():GetBattleTarget()
@@ -85,6 +86,7 @@ function c9950108.operation(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950108,0))
+   Duel.Hint(HINT_SOUND,0,aux.Stringid(9950108,4))
 end
 function c9950108.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -110,4 +112,5 @@ function c9950108.desop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950108,0))
+   Duel.Hint(HINT_SOUND,0,aux.Stringid(9950108,4))
 end

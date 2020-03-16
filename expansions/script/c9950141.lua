@@ -46,6 +46,7 @@ function c9950141.initial_effect(c)
 end
 function c9950141.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950141,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950141,1))
 end
 function c9950141.filter(c)
 	return c:IsCode(9950128) and c:IsSSetable()

@@ -34,12 +34,19 @@ function c9980527.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,9980527)
-	e1:SetCondition(c9980527.condition)
 	e1:SetTarget(c9980527.target)
 	e1:SetOperation(c9980527.operation)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCondition(c9980527.condition2)
+ --search
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9980527,1))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,99805270)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c9980527.thtg)
+	e2:SetOperation(c9980527.thop)
 	c:RegisterEffect(e2)
 end
 function c9980527.genchainlm(c)
@@ -53,12 +60,6 @@ end
 function c9980527.sumsuc2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980527,1))
 end
-function c9980527.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_HAND) and not Duel.IsExistingMatchingCard(aux.FilterEqualFunction(Card.GetSummonLocation,LOCATION_EXTRA),tp,0,LOCATION_MZONE,1,nil)
-end
-function c9980527.condition2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_HAND+LOCATION_GRAVE) and Duel.IsExistingMatchingCard(aux.FilterEqualFunction(Card.GetSummonLocation,LOCATION_EXTRA),tp,0,LOCATION_MZONE,1,nil)
-end
 function c9980527.filter(c)
 	return c:IsFaceup()
 end
@@ -71,4 +72,19 @@ function c9980527.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9980527.filter,tp,0,LOCATION_MZONE,nil)
 	Duel.Destroy(g,REASON_EFFECT)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980527,0))
+end
+function c9980527.thfilter(c)
+	return c:IsSetCard(0x3bca) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+end
+function c9980527.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9980527.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9980527.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9980527.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end

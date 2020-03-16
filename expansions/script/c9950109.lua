@@ -53,6 +53,7 @@ function c9950109.initial_effect(c)
 end
 function c9950109.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950109,0))
+   Duel.Hint(HINT_SOUND,0,aux.Stringid(9950109,3))
 end
 function c9950109.tgfilter2(c,tp)
 	return c:IsAbleToGrave() and Duel.GetMZoneCount(tp,c)>0
@@ -81,6 +82,7 @@ function c9950109.spop2(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+   Duel.Hint(HINT_SOUND,0,aux.Stringid(9950109,4))
 end
 function c9950109.desfilter(c)
 	return c:IsFacedown()
@@ -101,4 +103,5 @@ function c9950109.desop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsFacedown() and tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
+   Duel.Hint(HINT_SOUND,0,aux.Stringid(9950109,4))
 end

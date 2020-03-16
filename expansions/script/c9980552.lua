@@ -47,7 +47,7 @@ function c9980552.atkval(e,c)
 	return g:GetClassCount(Card.GetCode)*200
 end
 function c9980552.filter(c,e,sp)
-	return c:IsSetCard(0x3bca) and c:IsLevelAbove(5) and c:IsCanBeSpecialSummoned(e,0,sp,false,false)
+	return c:IsSetCard(0x3bca) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,sp,false,false)
 end
 function c9980552.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

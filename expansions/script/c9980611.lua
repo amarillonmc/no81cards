@@ -30,6 +30,17 @@ function c9980611.initial_effect(c)
 	e3:SetTarget(c9980611.destg)
 	e3:SetOperation(c9980611.desop)
 	c:RegisterEffect(e3)
+ --special summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9980611,1))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,99806111)
+	e2:SetTarget(c9980611.sptg)
+	e2:SetOperation(c9980611.spop)
+	c:RegisterEffect(e2)
 end
 function c9980611.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980611,0))
@@ -75,5 +86,24 @@ function c9980611.desop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980611,1))
 		Duel.Destroy(g,REASON_EFFECT)
+	end
+end
+function c9980611.thfilter(c,tp)
+	return c:IsFaceup() and c:IsSetCard(0x3bcd,0x6bcb) and not c:IsCode(9980611) and c:IsAbleToHand() and Duel.GetMZoneCount(tp,c)
+end
+function c9980611.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9980611.thfilter(chkc,tp) end
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.IsExistingTarget(c9980611.thfilter,tp,LOCATION_MZONE,0,1,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectTarget(tp,c9980611.thfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c9980611.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) and c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

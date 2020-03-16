@@ -29,8 +29,8 @@ function c9950032.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ops={}
 	local opval={}
 	if Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) then
-		ops[off]=aux.Stringid(9950032,0)
-		opval[off-1]=1
+		ops[off]=aux.Stringid(9950032,1)
+		opval[off-1]=2
 		off=off+1
 	end
 	if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=2 then
@@ -45,7 +45,7 @@ function c9950032.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if off==1 then return end
 	local op=Duel.SelectOption(tp,table.unpack(ops))
-	if opval[op]==1 then
+	if opval[op]==2 then
 		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 		Duel.Destroy(g,REASON_EFFECT)
 	elseif opval[op]==3 then

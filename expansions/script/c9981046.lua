@@ -3,6 +3,14 @@ function c9981046.initial_effect(c)
 	 --fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2(c,46986414,38033121,true,true)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_GRAVE,0,Duel.Remove,POS_FACEUP,REASON_COST)
+	--spsummon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c9981046.splimit)
+	c:RegisterEffect(e1)
 	--atkup
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -55,6 +63,9 @@ function c9981046.initial_effect(c)
 end
 function c9981046.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981046,0))
+end
+function c9981046.splimit(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function c9981046.val(e,c)
 	return Duel.GetMatchingGroupCount(c9981046.filter,0,0x14,0x14,nil)*500

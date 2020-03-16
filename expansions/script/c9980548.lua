@@ -43,7 +43,7 @@ function c9980548.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9980548.sfilter(c)
-	return c:IsSetCard(0x3bca) and c:IsType(TYPE_SYNCHRO)
+	return c:IsSetCard(0xbca) and c:IsType(TYPE_SYNCHRO)
 end
 function c9980548.genchainlm(c)
 	return  function (e,rp,tp)
@@ -79,7 +79,7 @@ function c9980548.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9980548.tgfilter(c,e,tp)
 	local lv=c:GetLevel()
-	return c:IsSetCard(0x3bca) and lv>0 and Duel.IsExistingMatchingCard(c9980548.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,lv)
+	return c:IsSetCard(0xbca) and lv>0 and Duel.IsExistingMatchingCard(c9980548.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,lv)
 end
 function c9980548.spfilter(c,e,tp,lv)
 	return c:IsLevelBelow(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

@@ -1,7 +1,7 @@
 --MRS甲斗-超越加速模式
 function c9980571.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xcbca),9,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),9,2)
 	c:EnableReviveLimit()
 	--immune
 	local e2=Effect.CreateEffect(c)

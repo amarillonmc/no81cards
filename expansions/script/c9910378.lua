@@ -44,6 +44,23 @@ function c9910378.initial_effect(c)
 	e5:SetCondition(c9910378.condition2)
 	e5:SetTarget(c9910378.target2)
 	c:RegisterEffect(e5)
+	--unreleaseable sum
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCode(EFFECT_UNRELEASABLE_SUM)
+	e6:SetValue(1)
+	e6:SetCondition(c9910378.relcon)
+	c:RegisterEffect(e6)
+	--summon with no tribute
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_FIELD)
+	e8:SetCode(EFFECT_SUMMON_PROC)
+	e8:SetRange(LOCATION_MZONE)
+	e8:SetTargetRange(LOCATION_HAND,0)
+	e8:SetCondition(c9910378.tricon)
+	c:RegisterEffect(e8)
 end
 function c9910378.ntcon(e,c,minc)
 	if c==nil then return true end
@@ -79,11 +96,29 @@ function c9910378.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK)
 end
 function c9910378.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,0,1,c) then
+		local flag=c:GetFlagEffectLabel(9910378)
+		if flag then
+			c:SetFlagEffectLabel(9910378,1)
+		else
+			c:RegisterFlagEffect(9910378,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,1)
+		end
+	else
+		local flag=c:GetFlagEffectLabel(9910391)
+		if flag then
+			c:SetFlagEffectLabel(9910391,1)
+		else
+			c:RegisterFlagEffect(9910391,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,1)
+		end
+	end
 	local loc=LOCATION_GRAVE+LOCATION_DECK+LOCATION_REMOVED 
 	local b1=Duel.IsExistingMatchingCard(c9910378.filter,tp,LOCATION_HAND,0,1,nil)
 	local b2=Duel.GetFlagEffect(tp,9910378)==0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9910378.spfilter,tp,loc,0,1,nil,e,tp)
+	c:SetFlagEffectLabel(9910378,0)
+	c:SetFlagEffectLabel(9910391,0)
 	if chk==0 then return b1 or b2 end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,loc)
@@ -113,4 +148,13 @@ function c9910378.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Summon(tp,g:GetFirst(),true,nil)
 		end
 	end
+end
+function c9910378.relcon(e)
+	local ct=e:GetHandler():GetFlagEffectLabel(9910378)
+	return ct and ct>0
+end
+function c9910378.tricon(e,c,minc)
+	local ct=e:GetHandler():GetFlagEffectLabel(9910391)
+	if c==nil then return ct and ct>0 end
+	return ct and ct>0 and minc==0
 end

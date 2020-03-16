@@ -1,7 +1,7 @@
 --黑魔术幻影巫术士
 function c9981024.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x10a2),1)
+	aux.AddSynchroMixProcedure(c,c9981024.matfilter1,nil,nil,aux.NonTuner(Card.IsRace,RACE_SPELLCASTER),1,99)
 	c:EnableReviveLimit()
 	--code
 	local e1=Effect.CreateEffect(c)
@@ -42,10 +42,12 @@ function c9981024.initial_effect(c)
 	e9:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e9)
 end
-c9981024.card_code_list={46986414,38033121}
 function c9981024.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981024,0))
 end 
+function c9981024.matfilter1(c)
+	return c:IsSynchroType(TYPE_TUNER) or (c:IsSynchroType(TYPE_MONSTER) and c:IsCode(46986414,38033121))
+end
 function c9981024.indct(e,re,r,rp)
 	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then
 		return 1

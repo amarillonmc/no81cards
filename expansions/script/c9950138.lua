@@ -59,7 +59,7 @@ function c9950138.spop1(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c9950138.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_HAND)
+	return e:GetHandler():IsPreviousLocation(LOCATION_GRAVE)
 end
 function c9950138.spfilter(c,e,tp)
 	return c:IsSetCard(0x9ba5) and not c:IsCode(9950138) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)

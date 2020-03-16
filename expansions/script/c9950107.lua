@@ -55,6 +55,7 @@ function c9950107.initial_effect(c)
 end
 function c9950107.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950107,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950107,3))
 end
 function c9950107.atktg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and aux.nzatk(chkc) end
@@ -95,6 +96,7 @@ function c9950107.atkop2(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e2)
 		end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950107,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950107,4))
 end
 function c9950107.btcon(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) and not e:GetHandler():IsStatus(STATUS_CHAINING)
@@ -127,6 +129,7 @@ function c9950107.btop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e2)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950107,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950107,4))
 end
 function c9950107.efilter(e,re)
 	return e:GetHandler()~=re:GetOwner()

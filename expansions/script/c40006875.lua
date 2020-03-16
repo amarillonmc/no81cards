@@ -1,6 +1,13 @@
 --一人千面·约翰娜
 function c40006875.initial_effect(c)
 	c:SetUniqueOnField(1,0,40006875)
+	--synchro limit
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetValue(c40006875.synlimit)
+	c:RegisterEffect(e0)
 	--equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(40006875,0))
@@ -41,6 +48,10 @@ function c40006875.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e4:SetValue(1)
 	c:RegisterEffect(e4)
+end
+function c40006875.synlimit(e,c)
+	if not c then return false end
+	return not c:IsAttribute(ATTRIBUTE_DARK)
 end
 function c40006875.filter(c)
 	return c:IsFaceup()

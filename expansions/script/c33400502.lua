@@ -1,5 +1,6 @@
 --天使-冰结傀儡
 function c33400502.initial_effect(c)
+c:SetUniqueOnField(1,0,33400502)
 	 --atc
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)

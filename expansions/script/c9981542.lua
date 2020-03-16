@@ -5,7 +5,6 @@ function c9981542.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(c9981542.condition)
 	e1:SetCost(c9981542.cost)
 	e1:SetTarget(c9981542.target)
 	e1:SetOperation(c9981542.activate)
@@ -22,9 +21,6 @@ function c9981542.initial_effect(c)
 	e2:SetTarget(c9981542.thtg)
 	e2:SetOperation(c9981542.thop)
 	c:RegisterEffect(e2)
-end
-function c9981542.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9981542.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

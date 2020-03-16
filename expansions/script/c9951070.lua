@@ -49,7 +49,7 @@ function c9951070.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9951070.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetOriginalRace()==RACE_BEASTWARRIOR
+	return e:GetHandler():GetOriginalRace()==RACE_WARRIOR
 end
 function c9951070.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

@@ -1,7 +1,7 @@
 --音击战士·斗鬼
 function c9980534.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bca),5,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),5,2)
 	c:EnableReviveLimit()
 	--spsummon
 	local e3=Effect.CreateEffect(c)

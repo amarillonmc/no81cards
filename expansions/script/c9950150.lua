@@ -68,6 +68,7 @@ function c9950150.initial_effect(c)
 end
 function c9950150.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950150,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950150,3))
 end
 function c9950150.filter2(c,ec)
 	return c:IsCode(9950151) and c:CheckEquipTarget(ec)

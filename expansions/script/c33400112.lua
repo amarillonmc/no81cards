@@ -32,12 +32,12 @@ function c33400112.tdfilter(c)
 end
 function c33400112.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(c33400112.tdfilter,tp,0x5e,0x5e,e:GetHandler())
+	local g=Duel.GetMatchingGroup(c33400112.tdfilter,tp,0x7e,0x7e,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 	Duel.SetChainLimit(aux.FALSE)
 end
 function c33400112.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c33400112.tdfilter,tp,0x5e,0x5e,aux.ExceptThisCard(e))
+	local g=Duel.GetMatchingGroup(c33400112.tdfilter,tp,0x7e,0x7e,aux.ExceptThisCard(e))
 	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	Duel.SetLP(1-tp,4000)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

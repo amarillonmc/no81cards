@@ -77,6 +77,7 @@ end
 function c9951072.condition(e,tp,eg,ep,ev,re,r,rp)
 	local attr=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_ATTRIBUTE)
 	return ep~=tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
+	and e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,9951071)
 end
 function c9951072.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

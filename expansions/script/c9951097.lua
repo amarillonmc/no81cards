@@ -16,8 +16,8 @@ function c9951097.initial_effect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCondition(c9951097.spcon2)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e2:SetCountLimit(1,99510970)
 	e2:SetTarget(c9951097.sptg2)
 	e2:SetOperation(c9951097.spop2)
 	c:RegisterEffect(e2)
@@ -63,9 +63,6 @@ function c9951097.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9951097.splimit(e,c)
 	return not c:IsSetCard(0x9bd1)
-end
-function c9951097.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+1
 end
 function c9951097.spfilter(c,e,tp)
 	return c:IsSetCard(0x9bd1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)

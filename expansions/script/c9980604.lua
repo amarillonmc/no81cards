@@ -2,7 +2,7 @@
 function c9980604.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCode3(c,9980536,9980604,true,true)
+	aux.AddFusionProcCodeFun(c,9980536,aux.FilterBoolFunction(Card.IsFusionType,TYPE_FUSION),1,true,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_ONFIELD,0,Duel.SendtoGrave,REASON_COST)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)

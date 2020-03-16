@@ -23,6 +23,17 @@ function c9950522.initial_effect(c)
 	e1:SetTarget(c9950522.destg)
 	e1:SetOperation(c9950522.desop)
 	c:RegisterEffect(e1)
+ --special summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9950522,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,99505220)
+	e2:SetCost(c9950522.spcost)
+	e2:SetTarget(c9950522.sptg)
+	e2:SetOperation(c9950522.spop)
+	c:RegisterEffect(e2)
 	--spsummon bgm
 	 local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -75,4 +86,27 @@ function c9950522.desop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950522,0))
+end
+function c9950522.filter(c,e,tp)
+	return c:IsSetCard(0x9ba6) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+end
+function c9950522.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
+		and Duel.CheckReleaseGroup(tp,nil,1,nil) end
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
+	local g=Duel.SelectReleaseGroup(tp,nil,1,1,nil)
+	Duel.Release(g,REASON_COST)
+end
+function c9950522.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
+		and Duel.IsExistingMatchingCard(c9950522.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+end
+function c9950522.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c9950522.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
+	end
 end

@@ -1,6 +1,6 @@
 --幽鬼侍者 小坂井绫
 function c9910253.initial_effect(c)
-	c:EnableCounterPermit(0x954)
+	c:EnableCounterPermit(0x953)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -41,10 +41,10 @@ end
 function c9910253.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x954,3,REASON_COST)
+		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x953,3,REASON_COST)
 end
 function c9910253.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.RemoveCounter(tp,1,0,0x954,3,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x953,3,REASON_COST)
 end
 function c9910253.setfilter(c)
 	return c:IsSetCard(0x953) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
@@ -53,7 +53,7 @@ function c9910253.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
 		local sel=0
-		if c:IsCanAddCounter(0x954,2) then sel=sel+1 end
+		if c:IsCanAddCounter(0x953,2) then sel=sel+1 end
 		if Duel.IsExistingMatchingCard(c9910253.setfilter,tp,LOCATION_GRAVE,0,1,nil) then sel=sel+2 end
 		e:SetLabel(sel)
 		return sel~=0
@@ -70,7 +70,7 @@ function c9910253.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(sel)
 	if sel==1 then
 		e:SetCategory(CATEGORY_COUNTER)
-		Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x954)
+		Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x953)
 	else
 		e:SetCategory(CATEGORY_LEAVE_GRAVE)
 		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE)
@@ -80,7 +80,7 @@ function c9910253.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sel=e:GetLabel()
 	if sel==1 then
-		if c:IsRelateToEffect(e) then c:AddCounter(0x954,2) end
+		if c:IsRelateToEffect(e) then c:AddCounter(0x953,2) end
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		local g=Duel.SelectMatchingCard(tp,c9910253.setfilter,tp,LOCATION_GRAVE,0,1,1,nil)
@@ -91,8 +91,8 @@ function c9910253.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910253.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x954,2,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x954,2,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x953,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x953,2,REASON_COST)
 end
 function c9910253.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

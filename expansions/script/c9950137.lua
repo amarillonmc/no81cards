@@ -68,6 +68,7 @@ function c9950137.initial_effect(c)
 end
 function c9950137.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950137,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950137,1))
 end
 function c9950137.filter(c)
 	return c:IsCode(9950128) and c:IsSSetable()
@@ -102,4 +103,5 @@ function c9950137.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	Duel.Destroy(g,REASON_EFFECT)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950137,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950137,2))
 end

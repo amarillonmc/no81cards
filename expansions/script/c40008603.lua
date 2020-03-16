@@ -23,8 +23,8 @@ function c40008603.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,40008603)
 	e3:SetCost(c40008603.cost)
-	e3:SetTarget(c40008603.dmtg)
-	e3:SetOperation(c40008603.dmop)
+	e3:SetTarget(c40008603.target)
+	e3:SetOperation(c40008603.activate)
 	c:RegisterEffect(e3)   
 end
 function c40008603.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -52,14 +52,20 @@ function c40008603.defval(e,c)
 	local g=e:GetHandler():GetOverlayGroup():Filter(c40008603.deffilter,nil)
 	return g:GetSum(Card.GetDefense)
 end
-function c40008603.dmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+function c40008603.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(c:GetAttack()/2)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,c:GetAttack()/2)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c40008603.filter(chkc) end
+	if chk==0 then return c:IsFaceup() end
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,PLAYER_ALL,0)
 end
-function c40008603.dmop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Damage(p,d,REASON_EFFECT)
+function c40008603.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsFaceup() then
+		local atk=c:GetTextAttack()
+		if atk<0 then atk=0 end
+		local val=Duel.Damage(tp,atk/2,REASON_EFFECT)
+		if val>0 and Duel.GetLP(tp)>0 then
+			Duel.Damage(1-tp,val,REASON_EFFECT)
+		end
+	end
 end

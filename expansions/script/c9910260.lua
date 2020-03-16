@@ -1,6 +1,6 @@
 --幽鬼不良 东云希
 function c9910260.initial_effect(c)
-	c:EnableCounterPermit(0x954)
+	c:EnableCounterPermit(0x953)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -37,19 +37,19 @@ end
 function c9910260.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x954,1,REASON_COST)
+		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x953,1,REASON_COST)
 end
 function c9910260.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.RemoveCounter(tp,1,0,0x954,1,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x953,1,REASON_COST)
 end
 function c9910260.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanAddCounter(0x954,1) end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x954)
+	if chk==0 then return e:GetHandler():IsCanAddCounter(0x953,1) end
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x953)
 end
 function c9910260.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	c:AddCounter(0x954,1)
+	c:AddCounter(0x953,1)
 	if c:IsFaceup() then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -63,8 +63,8 @@ function c9910260.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910260.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x954,1,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x954,1,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x953,1,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x953,1,REASON_COST)
 end
 function c9910260.spfilter2(c,e,tp)
 	return c:IsSetCard(0x953) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

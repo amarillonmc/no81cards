@@ -46,7 +46,6 @@ function c9981288.initial_effect(c)
 end
 function c9981288.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981288,0))
 end
 function c9981288.val(e,c)
 	return Duel.GetMatchingGroupCount(Card.IsSetCard,c:GetControler(),LOCATION_GRAVE,0,nil,0x5bc3)*100

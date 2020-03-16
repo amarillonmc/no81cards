@@ -55,7 +55,7 @@ function c9981126.atkval(e,c)
 	return Duel.GetMatchingGroupCount(c9981126.atkfilter,c:GetControler(),LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)*300
 end
 function c9981126.spfilter(c,e,tp)
-	return c:IsSetCard(0x5bc3) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x5bc3) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9981126.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9981126.spfilter(chkc,e,tp) end
@@ -69,7 +69,7 @@ function c9981126.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,g:GetCount(),0,0)
 end
 function c9981126.thfilter(c)
-	return c:IsCode(9981134) and c:IsAbleToHand()
+	return c:IsSetCard(0x5bc3) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function c9981126.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

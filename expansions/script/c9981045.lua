@@ -1,5 +1,6 @@
 --受难魔术
 function c9981045.initial_effect(c)
+ aux.AddCodeList(c,46986414,38033121)
 	  --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_EQUIP)
@@ -53,7 +54,6 @@ function c9981045.initial_effect(c)
 		Duel.RegisterEffect(ge2,0)
 	end
 end
-c9981045.card_code_list={46986414,38033121}
 function c9981045.filter(c)
 	return c:IsFaceup() and c:IsCode(38033121)
 end

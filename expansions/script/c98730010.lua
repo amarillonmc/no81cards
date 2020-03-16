@@ -39,7 +39,7 @@ function c98730010.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c98730010.psfilter(c)
-	return c:IsCode(98730017) and not c:IsForbidden()
+	return c:IsCode(98730017,98730417) and not c:IsForbidden()
 end
 function c98730010.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local seq=e:GetHandler():GetSequence()
@@ -53,7 +53,7 @@ function c98730010.pcop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g=Duel.SelectMatchingCard(tp,c98730010.psfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if g then
-		Duel.MoveToField(g,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	end
 end
 function c98730010.costfilter(c)

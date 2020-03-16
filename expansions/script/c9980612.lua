@@ -1,6 +1,6 @@
 --老子、登场！
 function c9980612.initial_effect(c)
-	aux.AddRitualProcGreaterCode(c,c9980612.filter,LOCATION_HAND+LOCATION_GRAVE,c9980612.mfilter)
+	aux.AddRitualProcGreaterCode(c,c9980612.filter,LOCATION_DECK,c9980612.mfilter)
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)

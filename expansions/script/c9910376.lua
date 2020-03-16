@@ -37,6 +37,23 @@ function c9910376.initial_effect(c)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetTargetRange(1,0)
 	c:RegisterEffect(e4)
+	--unreleaseable sum
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCode(EFFECT_UNRELEASABLE_SUM)
+	e5:SetValue(1)
+	e5:SetCondition(c9910376.relcon)
+	c:RegisterEffect(e5)
+	--summon with no tribute
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetCode(EFFECT_SUMMON_PROC)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetTargetRange(LOCATION_HAND,0)
+	e6:SetCondition(c9910376.tricon)
+	c:RegisterEffect(e6)
 	if c9910376.counter==nil then
 		c9910376.counter=true
 		c9910376[0]=0
@@ -99,7 +116,26 @@ function c9910376.filter(c)
 	return aux.IsCodeListed(c,9910376) and c:IsSummonable(true,nil)
 end
 function c9910376.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910376.filter,tp,LOCATION_HAND,0,1,nil) end
+	local c=e:GetHandler()
+	if Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,0,1,c) then
+		local flag=c:GetFlagEffectLabel(9910376)
+		if flag then
+			c:SetFlagEffectLabel(9910376,1)
+		else
+			c:RegisterFlagEffect(9910376,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,1)
+		end
+	else
+		local flag=c:GetFlagEffectLabel(9910390)
+		if flag then
+			c:SetFlagEffectLabel(9910390,1)
+		else
+			c:RegisterFlagEffect(9910390,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,1)
+		end
+	end
+	local b=Duel.IsExistingMatchingCard(c9910376.filter,tp,LOCATION_HAND,0,1,nil)
+	c:SetFlagEffectLabel(9910376,0)
+	c:SetFlagEffectLabel(9910390,0)
+	if chk==0 then return b end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function c9910376.sumop(e,tp,eg,ep,ev,re,r,rp)
@@ -108,4 +144,13 @@ function c9910376.sumop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.Summon(tp,g:GetFirst(),true,nil)
 	end
+end
+function c9910376.relcon(e)
+	local ct=e:GetHandler():GetFlagEffectLabel(9910376)
+	return ct and ct>0
+end
+function c9910376.tricon(e,c,minc)
+	local ct=e:GetHandler():GetFlagEffectLabel(9910390)
+	if c==nil then return ct and ct>0 end
+	return ct and ct>0 and minc==0
 end

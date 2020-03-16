@@ -56,6 +56,7 @@ function c9950110.initial_effect(c)
 end
 function c9950110.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950110,0))
+   Duel.Hint(HINT_SOUND,0,aux.Stringid(9950110,3))
 end
 function c9950110.filter(c,e,tp)
 	return c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -79,6 +80,7 @@ function c9950110.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterFlagEffect(9950110,RESET_EVENT+RESETS_STANDARD,0,0)
 		c:RegisterFlagEffect(9950110,RESET_EVENT+0x1020000,0,0)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950110,4))
 end
 function c9950110.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject():GetLabelObject()
@@ -126,4 +128,5 @@ function c9950110.spop2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950110,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950110,4))
 end

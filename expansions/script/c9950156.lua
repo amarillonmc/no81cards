@@ -55,6 +55,7 @@ function c9950156.initial_effect(c)
 end
 function c9950156.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950156,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950156,1))
 end
 function c9950156.target(e,c)
 	return c:IsRace(RACE_ZOMBIE) or c:IsSetCard(0xba5)
@@ -91,4 +92,5 @@ function c9950156.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(tg,REASON_EFFECT)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950156,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950156,2))
 end

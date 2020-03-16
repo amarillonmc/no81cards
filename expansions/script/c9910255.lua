@@ -1,6 +1,6 @@
 --幽鬼舞者 吾妻夜
 function c9910255.initial_effect(c)
-	c:EnableCounterPermit(0x954)
+	c:EnableCounterPermit(0x953)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -41,30 +41,30 @@ end
 function c9910255.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x954,2,REASON_COST)
+		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x953,2,REASON_COST)
 end
 function c9910255.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.RemoveCounter(tp,1,0,0x954,2,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x953,2,REASON_COST)
 end
 function c9910255.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp and eg:IsExists(Card.IsControler,1,nil,tp)
 end
 function c9910255.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanAddCounter(0x954,2) end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x954)
+	if chk==0 then return e:GetHandler():IsCanAddCounter(0x953,2) end
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x953)
 end
 function c9910255.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		c:AddCounter(0x954,2)
+		c:AddCounter(0x953,2)
 	end
 end
 function c9910255.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function c9910255.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x954,2,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x954,2,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x953,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x953,2,REASON_COST)
 end
 function c9910255.setfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()

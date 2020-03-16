@@ -4,14 +4,16 @@ function c9950147.initial_effect(c)
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)
 	c:EnableReviveLimit()
 	--remove
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_REMOVE)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
-	e3:SetTarget(c9950147.remtg)
-	e3:SetOperation(c9950147.remop)
-	c:RegisterEffect(e3)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9950147,0))
+	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCondition(c9950147.rmcon)
+	e1:SetTarget(c9950147.rmtg)
+	e1:SetOperation(c9950147.rmop)
+	c:RegisterEffect(e1)
 	--multiatk
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
@@ -43,27 +45,27 @@ end
 function c9950147.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950147,0))
 end
-function c9950147.remtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and chkc:IsAbleToRemove() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+function c9950147.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
-function c9950147.remop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
-		if tc:atk>0 and tc:IsType(TYPE_MONSTER) then
-		local atk=tc:GetAttack()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(atk/2)
-		c:RegisterEffect(e1)
-		end
+function c9950147.chkfilter(c)
+	return c:IsType(TYPE_MONSTER) and not c:IsAbleToRemove()
+end
+function c9950147.rmfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
+end
+function c9950147.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		return Duel.IsExistingMatchingCard(c9950147.rmfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil)
+			and not Duel.IsExistingMatchingCard(c9950147.chkfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil)
+	end
+	local g=Duel.GetMatchingGroup(c9950147.rmfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
+end
+function c9950147.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9950147.rmfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,nil)
+	if g:GetCount()>0 then
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	end
 end
 function c9950147.target(e,tp,eg,ep,ev,re,r,rp,chk)

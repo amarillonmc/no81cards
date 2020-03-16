@@ -45,6 +45,18 @@ function c9950521.initial_effect(c)
 	e1:SetTargetRange(0,1)
 	e1:SetTarget(c9950521.sumlimit)
 	c:RegisterEffect(e1)
+	--spsummon
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetHintTiming(0,TIMING_END_PHASE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCost(c9950521.spcost)
+	e4:SetTarget(c9950521.sptg)
+	e4:SetOperation(c9950521.spop)
+	c:RegisterEffect(e4)
 	--spsummon bgm
 	 local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -72,4 +84,42 @@ function c9950521.efilter(e,te)
 end
 function c9950521.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsAttackAbove(1500)
+end
+function c9950521.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToExtraAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),nil,0,REASON_COST)
+end
+function c9950521.filter1(c,e,tp)
+	return c:IsFaceup() and c:IsSetCard(0xba5) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+		and Duel.IsExistingTarget(c9950521.filter2,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,c,e,tp)
+end
+function c9950521.filter2(c,e,tp)
+	return c:IsFaceup() and c:IsSetCard(0xba5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+end
+function c9950521.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return false end
+	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c9950521.filter1,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g1=Duel.SelectTarget(tp,c9950521.filter1,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g2=Duel.SelectTarget(tp,c9950521.filter2,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,g1:GetFirst(),e,tp)
+	g1:Merge(g2)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g1,2,0,0)
+end
+function c9950521.spop(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	if g:GetCount()==0 then return end
+	if g:GetCount()<=ft then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:Select(tp,ft,ft,nil)
+		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+		g:Sub(sg)
+		Duel.SendtoGrave(g,REASON_RULE)
+	end
 end

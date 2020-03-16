@@ -166,6 +166,7 @@ function c98730417.spop(e,tp,eg,ep,ev,re,r,rp)
 	tc:CompleteProcedure()
 	mg:RemoveCard(tc)
 	if Duel.IsExistingMatchingCard(c98730417.scfilter,tp,LOCATION_PZONE,0,1,e:GetHandler()) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		mg=Duel.GetMatchingGroup(c98730417.matfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
 		ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if Duel.IsExistingMatchingCard(c98730417.filter,tp,LOCATION_DECK,0,1,nil,e,tp,mg,ft) and Duel.SelectYesNo(tp,aux.Stringid(98730417,1)) then
@@ -193,6 +194,7 @@ function c98730417.spop(e,tp,eg,ep,ev,re,r,rp)
 				mg:RemoveCard(tc)
 			end
 		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		mg=Duel.GetMatchingGroup(c98730417.matfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
 		ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if Duel.IsExistingMatchingCard(c98730417.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp,mg,ft) and Duel.SelectYesNo(tp,aux.Stringid(98730417,2)) then
@@ -220,6 +222,7 @@ function c98730417.spop(e,tp,eg,ep,ev,re,r,rp)
 				mg:RemoveCard(tc)
 			end
 		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		mg=Duel.GetMatchingGroup(c98730417.matfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
 		ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if Duel.IsExistingMatchingCard(c98730417.filter,tp,LOCATION_REMOVED,0,1,nil,e,tp,mg,ft) and Duel.SelectYesNo(tp,aux.Stringid(98730417,3)) then

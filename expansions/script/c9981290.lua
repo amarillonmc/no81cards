@@ -1,7 +1,7 @@
 --骑士时刻-真王·逢魔形态
 function c9981290.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x6bc3),5)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xbca),5)
 	c:EnableReviveLimit()
 --cannot release
 	local e4=Effect.CreateEffect(c)

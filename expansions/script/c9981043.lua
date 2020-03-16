@@ -1,5 +1,6 @@
 --拷问魔术
 function c9981043.initial_effect(c)
+	 aux.AddCodeList(c,46986414,38033121)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_EQUIP)
@@ -45,7 +46,6 @@ function c9981043.initial_effect(c)
 	e3:SetOperation(c9981043.spop)
 	c:RegisterEffect(e3)
 end
-c9981043.card_code_list={46986414,38033121}
 function c9981043.filter(c)
 	return c:IsFaceup() and c:IsCode(38033121)
 end

@@ -73,7 +73,7 @@ function c9981546.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,2-h,REASON_EFFECT)
 end
 function c9981546.costfilter(c)
-	return c:IsRace(RACE_WARRIOR) and c:IsDiscardable()
+	return (c:IsRace(RACE_WARRIOR) or (c:IsType(TYPE_MONSTER) and c;IsSetCard(0xbca)))and c:IsDiscardable()
 end
 function c9981546.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981546.costfilter,tp,LOCATION_HAND,0,1,nil) end

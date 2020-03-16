@@ -1,7 +1,7 @@
 --MRS钢斗-超越加速形态
 function c9980572.initial_effect(c)
 	  --xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xcbca),8,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),8,2)
 	c:EnableReviveLimit()
 	--remove
 	local e1=Effect.CreateEffect(c)

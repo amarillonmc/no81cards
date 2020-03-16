@@ -39,7 +39,7 @@ function c9980545.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980545,2))
 end 
 function c9980545.matfilter(c)
-	return c:IsLinkAttribute(ATTRIBUTE_DARK) and c:IsLinkRace(RACE_FIEND) and c:GetEquipCount()>0
+	return c:IsLinkAttribute(ATTRIBUTE_DARK) and c:GetEquipCount()>0
 end
 function c9980545.filter(c)
 	return c:IsSetCard(0x6bcb) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()

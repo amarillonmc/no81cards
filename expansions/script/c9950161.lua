@@ -12,12 +12,12 @@ function c9950161.initial_effect(c)
 	e1:SetOperation(c9950161.activate)
 	c:RegisterEffect(e1)
 end
-function c9950161.cfilter2(c)
+function c9950161.cfilter(c)
 	return c:IsSetCard(0x9ba5) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
 function c9950161.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950161.cfilter2,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,c9950161.cfilter2,1,1,REASON_COST,nil)
+	Duel.DiscardHand(tp,c9950161.cfilter,1,1,REASON_COST,nil)
 end
 function c9950161.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

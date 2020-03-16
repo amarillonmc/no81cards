@@ -1,8 +1,8 @@
 --最佳搭配Build·飞鹰加特林危险形态
 function c9981117.initial_effect(c)
-	  --fusion material
+	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,9981102,aux.FilterBoolFunction(Card.IsFusionSetCard,0x5bc3),1,false,false)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x5bc3),aux.FilterBoolFunction(Card.IsRace,RACE_WARRIOR),true)
 	--spsummon condition
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)

@@ -56,7 +56,7 @@ function c9951044.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9951044.spfilter(c,e,tp)
-	return c:IsSetCard(0xba5) and c:IsType(TYPE_NORMAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return ((c:IsSetCard(0xba5) and c:IsType(TYPE_NORMAL)) or (c:IsSetCard(0x5ba5,0x3ba5) and c:IsType(TYPE_TUNER))) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c9951044.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

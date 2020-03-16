@@ -1,5 +1,6 @@
 --符文魔贯炮
 function c9981020.initial_effect(c)
+	aux.AddCodeList(c,46986414,38033121)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -23,7 +24,6 @@ function c9981020.initial_effect(c)
 	e2:SetOperation(c9981020.desop)
 	c:RegisterEffect(e2)
 end
-c9981020.card_code_list={46986414,38033121}
 function c9981020.cfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER)
 end

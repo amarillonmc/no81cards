@@ -1,8 +1,8 @@
 --最佳搭配Build·海贼列车危险形态
 function c9981118.initial_effect(c)
-	   --fusion material
+	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,9981108,aux.FilterBoolFunction(Card.IsFusionSetCard,0x5bc3),1,false,false)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x5bc3),aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),true)
 	--indes
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)

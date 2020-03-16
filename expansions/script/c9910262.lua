@@ -28,11 +28,11 @@ function c9910262.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c9910262.filter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,g)
-		local tg=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,c,0x954,1)
+		local tg=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,c,0x953,1)
 		if tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910262,0)) then
 			for tc in aux.Next(tg) do
-				if tc:IsCanAddCounter(0x954,1) then
-					tc:AddCounter(0x954,1)
+				if tc:IsCanAddCounter(0x953,1) then
+					tc:AddCounter(0x953,1)
 				end
 			end
 		end

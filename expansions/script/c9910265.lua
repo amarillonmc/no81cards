@@ -1,7 +1,7 @@
 --幽鬼派对
 function c9910265.initial_effect(c)
-	c:EnableCounterPermit(0x954)
-	c:SetCounterLimit(0x954,6)
+	c:EnableCounterPermit(0x953)
+	c:SetCounterLimit(0x953,6)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_COUNTER)
@@ -40,7 +40,7 @@ function c9910265.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local ct=Duel.GetMatchingGroupCount(c9910265.cfilter,tp,LOCATION_GRAVE,0,nil)
 	if ct>0 and Duel.SelectYesNo(tp,aux.Stringid(9910265,0)) then
-		e:GetHandler():AddCounter(0x954,ct,true)
+		e:GetHandler():AddCounter(0x953,ct,true)
 	end
 end
 function c9910265.sumlimit(e,c,sump,sumtype,sumpos,targetp)
@@ -54,8 +54,8 @@ function c9910265.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c9910265.cfilter2,1,nil,tp)
 end
 function c9910265.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x954,2,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x954,2,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x953,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x953,2,REASON_COST)
 end
 function c9910265.spfilter(c,e,tp)
 	return c:IsSetCard(0x953) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

@@ -25,15 +25,23 @@ function c9981055.initial_effect(c)
 	local e3=e1:Clone()
 	e3:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
 	c:RegisterEffect(e3)
-	--destroy
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DAMAGE)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_BATTLED)
-	e4:SetCondition(c9981055.condition)
-	e4:SetTarget(c9981055.target)
-	e4:SetOperation(c9981055.operation)
-	c:RegisterEffect(e4)
+  --atkup
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(c9981055.atkval)
+	c:RegisterEffect(e1)
+	--damage&recover
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9981055,0))
+	e3:SetCategory(CATEGORY_DAMAGE+CATEGORY_RECOVER)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_DAMAGE_STEP_END)
+	e3:SetTarget(c9981055.damtg)
+	e3:SetOperation(c9981055.damop)
+	c:RegisterEffect(e3)
 	--destroy
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DAMAGE)
@@ -57,26 +65,27 @@ end
 function c9981055.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981055,0))
 end
-function c9981055.condition(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local bc=c:GetBattleTarget()
-	return bc and bc:IsSummonType(SUMMON_TYPE_SPECIAL) and c:GetBaseAttack()~=bc:GetBaseAttack()
+function c9981055.atkfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x8)
 end
-function c9981055.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9981055.atkval(e,c)
+	return Duel.GetMatchingGroup(c9981055.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,0,nil):GetClassCount(Card.GetCode)*500
+end
+function c9981055.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetAttackTarget()~=nil end
 	local bc=e:GetHandler():GetBattleTarget()
-	if chk==0 then return bc:IsRelateToBattle() end
-	local atk=math.abs(e:GetHandler():GetBaseAttack()-bc:GetBaseAttack())
-	Duel.SetTargetCard(bc)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,atk)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,bc,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,bc:GetAttack())
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,bc:GetDefense())
 end
-function c9981055.operation(e,tp,eg,ep,ev,re,r,rp)
-	local bc=Duel.GetFirstTarget()
-	local atk=math.abs(e:GetHandler():GetBaseAttack()-bc:GetBaseAttack())
-	if bc:IsRelateToEffect(e) and bc:IsFaceup() and Duel.Damage(1-tp,atk,REASON_EFFECT)~=0 then
-		Duel.SendtoGrave(bc,REASON_EFFECT)
-	end
- Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981055,0))
+function c9981055.damop(e,tp,eg,ep,ev,re,r,rp)
+	local bc=e:GetHandler():GetBattleTarget()
+	local atk=bc:GetAttack()
+	local def=bc:GetDefense()
+	if atk<0 then atk=0 end
+	if def<0 then def=0 end
+	Duel.Damage(1-tp,atk,REASON_EFFECT,true)
+	Duel.Recover(tp,def,REASON_EFFECT,true)
+	Duel.RDComplete()
 end
 function c9981055.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,1000) end

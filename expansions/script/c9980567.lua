@@ -43,7 +43,7 @@ function c9980567.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9980567.filter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xcbca) and c:IsAbleToHand()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xbca) and c:IsAbleToHand()
 end
 function c9980567.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9980567.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -58,10 +58,10 @@ function c9980567.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9980567.mfilter(c)
-	return c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_WIND)
+	return c:IsRace(RACE_WARRIOR) 
 end
 function c9980567.atkfilter(c)
-	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xcbca)
+	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xbca)
 end
 function c9980567.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and c9980567.atkfilter(chkc) end

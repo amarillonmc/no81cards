@@ -1,7 +1,7 @@
 --暗的战士-贝利亚
 function c9950964.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsXyzType,TYPE_NORMAL+TYPE_RITUAL),8,2)
+	aux.AddXyzProcedure(c,c9950964.mfilter,8,2)
 	c:EnableReviveLimit()
 	--immune
 	local e1=Effect.CreateEffect(c)
@@ -45,6 +45,9 @@ function c9950964.initial_effect(c)
 end
 function c9950964.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950964,0))
+end
+function c9950964.mfilter(c)
+	return c:IsSetCard(0x9bd1) or c:IsType(TYPE_NORMAL+TYPE_RITUAL)
 end
 function c9950964.imcon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==1

@@ -36,6 +36,7 @@ function c9951073.initial_effect(c)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9951073)
+	e2:SetCondition(c9951073.discon)
 	e2:SetCost(c9951073.cost)
 	e2:SetOperation(c9951073.operation2)
 	c:RegisterEffect(e2)
@@ -72,6 +73,9 @@ function c9951073.damop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,def,REASON_EFFECT,true)
 	Duel.RDComplete()
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951073,0))
+end
+function c9951073.discon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0xabd1)
 end
 function c9951073.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

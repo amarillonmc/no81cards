@@ -70,7 +70,7 @@ function c9950544.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c9950544.efffilter(c,e,tp,eg,ep,ev,re,r,rp)
-	if not (c:IsSetCard(0xba5) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())) then return false end
+	if not (c:IsSetCard(0xba5) and c:IsType(TYPE_MONSTER) and not c:IsCode(9950544)and c:IsAbleToDeck() and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())) then return false end
 	local m=_G["c"..c:GetCode()]
 	if not m then return false end
 	local te=m.discard_effect
