@@ -129,7 +129,7 @@ function c33400222.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 			e5:SetCountLimit(1)
 			token:RegisterEffect(e5)
 			--inm
-			local e6=Effect.CreateEffect(token)
+			local e6=Effect.CreateEffect(ec)
 			e6:SetType(EFFECT_TYPE_QUICK_O)
 			e6:SetCategory(CATEGORY_ANNOUNCE)
 			e6:SetRange(LOCATION_SZONE)

@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	local f=function(e)
 		return Duel.IsAbleToEnterBP()
 	end
-	local e1=rsef.I(c,{m,0},1,nil,nil,LOCATION_MZONE,f,rscost.rmxyzs(true),nil,cm.op)
+	local e1=rsef.I(c,{m,0},1,nil,nil,LOCATION_MZONE,f,rscost.rmxyz(true),nil,cm.op)
 	local e2=rsef.STO(c,EVENT_BATTLE_DESTROYING,{m,1},nil,nil,"de",cm.xyzcon,nil,cm.xyztg,cm.xyzop)
 end
 function cm.xyzcon(e,tp,eg,ep,ev,re,r,rp)

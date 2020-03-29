@@ -30,6 +30,7 @@ function c33401307.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,33401307+10000)
 	e3:SetCondition(c33401307.thcon)
+	e3:SetTarget(c33401307.thtg)
 	e3:SetOperation(c33401307.thop)
 	c:RegisterEffect(e3)
 end
@@ -91,6 +92,10 @@ function c33401307.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c33401307.thfilter(c)
 	return c:IsSetCard(0x341) and c:IsSetCard(0x46) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+end
+function c33401307.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c33401307.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c33401307.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

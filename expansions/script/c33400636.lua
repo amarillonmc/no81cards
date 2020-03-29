@@ -5,6 +5,13 @@ function cm.initial_effect(c)
 	 --xyz summon
 	c:EnableReviveLimit()
 	 aux.AddXyzProcedureLevelFree(c,cm.mfilter,cm.xyzcheck,3,99,cm.ovfilter,aux.Stringid(m,0),cm.xyzop)
+	--spsummon limit
+	local e0=Effect.CreateEffect(c)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(aux.xyzlimit)
+	c:RegisterEffect(e0)
  --CANNOT ACTIVATE
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -63,13 +70,12 @@ function cm.initial_effect(c)
 	e6:SetTarget(cm.target)
 	e6:SetOperation(cm.activate)
 	c:RegisterEffect(e6)
- --todeck
+ --rm+sp
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(m,0))
 	e7:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON)
 	e7:SetType(EFFECT_TYPE_IGNITION)
 	e7:SetRange(LOCATION_REMOVED)
-	e7:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e7:SetCountLimit(1,m+10000)
 	e7:SetCondition(cm.tdcon1)
 	e7:SetTarget(cm.tdtg)
@@ -146,14 +152,15 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.tdcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,33460651)==0 
+	return Duel.GetFlagEffect(tp,33460651)==0  and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.tdcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,33460651)>0 
+	return Duel.GetFlagEffect(tp,33460651)>0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK,0,1,nil,tp) end   
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)  
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x341)  and c:IsAttribute(ATTRIBUTE_DARK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 

@@ -21,7 +21,6 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_REMOVED)
-	e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e1:SetCountLimit(1,m+10000)
 	e1:SetCondition(cm.rmcon1)
 	e1:SetTarget(cm.rmtg1)
@@ -82,15 +81,16 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.rmcon1(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)==0
+	 return Duel.GetFlagEffect(tp,33460651)==0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.rmcon2(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)>0
+	 return Duel.GetFlagEffect(tp,33460651)>0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.rmtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return  Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE)
+e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)  
 end
 function cm.rmop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -103,7 +103,7 @@ function cm.rmop1(e,tp,eg,ep,ev,re,r,rp)
 		 if  Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
 			Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_EFFECT)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local g1=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil) 
+		   local g1=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil) 
 			Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)   
 		end
 	end

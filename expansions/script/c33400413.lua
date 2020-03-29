@@ -67,7 +67,7 @@ function c33400413.eqop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local g=Duel.SelectMatchingCard(tp,c33400413.eqfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tc,tp)
 		if g:GetCount()>0 then
-			Duel.Equip(tp,g:GetFirst(),tc)	   
+			Duel.Equip(tp,g:GetFirst(),tc)   
 		end
 	end
 end

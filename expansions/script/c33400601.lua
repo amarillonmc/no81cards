@@ -19,7 +19,6 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_TODECK+CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_REMOVED)
-	e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e2:SetCountLimit(1,m+10000)
 	e2:SetCondition(cm.tdcon1)
 	e2:SetTarget(cm.tdtg)
@@ -52,10 +51,10 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function cm.tdcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,33460651)==0
+	return Duel.GetFlagEffect(tp,33460651)==0 and e:GetHandler():GetFlagEffect(m)==0
 end
-function cm.tdcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,33460651)>0 
+function cm.tdcon2(e,tp,eg,ep,ev,re,r,rp) 
+	return Duel.GetFlagEffect(tp,33460651)>0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.tdfilter(c,tp)
 	return  c:IsSetCard(0x340,0x341) and c:IsAbleToDeck() and Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_DECK,0,1,nil,c:GetCode(),tp)
@@ -68,6 +67,7 @@ function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_REMOVED,0,1,nil,tp) end  
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_REMOVED)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
@@ -78,6 +78,6 @@ Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE) 
 		local g2=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_DECK,0,1,1,nil,m1,tp)
 		local tc2=g2:GetFirst()
-		Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)		   
+		Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)		
 	end 
 end

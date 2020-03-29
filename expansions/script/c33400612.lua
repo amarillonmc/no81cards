@@ -27,7 +27,6 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_REMOVED)
-	e3:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e3:SetCountLimit(1,m+10000)
 	e3:SetCondition(cm.setcon)
 	e3:SetTarget(cm.settg)
@@ -117,17 +116,18 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)==0
+	 return Duel.GetFlagEffect(tp,33460651)==0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.setcon2(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)>0
+	 return Duel.GetFlagEffect(tp,33460651)>0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.setfilter(c,tp)
 	return c:IsType(TYPE_SPELL,TYPE_TRAP)  and c:IsSetCard(0x340,0x341) and  c:IsSSetable(true) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED) and cm.setfilter(chkc,tp) end
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,0,1,nil,tp) end   
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,0,1,nil,tp) end 
+ e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)   
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  

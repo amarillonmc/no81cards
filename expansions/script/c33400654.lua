@@ -16,7 +16,6 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_REMOVED)
 	e1:SetCountLimit(1,m+10000)
-	e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.drtg)
 	e1:SetOperation(cm.drop)
@@ -105,7 +104,7 @@ function cm.xdop(e,tp,eg,ep,ev,re,r,rp)
 		  Duel.RegisterFlagEffect(tp,tc:GetCode()+40000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)   
 		  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		   local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
-		   Duel.Destroy(dg,REASON_EFFECT)	  
+		   Duel.Destroy(dg,REASON_EFFECT)	
 		end   
    end 
 end
@@ -131,7 +130,7 @@ function cm.xdop2(e,tp,eg,ep,ev,re,r,rp)
 		  Duel.RegisterFlagEffect(tp,tc:GetCode()+40000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)   
 		  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		   local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
-		   Duel.Destroy(dg,REASON_EFFECT)	  
+		   Duel.Destroy(dg,REASON_EFFECT)	
 		end   
    end 
 end
@@ -189,10 +188,10 @@ function cm.muop2(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)==0
+	 return Duel.GetFlagEffect(tp,33460651)==0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)>0
+	 return Duel.GetFlagEffect(tp,33460651)>0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.refilter(c)
 	return c:IsAbleToDeck()
@@ -203,6 +202,7 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return  Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,3,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,3,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)  
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp) 
 if not (Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,3,nil) and Duel.IsPlayerCanDraw(tp,1))  then return end 

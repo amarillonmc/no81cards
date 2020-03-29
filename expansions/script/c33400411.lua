@@ -131,7 +131,7 @@ end
 function c33400411.valcon(e,re,r,rp)
 	return r==REASON_BATTLE
 end
-function c33400411.op3(e,tp,eg,ep,ev,re,r,rp)	
+function c33400411.op3(e,tp,eg,ep,ev,re,r,rp)   
 			local e3_1=Effect.CreateEffect(e:GetHandler())
 			e3_1:SetType(EFFECT_TYPE_SINGLE)
 			e3_1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -158,7 +158,7 @@ function c33400411.op3(e,tp,eg,ep,ev,re,r,rp)
 						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 						e1:SetValue(c33400411.eqlimit)
 						e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-						tc:RegisterEffect(e1)	  
+						tc:RegisterEffect(e1)	 
 				   end
 				end
 			end

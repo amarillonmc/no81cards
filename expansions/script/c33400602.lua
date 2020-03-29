@@ -8,7 +8,6 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_REMOVED)
-	e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.tdcon1)
 	e2:SetTarget(cm.tdtg)
@@ -26,7 +25,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_TO_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCountLimit(1,m)
+	e4:SetCountLimit(1,m+10000)
 	e4:SetCondition(cm.con1)
 	e4:SetTarget(cm.xyztg)
 	e4:SetOperation(cm.xyzop)
@@ -37,7 +36,7 @@ function cm.initial_effect(c)
 	e41:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e41:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e41:SetProperty(EFFECT_FLAG_DELAY)
-	e41:SetCountLimit(1,m)
+	e41:SetCountLimit(1,m+10000)
 	e41:SetTarget(cm.xyztg)
 	e41:SetOperation(cm.xyzop)
 	c:RegisterEffect(e41)
@@ -48,7 +47,7 @@ function cm.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_TO_GRAVE)
 	e5:SetProperty(EFFECT_FLAG_DELAY)
-	e5:SetCountLimit(1,m+10000)
+	e5:SetCountLimit(1,m+20000)
 	e5:SetCondition(cm.con1)
 	e5:SetTarget(cm.target)
 	e5:SetOperation(cm.activate)
@@ -59,30 +58,30 @@ function cm.initial_effect(c)
 	e51:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e51:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e51:SetProperty(EFFECT_FLAG_DELAY)
-	e51:SetCountLimit(1,m+10000)
+	e51:SetCountLimit(1,m+20000)
 	e51:SetTarget(cm.target)
 	e51:SetOperation(cm.activate)
 	c:RegisterEffect(e51)
 end
 function cm.tdcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,33460651)==0 
+	return Duel.GetFlagEffect(tp,33460651)==0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.tdcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,33460651)>0 
+	return Duel.GetFlagEffect(tp,33460651)>0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.refilter(c,tp)
-	return  c:IsSetCard(0x9342) and c:IsAbleToRemove()  and Duel.GetFlagEffect(tp,c:GetCode()+10000)==0
+	return  c:IsSetCard(0x9342) and c:IsAbleToRemove()  
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_DECK,0,1,nil,tp) end   
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+ e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0) 
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)  
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE) 
 		local g2=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 		local tc2=g2:GetFirst()
-		Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)   
-		Duel.RegisterFlagEffect(tp,tc2:GetCode()+10000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)		  
+		Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)		  
 end
 
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
@@ -94,8 +93,8 @@ function cm.xyzfilter(c)
 	return c:IsXyzSummonable(nil)
 end
 function cm.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) and e:GetHandler():GetFlagEffect(m)==0 end
-e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) and e:GetHandler():GetFlagEffect(m+1)==0 end
+e:GetHandler():RegisterFlagEffect(m+1,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
@@ -108,8 +107,8 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)  and e:GetHandler():GetFlagEffect(m)==0 end
-e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)  and e:GetHandler():GetFlagEffect(m+1)==0 end
+e:GetHandler():RegisterFlagEffect(m+1,RESET_CHAIN,0,1)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)

@@ -98,6 +98,20 @@ function c46250024.tgop(e,tp,eg,ep,ev,re,r,rp)
             tc:RegisterEffect(e3)
         end
         Duel.SpecialSummonComplete()
+        local sxg=Duel.GetMatchingGroup(c46250024.sxfilter,tp,LOCATION_EXTRA,0,nil,sg1)
+        if sxg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(46250024,0)) then
+            Duel.BreakEffect()
+            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+            local sxc=sxg:Select(tp,1,1,nil):GetFirst()
+            if sxc:IsType(TYPE_FUSION) then
+                sxc:SetMaterial(sg1)
+                Duel.SendtoGrave(sg1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
+                Duel.BreakEffect()
+                Duel.SpecialSummon(sxc,SUMMON_TYPE_FUSION,tp,tp,false,true,POS_FACEUP)
+            else
+                Duel.XyzSummon(tp,sxc,sg1)
+            end
+        end
         sg1:KeepAlive()
         local e1=Effect.CreateEffect(c)
         e1:SetType(EFFECT_TYPE_FIELD)
@@ -117,20 +131,6 @@ function c46250024.tgop(e,tp,eg,ep,ev,re,r,rp)
         e2:SetTargetRange(1,0)
         e2:SetValue(c46250024.tgval)
         Duel.RegisterEffect(e2,tp)
-        local sxg=Duel.GetMatchingGroup(c46250024.sxfilter,tp,LOCATION_EXTRA,0,nil,sg1)
-        if sxg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(46250024,0)) then
-            Duel.BreakEffect()
-            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-            local sxc=sxg:Select(tp,1,1,nil):GetFirst()
-            if sxc:IsType(TYPE_FUSION) then
-                sxc:SetMaterial(sg1)
-                Duel.SendtoGrave(sg1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
-                Duel.BreakEffect()
-                Duel.SpecialSummon(sxc,SUMMON_TYPE_FUSION,tp,tp,false,true,POS_FACEUP)
-            else
-                Duel.XyzSummon(tp,sxc,sg1)
-            end
-        end
     end
 end
 function c46250024.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)

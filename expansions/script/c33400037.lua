@@ -120,7 +120,7 @@ function c33400037.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 			e5:SetCountLimit(1)
 			token:RegisterEffect(e5)
 			--inm
-			local e6=Effect.CreateEffect(token)
+			local e6=Effect.CreateEffect(ec)
 			e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 			e6:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 			e6:SetCode(EVENT_DESTROYED)

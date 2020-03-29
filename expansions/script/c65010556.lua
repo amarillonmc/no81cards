@@ -23,7 +23,7 @@ function c65010556.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c65010556.filter(c,e,tp)
-	return (c:IsCode(65010558) or c:IsCode(65010552)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsCode(65010558) or c:IsCode(65010552)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c65010556.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -35,8 +35,7 @@ function c65010556.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c65010556.filter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		Duel.SpecialSummonStep(g,0,tp,tp,false,false,POS_FACEUP)
+	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)~=0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CANNOT_TRIGGER)
@@ -48,7 +47,7 @@ function c65010556.spop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e2:SetReset(RESET_EVENT+RESETS_REDIRECT)
 			e2:SetValue(LOCATION_DECKBOT)
-			c:RegisterEffect(e2)
+			tc:RegisterEffect(e2)
 	end
 		Duel.SpecialSummonComplete()
 end

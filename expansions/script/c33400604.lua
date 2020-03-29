@@ -8,7 +8,6 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_REMOVED)
-	e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
@@ -29,7 +28,7 @@ function cm.initial_effect(c)
 	e5:SetCountLimit(1,m+10000)
 	e5:SetCondition(cm.con1)
 	e5:SetTarget(cm.thtg)
-	e5:SetOperation(cm.tgop)
+	e5:SetOperation(cm.thop)
 	c:RegisterEffect(e5)
 	local e51=Effect.CreateEffect(c)
 	e51:SetDescription(aux.Stringid(m,1))
@@ -43,10 +42,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e51)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)==0
+	 return Duel.GetFlagEffect(tp,33460651)==0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)>0
+	 return Duel.GetFlagEffect(tp,33460651)>0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x9342,0xc342)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -56,6 +55,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
+  e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)	
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

@@ -48,6 +48,7 @@ function c33401310.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c33401310.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+ if chk==0 then return Duel.IsExistingTarget(c33401310.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_GRAVE)
 end
 function c33401310.thfilter(c)

@@ -31,7 +31,6 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_REMOVED)
-	e3:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e3:SetCountLimit(1,m+10000)
 	e3:SetCondition(cm.dmcon)
 	e3:SetTarget(cm.dmtg)
@@ -98,13 +97,14 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.dmcon(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)==0
+	 return Duel.GetFlagEffect(tp,33460651)==0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.dmcon2(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)>0
+	 return Duel.GetFlagEffect(tp,33460651)>0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.dmtg(e,tp,eg,ep,ev,re,r,rp,chk)
    if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x341) end
+e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)  
 end
 function cm.dmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

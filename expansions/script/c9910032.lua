@@ -47,7 +47,7 @@ function c9910032.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910032.spfilter1(c,e,tp)
 	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3950) and not c:IsCode(9910032)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c9910032.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

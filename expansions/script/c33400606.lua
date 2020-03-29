@@ -8,7 +8,6 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_REMOVED)
-	e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
@@ -41,15 +40,16 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e51)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)==0
+	 return Duel.GetFlagEffect(tp,33460651)==0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetFlagEffect(tp,33460651)>0
+	 return Duel.GetFlagEffect(tp,33460651)>0 and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0   end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED)
+e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)  
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
@@ -58,10 +58,33 @@ local c=e:GetHandler()
 		if  Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
 		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		 local tr=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,1,1,c:IsCode(m)) 
-		  Duel.Remove(tr,POS_FACEUP,REASON_EFFECT)
+		 tc=tr:GetFirst()
+			if  Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)>0 then 
+				local e1=Effect.CreateEffect(e:GetHandler())
+					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+					e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+					e1:SetLabelObject(tc)
+					e1:SetCountLimit(1)
+					if Duel.GetCurrentPhase()==PHASE_STANDBY then
+						e1:SetLabel(Duel.GetTurnCount())
+						e1:SetCondition(cm.retcon)
+						e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
+					else
+						e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+					end
+					e1:SetOperation(cm.retop)
+					Duel.RegisterEffect(e1,tp)
+			end
 		end
 	end   
 		Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
+end
+function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()~=e:GetLabel()
+end
+function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.ReturnToField(tc) 
 end
 
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
@@ -81,11 +104,10 @@ end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
 	if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) then 
-		if  Duel.SelectYesNo(tp,aux.Stringid(m,2)) then 
-		Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_EFFECT)
+		if  Duel.SelectYesNo(tp,aux.Stringid(m,2)) then   
 		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local tr=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil) 
 		  Duel.Remove(tr,POS_FACEUP,REASON_EFFECT)
