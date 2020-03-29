@@ -17,7 +17,6 @@ function c9951092.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCondition(c9951092.espcon)
 	e3:SetTarget(c9951092.esptg)
 	e3:SetOperation(c9951092.espop)
 	c:RegisterEffect(e3)
@@ -48,9 +47,6 @@ function c9951092.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9951092.splimit(e,se,sp,st)
 	return e:GetHandler():GetLocation()~=LOCATION_EXTRA
-end
-function c9951092.espcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+1
 end
 function c9951092.espfilter(c,e,tp)
 	return c:IsSetCard(0xba5) and c:IsType(TYPE_XYZ) and c:IsAttackBelow(4000)

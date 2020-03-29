@@ -55,6 +55,7 @@ function c9910214.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(-1500)
 		tc:RegisterEffect(e1)
 		if Duel.GetCurrentChain()>2 and Duel.SelectYesNo(tp,aux.Stringid(9910214,0)) then
+			Duel.BreakEffect()
 			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		end
 	end

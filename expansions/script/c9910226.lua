@@ -2,16 +2,14 @@
 function c9910226.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x955),2,2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkAttribute,ATTRIBUTE_WIND),2,2)
 	--atkup
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,9910226)
-	e1:SetCondition(c9910226.atkcon)
-	e1:SetCost(c9910226.atkcost)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e1:SetTarget(c9910226.atktg)
 	e1:SetOperation(c9910226.atkop)
 	c:RegisterEffect(e1)
 	--special summon
@@ -25,35 +23,26 @@ function c9910226.initial_effect(c)
 	e2:SetOperation(c9910226.regop)
 	c:RegisterEffect(e2)
 end
-function c9910226.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+function c9910226.rmfilter(c)
+	return c:IsSetCard(0x955) and c:IsAbleToRemove()
 end
-function c9910226.cfilter(c)
-	return c:IsSetCard(0x955) and c:IsAbleToRemoveAsCost()
-end
-function c9910226.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local cg=Duel.GetMatchingGroup(c9910226.cfilter,tp,LOCATION_GRAVE,0,nil)
-	if chk==0 then return cg:GetCount()>0 end
-	local ct=math.min(3,cg:GetCount())
-	local t={}
-	for i=1,ct do
-		t[i]=i
-	end
-	local ac=Duel.AnnounceNumber(tp,table.unpack(t))
+function c9910226.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910226.rmfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910226.rmfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rg=cg:Select(tp,ac,ac,nil)
-	Duel.Remove(rg,POS_FACEUP,REASON_COST)
-	e:SetLabel(ac)
+	local g=Duel.SelectTarget(tp,c9910226.rmfilter,tp,LOCATION_GRAVE,0,1,2,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),tp,LOCATION_GRAVE)
 end
 function c9910226.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	local ct=Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		local ct=e:GetLabel()
+	if ct>0 and c:IsFaceup() and c:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)		
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-		e1:SetValue(ct*500)
+		e1:SetValue(ct*400)
 		c:RegisterEffect(e1)
 	end
 end

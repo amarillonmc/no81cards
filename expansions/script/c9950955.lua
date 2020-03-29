@@ -46,7 +46,7 @@ function c9950955.initial_effect(c)
 	e1:SetRange(LOCATION_FZONE)
 end
 function c9950955.filter(c,e,tp,chk)
-	return c:IsSetCard(0x9ba7) and (not chk or c~=e:GetHandler())
+	return (c:IsSetCard(0x9ba7) or c:IsCode(9950948))and (not chk or c~=e:GetHandler())
 end
 function c9950955.matfilter(c,e,tp,chk)
 	return not chk or c~=e:GetHandler()
@@ -56,7 +56,7 @@ function c9950955.rscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c9950955.thfilter(c)
-	return c:IsCode(9950954) and c:IsAbleToHand()
+	return c:IsCode(9950954,9950948) and c:IsAbleToHand()
 end
 function c9950955.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end

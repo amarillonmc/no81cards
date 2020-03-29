@@ -37,8 +37,8 @@ function c9981082.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,99810820)
-	e1:SetTarget(c9981082.thtg)
-	e1:SetOperation(c9981082.thop)
+	e1:SetTarget(c9981082.thtg2)
+	e1:SetOperation(c9981082.thop2)
 	c:RegisterEffect(e1)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
@@ -54,7 +54,7 @@ function c9981082.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981082,0))
 end
 function c9981082.spcfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xc008) and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xc008) and c:IsAbleToGraveAsCost()
 end
 function c9981082.mzfilter(c)
 	return c:GetSequence()<5
@@ -62,13 +62,13 @@ end
 function c9981082.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local mg=Duel.GetMatchingGroup(c9981082.spcfilter,tp,LOCATION_MZONE,0,nil)
+	local mg=Duel.GetMatchingGroup(c9981082.spcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local ct=-ft+1
 	return ft>-3 and mg:GetCount()>2 and (ft>0 or mg:IsExists(c9981082.mzfilter,ct,nil))
 end
 function c9981082.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local mg=Duel.GetMatchingGroup(c9981082.spcfilter,tp,LOCATION_MZONE,0,nil)
+	local mg=Duel.GetMatchingGroup(c9981082.spcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g=nil
 	if ft>0 then
@@ -103,16 +103,16 @@ function c9981082.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9981082.lpop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SetLP(1-tp,math.ceil(Duel.GetLP(1-tp)/2))
+	Duel.SetLP(1-tp,0)
 end
 function c9981082.thfilter(c)
 	return c:IsAbleToRemove()
 end
-function c9981082.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9981082.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981082.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
-function c9981082.thop(e,tp,eg,ep,ev,re,r,rp)
+function c9981082.thop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c9981082.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then

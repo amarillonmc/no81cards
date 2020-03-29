@@ -106,16 +106,16 @@ function c9950152.indct(e,re,r,rp)
 	else return 0 end
 end
 function c9950152.thfilter(c,tp)
-	return c:IsSetCard(0xba5) and c:IsType(TYPE_FIELD+TYPE_CONTINUOUS)
+	return c:IsSetCard(0xba5) and c:IsType(TYPE_FIELD)
 		and (c:IsAbleToHand() or c:GetActivateEffect():IsActivatable(tp))
 end
 function c9950152.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9950152.thfilter,tp,LOCATION_DECK,0,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950152.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c9950152.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9950152,3))
-	local g=Duel.SelectMatchingCard(tp,c9950152.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,c9950152.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
 		local b1=tc:IsAbleToHand()

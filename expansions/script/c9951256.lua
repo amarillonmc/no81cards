@@ -2,7 +2,7 @@
 function c9951256.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EFFECT_SPSUMMON_PROC+EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)

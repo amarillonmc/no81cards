@@ -91,13 +91,13 @@ function c9951267.initial_effect(c)
 	e9:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e9)
 end
-c9951267.assault_name=9951264
+c9951267.assault_name=9951266
 function c9951267.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951267,0))
    Duel.Hint(HINT_SOUND,0,aux.Stringid(9951267,1))
 end
 function c9951267.spfilter2(c,e,tp)
-	return c:IsCode(9951264)
+	return c:IsCode(9951266)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false)
 end
 function c9951267.spcon(e,tp,eg,ep,ev,re,r,rp)

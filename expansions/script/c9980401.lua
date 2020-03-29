@@ -21,7 +21,7 @@ function c9980401.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetCode(EFFECT_CHANGE_CODE)
-	e1:SetRange(LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE)
+	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e1:SetValue(9980400)
 	c:RegisterEffect(e1)
    --special summon (self)
@@ -81,13 +81,13 @@ function c9980401.spfilter(c,e,tp)
 end
 function c9980401.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) end
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE)
 end
 function c9980401.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_DEFENSE)~=0 then
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		local g=Duel.GetMatchingGroup(c9980401.spfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9980401,0)) then

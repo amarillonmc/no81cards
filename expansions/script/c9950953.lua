@@ -13,8 +13,8 @@ function c9950953.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9950953.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,3000) end
-	Duel.PayLPCost(tp,3000)
+	if chk==0 then return Duel.CheckLPCost(tp,2000) end
+	Duel.PayLPCost(tp,2000)
 end
 function c9950953.filter1(c,e,tp)
 	return c:IsRace(RACE_WARRIOR) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -49,7 +49,28 @@ function c9950953.activate(e,tp,eg,ep,ev,re,r,rp)
 		sc:SetMaterial(Group.FromCards(tc))
 		Duel.Overlay(sc,Group.FromCards(tc))
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetValue(c9950953.atkval)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		sc:RegisterEffect(e1,true)
+		if not sc:IsType(TYPE_EFFECT) then
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_ADD_TYPE)
+			e2:SetValue(TYPE_EFFECT)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			sc:RegisterEffect(e2,true)
+		end
 		sc:CompleteProcedure()
 	end
 end
-
+function c9950953.atkfilter(c)
+	return c:IsFaceup() and c:IsRace(RACE_WARRIOR)
+end
+function c9950953.atkval(e,c)
+	return Duel.GetMatchingGroupCount(c9950953.atkfilter,c:GetControler(),LOCATION_GRAVE,0,nil)*500
+end

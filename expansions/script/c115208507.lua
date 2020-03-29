@@ -1,0 +1,75 @@
+function c115208507.initial_effect(c)
+    local e1=Effect.CreateEffect(c)
+    e1:SetCategory(CATEGORY_TOGRAVE)
+    e1:SetType(EFFECT_TYPE_ACTIVATE)
+    e1:SetCode(EVENT_FREE_CHAIN)
+    e1:SetCost(c115208507.cost)
+    e1:SetOperation(c115208507.activate)
+    c:RegisterEffect(e1)
+    local e2=Effect.CreateEffect(c)
+    e2:SetCategory(CATEGORY_DESTROY)
+    e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+    e2:SetProperty(EFFECT_FLAG_DELAY)
+    e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+    e2:SetRange(LOCATION_GRAVE)
+    e2:SetCountLimit(1,115208507)
+    e2:SetCondition(c115208507.setcon)
+    e2:SetTarget(c115208507.settg)
+    e2:SetOperation(c115208507.setop)
+    c:RegisterEffect(e2)
+end
+function c115208507.cfilter(c)
+    return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x7f) and c:IsAbleToGraveAsCost()
+end
+function c115208507.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return Duel.IsExistingMatchingCard(c115208507.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+    local g=Duel.SelectMatchingCard(tp,c115208507.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
+    Duel.SendtoGrave(g,REASON_COST)
+    e:SetLabel(g:GetFirst():GetAttack())
+end
+function c115208507.activate(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
+    local atk=e:GetLabel()
+    local e1=Effect.CreateEffect(e:GetHandler())
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+    e1:SetTargetRange(1,1)
+    e1:SetValue(c115208507.actlimit)
+    e1:SetReset(RESET_PHASE+PHASE_END)
+    e1:SetLabel(atk)
+    Duel.RegisterEffect(e1,tp)
+    local e2=Effect.CreateEffect(c)
+    e2:SetType(EFFECT_TYPE_FIELD)
+    e2:SetCode(EFFECT_CANNOT_ATTACK)
+    e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+    e2:SetTarget(c115208507.antarget)
+    e2:SetReset(RESET_PHASE+PHASE_END)
+    e2:SetLabel(atk)
+    Duel.RegisterEffect(e2,tp)
+end
+function c115208507.actlimit(e,re,tp)
+    local c=re:GetHandler()
+    return re:IsActiveType(TYPE_MONSTER) and not c:IsImmuneToEffect(e) and c:GetBaseAttack()<=e:GetLabel()
+end
+function c115208507.antarget(e,c)
+    return c:IsType(TYPE_MONSTER) and not c:IsImmuneToEffect(e) and c:GetBaseAttack()<=e:GetLabel()
+end
+function c115208507.setfilter(c,tp)
+    return c:GetSummonLocation()==LOCATION_EXTRA and c:IsSetCard(0x7f) and c:IsType(TYPE_XYZ)
+end
+function c115208507.setcon(e,tp,eg,ep,ev,re,r,rp)
+    return eg:IsExists(c115208507.setfilter,1,nil,tp)
+end
+function c115208507.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return e:GetHandler():IsSSetable() end
+    Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
+end
+function c115208507.setop(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
+    if c:IsRelateToEffect(e) and c:IsSSetable() and Duel.Destroy(eg,REASON_EFFECT)==eg:GetCount() then
+        Duel.SSet(tp,c)
+        Duel.ConfirmCards(1-tp,c)
+    end
+end

@@ -8,6 +8,7 @@ function c9950144.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCost(c9950144.spcost)
 	e1:SetTarget(c9950144.sptg)
 	e1:SetOperation(c9950144.spop)
 	c:RegisterEffect(e1)
@@ -44,6 +45,11 @@ function c9950144.initial_effect(c)
 end
 function c9950144.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950144,0))
+end
+function c9950144.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return not c:IsPublic() and c:GetFlagEffect(9950144)==0 end
+	c:RegisterFlagEffect(9950144,RESET_CHAIN,0,1)
 end
 function c9950144.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

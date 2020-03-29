@@ -170,5 +170,5 @@ function c9951227.hvcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function c9951227.hvop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SetLP(tp,math.ceil(Duel.GetLP(1-tp)/2))
+	 Duel.SetLP(1-tp,math.ceil(Duel.GetLP(1-tp)/2))
 end

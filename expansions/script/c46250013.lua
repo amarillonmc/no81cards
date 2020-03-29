@@ -32,7 +32,7 @@ function c46250013.initial_effect(c)
     local e6=Effect.CreateEffect(c)
     e6:SetDescription(aux.Stringid(46250013,1))
     e6:SetCountLimit(1)
-    e6:SetCategory(CATEGORY_TOHAND+CATEGORY_NEGATE)
+    e6:SetCategory(CATEGORY_TOHAND)
     e6:SetType(EFFECT_TYPE_QUICK_O)
     e6:SetCode(EVENT_CHAINING)
     e6:SetRange(LOCATION_MZONE)
@@ -136,15 +136,15 @@ function c46250013.thfilter(c)
     return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xfc0) and c:IsFaceup() and c:IsAbleToHand()
 end
 function c46250013.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(Card.IsLocation,nil,LOCATION_MZONE)
-    if chk==0 then return g:GetCount()>0 and Duel.IsExistingMatchingCard(c46250003.thfilter,tp,LOCATION_REMOVED,0,1,nil) end
-    Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+    local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(Card.IsLocation,nil,LOCATION_MZONE):Filter(Card.IsAbleToHand,nil)
+    if chk==0 then return g:GetCount()>0 and Duel.IsExistingMatchingCard(c46250013.thfilter,tp,LOCATION_REMOVED,0,1,nil) end
+    Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,0,1,tp,LOCATION_REMOVED)
 end
 function c46250013.negop(e,tp,eg,ep,ev,re,r,rp)
-    local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(Card.IsLocation,nil,LOCATION_MZONE)
+    local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(Card.IsLocation,nil,LOCATION_MZONE):Filter(Card.IsAbleToHand,nil)
     if not g then return end
-    if Duel.NegateActivation(ev) then
+    if g and Duel.SendtoHand(g,nil,REASON_EFFECT) then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
         local tg=Duel.SelectMatchingCard(tp,c46250013.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
         Duel.SendtoHand(tg,nil,REASON_EFFECT)

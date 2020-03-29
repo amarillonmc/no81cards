@@ -23,6 +23,7 @@ function c33401303.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x341+0x5344))
 	e2:SetValue(c33401303.atkval)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
@@ -68,7 +69,7 @@ function c33401303.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c33401303.pd(c)
-	return c:IsSetCard(0x341) 
+	return c:IsSetCard(0x341+0x5344+0x340) 
 end
 function c33401303.atkval(e,c)
 	return Duel.GetMatchingGroupCount(c33401303.pd,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil)*100

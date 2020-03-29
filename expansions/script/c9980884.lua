@@ -57,7 +57,7 @@ function c9980884.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980884,0))
 end
 function c9980884.sprfilter(c)
-	return c:IsSetCard(0x6bc2) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xbca) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c9980884.sprcon(e,c)
 	if c==nil then return true end

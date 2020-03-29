@@ -118,7 +118,7 @@ function c9951265.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 end
-function c9951265.thfilter(c)
+function c9951265.thfilter2(c)
 	return c:IsSetCard(0x9ab5) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c9951265.spfilter(c,e,tp)
@@ -126,7 +126,7 @@ function c9951265.spfilter(c,e,tp)
 end
 function c9951265.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0
-		and Duel.IsExistingMatchingCard(c9951265.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
+		and Duel.IsExistingMatchingCard(c9951265.thfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
 	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_ONFIELD,0,nil,TYPE_SPELL+TYPE_TRAP)>0
 		and Duel.IsExistingMatchingCard(c9951265.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
@@ -149,7 +149,7 @@ end
 function c9951265.effop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabel()==0 then
 		local ct=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
-		local g=Duel.GetMatchingGroup(c9951265.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+		local g=Duel.GetMatchingGroup(c9951265.thfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 		if ct<=0 or g:GetCount()==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ct)

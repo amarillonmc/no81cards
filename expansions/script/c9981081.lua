@@ -1,7 +1,7 @@
 --命运英雄 血幕人-D
 function c9981081.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,c9981081.matfilter,3,true)
+	aux.AddFusionProcFunRep(c,c9981081.matfilter,2,true)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

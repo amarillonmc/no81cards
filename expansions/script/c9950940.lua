@@ -1,6 +1,6 @@
 --人类恶的显现仪式
 function c9950940.initial_effect(c)
-	aux.AddRitualProcGreaterCode(c,9950939,nil,c9950940.mfilter)
+	aux.AddRitualProcEqual(c,c9950940.ritual_filter,nil,c9950940.mfilter)
 	--salvage
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9950940,0))
@@ -15,6 +15,9 @@ function c9950940.initial_effect(c)
 end
 function c9950940.mfilter(c)
 	return c:IsSetCard(0xba5)
+end
+function c9950940.ritual_filter(c)
+	return (c:IsType(TYPE_RITUAL) and c:IsSetCard(0x3ba8)) or c:IsCode(9950939)
 end
 function c9950940.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

@@ -41,7 +41,7 @@ function c9910213.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCondition(c9910213.thcon)
 	e1:SetOperation(c9910213.thop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+	Duel.RegisterEffect(e1,p)
 end
 function c9910213.thfilter(c)
 	return c:IsSetCard(0x955) and c:IsAbleToHand() and not c:IsCode(9910213)

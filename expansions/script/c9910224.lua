@@ -48,6 +48,7 @@ function c9910224.activate(e,tp,eg,ep,ev,re,r,rp)
 	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		local tg=Duel.GetMatchingGroup(c9910224.tgfilter,tp,0,LOCATION_ONFIELD,nil,tc:GetColumnGroup())
 		if tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910224,0)) then
+			Duel.BreakEffect()
 			Duel.SendtoGrave(tg,REASON_EFFECT)
 		end
 	end

@@ -21,23 +21,14 @@ function c9981077.initial_effect(c)
 	e2:SetTarget(c9981077.thtg)
 	e2:SetOperation(c9981077.thop)
 	c:RegisterEffect(e2)
-	--cannot target
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e2:SetCondition(c9981077.condition)
-	e2:SetValue(aux.tgoval)
-	c:RegisterEffect(e2)
-	--indes
+	--immune
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e3:SetCode(EFFECT_IMMUNE_EFFECT)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCondition(c9981077.condition)
-	e3:SetValue(aux.indoval)
+	e3:SetValue(c9981077.efilter)
 	c:RegisterEffect(e3)
 	--negate
 	local e3=Effect.CreateEffect(c)
@@ -66,7 +57,7 @@ function c9981077.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981077,0))
 end
 function c9981077.spcfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xc008) and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xc008) and c:IsAbleToGraveAsCost()
 end
 function c9981077.mzfilter(c)
 	return c:GetSequence()<5
@@ -103,6 +94,9 @@ function c9981077.filter(c)
 end
 function c9981077.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+1
+end
+function c9981077.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
 end
 function c9981077.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
