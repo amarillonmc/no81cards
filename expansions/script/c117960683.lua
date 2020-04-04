@@ -181,7 +181,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function cm.spfilter(c,e,tp)
-    return cm.isherald(c) and c:GetCode()~=m and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+    return cm.isherald(c) and not c:IsCode(m,46935289) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.spfilter(chkc,e,tp) end

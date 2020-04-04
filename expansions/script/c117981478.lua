@@ -49,12 +49,12 @@ function c117981478.operation(e,tp,eg,ep,ev,re,r,rp)
     Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP)
     Duel.SpecialSummonComplete()
     g:AddCard(c)
-    local sg=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,nil,g)
+    local sg=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,c,g)
     if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(117981478,0)) then
         if not sg then return end
         local sc=sg:Select(tp,1,1,nil):GetFirst()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-        Duel.SynchroSummon(tp,sc,nil,g)
+        Duel.SynchroSummon(tp,sc,c,g)
     end
 end
 function c117981478.bftg(e,tp,eg,ep,ev,re,r,rp)
@@ -72,10 +72,10 @@ function c117981478.bfop(e,tp,eg,ep,ev,re,r,rp)
         e1:SetCondition(c117981478.discon)
         e1:SetOperation(c117981478.disop)
         e1:SetCode(EVENT_CHAIN_SOLVING)
-        e1:SetReset(RESET_EVENT+0x1fe0000)
+        e1:SetReset(RESET_EVENT+RESETS_STANDARD)
         e1:SetAbsoluteRange(ep,0,1)
         rc:RegisterEffect(e1,tp)
-        rc:RegisterFlagEffect(117981478,RESET_EVENT+0x1fe0000,0,1)
+        rc:RegisterFlagEffect(117981478,RESET_EVENT+RESETS_STANDARD,0,1)
     end
 end
 function c117981478.discon(e,tp,eg,ep,ev,re,r,rp)

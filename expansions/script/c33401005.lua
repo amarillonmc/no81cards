@@ -29,7 +29,7 @@ function cm.repfilter(c,tp)
 		and c:IsOnField() and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemove() and eg:IsExists(cm.repfilter,1,c:IsCode(m),tp) end
+	if chk==0 then return e:GetHandler():IsAbleToRemove() and eg:IsExists(cm.repfilter,1,e:GetHandler():IsCode(m),tp) end
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
 function cm.repval(e,c)

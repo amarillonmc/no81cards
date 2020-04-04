@@ -1,5 +1,5 @@
 --Real Scl Version - Variable
-local Version_Number=200119
+local Version_Number=20200218
 local m=10199990
 local vm=10199991
 rsv={}  --"Base Function"
@@ -19,6 +19,7 @@ rscate={}   --"Category Function"
 rsflag={}   --"Property Function"
 rsreset={}   --"Reset Function"
 rshint={}   --"Hint Function"
+rsloc={}	--"Location Function"
 
 --Info Variable
 rsef.valinfo	={} --"Value for inside series, inside type etc."
@@ -107,18 +108,31 @@ rscf.extype_r   =   rscf.extype + TYPE_RITUAL
 rscf.extype_np  =   rscf.extype - TYPE_PENDULUM 
 rscf.exlist  =   { TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK }
 
+--Location Variable
+rsloc.hd=LOCATION_HAND+LOCATION_DECK 
+rsloc.dg=LOCATION_DECK+LOCATION_GRAVE 
+rsloc.gr=LOCATION_GRAVE+LOCATION_REMOVED 
+rsloc.hdg=LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE 
+rsloc.de=LOCATION_DECK+LOCATION_EXTRA 
+rsloc.mg=LOCATION_MZONE+LOCATION_GRAVE 
+rsloc.hmg=LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE 
+rsloc.hog=LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE 
+rsloc.all=0xff 
+
 --Escape Old Functions
-rsof.DefineCard  =   rscf.DefineCard
-rsof.SendtoHand  =   rsop.SendtoHand
-rsof.SendtoDeck  =   rsop.SendtoDeck
-rsof.SendtoGrave =   rsop.SendtoGrave
-rsof.Destroy	 =   rsop.Destroy
-rsof.Remove   =   rsop.Remove
-rsof.SelectHint  =   rshint.Select
-rsof.SelectOption=   rsop.SelectOption
-rsof.SelectOption_Page= rsop.SelectOption_Page
-rsof.SelectNumber=   rsop.AnnounceNumber
-rsof.SelectNumber_List= rsop.AnnounceNumber_List
-rsof.IsSet   =   rscf.DefineSet
+function rsof.Escape_Old_Functions()
+	rsof.DefineCard  =   rscf.DefineCard
+	rsof.SendtoHand  =   rsop.SendtoHand
+	rsof.SendtoDeck  =   rsop.SendtoDeck
+	rsof.SendtoGrave =   rsop.SendtoGrave
+	rsof.Destroy	 =   rsop.Destroy
+	rsof.Remove   =   rsop.Remove
+	rsof.SelectHint  =   rshint.Select
+	rsof.SelectOption=   rsop.SelectOption
+	rsof.SelectOption_Page= rsop.SelectOption_Page
+	rsof.SelectNumber=   rsop.AnnounceNumber
+	rsof.SelectNumber_List= rsop.AnnounceNumber_List
+	rsof.IsSet   =   rscf.DefineSet
+end
 
 
