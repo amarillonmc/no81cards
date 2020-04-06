@@ -52,13 +52,11 @@ function c114722253.activate(e,tp,eg,ep,ev,re,r,rp)
             if tc:IsType(TYPE_TRAP) then e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN) end
             e1:SetReset(RESET_EVENT+RESETS_STANDARD)
             tc:RegisterEffect(e1)
-            tc=hg:GetNext()
         end
     end
 end
 function c114722253.imtarget(e,tg)
-    local c=e:GetHandler()
-    return c:IsType(TYPE_SPELL+TYPE_TRAP) and c~=tg
+    return tg:IsType(TYPE_SPELL+TYPE_TRAP) and e:GetHandler()~=tg
 end
 function c114722253.cfilter(c)
     return c:IsFaceup() and c:IsCode(46986414)

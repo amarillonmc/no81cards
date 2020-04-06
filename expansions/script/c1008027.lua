@@ -47,9 +47,7 @@ function c1008027.tkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if Duel.IsPlayerCanSpecialSummonMonster(tp,1008030,0,0x4011,1800,1800,4,RACE_MACHINE,ATTRIBUTE_EARTH) then
-		local os=require "os"
-		math.randomseed( tonumber(tostring(os.time()):reverse():sub(1,6)) )
-		local code = math.random(1008030,1008031)
+		local code = 1008030
 		local token=Duel.CreateToken(tp,code)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 		--special summon

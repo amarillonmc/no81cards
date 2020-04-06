@@ -218,9 +218,7 @@ function c1008032.voidop(e,tp,eg,ep,ev,re,r,rp)
 	local eqc=Duel.GetFirstTarget()
 	if eqc:IsRelateToEffect(e) then
 		c:RegisterFlagEffect(10080011,RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(1008001,4))
-		local os=require "os"
-		math.randomseed( tonumber(tostring(os.time()):reverse():sub(1,6)) )
-		local code = math.random(1008034,1008034)
+		local code = 1008034
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
 		local g=Group.FromCards(Duel.CreateToken(tp,code))
 		local tc=g:GetFirst()

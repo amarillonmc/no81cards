@@ -141,18 +141,7 @@ function c1008002.voidop(e,tp,eg,ep,ev,re,r,rp)
 	local eqc=Duel.GetFirstTarget()
 	if eqc:IsRelateToEffect(e) then
 	c:RegisterFlagEffect(10080011,RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(1008001,4))
-	--back void
-	-- local e7=Effect.CreateEffect(c)
-	-- e7:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	-- e7:SetCode(10080011)
-	-- e7:SetRange(LOCATION_MZONE)
-	-- e7:SetTarget(c1008002.backtg)
-	-- e7:SetOperation(c1008002.backop)
-	-- e7:SetLabelObject(e1)
-	-- c:RegisterEffect(e7)
-	local os=require "os"
-	math.randomseed( tonumber(tostring(os.time()):reverse():sub(1,6)) )
-	local code = math.random(1008004,1008006)
+		local code = 1008004
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
 		local g=Group.FromCards(Duel.CreateToken(tp,code))
 		local tc=g:GetFirst()
