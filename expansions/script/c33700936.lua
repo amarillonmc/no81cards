@@ -36,7 +36,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp,chk)
 	local act=Duel.AnnounceNumber(tp,table.unpack(t))
 	Duel.ConfirmDecktop(tp,act)
 	local rg=Duel.GetDecktopGroup(tp,act)
-	local codect=rg:GetClassCount(Card.IsCode)
+	local codect=rg:GetClassCount(Card.GetCode)
 	if codect<act then
 		if c then Duel.SendtoGrave(c,REASON_EFFECT)
 		Duel.ShuffleDeck(tp)
