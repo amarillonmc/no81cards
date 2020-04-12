@@ -38,9 +38,9 @@ function c9950508.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_BATTLE_DESTROYED)
-	e3:SetCondition(c9950508.condition)
-	e3:SetTarget(c9950508.target)
-	e3:SetOperation(c9950508.operation)
+	e3:SetCondition(c9950508.condition2)
+	e3:SetTarget(c9950508.target2)
+	e3:SetOperation(c9950508.operation2)
 	c:RegisterEffect(e3)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
@@ -84,21 +84,21 @@ function c9950508.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950508,0))
 end
-function c9950508.condition(e,tp,eg,ep,ev,re,r,rp)
+function c9950508.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLocation(LOCATION_GRAVE)
 end
-function c9950508.filter(c,e,tp)
+function c9950508.filter2(c,e,tp)
 	return c:IsLevelBelow(10) and c:IsSetCard(0xba5) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
-function c9950508.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9950508.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9950508.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+		and Duel.IsExistingMatchingCard(c9950508.filter2,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
-function c9950508.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9950508.operation2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9950508.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c9950508.filter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
 	end

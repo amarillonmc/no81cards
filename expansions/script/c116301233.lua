@@ -99,7 +99,6 @@ function c116301233.target(e,tp,eg,ep,ev,re,r,rp,chk)
     end
 end
 function c116301233.operation(e,tp,eg,ep,ev,re,r,rp)
-    if not e:GetHandler():IsRelateToEffect(e) then return end
     local op=e:GetLabel()
     if op==0 then
         Duel.DiscardDeck(1-tp,2,REASON_EFFECT)
@@ -124,12 +123,10 @@ function c116301233.con(e,tp,eg,ep,ev,re,r,rp)
     return eg:IsExists(c116301233.gfilter,1,nil,e:GetHandler())
 end
 function c116301233.op(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
-    if not c:IsRelateToEffect(e) then return end
     local tc=eg:GetFirst()
     local atk=0
     while tc do
-        if tc:IsCode(34193084,71200730,116301233) and c~=tc then
+        if tc:IsCode(34193084,71200730,116301233) and e:GetHandler()~=tc then
             atk=atk+tc:GetBaseAttack()
         end
         tc=eg:GetNext()

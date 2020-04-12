@@ -24,20 +24,22 @@ function c40006873.initial_effect(c)
 	e2:SetOperation(c40006873.operation)
 	c:RegisterEffect(e2)
 	c40006873.discard_effect=e2
-	--negate
+	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(40006873,2))
-	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_SZONE)
+	e3:SetCategory(CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1)
-	e3:SetCondition(c40006873.negcon)
-	e3:SetCost(c40006873.negcost)
-	e3:SetTarget(c40006873.negtg)
-	e3:SetOperation(c40006873.negop)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetCondition(c40006873.con)
+	e3:SetTarget(c40006873.sptg)
+	e3:SetOperation(c40006873.spop)
 	c:RegisterEffect(e3)
+end
+function c40006873.con(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:GetPreviousLocation()==LOCATION_SZONE and not c:IsReason(REASON_LOST_TARGET)
 end
 function c40006873.filter(c)
 	return c:IsFaceup()
@@ -129,5 +131,21 @@ end
 function c40006873.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SendtoGrave(eg,REASON_EFFECT)
+	end
+end
+function c40006873.thfilter0(c)
+	return c:IsSetCard(0xdf1d) and not c:IsCode(40006873) and c:IsAbleToHand()
+end
+function c40006873.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c40006873.thfilter0(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c40006873.thfilter0,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectTarget(tp,c40006873.thfilter0,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+end
+function c40006873.op(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end

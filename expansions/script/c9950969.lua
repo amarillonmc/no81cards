@@ -46,6 +46,7 @@ function c9950969.initial_effect(c)
 end
 function c9950969.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950969,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950969,1))
 end
 function c9950969.postg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDefensePos,tp,0,LOCATION_MZONE,1,nil) end
@@ -70,6 +71,7 @@ function c9950969.operation2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950969,0))
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9950969,2))
 end
 function c9950969.filter(c,e,tp)
 	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

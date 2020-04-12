@@ -38,10 +38,10 @@ function c9981240.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981240,0))
 end 
 function c9981240.mfilter(c)
-	return c:IsLevelBelow(2) and c:IsSetCard(0xbca)
+	return c:IsLevelBelow(4) and c:IsSetCard(0xbca)
 end
 function c9981240.thfilter(c)
-	return c:IsSetCard(0x12b) and not c:IsCode(9981240) and c:IsAbleToHand()
+	return c:IsSetCard(0xbca) and not c:IsCode(9981240) and c:IsAbleToHand()
 end
 function c9981240.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9981240.thfilter(chkc) end

@@ -60,19 +60,16 @@ end
 function c9950024.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ec=re:GetHandler()
 	if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL) then return end
+	ilocal ec=re:GetHandler()
 	if Duel.NegateActivation(ev) and ec:IsRelateToEffect(re) then
 		ec:CancelToGrave()
-		if Duel.SendtoDeck(ec,nil,2,REASON_EFFECT)~=0 and ec:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
-			local loc=0
-			if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_DECK end
-			if Duel.GetLocationCountFromEx(tp)>0 then loc=loc+LOCATION_EXTRA end
-			local g=Duel.GetMatchingGroup(c9950024.spfilter,tp,loc,0,nil,e,tp):GetFirst()
-			if loc~=0 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9950024,0)) then
+		if Duel.SendtoDeck(ec,nil,2,REASON_EFFECT)~=0 and ec:IsLocation(LOCATION_EXTRA) then
+			local g=Duel.GetMatchingGroup(c9950024.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp)
+			if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9950024,0)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				local tc=g:Select(tp,1,1,nil)
-				Duel.SpecialSummon(tc,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)
-				tc:CompleteProcedure()
+				local sg=g:Select(tp,1,1,nil)
+				Duel.SpecialSummon(sg,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)
 			end
 		end
 	end

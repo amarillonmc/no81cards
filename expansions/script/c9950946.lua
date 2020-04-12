@@ -52,6 +52,7 @@ function c9950946.initial_effect(c)
 end
 function c9950946.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950946,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950946,1))
 end
 function c9950946.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
@@ -97,6 +98,7 @@ function c9950946.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950946,2))
 end
 function c9950946.aclimit(e,re,tp)
 	return re:GetHandler():GetType()==TYPE_SPELL+TYPE_QUICKPLAY and re:IsHasType(EFFECT_TYPE_ACTIVATE)

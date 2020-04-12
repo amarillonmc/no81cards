@@ -67,7 +67,7 @@ function c9981282.initial_effect(c)
 	c:RegisterEffect(e7)
 	 --atk
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(1621413,2))
+	e1:SetDescription(aux.Stringid(9981282,2))
 	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -75,8 +75,8 @@ function c9981282.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1)
-	e1:SetTarget(c1621413.atktg)
-	e1:SetOperation(c1621413.atkop)
+	e1:SetTarget(c9981282.atktg)
+	e1:SetOperation(c9981282.atkop)
 	c:RegisterEffect(e1)
  --negate
 	local e4=Effect.CreateEffect(c)
@@ -153,14 +153,14 @@ end
 function c9981282.distg(e,c)
 	return c:GetFlagEffect(9981282)~=0
 end
-function c1621413.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9981282.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and aux.nzatk(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(aux.nzatk,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,aux.nzatk,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetChainLimit(c9981282.chainlm)
 end
-function c1621413.atkop(e,tp,eg,ep,ev,re,r,rp)
+function c9981282.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then

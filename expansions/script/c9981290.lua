@@ -47,7 +47,7 @@ function c9981290.initial_effect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_BATTLE_DESTROYING)
-	e2:SetCountLimit(1,23790300)
+	e2:SetCountLimit(1,99812900)
 	e2:SetCondition(aux.bdcon)
 	e2:SetTarget(c9981290.destg)
 	e2:SetOperation(c9981290.desop)
@@ -100,6 +100,7 @@ function c9981290.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,c9981290.cfilter,1,nil,lg) end
 	local g=Duel.SelectReleaseGroup(tp,c9981290.cfilter,1,1,nil,lg)
 	Duel.Release(g,REASON_COST)
+	Duel.SetChainLimit(c9981290.chainlm)
 end
 function c9981290.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -107,7 +108,6 @@ function c9981290.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	end
- Duel.SetChainLimit(c9981290.chainlm)
 end
 function c9981290.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then

@@ -51,6 +51,7 @@ function c9950947.initial_effect(c)
 end
 function c9950947.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950947,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950947,1))
 end
 function c9950947.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)

@@ -1,5 +1,6 @@
 --青眼融合
 function c9981037.initial_effect(c)
+	aux.AddCodeList(c,89631139)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
@@ -22,7 +23,6 @@ function c9981037.initial_effect(c)
 	e2:SetOperation(c9981037.spop)
 	c:RegisterEffect(e2)
 end
-c9981037.card_code_list={89631139}
 function c9981037.filter0(c)
 	return (c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck()
 end

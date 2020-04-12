@@ -11,24 +11,19 @@ function c9951207.initial_effect(c)
 	e2:SetTarget(c9951207.thtg)
 	e2:SetOperation(c9951207.thop)
 	c:RegisterEffect(e2)
-	--level change
+   --atkup
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9951207,3))
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
-	e1:SetCost(c9951207.lvcost)
-	e1:SetOperation(c9951207.lvop)
+	e1:SetDescription(aux.Stringid(9951207,0))
+	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetTarget(c9951207.atktg1)
+	e1:SetOperation(c9951207.atkop1)
 	c:RegisterEffect(e1)
-	--disable spsummon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(0,1)
-	e1:SetTarget(c9951207.sumlimit)
-	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2)
   --spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -61,39 +56,24 @@ function c9951207.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c9951207.cfilter(c)
-	return c:IsSetCard(0x9bd1) and not c:IsPublic()
+function c9951207.atkfilter1(c)
+	return c:IsSetCard(0xcbd1 and c:GetAttack()>0
 end
-function c9951207.lvcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9951207.cfilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,c9951207.cfilter,tp,LOCATION_HAND,0,1,63,nil)
-	Duel.ConfirmCards(1-tp,g)
-	Duel.ShuffleHand(tp)
-	e:SetLabel(g:GetCount())
+function c9951207.atktg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9951207.atkfilter1(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9951207.atkfilter1,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.SelectTarget(tp,c9951207.atkfilter1,tp,LOCATION_GRAVE,0,1,1,nil)
 end
-function c9951207.lvop(e,tp,eg,ep,ev,re,r,rp)
+function c9951207.atkop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
-	local ct=e:GetLabel()
-	local sel=nil
-	if c:IsAttack(0) then
-		sel=Duel.SelectOption(tp,aux.Stringid(9951207,1))
-	else
-		sel=Duel.SelectOption(tp,aux.Stringid(9951207,1),aux.Stringid(9951207,2))
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and c:IsFaceup() and c:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(tc:GetAttack())
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e1)
 	end
-	if sel==1 then
-		ct=ct*-1
-	end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(ct*500)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-	c:RegisterEffect(e1)
-Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951207,0))
-end
-function c9951207.sumlimit(e,c,sump,sumtype,sumpos,targetp)
-	local c=e:GetHandler()
-	return c:IsAttackAbove(c:GetAttack())
 end

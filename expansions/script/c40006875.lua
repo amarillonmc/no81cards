@@ -35,9 +35,11 @@ function c40006875.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(40006875,2))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1)
-	e3:SetRange(LOCATION_SZONE)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetCondition(c40006875.con)
 	e3:SetTarget(c40006875.sptg)
 	e3:SetOperation(c40006875.spop)
 	c:RegisterEffect(e3)
@@ -48,6 +50,10 @@ function c40006875.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e4:SetValue(1)
 	c:RegisterEffect(e4)
+end
+function c40006875.con(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:GetPreviousLocation()==LOCATION_SZONE and not c:IsReason(REASON_LOST_TARGET)
 end
 function c40006875.synlimit(e,c)
 	if not c then return false end
@@ -135,6 +141,15 @@ function c40006875.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c40006875.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) then
+		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+			e1:SetValue(LOCATION_DECK)
+			c:RegisterEffect(e1)
+		end
+	end
 end

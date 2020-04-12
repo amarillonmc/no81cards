@@ -55,6 +55,7 @@ function c9950945.initial_effect(c)
 end
 function c9950945.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950945,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950945,1))
 end
 function c9950945.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -36,6 +36,7 @@ function c9950936.initial_effect(c)
 end
 function c9950936.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950936,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950936,1))
 end
 function c9950936.atkfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_LINK) 
@@ -77,4 +78,5 @@ function c9950936.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(hg,nil,2,REASON_EFFECT)
 	end
   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950936,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950936,2))
 end

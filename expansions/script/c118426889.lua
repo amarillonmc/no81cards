@@ -62,9 +62,8 @@ function c118426889.condition2(e,tp,eg,ep,ev,re,r,rp,chk)
     return re:GetHandler():IsSetCard(0x97)
 end
 function c118426889.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
     if chk==0 then return true end
-    Duel.ConfirmCards(1-tp,c)
+    Duel.ConfirmCards(1-tp,e:GetHandler())
 end
 function c118426889.filter2(c,tp,sc)
     return c:IsSetCard(0x97) and c:IsFaceup() and Duel.IsExistingMatchingCard(c118426889.filter4,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,sc,tp,c,sc)

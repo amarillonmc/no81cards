@@ -1,5 +1,6 @@
 --青眼龙息
 function c9981038.initial_effect(c)
+	aux.AddCodeList(c,89631139)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DESTROY)
@@ -23,7 +24,6 @@ function c9981038.initial_effect(c)
 	c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(9981038,ACTIVITY_ATTACK,c9981038.counterfilter)
 end
-c9981038.card_code_list={89631139}
 function c9981038.counterfilter(c)
 	return not c:IsCode(89631139)
 end

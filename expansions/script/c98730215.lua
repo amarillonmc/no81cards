@@ -73,7 +73,8 @@ function c98730215.initial_effect(c)
     local e10=Effect.CreateEffect(c)
     e10:SetCategory(CATEGORY_EQUIP)
     e10:SetType(EFFECT_TYPE_QUICK_O)
-    e10:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+    e10:SetCode(EVENT_FREE_CHAIN)
+    e10:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
     e10:SetRange(LOCATION_GRAVE)
     e10:SetCountLimit(1,98731215)
     e10:SetCondition(c98730215.hspcon)
@@ -151,7 +152,7 @@ function c98730215.rdcon(e)
     return false
 end
 function c98730215.rdop(e,tp,eg,ep,ev,re,r,rp)
-    if (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.SelectYesNo(tp,aux.Stringid(98730215,2)) then
+    if Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) then
         Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,REASON_EFFECT)
     end
 end
@@ -179,7 +180,7 @@ function c98730215.effop(e,tp,eg,ep,ev,re,r,rp)
                 e1:SetType(EFFECT_TYPE_SINGLE)
                 e1:SetCode(EFFECT_UPDATE_LEVEL)
                 e1:SetValue(-lv)
-                e1:SetReset(RESET_EVENT+0x1ff0000)
+                e1:SetReset(RESET_EVENT+RESETS_STANDARD)
                 c:RegisterEffect(e1)
             end
         end
@@ -209,7 +210,7 @@ function c98730215.eqop(e,tp,eg,ep,ev,re,r,rp)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_SINGLE)
     e1:SetCode(EFFECT_EQUIP_LIMIT)
-    e1:SetReset(RESET_EVENT+0x1fe0000)
+    e1:SetReset(RESET_EVENT+RESETS_STANDARD)
     e1:SetLabelObject(tc)
     e1:SetValue(c98730215.eqlimit)
     c:RegisterEffect(e1)
@@ -236,7 +237,8 @@ end
 function c98730215.hspcon(e,tp,eg,ep,ev,re,r,rp)
     local a=Duel.GetAttacker()
     local d=Duel.GetAttackTarget()
-    return a and a:GetControler()==tp and (a:IsRace(RACE_DRAGON) or a:IsAttribute(ATTRIBUTE_WATER)) or d and d:GetControler()==tp and (d:IsRace(RACE_DRAGON) or d:IsAttribute(ATTRIBUTE_WATER))
+    local phase=Duel.GetCurrentPhase()
+    return a and a:GetControler()==tp and (a:IsRace(RACE_DRAGON) or a:IsAttribute(ATTRIBUTE_WATER)) or d and d:GetControler()==tp and (d:IsRace(RACE_DRAGON) or d:IsAttribute(ATTRIBUTE_WATER)) and phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()
 end
 function c98730215.rfilter(c)
     return (c:IsRace(RACE_DRAGON) or c:IsAttribute(ATTRIBUTE_WATER)) and c:IsAbleToRemoveAsCost() and c:IsFaceup()

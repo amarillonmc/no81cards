@@ -70,7 +70,7 @@ function c9980452.thfilter1(c)
 	return c:IsSetCard(0x9bca) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9980452.thfilter2(c)
-	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_RITUAL) and c:IsAbleToHand()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9bca)  c:IsAbleToHand()
 end
 function c9980452.desfilter(c,e,tp,g)
 	return c:IsFaceup() and (c:IsRace(RACE_FAIRY) or c:IsRace(RACE_WARRIOR))and g:IsContains(c) and Duel.GetMZoneCount(tp,c)>0

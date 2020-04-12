@@ -60,6 +60,7 @@ function c9981606.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981606,0))
 end 
 c9981606.material_setcode=0x8
+c9981606.neos_fusion=true
 function c9981606.ffilter(c,fc,sub,mg,sg)
 	return c:IsFusionSetCard(0x1f,0x8) and (not sg or not sg:Filter(Card.IsFusionSetCard,nil,0x1f,0x8):IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()))
 end

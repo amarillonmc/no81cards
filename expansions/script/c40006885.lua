@@ -64,28 +64,22 @@ end
 function c40006885.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
-function c40006885.thfilter(c)
-	return c:IsSetCard(0xdf1d) and c:IsAbleToHand()
+function c40006885.thfilter2(c,e,tp)
+	return c:IsSetCard(0xdf1d) 
+		and c:IsCanBeEffectTarget(e) and c:IsAbleToHand()
 end
 function c40006885.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c40006885.thfilter(chkc) end
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingTarget(c40006885.thfilter,tp,LOCATION_GRAVE,0,1,c) end
-	local g=Duel.GetMatchingGroup(c40006885.thfilter,tp,LOCATION_GRAVE,0,c):Filter(Card.IsCanBeEffectTarget,nil,e)
-	local tg=Group.CreateGroup()
-	repeat
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=g:Select(tp,1,1,nil)
-		tg:Merge(sg)
-		g:Remove(Card.IsCode,nil,sg:GetFirst():GetCode())
-	until tg:GetCount()==2 or g:GetCount()==0 or not Duel.SelectYesNo(tp,aux.Stringid(40006885,2))
-	Duel.SetTargetCard(tg)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tg,tg:GetCount(),0,0)
+	if chkc then return false end
+	local g=Duel.GetMatchingGroup(c40006885.thfilter2,tp,LOCATION_GRAVE,0,nil,e,tp)
+	if chk==0 then return g:GetClassCount(Card.GetCode)>=2 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g1=g:SelectSubGroup(tp,aux.dncheck,false,2,2)
+	Duel.SetTargetCard(g1)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,2,0,0)
 end
 function c40006885.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if tg:GetCount()>0 then
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tg)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
 	end
 end

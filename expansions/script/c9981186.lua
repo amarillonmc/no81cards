@@ -88,7 +88,7 @@ function c9981186.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lvt={}
 	local pc=1
 	for i=1,3 do
-		if tg:IsExists(c9981186.sfilter,1,nil,i,e,tp) then lvt[pc]=i pc=pc+1 end
+		if tg:IsExists(c9981186.sfilter2,1,nil,i,e,tp) then lvt[pc]=i pc=pc+1 end
 	end
 	lvt[pc]=nil
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9981186,2))

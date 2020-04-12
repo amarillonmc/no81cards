@@ -8,6 +8,7 @@ function c46250019.initial_effect(c)
     e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
     e2:SetType(EFFECT_TYPE_IGNITION)
     e2:SetRange(LOCATION_SZONE)
+    e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e2:SetCountLimit(1,46250019)
     e2:SetTarget(c46250019.lktg)
     e2:SetOperation(c46250019.lkop)
@@ -31,7 +32,7 @@ end
 function c46250019.lkfilter2(c)
     return c:IsSetCard(0x1fc0) and c:IsAbleToRemove() 
 end
-function c46250019.lktg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c46250019.lktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return false end
     if chk==0 then return Duel.IsExistingTarget(c46250019.lkfilter0,tp,LOCATION_MZONE,0,1,nil,e,tp) end
     local g=Duel.SelectTarget(tp,c46250019.lkfilter0,tp,LOCATION_MZONE,0,1,1,nil,e,tp)

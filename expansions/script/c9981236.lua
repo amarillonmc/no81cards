@@ -39,7 +39,7 @@ function c9981236.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981236,0))
 end 
 function c9981236.mfilter(c)
-	return c:IsLevelBelow(2) and c:IsSetCard(0xbca)
+	return c:IsLevelBelow(4) and c:IsSetCard(0xbca)
 end
 function c9981236.sumfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xbca) and c:IsSummonable(true,nil)

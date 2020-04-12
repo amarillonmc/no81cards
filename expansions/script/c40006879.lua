@@ -24,19 +24,17 @@ function c40006879.initial_effect(c)
 	e2:SetOperation(c40006879.operation)
 	c:RegisterEffect(e2)
 	c40006879.discard_effect=e2
-	--negate
+	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(40006879,2))
-	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_SZONE)
+	e3:SetCategory(CATEGORY_TOGRAVE)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1)
-	e3:SetCondition(c40006879.negcon)
-	e3:SetCost(c40006879.negcost)
-	e3:SetTarget(c40006879.negtg)
-	e3:SetOperation(c40006879.negop)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetCondition(c40006879.con)
+	e3:SetTarget(c40006879.tg)
+	e3:SetOperation(c40006879.op)
 	c:RegisterEffect(e3)
 end
 function c40006879.filter(c)
@@ -142,4 +140,21 @@ function c40006879.negop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(eg,REASON_EFFECT)
 	end
 end
-
+function c40006879.con(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:GetPreviousLocation()==LOCATION_SZONE and not c:IsReason(REASON_LOST_TARGET)
+end
+function c40006879.filter0(c)
+	return c:IsSetCard(0xdf1d) and not c:IsCode(40006879) and c:IsAbleToGrave()
+end
+function c40006879.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c40006879.filter0,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function c40006879.op(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c40006879.filter0,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
+	end
+end

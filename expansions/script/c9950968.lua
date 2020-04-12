@@ -80,6 +80,7 @@ function c9950968.initial_effect(c)
 end
 function c9950968.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950968,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950968,1))
 end
 function c9950968.poscon(e)
 	local ph=Duel.GetCurrentPhase()
@@ -118,6 +119,7 @@ function c9950968.atkop2(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950968,0))
+ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950968,2))
 end
 function c9950968.damcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttacker()==e:GetHandler() and Duel.GetAttackTarget()

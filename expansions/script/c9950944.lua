@@ -61,6 +61,7 @@ function c9950944.initial_effect(c)
 end
 function c9950944.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950944,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950944,1))
 end
 function c9950944.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
@@ -107,6 +108,7 @@ function c9950944.disop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e3)
 	end
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950944,0))
+Duel.Hint(HINT_SOUND,0,aux.Stringid(9950944,2))
 end
 function c9950944.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return bit.band(sumpos,POS_FACEDOWN)>0

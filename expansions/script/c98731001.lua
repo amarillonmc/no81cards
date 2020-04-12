@@ -26,6 +26,7 @@ function c98731001.initial_effect(c)
     local e4=Effect.CreateEffect(c)
     e4:SetType(EFFECT_TYPE_FIELD)
     e4:SetCode(EFFECT_IMMUNE_EFFECT)
+    e4:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
     e4:SetRange(LOCATION_PZONE)
     e4:SetTargetRange(0xff,0)
     e4:SetTarget(c98731001.etarget)
@@ -34,7 +35,6 @@ function c98731001.initial_effect(c)
     local e5=Effect.CreateEffect(c)
     e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
     e5:SetCode(EVENT_PHASE_START+PHASE_STANDBY)
-    e5:SetCountLimit(1,98731001)
     e5:SetRange(0x7f)
     e5:SetCondition(c98731001.condition)
     e5:SetOperation(c98731001.operation)
@@ -65,9 +65,8 @@ function c98731001.initial_effect(c)
     e10:SetValue(c98731001.mulval)
     c:RegisterEffect(e10)
     local e11=Effect.CreateEffect(c)
-    e11:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+    e11:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
     e11:SetCode(EVENT_SPSUMMON_SUCCESS)
-    e11:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
     e11:SetTarget(c98731001.tgtg)
     e11:SetOperation(c98731001.tgop)
     c:RegisterEffect(e11)
@@ -108,12 +107,12 @@ end
 function c98731001.spcon(e,c)
     if c==nil then return true end
     local tp=c:GetControler()
-    local mg=Duel.GetMatchingGroup(c98731001.cfilter,tp,LOCATION_MZONE,0,c)
+    local mg=Duel.GetMatchingGroup(c98731001.cfilter,tp,LOCATION_ONFIELD,0,c)
     local sg=Group.CreateGroup()
     return mg:IsExists(c98731001.fselect,1,nil,tp,mg,sg,ATTRIBUTE_FIRE,ATTRIBUTE_WATER,ATTRIBUTE_WIND,ATTRIBUTE_EARTH)
 end
 function c98731001.spop(e,tp,eg,ep,ev,re,r,rp,c)
-    local mg=Duel.GetMatchingGroup(c98731001.cfilter,tp,LOCATION_MZONE,0,c)
+    local mg=Duel.GetMatchingGroup(c98731001.cfilter,tp,LOCATION_ONFIELD,0,c)
     local sg=Group.CreateGroup()
     while sg:GetCount()<4 do
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -128,8 +127,9 @@ function c98731001.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98731001.operation(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    if not c:IsLocation(LOCATION_PZONE) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.SelectYesNo(tp,aux.Stringid(98731001,0)) then
+    if c:GetFlagEffect(tp,98731001)==0 and Duel.SelectYesNo(tp,aux.Stringid(98731001,0)) then
         Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+        c:RegisterFlagEffect(98731001,RESET_EVENT+RESETS_STANDARD,0,1)
     end
 end
 function c98731001.chop(e,tp,eg,ep,ev,re,r,rp)
@@ -152,7 +152,7 @@ function c98731001.repop(e,tp,eg,ep,ev,re,r,rp)
         local tc=g:GetFirst()
         Duel.Overlay(tc,c)
         Duel.BreakEffect()
-        tc:CopyEffect(c:GetCode(),RESET_EVENT+0x1fe0000,1)
+        tc:CopyEffect(c:GetCode(),RESET_EVENT+RESETS_STANDARD,1)
     end
 end
 function c98731001.atkval(e,c)
@@ -179,28 +179,22 @@ function c98731001.tgfilter(c)
     return c:IsRace(RACE_DRAGON) and c:IsType(TYPE_PENDULUM) and c:GetLevel()==7
 end
 function c98731001.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(c98731001.tgfilter,tp,LOCATION_REMOVED,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+    if chk==0 then return Duel.IsExistingMatchingCard(c98731001.tgfilter,tp,LOCATION_REMOVED,0,4,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>=4 end
     Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_REMOVED)
 end
 function c98731001.tgop(e,tp,eg,ep,ev,re,r,rp)
-    local n=math.min(Duel.GetMatchingGroupCount(c98731001.tgfilter,tp,LOCATION_REMOVED,0,nil),Duel.GetLocationCount(tp,LOCATION_SZONE))
-    n=math.min(n,4)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-    local g=Duel.SelectMatchingCard(tp,c98731001.tgfilter,tp,LOCATION_REMOVED,0,1,n,nil)
+    local g=Duel.SelectMatchingCard(tp,c98731001.tgfilter,tp,LOCATION_REMOVED,0,4,4,nil)
     local c=e:GetHandler()
-    if c:IsFaceup() and c:IsRelateToEffect(e) then
-        local tc=g:GetFirst()
-        while tc do
-            if Duel.Equip(tp,tc,c,false) then 
-                local e1=Effect.CreateEffect(c)
-                e1:SetType(EFFECT_TYPE_SINGLE)
-                e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
-                e1:SetCode(EFFECT_EQUIP_LIMIT)
-                e1:SetReset(RESET_EVENT+0x1fe0000)
-                e1:SetValue(c98731001.eqlimit)
-                tc:RegisterEffect(e1)
-                tc=g:GetNext()
-            end
+    for tc in aux.Next(g) do
+        if Duel.Equip(tp,tc,c,false) then 
+            local e1=Effect.CreateEffect(c)
+            e1:SetType(EFFECT_TYPE_SINGLE)
+            e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
+            e1:SetCode(EFFECT_EQUIP_LIMIT)
+            e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+            e1:SetValue(c98731001.eqlimit)
+            tc:RegisterEffect(e1)
         end
     end
 end

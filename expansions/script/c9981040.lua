@@ -1,5 +1,6 @@
 --青眼的龙人·菲琳
 function c9981040.initial_effect(c)
+	aux.AddCodeList(c,89631139)
 	--code
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)

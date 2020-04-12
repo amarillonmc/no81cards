@@ -3,6 +3,7 @@ function c121082832.initial_effect(c)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
     e1:SetCountLimit(1,121082832+EFFECT_COUNT_CODE_DUEL)
+    e1:SetCost(c121082832.thcost)
     e1:SetTarget(c121082832.target)
     c:RegisterEffect(e1)
     local e2=Effect.CreateEffect(c)
@@ -31,6 +32,13 @@ function c121082832.initial_effect(c)
     e5:SetRange(LOCATION_DECK)
     e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
     c:RegisterEffect(e5)
+    Duel.AddCustomActivityCounter(121082832,ACTIVITY_CHAIN,c121082832.chainfilter)
+end
+function c121082832.chainfilter(re,tp,cid)
+    return re:GetHandler():IsType(TYPE_FIELD) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function c121082832.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return Duel.GetCustomActivityCount(121082832,tp,ACTIVITY_CHAIN)==0 end
 end
 function c121082832.actarget(e,te,tp)
     return te:GetHandler()==e:GetHandler()

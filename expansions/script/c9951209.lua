@@ -76,7 +76,7 @@ function c9951209.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951209,0))
 end
 function c9951209.matfilter(c)
-	return c:IsLevelAbove(8) and c:IsSetCard(0xba5)
+	return c:IsLevelAbove(8) and c:IsSetCard(0x9bd1)
 end
 function c9951209.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)

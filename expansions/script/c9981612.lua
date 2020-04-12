@@ -38,6 +38,15 @@ function c9981612.initial_effect(c)
 	local e7=e6:Clone()
 	e7:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e7)
+	--destroy
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9981612,0))
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetTarget(c9981612.destg)
+	e1:SetOperation(c9981612.desop)
+	c:RegisterEffect(e1)
 --atkdown
 	local e8=Effect.CreateEffect(c)
 	e8:SetDescription(aux.Stringid(9981612,1))
@@ -83,6 +92,20 @@ end
 function c9981612.adval(e,c)
 	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_HAND,0)*1000
 end
+function c9981612.desfilter(c)
+	return c:IsFaceup() and c:IsAttackBelow(2000) or c:IsDefenseBelow(2000)
+end
+function c9981612.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local g=Duel.GetMatchingGroup(c9981612.desfilter,tp,0,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,g:GetCount())
+end
+function c9981612.desop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9981612.desfilter,tp,0,LOCATION_MZONE,nil)
+	local ct=Duel.Destroy(g,REASON_EFFECT)
+	Duel.Draw(tp,ct,REASON_EFFECT)
+end
 function c9981612.atkfilter(c,e,tp)
 	return c:IsControler(tp) and c:IsFaceup() and (not e or c:IsRelateToEffect(e))
 end
@@ -106,7 +129,13 @@ function c9981612.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(-2000)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		if preatk~=0 and tc:IsAttack(0) then dg:AddCard(tc) end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_DEFENSE)
+		e1:SetValue(-2000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		if preatk~=0 and (tc:IsAttack(0) or tc:IsDefense(0)) then dg:AddCard(tc) end
 		tc=g:GetNext()
 	end
 	Duel.SendtoGrave(dg,REASON_EFFECT)
