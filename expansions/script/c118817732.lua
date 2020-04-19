@@ -69,11 +69,21 @@ end
 function c118817732.xyzcondition(e,c,og,min,max)
     if c==nil then return true end
     local tp=c:GetControler()
-    local mg=Duel.GetMatchingGroup(c118817732.xyzfilter,tp,LOCATION_HAND,0,nil)
-    return mg:IsExists(aux.TRUE,2,nil)
+    local mg
+    if og then
+        mg=og
+    else
+        mg=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+    end
+    return mg:IsExists(c118817732.xyzfilter,2,nil)
 end
 function c118817732.xyztarget(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
-    local mg=Duel.GetMatchingGroup(c118817732.xyzfilter,tp,LOCATION_HAND,0,nil)
+    local mg=nil
+    if og then
+        mg=og
+    else
+        mg=Duel.GetMatchingGroup(c118817732.xyzfilter,tp,LOCATION_HAND,0,nil)
+    end
     local g=mg:Select(tp,2,2,nil)
     if g then
         g:KeepAlive()

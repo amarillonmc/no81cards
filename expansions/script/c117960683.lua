@@ -190,14 +190,13 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     local g=Duel.SelectTarget(tp,cm.spfilter,tp,LOCATION_GRAVE,0,2,2,e:GetHandler(),e,tp)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,2,tp,LOCATION_GRAVE)
 end
-function cm.sxfilter(c,mg)
-    return c:IsSynchroSummonable(nil,mg) or c:IsXyzSummonable(mg,2,2)
+function cm.sxfilter(c,tp,mg)
+    return (c:IsSynchroSummonable(nil,mg) or c:IsXyzSummonable(mg)) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
     if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 or g:GetCount()<2 or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-    local tc=g:GetFirst()
-    while tc do
+    for tc in aux.Next(g) do
         Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
         local e1=Effect.CreateEffect(e:GetHandler())
         e1:SetType(EFFECT_TYPE_SINGLE)
@@ -209,11 +208,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
         e2:SetCode(EFFECT_DISABLE_EFFECT)
         e2:SetReset(RESET_EVENT+RESETS_STANDARD)
         tc:RegisterEffect(e2,true)
-        tc=g:GetNext()
     end
     Duel.SpecialSummonComplete()
-    local sxg=Duel.GetMatchingGroup(cm.sxfilter,tp,LOCATION_EXTRA,0,nil,g)
-    if Duel.GetLocationCountFromEx(tp,tp,g,e:GetHandler())>0 and sxg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+    local sxg=Duel.GetMatchingGroup(cm.sxfilter,tp,LOCATION_EXTRA,0,nil,tp,g)
+    if sxg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
         Duel.BreakEffect()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
         local sxc=sxg:Select(tp,1,1,nil):GetFirst()

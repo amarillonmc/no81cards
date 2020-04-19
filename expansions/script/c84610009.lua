@@ -71,32 +71,27 @@ function c84610009.cost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.DiscardHand(tp,c84610009.cfilter,1,1,REASON_DISCARD+REASON_COST,nil)
 end
 function c84610009.scfilter(c,e,tp)
-    return c:IsSetCard(0x8) and c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,true,false)
+    return c:IsSetCard(0x8) and c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,true,false) and Duel.GetMatchingGroup(c84610009.filter1,tp,LOCATION_MZONE,0,nil,tp,c):GetClassCount(Card.GetCode)>2
 end
-function c84610009.filter1(c)
-    return c:IsSetCard(0x8) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+function c84610009.filter1(c,tp,tc)
+    return c:IsSetCard(0x8) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave() and Duel.GetLocationCountFromEx(tp,tp,c,tc)>0
 end
 function c84610009.target1(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then
-        local g=Duel.GetMatchingGroup(c84610009.filter1,tp,LOCATION_MZONE,0,nil)
-        return g:GetClassCount(Card.GetCode)>2
-            and Duel.GetLocationCountFromEx(tp)>0
-            and Duel.IsExistingMatchingCard(c84610009.scfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-    end
+    if chk==0 then return Duel.IsExistingMatchingCard(c84610009.scfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
     Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,3,tp,LOCATION_MZONE)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c84610009.activate1(e,tp,eg,ep,ev,re,r,rp)
-    local g=Duel.GetMatchingGroup(c84610009.filter1,tp,LOCATION_MZONE,0,nil)
-    if g:GetClassCount(Card.GetCode)<3 then return end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-    local tg=g:Select(tp,3,3,nil)
-    g:Remove(Card.IsCode,nil,tg:GetFirst():GetCode())
-    if Duel.SendtoGrave(tg,REASON_EFFECT)~=0 and tg:IsExists(Card.IsLocation,3,nil,LOCATION_GRAVE) then
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-        local g=Duel.SelectMatchingCard(tp,c84610009.scfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-        local tc=g:GetFirst()
-        if tc then
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+    local g=Duel.SelectMatchingCard(tp,c84610009.scfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+    local tc=g:GetFirst()
+    if tc then
+        local g=Duel.GetMatchingGroup(c84610009.filter1,tp,LOCATION_MZONE,0,nil,tp,tc)
+        if g:GetClassCount(Card.GetCode)<3 then return end
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+        local tg=g:Select(tp,3,3,nil)
+        g:Remove(Card.IsCode,nil,tg:GetFirst():GetCode())
+        if Duel.SendtoGrave(tg,REASON_EFFECT)~=0 and tg:IsExists(Card.IsLocation,3,nil,LOCATION_GRAVE) then
             Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,true,false,POS_FACEUP)
             tc:CompleteProcedure()
         end

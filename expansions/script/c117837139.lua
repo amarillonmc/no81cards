@@ -137,9 +137,9 @@ function c117837139.condition(e)
     return Duel.GetTurnPlayer()~=e:GetHandler():GetControler()
 end
 function c117837139.operation(e,tp,eg,ep,ev,re,r,rp)
-    if Duel.IsExistingMatchingCard(c117837139.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) then return false end
-    local g1=Duel.GetMatchingGroup(c117837139.filter2,tp,LOCATION_MZONE,0,nil,e)
-    local g2=Duel.GetMatchingGroup(c117837139.filter2,tp,0,LOCATION_MZONE,nil,e)
+    if Duel.IsExistingMatchingCard(c117837139.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e) then return false end
+    local g1=Duel.GetMatchingGroup(c117837139.filter2,tp,LOCATION_MZONE,0,nil)
+    local g2=Duel.GetMatchingGroup(c117837139.filter2,tp,0,LOCATION_MZONE,nil)
     Duel.Hint(HINT_CARD,0,117837139)
     Duel.ChangePosition(g1,POS_FACEUP_ATTACK)
     Duel.ChangePosition(g2,POS_FACEUP_ATTACK)

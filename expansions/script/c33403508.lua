@@ -84,6 +84,7 @@ function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
+if not Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil) then return end 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
 	local g1=Duel.SelectMatchingCard(tp,Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,1,1,nil)
 	local tc1=g1:GetFirst()

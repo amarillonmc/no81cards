@@ -60,13 +60,27 @@ end
 function c113652145.spfilter(c)
     return c:IsSetCard(0x99) and not c:IsCode(113652145) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
+function c113652145.spfilter2(c,tp)
+    return c:IsHasEffect(48829461,tp) and c:IsAbleToRemoveAsCost() and Duel.GetMZoneCount(tp,c)>0
+end
 function c113652145.spcon(e,c)
     if c==nil then return true end
-    return (not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(e:GetHandlerPlayer())>0) and Duel.IsExistingMatchingCard(c113652145.spfilter,c:GetControler(),LOCATION_DECK+LOCATION_EXTRA,0,1,e:GetHandler())
+    local tp=c:GetControler()
+    local b1=Duel.IsExistingMatchingCard(c113652145.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil)
+    local b2=Duel.IsExistingMatchingCard(c113652145.spfilter2,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,tp)
+    return c:IsLocation(LOCATION_HAND) and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and b1 or b2) or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp)>0 and b1
 end
 function c113652145.spop(e,tp,eg,ep,ev,re,r,rp,c)
-    local tg=Duel.SelectMatchingCard(tp,c113652145.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,e:GetHandler())
-    if tg:GetCount()>0 then
+    local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c113652145.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil)
+    local b2=Duel.IsExistingMatchingCard(c113652145.spfilter2,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,tp)
+    if c:IsLocation(LOCATION_HAND) and b2 and (not b1 or Duel.SelectYesNo(tp,aux.Stringid(48829461,0))) then
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+        local tg=Duel.SelectMatchingCard(tp,c113652145.spfilter2,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,tp)
+        local te=tg:GetFirst():IsHasEffect(48829461,tp)
+        te:UseCountLimit(tp)
+        Duel.Remove(tg,POS_FACEUP,REASON_COST)
+    else
+        local tg=Duel.SelectMatchingCard(tp,c113652145.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
         Duel.Remove(tg:GetFirst(),POS_FACEUP,REASON_COST)
     end
 end

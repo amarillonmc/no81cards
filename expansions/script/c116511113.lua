@@ -77,8 +77,8 @@ function c116511113.xyzcon1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c116511113.xyzop1(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    if not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) then return end
-    if Duel.SelectYesNo(tp,aux.Stringid(116511113,0)) then
+    if Duel.GetFlagEffect(tp,116511113)==0 and Duel.SelectYesNo(tp,aux.Stringid(116511113,0)) then
+        Duel.RegisterFlagEffect(tp,116511113,RESET_CHAIN,0,1)
         local mg=Group.CreateGroup()
         local rc=re:GetHandler()
         if rc:IsDisabled() then return end
@@ -148,20 +148,20 @@ function c116511113.cost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
     e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c116511113.sumfilter(c)
-    return c:IsSetCard(0x108a) and c:IsSummonable(true,nil)
+function c116511113.sumfilter(c,e)
+    return c:IsSetCard(0x108a) and c:IsSummonable(true,e)
 end
 function c116511113.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-        and Duel.IsExistingMatchingCard(c116511113.sumfilter,tp,LOCATION_DECK,0,1,nil) end
+        and Duel.IsExistingMatchingCard(c116511113.sumfilter,tp,LOCATION_DECK,0,1,nil,e) end
     Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function c116511113.sumop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-    local g=Duel.SelectMatchingCard(tp,c116511113.sumfilter,tp,LOCATION_DECK,0,1,1,nil)
+    local g=Duel.SelectMatchingCard(tp,c116511113.sumfilter,tp,LOCATION_DECK,0,1,1,nil,e)
     if g:GetCount()>0 then
-        Duel.Summon(tp,g:GetFirst(),true,nil)
+        Duel.Summon(tp,g:GetFirst(),true,e)
     end
 end
 function c116511113.spfilter(c,e,tp)

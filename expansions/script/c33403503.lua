@@ -36,10 +36,10 @@ function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not se:GetHandler():IsSetCard(0x5349)and  not c:IsCode(33403500)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.GetFieldGroupCount(tp,0,LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_ONFIELD)
+	local b1=Duel.IsExistingMatchingCard(aux.disfilter1,tp,0,LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_ONFIELD,1,nil)
 	local b2=Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,33403500)
 	if chkc then return true end
-	if chk==0 then return b1>0 or b2>0 end
+	if chk==0 then return b1 or b2 end
 	if e:GetLabel()==1 then 
 	local c=e:GetHandler()
 	local e2=Effect.CreateEffect(c)
@@ -83,7 +83,7 @@ function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local b1=Duel.GetFieldGroupCount(tp,0,LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_ONFIELD)
+	local b1=Duel.IsExistingMatchingCard(aux.disfilter1,tp,0,LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_ONFIELD,1,nil)
 	local b2=Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,33403500)
 	if not (b1 or b2) then return end 
 	local op
@@ -95,7 +95,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
    if op==0 then 
 	local ct=Duel.GetFlagEffect(tp,33403501)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
-	local tg=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,ct,nil)  
+	local tg=Duel.SelectMatchingCard(tp,aux.disfilter1,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,ct,nil)  
 	local tc=tg:GetFirst()  
 		while tc do
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
@@ -103,21 +103,21 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1)
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
 			e2:SetValue(RESET_TURN_SET)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e2)
 			if tc:IsType(TYPE_TRAPMONSTER) then
 				local e3=Effect.CreateEffect(c)
 				e3:SetType(EFFECT_TYPE_SINGLE)
 				e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-				e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+				e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 				tc:RegisterEffect(e3)
 			end
 		tc=tg:GetNext()
