@@ -33,7 +33,7 @@ function c9910025.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.SelectMatchingCard(tp,c9910025.rpfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
 		if g:GetCount()==0 then return end
 		local tc=g:GetFirst()
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 		ct=ct+1
 	end
 	if rt>=2 and Duel.IsExistingMatchingCard(c9910025.rpfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
@@ -42,7 +42,7 @@ function c9910025.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.SelectMatchingCard(tp,c9910025.rpfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
 		if g:GetCount()==0 then return end
 		local tc=g:GetFirst()
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 		ct=ct+1
 	end
 	e:SetLabel(ct)

@@ -8,7 +8,6 @@ function c119828752.initial_effect(c)
     e1:SetType(EFFECT_TYPE_QUICK_O)
     e1:SetCode(EVENT_FREE_CHAIN)
     e1:SetRange(LOCATION_PZONE)
-    e1:SetHintTiming(TIMING_STANDBY_PHASE)
     e1:SetCountLimit(1,119828751)
     e1:SetCondition(c119828752.pccon)
     e1:SetTarget(c119828752.pctg)
@@ -67,6 +66,15 @@ function c119828752.xyzop(e,tp,chk)
     if chk==0 then return Duel.GetFlagEffect(tp,119828752)==0 end
     Duel.RegisterFlagEffect(tp,119828752,RESET_PHASE+PHASE_END,0,1)
 end
+function c119828752.pccon(e)
+    local ph=Duel.GetCurrentPhase()
+    local tp=e:GetHandlerPlayer()
+    if Duel.GetTurnPlayer()==tp then
+        return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
+    else
+        return ph==PHASE_STANDBY
+    end
+end
 function c119828752.pcfilter(c)
     return c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and c:IsFaceup()
 end
@@ -85,14 +93,6 @@ function c119828752.pcop(e,tp,eg,ep,ev,re,r,rp)
         Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
         local tc=g:GetNext()
         if tc then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) end
-    end
-end
-function c119828752.pccon(e,tp,eg,ep,ev,re,r,rp)
-    local ph=Duel.GetCurrentPhase()
-    if Duel.GetTurnPlayer()==tp then
-        return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
-    else
-        return ph==PHASE_STANDBY
     end
 end
 function c119828752.filter1(c)
@@ -227,7 +227,8 @@ function c119828752.penop1(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
     local g=tg:Filter(Card.IsLocation,nil,LOCATION_DECK):SelectSubGroup(tp,aux.TRUE,true,1,1)
     if n>1 then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-        g:Merge(tg:Filter(Card.IsLocation,nil,LOCATION_HAND):SelectSubGroup(tp,aux.TRUE,true,1,n-1))
+        local fg=tg:Filter(Card.IsLocation,nil,LOCATION_HAND):SelectSubGroup(tp,aux.TRUE,true,1,n-1)
+        if fg then g:Merge(fg) end
     end
     aux.GCheckAdditional=nil
     if not g then return end
@@ -267,7 +268,6 @@ function c119828752.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c119828752.spop(e,tp,eg,ep,ev,re,r,rp)
-    if not e:GetHandler():IsRelateToEffect(e) then return end
     local g=Duel.GetMatchingGroup(c119828752.spfilter,tp,LOCATION_DECK,0,nil)
     if g:GetCount()>0 then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -282,6 +282,5 @@ end
 function c119828752.mvop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) or not (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
     Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 end

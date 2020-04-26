@@ -76,7 +76,7 @@ function c9951300.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterFlagEffect(tp,9951300,RESET_CHAIN,0,1)
 end
 function c9951300.sumtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSummonable(false,nil) or e:GetHandler():IsMSetable(false,nil) end
+	if chk==0 then return e:GetHandler():IsSummonable(true,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9951300.sumop2(e,tp,eg,ep,ev,re,r,rp)

@@ -48,6 +48,7 @@ function c9910080.tdfilter(c,att)
 	return c:IsType(TYPE_MONSTER) and c:IsAttribute(att) and c:IsAbleToDeck()
 end
 function c9910080.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
 	if chkc then return false end
 	if chk==0 then return Duel.IsExistingTarget(c9910080.tdfilter,tp,LOCATION_REMOVED,0,1,nil,ATTRIBUTE_LIGHT)
 		and Duel.IsExistingTarget(c9910080.tdfilter,tp,LOCATION_REMOVED,0,1,nil,ATTRIBUTE_DARK)
@@ -58,6 +59,7 @@ function c9910080.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g2=Duel.SelectTarget(tp,c9910080.tdfilter,tp,LOCATION_REMOVED,0,1,1,nil,ATTRIBUTE_DARK)
 	g1:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g1,2,0,0)
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910080,2))
 end
 function c9910080.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

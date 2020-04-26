@@ -89,8 +89,6 @@ function cm.coutg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_HANDE)
 	end
 	if ct>=10 then
-		Duel.SetTargetPlayer(tp)
-		Duel.SetTargetParam(1)
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	end
 	if ct>=20 then
@@ -111,8 +109,7 @@ function cm.couop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 	if ct>=10 or e:GetLabel()==33700090 then
-		local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-		Duel.Draw(p,d,REASON_EFFECT)
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 	if ct>=20 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

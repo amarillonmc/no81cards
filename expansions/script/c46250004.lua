@@ -38,7 +38,7 @@ end
 function c46250004.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsControler(1-tp) and c46250004.filter(chkc) end
     local c=e:GetHandler()
-    if chk==0 then return Duel.IsExistingTarget(c46250004.filter,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and e:GetHandler():GetFlagEffect(46250004)==0 end
+    if chk==0 then return Duel.IsExistingTarget(c46250004.filter,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:GetFlagEffect(46250004)==0 end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
     local g=Duel.SelectTarget(tp,c46250004.filter,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,nil)
     Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)

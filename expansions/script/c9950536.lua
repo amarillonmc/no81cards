@@ -21,6 +21,17 @@ function c9950536.initial_effect(c)
 	e1:SetTarget(c9950536.target2)
 	e1:SetOperation(c9950536.operation2)
 	c:RegisterEffect(e1)
+	--tohand
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9950536,1))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetCondition(c9950536.thcon)
+	e2:SetTarget(c9950536.target2)
+	e2:SetOperation(c9950536.operation2)
+	c:RegisterEffect(e2)
 	--spsummon bgm
 	 local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -54,6 +65,9 @@ function c9950536.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.ConfirmCards(1-tp,g)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950536,0))
+end
+function c9950536.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsReason(REASON_EFFECT)
 end
 function c9950536.filter2(c)
 	return c:IsCode(9950536) and c:IsAbleToHand()

@@ -2,7 +2,7 @@
 function c9910124.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910124)
@@ -30,8 +30,7 @@ function c9910124.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and c:IsAbleToDeck()
-		and Duel.IsPlayerCanDiscardDeck(tp,1) end
+		and c:IsAbleToDeck() end
 end
 function c9910124.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -53,12 +52,8 @@ function c9910124.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 		end
 	else
-		Duel.DisableShuffleCheck()
-		if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
-			if not c:IsRelateToEffect(e) then return end
-			Duel.BreakEffect()
-			Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
-		end
+		if not c:IsRelateToEffect(e) then return end
+		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end
 function c9910124.thcost(e,tp,eg,ep,ev,re,r,rp,chk)

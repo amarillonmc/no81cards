@@ -3,10 +3,10 @@ function c118353144.initial_effect(c)
     c:EnableReviveLimit()
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+    e1:SetCode(EVENT_TO_GRAVE)
     e1:SetRange(LOCATION_EXTRA)
-    e1:SetCode(EFFECT_SEND_REPLACE)
-    e1:SetTarget(c118353144.xyztg)
-    e1:SetValue(aux.TRUE)
+    e1:SetCondition(c118353144.spcon)
+    e1:SetOperation(c118353144.spop)
     c:RegisterEffect(e1)
     local e2=Effect.CreateEffect(c)
     e2:SetDescription(aux.Stringid(118353144,2))
@@ -45,21 +45,24 @@ function c118353144.initial_effect(c)
     c:RegisterEffect(e6)
 end
 function c118353144.xyzfilter(c,tp,xyzc)
-    return c118353144.mfilter(c,xyzc) and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:GetDestination()==LOCATION_GRAVE and not c:IsType(TYPE_XYZ) and c:IsSetCard(0xb1)
+    return c118353144.mfilter(c,xyzc) and c:IsControler(tp) and c:IsFaceup() and c:IsPreviousLocation(LOCATION_ONFIELD) and not c:IsType(TYPE_XYZ) and c:IsSetCard(0xb1)
 end
 function c118353144.mfilter(c,xyzc)
-    return c:IsCanBeXyzMaterial(xyzc) and c:IsType(TYPE_MONSTER)
+    return c:IsCanBeXyzMaterial(xyzc)
 end
-function c118353144.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c118353144.spcon(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    if chk==0 then return eg:IsExists(c118353144.xyzfilter,1,nil,tp,c) and not eg:IsExists(aux.NOT(c118353144.mfilter),1,nil,c) and Duel.GetLocationCountFromEx(tp,tp,eg,c)>0 and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,true,false) end
+    local mg=eg:Filter(Card.IsType,nil,TYPE_MONSTER)
+    return mg:IsExists(c118353144.xyzfilter,1,nil,tp,c) and not mg:IsExists(aux.NOT(c118353144.mfilter),1,nil,c) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0 and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
+end
+function c118353144.spop(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
     if Duel.SelectYesNo(tp,aux.Stringid(118353144,0)) then
-        local tc=eg:GetFirst()
+        local mg=eg:Filter(Card.IsType,nil,TYPE_MONSTER)
         local sg=Group.CreateGroup()
-        while tc do
+        for tc in aux.Next(mg) do
             tc:CancelToGrave()
             sg:Merge(tc:GetOverlayGroup())
-            tc=eg:GetNext()
         end
         Duel.SendtoGrave(sg,REASON_RULE)
         local e1=Effect.CreateEffect(c)
@@ -69,13 +72,11 @@ function c118353144.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
         e1:SetRange(LOCATION_EXTRA)
         e1:SetValue(SUMMON_TYPE_XYZ)
         c:RegisterEffect(e1)
-        c:SetMaterial(eg)
-        Duel.Overlay(c,eg)
+        c:SetMaterial(mg)
+        Duel.Overlay(c,mg)
         Duel.XyzSummon(tp,c,nil)
         e1:Reset()
-        return true
     end
-    return false
 end
 function c118353144.tgcostfilter(c)
     return c:IsSetCard(0xb1) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
@@ -105,12 +106,12 @@ function c118353144.desfilter(c)
 end
 function c118353144.destg(e,tp,eg,ep,ev,re,r,rp,chk)
     local n=eg:Filter(Card.IsControler,nil,tp):FilterCount(Card.IsPreviousLocation,nil,LOCATION_DECK)
-    if chk==0 then return n>0 and eg:Filter(Card.IsControler,nil,tp):IsExists(Card.IsAbleToDeck,n,nil) and Duel.GetMatchingGroup(c118353144.desfilter,tp,LOCATION_DECK,0,nil):GetCount()>=n and Duel.GetFlagEffect(tp,118353145)==0 end
+    if chk==0 then return n>0 and eg:Filter(Card.IsControler,nil,tp):IsExists(Card.IsAbleToDeck,n,nil) and Duel.GetMatchingGroup(c118353144.desfilter,tp,LOCATION_DECK,0,nil):GetCount()>=n and c.GetFlagEffect(118353145)==0 end
     e:SetLabel(n)
 end
 function c118353144.desop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.SelectYesNo(tp,aux.Stringid(118353144,3)) then
-        Duel.RegisterFlagEffect(tp,118353145,RESET_PHASE+PHASE_END,0,1)
+        c:RegisterFlagEffect(118353145,RESET_PHASE+PHASE_END,0,1)
         local n=e:GetLabel()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
         local g=Duel.SelectMatchingCard(tp,c118353144.desfilter,tp,LOCATION_DECK,0,n,n,nil)

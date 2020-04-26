@@ -1,5 +1,5 @@
 --Real Scl Version - Variable
-local Version_Number=20200218
+local Version_Number=20200409
 local m=10199990
 local vm=10199991
 rsv={}  --"Base Function"
@@ -25,7 +25,10 @@ rsloc={}	--"Location Function"
 rsef.valinfo	={} --"Value for inside series, inside type etc."
 rscost.costinfo ={} --"Cost information, for record cost value" 
 rsef.targetlist ={} --"Target group list, for rstg.GetTargetAttribute"
-rsef.attachinfo ={} --"Effect information for attach effects"
+rsef.attacheffect ={} --"Effect information for attach effects"
+rsef.attacheffectf ={}
+rsef.solveeffect ={}
+rsef.baseop={}
 
 rscf.synchro_material_action={} --"Custom syn material's action"
 rscf.xyz_material_action={} --"Custom xyz material's action" 
@@ -51,9 +54,11 @@ rsreset.est_pend=   rsreset.est +  rsreset.pend
 rsreset.ered	=   RESET_EVENT+RESETS_REDIRECT 
 
 --Code Variable 
-rscode.Extra_Effect   =   m+100   --"Attach Effect"
-rscode.Extra_Effect_FORCE=   m+200   --"Attach Effect,Force"
-rscode.Summon_Flag   =   m+300   --"Summon Flag for SummonBuff"
+rscode.Extra_Effect_Activate   =   m+100   --"Attach Effect"
+rscode.Extra_Effect_BSolve   =   m+200 
+rscode.Extra_Effect_ASolve   =   m+800 
+
+rscode.Phase_Leave_Flag   =   m+300   --"Summon Flag for SummonBuff"
 rscode.Extra_Synchro_Material=  m+400 --"Extra Synchro Material"
 rscode.Extra_Xyz_Material   =   m+401 --"Extra Xyz Material" 
 rscode.Utility_Xyz_Material =   m+500 --"Utility Xyz Material" 
@@ -76,6 +81,8 @@ rshint.negsp=aux.Stringid(74892653,0) --"negate special summon"
 rshint.darktuner=aux.Stringid(m,14) --"treat as dark tuner"
 rshint.darksynchro=aux.Stringid(m,15) --"treat as dark synchro"
 rshint.choose=aux.Stringid(23912837,1) --"choose 1 effect"
+rshint.epleave=aux.Stringid(m,3)	--"end phase leave field"
+rshint.finshcopy=aux.Stringid(43387895,1) --"reset copy effect"
 
 --Property Variable
 rsflag.flaglist =   { EFFECT_FLAG_CARD_TARGET,EFFECT_FLAG_PLAYER_TARGET,EFFECT_FLAG_DELAY,EFFECT_FLAG_DAMAGE_STEP,EFFECT_FLAG_DAMAGE_CAL,
@@ -110,6 +117,7 @@ rscf.exlist  =   { TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK }
 
 --Location Variable
 rsloc.hd=LOCATION_HAND+LOCATION_DECK 
+rsloc.hg=LOCATION_HAND+LOCATION_GRAVE  
 rsloc.dg=LOCATION_DECK+LOCATION_GRAVE 
 rsloc.gr=LOCATION_GRAVE+LOCATION_REMOVED 
 rsloc.hdg=LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE 
@@ -132,7 +140,35 @@ function rsof.Escape_Old_Functions()
 	rsof.SelectOption_Page= rsop.SelectOption_Page
 	rsof.SelectNumber=   rsop.AnnounceNumber
 	rsof.SelectNumber_List= rsop.AnnounceNumber_List
-	rsof.IsSet   =   rscf.DefineSet
+	rsof.IsSet   =   rscf.DefineSet 
+	--some card use old SummonBuff's phase leave field parterment, must fix them in their luas
+	rssf.SummonBuff=function(attlist,isdis,isdistig,selfleave,phaseleave)
+		local bufflist={}
+		if attlist then 
+			for index,par in pairs(attlist) do
+				if par then 
+					if index==1 then att="atkf" end
+					if index==2 then att="deff" end
+					if index==3 then att="lv" end
+					table.insert(bufflist,att)
+					table.insert(bufflist,par)
+				end
+			end
+		end
+		if isdis then
+			table.insert(bufflist,"dis,dise")
+			table.insert(bufflist,true)
+		end
+		if isdistig then
+			table.insert(bufflist,"tri")
+			table.insert(bufflist,true)
+		end
+		if selfleave then 
+			table.insert(bufflist,"leave")
+			table.insert(bufflist,selfleave)
+		end
+		return bufflist
+	end
 end
 
 

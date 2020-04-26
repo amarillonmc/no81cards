@@ -26,18 +26,18 @@ local rssmf =   Special_Mode_Fast_Duel
 local rssmm =   Special_Mode_Multiple_Duel
 local rssmu =   Special_Mode_Universal_Duel
 
-#Gale
+#Gale 1472676207
 local rsve  =   Voison
 local rsneov=   Neons
 local tfrsv =   T.Fairies
 local rsss  =   Star_Spirit
 
-#ChiJiang
+#ChiJiang 626386490
 local rsnm  =   Nightmare
 local rslf  =   Little_Fox 
 local rccv  =   Thermonuclear
 
-#XiaoMi
+#XiaoMi 643865567
 local rssg  =   Sex_Gun
 local rsps  =   Pseudo_Soul
 local rsdcc =   Dragon_Chess_Corps
@@ -51,28 +51,38 @@ local rsvw  =   Virus_Wrom
 local rsia  =   Indolent_Angel
 local rsso  =   Simulated_Organism
 
-#NianBao
+#NianBao 583322404
 local rslap =   Lapin
 
-#XiaoDaoHeng
+#XiaoDaoHeng 1614895649
 local rslrd =   Life_DeathRound_Dance
 
-#Huang
+#Huang 1184387005
 local rsts  =   Trinity_Sword
 
-#Luoxing
+#Luoxing 1151483512
 local rsdt  =   Dark_Tale
 local rsod  =   Order
 
-#YunZeZhun
+#YunZeZhun 1587361112
 local rsphh =   Phantom_Thieves_Of_Hearts
 local rsgc  =   Guard_City
 
-#ZhenDong
+#ZhenDong 
 local rsfv  =   Fgo/Assassin
 
-#JingJing
+#JingJing 1772438857
 local rsba  =   BlueAngel
+
+#Akashic 3204027606
+local rszg  =   Zogu
+local rsgs  =   Gran_Sphere
+
+#HeiBai 1172777968
+local rstm  =   Toaru_Majutsu_no_Index
+
+#2558566212
+local rsgod =   God
 
 --Set Code
 #Scl
@@ -120,7 +130,7 @@ local   =   0xc334
 local Oraclesmith =   0x3335
 local DevilHunter =   0x5335
 local DevilSlayer =   0x6335
-local DMC	  =   0x9335
+local DMC   =   0x9335
 local Ashenone  =   0xa335
 local Cinderlord  =   0xc335
 

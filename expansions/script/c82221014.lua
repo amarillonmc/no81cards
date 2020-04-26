@@ -25,38 +25,51 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)  
 	--act from deck
 	local e4=e1:Clone()
-	e4:SetRange(LOCATION_DECK)
+	e4:SetRange(LOCATION_HAND+LOCATION_DECK)
 	e4:SetCost(cm.actcost2)
 	e4:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_ACTIVATE_COST)
+	e5:SetRange(LOCATION_DECK)  
+	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e5:SetTargetRange(1,0)
+	e5:SetTarget(cm.actarget)
+	e5:SetOperation(cm.costop)
+	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetCode(EFFECT_SPSUMMON_PROC_G)
+	e6:SetRange(LOCATION_DECK)
+	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
+	c:RegisterEffect(e6)
 end
 function cm.cfilter(c)  
-	return c:IsSetCard(0xb4) and c:GetType()==0x81 and not c:IsPublic()  
+	return c:IsSetCard(0xb4) and bit.band(c:GetType(),0x81)==0x81 and not c:IsPublic()  
 end  
-function cm.actcost(e,tp,eg,ep,ev,re,r,rp,chk)  
+function cm.actarget(e,te,tp)
+	local c=e:GetHandler()
+	return te:GetHandler()==c
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+end
+function cm.actcost(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then
-		if not e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then 
-			return true
-		else
-			return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil)
-		end  
-	end
-	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then 
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)  
-		local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,1,1,nil)  
-		Duel.ConfirmCards(1-tp,g)  
-		Duel.ShuffleHand(tp)  
+		return not e:GetHandler():IsLocation(LOCATION_HAND)
 	end
 end  
 function cm.actcost2(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)  
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,1,1,nil)  
-	Duel.ConfirmCards(1-tp,g)  
+	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)  
 end  
 function cm.cpfilter(c)  
-	return c:GetType()==0x82 and c:IsSetCard(0xb4) and c:IsAbleToGraveAsCost() and c:CheckActivateEffect(false,true,false)~=nil  
+	return bit.band(c:GetType(),0x82)==0x82 and c:IsSetCard(0xb4) and c:IsAbleToGraveAsCost() and c:CheckActivateEffect(false,true,false)~=nil  
 end  
 function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then 

@@ -102,7 +102,6 @@ function c9910021.mdisable(e,c)
 	local tp=e:GetHandlerPlayer()
 	return (c:IsType(TYPE_EFFECT) or bit.band(c:GetOriginalType(),TYPE_EFFECT)==TYPE_EFFECT)
 		and aux.GetColumn(c,tp)==seq and c~=e:GetHandler():GetEquipTarget()
-		and c:GetSequence()<5
 end
 function c9910021.distg(e,c)
 	local ec=e:GetHandler()

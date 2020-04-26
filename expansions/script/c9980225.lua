@@ -1,14 +1,21 @@
 --地狱女神·赫斯提亚
 function c9980225.initial_effect(c)
 	c:EnableReviveLimit()
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.FALSE)
+	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9980225,0))
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCondition(c9980225.spcon)
+	e2:SetTarget(c9980225.sptg)
 	e2:SetOperation(c9980225.spop)
 	c:RegisterEffect(e2)
 	local e1=Effect.CreateEffect(c)
@@ -77,44 +84,42 @@ function c9980225.initial_effect(c)
 	e4:SetTarget(c9980225.destg)
 	e4:SetOperation(c9980225.desop)
 	c:RegisterEffect(e4)
-	--spsummon limit
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,0)
-	e2:SetTarget(c9980225.sslimit)
-	c:RegisterEffect(e2)
+ --negate
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DISABLE+CATEGORY_POSITION)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAIN_SOLVING)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetCondition(c9980225.negcon)
+	e3:SetOperation(c9980225.negop)
+	c:RegisterEffect(e3)
 end
-function c9980225.sslimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0xbc8)
-end
-function c9980225.spfilter(c)
-	return c:IsSetCard(0xbc8) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
+function c9980225.spfilter(c,check)
+	return c:IsReleasable() and c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSetCard(0xbc8)
+		and (c:IsFaceup() or check and c:IsFacedown())
 end
 function c9980225.spcon(e,c)
 	if c==nil then return true end
-	if Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)==0 then
-		return Duel.IsExistingMatchingCard(c9980225.spfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
-			and Duel.IsExistingMatchingCard(c9980225.spfilter,c:GetControler(),LOCATION_ONFIELD,0,3,nil)
-	else
-		return Duel.IsExistingMatchingCard(c9980225.spfilter,c:GetControler(),LOCATION_ONFIELD,0,3,nil)
-	end
+	local tp=c:GetControler()
+	local check=Duel.IsPlayerAffectedByEffect(tp,9980211,9980225)
+	local g=Duel.GetReleaseGroup(c9980225.spfilter,tp,LOCATION_ONFIELD,0,nil,check)
+	return g:CheckSubGroup(aux.mzctcheck,3,3,tp)
+end
+function c9980225.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local check=Duel.IsPlayerAffectedByEffect(tp,9980211,9980225)
+	local g=Duel.GetReleaseGroup(c9980225.spfilter,tp,LOCATION_ONFIELD,0,nil,check)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local sg=g:SelectSubGroup(tp,aux.mzctcheck,true,3,3,tp)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
 end
 function c9980225.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	if Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)==0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g1=Duel.SelectMatchingCard(tp,c9980225.spfilter,tp,LOCATION_MZONE,0,1,1,nil)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g2=Duel.SelectMatchingCard(tp,c9980225.spfilter,tp,LOCATION_ONFIELD,0,2,2,g1:GetFirst())
-		g2:AddCard(g1:GetFirst())
-		Duel.SendtoGrave(g2,REASON_COST)
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c9980225.spfilter,tp,LOCATION_ONFIELD,0,3,3,nil)
-		Duel.SendtoGrave(g,REASON_COST)
-	end
+	local g=e:GetLabelObject()
+	Duel.Release(g,REASON_COST)
+	g:DeleteGroup()
 end
 function c9980225.efilter(e,te)
 	return te:IsActiveType(TYPE_TRAP+TYPE_SPELL)
@@ -131,24 +136,25 @@ end
 function c9980225.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if tc:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e1:SetValue(1000)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.Damage(1-tp,1000,REASON_EFFECT)
-		Duel.Recover(p,d,REASON_EFFECT)
+		Duel.Recover(tp,1000,REASON_EFFECT)
 	end
 end
 function c9980225.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousPosition(POS_FACEUP) and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9980225.op(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CHANGE_DAMAGE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -160,7 +166,7 @@ function c9980225.op(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
-	e:GetHandler():RegisterFlagEffect(9980225,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	c:RegisterFlagEffect(9980225,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function c9980225.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -187,5 +193,27 @@ function c9980225.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
+	end
+end
+function c9980225.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xbc8) and c:IsAttackPos()
+end
+function c9980225.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c9980225.cfilter,tp,LOCATION_MZONE,0,1,nil)
+		and rp==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainDisablable(ev)
+		and e:GetHandler():GetFlagEffect(9980225)<=0
+end
+function c9980225.negop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if Duel.SelectYesNo(tp,aux.Stringid(9980225,3)) then
+		Duel.Hint(HINT_CARD,0,9980225)
+		if Duel.NegateEffect(ev) and Duel.IsExistingMatchingCard(c9980225.cfilter,tp,LOCATION_MZONE,0,1,nil) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+			local g=Duel.SelectMatchingCard(tp,c9980225.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
+			Duel.HintSelection(g)
+			Duel.ChangePosition(g:GetFirst(),POS_FACEUP_DEFENSE)
+		end
+		e:GetHandler():RegisterFlagEffect(9980225,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	end
 end

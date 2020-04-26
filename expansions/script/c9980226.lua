@@ -6,18 +6,16 @@ function c9980226.initial_effect(c)
 	e1:SetCode(EFFECT_RITUAL_LEVEL)
 	e1:SetValue(c9980226.rlevel)
 	c:RegisterEffect(e1)
-	--act limit
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9980226,0))
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,9980226)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e1:SetCost(c9980226.cost)
-	e1:SetTarget(c9980226.target)
-	e1:SetOperation(c9980226.operation)
-	c:RegisterEffect(e1)
+	 --ritual summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9980226,1))
+	e2:SetCategory(CATEGORY_RELEASE+CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,9980226)
+	e2:SetTarget(c9980226.rstg)
+	e2:SetOperation(c9980226.rsop)
+	c:RegisterEffect(e2)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9980226,1))
@@ -42,45 +40,57 @@ end
 function c9980226.cfilter(c)
 	return c:IsSetCard(0xbc8) and c:IsAbleToRemoveAsCost()
 end
-function c9980226.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9980226.cfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9980226.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+function c9980226.rcheck(gc)
+	return  function(tp,g,c)
+				return g:IsContains(gc)
+			end
 end
-function c9980226.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
-	e:SetLabel(Duel.AnnounceType(tp))
+function c9980226.filter(c,e,tp)
+	return c:IsSetCard(0xbc8)
 end
-function c9980226.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9980226.rstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(0,1)
-	if e:GetLabel()==0 then
-		e1:SetDescription(aux.Stringid(9980226,2))
-		e1:SetValue(c9980226.aclimit1)
-	elseif e:GetLabel()==1 then
-		e1:SetDescription(aux.Stringid(9980226,3))
-		e1:SetValue(c9980226.aclimit2)
-	else
-		e1:SetDescription(aux.Stringid(9980226,4))
-		e1:SetValue(c9980226.aclimit3)
+	if chk==0 then
+		local mg=Duel.GetRitualMaterial(tp)
+		aux.RCheckAdditional=c9980226.rcheck(c)
+		local res=mg:IsContains(c) and Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,c9980226.filter,e,tp,mg,nil,Card.GetLevel,"Greater")
+		aux.RCheckAdditional=nil
+		return res
 	end
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
-function c9980226.aclimit1(e,re,tp)
-	return re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsImmuneToEffect(e)
-end
-function c9980226.aclimit2(e,re,tp)
-	return re:IsActiveType(TYPE_SPELL) and not re:GetHandler():IsImmuneToEffect(e)
-end
-function c9980226.aclimit3(e,re,tp)
-	return re:IsActiveType(TYPE_TRAP) and not re:GetHandler():IsImmuneToEffect(e)
+function c9980226.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local mg=Duel.GetRitualMaterial(tp)
+	if c:GetControler()~=tp or not c:IsRelateToEffect(e) or not mg:IsContains(c) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	aux.RCheckAdditional=c9980226.rcheck(c)
+	local tg=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,c9980226.filter,e,tp,mg,nil,Card.GetLevel,"Greater")
+	local tc=tg:GetFirst()
+	if tc then
+		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
+		if tc.mat_filter then
+			mg=mg:Filter(tc.mat_filter,tc,tp)
+		else
+		mg:RemoveCard(tc)
+		end
+		if not mg:IsContains(c) then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		Duel.SetSelectedCard(c)
+		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
+		local mat=mg:SelectSubGroup(tp,aux.RitualCheck,false,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater")
+		aux.GCheckAdditional=nil
+		if not mat or mat:GetCount()==0 then
+			aux.RCheckAdditional=nil
+			return
+		end
+		tc:SetMaterial(mat)
+		Duel.ReleaseRitualMaterial(mat)
+		Duel.BreakEffect()
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+		tc:CompleteProcedure()
+	end
+	aux.RCheckAdditional=nil
 end
 function c9980226.cfilter(c,tp)
 	return c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0xbc8)

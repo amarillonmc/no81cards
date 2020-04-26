@@ -1,6 +1,6 @@
 --交错进化
 function c9950528.initial_effect(c)
- aux.AddCodeList(c,9950528)
+	 aux.AddCodeList(c,9950528)
 	  --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -11,6 +11,16 @@ function c9950528.initial_effect(c)
 	e1:SetTarget(c9950528.target)
 	e1:SetOperation(c9950528.activate)
 	c:RegisterEffect(e1)
+ --to hand
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9950528,2))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(c9950528.thtg)
+	e3:SetOperation(c9950528.thop)
+	c:RegisterEffect(e3)
 end
 function c9950528.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
@@ -42,4 +52,18 @@ function c9950528.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 end
-
+function c9950528.thfilter(c)
+	return c:IsSetCard(0x9ba6) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+function c9950528.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950528.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9950528.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9950528.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end

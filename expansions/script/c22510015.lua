@@ -21,11 +21,13 @@ function c22510015.initial_effect(c)
     c:RegisterEffect(e6)
 end
 function c22510015.cfilter(c)
-    return c:IsSetCard(0xec0) and c:IsType(TYPE_MONSTER) and c:IsDiscardable()
+    return c:IsSetCard(0xec0) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
 end
 function c22510015.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(c22510015.cfilter,tp,LOCATION_HAND,0,1,nil) end
-    Duel.DiscardHand(tp,c22510015.cfilter,1,1,REASON_COST+REASON_DISCARD,nil)
+    if chk==0 then return Duel.IsExistingMatchingCard(c22510015.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+    local g=Duel.SelectMatchingCard(tp,c22510015.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+    Duel.SendtoGrave(g,REASON_COST)
 end
 function c22510015.filter(c,tp)
     return c:GetSummonPlayer()~=tp and c:IsCanTurnSet()
@@ -39,7 +41,7 @@ end
 function c22510015.activate(e,tp,eg,ep,ev,re,r,rp)
     local g=eg:Filter(c22510015.filter,nil,tp)
     if not g then return end
-    Duel.NegateSummon(c)
+    Duel.NegateSummon(g:GetFirst())
 end
 function c22510015.handcon(e)
     return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_HAND,0)==5

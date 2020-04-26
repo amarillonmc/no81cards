@@ -1,15 +1,22 @@
 --守护女神之敌·玛吉空奴
 function c9980213.initial_effect(c)
-	 c:EnableReviveLimit()
+	c:EnableReviveLimit()
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.FALSE)
+	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9980213,0))
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetCondition(c9980213.spcon)
-	e2:SetOperation(c9980213.spop)
+	e2:SetCondition(c9980213.sprcon)
+	e2:SetTarget(c9980213.sprtg)
+	e2:SetOperation(c9980213.sprop)
 	c:RegisterEffect(e2)
 	--atkup
 	local e3=Effect.CreateEffect(c)
@@ -59,7 +66,7 @@ function c9980213.initial_effect(c)
 	--destroy
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(9980213,1))
-	e4:SetCategory(CATEGORY_DESTROY)
+	e4:SetCategory(CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_MZONE)
@@ -75,76 +82,62 @@ function c9980213.initial_effect(c)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,9980213)
 	e2:SetCost(c9980213.spcost)
-	e2:SetTarget(c9980213.sptg)
+	e2:SetTarget(c9980213.sptg2)
 	e2:SetOperation(c9980213.spop2)
 	c:RegisterEffect(e2)
-	--spsummon limit
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,0)
-	e2:SetTarget(c9980213.sslimit)
-	c:RegisterEffect(e2)
 end
-function c9980213.sslimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0xbc8)
+function c9980213.sprfilter(c,check)
+	return c:IsReleasable() and c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSetCard(0xbc8)
+		and (c:IsFaceup() or check and c:IsFacedown())
 end
-function c9980213.spfilter(c)
-	return c:IsSetCard(0xbc8) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
-end
-function c9980213.spcon(e,c)
+function c9980213.sprcon(e,c)
 	if c==nil then return true end
-	if Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)==0 then
-		return Duel.IsExistingMatchingCard(c9980213.spfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
-			and Duel.IsExistingMatchingCard(c9980213.spfilter,c:GetControler(),LOCATION_ONFIELD,0,3,nil)
-	else
-		return Duel.IsExistingMatchingCard(c9980213.spfilter,c:GetControler(),LOCATION_ONFIELD,0,3,nil)
-	end
+	local tp=c:GetControler()
+	local check=Duel.IsPlayerAffectedByEffect(tp,9980225,9980211)
+	local g=Duel.GetReleaseGroup(c9980213.sprfilter,tp,LOCATION_ONFIELD,0,nil,check)
+	return g:CheckSubGroup(aux.mzctcheck,3,3,tp)
 end
-function c9980213.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	if Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)==0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g1=Duel.SelectMatchingCard(tp,c9980213.spfilter,tp,LOCATION_MZONE,0,1,1,nil)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g2=Duel.SelectMatchingCard(tp,c9980213.spfilter,tp,LOCATION_ONFIELD,0,2,2,g1:GetFirst())
-		g2:AddCard(g1:GetFirst())
-		Duel.SendtoGrave(g2,REASON_COST)
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c9980213.spfilter,tp,LOCATION_ONFIELD,0,3,3,nil)
-		Duel.SendtoGrave(g,REASON_COST)
-	end
+function c9980213.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local check=Duel.IsPlayerAffectedByEffect(tp,9980225,9980211)
+	local g=Duel.GetReleaseGroup(c9980213.sprfilter,tp,LOCATION_ONFIELD,0,nil,check)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local sg=g:SelectSubGroup(tp,aux.mzctcheck,true,3,3,tp)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function c9980213.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.Release(g,REASON_COST)
+	g:DeleteGroup()
 end
 function c9980213.atkfilter(c)
 	return c:IsType(TYPE_TRAP+TYPE_SPELL)
 end
 function c9980213.atkval(e,c)
-	return Duel.GetMatchingGroupCount(c9980213.atkfilter,tp,LOCATION_GRAVE,0,nil)*1000
+	return Duel.GetMatchingGroupCount(c9980213.atkfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)*1000
 end
 function c9980213.atkval2(e,c)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_EXTRA,0,nil,TYPE_MONSTER)*200
+	return Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_EXTRA,0,nil,TYPE_MONSTER)*500
 end
 function c9980213.efilter(e,te)
 	return te:IsActiveType(TYPE_TRAP+TYPE_SPELL)
 end
-function c9980213.desfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
 function c9980213.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(1-tp) and c9980213.desfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9980213.desfilter,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c9980213.desfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 	Duel.SetChainLimit(aux.FALSE)
 end
 function c9980213.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsFacedown() and tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
+	if tc:IsRelateToEffect(e) then
+		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end
 end
 function c9980213.cfilter(c)
@@ -156,13 +149,13 @@ function c9980213.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,c9980213.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
-function c9980213.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9980213.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) end
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9980213.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+		Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 	end
 end

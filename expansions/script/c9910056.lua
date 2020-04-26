@@ -1,18 +1,25 @@
 --大藏里想奈
 function c9910056.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsAttribute,ATTRIBUTE_DARK),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_LIGHT),aux.NonTuner(Card.IsAttribute,ATTRIBUTE_DARK),1)
 	c:EnableReviveLimit()
-	--draw
+	--to deck
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCondition(c9910056.drcon)
 	e1:SetTarget(c9910056.drtg)
 	e1:SetOperation(c9910056.drop)
 	c:RegisterEffect(e1)
+	--adjust
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_ADJUST)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetOperation(c9910056.adjustop)
+	c:RegisterEffect(e4)
 	--cannot activate
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -20,9 +27,11 @@ function c9910056.initial_effect(c)
 	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(1,1)
+	e2:SetLabel(0)
 	e2:SetCondition(c9910056.accon)
-	e2:SetValue(c9910056.aclimit)
+	e2:SetValue(c9910056.aclimit)   
 	c:RegisterEffect(e2)
+	e4:SetLabelObject(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_SSET)
@@ -37,24 +46,15 @@ end
 function c9910056.filter(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsRace(RACE_FAIRY) and c:IsAbleToDeck()
 end
-function c9910056.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingMatchingCard(c9910056.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+function c9910056.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910056.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function c9910056.locfilter(c,sp)
-	return c:IsLocation(LOCATION_DECK) and c:IsControler(sp)
 end
 function c9910056.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,c9910056.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	if g:GetCount()>0 then
-		if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0 then
-			local ct=Duel.GetOperatedGroup():FilterCount(c9910056.locfilter,nil,tp)
-			if ct>0 then Duel.ShuffleDeck(tp) end
-			Duel.Draw(tp,1,REASON_EFFECT)
-		end
+		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
 end
 function c9910056.accon(e)
@@ -62,13 +62,27 @@ function c9910056.accon(e)
 end
 function c9910056.aclimit(e,re,tp)
 	if not re:IsHasType(EFFECT_TYPE_ACTIVATE) or not re:IsActiveType(TYPE_SPELL+TYPE_TRAP) then return false end
-	local c=re:GetHandler()
-	return not c:IsLocation(LOCATION_SZONE) or c:GetFlagEffect(9910056)>0
+	if tp==e:GetHandlerPlayer() then return e:GetLabel()==1 or e:GetLabel()==3
+	else return e:GetLabel()==2 or e:GetLabel()==3 end
 end
 function c9910056.aclimset(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		tc:RegisterFlagEffect(9910056,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,1)
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_TRIGGER)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+		e1:SetValue(1)
+		tc:RegisterEffect(e1)
 		tc=eg:GetNext()
 	end
+end
+function c9910056.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	local b1=Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_SZONE,0,1,nil)
+	local b2=Duel.IsExistingMatchingCard(Card.IsFacedown,tp,0,LOCATION_SZONE,1,nil)
+	local te=e:GetLabelObject()
+	if b1 and b2 then te:SetLabel(0) end
+	if not b1 and b2 then te:SetLabel(1) end
+	if b1 and not b2 then te:SetLabel(2) end
+	if not b1 and not b2 then te:SetLabel(3) end
 end

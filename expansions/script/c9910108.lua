@@ -10,20 +10,6 @@ function c9910108.initial_effect(c)
 	e1:SetTarget(c9910108.sptg)
 	e1:SetOperation(c9910108.spop)
 	c:RegisterEffect(e1)
-	--destroy
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910108,0))
-	e2:SetCategory(CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCountLimit(1)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetLabelObject(c)
-	e2:SetCost(c9910108.descost)
-	e2:SetTarget(c9910108.destg)
-	e2:SetOperation(c9910108.desop)
-	c:RegisterEffect(e2)
 end
 function c9910108.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
@@ -72,40 +58,5 @@ function c9910108.spop(e,tp,eg,ep,ev,re,r,rp)
 		if not c:IsRelateToEffect(e) then return end
 		Duel.BreakEffect()
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
-	end
-end
-function c9910108.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	local c=e:GetLabelObject()
-	local g=e:GetHandler():GetOverlayGroup()
-	if not g:IsContains(c) then return false end
-	g:RemoveCard(c)
-	if g:GetCount()==0 or (g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910108,1))) then
-		Duel.SendtoGrave(c,REASON_COST)
-	elseif Duel.SelectYesNo(tp,aux.Stringid(9910108,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
-		local tg=g:Select(tp,1,1,nil)
-		if tg:GetCount()>0 then
-			Duel.SendtoGrave(tg,REASON_COST)
-		end
-	else e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST) end
-end
-function c9910108.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,nil)
-		and Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g1=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g2=Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,1,nil)
-	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,2,0,0)
-end
-function c9910108.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
-	if tg:GetCount()>0 then
-		Duel.Destroy(tg,REASON_EFFECT)
 	end
 end

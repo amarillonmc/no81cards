@@ -57,7 +57,7 @@ function c9951207.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9951207.atkfilter1(c)
-	return c:IsSetCard(0xcbd1 and c:GetAttack()>0
+	return c:IsSetCard(0xcbd1) and c:GetAttack()>0
 end
 function c9951207.atktg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9951207.atkfilter1(chkc) end

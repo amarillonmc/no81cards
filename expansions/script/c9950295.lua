@@ -62,13 +62,13 @@ function c9950295.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950295,1))
 end
 function c9950295.aclimit(e,re,tp)
-	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsRace(RACE_DRAGON+RACE_SEASERPENT+RACE_WYRM+RACE_MACHINE)
+	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsRace(RACE_DRAGON+RACE_SEASERPENT+RACE_WYRM+RACE_MACHINE+RACE_DINOSAUR)
 end
 function c9950295.val(e,c)
 	return Duel.GetMatchingGroupCount(c9950295.filter,0,0x14,0x14,nil)*1000
 end
 function c9950295.filter(c)
-	return c:IsRace(RACE_DRAGON+RACE_SEASERPENT+RACE_WYRM+RACE_MACHINE) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+	return c:IsRace(RACE_DRAGON+RACE_SEASERPENT+RACE_WYRM+RACE_MACHINE+RACE_DINOSAUR) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
 end
 function c9950295.discon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)

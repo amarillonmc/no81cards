@@ -13,7 +13,6 @@ function c9950330.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetCountLimit(1)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCondition(c9950330.condition)
 	e2:SetTarget(c9950330.target)
 	e2:SetOperation(c9950330.operation)
 	c:RegisterEffect(e2)
@@ -39,9 +38,6 @@ function c9950330.initial_effect(c)
 	e1:SetTarget(c9950330.thtg)
 	e1:SetOperation(c9950330.thop)
 	c:RegisterEffect(e1)
-end
-function c9950330.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function c9950330.filter2(c,e,tp)
 	return c:IsRace(RACE_DIVINE) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)

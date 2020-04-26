@@ -45,7 +45,7 @@ function c9980223.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9980223.matfilter(c)
-	return c:IsLinkType(TYPE_NORMAL) and c:IsLinkRace(RACE_CYBERSE)
+	return (c:IsLinkType(TYPE_NORMAL) and c:IsLinkRace(RACE_CYBERSE)) or c:IsLinkSetCard(0xbc8)
 end
 function c9980223.atkval(e,c)
 	local g=e:GetHandler():GetLinkedGroup():Filter(Card.IsFaceup,nil)

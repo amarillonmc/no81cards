@@ -10,23 +10,6 @@ function c9910120.initial_effect(c)
 	e1:SetTarget(c9910120.sptg)
 	e1:SetOperation(c9910120.spop)
 	c:RegisterEffect(e1)
-	--actlimit
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e3:SetTargetRange(0,1)
-	e3:SetValue(1)
-	e3:SetCondition(c9910120.actcon)
-	c:RegisterEffect(e3)
-	--atkup
-	local e3=Effect.CreateEffect(c)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetType(EFFECT_TYPE_XMATERIAL)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetCondition(c9910120.atkcon)
-	e3:SetValue(1600)
-	c:RegisterEffect(e3)
 end
 function c9910120.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
@@ -73,11 +56,4 @@ function c9910120.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
-end
-function c9910120.actcon(e)
-	return Duel.GetAttacker()==e:GetHandler() and Duel.GetAttackTarget()~=nil
-end
-function c9910120.atkcon(e)
-	local phase=Duel.GetCurrentPhase()
-	return phase==PHASE_DAMAGE_CAL and Duel.GetAttacker()==e:GetHandler() and Duel.GetAttackTarget()~=nil
 end

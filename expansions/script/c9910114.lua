@@ -2,7 +2,7 @@
 function c9910114.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_RECOVER+CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910114)
@@ -38,8 +38,7 @@ function c9910114.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and c:IsAbleToDeck()
-		and Duel.IsPlayerCanDraw(tp,1) end
+		and c:IsAbleToDeck() end
 end
 function c9910114.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -61,10 +60,7 @@ function c9910114.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 		end
 	else
-		Duel.Recover(1-tp,1000,REASON_EFFECT)
-		if Duel.Draw(tp,1,REASON_EFFECT)==0 then return end
 		if not c:IsRelateToEffect(e) then return end
-		Duel.BreakEffect()
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end

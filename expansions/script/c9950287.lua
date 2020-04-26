@@ -64,7 +64,7 @@ function c9950287.rettg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c9950287.retfilter1,tp,LOCATION_GRAVE,0,2,nil)
 		and Duel.IsExistingTarget(c9950287.retfilter2,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g1=Duel.SelectTarget(tp,c9950287.retfilter1,tp,LOCATION_GRAVE,0,2,2,nil)
+	local g1=Duel.SelectTarget(tp,c9950287.retfilter1,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g2=Duel.SelectTarget(tp,c9950287.retfilter2,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g1,g1:GetCount(),0,0)

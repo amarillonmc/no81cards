@@ -84,7 +84,7 @@ function c9950503.operation2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function c9950503.filter(c,e,sp)
-	return c:IsCode(9950503) and c:IsCanBeSpecialSummoned(e,0,sp,false,false)
+	return c:IsSetCard(0xba5) and c:IsLevel(3) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsCanBeSpecialSummoned(e,0,sp,false,false)
 end
 function c9950503.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950503.filter,tp,LOCATION_DECK,0,1,nil,e,tp)

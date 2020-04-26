@@ -1,13 +1,16 @@
 --五河士道 守护
 function c33401312.initial_effect(c)
-	 --inm
+   --atk & def
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
-	e1:SetCountLimit(1,33401312)
-	e1:SetTarget(c33401312.target)
-	e1:SetOperation(c33401312.activate)
+	e1:SetDescription(aux.Stringid(33401312,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,33411312)
+	e1:SetCondition(c33401312.atkcon)
+	e1:SetTarget(c33401312.atktg)
+	e1:SetOperation(c33401312.atkop)
 	c:RegisterEffect(e1)
 --destroy replace
 	local e2=Effect.CreateEffect(c)
@@ -20,43 +23,46 @@ function c33401312.initial_effect(c)
 	e2:SetOperation(c33401312.repop)
 	c:RegisterEffect(e2)
 end
-function c33401312.filter(c)
-	return  c:IsSetCard(0x341) 
+function c33401312.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetAttackTarget()
+		and (Duel.GetAttacker():IsControler(tp) and Duel.GetAttacker():IsSetCard(0x341)
+			or Duel.GetAttackTarget():IsControler(tp) and Duel.GetAttackTarget():IsSetCard(0x341))
 end
-function c33401312.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(c33401312.filter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33401312,0))
-	local g=Duel.SelectTarget(tp,c33401312.filter,tp,LOCATION_MZONE,0,1,1,nil)
-end
-function c33401312.activate(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e)  and tc:IsFaceup() and tc:IsControler(tp) then
-		 local e3=Effect.CreateEffect(e:GetHandler())
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_IMMUNE_EFFECT)
-		e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e3:SetRange(LOCATION_MZONE)
-		e3:SetValue(c33401312.efilter)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		e3:SetOwnerPlayer(tp)
-		tc:RegisterEffect(e3)
-		  local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-			e1:SetRange(LOCATION_MZONE)
-			e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
-			e1:SetCountLimit(1)
-			e1:SetValue(c33401312.indct)
-			tc:RegisterEffect(e1)  
+function c33401312.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	 local c=e:GetHandler()
+	if chk==0 then
+		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
-function c33401312.efilter(e,re)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
-end
-function c33401312.indct(e,re,r,rp)
-	if bit.band(r,REASON_BATTLE)~=0 then
-		return 1
-	else return 0 end
+function c33401312.atkop(e,tp,eg,ep,ev,re,r,rp)
+	 local c=e:GetHandler()
+	local a=Duel.GetAttacker()
+	local d=a:GetBattleTarget()
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e2:SetTargetRange(1,1)
+		e2:SetReset(RESET_PHASE+PHASE_DAMAGE)
+		Duel.RegisterEffect(e2,tp)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e1:SetValue(1)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE)
+		a:RegisterEffect(e1)
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e3:SetValue(1)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE)
+		d:RegisterEffect(e3)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		Duel.BreakEffect()
+		local cp=Duel.GetTurnPlayer()
+		 Duel.SkipPhase(cp,PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
+	end
 end
 
 function c33401312.repfilter(c,tp)

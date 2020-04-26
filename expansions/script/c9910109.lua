@@ -2,7 +2,7 @@
 function c9910109.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910109)
@@ -24,13 +24,11 @@ function c9910109.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910109.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local rg=Duel.GetDecktopGroup(1-tp,4)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and c:IsAbleToDeck()
-		and rg:GetCount()>0 and rg:FilterCount(Card.IsAbleToRemove,nil)==4 end
+		and c:IsAbleToDeck() end
 end
 function c9910109.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -52,13 +50,7 @@ function c9910109.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 		end
 	else
-		local rg=Duel.GetDecktopGroup(1-tp,4)
-		if rg:GetCount()>0 and rg:FilterCount(Card.IsAbleToRemove,nil)==4 then
-			Duel.DisableShuffleCheck()
-			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
-		end
 		if not c:IsRelateToEffect(e) then return end
-		Duel.BreakEffect()
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end

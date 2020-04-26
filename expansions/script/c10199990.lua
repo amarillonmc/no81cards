@@ -2,7 +2,7 @@
 if not pcall(function() require("expansions/script/c10199991") end) then require("script/c10199991") end
 local m=10199990
 local vm=10199991
-local Version_Number=20200218
+local Version_Number=20200409
 
 -----------------------"Part_Effect_Base"-----------------------
 
@@ -446,7 +446,7 @@ function rsef.SV_ATTRIBUTE(cardtbl,atttbl,valtbl,con,resettbl,flag,desctbl,ctlim
 	for k,effectcode in ipairs(effectcodetbl) do
 		local range=rsef.GetRegisterRange(cardtbl)
 		if rsof.Table_List(rangelist["pzone"],effectcode) then range=LOCATION_PZONE end
-		if rsof.Table_List(rangelist["nil"],effectcode) then range=nil end 
+		--if rsof.Table_List(rangelist["nil"],effectcode) then range=nil end 
 		if effectvaluetbl[k] then
 			local e1=nil
 			if type(effectvaluetbl[k])~="string" then
@@ -855,23 +855,23 @@ function rsef.ACT(cardtbl,code,desctbl,ctlimittbl,cate,flag,con,cost,tg,op,timin
 end  
 --Activate Effect: Equip Spell
 function rsef.ACT_EQUIP(cardtbl,eqfilter,desctbl,ctlimittbl,con,cost) 
-	if not desctbl then desctbl=rshint.eq end
-	if not eqfilter then eqfilter=Card.IsFaceup end
+	desctbl=desctbl or rshint.eq
+	eqfilter=eqfilter or Card.IsFaceup 
 	local eqfilter2=eqfilter
 	eqfilter=function(c,e,tp)
 		return c:IsFaceup() and eqfilter2(c,tp)
 	end
-	local e1=rsef.ACT(cardtbl,nil,desctbl,ctlimittbl,"eq","tg",con,cost,rstg.target({eqfilter,"eq",LOCATION_MZONE,LOCATION_MZONE,1}),rsef.ACT_EQUIP_op)
-	local e2=rsef.SV(cardtbl,EFFECT_EQUIP_LIMIT,rsef.ACT_EQUIP_val(eqfilter),nil,nil,nil,"cd")
+	local e1=rsef.ACT(cardtbl,nil,desctbl,ctlimittbl,"eq","tg",con,cost,rstg.target({eqfilter,"eq",LOCATION_MZONE,LOCATION_MZONE,1}),rsef.ACT_EQUIP_Op)
+	local e2=rsef.SV(cardtbl,EFFECT_EQUIP_LIMIT,rsef.ACT_EQUIP_Val(eqfilter),nil,nil,nil,"cd")
 	return e1,e2
 end
-function rsef.ACT_EQUIP_op(e,tp,eg,ep,ev,re,r,rp) 
+function rsef.ACT_EQUIP_Op(e,tp,eg,ep,ev,re,r,rp) 
 	local tc=rscf.GetTargetCard(Card.IsFaceup)
 	if e:GetHandler():IsRelateToEffect(e) and tc then
 		Duel.Equip(tp,e:GetHandler(),tc)
 	end
 end
-function rsef.ACT_EQUIP_val(eqfilter) 
+function rsef.ACT_EQUIP_Val(eqfilter) 
 	return function(e,c)
 		local tp=e:GetHandlerPlayer()
 		return eqfilter(c,tp)
@@ -964,228 +964,274 @@ function rsef.FC(cardtbl,code,desctbl,ctlimittbl,flag,range,con,op,resettbl)
 	return rsef.Register(cardtbl,EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS,code,desctbl,ctlimittbl,nil,flag,range,con,nil,nil,op,nil,nil,nil,resettbl)
 end 
 --Field Continues: Attach an extra effect when base effect is activating
-function rsef.FC_AttachEffect_Activate(cardtbl,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
-	return rsef.FC_AttachEffect(cardtbl,0x1,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force) 
+function rsef.FC_AttachEffect_Activate(cardtbl,desctbl,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
+	return rsef.FC_AttachEffect(cardtbl,force,0x1,desctbl,ctlimittbl,flag,range,attachcon,attachop,resettbl) 
 end
 --Field Continues: Attach an extra effect before the base effect solving
-function rsef.FC_AttachEffect_BeforeResolve(cardtbl,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
-	return rsef.FC_AttachEffect(cardtbl,0x2,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force) 
+function rsef.FC_AttachEffect_BeforeResolve(cardtbl,desctbl,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
+	return rsef.FC_AttachEffect(cardtbl,force,0x2,desctbl,ctlimittbl,flag,range,attachcon,attachop,resettbl) 
 end
 --Field Continues: Attach an extra effect after the base effect solving
-function rsef.FC_AttachEffect_Resolve(cardtbl,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
-	return rsef.FC_AttachEffect(cardtbl,0x4,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
+function rsef.FC_AttachEffect_Resolve(cardtbl,desctbl,ctlimittbl,flag,range,attachcon,attachop,resettbl,force)
+	return rsef.FC_AttachEffect(cardtbl,force,0x4,desctbl,ctlimittbl,flag,range,attachcon,attachop,resettbl) 
 end
---Field Continues: base set
---for old version see code 10199981
-function rsef.FC_AttachEffect(cardtbl,attachtime,desctbl1,ctlimittbl,flag,range,attachcon,attachop,resettbl,force) 
-	if not range then range=rsef.GetRegisterRange(cardtbl) end
+function rsef.FC_AttachEffect(cardtbl,force,attachtime,desctbl,ctlimittbl,flag,range,attachcon,attachop,resettbl) 
 	local c1,var2=rsef.GetRegisterCard(cardtbl)
-	local flag2=rsflag.GetRegisterProperty({flag,"ptg"})
-	local code=not force and rscode.Extra_Effect or rscode.Extra_Effect_FORCE
-	local e1=rsef.FV(cardtbl,code,attachcon,nil,{1,0},range,rsef.FC_AttachEffect_setcon,resettbl,flag2,desctbl1) 
-	e1:SetOperation(attachop) 
-	e1:SetCategory(attachtime)
-	local e2=rsef.I(cardtbl,nil,ctlimittbl,nil,nil,range,aux.FALSE,nil,nil,nil,resettbl)
-	e2:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
-	if flag2&EFFECT_FLAG_NO_TURN_RESET~=0 then
-		e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
-	end
-	rsef.attachinfo[e1]=e2
-	local reset,resetct=0,0
-	if resettbl then 
-		reset,resetct=rsef.RegisterReset(nil,resettbl,true) 
-	end
-	local desc=not desctbl1 and 0 or rsef.RegisterDescription(nil,desctbl1,true)
+	range=range or rsef.GetRegisterRange(cardtbl)
+	local attachcode=rscode.Extra_Effect_Activate 
+	if attachtime==0x2 then attachcode=rscode.Extra_Effect_BSolve end
+	if attachtime==0x4 then attachcode=rscode.Extra_Effect_ASolve end
+	local e0=rsef.I(cardtbl,nil,ctlimittbl,nil,flag,range,aux.FALSE,nil,nil,nil,resettbl)
+	local e1=rsef.FC(cardtbl,attachcode,desctbl,nil,flag,range,rsef.FC_AttachEffect_Con(e0,attachcon),rsef.FC_AttachEffect_Op(e0,force),resettbl)
+	e1:SetValue(attachop)
+	e1:SetLabelObject(e0)
 	if aux.GetValueType(var2)=="Card" then
-		var2:RegisterFlagEffect(code,reset,EFFECT_FLAG_CLIENT_HINT,resetct,e1:GetFieldID(),desc)
+		local desc=not desctbl and 0 or rsef.RegisterDescription(nil,desctbl,true)
+		var2:RegisterFlagEffect(attachcode,reset,EFFECT_FLAG_CLIENT_HINT,resetct,e1:GetFieldID(),desc)
 	end
-	if not rsef.FC_AttachEffect_Switch then
-		rsef.FC_AttachEffect_Switch=true
-		for i=0,1 do
-			local e3=Effect.GlobalEffect()
-			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e3:SetCode(EVENT_CHAIN_SOLVING)
-			e3:SetCondition(rsef.FC_AttachEffect_changecon)
-			e3:SetOperation(rsef.FC_AttachEffect_changeop)
-			e3:SetOwnerPlayer(i)
-			Duel.RegisterEffect(e3,i)
-		end
-		--reset chain op information
-		local e4=Effect.GlobalEffect()
-		e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e4:SetCode(EVENT_CHAINING)
-		e4:SetOperation(rsef.FC_AttachEffect_resetinfo)
-		e4:SetOwnerPlayer(i)
-		Duel.RegisterEffect(e4,0)
-		rsef.ChangeChainOperation=Duel.ChangeChainOperation
-		Duel.ChangeChainOperation=rsef.ChangeChainOperation2
-	end
-	return e1,e2
-end
-function rsef.FC_AttachEffect_resetinfo(e,tp,eg,ep,ev,re,r,rp)
-	local baseop=re:GetOperation()
-	if not baseop then 
-		baseop=function(e2) 
-			return 
-		end
+	if rsef.FC_AttachEffect_Switch then return e1 end
+	rsef.FC_AttachEffect_Switch=true
+	for p=0,1 do
+		local e2=Effect.GlobalEffect()
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_CHAIN_SOLVING)
+		e2:SetOperation(rsef.FC_AttachEffect_ChangeOp)
+		e2:SetOwnerPlayer(p)
+		Duel.RegisterEffect(e2,p)
 	end 
-	rsef.attachinfo[ev]=baseop
+	rsef.ChangeChainOperation=Duel.ChangeChainOperation
+	Duel.ChangeChainOperation=rsef.ChangeChainOperation2	
+	return e1
 end
-function rsef.ChangeChainOperation2(chainev,changeop,ischange)
-	rsef.ChangeChainOperation(chainev,changeop)
-	if not ischange then
-		rsef.attachinfo[chainev]=changeop
+function rsef.FC_AttachEffect_Con(e0,attachcon)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+		if not e0:CheckCountLimit(tp) then return false end
+		return not attachcon or attachcon(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
-function rsef.GetOperation(e,chainev)
-	return rsef.attachinfo[chainev]
-end
-function rsef.FC_AttachEffect_setcon(e)
-	local tp=e:GetHandlerPlayer()
-	local te=rsef.attachinfo[e]
-	te:SetCondition(aux.TRUE)
-	local bool=te:IsActivatable(tp)
-	te:SetCondition(aux.FALSE)
-	return bool 
-end
-function rsef.FC_AttachEffect_changecon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,rscode.Extra_Effect) or Duel.IsPlayerAffectedByEffect(tp,rscode.Extra_Effect_FORCE)
-end
-function rsef.FC_AttachEffect_changeop(e,tp,eg,ep,ev,re,r,rp)
-	local parameterlistcheck={e,tp,eg,ep,ev,re,r,rp}
-	local attachlist=rsef.FC_AttachEffect_geteffect(parameterlistcheck,{},0x1,{})
-	local baseop=rsef.GetOperation(re,ev)
-	Duel.ChangeChainOperation(ev,rsef.FC_AttachEffect_changeop2(parameterlistcheck,baseop,attachlist),true)
-end
-function rsef.FC_AttachEffect_changeop2(parameterlistcheck,baseop,attachlist)
+function rsef.FC_AttachEffect_Op(e0,force)
 	return function(e,tp,eg,ep,ev,re,r,rp)
+		rsef.attacheffect[ev]=rsef.attacheffect[ev] or {}
+		rsef.attacheffectf[ev]=rsef.attacheffectf[ev] or {}
+		if force then table.insert(rsef.attacheffectf[ev],e)
+		else
+			table.insert(rsef.attacheffect[ev],e)
+		end
+	end
+end
+function rsef.FC_AttachEffect_GetGroup(selectlist)
+	local attachgroup=Group.CreateGroup()
+	local attacheffectlist={}
+	for _,ae in pairs(selectlist) do
+		local tc=ae:GetOwner()
+		attachgroup:AddCard(tc)
+		attacheffectlist[tc]=attacheffectlist[tc] or {}
+		table.insert(attacheffectlist[tc],ae)
+	end
+	return attachgroup,attacheffectlist
+end
+function rsef.ChangeChainOperation2(ev,changeop,ischange)
+	rsef.ChangeChainOperation(ev,changeop)
+	if ischange then return end
+	rsef.baseop[ev]=changeop
+end
+function rsef.FC_AttachEffect_ChangeOp(e,tp,eg,ep,ev,re,r,rp)
+	local baseop=re:GetOperation() or aux.TRUE 
+	baseop=rsef.baseop[ev] or baseop
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetReset(RESET_CHAIN)
+	e1:SetOperation(rsef.FC_AttachEffect_Reset(re,baseop))
+	Duel.RegisterEffect(e1,0)
+	rsef.ChangeChainOperation2(ev,rsef.FC_AttachEffect_ChangeOp2(baseop),true)
+end
+function rsef.FC_AttachEffect_Reset(re1,baseop)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+		if re1~=re then return end
+		rsef.attacheffect[ev]=nil
+		rsef.attacheffectf[ev]=nil
+		rsef.solveeffect[ev]=nil
+		rsef.baseop[ev]=nil
+		local rc=re:GetHandler()
+		local res1=re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc:IsType(TYPE_PENDULUM+TYPE_FIELD+TYPE_CONTINUOUS+TYPE_EQUIP)
+		local res2=#({rc:IsHasEffect(EFFECT_REMAIN_FIELD)})>0
+		if (res1 or res2) and not rsef.baseop[ev2] then
+			re:SetOperation(baseop)
+			rc:CancelToGrave(true)
+		end
+	end
+end
+function rsef.FC_AttachEffect_Solve(solveeffectlist,attachtime,e,tp,eg,ep,ev,re,r,rp)
+	local actuselist={}
+	local ev2=Duel.GetCurrentChain()
+	local attachcode=rscode.Extra_Effect_Activate 
+	if attachtime==0x2 then attachcode=rscode.Extra_Effect_BSolve end
+	if attachtime==0x4 then attachcode=rscode.Extra_Effect_ASolve end
+	Duel.RaiseEvent(e:GetHandler(),attachcode,e,0,tp,tp,ev2)
+	local forcelist=rsef.attacheffectf[ev2] or {}
+	local selectablelist=rsef.attacheffect[ev2] or {}
+	for _,ae in pairs(forcelist) do
+		local tc=ae:GetOwner()
+		if tc:IsOnField() then
+			Duel.HintSelection(rsgf.Mix2(tc))
+		else
+			Duel.Hint(HINT_CARD,0,tc:GetOriginalCodeRule())
+		end
+		Duel.Hint(HINT_OPSELECTED,1-tp,ae:GetDescription())
+		table.insert(actuselist,ae)
+		ae:GetLabelObject():UseCountLimit(tp,1)
+		if attachtime~=0x1 then
+			table.insert(solveeffectlist,ae)
+			ae:GetValue()(e,tp,eg,ep,ev,re,r,rp)
+		end
+	end
+	local attachgroup,attacheffectlist=rsef.FC_AttachEffect_GetGroup(selectablelist)
+	local selecthint=8
+	if attachtime==0x2 then selecthint=9 end
+	if attachtime==0x4 then selecthint=10 end
+	if #attachgroup>0 and Duel.SelectYesNo(tp,aux.Stringid(m,selecthint)) then
+		::Select::
+		rshint.Select(tp,HINTMSG_TARGET)
+		local tc=attachgroup:Select(tp,1,1,nil):GetFirst()
+		if tc:IsOnField() then
+			Duel.HintSelection(rsgf.Mix2(tc))
+		else
+			Duel.Hint(HINT_CARD,0,tc:GetOriginalCodeRule())
+		end
+		local hintlist={}
+		for _,ae in pairs(attacheffectlist[tc]) do
+			local hint=ae:GetDescription()
+			table.insert(hintlist,hint)
+		end
+		local opt=Duel.SelectOption(tp,table.unpack(hintlist))+1
+		local ae=attacheffectlist[tc][opt]
+		Duel.Hint(HINT_OPSELECTED,1-tp,ae:GetDescription())
+		table.insert(actuselist,ae)
+		ae:GetLabelObject():UseCountLimit(tp,1)
+		if attachtime~=0x1 then
+			table.insert(solveeffectlist,ae)
+			ae:GetValue()(e,tp,eg,ep,ev,re,r,rp)
+		end
+		local _,index=rsof.Table_List(selectablelist,ae)
+		table.remove(selectablelist,index)
+		attachgroup,attacheffectlist=rsef.FC_AttachEffect_GetGroup(selectablelist)
+		if #attachgroup>0 and Duel.SelectYesNo(tp,aux.Stringid(m,11)) then goto Select end
+	end
+	rsef.attacheffect[ev2]=nil
+	rsef.attacheffectf[ev2]=nil
+	return actuselist
+end
+function rsef.FC_AttachEffect_ChangeOp2(baseop)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+		local ev2=Duel.GetCurrentChain()
 		local c=e:GetHandler()
 		if (c:IsType(TYPE_FIELD) or c:IsType(TYPE_CONTINUOUS) or c:IsLocation(LOCATION_PZONE)) and not c:IsRelateToEffect(e) then
 			return
 		end
-		local attachlisttotal={}
-		local parameterlistsolve={e,tp,eg,ep,ev,re,r,rp}
-		--before base effect solve
-		rsef.FC_AttachEffect_geteffect(parameterlistcheck,parameterlistsolve,0x2,attachlisttotal)
-		--base effect
-		--Duel.Hint(HINT_CARD,0,e:GetHandler():GetOriginalCode())
+		rsef.solveeffect[ev2]={}
+		--baseop record
+		table.insert(rsef.solveeffect[ev2],baseop)
+		--activate select
+		local actuselist=rsef.FC_AttachEffect_Solve(rsef.solveeffect[ev2],0x1,e,tp,eg,ep,ev,re,r,rp)
+		--before solve
+		rsef.FC_AttachEffect_Solve(rsef.solveeffect[ev2],0x2,e,tp,eg,ep,ev,re,r,rp)  
+		--baseop solve
 		baseop(e,tp,eg,ep,ev,re,r,rp)
-		table.insert(attachlisttotal,baseop)
-		--attachlist 
-		for _,attacheffect in pairs(attachlist) do 
-			table.insert(attachlisttotal,attacheffect)  
-			rsef.FC_AttachEffect_Operation_Solve(parameterlistsolve,attacheffect,attachlisttotal)
+		--activate solve 
+		for _,ae in pairs(actuselist) do
+			table.insert(rsef.solveeffect[ev2],ae)
+			ae:GetValue()(e,tp,eg,ep,ev,re,r,rp)
+			ae:GetLabelObject():UseCountLimit(tp,1)
 		end
-		--after base effect solve
-		rsef.FC_AttachEffect_geteffect(parameterlistcheck,parameterlistsolve,0x4,attachlisttotal)
-	end
-end
-function rsef.FC_AttachEffect_getgroup(parameterlistcheck,cardlist,attachtime)
-	local e,tp,eg,ep,ev,re,r,rp=table.unpack(parameterlistcheck)
-	local effectlist={Duel.IsPlayerAffectedByEffect(tp,rscode.Extra_Effect)}
-	local g=Group.CreateGroup()
-	for _,effect in pairs(effectlist) do
-		local con=effect:GetValue()
-		local cate=effect:GetCategory() 
-		if (not con or con(effect,tp,eg,ep,ev,re,r,rp)) and effect:GetHandlerPlayer()==e:GetOwnerPlayer() and cate==attachtime then
-			local tc=effect:GetHandler()
-			if not cardlist[tc] then
-				cardlist[tc]={}
-			end
-			table.insert(cardlist[tc],effect)
-			g:AddCard(tc)
-		end
-	end
-	return g
-end
-function rsef.FC_AttachEffect_geteffect(parameterlistcheck,parameterlistsolve,attachtime,attachlisttotal)
-	local cardlist={}
-	local attachlist={}
-	local e,tp,eg,ep,ev,re,r,rp=table.unpack(parameterlistcheck)
-	--get force effect 
-	local effectlist={Duel.IsPlayerAffectedByEffect(tp,rscode.Extra_Effect_FORCE)}
-	if #effectlist>0 then
-		for _,effect in pairs(effectlist) do
-			local con=effect:GetValue()
-			local cate=effect:GetCategory() 
-			if (not con or con(effect,tp,eg,ep,ev,re,r,rp)) and effect:GetHandlerPlayer()==e:GetOwnerPlayer() and cate==attachtime then
-				local tc=effect:GetHandler()
-				if tc:IsOnField() then
-					Duel.HintSelection(rsgf.Mix2(tc))
-				else 
-					Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-				end
-				Duel.Hint(HINT_OPSELECTED,1-tp,effect:GetDescription())
-				if attachtime~=0x1 then 
-					table.insert(attachlisttotal,effect)
-					rsef.FC_AttachEffect_Operation_Solve(parameterlistsolve,effect,attachlisttotal)
-				end
-				table.insert(attachlist,effect)
-				local te=rsef.attachinfo[effect]
-				te:UseCountLimit(tp,1)
-			end
-		end
-	end
-	--get not force
-	local g=rsef.FC_AttachEffect_getgroup(parameterlistcheck,cardlist,attachtime)
-	if #g<=0 then return attachlist end
-	local hint=aux.Stringid(m,8)
-	if attachtime==0x2 then hint=aux.Stringid(m,9) end
-	if attachtime==0x4 then hint=aux.Stringid(m,10) end
-	if not Duel.SelectYesNo(tp,hint) then return attachlist end
-	local ct=1
-	repeat
-		ct=ct+1
-		cardlist={}
-		local g=rsef.FC_AttachEffect_getgroup(parameterlistcheck,cardlist,attachtime)
-		if #g<=0 then break end
-		rshint.Select(tp,HINTMSG_TARGET)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		if tc:IsOnField() then
-			Duel.HintSelection(rsgf.Mix2(tc))
-		else 
-			Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-		end
-		local effectlist2=cardlist[tc]
-		local hintlist={}
-		for _,effect in pairs(effectlist2) do
-			local hint=effect:GetDescription()
-			table.insert(hintlist,hint)
-		end
-		local op=Duel.SelectOption(tp,table.unpack(hintlist))+1
-		local effect=effectlist2[op]
-		--Duel.Hint(HINT_OPSELECTED,1-tp,effect:GetDescription())
-		if attachtime~=0x1 then 
-			table.insert(attachlisttotal,effect)
-			rsef.FC_AttachEffect_Operation_Solve(parameterlistsolve,effect,attachlisttotal)
-		end
-		table.insert(attachlist,effect)
-		local te=rsef.attachinfo[effect]
-		te:UseCountLimit(tp,1)
-		local g2=rsef.FC_AttachEffect_getgroup(parameterlistcheck,cardlist,attachtime)
-	until (ct>1 and #g2<=0) or (ct>1 and not Duel.SelectYesNo(tp,aux.Stringid(m,11))) 
-	return attachlist
-end
-function rsef.FC_AttachEffect_Operation_Solve(parameterlistsolve,currenteffect,attachlisttotal)
-	--local e=table.unpack(parameterlistsolve)
-	if aux.GetValueType(currenteffect)~="Effect" then 
-		--Duel.Hint(HINT_CARD,0,e:GetHandler():GetOriginalCode())
-		currenteffect(table.unpack(parameterlistsolve)) 
-	else
-		--Duel.Hint(HINT_CARD,0,currenteffect:GetHandler():GetOriginalCode())
-		local operation=currenteffect:GetOperation()
-		operation(table.unpack(parameterlistsolve)) 
-	end
-	if rsef.FC_AttachEffect_Repeat then
-		rsef.FC_AttachEffect_Repeat=false
-		for index,attacheffect in pairs(attachlisttotal) do
-			local _,indexrepeat=rsof.Table_List(attachlisttotal,currenteffect)
-			if index>=indexrepeat then break end
-			rsef.FC_AttachEffect_Operation_Solve(parameterlistsolve,attacheffect,attachlisttotal)
-		end
+		--after solve 
+		rsef.FC_AttachEffect_Solve(rsef.solveeffect[ev2],0x4,e,tp,eg,ep,ev,re,r,rp)  
 	end
 end
 
+--Effect Function:XXX card/group will leave field in XXX Phase , often use in special summon
+function rsef.FC_PHASELEAVE(cardtbl,sg,times,whos,phase,leaveway,resettbl)
+	--times: nil  every phase 
+	--   0  next  phase
+	--   1 or +  times  phase 
+	--whos:  nil  each player 
+	--   0  yours phase (tp)
+	--   1  your opponent's phase (1-tp)
+	local c1,var2=rsef.GetRegisterCard(cardtbl)
+	local cphase=Duel.GetCurrentPhase()
+	local turnctlist={Duel.GetTurnCount(),Duel.GetTurnCount(var2),Duel.GetTurnCount(1-var2)}
+	local turnp=Duel.GetTurnPlayer()
+	phase=phase or PHASE_END 
+	leaveway=leaveway or "des"   
+	if times==0 and whos==0 and turnp==tp then 
+		times=cphase<=phase and 2 or 1
+	end
+	if times==0 and whos==1 and turnp~=tp then 
+		times=cphase<=phase and 2 or 1
+	end
+	local fid=c1:GetFieldID()
+	for tc in aux.Next(sg) do
+		tc:RegisterFlagEffect(rscode.Phase_Leave_Flag,rsreset.est+RESET_PHASE+phase,0,0,fid)
+	end
+	local e1=rsef.FC(cardtbl,EVENT_PHASE+phase,rshint.epleave,1,"ii",nil,rsef.FC_PhaseLeave_Con(cphase,turnctlist,turnp,fid,times,whos),rsef.FC_PhaseLeave_Op(leaveway,fid),resettbl)
+	sg:KeepAlive()
+	e1:SetLabelObject(sg)
+	return e1
+end
+function rsef.FC_PhaseLeave_Filter(c,fid)
+	return c:GetFlagEffectLabel(rscode.Phase_Leave_Flag)==fid
+end 
+function rsef.FC_PhaseLeave_Con(cphase,turnctlist,turnp,fid,times,whos)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+		local ecphase=Duel.GetCurrentPhase()
+		local eturnp=Duel.GetTurnPlayer()
+		local eturnct,eturncttp,eturnctop=Duel.GetTurnCount(),Duel.GetTurnCount(tp),Duel.GetTurnCount()
+		local turnct,turncttp,turnctop=turnctlist[1],turnctlist[2],turnctlist[3]
+		local g=e:GetLabelObject()
+		local rg=g:Filter(rsef.FC_PhaseLeave_Filter,nil,fid)
+		local reset=false
+		local solve=false
+		if #rg<=0 then reset=true end
+		if times and times>0 and not whos then 
+			if eturnct>turnct+(times-1) then reset=true end
+			if eturnct==turnct+(times-1) then solve=true end
+		end
+		if times and times>0 and whos==0 and eturnp==tp then
+			if eturncttp>turncttp+(times-1) then reset=true end
+			if eturncttp==turncttp+(times-1) then solve=true end
+		end
+		if times and times>0 and whos==0 and eturnp~=tp then
+			if eturnctop>turnctop+(times-1) then reset=true end
+			if eturnctop==turnctop+(times-1) then solve=true end
+		end
+		if not times then 
+			solve=true
+		end
+		if reset then
+			g:DeleteGroup() 
+			e:Reset() 
+			return false 
+		end
+		return solve
+	end
+end
+function rsef.FC_PhaseLeave_Op(way,fid)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+		local c=e:GetOwner()
+		Duel.Hint(HINT_CARD,0,c:GetOriginalCode())
+		local g=e:GetLabelObject()
+		local rg=g:Filter(rsef.FC_PhaseLeave_Filter,nil,fid)
+		if type(way)=="function" then way(rg,e,tp,eg,ep,ev,re,r,rp)
+		elseif way=="des" then Duel.Destroy(rg,REASON_EFFECT)
+		elseif way=="th" then Duel.SendtoHand(rg,nil,REASON_EFFECT)
+		elseif way=="td" then Duel.SendtoDeck(rg,nil,2,REASON_EFFECT)
+		elseif way=="tdt" then Duel.SendtoDeck(rg,nil,0,REASON_EFFECT)
+		elseif way=="tdb" then Duel.SendtoDeck(rg,nil,1,REASON_EFFECT)
+		elseif way=="rm" then Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
+		elseif way=="tg" then Duel.SendtoGrave(rg,REASON_EFFECT)
+		end
+	end
+end 
 ----------------"Part_Effect_SingleContinuous"----------------
 
 --Single Continues: Base set
@@ -1195,98 +1241,18 @@ end
 
 
 -------------------"Part_Summon_Function"---------------------
-
---Summon Function: Quick Special Summon buff
---valtbl:{atk,def,lv} 
---waytbl:{way,resettbl} 
-function rssf.SummonBuff(valtbl,dis,trigger,leaveloc,waytbl)
-	return function(c,sc,e,tp,sg)
-		local reset=((c==sc and not sg or #sg==1) and  rsreset.est_d or rsreset.est)
-		if valtbl then
-			local atk,def,lv=valtbl[1],valtbl[2],valtbl[3]
-			rsef.SV_SET({c,sc,true},"atk,def",{atk,def},nil,reset)
-			rsef.SV_CHANGE({c,sc,true},"lv",lv,nil,reset)
-		end
-		if dis then
-			rsef.SV_LIMIT({c,sc,true},"dis,dise",nil,nil,reset)
-		end
-		if trigger then
-			rsef.SV_LIMIT({c,tc,true},"tri",nil,nil,reset)
-		end
-		if type(leaveloc)=="number" then
-			local flag=nil
-			if c==sc then flag=EFFECT_CANNOT_DISABLE end
-			rsef.SV_REDIRECT({c,sc,true},"leave",leaveloc,nil,rsreset.ered,flag)
-		end
-		if waytbl then
-			if type(waytbl)=="string" then waytbl={waytbl} end
-			if type(waytbl)=="boolean" then waytbl={"des"} end
-			local way=waytbl[1]
-			local resettbl=waytbl[2]
-			if not resettbl then resettbl={0,1} end
-			local reset2,resetct,resetplayer=resettbl[1],resettbl[2],resettbl[3]
-			local fid=c:GetFieldID()
-			for tc in aux.Next(sg) do
-				tc:RegisterFlagEffect(rscode.Summon_Flag,rsreset.est+reset2,0,resetct,fid)
-			end  
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_PHASE+PHASE_END) 
-			e1:SetCountLimit(1)
-			if reset2 and reset2~=0 then
-				e1:SetReset(reset2,resetct)
-			end
-			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-			sg:KeepAlive()
-			e1:SetLabelObject(sg)
-			e1:SetCondition(rssf.SummonBuff_Con(fid,resetct,resetplayer))
-			e1:SetOperation(rssf.SummonBuff_Op(fid,way))
-			Duel.RegisterEffect(e1,tp)   
-		end
-	end
+--Summon Function: Set Default Parameter
+function rssf.GetSSDefaultParameter(sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos)
+	sstype= sstype or 0 
+	ssplayer=ssplayer or Duel.GetChainInfo(0,CHAININFO_TRIGGERING_PLAYER) 
+	tplayer=tplayer or ssplayer
+	ignorecon=ignorecon or false
+	ignorerevie=ignorerevie or false
+	pos=pos or POS_FACEUP
+	return sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos
 end
-function rssf.SummonBuff_Filter(c,e,fid)
-	return c:GetFlagEffectLabel(rscode.Summon_Flag)==fid
-end 
-function rssf.SummonBuff_Con(fid,resetct,resetplayer)
-	return function(e,tp,eg,ep,ev,re,r,rp)
-		local g=e:GetLabelObject()
-		local rg=g:Filter(rssf.SummonBuff_Filter,nil,e,fid)
-		if rg:GetCount()<=0 then 
-			g:DeleteGroup() e:Reset() 
-		return false 
-		end
-		if resetplayer and resetplayer~=Duel.GetTurnPlayer() then return false 
-		end
-		local tid1=rg:GetFirst():GetTurnID()
-		local tid2=Duel.GetTurnCount()
-		if resetct==0 and tid1~=tid2 then return false end
-		if resetct>1 and tid1==tid2 then return false end
-		return true
-	end
-end
-function rssf.SummonBuff_Op(fid,way)
-	return function(e,tp,eg,ep,ev,re,r,rp)
-		local c=e:GetOwner()
-		Duel.Hint(HINT_CARD,0,c:GetOriginalCode())
-		local g=e:GetLabelObject()
-		local rg=g:Filter(rssf.SummonBuff_Filter,nil,e,fid)
-		if way=="des" then Duel.Destroy(rg,REASON_EFFECT)
-		elseif way=="th" then Duel.SendtoHand(rg,nil,REASON_EFFECT)
-		elseif way=="td" then Duel.SendtoDeck(rg,nil,2,REASON_EFFECT)
-		elseif way=="tdt" then Duel.SendtoDeck(rg,nil,0,REASON_EFFECT)
-		elseif way=="tdb" then Duel.SendtoDeck(rg,nil,1,REASON_EFFECT)
-		elseif way=="rm" then Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
-		elseif way=="rg" then Duel.SendtoGrave(rg,REASON_EFFECT)
-		end
-		if g:FilterCount(rssf.SummonBuff_Filter,nil,e,fid)<=0 then
-			g:DeleteGroup()
-			e:Reset()
-		end
-	end
-end 
 --Summon Function: Duel.SpecialSummon + buff
-function rssf.SpecialSummon(ssgorc,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos,zone,sumfun)
+function rssf.SpecialSummon(ssgorc,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos,zone,sumcardfun,sumgroupfun)
 	sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos=rssf.GetSSDefaultParameter(sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos)
 	local ct=0
 	if zone then
@@ -1295,26 +1261,47 @@ function rssf.SpecialSummon(ssgorc,sstype,ssplayer,tplayer,ignorecon,ignorerevie
 		ct=Duel.SpecialSummon(ssgorc,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos)
 	end
 	local g=Duel.GetOperatedGroup()
-	if #g>0 and sumfun then
-		local c=g:GetFirst():GetReasonEffect():GetHandler()
+	local e=g:GetFirst():GetReasonEffect()
+	local tp=e:GetHandlerPlayer()
+	local c=g:GetFirst():GetReasonEffect():GetHandler()
+	if #g>0 and sumcardfun then
 		for tc in aux.Next(g) do
-			sumfun(c,tc,e,tp,g)
+			if type(sumcardfun)=="table" then 
+				rscf.QuickBuff({c,tc,true},table.unpack(sumcardfun))
+			elseif type(sumcardfun)=="function" then
+				sumcardfun(c,tc,e,tp,g)
+			end
 		end
 	end 
-	return ct,g 
+	if #g>0 and sumgroupfun then
+		if type(sumgroupfun)=="table" then 
+			rsef.FC_PHASELEAVE({c,tp},g,table.unpack(sumgroupfun))
+		elseif type(sumgroupfun)=="string" then
+			rsef.FC_PHASELEAVE({c,tp},g,nil,nil,PHASE_END,sumgroupfun)
+		elseif type(sumcardfun)=="function" then
+			sumgroupfun(g,c,e,tp)
+		end
+	end
+	return ct,g,g:GetFirst()
 end 
 --Summon Function: Duel.SpecialSummonStep + buff 
-function rssf.SpecialSummonStep(sscard,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos,zone,sumfun) 
+function rssf.SpecialSummonStep(sc,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos,zone,sumcardfun) 
 	sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos=rssf.GetSSDefaultParameter(sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos)
 	local tf=false
 	if zone then
-		tf=Duel.SpecialSummonStep(sscard,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos,zone)
+		tf=Duel.SpecialSummonStep(sc,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos,zone)
 	else
-		tf=Duel.SpecialSummonStep(sscard,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos)
+		tf=Duel.SpecialSummonStep(sc,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos)
 	end
-	if tf and sumfun then
-		local c=sscard:GetReasonEffect():GetHandler()
-		sumfun(c,sscard,e,tp)
+	if tf and sumcardfun then
+		local e=sc:GetReasonEffect()
+		local tp=e:GetHandlerPlayer()
+		local c=sc:GetReasonEffect():GetHandler()
+		if type(sumcardfun)=="table" then 
+			rscf.QuickBuff({c,sc,true},table.unpack(sumcardfun))
+		elseif type(sumcardfun)=="function" then
+			sumcardfun(c,sc,e,tp,g)
+		end
 	end
 	return tf,sscard
 end
@@ -1358,17 +1345,7 @@ function rssf.SpecialSummonEither(ssgorc,e,sstype,ssplayer,tplayer,ignorecon,ign
 	if #ssg>0 then
 		Duel.SpecialSummonComplete()
 	end
-	return #ssg,ssg 
-end
---Summon Function: Set Default Parameter
-function rssf.GetSSDefaultParameter(sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos)
-	if not sstype then sstype=0 end
-	if not ssplayer then ssplayer=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_PLAYER) end
-	if not tplayer then tplayer=ssplayer end
-	if not ignorecon then ignorecon=false end
-	if not ignorerevie then ignorerevie=false end
-	if not pos then pos=POS_FACEUP end
-	return sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos
+	return #ssg,ssg,ssg:GetFirst()
 end
 
 -------------------"Part_Value_Function"---------------------
@@ -1399,7 +1376,7 @@ function rsval.indct(string1,string2)
 end
 --value: unaffected by opponent's card effects
 function rsval.imoe(e,re)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+	return e:GetOwnerPlayer()~=re:GetHandlerPlayer()
 end
 --value: unaffected by other card effects 
 function rsval.imes(e,re)
@@ -1682,7 +1659,7 @@ function rstg.PlayerTarget_Set_Usingct(cate,tp,spct,opct,usingct)
 		--if cate==CATEGORY_HANDES and not Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=opct2 then return false end
 		if cate==CATEGORY_DECKDES and not Duel.IsPlayerCanDiscardDeck(1-tp,opct2) then return false end
 	end
-	return true
+	return spct>0 or opct>0
 end
 function rstg.Target_Fun_Check_Fun(cate)
 	return function(filter,tp,spct,opct,minct2_nouse,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,targetvalue1,targetvalue2,...)
@@ -2276,8 +2253,8 @@ function rscon.phase(p1,...)
 			table.insert(mainstringlist,mainstring)
 			table.insert(turnplayerlist,splitstring)
 		end
-		local phaselist2=rsof.Table_Suit(mainstringlist,stringlist,phaselist)
-		for index,phase in pairs(phaselist2) do
+		local phaselist2=rsof.Table_Suit(mainstringlist,stringlist,phaselist) 
+		for index,phase in pairs(phaselist2) do 
 			if turnplayerlist[index] then
 				if (turnplayerlist[index]=="_s" and turnp~=tp) or (turnplayerlist[index]=="_o" and turnp==tp ) then return false end
 			end
@@ -2290,19 +2267,19 @@ function rscon.phase(p1,...)
 end
 --Condition in Main Phase
 function rscon.phmp(e)
-	return rscon.phase("mp1,mp2")
+	return rscon.phase("mp1,mp2")(e)
 end 
 --Condition: Phase no damage calculate , for change atk/def
 function rscon.adcon(e)
-	return rscon.phase("ndcal")
+	return rscon.phase("ndcal")(e)
 end
 --Condition: Battle Phase 
 function rscon.phbp(e)
-	return rscon.phase("bp")
+	return rscon.phase("bp")(e)
 end
 --Condition: Phase damage calculate,but not calculate 
 function rscon.dambdcal(e)
-	return rscon.phase("dambdcal")
+	return rscon.phase("dambdcal")(e)
 end
 --Condition in ADV or SP Summon Sucess
 function rscon.sumtype(sumtbl,sumfilter,matchall)
@@ -2628,10 +2605,6 @@ end
 function rsop.SelectSpecialSummon_Operation(sumfunvarlist)
 	return function(tg)
 		if #tg<=0 then return 0,tg end
-		local hintg=tg:Filter(Card.IsLocation,nil,LOCATION_SZONE+LOCATION_GRAVE+LOCATION_REMOVED)
-		if #hintg>0 then
-			Duel.HintSelection(tg)
-		end
 		return rssf.SpecialSummon(tg,table.unpack(sumfunvarlist)) 
 	end
 end
@@ -3251,7 +3224,7 @@ function rscf.QuickBuff(reglist,...)
 	local limitlist={"dis","dise","tri","atk","atkan","datk","ress","resns","td","th","cp","cost"} 
 	local matlimitlist={"fus","syn","xyz","link"}
 	local leavelist={"leave"}
-	local phaselist={"ep","sp"}
+	--local phaselist={"ep","sp"}
 	local funlist=rsof.Table_Mix(setlist,uplist,changelist,addlist,limitlist,matlimitlist,leavelist)
 	local funlistatt=rsof.Table_Mix(setlist,uplist,changelist,addlist)
 	--local nulllist={}
@@ -3418,7 +3391,9 @@ function rscf.RecordSummonProcedure()
 		return e0
 	end
 end
-rscf.RecordSummonProcedure()
+rssf.RecordSummonProcedure=rscf.RecordSummonProcedure
+--directly enable will cause bugs, but i am lazy to find what cards i have used this function
+rssf.RecordSummonProcedure()
 function rscf.RecordSummonProcedure_Operation(e,tp)
 	local g=Duel.GetMatchingGroup(Card.IsType,0,0xff,0xff,nil,rscf.extype-TYPE_PENDULUM)
 	local f6=aux.AddSynchroProcedure
@@ -3432,8 +3407,8 @@ function rscf.RecordSummonProcedure_Operation(e,tp)
 	aux.AddXyzProcedureLevelFree=rscf.GetBaseXyzProduce2
 	aux.AddLinkProcedure=rscf.GetBaseLinkProduce1
 	for tc in aux.Next(g) do
-		--Method ResetEffect/ReplaceEffect is issue at Raise Event 
-		tc:ResetEffect(tc:GetOriginalCode(),RESET_CARD)
+		--Method ResetEffect/ReplaceEffect will cause issue at Raise Event
+		tc:ReplaceEffect(80316585,0)
 		local mt=getmetatable(tc)
 		if mt.initial_effect then
 			mt.initial_effect(tc) 

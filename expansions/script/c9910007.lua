@@ -46,14 +46,14 @@ function c9910007.rpop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,c9910007.rpfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
 		if g:GetCount()==0 then return end
 		local tc=g:GetFirst()
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 		local sg=Duel.GetMatchingGroup(c9910007.rpsfilter,tp,LOCATION_DECK,0,nil,tp)
 		if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910007,2)) then
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910007,3))
 			local tg=sg:Select(tp,1,1,nil)
 			local fc=tg:GetFirst()
 			Duel.BreakEffect()
-			Duel.MoveToField(fc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+			Duel.MoveToField(fc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 		end
 	end
 end

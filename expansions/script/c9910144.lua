@@ -2,7 +2,7 @@
 function c9910144.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_POSITION)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910144)
@@ -12,7 +12,7 @@ function c9910144.initial_effect(c)
 	c:RegisterEffect(e1)
 	--atk & def
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910144,1))
+	e2:SetDescription(aux.Stringid(9910144,0))
 	e2:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
@@ -31,9 +31,6 @@ function c9910144.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and c:IsAbleToDeck() end
-end
-function c9910144.posfilter(c)
-	return c:IsFaceup() and c:IsCanChangePosition()
 end
 function c9910144.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -56,14 +53,7 @@ function c9910144.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	else
 		if not c:IsRelateToEffect(e) then return end
-		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
-		local g=Duel.GetMatchingGroup(c9910144.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910144,0)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-			local sg=g:Select(tp,1,1,nil)
-			Duel.BreakEffect()
-			Duel.ChangePosition(sg,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
-		end
+		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end
 function c9910144.atkcon(e,tp,eg,ep,ev,re,r,rp)

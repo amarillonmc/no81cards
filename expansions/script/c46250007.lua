@@ -64,6 +64,7 @@ function c46250007.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c46250007.spop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
+    if not c:IsRelateToEffect(e) then return end
     local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
     local g=nil
     if ft>-1 then
@@ -83,7 +84,6 @@ function c46250007.spop(e,tp,eg,ep,ev,re,r,rp)
     local g2=g:Select(tp,1,1,g1:GetFirst())
     g1:Merge(g2)
     if Duel.Destroy(g1,REASON_EFFECT)==2 then
-        if not c:IsRelateToEffect(e) then return end
         Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
     end
 end

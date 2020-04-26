@@ -24,12 +24,13 @@ function c9910011.initial_effect(c)
 	c:RegisterEffect(e3)
 	--to grave
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DAMAGE)
+	e4:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_SZONE)
+	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e4:SetCountLimit(1,9910011)
-	e4:SetTarget(c9910011.tgtg)
-	e4:SetOperation(c9910011.tgop)
+	e4:SetTarget(c9910011.atktg)
+	e4:SetOperation(c9910011.atkop)
 	c:RegisterEffect(e4)
 	--to hand
 	local e5=Effect.CreateEffect(c)
@@ -73,18 +74,30 @@ end
 function c9910011.tgfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3950) and c:IsAbleToGrave()
 end
-function c9910011.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910011.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) end
+function c9910011.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c9910011.tgfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil)
+		 and Duel.IsExistingMatchingCard(c9910011.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,0)
 end
-function c9910011.tgop(e,tp,eg,ep,ev,re,r,rp)
+function c9910011.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9910011.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)
 	if g:GetCount()>0 then
-		Duel.SendtoGrave(g,REASON_EFFECT)
-		local tc=g:GetFirst()
-		if tc then Duel.Damage(tp,tc:GetLevel()*400,REASON_EFFECT)
+		local gc=g:GetFirst()
+		if Duel.SendtoGrave(gc,REASON_EFFECT)~=0 and gc:IsLocation(LOCATION_GRAVE)
+			and tc:IsRelateToEffect(e) and tc:IsFaceup() then
+			local lv=gc:GetLevel()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e1:SetValue(lv*-100)
+			tc:RegisterEffect(e1)
 		end
 	end
 end

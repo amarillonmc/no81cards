@@ -150,8 +150,10 @@ function c114064005.thfilter(c,e,tp,tc)
     return c:IsSetCard(0xa4) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(tc:GetCode())
 end
 function c114064005.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c114064005.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp,e:GetHandler()) end
+    local c=e:GetHandler()
+    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c114064005.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c) and c:GetFlagEffect(114064005)==0 end
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+    c:RegisterFlagEffect(114064005,RESET_CHAIN,0,1)
 end
 function c114064005.thop2(e,tp,eg,ep,ev,re,r,rp)
     if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

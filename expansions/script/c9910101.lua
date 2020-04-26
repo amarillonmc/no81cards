@@ -10,16 +10,6 @@ function c9910101.initial_effect(c)
 	e1:SetTarget(c9910101.sptg)
 	e1:SetOperation(c9910101.spop)
 	c:RegisterEffect(e1)
-	--draw
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910101,0))
-	e2:SetCategory(CATEGORY_DRAW)
-	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_IGNITION)
-	e2:SetCountLimit(1,9910102)
-	e2:SetCost(c9910101.drcost)
-	e2:SetTarget(c9910101.drtg)
-	e2:SetOperation(c9910101.drop)
-	c:RegisterEffect(e2)
 end
 function c9910101.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
@@ -58,7 +48,7 @@ function c9910101.spop(e,tp,eg,ep,ev,re,r,rp)
 		if not c:IsRelateToEffect(e) then return end
 		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
 		if Duel.IsExistingMatchingCard(c9910101.thfilter,tp,LOCATION_DECK,0,1,nil)
-			and Duel.SelectYesNo(tp,aux.Stringid(9910101,1)) then
+			and Duel.SelectYesNo(tp,aux.Stringid(9910101,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g=Duel.SelectMatchingCard(tp,c9910101.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 			if #g>0 then
@@ -67,26 +57,5 @@ function c9910101.spop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ConfirmCards(1-tp,g)
 			end
 		end
-	end
-end
-function c9910101.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-end
-function c9910101.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function c9910101.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	if Duel.Draw(p,d,REASON_EFFECT)==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.BreakEffect()
-		Duel.SendtoDeck(g,nil,1,REASON_EFFECT)
 	end
 end

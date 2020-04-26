@@ -121,9 +121,9 @@ function c9981290.atkcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9981290.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.CheckReleaseGroup(aux.true,tp,LOCATION_MZONE,LOCATION_MZONE,1,c) end
+	if chk==0 then return Duel.CheckReleaseGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(tp,aux.true,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c)
+	local g=Duel.SelectReleaseGroup(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c)
 	Duel.Release(g,REASON_COST)
 	e:SetLabel(g:GetFirst():GetPreviousAttackOnField())
  Duel.SetChainLimit(c9981290.chainlm)

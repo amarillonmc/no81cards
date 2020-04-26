@@ -1,6 +1,5 @@
 --伏见祸津观
 function c9910040.initial_effect(c)
-	c:SetSPSummonOnce(9910040)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910040,0))

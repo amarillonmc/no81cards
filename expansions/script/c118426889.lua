@@ -66,7 +66,7 @@ function c118426889.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.ConfirmCards(1-tp,e:GetHandler())
 end
 function c118426889.filter2(c,tp,sc)
-    return c:IsSetCard(0x97) and c:IsFaceup() and Duel.IsExistingMatchingCard(c118426889.filter4,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,sc,tp,c,sc)
+    return c:IsSetCard(0x97) and c:IsFaceup() and Duel.IsExistingMatchingCard(c118426889.filter4,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,c,sc)
 end
 function c118426889.filter4(c,tp,mc,sc)
     return Duel.GetLocationCountFromEx(tp,tp,Group.FromCards(c,mc),sc)>0
@@ -150,7 +150,7 @@ function c118426889.skop(e,tp,eg,ep,ev,re,r,rp)
         if tc then
             if Duel.SendtoGrave(tc,REASON_EFFECT)<1 then return end
         else
-            Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LICATON_DECK,0))
+            Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LOCATION_DECK,0))
         end
         local e1=Effect.CreateEffect(e:GetHandler())
         e1:SetType(EFFECT_TYPE_FIELD)
@@ -160,6 +160,6 @@ function c118426889.skop(e,tp,eg,ep,ev,re,r,rp)
         e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_OPPO_TURN)
         Duel.RegisterEffect(e1,tp)
     else
-        Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LICATON_DECK,0))
+        Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LOCATION_DECK,0))
     end
 end

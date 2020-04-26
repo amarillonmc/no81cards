@@ -71,8 +71,8 @@ function c9951270.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g2=Duel.SelectMatchingCard(tp,c9951270.setfilter2,tp,LOCATION_DECK,0,1,1,nil,tc1:GetCode())
 	local tc2=g2:GetFirst()
-	if Duel.MoveToField(tc1,tp,tp,LOCATION_SZONE,POS_FACEUP,false) then
-		if Duel.MoveToField(tc2,tp,tp,LOCATION_SZONE,POS_FACEUP,false) then
+	if Duel.MoveToField(tc1,tp,tp,LOCATION_PZONE,POS_FACEUP,false) then
+		if Duel.MoveToField(tc2,tp,tp,LOCATION_PZONE,POS_FACEUP,false) then
 			Duel.Recover(tp,1000,REASON_EFFECT)
 			tc2:SetStatus(STATUS_EFFECT_ENABLED,true)
 		end
