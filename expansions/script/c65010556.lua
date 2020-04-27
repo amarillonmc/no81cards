@@ -59,11 +59,9 @@ function c65010556.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function c65010556.filter2(c,e,tp,m,f,chkf)
-	if c:IsCode(65010554) then
-		local mg=Duel.GetMatchingGroup(c65010556.filter0,tp,LOCATION_GRAVE,0,nil)
-		m:Merge(mg)
-	end
-	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+	local m2=Duel.GetMatchingGroup(c65010556.filter0,tp,LOCATION_GRAVE,0,nil)
+	m2:Merge(m)
+	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and (c:CheckFusionMaterial(m,nil,chkf) or (c:IsCode(65010554) and c:CheckFusionMaterial(m2,nil,chkf)))
 end
 function c65010556.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
