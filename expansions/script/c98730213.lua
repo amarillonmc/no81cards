@@ -132,7 +132,7 @@ function c98730213.mvop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
     local g=Duel.SelectMatchingCard(tp,c98730213.mvfilter,tp,LOCATION_DECK,0,1,1,nil)
     if g:GetCount()>0 then
-        Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,REASON_EFFECT)
+        Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,REASON_EFFECT)
     end
 end
 function c98730213.synlimit(e,c)
@@ -154,7 +154,7 @@ function c98730213.rdcon(e)
 end
 function c98730213.rdop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) then
-        Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,REASON_EFFECT)
+        Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_PZONE,POS_FACEUP,REASON_EFFECT)
     end
 end
 function c98730213.effcon(e,tp,eg,ep,ev,re,r,rp)

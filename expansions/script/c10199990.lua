@@ -740,22 +740,24 @@ function rsef.FV_INDESTRUCTABLE(cardtbl,indstbl,valtbl,tg,tgrangetbl,con,resettb
 end
 --Field Val Effect: Other Limit
 function rsef.FV_LIMIT(cardtbl,lotbl,valtbl,tg,tgrangetbl,con,resettbl,flag,desctbl) 
-	local codetbl1={"dis","dise","tri","atk","atkan","datk","ress","resns","td","th","cp","res"}
-	local codetbl2={ EFFECT_DISABLE,EFFECT_DISABLE_EFFECT,EFFECT_CANNOT_TRIGGER,EFFECT_CANNOT_ATTACK,EFFECT_CANNOT_ATTACK_ANNOUNCE,EFFECT_CANNOT_DIRECT_ATTACK,EFFECT_CANNOT_RELEASE,EFFECT_UNRELEASABLE_SUM,EFFECT_UNRELEASABLE_NONSUM,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_CHANGE_POSITION }
+	local codetbl1={"dis","dise","tri","atk","atkan","datk","res","ress","resns","td","th","cp","cpe"}
+	local codetbl2={ EFFECT_DISABLE,EFFECT_DISABLE_EFFECT,EFFECT_CANNOT_TRIGGER,EFFECT_CANNOT_ATTACK,EFFECT_CANNOT_ATTACK_ANNOUNCE,EFFECT_CANNOT_DIRECT_ATTACK,EFFECT_CANNOT_RELEASE,EFFECT_UNRELEASABLE_SUM,EFFECT_UNRELEASABLE_NONSUM,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_CHANGE_POSITION,EFFECT_CANNOT_CHANGE_POS_E }
 	local effectcodetbl,effectvaluetbl=rsof.Table_Suit(lotbl,codetbl1,codetbl2,valtbl)
 	local resulteffecttbl={}
 	local range=rsef.GetRegisterRange(cardtbl) 
 	if not tgrangetbl then tgrangetbl={ 0,LOCATION_MZONE } end
 	for k,effectcode in ipairs(effectcodetbl) do 
-		local e1=rsef.FV(cardtbl,effectcode,effectvaluetbl[k],tg,tgrangetbl,range,con,resettbl,flag,desctbl)
+		local flag2=rsef.GetRegisterProperty(flag)|EFFECT_FLAG_SET_AVAILABLE 
+		flag2=effectcode==EFFECT_CANNOT_CHANGE_POSITION and flag2 or flag2|EFFECT_FLAG_IGNORE_IMMUNE 
+		local e1=rsef.FV(cardtbl,effectcode,effectvaluetbl[k],tg,tgrangetbl,range,con,resettbl,flag2,desctbl)
 		table.insert(resulteffecttbl,e1)
 	end
 	return table.unpack(resulteffecttbl)
 end
 --Field Val Effect: Other Limit (affect Player)
 function rsef.FV_LIMIT_PLAYER(cardtbl,lotbl,valtbl,tg,tgrangetbl,con,resettbl,flag,desctbl) 
-	local codetbl1={"act","sum","sp","th","dr","td","tg","res","rm","sbp","sm1","sm2","sdp","ssp","sset","mset","dish","disd","fp"}
-	local codetbl2={ EFFECT_CANNOT_ACTIVATE,EFFECT_CANNOT_SUMMON,EFFECT_CANNOT_SPECIAL_SUMMON,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_DRAW,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_GRAVE,EFFECT_CANNOT_RELEASE,EFFECT_CANNOT_REMOVE,EFFECT_CANNOT_BP,EFFECT_SKIP_M1,EFFECT_SKIP_M2,EFFECT_SKIP_DP,EFFECT_SKIP_SP,EFFECT_CANNOT_SSET,EFFECT_CANNOT_MSET,EFFECT_CANNOT_DISCARD_HAND,EFFECT_CANNOT_DISCARD_DECK,EFFECT_CANNOT_FLIP_SUMMON }
+	local codetbl1={"act","sum","sp","th","dr","td","tg","res","rm","sbp","sm1","sm2","sdp","ssp","sset","mset","dish","disd","fp","cp"}
+	local codetbl2={ EFFECT_CANNOT_ACTIVATE,EFFECT_CANNOT_SUMMON,EFFECT_CANNOT_SPECIAL_SUMMON,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_DRAW,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_GRAVE,EFFECT_CANNOT_RELEASE,EFFECT_CANNOT_REMOVE,EFFECT_CANNOT_BP,EFFECT_SKIP_M1,EFFECT_SKIP_M2,EFFECT_SKIP_DP,EFFECT_SKIP_SP,EFFECT_CANNOT_SSET,EFFECT_CANNOT_MSET,EFFECT_CANNOT_DISCARD_HAND,EFFECT_CANNOT_DISCARD_DECK,EFFECT_CANNOT_FLIP_SUMMON,EFFECT_CANNOT_CHANGE_POSITION }
 	local effectcodetbl,effectvaluetbl=rsof.Table_Suit(lotbl,codetbl1,codetbl2,valtbl)
 	local resulteffecttbl={}
 	local range=rsef.GetRegisterRange(cardtbl) 
@@ -1255,24 +1257,20 @@ end
 function rssf.SpecialSummon(ssgorc,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos,zone,sumcardfun,sumgroupfun)
 	sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos=rssf.GetSSDefaultParameter(sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos)
 	local ct=0
-	if zone then
-		ct=Duel.SpecialSummon(ssgorc,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos,zone)
-	else
-		ct=Duel.SpecialSummon(ssgorc,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos)
+	local g=Group.CreateGroup()
+	local sg=rsgf.Mix2(ssgorc)
+	for sc in aux.Next(sg) do
+		if rssf.SpecialSummonStep(sc,sstype,ssplayer,tplayer,ignorecon,ignorerevie,pos,zone,sumcardfun) then
+			ct=ct+1
+			g:AddCard(sc)
+		end
 	end
-	local g=Duel.GetOperatedGroup()
+	if ct>0 then
+		Duel.SpecialSummonComplete()
+	end
 	local e=g:GetFirst():GetReasonEffect()
 	local tp=e:GetHandlerPlayer()
 	local c=g:GetFirst():GetReasonEffect():GetHandler()
-	if #g>0 and sumcardfun then
-		for tc in aux.Next(g) do
-			if type(sumcardfun)=="table" then 
-				rscf.QuickBuff({c,tc,true},table.unpack(sumcardfun))
-			elseif type(sumcardfun)=="function" then
-				sumcardfun(c,tc,e,tp,g)
-			end
-		end
-	end 
 	if #g>0 and sumgroupfun then
 		if type(sumgroupfun)=="table" then 
 			rsef.FC_PHASELEAVE({c,tp},g,table.unpack(sumgroupfun))
@@ -1403,7 +1401,7 @@ function rsval.cdisneg(filter)
 	return function(e,ct)
 		local p=e:GetHandlerPlayer()
 		local te,tp,loc=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
-		return (not filter and p==tp) or filter(e,p,te,tp,loc)
+		return (not filter and p==tp) or (filter and filter(e,p,te,tp,loc))
 	end
 end
 
@@ -1490,7 +1488,12 @@ function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,targetlist)
 			selecthint=catevalue[3]
 		end
 	end
+	local listtype=targetlist[10]
 	local _,catelist2,catestringlist=rsef.GetRegisterCategory(catelist)
+	if listtype and listtype=="cost" and rsof.Table_List(catelist2,CATEGORY_HANDES) then
+		catelist2={ CATEGORY_TOGRAVE }
+		selecthint=selecthint or HINTMSG_DISCARD 
+	end
 	local loc1,loc2=targetlist[3],targetlist[4]
 	if type(loc1)=="function" then
 		loc1=loc1(e,tp,eg,ep,ev,re,r,rp)
@@ -1509,7 +1512,6 @@ function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,targetlist)
 	local exceptfun=targetlist[7]
 	local isoptional=targetlist[8]
 	--local selecthint=targetlist[9]  
-	local listtype=targetlist[10]
 	if not listtype then
 		listtype="target"
 	end
@@ -1593,14 +1595,40 @@ end
 function rstg.GetTargetCheckAndSelectFun(b2,catelist)
 	local targetcheckfun= not b2 and Duel.IsExistingMatchingCard or Duel.IsExistingTarget 
 	local targetselectfun= not b2 and Duel.SelectMatchingCard or Duel.SelectTarget 
-	local playertargetlist={ CATEGORY_DRAW,CATEGORY_DECKDES,CATEGORY_RECOVER,CATEGORY_DAMAGE } --CATEGORY_HANDES
+	local playertargetlist={ CATEGORY_DRAW,CATEGORY_DECKDES,CATEGORY_RECOVER,CATEGORY_DAMAGE,CATEGORY_HANDES } --
 	for _,cate in pairs(playertargetlist) do
 		if rsof.Table_List(catelist,cate) then
-			targetcheckfun=rstg.Target_Fun_Check_Fun(cate)
+			targetcheckfun=rstg.PlayerTarget_Set_Usingct(cate)
 			targetselectfun=rstg.Target_Fun_Select_Fun(cate)
 		end
 	end
 	return targetcheckfun,targetselectfun
+end
+function rstg.PlayerTarget_Set_Usingct(cate)
+	return function(filter,tp,spct,opct,minct2_nouse,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,targetvalue1,targetvalue2,...)
+		if spct>0 then
+			usingct[tp][cate]=usingct[tp][cate] or 0
+			local spct2=usingct[tp][cate]+spct 
+			usingct[tp][cate]=spct2
+			if cate==CATEGORY_DRAW and not Duel.IsPlayerCanDraw(tp,spct2) then return false end
+			if cate==CATEGORY_HANDES and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)<spct2 then return false end
+			if cate==CATEGORY_DECKDES and not Duel.IsPlayerCanDiscardDeck(tp,spct2) then return false end
+		end
+		if opct>0 then
+			usingct[1-tp][cate]=usingct[1-tp][cate] or 0
+			local opct2=usingct[1-tp][cate]+opct 
+			usingct[1-tp][cate]=opct2
+			if cate==CATEGORY_DRAW and not Duel.IsPlayerCanDraw(1-tp,opct2) then return false end
+			if cate==CATEGORY_HANDES and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<opct2 then return false end
+			if cate==CATEGORY_DECKDES and not Duel.IsPlayerCanDiscardDeck(1-tp,opct2) then return false end
+		end
+		return spct>0 or opct>0
+	end
+end
+function rstg.Target_Fun_Select_Fun(cate)
+	return function(selectp,filter_nouse,locp_nouse,spct,opct,minct_nouse,maxct_nouse,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,targetvalue1,...)
+		rstg.PlayerTarget_Set_Usingct(cate,tp,spct,opct,usingct)
+	end
 end
 --Effect target: Check chkc & chk
 function rstg.TargetCheck(e,tp,eg,ep,ev,re,r,rp,chk,chkc,valuetype,...)
@@ -1641,50 +1669,6 @@ function rstg.TargetCheck(e,tp,eg,ep,ev,re,r,rp,chk,chkc,valuetype,...)
 			return targetfun(rstg.TargetFilter,tp,loc1,loc2,minct2,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,table.unpack(targetlist))
 		end
 	end
-end
-function rstg.PlayerTarget_Set_Usingct(cate,tp,spct,opct,usingct)
-	if spct>0 then
-		usingct[tp][cate]=usingct[tp][cate] or 0
-		local spct2=usingct[tp][cate]+spct 
-		usingct[tp][cate]=spct2
-		if cate==CATEGORY_DRAW and not Duel.IsPlayerCanDraw(tp,spct2) then return false end
-		--if cate==CATEGORY_HANDES and not Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>=spct2 then return false end
-		if cate==CATEGORY_DECKDES and not Duel.IsPlayerCanDiscardDeck(tp,spct2) then return false end
-	end
-	if opct>0 then
-		usingct[1-tp][cate]=usingct[1-tp][cate] or 0
-		local opct2=usingct[1-tp][cate]+opct 
-		usingct[1-tp][cate]=opct2
-		if cate==CATEGORY_DRAW and not Duel.IsPlayerCanDraw(1-tp,opct2) then return false end
-		--if cate==CATEGORY_HANDES and not Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=opct2 then return false end
-		if cate==CATEGORY_DECKDES and not Duel.IsPlayerCanDiscardDeck(1-tp,opct2) then return false end
-	end
-	return spct>0 or opct>0
-end
-function rstg.Target_Fun_Check_Fun(cate)
-	return function(filter,tp,spct,opct,minct2_nouse,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,targetvalue1,targetvalue2,...)
-		if not rstg.PlayerTarget_Set_Usingct(cate,tp,spct,opct,usingct) then return false end
-		if not targetvalue2 then return true end
-		local ffunction,catelist,catestringlist,catefun,selecthint,loc1,loc2,minct,maxct,exceptfun,isoptional,listtype = rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,targetvalue2)
-		local b1,b2,b3,b4,b5=rstg.CheckTargetlistType(listtype)
-		local targetfun=rstg.GetTargetCheckAndSelectFun(b2,catelist)
-		local exceptg=rsgf.GetExceptGroup(exceptfun,b4,e,tp,eg,ep,ev,re,r,rp)
-		return targetfun(rstg.TargetFilter,tp,loc1,loc2,minct2,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,targetvalue2,...)
-	end
-end
-function rstg.Target_Fun_Select_Fun(cate)
-	return function(selectp,filter_nouse,locp_nouse,spct,opct,minct_nouse,maxct_nouse,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,targetvalue1,...)
-		rstg.PlayerTarget_Set_Usingct(cate,tp,spct,opct,usingct)   
-		return Group.CreateGroup(),{[tp]=spct,[1-tp]=opct}
-	end
-end
-function rstg.Target_Fun_Check_NullFun(filter,tp,spct,opct,minct2_nouse,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,targetvalue1,targetvalue2,...)
-	if not targetvalue2 then return true end
-	local ffunction,catelist,catestringlist,catefun,selecthint,loc1,loc2,minct,maxct,exceptfun,isoptional,listtype = rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,targetvalue2)
-	local b1,b2,b3,b4,b5=rstg.CheckTargetlistType(listtype)
-	local targetfun=rstg.GetTargetCheckAndSelectFun(b2,catelist)
-	local exceptg=rsgf.GetExceptGroup(exceptfun,b4,e,tp,eg,ep,ev,re,r,rp)
-	return targetfun(rstg.TargetFilter,tp,loc1,loc2,minct2,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,targetvalue2,...)
 end
 --Effect target: Target filter 
 function rstg.TargetFilter(c,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,targetvalue1,targetvalue2,...)
@@ -1805,7 +1789,7 @@ function rstg.TargetSelectNoInfo(e,tp,eg,ep,ev,re,r,rp,valuetype,...)
 			selectgroup=solvegroup:Filter(rstg.targetsolvefilter,exceptg,e,tp,eg,ep,ev,re,r,rp,usingg,usingct,ffunction)
 		end
 		--operation info catelist 
-		local playertargetcatelist={ CATEGORY_DRAW,CATEGORY_RECOVER,CATEGORY_DAMAGE,CATEGORY_DECKDES } --CATEGORY_HANDES 
+		local playertargetcatelist={ CATEGORY_DRAW,CATEGORY_RECOVER,CATEGORY_DAMAGE,CATEGORY_DECKDES,CATEGORY_HANDES } -- 
 		for _,cate in ipairs(catelist) do 
 			local selectinfolist=b1 and costinfolist or cateinfolist
 			--because player use 0 and 1 , some caculate like 0+1=1 ,cannot get PLAYER_ALL(3) ,so first treat base player as 1 and 2
@@ -1886,10 +1870,10 @@ function rstg.TargetSelect(e,tp,eg,ep,ev,re,r,rp,valuetype,...)
 			--because player use 0 and 1 , some caculate like 0+1=1 ,cannot get PLAYER_ALL(3) ,so first treat base player as 1 and 2, inverse operation
 			local playerlist={[0]=0,[1]=0,[2]=1,[3]=3} 
 			infop=playerlist[infop]
-			local playertargetcatelist={ CATEGORY_DRAW,CATEGORY_RECOVER,CATEGORY_DAMAGE,CATEGORY_DECKDES } --CATEGORY_HANDES
+			local playertargetcatelist={ CATEGORY_DRAW,CATEGORY_RECOVER,CATEGORY_DAMAGE,CATEGORY_DECKDES,CATEGORY_HANDES } --
 			if rsof.Table_List(playertargetcatelist,cate) then 
 				local spvalue=infoloc[tp]
-				local opvalue=infoloc[1-tp]
+				local opvalue=infoloc[1-tp] 
 				local infovalue=0
 				if spvalue>0 and opvalue>0 then infovalue=math.min(spvalue,opvalue) 
 				else 
@@ -3124,53 +3108,60 @@ function rsgf.SelectSolve(g,selecthint,sp,filter,minct,maxct,exceptg,solvefun,..
 		solveparlist[len2]=solvepar
 	end
 	local res=not solvefun and {tg,tg:GetFirst()} or {solvefun2(tg,table.unpack(solveparlist))}   
-	rsop.nohint=false
 	rsop.solveprlen=nil
+	rsop.nohint=false
 	return table.unpack(res) 
 end
 Group.SelectSolve=rsgf.SelectSolve
 --Group:Select card from group and send to hand
 function rsgf.SelectToHand(g,sp,filter,minct,maxct,exceptg,solvepar,...)
 	solvepar=rsop.GetFollowingSolvepar(solvepar,4)
+	rsop.nohint=true
 	return rsgf.SelectSolve(g,"th",sp,filter,minct,maxct,exceptg,{rsop.SendtoHand,table.unpack(solvepar)},...)
 end
 Group.SelectToHand=rsgf.SelectToHand
 --Group:Select card from group and send to grave
 function rsgf.SelectToGrave(g,sp,filter,minct,maxct,exceptg,solvepar,...)
 	solvepar=rsop.GetFollowingSolvepar(solvepar,2)
+	rsop.nohint=true
 	return rsgf.SelectSolve(g,"tg",sp,filter,minct,maxct,exceptg,{rsop.SendtoGrave,table.unpack(solvepar)},...)
 end
 Group.SelectToGrave=rsgf.SelectToGrave
 --Group:Select card from group and release
 function rsgf.SelectRelease(g,sp,filter,minct,maxct,exceptg,solvepar,...)
 	solvepar=rsop.GetFollowingSolvepar(solvepar,2)
+	rsop.nohint=true
 	return rsgf.SelectSolve(g,"tg",sp,filter,minct,maxct,exceptg,{rsop.Release,table.unpack(solvepar)},...)
 end
 Group.SelectRelease=rsgf.SelectRelease
 --Group:Select card from group and send to deck
 function rsgf.SelectToDeck(g,sp,filter,minct,maxct,exceptg,solvepar,...)
 	solvepar=rsop.GetFollowingSolvepar(solvepar,4)
+	rsop.nohint=true
 	return rsgf.SelectSolve(g,"td",sp,filter,minct,maxc,t,exceptg,{rsop.SendtoDeck,table.unpack(solvepar)},...)
 end
 Group.SelectToDeck=rsgf.SelectToDeck
 --Group:Select card from group and destroy
 function rsgf.SelectDestroy(g,sp,filter,minct,maxct,exceptg,solvepar,...)
 	solvepar=rsop.GetFollowingSolvepar(solvepar,2)
+	rsop.nohint=true
 	return rsgf.SelectSolve(g,"des",sp,filter,minct,maxct,exceptg,{rsop.Destroy,table.unpack(solvepar)},...)
 end
 Group.SelectDestroy=rsgf.SelectDestroy
 --Group:Select card from group and remove
 function rsgf.SelectRemove(g,sp,filter,minct,maxct,exceptg,solvepar,...)
 	solvepar=rsop.GetFollowingSolvepar(solvepar,3)
+	rsop.nohint=true
 	return rsgf.SelectSolve(g,"rm",sp,filter,minct,maxct,exceptg,{rsop.Remove,table.unpack(solvepar)},...)
 end
 Group.SelectRemove=rsgf.SelectRemove
 --Group:Select card from group and special summon
 function rsgf.SelectSpecialSummon(g,sp,filter,minct,maxct,exceptg,solvepar,...)
-	solvepar=rsop.GetFollowingSolvepar(solvepar,8)
+	--solvepar=rsop.GetFollowingSolvepar(solvepar,8)
+	solvepar = type(solvepar)=="table" and solvepar or {solvepar}
 	local e=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
 	local ex_par=not ... and {e,sp} or {...}
-	return rsgf.SelectSolve(g,"sp",sp,filter,minct,maxct,exceptg,{rssf.SpecialSummon,table.unpack(solvepar)},table.unpack(ex_par))
+	return rsgf.SelectSolve(g,"sp",sp,filter,minct,maxct,exceptg,rsop.SelectSpecialSummon_Operation(solvepar),table.unpack(ex_par))
 end
 Group.SelectSpecialSummon=rsgf.SelectSpecialSummon
 
@@ -3209,13 +3200,25 @@ function rscf.DefineSet_Fun(prefix1,prefix2,seriesstring)
 end
 --Register qucik attribute buff in cards
 function rscf.QuickBuff(reglist,...)
+	local bufflist={...}  
 	local c1,c2=rsef.GetRegisterCard(reglist)
-	local bufflist={...}
 	local reset=rsreset.est
-	local reset2=c1~=c2 and rsreset.est or rsreset.est_d
-	if #bufflist&1==1 then
-		reset=bufflist[#bufflist]
-		reset2=c1~=c2 and bufflist[#bufflist] or bufflist[#bufflist]|RESET_DISABLE 
+	local reset2=c1~=c2 and rsreset.est or rsreset.est_d 
+	local res,ct=rsof.Table_List(bufflist,"reset")
+	if res then
+		local resetval=bufflist[ct+1]
+		if resetval and type(resetval)~="string" then
+			reset=resetval  
+			if c1==c2 then
+				reset2=type(resetval)=="table" and {resetval[1]|RESET_DISABLE,resetval[2] } or resetval|RESET_DISABLE 
+			else
+				reset2=resetval
+			end
+		end
+	end
+	if not rsof.Table_List(bufflist,"reset") then
+		table.insert(bufflist,"reset")
+		table.insert(bufflist,rsreset.est)
 	end
 	local setlist={"atk","def","batk","bdef","atkf","deff"} 
 	local uplist={"atk+","def+","lv+","rk+"}
@@ -3232,11 +3235,20 @@ function rscf.QuickBuff(reglist,...)
 		--table.insert(nulllist,"hape")
 	--end
 	local effectlist={}
-	for index,value in pairs(bufflist) do
-		if index&1==1 then
-			local vallist=type(bufflist[index+1])~=table and {bufflist[index+1]} or bufflist[index+1]
-			local stringlist=rsof.String_Number_To_Table(value)
-			local _,effectvaluelist=rsof.Table_Suit(value,funlist,{},vallist)
+	for index,par in pairs(bufflist) do
+		local vtype=type(par)
+		local parnext=bufflist[index+1]
+		local vtypenext=type(nextpar)
+		if vtype=="string" and par~="reset" then
+			local vallist
+			if not parnext or vtypenext=="string" then 
+				vallist={}
+			end
+			if parnext and vtypenext~="string" then
+				vallist=vtypenext~="table" and {parnext} or parnext
+			end
+			local stringlist=rsof.String_Number_To_Table(par)
+			local _,effectvaluelist=rsof.Table_Suit(par,funlist,{},vallist)
 			for k,codestring in pairs(stringlist) do
 				if rsof.Table_List(funlistatt,codestring) then
 					e1=rsef.SV_ATTRIBUTE(reglist,codestring,effectvaluelist[k],nil,reset2)
@@ -3289,30 +3301,45 @@ function rscf.SetSummonCondition(cardtbl,isnsable,sumvalue,iseffectspsum,resettb
 			tc2:EnableReviveLimit()
 		end
 	end
-	if not sumvalue then sumvalue=aux.FALSE end
-	local e1=rsef.SV(cardtbl,EFFECT_SPSUMMON_CONDITION,sumvalue,nil,nil,resettbl,"uc,cd")
+	sumvalue = sumvalue or aux.FALSE 
+	local e1=rsef.SV(cardtbl,EFFECT_SPSUMMON_CONDITION,sumvalue,nil,nil,resettbl,"uc,cd,sr")
 	return e1
 end 
 rssf.SetSummonCondition=rscf.SetSummonCondition
 --Check Built-in SetCode / Series Main Set
 function rscf.CheckSetCardMainSet(c,settype,series1,...) 
-	local stringlist=rsof.String_Number_To_Table({series1,...})
+	local serieslist={series1,...}
+	local seriesnormallist={}
+	local seriescustomlist={}
+	for _,series in pairs(serieslist) do 
+		if type(series)=="number" then
+			table.insert(seriesnormallist,series) 
+		else
+			table.insert(seriescustomlist,series) 
+		end
+	end
+	local stringlist=rsof.String_Number_To_Table(seriescustomlist)
 	local codelist={}
 	local effectlist={}
 	local addcodelist={}
 	if settype=="base" then
+		if #seriesnormallist>0 and c:IsSetCard(table.unpack(seriesnormallist)) then return true end
 		codelist={c:GetCode()} 
 		effectlist={c:IsHasEffect(EFFECT_ADD_SETCODE)} 
 	elseif settype=="fus" then
+		if #seriesnormallist>0 and c:IsFusionSetCard(table.unpack(seriesnormallist)) then return true end
 		codelist={c:GetFusionCode()}
 		effectlist={c:IsHasEffect(EFFECT_ADD_FUSION_SETCODE),c:IsHasEffect(EFFECT_ADD_SETCODE)} 
 	elseif settype=="link" then
+		if #seriesnormallist>0 and c:IsLinkSetCard(table.unpack(seriesnormallist)) then return true end
 		codelist={c:GetLinkCode()}
 		effectlist={c:IsHasEffect(EFFECT_ADD_LINK_SETCODE),c:IsHasEffect(EFFECT_ADD_SETCODE)} 
 	elseif settype=="org" then
+		if #seriesnormallist>0 and c:IsOriginalSetCard(table.unpack(seriesnormallist)) then return true end
 		codelist={c:GetOriginalCode()}
 		effectlist={}
 	elseif settype=="pre" then
+		if #seriesnormallist>0 and c:IsPreviousSetCard(table.unpack(seriesnormallist)) then return true end
 		codelist={c:GetPreviousCodeOnField()}
 		effectlist=rscf.Previous_Set_Code_List
 	end

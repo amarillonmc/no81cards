@@ -2,7 +2,7 @@
 function c9910123.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910123)
@@ -12,7 +12,7 @@ function c9910123.initial_effect(c)
 	c:RegisterEffect(e1)
 	--draw
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910123,1))
+	e2:SetDescription(aux.Stringid(9910123,0))
 	e2:SetCategory(CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_BATTLE_DAMAGE)
@@ -53,22 +53,14 @@ function c9910123.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	else
 		if not c:IsRelateToEffect(e) then return end
-		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
-		local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_SZONE,LOCATION_SZONE,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910123,0)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local sg=g:Select(tp,1,1,nil)
-			Duel.BreakEffect()
-			Duel.HintSelection(sg)
-			Duel.Destroy(sg,REASON_EFFECT)
-		end
+		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end
 function c9910123.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp
 end
 function c9910123.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_EFFECT) and Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
@@ -76,8 +68,5 @@ function c9910123.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910123.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:RemoveOverlayCard(tp,1,1,REASON_EFFECT) then
-		Duel.Draw(p,d,REASON_EFFECT)
-	end
+	Duel.Draw(p,d,REASON_EFFECT)
 end

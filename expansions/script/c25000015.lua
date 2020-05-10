@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	local e1=rsef.SV_CHANGE(c,"code",25000014)
 	e1:SetRange(LOCATION_MZONE)
 	local e2=rsgs.FusTypeFun(c,m,TYPE_SYNCHRO)
-	local e3=rsef.FTO(c,EVENT_LEAVE_FIELD,{m,1},{1,m+100},"sp,dr","de",LOCATION_HAND+LOCATION_GRAVE,cm.spcon,nil,rsop.target(rscf.spfilter2(),"sp"),cm.spop)
+	local e3=rsef.FTO(c,EVENT_LEAVE_FIELD,{m,1},{1,m+200},"sp,dr","de",LOCATION_HAND+LOCATION_GRAVE,cm.spcon,nil,rsop.target(rscf.spfilter2(),"sp"),cm.spop)
 end
 function cm.cfilter(c,tp)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:GetSummonLocation()==LOCATION_EXTRA and c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:GetPreviousControler()~=tp

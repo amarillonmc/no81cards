@@ -3,7 +3,7 @@ function c33400311.initial_effect(c)
 	 c:EnableReviveLimit()
 	--
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_BATTLE_DESTROYING)
 	e1:SetCountLimit(1,33400311)
@@ -49,23 +49,27 @@ function c33400311.desop(e,tp,eg,ep,ev,re,r,rp)
 	e5:SetTarget(c33400311.distg)
 	e5:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e5,1-tp)
-	if Duel.IsExistingMatchingCard(c33400311.thfilter1,tp,LOCATION_GRAVE,0,1,nil,tp) then 
+	if Duel.IsExistingMatchingCard(c33400311.refilter1,tp,0,LOCATION_ONFIELD,1,nil)  then
 	   if Duel.SelectYesNo(tp,aux.Stringid(33400311,0)) then 
-				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33400311,1))
-				local g=Duel.SelectMatchingCard(tp,c33400311.thfilter1,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+		 local tc1=Duel.SelectMatchingCard(tp,c33400311.refilter1,tp,0,LOCATION_ONFIELD,1,1,nil)
+		 Duel.Remove(tc1,POS_FACEDOWN,REASON_EFFECT)
+	   end 
+	end
+	local k1=Duel.GetMatchingGroup(c33400311.thfilter1,tp,LOCATION_GRAVE,0,nil)
+	local k2=Duel.GetMatchingGroup(c33400311.thfilter2,tp,LOCATION_GRAVE,0,nil)
+	if Duel.GetTurnPlayer()~=tp and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and  (k1 or k2) then 
+	   if Duel.SelectYesNo(tp,aux.Stringid(33400311,1)) then 
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33400311,4))
+				local g=Duel.SelectMatchingCard(tp,c33400311.thfilter3,tp,LOCATION_GRAVE,0,1,1,nil,tp)
 				local tc=g:GetFirst()
-				if tc then
-					local b1=tc:IsAbleToHand()
-					local b2=Duel.GetLocationCount(tp,LOCATION_SZONE)
-					if  b1 and (b2==0 or Duel.SelectOption(tp,aux.Stringid(33400311,2),aux.Stringid(33400311,3))==0) then
-						Duel.SendtoHand(tc,nil,REASON_EFFECT)
+				if tc then		  
+			   local b1=tc:IsSSetable()
+			   local b2=tc:IsForbidden()
+					if  b1 and (b2 or Duel.SelectOption(tp,aux.Stringid(33400311,2),aux.Stringid(33400311,3))==0) then
+						Duel.SSet(tp,tc)
 						Duel.ConfirmCards(1-tp,tc)
 					else						
-						Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-						local te=tc:GetActivateEffect()
-						local tep=tc:GetControler()
-						local cost=te:GetCost()
-						if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end					 
+						Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)			 
 					end
 				end
 		end
@@ -77,9 +81,19 @@ end
 function c33400311.distg(e,c)
 	return c:IsFacedown()
 end
-function c33400311.thfilter1(c)
-	return  (c:IsAbleToHand() or not c:IsForbidden()) and c:IsCode(33400350)
+function c33400311.refilter1(c)
+	return  c:IsAbleToRemove()  and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
+function c33400311.thfilter1(c)
+	return  c:IsSetCard(0x5341) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+end
+function c33400311.thfilter2(c)
+	return  c:IsSetCard(0x5341)  and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsForbidden()
+end
+function c33400311.thfilter3(c)
+	return  c:IsSetCard(0x5341) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsSSetable() or not c:IsForbidden())
+end
+
 function c33400311.imfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x341)
 end
@@ -92,16 +106,11 @@ end
 function c33400311.imop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-	  local e4=Effect.CreateEffect(e:GetHandler())
-			e4:SetType(EFFECT_TYPE_SINGLE)
-			e4:SetCode(EFFECT_IMMUNE_EFFECT)
-			e4:SetValue(c33400311.efilter)
-			e4:SetOwnerPlayer(tp)
-			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e4)
+	 local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_EXTRA_ATTACK)
+		e1:SetValue(1)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
 	end
 end
-function c33400311.efilter(e,re)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
-end
-

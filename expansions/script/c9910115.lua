@@ -2,7 +2,7 @@
 function c9910115.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910115)
@@ -12,7 +12,7 @@ function c9910115.initial_effect(c)
 	c:RegisterEffect(e1)
 	--atkup
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910115,1))
+	e2:SetDescription(aux.Stringid(9910115,0))
 	e2:SetCategory(CATEGORY_ATKCHANGE)
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_BATTLE_DAMAGE)
@@ -53,27 +53,19 @@ function c9910115.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	else
 		if not c:IsRelateToEffect(e) then return end
-		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
-		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910115,0)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local sg=g:Select(tp,1,1,nil)
-			Duel.BreakEffect()
-			Duel.HintSelection(sg)
-			Duel.Destroy(sg,REASON_EFFECT)
-		end
+		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end
 function c9910115.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp
 end
 function c9910115.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetOverlayCount(tp,1,1)>1 end
+	if chk==0 then return Duel.GetOverlayCount(tp,1,1)>0 end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c9910115.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) and c:RemoveOverlayCard(tp,1,1,REASON_EFFECT) then
+	if c:IsFaceup() and c:IsRelateToEffect(e) then
 		local ct=Duel.GetOverlayCount(tp,1,1)
 		if ct>0 then
 			local e1=Effect.CreateEffect(c)

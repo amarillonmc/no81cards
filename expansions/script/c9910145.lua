@@ -10,14 +10,6 @@ function c9910145.initial_effect(c)
 	e1:SetTarget(c9910145.sptg)
 	e1:SetOperation(c9910145.spop)
 	c:RegisterEffect(e1)
-	--immune
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_XMATERIAL)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_IMMUNE_EFFECT)
-	e2:SetCondition(c9910145.condtion)
-	e2:SetValue(c9910145.efilter)
-	c:RegisterEffect(e2)
 end
 function c9910145.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
@@ -76,12 +68,4 @@ function c9910145.spop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-end
-function c9910145.condtion(e)
-	local tp=e:GetHandlerPlayer()
-	return not Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,e:GetHandler())
-end
-function c9910145.efilter(e,te)
-	local tp=e:GetHandlerPlayer()
-	return te:GetOwnerPlayer()~=tp and te:IsActiveType(TYPE_MONSTER)
 end

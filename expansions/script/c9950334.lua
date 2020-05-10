@@ -12,6 +12,16 @@ function c9950334.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(c9950334.efilter)
 	c:RegisterEffect(e2)
+  --actlimit
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(0,1)
+	e2:SetValue(1)
+	e2:SetCondition(c9950334.actcon)
+	c:RegisterEffect(e2)
 	--destroy
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(9950334,0))
@@ -40,6 +50,9 @@ function c9950334.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 end 
 function c9950334.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
+end
+function c9950334.actcon(e)
+	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
 end
 function c9950334.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

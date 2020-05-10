@@ -1,7 +1,7 @@
 --降临者·杨贵妃
 function c9950943.initial_effect(c)
 	  --ritual summon
-	local e1=aux.AddRitualProcGreater2(c,c9950943.filter,LOCATION_HAND+LOCATION_GRAVE,nil,c9950943.matfilter)
+	local e1=aux.AddRitualProcGreater2(c,c9950943.filter,LOCATION_HAND+LOCATION_DECK,nil,c9950943.matfilter)
 	e1:SetDescription(aux.Stringid(9950943,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetCode(0)
@@ -58,7 +58,7 @@ function c9950943.operation(e,tp,eg,ep,ev,re,r,rp)
 			--untargetable
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetDescription(aux.Stringid(9950943,1))
-			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 			e1:SetRange(LOCATION_MZONE)
 			e1:SetCode(EFFECT_CANNOT_ACTIVATE)
@@ -66,6 +66,7 @@ function c9950943.operation(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetTargetRange(0,1)
 			e1:SetValue(c9950943.aclimit)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetAbsoluteRange(ep,0,1)
 			rc:RegisterEffect(e1,true)
 			rc:RegisterFlagEffect(9950943,RESET_EVENT+RESETS_STANDARD,0,1)
 		end

@@ -45,7 +45,7 @@ function c121082832.actarget(e,te,tp)
 end
 function c121082832.costop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+    Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 end
 function c121082832.target(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end

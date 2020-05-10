@@ -152,7 +152,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
     local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
     if g and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0 then
-        Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+        Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
     end
 end
 function cm.sp1(e,tp,eg,ep,ev,re,r,rp)

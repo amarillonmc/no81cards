@@ -34,10 +34,10 @@ function c9950438.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9950438.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xba5) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0xba5) 
 end
 function c9950438.actcona(e,tp,eg,ep,ev,re,r,rp)
-	Duel.IsExistingMatchingCard(c9950438.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(c9950438.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9950438.actlimit(e,re,tp)
 	return re:IsActiveType(TYPE_MONSTER)

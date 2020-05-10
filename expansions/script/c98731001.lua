@@ -26,7 +26,7 @@ function c98731001.initial_effect(c)
     local e4=Effect.CreateEffect(c)
     e4:SetType(EFFECT_TYPE_FIELD)
     e4:SetCode(EFFECT_IMMUNE_EFFECT)
-    e4:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+    e4:SetProperty(EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_SET_AVAILABLE)
     e4:SetRange(LOCATION_PZONE)
     e4:SetTargetRange(0xff,0)
     e4:SetTarget(c98731001.etarget)
@@ -128,7 +128,7 @@ end
 function c98731001.operation(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if c:GetFlagEffect(tp,98731001)==0 and Duel.SelectYesNo(tp,aux.Stringid(98731001,0)) then
-        Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+        Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
         c:RegisterFlagEffect(98731001,RESET_EVENT+RESETS_STANDARD,0,1)
     end
 end

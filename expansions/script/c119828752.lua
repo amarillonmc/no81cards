@@ -90,9 +90,9 @@ function c119828752.pcop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
     local g=Duel.SelectMatchingCard(tp,c119828752.pcfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,2,nil)
     if g:GetCount()>0 then
-        Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+        Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
         local tc=g:GetNext()
-        if tc then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) end
+        if tc then Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) end
     end
 end
 function c119828752.filter1(c)
@@ -282,5 +282,5 @@ end
 function c119828752.mvop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) or not (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end
-    Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+    Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 end

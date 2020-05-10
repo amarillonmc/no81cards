@@ -54,6 +54,15 @@ function c9981614.initial_effect(c)
 	e4:SetTarget(c9981614.mttg)
 	e4:SetOperation(c9981614.mtop)
 	c:RegisterEffect(e4)
+ --material
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(9981614,6))
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1)
+	e4:SetTarget(c9981614.mttg2)
+	e4:SetOperation(c9981614.mtop2)
+	c:RegisterEffect(e4)
    --spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -107,8 +116,19 @@ function c9981614.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		c:RegisterEffect(e2)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_PHASE+PHASE_END)
+		e2:SetCountLimit(1)
+		e2:SetLabel(c:GetAttack())
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		e2:SetOperation(c9981614.damop)
+		Duel.RegisterEffect(e2,tp)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981614,5))
+end
+function c9981614.damop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Recover(tp,e:GetLabel(),REASON_EFFECT)
 end
 function c9981614.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -139,6 +159,22 @@ function c9981614.mtop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local g=Duel.SelectMatchingCard(tp,c9981614.mtfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,e)
+	if g:GetCount()>0 then
+		Duel.Overlay(c,g)
+	end
+end
+function c9981614.mtfilter2(c,e)
+	return c:IsType(TYPE_MONSTER) and c:IsCanOverlay() and not (e and c:IsImmuneToEffect(e))
+end
+function c9981614.mttg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ)
+		and Duel.IsExistingMatchingCard(c9981614.mtfilter2,tp,LOCATION_GRAVE,0,1,nil) end
+end
+function c9981614.mtop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local g=Duel.SelectMatchingCard(tp,c9981614.mtfilter2,tp,LOCATION_GRAVE,0,1,1,nil,e)
 	if g:GetCount()>0 then
 		Duel.Overlay(c,g)
 	end

@@ -3,7 +3,7 @@ function c33400312.initial_effect(c)
 	 c:EnableReviveLimit()
 	--activate limit
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_BATTLE_DESTROYING)
 	e1:SetCountLimit(1,33400312)
@@ -20,11 +20,11 @@ function c33400312.initial_effect(c)
 	e2:SetOperation(c33400312.dbop)
 	c:RegisterEffect(e2)
 end
-function c33400312.thfilter1(c)
-	return  (c:IsAbleToHand() or not c:IsForbidden()) and c:IsCode(33400355)
+function c33400312.tdfilter1(c)
+	return  c:IsAbleToDeck() 
 end
 function c33400312.aclimit(e,re,tp)
-	return re:GetActivateLocation()==LOCATION_GRAVE
+	return re:GetActivateLocation()==LOCATION_GRAVE+LOCATION_REMOVED
 end
 function c33400312.alsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -36,27 +36,37 @@ function c33400312.alsop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(c33400312.aclimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp) 
-	if Duel.IsExistingMatchingCard(c33400312.thfilter1,tp,LOCATION_GRAVE,0,1,nil) then 
+	if Duel.IsExistingMatchingCard(c33400312.tdfilter1,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) then 
 	   if Duel.SelectYesNo(tp,aux.Stringid(33400312,0)) then 
-				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33400312,1))
-				local g=Duel.SelectMatchingCard(tp,c33400312.thfilter1,tp,LOCATION_GRAVE,0,1,1,nil,tp)
-				local tc=g:GetFirst()
-				if tc then
-					local b1=tc:IsAbleToHand()
-					local b2=Duel.GetLocationCount(tp,LOCATION_SZONE)
-					if b1 and (b2==0 or Duel.SelectOption(tp,aux.Stringid(33400312,2),aux.Stringid(33400312,3))==0) then
-						Duel.SendtoHand(tc,nil,REASON_EFFECT)
-						Duel.ConfirmCards(1-tp,tc)
-					else
-						Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-						local te=tc:GetActivateEffect()
-						local tep=tc:GetControler()
-						local cost=te:GetCost()
-						if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-					end
-			   end
+		   local tc=Duel.SelectMatchingCard(tp,c33400312.tdfilter1,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,2,nil)
+		  Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 		end
 	end
+   if Duel.GetTurnPlayer()~=tp and Duel.IsExistingMatchingCard(c33400312.dbfilter,tp,LOCATION_MZONE,0,1,nil) then 
+	  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	  local g=Duel.SelectMatchingCard(tp,c33400312.dbfilter,tp,LOCATION_MZONE,0,1,2,nil)
+	  while tc do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(1000)
+		tc:RegisterEffect(e1)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_IMMUNE_EFFECT)
+		e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e3:SetRange(LOCATION_MZONE)
+		e3:SetValue(c33400312.efilter)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e3:SetOwnerPlayer(tp)
+		tc:RegisterEffect(e3)
+		tc=g:GetNext()
+	  end
+   end
+end
+function c33400312.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function c33400312.dbfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x341)

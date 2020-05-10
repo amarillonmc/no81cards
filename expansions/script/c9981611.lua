@@ -6,7 +6,7 @@ function c9981611.initial_effect(c)
 	--code
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_CHANGE_CODE)
+	e3:SetCode(EFFECT_ADD_CODE)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e3:SetValue(89943723)

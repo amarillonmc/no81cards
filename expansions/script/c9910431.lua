@@ -24,7 +24,7 @@ function c9910431.initial_effect(c)
 	c:RegisterEffect(e3)
 	--atk down
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_REMOVE)
+	e4:SetCategory(CATEGORY_ATKCHANGE)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_DAMAGE_STEP_END)
 	e4:SetCondition(c9910431.atkcon)
@@ -44,6 +44,15 @@ function c9910431.initial_effect(c)
 	e5:SetTarget(c9910431.destg)
 	e5:SetOperation(c9910431.desop)
 	c:RegisterEffect(e5)
+	--spsummon bgm
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e8:SetOperation(c9910431.sumsuc)
+	c:RegisterEffect(e8)
+end
+function c9910431.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9910431,0))
 end
 function c9910431.valcon(e)
 	local res=false
@@ -56,9 +65,7 @@ function c9910431.valcon(e)
 	return res
 end
 function c9910431.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local bc=c:GetBattleTarget()
-	return bc and c:IsStatus(STATUS_OPPO_BATTLE) and (bc:IsRelateToBattle() or not bc:IsReason(REASON_BATTLE))
+	return Duel.GetAttacker()==e:GetHandler() and Duel.GetAttackTarget()
 end
 function c9910431.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
@@ -72,7 +79,7 @@ function c9910431.atkop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(-1000)
+			e1:SetValue(-1500)
 			sc:RegisterEffect(e1)
 			local e2=e1:Clone()
 			e2:SetCode(EFFECT_UPDATE_DEFENSE)
@@ -80,6 +87,7 @@ function c9910431.atkop(e,tp,eg,ep,ev,re,r,rp)
 			sc=g:GetNext()
 		end
 	end
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9910431,1))
 end
 function c9910431.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
@@ -106,4 +114,5 @@ function c9910431.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(g)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9910431,2))
 end

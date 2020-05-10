@@ -83,7 +83,7 @@ function c84610022.spfilter(c,e,tp)
 end
 function c84610022.op(e,tp,eg,ep,ev,re,r,rp,chk)
     local dc=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
-    Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true) 
+    Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_FZONE,POS_FACEUP,true) 
     Duel.ShuffleDeck(tp)
     local ht1=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
     if ht1<5 then

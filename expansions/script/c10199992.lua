@@ -53,6 +53,7 @@ local rsso  =   Simulated_Organism
 
 #NianBao 583322404
 local rslap =   Lapin
+local rskh  =   Karehana
 
 #XiaoDaoHeng 1614895649
 local rslrd =   Life_DeathRound_Dance
@@ -77,6 +78,7 @@ local rsba  =   BlueAngel
 #Akashic 3204027606
 local rszg  =   Zogu
 local rsgs  =   Gran_Sphere
+local rsoc  =   Oligocene_Civilization
 
 #HeiBai 1172777968
 local rstm  =   Toaru_Majutsu_no_Index

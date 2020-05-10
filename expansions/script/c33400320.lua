@@ -63,8 +63,22 @@ function c33400320.atkop1(e,tp,eg,ep,ev,re,r,rp,chk)
 		e1:SetValue(1500)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
+	   if tc:IsSetCard(0x5341) then
+		   local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+			e2:SetRange(LOCATION_MZONE)
+			e2:SetCode(EFFECT_IMMUNE_EFFECT)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e2:SetValue(c33400320.efilter4)
+			tc:RegisterEffect(e2)
+	   end
 	end
 end
+function c33400320.efilter4(e,te)
+	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+end
+
 function c33400320.Eqop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsLocation(LOCATION_MZONE) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
@@ -132,7 +146,7 @@ function c33400320.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(800)
+		e1:SetValue(1000)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		ec:RegisterEffect(e1)
 	end
@@ -140,17 +154,38 @@ end
 function c33400320.thfilter1(c)
 	return  c:IsAbleToHand() and c:IsSetCard(0x5341)
 end
-function c33400320.desop(e,tp,eg,ep,ev,re,r,rp)
-   
-	 if  Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)==0 then return end
+function c33400320.refilter(c)
+	return  c:IsAbleToRemove() 
+end
+function c33400320.desop(e,tp,eg,ep,ev,re,r,rp)  
 	 local g1=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	 local g2=Duel.GetMatchingGroup(c33400320.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		 local tc=g1:Select(tp,1,1,nil)
-		 Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
 	 if Duel.SelectYesNo(tp,aux.Stringid(33400320,0)) then
 		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		 local tc2=g2:Select(tp,1,1,nil)
 		 Duel.SendtoHand(tc2,tp,REASON_EFFECT)
 	 end
+	if Duel.SelectYesNo(tp,aux.Stringid(33400320,1)) then
+		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		 local tc=g1:Select(tp,1,1,nil)
+		 Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
+	end
+	if Duel.GetTurnPlayer()~=tp and Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE+LOCATION_HAND,0,1,nil)and  Duel.IsExistingMatchingCard(c33400320.refilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(33400320,2)) then 
+	local g3=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
+	local g4=Duel.GetMatchingGroup(c33400320.refilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
+	local t3=g3:GetCount()
+	local t4=g4:GetCount()
+	local t5
+	if t3>t4 then t5=t4
+	else t5=t3 
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		 local tc3=g3:Select(tp,1,t5,nil)   
+	local t6=Duel.Release(tc3,REASON_EFFECT)
+	 if t6>=1 then 
+	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		 local tc4=g4:Select(tp,1,t6,nil)
+		 Duel.Remove(tc4,POS_FACEDOWN,REASON_EFFECT)
+	 end
+	end
 end

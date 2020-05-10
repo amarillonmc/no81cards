@@ -29,7 +29,7 @@ end
 function rsgs.FusProcFun(c,code,ctype,cate,flag,tg,op)
 	local e1=rssf.SetSummonCondition(c,false,rsval.spconfe)
 	aux.AddFusionProcCodeFun(c,25000014,cm.fumatfilter(ctype),1,true,false)
-	local e2=aux.AddContactFusionProcedure(c,cm.fumatfilter2,LOCATION_MZONE,LOCATION_MZONE,Duel.SendtoGrave,REASON_COST+REASON_MATERIAL+REASON_FUSION)
+	local e2=aux.AddContactFusionProcedure(c,cm.fumatfilter2,LOCATION_ONFIELD,LOCATION_ONFIELD,Duel.SendtoGrave,REASON_COST+REASON_MATERIAL+REASON_FUSION)
 	local e3=rsef.SV_INDESTRUCTABLE(c,"effect",aux.indoval)
 	local e4=rsef.STO(c,EVENT_LEAVE_FIELD,{code,1},nil,cate,flag,cm.fusleavecon,nil,tg,op)
 	return e1,e2,e3,e4
@@ -37,7 +37,7 @@ end
 function cm.fumatfilter(ctype)
 	return function(c,fc)
 		local flaglist={c:GetFlagEffectLabel(m)}
-		return (c:IsFusionType(ctype) or (#flaglist>0 and rsof.Table_List(flaglist,ctype)))
+		return (c:IsFusionType(ctype) or (#flaglist>0 and rsof.Table_List(flaglist,ctype))) and (c:IsControler(fc:GetControler()) or c:IsFaceup()) and (c:IsCode(25000014) or c:IsLocation(LOCATION_MZONE))
 	end
 end
 function cm.fumatfilter2(c,fc)
@@ -52,7 +52,7 @@ end
 function cm.initial_effect(c)
 	local e1=rsef.ACT(c,nil,nil,{1,m},"se,th",nil,nil,nil,rsop.target(cm.thfilter,"th",LOCATION_DECK),cm.act)
 	local e2=rsef.I(c,{m,0},{1,m+100},"sp","tg",LOCATION_SZONE,nil,rscost.cost(Card.IsDiscardable,"dish",LOCATION_HAND),rstg.target(rscf.spfilter2(Card.IsLevel,1),"sp",LOCATION_GRAVE),cm.spop)
-	local e3=rsef.FTO(c,EVENT_SPSUMMON_SUCCESS,{m,0},{1,m+200},"sp","de",LOCATION_SZONE,cm.spcon2,rscost.cost(Card.IsAbleToGraveAsCost,"tg"),rsop.target(cm.spfilter2,"sp",LOCATION_EXTRA+LOCATION_GRAVE),cm.spop2)
+	local e3=rsef.QO(c,EVENT_CHAINING,{m,0},{1,m+200},"sp","de",LOCATION_SZONE,cm.spcon2,rscost.cost(Card.IsAbleToGraveAsCost,"tg"),rsop.target(cm.spfilter2,"sp",LOCATION_EXTRA+LOCATION_GRAVE),cm.spop2)
 end
 function cm.thfilter(c)
 	return c:IsSetCard(0xaf2) and c:IsAbleToHand()
@@ -66,10 +66,11 @@ function cm.spop(e,tp)
 	if tc and aux.ExceptThisCard(e) then rssf.SpecialSummon(tc) end
 end
 function cm.cfilter2(c,tp)
-	return c:GetSummonPlayer()==tp
+	return c:GetSummonPlayer()==tp and c:GetSummonLocation()&LOCATION_EXTRA ~=0
 end
-function cm.spcon2(e,tp,eg)
-	return eg:IsExists(cm.cfilter2,1,nil,1-tp)
+function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	return rp~=tp and loc&LOCATION_MZONE ~=0 and re:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) and re:GetHandler():GetSummonLocation()&LOCATION_EXTRA ~=0
 end
 function cm.spfilter2(c,e,tp)
 	return rsgs.isfus(c) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and ((c:IsLocation(LOCATION_GRAVE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0))

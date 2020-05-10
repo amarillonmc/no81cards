@@ -10,13 +10,6 @@ function c9910119.initial_effect(c)
 	e1:SetTarget(c9910119.sptg)
 	e1:SetOperation(c9910119.spop)
 	c:RegisterEffect(e1)
-	--cannot target
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_XMATERIAL)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e2:SetValue(aux.tgoval)
-	c:RegisterEffect(e2)
 end
 function c9910119.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
@@ -62,7 +55,4 @@ function c9910119.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 		end
 	end
-end
-function c9910119.skipcon(e)
-	return Duel.GetTurnCount()~=e:GetLabel()
 end

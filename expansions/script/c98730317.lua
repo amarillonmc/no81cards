@@ -141,7 +141,7 @@ function c98730317.mvop(e,tp,eg,ep,ev,re,r,rp)
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
         local g=Duel.SelectMatchingCard(tp,c98730317.mvfilter,tp,LOCATION_REMOVED,0,1,1,nil)
         if g:GetCount()>0 then
-            Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,REASON_EFFECT)
+            Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,REASON_EFFECT)
         end
     end
 end

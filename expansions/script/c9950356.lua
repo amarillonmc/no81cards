@@ -16,21 +16,17 @@ end
 function c9950356.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9950356.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
-function c9950356.filter(c)
-	return c:IsFaceup()
-end
 function c9950356.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9950356.filter,tp,0,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(c9950356.filter,tp,0,LOCATION_MZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
+	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
 end
 function c9950356.setfilter(c)
 	return c:IsSetCard(0xba5) and c:IsType(TYPE_EQUIP) and c:IsSSetable()
 end
 function c9950356.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c9950356.filter,tp,0,LOCATION_MZONE,nil)
-	local sc=g:GetFirst()
-	if sc and Duel.Destroy(sc,REASON_EFFECT)>0 then
+	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	if sg and Duel.Destroy(sg,REASON_EFFECT)>0 then
 		local g2=Duel.GetMatchingGroup(c9950356.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 		if g2:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 			and Duel.SelectYesNo(tp,aux.Stringid(9950356,0)) then

@@ -50,7 +50,7 @@ function c114707556.activate(e,tp,eg,ep,ev,re,r,rp)
         Duel.BreakEffect()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
         local sg2=g2:Select(tp,1,1,nil)
-        Duel.MoveToField(sg2:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+        Duel.MoveToField(sg2:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
     end
     local g3=Duel.GetMatchingGroup(c114707556.thfilter3,tp,LOCATION_DECK,0,nil,e,tp)
     if ct>=3 and g3:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(114707556,2)) then

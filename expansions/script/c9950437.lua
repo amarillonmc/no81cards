@@ -2,7 +2,7 @@
 function c9950437.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(ATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_DECKDES)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DECKDES+CATEGORY_NEGATE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,9950437+EFFECT_COUNT_CODE_OATH)

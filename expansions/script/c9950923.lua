@@ -50,7 +50,7 @@ function c9950923.ffilter(c)
 	return c:IsLevelAbove(5) and c:IsSetCard(0xba5)
 end
 function c9950923.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c9950923.filter(c,ec)
 	return c:IsCode(9950924) and c:CheckEquipTarget(ec)

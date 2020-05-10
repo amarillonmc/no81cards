@@ -2,7 +2,7 @@
 function c9910137.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_ATKCHANGE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910137)
@@ -49,21 +49,6 @@ function c9910137.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	else
 		if not c:IsRelateToEffect(e) then return end
-		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
-		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910137,0)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-			local sg=g:Select(tp,1,1,nil)
-			local tsc=sg:GetFirst()
-			if tsc then
-				Duel.BreakEffect()
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_UPDATE_ATTACK)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-				e1:SetValue(1000)
-				tsc:RegisterEffect(e1)
-			end
-		end
+		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end

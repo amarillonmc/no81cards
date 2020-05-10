@@ -46,7 +46,7 @@ function c9981609.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981609,0))
 end 
 function c9981609.ffilter2(c)
-	return c:GetOriginalLevel()>4 or c:GetOriginalRank()>3 or c:GetOriginalLinkMarker()>2
+	return c:GetOriginalLevel()>4 or c:GetOriginalRank()>3 or c:IsLinkAbove(2)
 end
 function c9981609.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or aux.fuslimit(e,se,sp,st)

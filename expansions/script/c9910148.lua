@@ -23,17 +23,13 @@ end
 function c9910148.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
-function c9910148.tofifilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_TRAP) and c:IsSSetable()
-end
 function c9910148.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and c:IsAbleToDeck()
-		and Duel.IsExistingMatchingCard(c9910148.tofifilter,tp,LOCATION_DECK,0,1,nil) end
+		and c:IsAbleToDeck() end
 end
 function c9910148.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -55,14 +51,7 @@ function c9910148.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 		end
 	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,c9910148.tofifilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()==0 then return end
-		Duel.SSet(tp,g)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleDeck(tp)
 		if not c:IsRelateToEffect(e) then return end
-		Duel.BreakEffect()
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end

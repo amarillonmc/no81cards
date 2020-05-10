@@ -119,13 +119,13 @@ function c9951267.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9951267.regop(e,tp,eg,ep,ev,re,r,rp)
-	if (re:GetHandler():IsSetCard(0x9ba5) and rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE)) or (re:GetHandler():IsSetCard(0xba5) and rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsType(TYPE_TRAP))then
+	if re:GetHandler():IsSetCard(0xba5) and rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE)then
 		local val=e:GetLabelObject():GetLabel()
 		e:GetLabelObject():SetLabel(val+1)
 	end
 end
 function c9951267.regop2(e,tp,eg,ep,ev,re,r,rp)
-	if (re:GetHandler():IsSetCard(0x9ba5) and rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE)) or (re:GetHandler():IsSetCard(0xba5) and rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsType(TYPE_TRAP)) then
+	if re:GetHandler():IsSetCard(0xba5) and rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		local val=e:GetLabelObject():GetLabel()
 		if val==0 then val=1 end
 		e:GetLabelObject():SetLabel(val-1)

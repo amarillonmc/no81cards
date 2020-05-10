@@ -27,6 +27,15 @@ function c9950948.initial_effect(c)
 	e1:SetTarget(c9950948.thtg)
 	e1:SetOperation(c9950948.thop)
 	c:RegisterEffect(e1)
+ --atkup
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_UPDATE_ATTACK)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCondition(c9950948.atkcon)
+	e4:SetValue(5000)
+	c:RegisterEffect(e4)
    --control
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(9950948,0))
@@ -53,8 +62,11 @@ end
 function c9950948.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
+function c9950948.atkcon(e)
+	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+end
 function c9950948.thfilter(c)
-	return  c:IsLevel(12) and c:IsAbleToHand()
+	return  c:IsRace(RACE_FIEND) and c:IsAbleToHand()
 end
 function c9950948.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950948.thfilter,tp,LOCATION_DECK,0,1,nil) end

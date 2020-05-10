@@ -8,16 +8,15 @@ function c9980211.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(aux.FALSE)
 	c:RegisterEffect(e1)
-	--special summon rule
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e2:SetCode(EFFECT_SPSUMMON_PROC)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCondition(c9980211.sprcon)
-	e2:SetTarget(c9980211.sprtg)
-	e2:SetOperation(c9980211.sprop)
-	c:RegisterEffect(e2)
+	  --special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCondition(c9980211.sprcon)
+	e1:SetOperation(c9980211.sprop)
+	c:RegisterEffect(e1)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -81,29 +80,19 @@ function c9980211.initial_effect(c)
 	e3:SetOperation(c9980211.atkop)
 	c:RegisterEffect(e3)
 end
-function c9980211.spfilter(c)
-	return c:IsReleasable() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xbc8) and c:IsFaceup() 
+function c9980211.sprfilter(c)
+	return c:IsSetCard(0xbc8) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c9980211.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local rg=Duel.GetReleaseGroup(c9980211.spfilter,tp,LOCATION_ONFIELD,0,nil)
-	return rg:CheckSubGroup(aux.mzctcheckrel,3,3,tp)
-end
-function c9980211.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local rg=Duel.GetReleaseGroup(c9980211.spfilter,tp,LOCATION_ONFIELD,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local sg=rg:SelectSubGroup(tp,aux.mzctcheckrel,true,3,3,tp)
-	if sg then
-		sg:KeepAlive()
-		e:SetLabelObject(sg)
-		return true
-	else return false end
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9980211.sprfilter,tp,LOCATION_GRAVE,0,3,nil)
 end
 function c9980211.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=e:GetLabelObject()
-	Duel.Release(g,REASON_COST)
-	g:DeleteGroup()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c9980211.sprfilter,tp,LOCATION_GRAVE,0,3,3,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c9980211.efilter(e,te)
 	return te:IsActiveType(TYPE_TRAP+TYPE_SPELL)

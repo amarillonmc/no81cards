@@ -6,7 +6,7 @@ function c98730313.initial_effect(c)
     e1:SetCategory(CATEGORY_DESTROY)
     e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
     e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-    e1:SetProperty(EFFECT_FLAG_DELAY)
+    e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
     e1:SetCountLimit(1,98731313)
     e1:SetCondition(c98730313.effcon)
     e1:SetTarget(c98730313.efftg)
@@ -142,7 +142,7 @@ function c98730313.mvop(e,tp,eg,ep,ev,re,r,rp)
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
         local g=Duel.SelectMatchingCard(tp,c98730313.mvfilter,tp,LOCATION_REMOVED,0,1,1,nil)
         if g:GetCount()>0 then
-            Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,REASON_EFFECT)
+            Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,REASON_EFFECT)
         end
     end
 end
