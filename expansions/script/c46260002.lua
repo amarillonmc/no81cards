@@ -37,7 +37,7 @@ function c46260002.initial_effect(c)
 end
 c46260002.fit_monster={46260003}
 function c46260002.spfilter(c,e,tp,mc)
-    return bit.band(c:GetType(),0x81)==0x81 and (not c.mat_filter or c.mat_filter(mc,tp)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and mc:IsCanBeRitualMaterial(c)
+    return bit.band(c:GetOriginalType(),0x81)==0x81 and (not c.mat_filter or c.mat_filter(mc,tp)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and mc:IsCanBeRitualMaterial(c)
 end
 function c46260002.rfilter(c,mc)
     local mlv=mc:GetRitualLevel(c)
@@ -75,7 +75,7 @@ function c46260002.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
         end
         return mg:IsExists(c46260002.filter,1,nil,e,tp)
     end
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_PZONE)
 end
 function c46260002.rop(e,tp,eg,ep,ev,re,r,rp)
     local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -91,7 +91,7 @@ function c46260002.rop(e,tp,eg,ep,ev,re,r,rp)
     local mat=mg:FilterSelect(tp,c46260002.filter,1,1,nil,e,tp)
     local mc=mat:GetFirst()
     if not mc then return end
-    local sg=Duel.GetMatchingGroup(c46260002.spfilter,tp,LOCATION_HAND,0,mc,e,tp,mc)
+    local sg=Duel.GetMatchingGroup(c46260002.spfilter,tp,LOCATION_HAND+LOCATION_PZONE,0,mc,e,tp,mc)
     if mc:IsLocation(LOCATION_MZONE) then ft=ft+1 end
     if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
     local b1=sg:IsExists(c46260002.rfilter,1,nil,mc)
@@ -119,7 +119,7 @@ function c46260002.rop(e,tp,eg,ep,ev,re,r,rp)
         for tc in aux.Next(tg) do
             tc:SetMaterial(mat)
         end
-        Duel.ReleaseRitualMaterial(mat)
+        Duel.SendtoGrave(mat,REASON_RELEASE+REASON_EFFECT+REASON_RITUAL)
         Duel.BreakEffect()
         for tc in aux.Next(tg) do
             Duel.SpecialSummonStep(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)

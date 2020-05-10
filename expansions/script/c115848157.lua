@@ -40,16 +40,19 @@ function c115848157.regop(e,tp,eg,ep,ev,re,r,rp)
     e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
     e1:SetCode(EVENT_PHASE+PHASE_END)
     e1:SetRange(LOCATION_GRAVE)
-    e1:SetCost(aux.bfgcost)
     e1:SetTarget(c115848157.sptg)
     e1:SetOperation(c115848157.spop)
     e1:SetReset(RESET_PHASE+PHASE_END)
     c:RegisterEffect(e1)
 end
 function c115848157.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+    local c=e:GetHandler()
+    if chk==0 then return c:IsAbleToRemove() and Duel.IsPlayerCanDraw(tp,1) end
+    Duel.SetOperationInfo(0,CATEGORY_REMOVE,c,1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,1,tp,LOCATION_DECK)
 end
 function c115848157.spop(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
+    if not c:IsRelateToEffect(e) or Duel.Remove(c,POS_FACEUP,REASON_EFFECT)==0 then return end
     Duel.Draw(tp,1,REASON_EFFECT)
 end

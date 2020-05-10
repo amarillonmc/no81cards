@@ -76,7 +76,7 @@ function c9910509.indcon(e)
 	local tc=c:GetEquipTarget()
 	return tc:IsAttribute(ATTRIBUTE_FIRE)
 end
-function c9910509.thcfilter(c)
+function c9910509.thcfilter(c,tp)
 	return c:IsSetCard(0xa950) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 		and Duel.IsExistingMatchingCard(c9910509.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
@@ -84,9 +84,9 @@ function c9910509.thfilter(c,code)
 	return c:IsSetCard(0xa950) and c:IsType(TYPE_MONSTER) and not c:IsCode(code) and c:IsAbleToHand()
 end
 function c9910509.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910509.thcfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910509.thcfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910509.thcfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c9910509.thcfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
 	e:SetLabel(g:GetFirst():GetCode())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end

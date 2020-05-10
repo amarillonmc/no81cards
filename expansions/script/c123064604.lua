@@ -80,7 +80,7 @@ function c123064604.discon(e,tp,eg,ep,ev,re,r,rp)
     return rp~=tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev)
 end
 function c123064604.sumfilter(c,lv)
-    return c:GetLevel()>=lv and c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1) and not c:IsPublic()
+    return c:GetLevel()>=lv and (c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)) and not c:IsPublic()
 end
 function c123064604.distg(e,tp,eg,ep,ev,re,r,rp,chk)
     local ec=eg:GetFirst()
@@ -109,11 +109,10 @@ function c123064604.disop(e,tp,eg,ep,ev,re,r,rp)
         local s2=tc:IsMSetable(true,nil,1)
         if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
             Duel.Summon(tp,tc,true,nil,1)
-            Duel.NegateActivation(ev)
         else
             Duel.MSet(tp,tc,true,nil,1)
-            Duel.NegateActivation(ev)
         end
+        Duel.NegateActivation(ev)
     end
 end
 function c123064604.cfilter(c)

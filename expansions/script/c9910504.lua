@@ -49,15 +49,17 @@ function c9910504.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function c9910504.activate(e,tp,eg,ep,ev,re,r,rp)
+	local g=Group.CreateGroup()
 	local mg=Duel.GetRitualMaterial(tp)
 	local atkg=Duel.GetMatchingGroup(c9910504.atkfilter2,tp,LOCATION_MZONE,0,nil,e)
 	local g1=Duel.GetMatchingGroup(aux.RitualUltimateFilter,tp,LOCATION_HAND,0,nil,c9910504.filter,e,tp,mg,nil,Card.GetLevel,"Greater")
 	local g2=Duel.GetMatchingGroup(c9910504.filter2,tp,LOCATION_HAND,0,nil,e,tp,atkg)
-	g1:Merge(g2)
-	if g1:GetCount()==0 then return end
+	g:Merge(g1)
+	g:Merge(g2)
+	if g:GetCount()==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=g1:Select(tp,1,1,nil):GetFirst()
-	if not g2:IsContains(tc) or Duel.SelectOption(tp,aux.Stringid(9910504,0),aux.Stringid(9910504,1))==0 then
+	local tc=g:Select(tp,1,1,nil):GetFirst()
+	if g1:IsContains(tc) and (not g2:IsContains(tc) or Duel.SelectOption(tp,aux.Stringid(9910504,0),aux.Stringid(9910504,1))==0) then
 		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
 		if tc.mat_filter then
 			mg=mg:Filter(tc.mat_filter,tc,tp)

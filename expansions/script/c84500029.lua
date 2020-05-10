@@ -45,6 +45,7 @@ function c84500029.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c84500029.drop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
+    if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
     local tg=Duel.SelectMatchingCard(tp,aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
     if not tg then return end
