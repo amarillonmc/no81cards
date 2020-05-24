@@ -64,7 +64,7 @@ function c9951008.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951008,0))
 end
 function c9951008.otfilter(c)
-	return c:IsSummonType(SUMMON_TYPE_LINK+SUMMON_TYPE_ADVANCE)
+	return c:IsSummonType(SUMMON_TYPE_LINK+SUMMON_TYPE_ADVANCE) or c:IsSetCard(0xcba8)
 end
 function c9951008.otcon(e,c,minc)
 	if c==nil then return true end
@@ -82,7 +82,7 @@ function c9951008.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
 function c9951008.cfilter(c)
-	return c:IsSetCard(0xba5) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return (c:IsSetCard(0xba5) and c:IsType(TYPE_MONSTER)) or c:IsSetCard(0xcba8)and c:IsAbleToRemoveAsCost()
 end
 function c9951008.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

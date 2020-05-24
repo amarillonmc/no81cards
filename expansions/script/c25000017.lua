@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	local e1=rsef.SV_CHANGE(c,"code",25000014)
 	e1:SetRange(LOCATION_MZONE)
 	local e2=rsgs.FusTypeFun(c,m,TYPE_LINK)
-	local e3=rsef.QO(c,EVENT_CHAINING,{m,1},{1,m+200},"neg,des,sp","dsp,dcal",LOCATION_HAND+LOCATION_GRAVE,rscon.negcon(cm.cfilter,true),nil,cm.negtg,cm.negop)
+	local e3=rsef.QO(c,EVENT_CHAINING,{m,1},{1,m+200},"neg,des,sp","dsp,dcal",LOCATION_HAND+LOCATION_GRAVE,rscon.negcon(cm.cfilter,true),rsgs.ToDeckCost(c),cm.negtg,cm.negop)
 end
 function cm.cfilter(e,tp,re,rp,tg,loc,seq) 
 	return loc==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER)

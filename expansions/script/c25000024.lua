@@ -47,9 +47,10 @@ function cm.initial_effect(c)
 	local e3=rsef.FV_LIMIT_PLAYER(c,"cp",nil,nil,{1,1})
 	local e4=rsef.FV_LIMIT_PLAYER(c,"sp",nil,cm.sptg,{1,1})
 	local e5=rsef.FV_LIMIT_PLAYER(c,"act",cm.aclimit,nil,{1,1})
+	local e6=rsef.FTF(c,EVENT_PHASE+PHASE_END,{m,0},1,"des",nil,LOCATION_FZONE,cm.descon,nil,rsop.target(aux.TRUE,"des"),cm.desop)
 end
 function cm.thfilter(c)
-	return c:IsComplexType(TYPE_SPELL+TYPE_RITUAL) and c:IsAbleToHand()
+	return c:IsCode(25000031,25000032) and c:IsAbleToHand()
 end
 function cm.thop(e,tp)
 	rsop.SelectToHand(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,{})
@@ -60,5 +61,17 @@ end
 function cm.aclimit(e,re,tp)
 	if not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return false end
 	local c=re:GetHandler()
-	return not c:IsLocation(LOCATION_SZONE)
+	return c:IsLocation(LOCATION_SZONE) and c:IsFacedown()
+end
+function cm.cfilter(c)
+	return c:IsFaceup() and c:IsCode(25000031,25000032)
+end
+function cm.descon(e,tp)
+	return not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+end
+function cm.desop(e,tp)
+	local c=aux.ExceptThisCard(e)
+	if c then
+		Duel.Destroy(c,REASON_EFFECT)
+	end
 end

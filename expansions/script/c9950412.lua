@@ -11,7 +11,7 @@ function c9950412.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9950412.filter(c,e,tp)
-	return c:IsSetCard(0xba5) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return ((c:IsSetCard(0xba5) and c:IsType(TYPE_SYNCHRO)) or (c:IsSetCard(0xcba8) and c:IsType(TYPE_MONSTER))) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950412.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

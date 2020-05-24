@@ -88,7 +88,7 @@ function c117837139.sumfilter(c,e,tp)
 end
 function c117837139.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
-    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCountFromEx(1-tp)>0 and Duel.IsExistingMatchingCard(c117837139.sumfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) end
+    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCountFromEx(1-tp)>0 and Duel.IsExistingMatchingCard(c117837139.sumfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,1-tp,true,false) end
 end
 function c117837139.sumop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()

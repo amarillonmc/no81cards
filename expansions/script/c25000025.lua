@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	local e1=aux.AddRitualProcGreater2Code2(c,25000031,25000032,nil,nil,aux.TRUE)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetOperation(cm.ritop(e1:GetOperation()))
-	local e2=rsef.I(c,{m,1},{1,m},"se,th",nil,LOCATION_HAND,nil,cm.thcost,rsop.target(cm.thfilter,"th",LOCATION_DECK),cm.thop)
+	local e2=rsef.I(c,{m,1},{1,m},"se,th,dish",nil,LOCATION_HAND,nil,cm.thcost,rsop.target(cm.thfilter,"th",LOCATION_DECK),cm.thop)
 end
 function cm.ritop(op)
 	return function(e,tp,...)
@@ -20,8 +20,12 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
 function cm.thfilter(c)
-	return c:IsAbleToHand() and (rsoc.IsSetM(c) or (c:IsLevelAbove(6) and c:IsType(TYPE_RITUAL)))
+	return c:IsAbleToHand() and c:IsCode(m-1)
 end
 function cm.thop(e,tp)
-	rsop.SelectToHand(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,{})
+	if rsop.SelectToHand(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,{})>0 then
+		Duel.ShuffleHand(tp)
+		Duel.BreakEffect()
+		rsop.SelectToGrave(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,1,1,nil,{REASON_EFFECT+REASON_DISCARD })
+	end
 end

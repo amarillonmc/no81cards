@@ -31,6 +31,18 @@ function c9951285.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	c:RegisterEffect(e2)
+ --xyz effect
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9951285,1))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetHintTiming(0,TIMING_END_PHASE+TIMINGS_CHECK_MONSTER)
+	e3:SetCountLimit(1)
+	e3:SetTarget(c9951285.xyztg)
+	e3:SetOperation(c9951285.xyzop)
+	c:RegisterEffect(e3)
   --spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -59,13 +71,28 @@ function c9951285.shop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
+function c9951285.xyzfilter(c)
+	return c:IsSetCard(0xaba8) and c:IsXyzSummonable(nil)
+end
+function c9951285.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9951285.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c9951285.xyzop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9951285.xyzfilter,tp,LOCATION_EXTRA,0,nil)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tg=g:Select(tp,1,1,nil)
+		Duel.XyzSummon(tp,tg:GetFirst(),nil)
+	end
+end
 function c9951285.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFlagEffect(tp,9951285)==0 end
 	Duel.RegisterFlagEffect(tp,9951285,RESET_CHAIN,0,1)
 end
 function c9951285.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSummonable(true,nil) end
+	if chk==0 then return e:GetHandler():IsSummonable(false,nil) or e:GetHandler():IsMSetable(false,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9951285.sumop(e,tp,eg,ep,ev,re,r,rp)

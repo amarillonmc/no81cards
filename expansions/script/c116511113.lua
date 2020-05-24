@@ -51,10 +51,11 @@ function c116511113.initial_effect(c)
     c:RegisterEffect(e5)
     local e6=Effect.CreateEffect(c)
     e6:SetType(EFFECT_TYPE_FIELD)
-    e6:SetCode(EFFECT_CANNOT_ACTIVATE)
+    e6:SetCode(EFFECT_CANNOT_TRIGGER)
+    e6:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
     e6:SetRange(LOCATION_MZONE)
     e6:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-    e6:SetValue(c116511113.limval)
+    e6:SetTarget(c116511113.distg)
     c:RegisterEffect(e6)
     local e7=Effect.CreateEffect(c)
     e7:SetType(EFFECT_TYPE_FIELD)
@@ -148,28 +149,27 @@ function c116511113.cost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
     e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c116511113.sumfilter(c,e)
-    return c:IsSetCard(0x108a) and c:IsSummonable(true,e)
+function c116511113.sumfilter(c)
+    return c:IsSetCard(0x108a) and c:IsSummonable(true,nil)
 end
 function c116511113.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-        and Duel.IsExistingMatchingCard(c116511113.sumfilter,tp,LOCATION_DECK,0,1,nil,e) end
+        and Duel.IsExistingMatchingCard(c116511113.sumfilter,tp,LOCATION_DECK,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function c116511113.sumop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-    local g=Duel.SelectMatchingCard(tp,c116511113.sumfilter,tp,LOCATION_DECK,0,1,1,nil,e)
+    local g=Duel.SelectMatchingCard(tp,c116511113.sumfilter,tp,LOCATION_DECK,0,1,1,nil)
     if g:GetCount()>0 then
-        Duel.Summon(tp,g:GetFirst(),true,e)
+        Duel.Summon(tp,g:GetFirst(),true,nil)
     end
 end
 function c116511113.spfilter(c,e,tp)
     return c:IsSetCard(0x108a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c116511113.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-        and Duel.IsExistingMatchingCard(c116511113.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c116511113.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c116511113.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -180,9 +180,8 @@ function c116511113.spop(e,tp,eg,ep,ev,re,r,rp)
         Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
     end
 end
-function c116511113.limval(e,re,rp)
-    local rc=re:GetHandler()
-    return re:IsActiveType(TYPE_MONSTER) and not rc:IsSetCard(0x108a) and not rc:IsImmuneToEffect(e)
+function c116511113.distg(e,c)
+    return not c:IsSetCard(0x108a)
 end
 function c116511113.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
     return not c:IsSetCard(0x108a)

@@ -96,11 +96,8 @@ function cm.xyzleaveop(spfilter)
 	return function(e,tp)
 		local c=aux.ExceptThisCard(e)
 		local ct,og,tc=rsop.SelectSpecialSummon(tp,cm.xyzleavefilter(spfilter),tp,LOCATION_EXTRA,0,1,1,nil,{ SUMMON_TYPE_XYZ },e,tp)
-		if ct>0 then
-			tc:CompleteProcedure()
-			if c and c:IsCanOverlay() then
-				Duel.Overlay(tc,Group.FromCards(c))
-			end
+		if ct>0 and c and c:IsCanOverlay() then
+			Duel.Overlay(tc,Group.FromCards(c))
 		end
 	end
 end

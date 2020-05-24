@@ -137,7 +137,7 @@ end
 function c46250016.discon(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local eg=c:GetEquipGroup()
-    return eg and eg:IsExists(Card.IsSetCard,1,nil,0x1fc0) and re:GetHandler()~=c and not c:IsStatus(STATUS_BATTLE_DESTROYED) and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
+    return eg and eg:IsExists(Card.IsSetCard,1,nil,0x1fc0) and re:GetHandler()~=c and not c:IsStatus(STATUS_BATTLE_DESTROYED) and not c:IsStatus(STATUS_CHAINING) and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c46250016.disfilter(c)
     for k,v in ipairs(c46250016[c:GetOwner()]) do

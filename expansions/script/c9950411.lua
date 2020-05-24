@@ -34,7 +34,7 @@ function c9950411.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9950411.filter(c,e,tp)
-	return c:IsLevelBelow(4) and c:IsSetCard(0xba5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return ((c:IsLevelBelow(4) and c:IsSetCard(0xba5)) or (c:IsSetCard(0xcba8) and c:IsType(TYPE_MONSTER)))and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950411.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9950411.filter(chkc,e,tp) end

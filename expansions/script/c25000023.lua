@@ -34,10 +34,10 @@ function cm.lcon(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsPreviousPosition(POS_FACEUP)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0xaf1) and c:IsAbleToHand()
+	return c:IsSetCard(0xaf1) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function cm.thop(e,tp)
-	if rsop.SelectToHand(tp,cm.thfilter,tp,LOCATION_DECK,0,1,2,nil,{})>0 and aux.ExceptThisCard(e) then
+	if rsop.SelectToHand(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,{})>0 and aux.ExceptThisCard(e) then
 		Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 	end
 end

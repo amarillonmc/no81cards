@@ -8,10 +8,8 @@ function c113482285.initial_effect(c)
     e1:SetOperation(c113482285.activate)
     c:RegisterEffect(e1)
     local e2=Effect.CreateEffect(c)
-    e2:SetCategory(CATEGORY_POSITION)
     e2:SetType(EFFECT_TYPE_IGNITION)
     e2:SetRange(LOCATION_SZONE)
-    e2:SetTarget(c113482285.settg)
     e2:SetOperation(c113482285.setop)
     c:RegisterEffect(e2)
     local e3=Effect.CreateEffect(c)
@@ -143,12 +141,7 @@ function c113482285.activate(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function c113482285.actlimit(e,re,tp)
-    return re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsImmuneToEffect(e)
-end
-function c113482285.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return c:IsSSetable(true) end
-    Duel.SetOperationInfo(0,CATEGORY_POSITION,c,1,0,0)
+    return re:IsActiveType(TYPE_MONSTER)
 end
 function c113482285.setop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()

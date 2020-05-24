@@ -32,7 +32,7 @@ function c9951310.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951310,0))
 end
 function c9951310.spfilter1(c,e,tp)
-	return not c:IsType(TYPE_TUNER) and c:IsSetCard(0xaba8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelAbove(5) and c:IsSetCard(0xaba8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9951310.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -53,7 +53,7 @@ function c9951310.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterFlagEffect(tp,9951310,RESET_CHAIN,0,1)
 end
 function c9951310.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSummonable(true,nil) end
+	if chk==0 then return e:GetHandler():IsSummonable(false,nil) or e:GetHandler():IsMSetable(false,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9951310.sumop(e,tp,eg,ep,ev,re,r,rp)

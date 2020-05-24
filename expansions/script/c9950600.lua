@@ -29,14 +29,12 @@ function c9950600.initial_effect(c)
 	c:RegisterEffect(e3)
  --To hand
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_IGNITION)
-	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCountLimit(1,99506000)
 	e4:SetCost(aux.bfgcost)
-	e4:SetTarget(c9950600.thtg)
-	e4:SetOperation(c9950600.thop)
+	e4:SetTarget(c9950600.settg)
+	e4:SetOperation(c9950600.setop)
 	c:RegisterEffect(e4)
 end
 function c9950600.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -94,23 +92,18 @@ function c9950600.atkop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c9950600.thfilter(c)
-	return c:IsCode(6007213,32491822,69890967) and c:IsAbleToHand()
+function c9950600.stfilter(c)
+	return (aux.IsCodeListed(c,6007213) or aux.IsCodeListed(c,32491822) or aux.IsCodeListed(c,69890967)) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
-function c9950600.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c9950600.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
+function c9950600.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingMatchingCard(c9950600.stfilter,tp,LOCATION_DECK,0,1,nil) end
 end
-function c9950600.fselect(g,c)
-	return aux.dncheck(g) 
-end
-function c9950600.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c9950600.thfilter,tp,LOCATION_GRAVE,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local sg=g:SelectSubGroup(tp,c9950600.fselect,false,1,g:GetCount(),c)
-	if sg and sg:GetCount()>0 then
-	Duel.SendtoHand(sg,REASON_EFFECT)
+function c9950600.setop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,c9950600.stfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 then
+		Duel.SSet(tp,g)
 	end
 end

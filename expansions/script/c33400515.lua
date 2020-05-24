@@ -186,7 +186,7 @@ function cm.penop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,nil) then
 	 if Duel.SelectYesNo(tp,aux.Stringid(m,5)) then 
 		local g3=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,1,nil)
-		Duel.SendtoDeck(g3,REASON_EFFECT)
+		Duel.SendtoDeck(g3,nil,2,REASON_EFFECT)
 		Duel.ShuffleDeck(tp)
 	 end 
    end 

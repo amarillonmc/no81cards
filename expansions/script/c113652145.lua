@@ -111,15 +111,14 @@ function c113652145.ftg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c113652145.ffilter,tp,LOCATION_DECK,0,1,nil,tp) end
 end
 function c113652145.fop(e,tp,eg,ep,ev,re,r,rp)
-    local g=Duel.GetMatchingGroup(c113652145.ffilter,tp,LOCATION_DECK,0,nil,tp)
-    local tc=g:GetFirst()
-    if tc and tc:GetActivateEffect():IsActivatable(tp) then
+    local tc=Duel.GetFirstMatchingCard(c113652145.ffilter,tp,LOCATION_DECK,0,nil,tp)
+    if tc then
         local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
         if fc then
             Duel.SendtoGrave(fc,REASON_RULE)
             Duel.BreakEffect()
         end
-        Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+        Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
         Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
     end
 end
@@ -219,5 +218,5 @@ end
 function c113652145.rop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
     local g=Duel.SelectMatchingCard(tp,c113652145.rfilter,tp,LOCATION_DECK,0,1,bit.band(ev,0xffff),nil)
-    Duel.SendtoGrave(g,POS_FACEDOWN,REASON_EFFECT)
+    Duel.SendtoGrave(g,REASON_EFFECT)
 end

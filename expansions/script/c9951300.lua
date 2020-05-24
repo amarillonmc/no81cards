@@ -9,13 +9,6 @@ function c9951300.initial_effect(c)
 	e1:SetTarget(c9951300.sumtg)
 	e1:SetOperation(c9951300.sumop)
 	c:RegisterEffect(e1)
-	--synchro limit
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetValue(c9951300.synlimit)
-	c:RegisterEffect(e2)
    local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SUMMON)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
@@ -26,13 +19,17 @@ function c9951300.initial_effect(c)
 	e3:SetTarget(c9951300.sumtg2)
 	e3:SetOperation(c9951300.sumop2)
 	c:RegisterEffect(e3)
- --nontuner
+--synchro effect
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetDescription(aux.Stringid(9951300,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_NONTUNER)
-	e2:SetValue(c9951300.tnval)
+	e2:SetCondition(c9951300.sccon)
+	e2:SetTarget(c9951300.sctarg)
+	e2:SetOperation(c9951300.scop)
 	c:RegisterEffect(e2)
   --spsummon bgm
 	local e8=Effect.CreateEffect(c)
@@ -46,10 +43,6 @@ function c9951300.initial_effect(c)
 end
 function c9951300.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951300,0))
-end
-function c9951300.synlimit(e,c)
-	if not c then return false end
-	return not c:IsSetCard(0xba5)
 end
 function c9951300.filter(c,e,tp)
 	return c:IsLevelBelow(4) and c:IsSetCard(0xba5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -67,20 +60,38 @@ function c9951300.sumop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c9951300.tnval(e,c)
-	return e:GetHandler():IsControler(c:GetControler()) and c:IsSetCard(0xba5)
-end
 function c9951300.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFlagEffect(tp,9951300)==0 end
 	Duel.RegisterFlagEffect(tp,9951300,RESET_CHAIN,0,1)
 end
 function c9951300.sumtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSummonable(true,nil) end
+	if chk==0 then return e:GetHandler():IsSummonable(false,nil) or e:GetHandler():IsMSetable(false,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9951300.sumop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.Summon(tp,c,true,nil)
+end
+function c9951300.sccon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()~=tp
+		and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+end
+function c9951300.sctarg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(9951300)==0
+		and Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,c) end
+	c:RegisterFlagEffect(9951300,RESET_CHAIN,0,1)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c9951300.scop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:GetControler()~=tp or not c:IsRelateToEffect(e) then return end
+	local g=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,c)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SynchroSummon(tp,sg:GetFirst(),c)
+	end
 end

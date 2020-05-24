@@ -15,6 +15,7 @@ function c9951333.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetCountLimit(1,9951333)
 	e2:SetTarget(c9951333.target)
 	e2:SetOperation(c9951333.operation)
 	c:RegisterEffect(e2)
@@ -65,25 +66,20 @@ end
 function c9951333.splimit(e,c)
 	return not c:IsSetCard(0xba5)
 end
-function c9951333.filter(c)
-	return c:IsSetCard(0xba5) and c:IsAbleToDeck() and not c:IsPublic()
-end
 function c9951333.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp)
-		and Duel.IsExistingMatchingCard(c9951333.filter,tp,LOCATION_HAND,0,1,nil) end
+		and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
 end
 function c9951333.operation(e,tp,eg,ep,ev,re,r,rp)
 	 local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(p,c9951333.filter,p,LOCATION_HAND,0,1,63,nil)
-	if g:GetCount()>0 then
-		Duel.ConfirmCards(1-p,g)
-		local ct=Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-		Duel.ShuffleDeck(p)
-		Duel.BreakEffect()
-		Duel.Draw(p,ct+1,REASON_EFFECT)
-	end
+	local g=Duel.SelectMatchingCard(p,Card.IsAbleToDeck,p,LOCATION_HAND,0,1,63,nil)
+	if g:GetCount()==0 then return end
+	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+	Duel.ShuffleDeck(p)
+	Duel.BreakEffect()
+	Duel.Draw(p,g:GetCount()+1,REASON_EFFECT)
 end
 

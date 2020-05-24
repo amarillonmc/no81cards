@@ -1,4 +1,4 @@
-zzz--⑨
+--⑨
 function c9950035.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)

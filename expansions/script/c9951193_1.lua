@@ -67,7 +67,7 @@ function c9951193.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9951193.cfilter(c,tp)
-	return c:IsFaceup() and c:IsRace(RACE_FAIRY)
+	return c:IsFaceup() and c:IsRace(RACE_FAIRY,RACE_MACHINE)
 		and Duel.IsExistingMatchingCard(c9951193.desfilter,tp,0,LOCATION_MZONE,1,nil,c:GetAttack())
 end
 function c9951193.desfilter(c,atk)
@@ -84,7 +84,7 @@ function c9951193.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c9951193.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsRace(RACE_FAIRY) then
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsRace(RACE_FAIRY,RACE_MACHINE) then
 		local g=Duel.GetMatchingGroup(c9951193.desfilter,tp,0,LOCATION_MZONE,nil,tc:GetAttack())
 		if g:GetCount()>0 then
 			g:AddCard(tc)

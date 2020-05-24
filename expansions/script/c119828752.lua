@@ -169,7 +169,7 @@ function c119828752.pencon1(e,c,og)
     else
         g=Duel.GetFieldGroup(tp,loc,0)
     end
-    return g:IsExists(c119828752.penfilter,1,nil,e,tp,lscale,rscale,eset)
+    return g:IsExists(c119828752.penfilter,1,nil,e,tp,lscale,rscale,eset) and not Duel.IsExistingMatchingCard(aux.NOT(Card.IsSetCard),tp,LOCATION_EXTRA,0,1,nil,0xe0)
 end
 function c119828752.penop1(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
     Duel.Hint(HINT_CARD,0,119828752)
@@ -191,7 +191,7 @@ function c119828752.penop1(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
         if ft2>0 then ft2=1 end
         ft=1
     end
-    if ft1>0 then loc=loc|LOCATION_HAND+LOCATION_DECK end
+    if ft1>0 then loc=loc|LOCATION_HAND|LOCATION_DECK end
     if ft2>0 then loc=loc|LOCATION_EXTRA end
     if og then
         tg=og:Filter(Card.IsLocation,nil,loc):Filter(c119828752.penfilter,nil,e,tp,lscale,rscale,eset)
@@ -221,13 +221,15 @@ function c119828752.penop1(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
     if ce then
         tg=tg:Filter(aux.PConditionExtraFilterSpecific,nil,e,tp,lscale,rscale,ce)
     end
-    aux.GCheckAdditional=aux.PendOperationCheck(ft1,ft2,ft)
-    local n=math.min(#tg,ft)
+    aux.GCheckAdditional=aux.PendOperationCheck(ft1-1,ft2,ft-1)
+    local flag=0
+    if tg:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then flag=1 end
+    local n=math.min(tg:Filter(Card.IsLocation,nil,LOCATION_HAND+LOCATION_EXTRA):GetCount()+flag,ft)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-    local g=tg:Filter(Card.IsLocation,nil,LOCATION_DECK):SelectSubGroup(tp,aux.TRUE,true,1,1)
-    if n>1 then
+    local g=tg:Filter(Card.IsLocation,nil,LOCATION_DECK):Select(tp,1,1,nil)
+    if n>1 and Duel.SelectYesNo(tp,210) then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-        local fg=tg:Filter(Card.IsLocation,nil,LOCATION_HAND):SelectSubGroup(tp,aux.TRUE,true,1,n-1)
+        local fg=tg:Filter(Card.IsLocation,nil,LOCATION_HAND+LOCATION_EXTRA):SelectSubGroup(tp,aux.TRUE,true,1,n-1)
         if fg then g:Merge(fg) end
     end
     aux.GCheckAdditional=nil

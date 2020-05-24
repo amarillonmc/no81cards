@@ -29,6 +29,16 @@ function c9950493.initial_effect(c)
 	e2:SetTarget(c9950493.sptg2)
 	e2:SetOperation(c9950493.spop2)
 	c:RegisterEffect(e2)
+--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9950493,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_GRAVE)
+	e1:SetCost(aux.bfgcost)
+	e1:SetTarget(c9950493.target)
+	e1:SetOperation(c9950493.operation)
+	c:RegisterEffect(e1)
 	 --spsummon bgm
 	 local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -76,5 +86,20 @@ function c9950493.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+	end
+end
+function c9950493.filter(c,e,sp)
+	return c:IsSetCard(0xcba8) and c:IsCanBeSpecialSummoned(e,0,sp,false,false)
+end
+function c9950493.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950493.filter,tp,LOCATION_DECK,0,1,nil,e,tp)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+end
+function c9950493.operation(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local sc=Duel.GetFirstMatchingCard(c9950493.filter,tp,LOCATION_DECK,0,nil,e,tp)
+	if sc then
+		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

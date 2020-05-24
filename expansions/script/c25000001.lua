@@ -2,7 +2,7 @@
 if not pcall(function() require("expansions/script/c25000000") end) then require("script/c25000000") end
 local m,cm=rscf.DefineCard(25000001)
 function cm.initial_effect(c)
-	local e1=rszg.XyzFun(c,m,4,{1,m,1}) 
+	local e1=rszg.XyzFun(c,m,4) 
 	local e2=rszg.ToGraveFun(c) 
 	local e3=rsef.FC(c,EVENT_SPSUMMON_SUCCESS)
 	e3:SetCondition(cm.hgcon)

@@ -113,7 +113,7 @@ function c114431144.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.ConfirmCards(1-tp,tg)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
     tg:Merge(g2:Select(tp,1,1,nil))
-    Duel.SendtoDeck(tg,2,nil,REASON_COST)
+    Duel.SendtoDeck(tg,nil,2,REASON_COST)
 end
 function c114431144.target2(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
@@ -126,7 +126,8 @@ function c114431144.operation2(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local g3=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,nil,74641045)
     if not (g3:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,true,true,POS_FACEUP)) then return end
-    local tc=g3:GetFirst()
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+    local tc=g3:Select(tp,1,1,nil):GetFirst()
     if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)==1 then
         c:SetMaterial(Group.FromCards(tc))
         Duel.Overlay(c,Group.FromCards(tc))

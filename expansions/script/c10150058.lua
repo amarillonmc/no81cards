@@ -4,7 +4,7 @@ function c10150058.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit() 
 	aux.AddLinkProcedure(c,nil,2,99,c10150058.lcheck)
-	rscf.SetExtraLinkMaterial(c,aux.FilterBoolFunction(Card.IsSetCard,0xd3))
+	local e1=rsef.FV_EXTRA_MATERIAL_SELF(c,"link",nil,aux.TargetBoolFunction(Card.IsLinkSetCard,0xd3),{0,LOCATION_MZONE }) 
 	--sp
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(10150058,0))

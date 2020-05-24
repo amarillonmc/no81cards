@@ -57,6 +57,9 @@ end
 function c9950595.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950595,1))
 end
+function c9950595.ovfilter(c)
+	return c:IsFaceup() and c:IsCode(9950598) 
+end
 function c9950595.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end

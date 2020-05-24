@@ -25,6 +25,16 @@ function c9950614.initial_effect(c)
 	e4:SetTarget(c9950614.thtg)
 	e4:SetOperation(c9950614.thop)
 	c:RegisterEffect(e4)
+ --to hand
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9950614,2))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(c9950614.thtg2)
+	e3:SetOperation(c9950614.thop2)
+	c:RegisterEffect(e3)
 	 --spsummon bgm
 	 local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -84,4 +94,19 @@ function c9950614.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950614,0))
  Duel.Hint(HINT_SOUND,0,aux.Stringid(9950614,2))
+end
+function c9950614.thfilter2(c)
+	return c:IsSetCard(0xcba8) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+function c9950614.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950614.thfilter2,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9950614.thop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9950614.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end

@@ -1,15 +1,30 @@
 --魔法少女·克洛伊
 function c9951296.initial_effect(c)
-	 --spsummon
+	 --summon with no tribute
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9951296,1))
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SUMMON_PROC)
+	e1:SetCondition(c9951296.ntcon)
+	e1:SetOperation(c9951296.ntop)
+	c:RegisterEffect(e1)
+ local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_SUMMON)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetRange(LOCATION_HAND)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_CHAIN_END+TIMING_END_PHASE)
+	e3:SetCost(c9951296.sumcost)
+	e3:SetTarget(c9951296.sumtg)
+	e3:SetOperation(c9951296.sumop)
+	c:RegisterEffect(e3)
+--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9951296,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,9951296)
-	e1:SetCondition(c9951296.spcon)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetTarget(c9951296.sptg)
 	e1:SetOperation(c9951296.spop)
 	c:RegisterEffect(e1)
@@ -26,41 +41,65 @@ end
 function c9951296.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951296,0))
 end
-function c9951296.cfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0xba5) and c:IsControler(tp) and c:IsType(TYPE_LINK) and c:IsSummonType(SUMMON_TYPE_LINK)
+function c9951296.ntcon(e,c,minc)
+	if c==nil then return true end
+	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
-function c9951296.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c9951296.cfilter,1,nil,tp)
+function c9951296.ntop(e,tp,eg,ep,ev,re,r,rp,c)
+	--to grave
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9951296,2))
+	e1:SetCategory(CATEGORY_TOGRAVE)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCondition(c9951296.tgcon)
+	e1:SetTarget(c9951296.tgtg)
+	e1:SetOperation(c9951296.tgop)
+	e1:SetReset(RESET_EVENT+0xee0000)
+	c:RegisterEffect(e1)
 end
-function c9951296.tgfilter(c,e,tp)
-	if not c:IsType(TYPE_LINK) then return false end
-	local zone=bit.band(c:GetLinkedZone(tp),0x1f)
-	return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+function c9951296.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return tp==Duel.GetTurnPlayer()
 end
-function c9951296.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9951296.tgfilter(chkc,e,tp) and chkc~=eg:GetFirst() end
-	if chk==0 then return Duel.IsExistingTarget(c9951296.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,eg:GetFirst(),e,tp)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,c9951296.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,eg:GetFirst(),e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+function c9951296.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
+end
+function c9951296.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		Duel.SendtoGrave(c,REASON_EFFECT)
+	end
+end
+function c9951296.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetFlagEffect(tp,9951296)==0 end
+	Duel.RegisterFlagEffect(tp,9951296,RESET_CHAIN,0,1)
+end
+function c9951296.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsSummonable(false,nil) or e:GetHandler():IsMSetable(false,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
+end
+function c9951296.sumop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	Duel.Summon(tp,c,true,nil)
+end
+function c9951296.spfilter(c,e,tp)
+	return c:IsSetCard(0xaba8) and c:IsLevelBelow(2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+end
+function c9951296.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9951296.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function c9951296.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) then return end
-	local zone=bit.band(tc:GetLinkedZone(tp),0x1f)
-	if c:IsRelateToEffect(e) and zone~=0 then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP,zone)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c9951296.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	end
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9951296,1))
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_ADD_SETCODE)
-	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetValue(0xba5)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	tc:RegisterEffect(e1)
 end
-

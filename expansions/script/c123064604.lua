@@ -7,11 +7,10 @@ function c123064604.initial_effect(c)
     e1:SetOperation(c123064604.activate)
     c:RegisterEffect(e1)
     local e2=Effect.CreateEffect(c)
-    e2:SetCategory(CATEGORY_NEGATE)
+    e2:SetCategory(CATEGORY_DISABLE)
     e2:SetType(EFFECT_TYPE_QUICK_O)
     e2:SetCode(EVENT_CHAINING)
     e2:SetRange(LOCATION_SZONE)
-    e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
     e2:SetCountLimit(1)
     e2:SetCondition(c123064604.discon)
     e2:SetTarget(c123064604.distg)
@@ -112,7 +111,7 @@ function c123064604.disop(e,tp,eg,ep,ev,re,r,rp)
         else
             Duel.MSet(tp,tc,true,nil,1)
         end
-        Duel.NegateActivation(ev)
+        Duel.NegateEffect(ev)
     end
 end
 function c123064604.cfilter(c)

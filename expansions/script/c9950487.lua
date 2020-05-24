@@ -30,6 +30,16 @@ function c9950487.initial_effect(c)
 	e3:SetTarget(c9950487.sptg)
 	e3:SetOperation(c9950487.spop)
 	c:RegisterEffect(e3)
+--to hand
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9950487,2))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(c9950487.thtg)
+	e3:SetOperation(c9950487.thop)
+	c:RegisterEffect(e3)
 --spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -91,5 +101,20 @@ function c9950487.spop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
+	end
+end
+function c9950487.thfilter(c)
+	return c:IsSetCard(0xb1,0x45) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+function c9950487.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950487.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9950487.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9950487.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end

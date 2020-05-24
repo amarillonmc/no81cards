@@ -56,7 +56,7 @@ function c9950033.sprcon(e,c)
 		and not Duel.IsExistingMatchingCard(c9950033.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9950033.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xba1)
+	return  (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsSetCard(0xba1)
 end
 function c9950033.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9950033.filter(chkc) end

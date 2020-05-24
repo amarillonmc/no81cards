@@ -48,7 +48,7 @@ function c84500036.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c84500036.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
-    if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK,0,1,nil,84500036) end
+    if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK,0,1,nil,84500035) end
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c84500036.tdop(e,tp,eg,ep,ev,re,r,rp)

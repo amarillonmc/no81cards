@@ -106,11 +106,12 @@ function c118353144.desfilter(c)
 end
 function c118353144.destg(e,tp,eg,ep,ev,re,r,rp,chk)
     local n=eg:Filter(Card.IsControler,nil,tp):FilterCount(Card.IsPreviousLocation,nil,LOCATION_DECK)
-    if chk==0 then return n>0 and eg:Filter(Card.IsControler,nil,tp):IsExists(Card.IsAbleToDeck,n,nil) and Duel.GetMatchingGroup(c118353144.desfilter,tp,LOCATION_DECK,0,nil):GetCount()>=n and c.GetFlagEffect(118353145)==0 end
+    if chk==0 then return n>0 and eg:Filter(Card.IsControler,nil,tp):IsExists(Card.IsAbleToDeck,n,nil) and Duel.GetMatchingGroup(c118353144.desfilter,tp,LOCATION_DECK,0,nil):GetCount()>=n and c:GetFlagEffect(118353145)==0 end
     e:SetLabel(n)
 end
 function c118353144.desop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.SelectYesNo(tp,aux.Stringid(118353144,3)) then
+        Duel.Hint(HINT_CARD,0,118353144)
         c:RegisterFlagEffect(118353145,RESET_PHASE+PHASE_END,0,1)
         local n=e:GetLabel()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

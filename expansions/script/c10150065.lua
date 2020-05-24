@@ -1,11 +1,11 @@
 --怒喰大怪兽 哥莫拉
 if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
 function c10150065.initial_effect(c)
+	c:SetSPSummonOnce(10150065)
 	--link summon
 	c:EnableReviveLimit() 
 	aux.AddLinkProcedure(c,nil,2,2,c10150065.lcheck)
-	rscf.SetExtraLinkMaterial(c,aux.FilterBoolFunction(Card.IsSetCard,0xd3))
-	c:SetSPSummonOnce(10150065)
+	local e1=rsef.FV_EXTRA_MATERIAL_SELF(c,"link",nil,aux.TargetBoolFunction(Card.IsLinkSetCard,0xd3),{0,LOCATION_MZONE }) 
 	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10150065,1))
