@@ -82,7 +82,7 @@ function c46250013.eqlimit(e,c)
     return e:GetOwner()==c
 end
 function c46250013.matval(e,c,mg)
-    return c:IsRace(RACE_WYRM)
+    return c:IsRace(RACE_WYRM) and c:IsControler(e:GetHandlerPlayer())
 end
 function c46250013.atkval(e,c)
     return Group.GetSum(c:GetEquipGroup():Filter(Card.IsSetCard,nil,0x1fc0),Card.GetTextAttack)
