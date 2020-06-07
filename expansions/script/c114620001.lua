@@ -48,7 +48,7 @@ function cm.costfilter(c)
 end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
-    if chk==0 then return c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(cm.dcostfilter,tp,LOCATION_DECK,0,1,nil) end
+    if chk==0 then return c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_DECK,0,1,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
     local tg=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_DECK,0,1,1,nil)
     tg:AddCard(c)

@@ -35,7 +35,6 @@ function c46260002.initial_effect(c)
     e4:SetOperation(c46260002.negop)
     c:RegisterEffect(e4)
 end
-c46260002.fit_monster={46260003}
 function c46260002.spfilter(c,e,tp,mc)
     return bit.band(c:GetOriginalType(),0x81)==0x81 and (not c.mat_filter or c.mat_filter(mc,tp)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and mc:IsCanBeRitualMaterial(c)
 end
@@ -119,7 +118,12 @@ function c46260002.rop(e,tp,eg,ep,ev,re,r,rp)
         for tc in aux.Next(tg) do
             tc:SetMaterial(mat)
         end
-        Duel.SendtoGrave(mat,REASON_RELEASE+REASON_EFFECT+REASON_RITUAL)
+        local mc=mat:GetFirst()
+        if not mc:IsLocation(LOCATION_EXTRA) then
+            Duel.ReleaseRitualMaterial(mat)
+        else
+            Duel.SendtoGrave(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL+REASON_RELEASE)
+        end
         Duel.BreakEffect()
         for tc in aux.Next(tg) do
             Duel.SpecialSummonStep(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)

@@ -67,7 +67,7 @@ function c33400010.afilter(c)
 	return c:IsSetCard(0x3340) and c:IsType(TYPE_QUICKPLAY)
 end
 function c33400010.discon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function c33400010.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

@@ -9,14 +9,9 @@ function c46250022.initial_effect(c)
     e1:SetType(EFFECT_TYPE_IGNITION)
     e1:SetRange(LOCATION_PZONE)
     e1:SetCost(c46250022.discost)
-    e1:SetTarget(aux.RitualUltimateTarget(aux.TRUE))
-    e1:SetOperation(aux.RitualUltimateOperation(aux.TRUE))
+    e1:SetTarget(c46250022.rtg)
+    e1:SetOperation(c46250022.rop)
     c:RegisterEffect(e1)
-    local e2=e1:Clone()
-    e2:SetDescription(aux.Stringid(46250022,1))
-    e2:SetTarget(c46250022.rtg)
-    e2:SetOperation(c46250022.rop)
-    c:RegisterEffect(e2)
     local e4=Effect.CreateEffect(c)
     e4:SetDescription(aux.Stringid(46250022,2))
     e4:SetType(EFFECT_TYPE_IGNITION)
@@ -59,46 +54,40 @@ function c46250022.initial_effect(c)
     e7:SetOperation(c46250022.thop)
     c:RegisterEffect(e7)
 end
-c46250022.fit_monster={46250022}
 function c46250022.discost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsPlayerCanDiscardDeckAsCost(tp,1) end
     Duel.DiscardDeck(tp,1,REASON_COST)
 end
+function c46250022.filter(c,e,tp,mg)
+    if bit.band(c:GetOriginalType(),0x81)~=0x81 or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
+    local mg1=mg:Clone()
+    mg1:RemoveCard(c)
+    return mg1:CheckWithSumGreater(Card.GetRitualLevel,c:GetLevel(),c)
+end
 function c46250022.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
     if chk==0 then
-        local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-        if ft<0 or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
-        local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsCanBeRitualMaterial,nil,c)
-        if ft>0 then
-            return mg:CheckWithSumGreater(Card.GetRitualLevel,c:GetOriginalLevel(),c)
-        else
-            return mg:IsExists(aux.RPGFilterF,1,nil,tp,mg,c)
-        end
+        if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
+        local mg1=Duel.GetRitualMaterial(tp)
+        return Duel.IsExistingMatchingCard(c46250022.filter,tp,LOCATION_HAND+LOCATION_PZONE,0,1,nil,e,tp,mg1)
     end
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_PZONE)
 end
 function c46250022.rop(e,tp,eg,ep,ev,re,r,rp)
-    local tc=e:GetHandler()
+    if not e:GetHandler():IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
     local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsCanBeRitualMaterial,tc,tc)
-    local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-    local mat=nil
-    if ft>0 then
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+    local tg=Duel.SelectMatchingCard(tp,c46250022.filter,tp,LOCATION_HAND+LOCATION_PZONE,0,1,1,nil,e,tp,mg)
+    local tc=tg:GetFirst()
+    if tc then
+        mg:RemoveCard(tc)
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-        mat=mg:SelectWithSumGreater(tp,Card.GetRitualLevel,tc:GetOriginalLevel(),tc)
-    else
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-        mat=mg:FilterSelect(tp,aux.RPGFilterF,1,1,nil,tp,mg,tc)
-        Duel.SetSelectedCard(mat)
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-        local mat2=mg:SelectWithSumGreater(tp,Card.GetRitualLevel,tc:GetOriginalLevel(),tc)
-        mat:Merge(mat2)
+        local mat=mg:SelectWithSumGreater(tp,Card.GetRitualLevel,tc:GetLevel(),tc)
+        tc:SetMaterial(mat)
+        Duel.ReleaseRitualMaterial(mat)
+        Duel.BreakEffect()
+        Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+        tc:CompleteProcedure()
     end
-    tc:SetMaterial(mat)
-    Duel.ReleaseRitualMaterial(mat)
-    Duel.BreakEffect()
-    Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-    tc:CompleteProcedure()
 end
 function c46250022.lvtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end
@@ -123,14 +112,14 @@ function c46250022.lvop(e,tp,eg,ep,ev,re,r,rp)
     Duel.RegisterEffect(e2,tp)
 end
 function c46250022.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local g=eg:Filter(Card.IsAbleToRemove,nil)
-    if chk==0 then return g and Duel.CheckReleaseGroup(tp,aux.TRUE,1,nil) end
+    local g=eg:Filter(Card.IsAbleToRemove,e:GetHandler())
+    if chk==0 then return g and g:GetCount()>0 and Duel.CheckReleaseGroup(tp,aux.TRUE,1,g) end
     Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end
 function c46250022.tgop(e,tp,eg,ep,ev,re,r,rp)
-    local g=eg:Filter(Card.IsAbleToRemove,nil)
-    if not g then return end
-    local tg=Duel.SelectReleaseGroup(tp,aux.TRUE,1,1,nil)
+    local g=eg:Filter(Card.IsAbleToRemove,e:GetHandler())
+    if not g or g:GetCount()==0 then return end
+    local tg=Duel.SelectReleaseGroup(tp,aux.TRUE,1,1,g)
     Duel.Release(tg,REASON_EFFECT)
     Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
 end

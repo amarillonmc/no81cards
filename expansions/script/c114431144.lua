@@ -23,6 +23,7 @@ function c114431144.initial_effect(c)
     e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e3:SetType(EFFECT_TYPE_IGNITION)
     e3:SetRange(LOCATION_GRAVE)
+    e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e3:SetCountLimit(1,114431144)
     e3:SetTarget(c114431144.hsptg)
     e3:SetOperation(c114431144.hspop)
@@ -75,12 +76,15 @@ function c114431144.mtop(e,tp,eg,ep,ev,re,r,rp)
         Duel.Overlay(c,g)
     end
 end
+function c114431144.mtfilter2(c,sc)
+    return c:IsFaceup() and c:IsSetCard(0x71) and c:IsType(TYPE_MONSTER) and c:IsCanBeXyzMaterial(sc)
+end
 function c114431144.hsptg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
-    if chkc then return chkc:IsOnField() and c114431144.mtfilter(chkc,c) end
-    if chk==0 then return Duel.IsExistingTarget(c114431144.mtfilter,tp,LOCATION_MZONE,0,1,nil,c) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+    if chkc then return chkc:IsOnField() and c114431144.mtfilter2(chkc,c) end
+    if chk==0 then return Duel.IsExistingTarget(c114431144.mtfilter2,tp,LOCATION_MZONE,0,1,nil,c) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-    local g=Duel.SelectTarget(tp,c114431144.mtfilter,tp,LOCATION_MZONE,0,1,1,nil,c)
+    local g=Duel.SelectTarget(tp,c114431144.mtfilter2,tp,LOCATION_MZONE,0,1,1,nil,c)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c114431144.hspop(e,tp,eg,ep,ev,re,r,rp)

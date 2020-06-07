@@ -47,8 +47,8 @@ function cm.conop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
 			local tc=g:FilterSelect(tp,cm.confilter,1,1,nil,e,tp):GetFirst()
 			if tc:IsType(TYPE_SPELL+TYPE_TRAP) then
-				Duel.SendtoHand(sg,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,sg)
+				Duel.SendtoHand(tc,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,tc)
 				Duel.ShuffleHand(tp)
 			else
 				rssf.SpecialSummon(tc)

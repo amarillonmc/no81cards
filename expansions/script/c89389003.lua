@@ -48,8 +48,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
             Duel.BreakEffect()
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
             local tc=Duel.SelectMatchingCard(tp,cm.sumfilter,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
-            local s1=tc:IsSummonable(true,nil)
-            local s2=tc:IsMSetable(true,nil)
+            local s1=tc and tc:IsSummonable(true,nil)
+            local s2=tc and tc:IsMSetable(true,nil)
             if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
                 Duel.Summon(tp,tc,true,nil)
             else

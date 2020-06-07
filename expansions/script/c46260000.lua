@@ -98,7 +98,7 @@ end
 function c46260000.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_ONFIELD,0,1,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-    local g=Duel.SelectMatchingCard(tp,IsReleasable,tp,LOCATION_MZONE,0,1,1,nil)
+    local g=Duel.SelectMatchingCard(tp,IsReleasable,tp,LOCATION_ONFIELD,0,1,1,nil)
     Duel.Release(g,REASON_COST)
 end
 function c46260000.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
