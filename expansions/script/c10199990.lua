@@ -3,7 +3,6 @@ if not pcall(function() require("expansions/script/c10199991") end) then require
 local m=10199990
 local vm=10199991
 local Version_Number=20200409
-
 -----------------------"Part_Effect_Base"-----------------------
 
 --Effect: Get default hint string for Duel.Hint ,use in effect target
@@ -114,7 +113,7 @@ function rsef.GetRegisterRange(cardtbl)
 end
 --Effect: Get Flag for SetProperty 
 function rsef.GetRegisterProperty(mixflag)
-	local flagstringlist={"tg","ptg","de","dsp","dcal","ii","sa","ir","sr","bs","uc","cd","cn","ch","lz","at","sp"}
+	local flagstringlist={"tg","ptg","de","dsp","dcal","ii","sa","ir","sr","bs","uc","cd","cn","ch","lz","at","sp","ep"}
 	return rsof.Mix_Value_To_Table(mixflag,flagstringlist,rsflag.flaglist)
 end
 rsflag.GetRegisterProperty=rsef.GetRegisterProperty
@@ -453,7 +452,7 @@ function rsef.SV_ATTRIBUTE(cardtbl,atttbl,valtbl,con,resettbl,flag,desctbl,ctlim
 				e1=rsef.SV(cardtbl,effectcode,effectvaluetbl[k],range,con,resettbl,flag,desctbl)
 			else -- use for set code
 				e1=rsef.SV(cardtbl,effectcode,0,range,con,resettbl,flag,desctbl)
-				rsef.valinfo[e1]=effectvaluetbl[k]
+				rsval.valinfo[e1]=effectvaluetbl[k]
 				if c2:GetFlagEffect(rscode.Previous_Set_Code)==0 then
 					local e2=rsef.SC({c2,true},EVENT_LEAVE_FIELD_P,nil,nil,"cd,uc",nil,rsef.presetop)
 					c2:RegisterFlagEffect(rscode.Previous_Set_Code,0,0,1)
@@ -987,9 +986,18 @@ function rsef.FC_AttachEffect(cardtbl,force,attachtime,desctbl,ctlimittbl,flag,r
 	local e1=rsef.FC(cardtbl,attachcode,desctbl,nil,flag,range,rsef.FC_AttachEffect_Con(e0,attachcon),rsef.FC_AttachEffect_Op(e0,force),resettbl)
 	e1:SetValue(attachop)
 	e1:SetLabelObject(e0)
+	local desc=not desctbl and 0 or rsef.RegisterDescription(nil,desctbl,true)
 	if aux.GetValueType(var2)=="Card" then
-		local desc=not desctbl and 0 or rsef.RegisterDescription(nil,desctbl,true)
 		var2:RegisterFlagEffect(attachcode,reset,EFFECT_FLAG_CLIENT_HINT,resetct,e1:GetFieldID(),desc)
+	else
+		local e1=Effect.CreateEffect(c1)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(0x10000000+attachcode)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e1:SetDescription(desc)
+		e1:SetTargetRange(1,0)
+		e1:SetReset(reset,resetct)
+		Duel.RegisterEffect(e1,var2)
 	end
 	if rsef.FC_AttachEffect_Switch then return e1 end
 	rsef.FC_AttachEffect_Switch=true
@@ -1035,11 +1043,11 @@ end
 function rsef.ChangeChainOperation2(ev,changeop,ischange)
 	rsef.ChangeChainOperation(ev,changeop)
 	if ischange then return end
-	rsef.baseop[ev]=changeop
+	rsop.baseop[ev]=changeop
 end
 function rsef.FC_AttachEffect_ChangeOp(e,tp,eg,ep,ev,re,r,rp)
 	local baseop=re:GetOperation() or aux.TRUE 
-	baseop=rsef.baseop[ev] or baseop
+	baseop=rsop.baseop[ev] or baseop
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
@@ -1054,11 +1062,11 @@ function rsef.FC_AttachEffect_Reset(re1,baseop)
 		rsef.attacheffect[ev]=nil
 		rsef.attacheffectf[ev]=nil
 		rsef.solveeffect[ev]=nil
-		rsef.baseop[ev]=nil
+		rsop.baseop[ev]=nil
 		local rc=re:GetHandler()
 		local res1=re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc:IsType(TYPE_PENDULUM+TYPE_FIELD+TYPE_CONTINUOUS+TYPE_EQUIP)
 		local res2=#({rc:IsHasEffect(EFFECT_REMAIN_FIELD)})>0
-		if (res1 or res2) and not rsef.baseop[ev2] then
+		if (res1 or res2) and not rsop.baseop[ev2] then
 			re:SetOperation(baseop)
 			rc:CancelToGrave(true)
 		end
@@ -1268,6 +1276,12 @@ function rssf.SpecialSummon(ssgorc,sstype,ssplayer,tplayer,ignorecon,ignorerevie
 	if ct>0 then
 		Duel.SpecialSummonComplete()
 	end
+	for sc in aux.Next(g) do
+		if sc:GetFlagEffect(rscode.Pre_Complete_Proc)>0 then
+			sc:CompleteProcedure()
+			sc:ResetFlagEffect(rscode.Pre_Complete_Proc)
+		end
+	end
 	local e=g:GetFirst():GetReasonEffect()
 	local tp=e:GetHandlerPlayer()
 	local c=g:GetFirst():GetReasonEffect():GetHandler()
@@ -1431,6 +1445,7 @@ function rstg.disnegtg(disorneg,waystring)
 	local _,_,filterfun=rsof.Table_Suit(waystring,waylist,waylist2)
 	local _,_,filterfun2,cate=rsof.Table_Suit(waystring,waylist,waylist3,catelist)
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
+		local c=e:GetHandler()
 		local rc=re:GetHandler()
 		if chk==0 then return 
 			--filterfun(rc) 
@@ -1442,8 +1457,13 @@ function rstg.disnegtg(disorneg,waystring)
 				Duel.SetOperationInfo(0,cate,eg,1,0,0)
 			end
 		end
+		if c:IsType(TYPE_CONTINUOUS+TYPE_FIELD+TYPE_PENDULUM) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsOnField() and c:IsRelateToEffect(e) then
+			rsef.relationinfo[Duel.GetCurrentChain()]=true
+		else
+			rsef.relationinfo[Duel.GetCurrentChain()]=false
+		end
 	end
-end
+end 
 function rstg.distg(waystring)
 	return function(...)
 		return rstg.disnegtg("dis",waystring)(...)
@@ -1775,7 +1795,7 @@ function rstg.TargetSelectNoInfo(e,tp,eg,ep,ev,re,r,rp,valuetype,...)
 		end
 		--target 
 		if b4 and type(loc1)=="table" then
-			local solvelist=rsef.targetlist[chainid]
+			local solvelist=rstg.targetlist[chainid]
 			local solvegroup=Group.CreateGroup()
 			for _,listindex in pairs(loc1) do
 				if listindex==0 then
@@ -1848,10 +1868,10 @@ function rstg.TargetSelectNoInfo(e,tp,eg,ep,ev,re,r,rp,valuetype,...)
 				if not costres or (aux.GetValueType(costres)=="Group" and #costres<=0) then return end
 			elseif b2 or b3 then
 				if b2 then
-					if not rsef.targetlist[chainid] then
-						rsef.targetlist[chainid]={}
+					if not rstg.targetlist[chainid] then
+						rstg.targetlist[chainid]={}
 					end
-					table.insert(rsef.targetlist[chainid],rsgf.Group_To_Table(selectgroup))
+					table.insert(rstg.targetlist[chainid],rsgf.Group_To_Table(selectgroup))
 				end
 				targettotalgroup:Merge(selectgroup)
 			end
@@ -2227,8 +2247,11 @@ function rscon.phase(p1,...)
 		local phase_ndcal=function()
 			return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 		end
-		local stringlist={"dp","sp","mp1","bp","bsp","dam","damndcal","dambdcal","dcal","ndcal","mp2","ep"} 
-		local phaselist={PHASE_DRAW,PHASE_STANDBY,PHASE_MAIN1,phase_bp,PHASE_BATTLE_STEP,phase_dam,PHASE_DAMAGE,phase_dambdcal,PHASE_DAMAGE_CAL,phase_ndcal,PHASE_MAIN2,PHASE_END } 
+		local phase_mp=function()
+			return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+		end
+		local stringlist={"dp","sp","mp1","bp","bsp","dam","damndcal","dambdcal","dcal","ndcal","mp2","ep","mp"} 
+		local phaselist={PHASE_DRAW,PHASE_STANDBY,PHASE_MAIN1,phase_bp,PHASE_BATTLE_STEP,phase_dam,PHASE_DAMAGE,phase_dambdcal,PHASE_DAMAGE_CAL,phase_ndcal,PHASE_MAIN2,PHASE_END,phase_mp } 
 		local mainstringlist={}
 		local turnplayerlist={}
 		local parlist2=rsof.String_Number_To_Table(parlist) 
@@ -2441,6 +2464,9 @@ function rsop.disnegop(disorneg,waystring)
 	if type(waystring)==nil then waystring="des" end
 	if not waystring then waystring="nil" end
 	return function(e,tp,eg,ep,ev,re,r,rp)
+		local c=e:GetHandler()
+		local relate=rsef.relationinfo[Duel.GetCurrentChain()] 
+		if relate and not c:IsRelateToEffect(e) then return end
 		local ct=0
 		local rc=re:GetHandler()
 		if disorneg=="sum" then 
@@ -2734,7 +2760,7 @@ function rsop.SelectOption(p,...)
 	local off=1
 	local ops={}
 	local opval={}
-	for k,v in ipairs(functionlist) do
+	for k,v in pairs(functionlist) do
 		if rsof.Check_Boolean(v) and k~=#functionlist then
 			local selecthint=functionlist[k+1]
 			if type(selecthint)=="table" then ops[off]=aux.Stringid(selecthint[1],selecthint[2])
@@ -2974,7 +3000,7 @@ function rsgf.GetExceptGroup(exceptfun,b4,e,tp,eg,ep,ev,re,r,rp)
 			exceptg:AddCard(c)
 		end
 	elseif excepttype=="function" then
-		exceptg=exceptfun(e,tp,eg,ep,ev,re,r,rp)
+		exceptg=rsgf.Mix2(exceptfun(e,tp,eg,ep,ev,re,r,rp))
 	end
 	local ct=not exceptg and 0 or #exceptg
 	return exceptg,ct
@@ -3202,23 +3228,20 @@ end
 function rscf.QuickBuff(reglist,...)
 	local bufflist={...}  
 	local c1,c2=rsef.GetRegisterCard(reglist)
-	local reset=rsreset.est
-	local reset2=c1~=c2 and rsreset.est or rsreset.est_d 
-	local res,ct=rsof.Table_List(bufflist,"reset")
-	if res then
-		local resetval=bufflist[ct+1]
-		if resetval and type(resetval)~="string" then
-			reset=resetval  
-			if c1==c2 then
-				reset2=type(resetval)=="table" and {resetval[1]|RESET_DISABLE,resetval[2] } or resetval|RESET_DISABLE 
-			else
-				reset2=resetval
-			end
-		end
-	end
+	local reset,reset2
 	if not rsof.Table_List(bufflist,"reset") then
 		table.insert(bufflist,"reset")
 		table.insert(bufflist,rsreset.est)
+	end
+	local _,ct=rsof.Table_List(bufflist,"reset")
+	local resetval=bufflist[ct+1]
+	if resetval and type(resetval)~="string" then
+		reset=resetval  
+		if c1==c2 then
+			reset2=type(resetval)=="table" and {resetval[1]|RESET_DISABLE,resetval[2] } or resetval|RESET_DISABLE 
+		else
+			reset2=resetval
+		end
 	end
 	local setlist={"atk","def","batk","bdef","atkf","deff"} 
 	local uplist={"atk+","def+","lv+","rk+"}
@@ -3227,8 +3250,9 @@ function rscf.QuickBuff(reglist,...)
 	local limitlist={"dis","dise","tri","atk","atkan","datk","ress","resns","td","th","cp","cost"} 
 	local matlimitlist={"fus","syn","xyz","link"}
 	local leavelist={"leave"}
+	local splist={"mat","pc"} 
 	--local phaselist={"ep","sp"}
-	local funlist=rsof.Table_Mix(setlist,uplist,changelist,addlist,limitlist,matlimitlist,leavelist)
+	local funlist=rsof.Table_Mix(setlist,uplist,changelist,addlist,limitlist,matlimitlist,leavelist,splist)
 	local funlistatt=rsof.Table_Mix(setlist,uplist,changelist,addlist)
 	--local nulllist={}
 	--for i=1,#stringlist do 
@@ -3238,7 +3262,7 @@ function rscf.QuickBuff(reglist,...)
 	for index,par in pairs(bufflist) do
 		local vtype=type(par)
 		local parnext=bufflist[index+1]
-		local vtypenext=type(nextpar)
+		local vtypenext=type(parnext)
 		if vtype=="string" and par~="reset" then
 			local vallist
 			if not parnext or vtypenext=="string" then 
@@ -3262,7 +3286,16 @@ function rscf.QuickBuff(reglist,...)
 				if rsof.Table_List(leavelist,codestring) then
 					e1=rsef.SV_REDIRECT(reglist,codestring,effectvaluelist[k],nil,rsreset.ered,"cd")
 				end 
-				table.insert(effectlist,e1)  
+				if rsof.Table_List(splist,codestring) then
+					if codestring=="mat" then
+						c2:SetMaterial(effectvaluelist[k])
+					end
+					if codestring=="cp" then
+						c2:RegisterFlagEffect(rscode.Pre_Complete_Proc,rsreset.est,0,1)
+					end
+				else
+					table.insert(effectlist,e1)  
+				end
 			end
 		end
 	end
@@ -3344,7 +3377,7 @@ function rscf.CheckSetCardMainSet(c,settype,series1,...)
 		effectlist=rscf.Previous_Set_Code_List
 	end
 	for _,effect in pairs(effectlist) do
-		local string=rsef.valinfo[effect]
+		local string=rsval.valinfo[effect]
 		if type(string)=="string" then 
 			table.insert(addcodelist,string)
 		end
@@ -3422,7 +3455,7 @@ rssf.RecordSummonProcedure=rscf.RecordSummonProcedure
 --directly enable will cause bugs, but i am lazy to find what cards i have used this function
 rssf.RecordSummonProcedure()
 function rscf.RecordSummonProcedure_Operation(e,tp)
-	local g=Duel.GetMatchingGroup(Card.IsType,0,0xff,0xff,nil,rscf.extype-TYPE_PENDULUM)
+	local g=Duel.GetMatchingGroup(Card.IsType,0,0xff,0xff,nil,rscf.extype)
 	local f6=aux.AddSynchroProcedure
 	local f7=aux.AddSynchroMixProcedure
 	local f8=aux.AddXyzProcedure
@@ -4191,7 +4224,7 @@ function rscf.DarkTuner(f,...)
 				local typelist={target:IsHasEffect(EFFECT_ADD_TYPE)}
 				local bool=false
 				for _,e in pairs(typelist) do
-					if rsef.valinfo[e]=="TYPE_DARKTUNER" then
+					if rsval.valinfo[e]=="TYPE_DARKTUNER" then
 						bool=true
 					break 
 					end
@@ -4200,7 +4233,7 @@ function rscf.DarkTuner(f,...)
 			end
 end
 --Card filter: face up + filter
-function rscf.FilterFaceUp(f,...)
+function rscf.fufilter(f,...)
 	local ext_params={...}
 	return  function(target)
 				return f(target,table.unpack(ext_params)) and target:IsFaceup()
@@ -4517,6 +4550,16 @@ function rsof.Table_To_Desc(hintlist)
 		end
 	end
 	return table.unpack(newlist)
+end
+--other function: Count for table value 
+function rsof.Table_Count(list,cval)
+	local ctlist={}
+	for index,value in pairs(list) do
+		if value==cval then
+			table.insert(ctlist,index)
+		end
+	end
+	return #ctlist,ctlist
 end
 --other function: check a value is true or false
 function rsof.Check_Boolean(value,booleanvaule)

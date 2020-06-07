@@ -33,7 +33,6 @@ function c46260000.initial_effect(c)
     e3:SetOperation(c46260000.thop)
     c:RegisterEffect(e3)
 end
-c46260000.fit_monster={46260001}
 function c46260000.mfilter(c,e)
     return c:IsFaceup() and c:GetLevel()>0 and not c:IsImmuneToEffect(e) and c:IsReleasable()
 end

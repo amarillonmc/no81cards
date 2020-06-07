@@ -1,6 +1,6 @@
 --爱国者＆霜星
 function c112004.initial_effect(c)
-	 --pendulum summon
+	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--to hand
 	local e1=Effect.CreateEffect(c)
@@ -34,6 +34,6 @@ function c112004.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c112004.splimit1(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xa007) or c:IsSetCard(0xa006)
+	return not c:IsType(TYPE_NORMAL)
 end
 

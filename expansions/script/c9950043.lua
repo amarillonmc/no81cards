@@ -25,6 +25,13 @@ function c9950043.initial_effect(c)
 	e2:SetTarget(c9950043.sctg)
 	e2:SetOperation(c9950043.scop)
 	c:RegisterEffect(e2)
+ --summon,flip
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetOperation(c9950043.handes)
+	c:RegisterEffect(e1)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -35,6 +42,7 @@ function c9950043.initial_effect(c)
 	e9:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e9)
 end
+c9950043[0]=0
 function c9950043.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950043,0))
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950043,1))
@@ -75,4 +83,13 @@ function c9950043.scop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SynchroSummon(tp,sg:GetFirst(),c)
 	end
+end
+function c9950043.handes(e,tp,eg,ep,ev,re,r,rp)
+	local loc,id=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_CHAIN_ID)
+	if ep==tp or loc~=LOCATION_MZONE or id==c9950043[0] or not re:IsActiveType(TYPE_MONSTER) then return end
+	c9950043[0]=id
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and Duel.SelectYesNo(1-tp,aux.Stringid(9950043,2)) then
+		Duel.DiscardHand(1-tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD,nil)
+		Duel.BreakEffect()
+	else Duel.NegateEffect(ev) end
 end

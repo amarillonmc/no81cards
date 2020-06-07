@@ -1,5 +1,16 @@
 --觉觉之女仆
 function c9950420.initial_effect(c)
+--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9950420,0))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SPSUM_PARAM)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetTargetRange(POS_FACEUP_DEFENSE,0)
+	e1:SetCondition(c9950420.spcon)
+	e1:SetValue(c9950420.spval)
+	c:RegisterEffect(e1)
 	 --deckdes
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9950420,0))
@@ -24,6 +35,15 @@ function c9950420.initial_effect(c)
 	e2:SetOperation(c9950420.thop)
 	c:RegisterEffect(e2)
 end
+function c9950420.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local zone=Duel.GetLinkedZone(tp)
+	return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)>0
+end
+function c9950420.spval(e,c)
+	return 0,Duel.GetLinkedZone(c:GetControler())
+end
 function c9950420.ddtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,4) end
 	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,4)
@@ -32,7 +52,7 @@ function c9950420.ddop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.DiscardDeck(tp,4,REASON_EFFECT)
 end
 function c9950420.thfilter(c)
-	return c:IsCode(9950421) and c:IsAbleToHand()
+	return c:IsRace(RACE_PSYCHO) and c:IsAbleToHand()
 end
 function c9950420.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950420.thfilter,tp,LOCATION_DECK,0,1,nil) end

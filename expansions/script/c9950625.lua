@@ -37,11 +37,11 @@ function c9950625.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9950625.costfilter(c,tp)
-	return c:IsSetCard(0x12b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x3ba2) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
 		and Duel.IsExistingMatchingCard(c9950625.srfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
 function c9950625.srfilter(c,code)
-	return c:IsSetCard(0x12b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsCode(code) and c:IsAbleToHand()
+	return c:IsSetCard(0x3ba2) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsCode(code) and c:IsAbleToHand()
 end
 function c9950625.srcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950625.costfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end

@@ -79,6 +79,8 @@ local rsba  =   BlueAngel
 local rszg  =   Zogu
 local rsgs  =   Gran_Sphere
 local rsoc  =   Oligocene_Civilization
+local rsgol =   Giant_of_Light
+local rssb  =   Space_Beasts
 
 #HeiBai 1172777968
 local rstm  =   Toaru_Majutsu_no_Index

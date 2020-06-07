@@ -68,16 +68,17 @@ function c9950425.hspcon(e,c)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if ft<=-1 then return false end
 	if ft<=0 then
-		return Duel.IsExistingMatchingCard(c9950425.spfilter,tp,LOCATION_MZONE,0,1,nil)
-	else return Duel.IsExistingMatchingCard(c9950425.spfilter,tp,0x16,0,1,nil) end
+		return Duel.IsExistingMatchingCard(c9950425.spfilter,tp,LOCATION_MZONE,0,1,e:GetHandler())
+	else return Duel.IsExistingMatchingCard(c9950425.spfilter,tp,0x16,0,1,e:GetHandler()) end
 end
 function c9950425.hspop(e,tp,eg,ep,ev,re,r,rp,c)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then
-		local g=Duel.SelectMatchingCard(tp,c9950425.spfilter,tp,LOCATION_MZONE,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c9950425.spfilter,tp,LOCATION_MZONE,0,1,1,c)
 		Duel.Remove(g,POS_FACEUP,REASON_COST)
 	else
-		local g=Duel.SelectMatchingCard(tp,c9950425.spfilter,tp,0x16,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c9950425.spfilter,tp,0x16,0,1,1,c)
 		Duel.Remove(g,POS_FACEUP,REASON_COST)
 	end
 end

@@ -45,7 +45,7 @@ function c9950683.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 Duel.Hint(HINT_SOUND,0,aux.Stringid(9950683,2))
 end
 function c9950683.chainfilter(re,tp,cid)
-	return not (re:GetHandler():IsSetCard(0xba5) and re:IsActiveType(TYPE_MONSTER)
+	return not re:IsActiveType(TYPE_MONSTER)
 		and Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)==LOCATION_HAND)
 end
 function c9950683.spfilter(c,tp)
@@ -65,27 +65,15 @@ function c9950683.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c9950683.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(1-tp,8) end
+	if chk==0 then return Duel.IsPlayerCanDraw(1-tp,10) end
 	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(8)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,8)
+	Duel.SetTargetParam(10)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,10)
 end
 function c9950683.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	local c=e:GetHandler()
-	Duel.Draw(p,d,REASON_EFFECT)
-	Duel.BreakEffect()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(0,1)
-	e1:SetValue(c9950683.aclimit)
-	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e1,tp)
-end
-function c9950683.aclimit(e,re,tp)
-	return re:GetActivateLocation()==LOCATION_GRAVE+LOCATION_HAND
+	Duel.Draw(p,d,REASON_EFFECT) 
 end
 function c9950683.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanSummon(tp) and Duel.IsPlayerCanAdditionalSummon(tp) and Duel.GetFlagEffect(tp,9950683)==0 end

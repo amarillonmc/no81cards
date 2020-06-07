@@ -22,13 +22,15 @@ rshint={}   --"Hint Function"
 rsloc={}	--"Location Function"
 
 --Info Variable
-rsef.valinfo	={} --"Value for inside series, inside type etc."
+rsval.valinfo   ={} --"Value for inside series, inside type etc."
 rscost.costinfo ={} --"Cost information, for record cost value" 
-rsef.targetlist ={} --"Target group list, for rstg.GetTargetAttribute"
+rsop.opinfo={}  --"Operation information, for record something"
+rsef.relationinfo={} --"Field,Pendulum,Continous leave field"
+rstg.targetlist ={} --"Target group list, for rstg.GetTargetAttribute"
 rsef.attacheffect ={} --"Effect information for attach effects"
 rsef.attacheffectf ={}
 rsef.solveeffect ={}
-rsef.baseop={}
+rsop.baseop={}
 
 rscf.synchro_material_action={} --"Custom syn material's action"
 rscf.xyz_material_action={} --"Custom xyz material's action" 
@@ -64,6 +66,7 @@ rscode.Extra_Xyz_Material   =   m+401 --"Extra Xyz Material"
 rscode.Utility_Xyz_Material =   m+500 --"Utility Xyz Material" 
 rscode.Previous_Set_Code	=   m+600 --"Previous Set Code" 
 rscode.Synchro_Material =   m+700  --"Record synchro proceudre target"
+rscode.Pre_Complete_Proc = m+900 --"Previous c:CompleteProcedure" 
 
 --Hint Message Variable
 rshint.act=aux.Stringid(m,0) --"activate spell/trap"
@@ -74,7 +77,7 @@ rshint.spproc=aux.Stringid(m,4) --"SS by self produce"
 rshint.negeffect=aux.Stringid(19502505,1) --"negate activation"
 rshint.eq=aux.Stringid(68184115,0)  --"cards will equip"
 rshint.te=aux.Stringid(24094258,3) --"add to extra deck"
-rshint.xyz=HINTMSG_XMATERIAL   --"cards will be overlay cards"
+rshint.xyz=HINTMSG_XMATERIAL   --"cards will become overlay cards"
 rshint.diseffect=aux.Stringid(39185163,1) --"negate effect"
 rshint.negsum=aux.Stringid(m+1,1) --"negate summon"
 rshint.negsp=aux.Stringid(74892653,0) --"negate special summon"
@@ -88,7 +91,8 @@ rshint.finshcopy=aux.Stringid(43387895,1) --"reset copy effect"
 rsflag.flaglist =   { EFFECT_FLAG_CARD_TARGET,EFFECT_FLAG_PLAYER_TARGET,EFFECT_FLAG_DELAY,EFFECT_FLAG_DAMAGE_STEP,EFFECT_FLAG_DAMAGE_CAL,
 EFFECT_FLAG_IGNORE_IMMUNE,EFFECT_FLAG_SET_AVAILABLE,EFFECT_FLAG_IGNORE_RANGE,EFFECT_FLAG_SINGLE_RANGE,EFFECT_FLAG_BOTH_SIDE, 
 EFFECT_FLAG_UNCOPYABLE,EFFECT_FLAG_CANNOT_DISABLE,EFFECT_FLAG_CANNOT_NEGATE,EFFECT_FLAG_CLIENT_HINT,EFFECT_FLAG_LIMIT_ZONE,
-EFFECT_FLAG_ABSOLUTE_TARGET,EFFECT_FLAG_SPSUM_PARAM }
+EFFECT_FLAG_ABSOLUTE_TARGET,EFFECT_FLAG_SPSUM_PARAM,
+EFFECT_FLAG_EVENT_PLAYER }
 rsflag.tg_d  =   EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY 
 rsflag.dsp_d	=   EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY 
 rsflag.dsp_tg   =   EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET 
@@ -110,10 +114,14 @@ rscate.neg_des  =   CATEGORY_NEGATE+CATEGORY_DESTROY
 rscf.typelist   =   { TYPE_MONSTER,TYPE_NORMAL,TYPE_EFFECT,TYPE_DUAL,TYPE_UNION,TYPE_TOON,TYPE_TUNER,TYPE_RITUAL,TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK,TYPE_TOKEN,TYPE_PENDULUM,TYPE_SPSUMMON,TYPE_FLIP,TYPE_SPIRIT,
 TYPE_SPELL,TYPE_EQUIP,TYPE_FIELD,TYPE_CONTINUOUS,TYPE_QUICKPLAY,
 TYPE_TRAP,TYPE_COUNTER,TYPE_TRAPMONSTER }
-rscf.extype  =   TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_PENDULUM+TYPE_LINK 
+rscf.extype  =   TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK 
 rscf.extype_r   =   rscf.extype + TYPE_RITUAL 
-rscf.extype_np  =   rscf.extype - TYPE_PENDULUM 
+rscf.extype_p  =   rscf.extype + TYPE_PENDULUM 
+rscf.extype_rp  =  rscf.extype + TYPE_RITUAL + TYPE_PENDULUM 
 rscf.exlist  =   { TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK }
+rscf.exlist_r  =   { TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK,TYPE_RITUAL }
+rscf.exlist_p  =   { TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK,TYPE_PENDULUM }
+rscf.exlist_rp  =   { TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK,TYPE_PENDULUM,TYPE_RITUAL }
 
 --Location Variable
 rsloc.hd=LOCATION_HAND+LOCATION_DECK 
@@ -132,6 +140,7 @@ rsloc.all=0xff
 --Escape Old Functions
 function rsof.Escape_Old_Functions()
 	rsof.DefineCard  =   rscf.DefineCard
+	rscf.FilterFaceUp =  rscf.fufilter
 	rsof.SendtoHand  =   rsop.SendtoHand
 	rsof.SendtoDeck  =   rsop.SendtoDeck
 	rsof.SendtoGrave =   rsop.SendtoGrave

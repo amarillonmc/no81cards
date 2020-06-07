@@ -5,6 +5,7 @@ function c9950619.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,995019+EFFECT_COUNT_CODE_OATH)
 	e1:SetOperation(c9950619.recop)
 	c:RegisterEffect(e1)
 end

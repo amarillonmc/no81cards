@@ -25,6 +25,7 @@ function c9950655.initial_effect(c)
 	c:RegisterEffect(e1)
    --effect gain
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9950655,2))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_BE_MATERIAL)
 	e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)

@@ -13,5 +13,5 @@ function c112005.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c112005.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsType(TYPE_NORMAL)   
+	return not c:IsType(TYPE_NORMAL) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM 
 end

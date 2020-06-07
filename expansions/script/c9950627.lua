@@ -47,7 +47,7 @@ function c9950627.filter(c,e,tp,lv,mc)
 		and Duel.IsExistingMatchingCard(c9950627.scfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,lv+c:GetOriginalLevel(),Group.FromCards(c,mc))
 end
 function c9950627.scfilter(c,e,tp,lv,mg)
-	return c:IsSetCard(0xba5) and c:GetOriginalLevel()<=lv and c:IsType(TYPE_SYNCHRO)
+	return c:IsSetCard(0xba5) and c:GetOriginalLevel()=lv and c:IsType(TYPE_SYNCHRO)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
 function c9950627.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

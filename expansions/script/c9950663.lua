@@ -128,7 +128,9 @@ end
 function c9950663.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rtype=bit.band(re:GetActiveType(),0x7)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950663.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,rtype) end
-	Duel.SendtoGrave(tp,c9950663.cfilter,1,1,REASON_COST,nil,rtype)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9950663.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,rtype)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9950663.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return aux.nbcon(tp,re) end

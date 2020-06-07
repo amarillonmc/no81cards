@@ -39,8 +39,8 @@ function c9950690.initial_effect(c)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,99506900)
-	e1:SetTarget(c9950690.target)
-	e1:SetOperation(c9950690.operation)
+	e1:SetTarget(c9950690.target2)
+	e1:SetOperation(c9950690.operation2)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
@@ -61,11 +61,11 @@ end
 function c9950690.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950690,0))
 end
-function c9950690.cfilter(c)
+function c9950690.cfilter2(c)
 	return c:GetSummonLocation()==LOCATION_EXTRA
 end
 function c9950690.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9950690.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	return Duel.IsExistingMatchingCard(c9950690.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function c9950690.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -151,16 +151,16 @@ function c9950690.drop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9950690)
 	Duel.Draw(tp,1,REASON_EFFECT)
 end
-function c9950690.filter(c)
+function c9950690.filter2(c)
 	return c:IsSetCard(0xcba8) and c:IsType(TYPE_MONSTER) and not c:IsCode(9950690) and c:IsAbleToHand()
 end
-function c9950690.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9950690.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+function c9950690.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950690.filter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
-function c9950690.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9950690.operation2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9950690.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c9950690.filter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
