@@ -74,7 +74,7 @@ function c119918512.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c119918512.thfilter(c)
-    return c:IsSetCard(0xb4) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+    return c:IsSetCard(0x10b4) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c119918512.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c119918512.thfilter,tp,LOCATION_DECK,0,1,nil) end

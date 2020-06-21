@@ -21,6 +21,8 @@ rsreset={}   --"Reset Function"
 rshint={}   --"Hint Function"
 rsloc={}	--"Location Function"
 
+rsdv="Divide_Variable"
+
 --Info Variable
 rsval.valinfo   ={} --"Value for inside series, inside type etc."
 rscost.costinfo ={} --"Cost information, for record cost value" 
@@ -125,6 +127,7 @@ rscf.exlist_rp  =   { TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK,TYPE_PENDULUM,
 
 --Location Variable
 rsloc.hd=LOCATION_HAND+LOCATION_DECK 
+rsloc.ho=LOCATION_HAND+LOCATION_ONFIELD
 rsloc.hg=LOCATION_HAND+LOCATION_GRAVE  
 rsloc.dg=LOCATION_DECK+LOCATION_GRAVE 
 rsloc.gr=LOCATION_GRAVE+LOCATION_REMOVED 

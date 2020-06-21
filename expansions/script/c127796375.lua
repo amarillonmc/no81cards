@@ -45,7 +45,7 @@ function c127796375.thcon(e,tp,eg,ep,ev,re,r,rp)
     return bit.band(r,REASON_EFFECT)~=0
 end
 function c127796375.thfilter(c)
-    return c:IsSetCard(0xb4) and c:IsType(TYPE_RITUAL) and c:IsRace(RACE_SPELLCASTER) and c:IsAbleToHand()
+    return c:IsSetCard(0x10b4) and c:IsType(TYPE_RITUAL) and c:IsRace(RACE_SPELLCASTER) and c:IsAbleToHand()
 end
 function c127796375.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c127796375.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -60,7 +60,7 @@ function c127796375.thop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function c127796375.tgfilter(c)
-    return c:IsSetCard(0xb4) and not c:IsCode(127796375) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+    return c:IsSetCard(0x10b4) and not c:IsCode(127796375) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c127796375.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c127796375.tgfilter,tp,LOCATION_DECK,0,1,nil) end

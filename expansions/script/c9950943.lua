@@ -39,7 +39,7 @@ function c9950943.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950943,0))
 end
 function c9950943.filter(c,e,tp,chk)
-	return c:IsSetCard(0xba5) and c:IsType(TYPE_RITUAL) and (not chk or c~=e:GetHandler())
+	return c:IsLevelBelow(8) and c:IsSetCard(0xba5) and c:IsType(TYPE_RITUAL) and (not chk or c~=e:GetHandler())
 end
 function c9950943.matfilter(c,e,tp,chk)
 	return not chk or c~=e:GetHandler()

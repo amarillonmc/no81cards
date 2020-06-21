@@ -17,10 +17,8 @@ function c9950621.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 function c9950621.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(2)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) and Duel.IsPlayerCanDraw(1-tp,2) end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,PLAYER_ALL,2)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		Duel.SetChainLimit(c9950621.chlimit)
 	end
@@ -29,7 +27,7 @@ function c9950621.chlimit(e,ep,tp)
 	return tp==ep
 end
 function c9950621.activate(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+	local d1=Duel.Draw(tp,2,REASON_EFFECT)
+	local d2=Duel.Draw(1-tp,2,REASON_EFFECT)
 end
 

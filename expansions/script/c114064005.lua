@@ -4,7 +4,8 @@ function c114064005.initial_effect(c)
     e1:SetRange(LOCATION_HAND+LOCATION_DECK)
     e1:SetCode(EFFECT_SEND_REPLACE)
     e1:SetTarget(c114064005.reptg)
-    e1:SetValue(aux.TRUE)
+    e1:SetValue(c114064005.value)
+    e1:SetOperation(c114064005.repop)
     c:RegisterEffect(e1)
     local e2=Effect.CreateEffect(c)
     e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -44,17 +45,26 @@ function c114064005.initial_effect(c)
     c:RegisterEffect(e6)
 end
 function c114064005.repfilter(c,tp)
-    return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE+LOCATION_HAND) and c:IsSetCard(0xa4) and Duel.GetFlagEffect(tp,114064005)==0
+    return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE+LOCATION_HAND) and c:GetDestination()==LOCATION_GRAVE and c:IsSetCard(0xa4) and not c:IsCode(114064005) and Duel.GetFlagEffect(tp,114064005)==0
 end
 function c114064005.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
     if chk==0 then return eg:IsExists(c114064005.repfilter,1,nil,tp) and c:IsAbleToGrave() end
     if Duel.SelectYesNo(tp,aux.Stringid(114064005,0)) then
-        Duel.RegisterFlagEffect(tp,114064005,RESET_PHASE+PHASE_END,0,1)
-        Duel.SendtoGrave(c,REASON_REPLACE)
+        local sg=eg:Filter(c114064005.repfilter,nil,tp):Filter(Card.IsLocation,nil,LOCATION_HAND)
+        if sg and sg:GetCount()>0 then
+            Duel.ConfirmCards(1-tp,sg)
+        end
         return true
     end
     return false
+end
+function c114064005.value(e,c)
+    return c114064005.repfilter(c,e:GetHandlerPlayer())
+end
+function c114064005.repop(e,tp,eg,ep,ev,re,r,rp)
+    Duel.RegisterFlagEffect(tp,114064005,RESET_PHASE+PHASE_END,0,1)
+    Duel.SendtoGrave(e:GetHandler(),REASON_REPLACE+REASON_EFFECT)
 end
 function c114064005.actfilter(c)
     return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsCode(80831721,15471265,20065322,25573054,40703222,85787173,89086566)

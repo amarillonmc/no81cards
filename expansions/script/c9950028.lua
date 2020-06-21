@@ -11,27 +11,21 @@ function c9950028.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetValue(c9950028.efilter)
 	c:RegisterEffect(e4)
-	--negate
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(9950028,0))
-	e4:SetCategory(CATEGORY_DISABLE)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(c9950028.discon)
-	e4:SetTarget(c9950028.distg)
-	e4:SetOperation(c9950028.disop)
-	c:RegisterEffect(e4)
-	--change battle target
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9950028,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_BE_BATTLE_TARGET)
-	e2:SetTarget(c9950028.sptg2)
-	e2:SetOperation(c9950028.spop2)
-	c:RegisterEffect(e2)
+ --reflect battle dam
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_REFLECT_BATTLE_DAMAGE)
+	e1:SetValue(1)
+	c:RegisterEffect(e1)
+  --control
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(9950028,0))
+	e6:SetCategory(CATEGORY_CONTROL)
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e6:SetCode(EVENT_DAMAGE_STEP_END)
+	e6:SetTarget(c9950028.cttg)
+	e6:SetOperation(c9950028.ctop)
+	c:RegisterEffect(e6)
 	--destroy and summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9950028,2))
@@ -71,47 +65,15 @@ function c9950028.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950028,3))
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950028,5))
 end
-function c9950028.discon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return end
-	local loc,tg=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TARGET_CARDS)
-	if not tg or not tg:IsContains(c) then return false end
-	return Duel.IsChainDisablable(ev) and loc~=LOCATION_DECK
+function c9950028.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tc=e:GetHandler():GetBattleTarget()
+	if chk==0 then return tc and tc:IsRelateToBattle() and tc:IsControlerCanBeChanged() end
+	Duel.SetOperationInfo(0,CATEGORY_CONTROL,tc,1,0,0)
 end
-function c9950028.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-end
-function c9950028.disop(e,tp,eg,ep,ev,re,r,rp,chk)
-	Duel.NegateEffect(ev)
-end
-function c9950028.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and not c:IsCode(9950028) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c9950028.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9950028.spfilter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c9950028.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c9950028.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-end
-function c9950028.spop2(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local a=Duel.GetAttacker()
-		local ag=a:GetAttackableTarget()
-		if a:IsAttackable() and not a:IsImmuneToEffect(e) and ag:IsContains(tc) then
-			Duel.BreakEffect()
-			Duel.ChangeAttackTarget(tc)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(math.ceil(a:GetAttack()/2))
-			a:RegisterEffect(e1)
-		end
+function c9950028.ctop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetHandler():GetBattleTarget()
+	if tc:IsRelateToBattle() then
+		Duel.GetControl(tc,tp,PHASE_BATTLE,1)
 	end
 end
 function c9950028.spcon(e,tp,eg,ep,ev,re,r,rp)

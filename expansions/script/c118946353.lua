@@ -69,7 +69,7 @@ function c118946353.cost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c118946353.filter(c)
-    return c:IsSetCard(0xb4) and not c:IsCode(118946353) and c:IsAbleToHand()
+    return c:IsSetCard(0x10b4) and not c:IsCode(118946353) and c:IsAbleToHand()
 end
 function c118946353.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c118946353.filter(chkc) end

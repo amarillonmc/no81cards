@@ -14,8 +14,9 @@ function c9950031.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1)
 	e1:SetCondition(c9950031.condition)
@@ -95,29 +96,31 @@ function c9950031.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950031.cfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,c9950031.cfilter,1,1,REASON_COST+REASON_DISCARD,nil)
 end
-function c9950031.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-	end
+function c9950031.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc~=e:GetHandler() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
 end
 function c9950031.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT)
-	end
+	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) or tc:IsFacedown() then return end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(0,1)
+	e1:SetTargetRange(1,1)
 	e1:SetValue(c9950031.aclimit)
-	e1:SetLabel(re:GetHandler():GetCode())
+	e1:SetLabel(tc:GetCode())
 	Duel.RegisterEffect(e1,tp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950031,1))
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetLabel(tc:GetFieldID())
+	Duel.RegisterEffect(e2,tp)
+	e1:SetLabelObject(e2)
 end
 function c9950031.aclimit(e,re,tp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(e:GetLabel())
+	local rc=re:GetHandler()
+	return rc:IsCode(e:GetLabel()) and (not rc:IsOnField() or rc:GetFieldID()~=e:GetLabelObject():GetLabel())
 end
 function c9950031.atkfilter(c)
 	return c:IsSetCard(0xba1) and c:IsType(TYPE_MONSTER)

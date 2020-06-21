@@ -32,7 +32,7 @@ function c119030777.initial_effect(c)
 end
 function c119030777.rlevel(e,c)
     local lv=e:GetHandler():GetLevel()
-    if c:IsSetCard(0xb4) then
+    if c:IsSetCard(0x10b4) then
         local clv=c:GetLevel()
         return lv*65536+clv
     else return lv end
@@ -41,7 +41,7 @@ function c119030777.thcon(e,tp,eg,ep,ev,re,r,rp)
     return bit.band(r,REASON_EFFECT)~=0
 end
 function c119030777.filter(c)
-    return c:IsSetCard(0xb4) and c:IsType(TYPE_RITUAL) and c:IsRace(RACE_WARRIOR) and c:IsAbleToHand()
+    return c:IsSetCard(0x10b4) and c:IsType(TYPE_RITUAL) and c:IsRace(RACE_WARRIOR) and c:IsAbleToHand()
 end
 function c119030777.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c119030777.filter,tp,LOCATION_DECK,0,1,nil) end

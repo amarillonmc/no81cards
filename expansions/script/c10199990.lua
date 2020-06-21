@@ -2496,21 +2496,6 @@ function rsop.negsumop(waystring)
 	end
 end
 --Operation: Select Card
-function rsop.SelectCheck_Filter(filter,...)
-	local filterpar={...}
-	local filterpar2={}
-	if type(filter)=="table" then
-		for index,par in pairs(filter) do
-			if index>=2 then
-				--table.insert(filterpar2,par)
-				filterpar2[index-1]=par
-			end
-		end
-		filter=filter[1]
-		filterpar=rsof.Table_Mix(filterpar2,filterpar)
-	end
-	return filter or aux.TRUE,filterpar
-end
 function rsop.SelectCheck_Solve(solvefun)
 	local solveparlist={}
 	local len=0
@@ -2530,14 +2515,13 @@ end
 function rsop.SelectSolve(selecthint,sp,filter,tp,loc1,loc2,minct,maxct,exceptg,solvefun,...)
 	minct=minct or 1 
 	maxct=maxct or minct
-	local filter2,filterpar=rsop.SelectCheck_Filter(filter,...)
 	local solvefun2,solvefunpar,len=rsop.SelectCheck_Solve(solvefun)
 	if rsof.Check_Boolean(minct) then
-		local g=Duel.GetMatchingGroup(sp,filter2,tp,loc1,loc2,exceptg,...)
-		return rsgf.SelectSolve(g,selecthint,sp,filter2,minct,maxct,exceptg,solvefun,table.unpack(filterpar))
+		local g=Duel.GetMatchingGroup(sp,filter,tp,loc1,loc2,exceptg,...)
+		return rsgf.SelectSolve(g,selecthint,sp,filter,minct,maxct,exceptg,solvefun,...)
 	else
 		rshint.Select(sp,selecthint)
-		local g=Duel.SelectMatchingCard(sp,filter2,tp,loc1,loc2,minct,maxct,exceptg,table.unpack(filterpar))
+		local g=Duel.SelectMatchingCard(sp,filter,tp,loc1,loc2,minct,maxct,exceptg,...)
 		if g:IsExists(Card.IsLocation,1,nil,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED) and not rsop.nohint then
 			Duel.HintSelection(g)
 		end
@@ -2554,9 +2538,10 @@ function rsop.SelectSolve(selecthint,sp,filter,tp,loc1,loc2,minct,maxct,exceptg,
 				solveparlist[len2]=nil
 			end
 		end
-		for index,solvepar in pairs({...}) do 
+		local solveparlen=select("#",...)
+		for index=1,solveparlen do
 			len2=len2+1
-			solveparlist[len2]=solvepar
+			solveparlist[len2]=({...})[index]
 		end
 		local res=not solvefun and {g,g:GetFirst()} or {solvefun2(g,table.unpack(solveparlist))}
 		rsop.solveprlen=nil
@@ -2609,8 +2594,12 @@ end
 function rsop.SelectSpecialSummon(sp,filter,tp,loc1,loc2,minct,maxct,exceptg,solvepar,...)
 	solvepar=type(solvepar)=="table" and solvepar or {solvepar} 
 	local e=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
-	local ex_par=not ... and {e,sp} or {...}
-	return rsop.SelectSolve("sp",sp,filter,tp,loc1,loc2,minct,maxct,exceptg,rsop.SelectSpecialSummon_Operation(solvepar),table.unpack(ex_par) )
+	local parlen=select("#",...)
+	if parlen==0 then
+		return rsop.SelectSolve("sp",sp,filter,tp,loc1,loc2,minct,maxct,exceptg,rsop.SelectSpecialSummon_Operation(solvepar),e,sp)
+	else
+		return rsop.SelectSolve("sp",sp,filter,tp,loc1,loc2,minct,maxct,exceptg,rsop.SelectSpecialSummon_Operation(solvepar),...)
+	end
 end
 function rsop.SelectSpecialSummon_Operation(sumfunvarlist)
 	return function(tg)
@@ -3104,14 +3093,13 @@ end
 function rsgf.SelectSolve(g,selecthint,sp,filter,minct,maxct,exceptg,solvefun,...)
 	minct=minct or 1 
 	maxct=maxct or minct
-	local filter2,filterpar=rsop.SelectCheck_Filter(filter,...)
 	local solvefun2,solvefunpar,len=rsop.SelectCheck_Solve(solvefun)
 	local tg=Group.CreateGroup()
 	if rsof.Check_Boolean(minct) then
 		tg=g   
 	else
 		rshint.Select(sp,selecthint)
-		tg=g:FilterSelect(sp,filter2,minct,maxct,exceptg,table.unpack(filterpar))
+		tg=g:FilterSelect(sp,filter,minct,maxct,exceptg,...)
 		if tg:IsExists(Card.IsLocation,1,nil,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED) and not rsop.nohint then
 			Duel.HintSelection(tg)
 		end
@@ -3129,9 +3117,10 @@ function rsgf.SelectSolve(g,selecthint,sp,filter,minct,maxct,exceptg,solvefun,..
 			solveparlist[len2]=nil
 		end
 	end
-	for index,solvepar in pairs({...}) do 
+	local solveparlen=select("#",...)
+	for index=1,solveparlen do
 		len2=len2+1
-		solveparlist[len2]=solvepar
+		solveparlist[len2]=({...})[index]
 	end
 	local res=not solvefun and {tg,tg:GetFirst()} or {solvefun2(tg,table.unpack(solveparlist))}   
 	rsop.solveprlen=nil
@@ -3186,8 +3175,12 @@ function rsgf.SelectSpecialSummon(g,sp,filter,minct,maxct,exceptg,solvepar,...)
 	--solvepar=rsop.GetFollowingSolvepar(solvepar,8)
 	solvepar = type(solvepar)=="table" and solvepar or {solvepar}
 	local e=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
-	local ex_par=not ... and {e,sp} or {...}
-	return rsgf.SelectSolve(g,"sp",sp,filter,minct,maxct,exceptg,rsop.SelectSpecialSummon_Operation(solvepar),table.unpack(ex_par))
+	local parlen=select("#",...)
+	if parlen==0 then
+		return rsgf.SelectSolve(g,"sp",sp,filter,minct,maxct,exceptg,rsop.SelectSpecialSummon_Operation(solvepar),e,sp)
+	else
+		return rsgf.SelectSolve(g,"sp",sp,filter,minct,maxct,exceptg,rsop.SelectSpecialSummon_Operation(solvepar),...)
+	end
 end
 Group.SelectSpecialSummon=rsgf.SelectSpecialSummon
 
@@ -4526,13 +4519,16 @@ function rsof.Table_Clone(table)
 	return t2
 end
 --other function: Mix Table
+--error at "nil" value !!!!!!!!!
+--error at no number key !!!!!!!!!
 function rsof.Table_Mix(table1,...)
 	local resultlist={}
 	local list={table1,...}
 	local len=0
 	for _,tab in pairs(list) do
-		for _,value in pairs(tab) do
+		for _,value in pairs(tab) do 
 			--table.insert(resultlist,value)
+			
 			len=len+1
 			resultlist[len]=value
 		end

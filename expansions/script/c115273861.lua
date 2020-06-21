@@ -41,7 +41,7 @@ function c115273861.initial_effect(c)
 end
 function c115273861.chainop(e,tp,eg,ep,ev,re,r,rp)
     local rc=re:GetHandler()
-    if re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc:IsSetCard(0xb4) and re:IsActiveType(TYPE_RITUAL) then
+    if re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc:IsSetCard(0x10b4) and re:IsActiveType(TYPE_RITUAL) then
         Duel.SetChainLimit(c115273861.chainlm)
     end
 end
@@ -55,7 +55,7 @@ function c115273861.thcon(e,tp,eg,ep,ev,re,r,rp)
     return bit.band(r,REASON_EFFECT)~=0
 end
 function c115273861.thfilter(c)
-    return c:IsFaceup() and c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and not c:IsCode(115273861) and c:IsAbleToHand()
+    return c:IsFaceup() and c:IsSetCard(0x10b4) and c:IsType(TYPE_MONSTER) and not c:IsCode(115273861) and c:IsAbleToHand()
 end
 function c115273861.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c115273861.thfilter(chkc) end

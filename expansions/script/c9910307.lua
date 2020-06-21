@@ -61,6 +61,7 @@ function c9910307.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c9910307.spop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local ct=Duel.GetMatchingGroupCount(c9910307.filter,tp,LOCATION_MZONE,0,nil)
 	if ft>ct then ft=ct end

@@ -56,12 +56,11 @@ function c114890515.defval(e,c)
 end
 function c114890515.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
-    if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) and c:GetFlagEffect(114890515)==0 end
+    if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) end
     c:RemoveOverlayCard(tp,1,1,REASON_COST)
-    c:RegisterFlagEffect(114890515,RESET_CHAIN,0,1)
 end
 function c114890515.filter(c,e,tp,tc)
-    return c:GetRank()==4 and e:GetHandler():IsCanBeXyzMaterial(c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,c,tc)>0
+    return c:IsRank(4) and e:GetHandler():IsCanBeXyzMaterial(c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,tc,c)>0
 end
 function c114890515.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c114890515.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp,e:GetHandler()) end
@@ -69,21 +68,19 @@ function c114890515.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c114890515.spop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    if Duel.GetLocationCountFromEx(tp,tp,c)<=0 then return end
     if c:IsFacedown() or not c:IsRelateToEffect(e) or c:IsControler(1-tp) or c:IsImmuneToEffect(e) then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
     local g=Duel.SelectMatchingCard(tp,c114890515.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,c)
+    if not g or g:GetCount()==0 then return end
     local sc=g:GetFirst()
-    if sc then
-        local mg=c:GetOverlayGroup()
-        if mg:GetCount()~=0 then
-            Duel.Overlay(sc,mg)
-        end
-        sc:SetMaterial(Group.FromCards(c))
-        Duel.Overlay(sc,Group.FromCards(c))
-        Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
-        sc:CompleteProcedure()
+    local mg=c:GetOverlayGroup()
+    if mg:GetCount()~=0 then
+        Duel.Overlay(sc,mg)
     end
+    sc:SetMaterial(Group.FromCards(c))
+    Duel.Overlay(sc,c)
+    Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+    sc:CompleteProcedure()
 end
 function c114890515.mtfilter(c)
     return c:IsSetCard(0xf1)

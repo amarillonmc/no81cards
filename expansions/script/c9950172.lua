@@ -88,7 +88,7 @@ function c9950172.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RegisterFlagEffect(9950172,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function c9950172.filter1(c)
-	return c:GetType()==TYPE_TRAP+TYPE_SPELL and c:IsSetCard(0xba5) and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSetCard(0xba5) and c:IsAbleToGraveAsCost()
 		and c:CheckActivateEffect(false,true,false)~=nil
 end
 function c9950172.target(e,tp,eg,ep,ev,re,r,rp,chk)

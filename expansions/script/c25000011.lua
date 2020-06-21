@@ -9,8 +9,13 @@ end
 function rsgs.isfusf(c)
 	return c:IsSetCard(0xaf2) and c:IsType(TYPE_FUSION) and c:IsFaceup()
 end
+function rsgs.ToDeckCost(c)
+	return function(...)
+		return rscost.cost(cm.ctypecfilter,"td",rsloc.hg,0,1,1,c)(...)
+	end
+end
 function rsgs.FusTypeFun(c,code,ctype)
-	local e1=rsef.I(c,{code,0},{1,code+100},nil,"tg",LOCATION_MZONE,nil,rscost.cost(cm.ctypecfilter,"td",rsloc.hg),rstg.target(cm.ctypefilter,nil,LOCATION_MZONE,LOCATION_MZONE),cm.ctypeop)   
+	local e1=rsef.I(c,{code,0},{1,code+100},nil,"tg",LOCATION_MZONE,nil,nil,rstg.target(cm.ctypefilter,nil,LOCATION_MZONE,LOCATION_MZONE),cm.ctypeop)   
 	e1:SetLabel(ctype)
 	e1:SetValue(code)
 	return e1

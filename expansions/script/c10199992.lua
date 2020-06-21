@@ -14,6 +14,7 @@ local rssp  =   Stellar_Pearl
 local rsed  =   Epic_Dragon
 local rsdh  =   Devil_Hunter
 local rsds  =   Dark_Souls
+local rsca  =   Corona
 
 #Scl - Special Mode
 local rssm  =   Special_Mode
@@ -123,7 +124,7 @@ local Stellar_Pearl  =   0xa333
 local Utoland   =   0xc333
 
 --local  =   0x1334
-local   =   0x3334
+local	  =   0x3334
 local Summerlover   =   0x5334
 local Quasi_Beast   =   0x6334
 local Bite_Teech	 =   0x9334

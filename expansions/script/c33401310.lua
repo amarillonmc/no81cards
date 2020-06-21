@@ -47,8 +47,7 @@ function c33401310.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsLocation(LOCATION_GRAVE) and rc:IsSetCard(0x341) or rc:IsSetCard(0xa342) and r&REASON_FUSION+REASON_LINK~=0
 end
 function c33401310.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
- if chk==0 then return Duel.IsExistingTarget(c33401310.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
+ if chk==0 then return Duel.IsExistingMatchingCard(c33401310.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_GRAVE)
 end
 function c33401310.thfilter(c)

@@ -66,7 +66,7 @@ function c9910080.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if tg:GetCount()>0 and Duel.SendtoDeck(tg,nil,0,REASON_EFFECT)~=0 and g:GetCount()>0 then
+	if tg:GetCount()>0 and Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)~=0 and g:GetCount()>0 then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910080,1))
 		local sg=g:Select(tp,1,1,nil)

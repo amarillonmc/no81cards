@@ -70,7 +70,7 @@ function c9950505.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function c9950505.filter(c)
-	return c:IsLevel(3) and c:IsSetCard(0xba5) and c:IsAbleToHand()
+	return c:IsLevelBelow(3) and c:IsSetCard(0xba5) and c:IsAbleToHand()
 end
 function c9950505.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950505.filter,tp,LOCATION_DECK,0,1,nil) end

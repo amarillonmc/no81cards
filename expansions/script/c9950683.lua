@@ -46,7 +46,7 @@ Duel.Hint(HINT_SOUND,0,aux.Stringid(9950683,2))
 end
 function c9950683.chainfilter(re,tp,cid)
 	return not re:IsActiveType(TYPE_MONSTER)
-		and Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)==LOCATION_HAND)
+		and Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)==LOCATION_HAND 
 end
 function c9950683.spfilter(c,tp)
 	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsLevelBelow(8) and c:IsSetCard(0xba5)

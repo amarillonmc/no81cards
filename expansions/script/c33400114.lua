@@ -17,8 +17,8 @@ function c33400114.tfilter(c,e,tp)
 	return c:IsCode(33400011) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c33400114.filter(c,e,tp)
-	return  c:IsSetCard(0x3341) 
-		and Duel.IsExistingMatchingCard(c33400114.tfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)		
+	return  c:IsSetCard(0x3341) and c:IsAbleToGraveAsCost()
+		and Duel.IsExistingMatchingCard(c33400114.tfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)	  
 end
 function c33400114.chkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3341) 
@@ -34,7 +34,6 @@ function c33400114.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c33400114.activate(e,tp,eg,ep,ev,re,r,rp)  
-	if Duel.GetLocationCountFromEx(tp)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=Duel.SelectMatchingCard(tp,c33400114.tfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	if sg:GetCount()>0 then

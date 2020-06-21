@@ -1,5 +1,18 @@
 --fate·凯撒
 function c9950686.initial_effect(c)
+--spsummon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9950686,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetCountLimit(1,9950686)
+	e1:SetCondition(c9950686.spcon)
+	e1:SetTarget(c9950686.sptg)
+	e1:SetOperation(c9950686.spop)
+	c:RegisterEffect(e1)
 	--deckdes
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9950686,0))
@@ -40,6 +53,23 @@ function c9950686.initial_effect(c)
 end
 function c9950686.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950686,0))
+end
+function c9950686.cfilter2(c)
+	return c:GetSummonLocation()==LOCATION_EXTRA
+end
+function c9950686.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c9950686.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+end
+function c9950686.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c9950686.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 function c9950686.cfilter(c)
 	return c:IsSetCard(0xcba8) and c:IsAbleToRemoveAsCost()

@@ -23,7 +23,7 @@ function cm.disfun(g,c,tp)
 	local e1,e2=rscf.QuickBuff({c,tc},"dis,dise",true)
 	Duel.AdjustInstantly(tc)
 	if tc:IsDisabled() and not tc:IsImmuneToEffect(e1) then
-		local ct=Duel.Damage(1-tp,1500,REASON_EFFECT)
+		local ct=Duel.Damage(1-tp,2000,REASON_EFFECT)
 		return tc,ct
 	else return 
 	end

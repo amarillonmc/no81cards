@@ -45,12 +45,12 @@ function c9910452.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleDeck(tp)
 end
 function c9910452.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
 	local ct=Duel.DiscardHand(tp,Card.IsDiscardable,1,60,REASON_COST+REASON_DISCARD)
 	e:SetLabel(ct)
 end
 function c9910452.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then 
+	if chk==0 then
 		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<10 then return false end
 		local g=Duel.GetDecktopGroup(tp,10)
 		local result=g:FilterCount(Card.IsAbleToHand,nil)>0

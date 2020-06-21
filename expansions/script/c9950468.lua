@@ -18,7 +18,6 @@ function c9950468.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetCountLimit(1,9950468)
-	e2:SetCondition(c9950468.thcon)
 	e2:SetTarget(c9950468.thtg)
 	e2:SetOperation(c9950468.thop)
 	c:RegisterEffect(e2)
@@ -56,9 +55,6 @@ function c9950468.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9950468.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
-end
-function c9950468.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c9950468.thfilter(c)
 	return c:IsSetCard(0x35) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

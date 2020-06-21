@@ -74,7 +74,7 @@ function c115284688.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c115284688.spfilter(c,e,tp)
-    return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+    return c:IsSetCard(0x10b4) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function c115284688.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c115284688.spfilter(chkc,e,tp) end
@@ -95,7 +95,7 @@ function c115284688.condition(e,tp,eg,ep,ev,re,r,rp)
     local bc=Duel.GetAttackTarget()
     if not bc then return false end
     if tc:IsControler(1-tp) then tc,bc=bc,tc end
-    if tc:IsSetCard(0xb4) and bc:GetSummonLocation()==LOCATION_EXTRA then
+    if tc:IsSetCard(0x10b4) and bc:GetSummonLocation()==LOCATION_EXTRA then
         e:SetLabelObject(bc)
         return true
     else return false end

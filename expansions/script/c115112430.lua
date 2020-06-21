@@ -131,7 +131,7 @@ function c115112430.thcon(e,tp,eg,ep,ev,re,r,rp)
     return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function c115112430.cfilter(c)
-    return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+    return c:IsSetCard(0x10b4) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c115112430.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
@@ -142,7 +142,7 @@ function c115112430.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c115112430.thfilter(c)
-    return c:IsSetCard(0xb4) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+    return c:IsSetCard(0x10b4) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function c115112430.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c115112430.thfilter,tp,LOCATION_DECK,0,1,nil) end

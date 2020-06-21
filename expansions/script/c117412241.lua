@@ -76,7 +76,7 @@ function c117412241.indcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c117412241.filter(c)
-    return c:IsFaceup() and c:IsSetCard(0xb4)
+    return c:IsFaceup() and c:IsSetCard(0x10b4)
 end
 function c117412241.indtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c117412241.filter(chkc) end
@@ -99,7 +99,7 @@ function c117412241.indop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function c117412241.cfilter(c)
-    return c:IsSetCard(0xb4) and c:IsDiscardable()
+    return c:IsSetCard(0x10b4) and c:IsDiscardable()
 end
 function c117412241.descost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c117412241.cfilter,tp,LOCATION_HAND,0,1,nil) end

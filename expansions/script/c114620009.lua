@@ -49,7 +49,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_HAND,0,1,nil)
     if g:GetCount()>0 then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-        local sg=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,1,1,nil)
+        local sg=g:Select(tp,1,1,nil)
         if Duel.Destroy(sg,REASON_EFFECT)>0 then Duel.Draw(tp,2,REASON_EFFECT) end
     end
 end

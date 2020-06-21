@@ -27,6 +27,9 @@ c65010516.setname="URBEX"
 function c65010516.lcfil(c)
 	return c.setname=="URBEX"
 end
+function c65010516.lcheck(g)
+	return g:IsExists(c65010516.lcfil,1,nil)
+end
 function c65010516.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_EXTRA,0,2,nil) end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)

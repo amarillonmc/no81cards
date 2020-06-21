@@ -79,16 +79,13 @@ function c117837139.initial_effect(c)
     e14:SetCondition(c117837139.condition)
     e14:SetOperation(c117837139.operation)
     c:RegisterEffect(e14)
-    --local e15=e14:Clone()
-    --e15:SetCode(EVENT_PHASE+PHASE_BATTLE)
-    --c:RegisterEffect(e15)
 end
 function c117837139.sumfilter(c,e,tp)
     return c:IsCode(78371393,4779091,31764700,117837139) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP_ATTACK,tp)
 end
 function c117837139.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
-    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCountFromEx(1-tp,tp,nil,c)>0 and Duel.IsExistingMatchingCard(c117837139.sumfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,1-tp,true,false) end
+    if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCountFromEx(1-tp,tp,nil,c)>0 and Duel.IsExistingMatchingCard(c117837139.sumfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,1-tp,true,false) end
 end
 function c117837139.sumop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()

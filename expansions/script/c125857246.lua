@@ -71,7 +71,7 @@ function c125857246.atkcon(e,tp,eg,ep,ev,re,r,rp)
     return Duel.GetAttacker():IsControler(1-tp)
 end
 function c125857246.cfilter(c)
-    return c:IsSetCard(0xb4) and c:IsAbleToRemoveAsCost()
+    return c:IsSetCard(0x10b4) and c:IsAbleToRemoveAsCost()
 end
 function c125857246.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():IsDiscardable()

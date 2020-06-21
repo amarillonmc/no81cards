@@ -74,7 +74,7 @@ function c121105106.discon(e,tp,eg,ep,ev,re,r,rp)
     return Duel.GetCurrentPhase()==PHASE_MAIN1
 end
 function c121105106.cfilter(c)
-    return c:IsSetCard(0xb4) and c:IsDiscardable()
+    return c:IsSetCard(0x10b4) and c:IsDiscardable()
 end
 function c121105106.discost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():IsDiscardable()

@@ -1,14 +1,22 @@
 --愚人节·伊莉雅
 function c9951300.initial_effect(c)
-	 --summon success
+   --tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9951300,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetTarget(c9951300.sumtg)
-	e1:SetOperation(c9951300.sumop)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,99513001)
+	e1:SetTarget(c9951300.target)
+	e1:SetOperation(c9951300.operation)
 	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+	c:RegisterEffect(e2)
+	local e3=e1:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e3)
    local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SUMMON)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
@@ -45,14 +53,14 @@ function c9951300.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951300,0))
 end
 function c9951300.filter(c,e,tp)
-	return c:IsLevelBelow(4) and c:IsSetCard(0xba5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelBelow(5) and c:IsSetCard(0xaba8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c9951300.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9951300.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9951300.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
-function c9951300.sumop(e,tp,eg,ep,ev,re,r,rp)
+function c9951300.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9951300.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)

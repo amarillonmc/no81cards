@@ -89,7 +89,7 @@ function c118426889.operation2(e,tp,eg,ep,ev,re,r,rp)
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
         tg:Merge(Duel.SelectMatchingCard(tp,c118426889.filter4,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,tc,tp,tc,c))
         if tg and Duel.SendtoGrave(tg,REASON_EFFECT)==2 then
-        Duel.SpecialSummon(c,SUMMON_TYPE_LINK,tp,tp,true,true,POS_FACEUP)
+            Duel.SpecialSummon(c,SUMMON_TYPE_LINK,tp,tp,true,true,POS_FACEUP)
         end
     end
 end

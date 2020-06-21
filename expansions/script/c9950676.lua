@@ -44,6 +44,13 @@ function c9950676.initial_effect(c)
 	e6:SetTarget(c9950676.thtg)
 	e6:SetOperation(c9950676.thop)
 	c:RegisterEffect(e6)
+  --Equip limit
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_EQUIP_LIMIT)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)
 end
 function c9950676.effcon(e,c)
 	return c:IsSetCard(0x9db1)

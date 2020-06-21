@@ -13,18 +13,14 @@ function c9980177.initial_effect(c)
 	e5:SetTarget(c9980177.thtg)
 	e5:SetOperation(c9980177.thop)
 	c:RegisterEffect(e5)
-	--search
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9980177,3))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,99801771)
-	e2:SetCondition(c9980177.thcon2)
-	e2:SetTarget(c9980177.thtg2)
-	e2:SetOperation(c9980177.thop2)
-	c:RegisterEffect(e2)
+	--cannot spsummon
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9980177,1))
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	e3:SetCondition(c9980177.dcon)
+	e3:SetOperation(c9980177.dop)
+	c:RegisterEffect(e3)
 	--tribute summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9980177,2))
@@ -93,35 +89,21 @@ function c9980177.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c9980177.thcon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE) 
+function c9980177.dcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()~=tp
 end
-function c9980177.thfilter2(c,tp)
-	return c:IsSetCard(0x5bc4) and c:IsType(TYPE_SPELL+TYPE_TRAP)
-		and (c:IsAbleToHand() or c:GetActivateEffect():IsActivatable(tp))
+function c9980177.dop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(0,1)
+	e1:SetTarget(c9980177.sumlimit)
+	Duel.RegisterEffect(e1,tp)
 end
-function c9980177.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9980177.thfilter2,tp,LOCATION_DECK,0,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c9980177.thop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9980177,4))
-	local g=Duel.SelectMatchingCard(tp,c9980177.thfilter2,tp,LOCATION_DECK,0,1,1,nil,tp)
-	local tc=g:GetFirst()
-	if tc then
-		local b1=tc:IsAbleToHand()
-		local b2=tc:GetActivateEffect():IsActivatable(tp)
-		if b1 and (not b2 or Duel.SelectOption(tp,1190,1150)==0) then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
-		else
-			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-			local te=tc:GetActivateEffect()
-			local tep=tc:GetControler()
-			local cost=te:GetCost()
-			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-		end
-	end
+function c9980177.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return c:IsLocation(LOCATION_EXTRA)
 end
 function c9980177.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,9980177)==0 end
@@ -148,7 +130,7 @@ function c9980177.sumop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9980177.descon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE)
 end
 function c9980177.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) end

@@ -72,7 +72,7 @@ function c115206843.mat_filter(c)
     return c:GetLevel()~=9
 end
 function c115206843.tfilter(c,tp)
-    return c:IsFaceup() and c:IsSetCard(0xb4) and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
+    return c:IsFaceup() and c:IsSetCard(0x10b4) and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
 end
 function c115206843.negcon(e,tp,eg,ep,ev,re,r,rp)
     if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end

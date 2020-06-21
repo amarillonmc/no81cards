@@ -60,7 +60,7 @@ function c4058.initial_effect(c)
     e7:SetRange(LOCATION_ONFIELD)
     e7:SetCode(EFFECT_SEND_REPLACE)
     e7:SetTarget(c4058.reptg)
-    e7:SetValue(aux.TRUE)
+    e7:SetValue(c4058.repval)
     c:RegisterEffect(e7)
     --triple tribute
     local e8=Effect.CreateEffect(c)
@@ -315,11 +315,14 @@ end
 function c4058.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
     if chk==0 then return eg:IsExists(c4058.repfilter,1,nil,tp) and c:IsAbleToGrave() end
-    if Duel.SelectYesNo(tp,aux.Stringid(4058,0)) then
+    if Duel.SelectEffectYesNo(tp,c,96) then
         Duel.SendtoGrave(c,REASON_REPLACE)
         return true
     end
     return false
+end
+function c4058.repval(e,c)
+    return c4058.repfilter(c,e:GetHandlerPlayer())
 end
 function c4058.damcon(e,tp,eg,ep,ev,re,r,rp)
     return not Duel.IsExistingMatchingCard(c4058.filter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)

@@ -60,7 +60,7 @@ function c9950751.filter(c,e,tp)
 		and Duel.IsExistingMatchingCard(c9950751.exfilter,tp,LOCATION_EXTRA,0,1,nil,lv+1,e,tp)
 end
 function c9950751.exfilter(c,lv,e,tp)
-	return c:IsSetCard(0xcba8) and c:IsLevel(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xcba8) and c:IsLevel(lv) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c9950751.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -80,27 +80,6 @@ function c9950751.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=Duel.SelectMatchingCard(tp,c9950751.exfilter,tp,LOCATION_EXTRA,0,1,1,nil,tc:GetLevel()+1,e,tp)
 		local sc=sg:GetFirst()
-		if sc and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)>0 then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetRange(LOCATION_MZONE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetCondition(c9950751.damcon)
-			e1:SetValue(1)
-			e1:SetOwnerPlayer(tp)
-			sc:RegisterEffect(e1)
-			local e2=e1:Clone()
-			e2:SetCode(EFFECT_NO_BATTLE_DAMAGE)
-			e2:SetCondition(c9950751.damcon2)
-			sc:RegisterEffect(e2)
-		end
+		Duel.SpecialSummon(sg,0,tp,tp,true,false,POS_FACEUP)
 	end
-end
-function c9950751.damcon(e)
-	return e:GetHandlerPlayer()==e:GetOwnerPlayer()
-end
-function c9950751.damcon2(e)
-	return 1-e:GetHandlerPlayer()==e:GetOwnerPlayer()
 end

@@ -43,7 +43,7 @@ function c9950467.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950467,0))
 end
 function c9950467.thfilter(c)
-	return c:IsSetCard(0x10cf,0xbd) or c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x10cf,0xbd) and c:IsType(TYPE_MONSTER)
 		and c:IsAbleToHand()
 end
 function c9950467.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -61,7 +61,7 @@ end
 function c9950467.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,nil,1,nil) end
 	local sg=Duel.SelectReleaseGroup(tp,nil,1,1,nil)
-	e:SetLabel(math.floor(sg:GetFirst():GetAttack()/2))
+	e:SetLabel(math.floor(sg:GetFirst():GetDefense()/2))
 	Duel.Release(sg,REASON_COST)
 end
 function c9950467.target(e,tp,eg,ep,ev,re,r,rp,chk)
