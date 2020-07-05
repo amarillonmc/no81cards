@@ -35,7 +35,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x9da0) and ((c:IsType(TYPE_FIELD) or c:IsType(TYPE_CONTINUOUS)) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or ((c:IsType(TYPE_QUICKPLAY) or c:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP) and c:CheckActivateEffect(false,true,false)~=nil )
+	return c:IsSetCard(0x9da0) and (((c:IsType(TYPE_FIELD) or c:IsType(TYPE_CONTINUOUS)) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or ((c:IsType(TYPE_QUICKPLAY) or c:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP) and c:CheckActivateEffect(false,true,false)~=nil ))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
    if chkc then

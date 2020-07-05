@@ -158,7 +158,7 @@ function c30000033.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function c30000033.thfilter(c)
-	return c:IsDefenseBelow(2200) and c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToHand() 
+	return c:IsDefenseBelow(8000) and c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToHand() 
 end
 
 function c30000033.operation(e,tp,eg,ep,ev,re,r,rp)

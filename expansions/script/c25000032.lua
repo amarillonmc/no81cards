@@ -20,7 +20,7 @@ function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.NegateActivation(ev) then return end
-	if Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0))>0 then
+	if Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.BreakEffect()
 		rsop.SelectSolve(HINTMSG_POSCHANGE,tp,Card.IsCanTurnSet,tp,0,LOCATION_MZONE,1,1,nil,cm.solvefun)
 	end
@@ -38,7 +38,7 @@ function cm.actval(e,re)
 	return rc:IsLocation(LOCATION_GRAVE)
 end
 function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(cm.afilter,tp,rsloc.og,rsloc.og,nil)*100
+	return Duel.GetMatchingGroupCount(cm.afilter,tp,rsloc.og,rsloc.og,nil)*-100
 end
 function cm.afilter(c)
 	return c:IsFacedown() or c:IsLocation(LOCATION_GRAVE)

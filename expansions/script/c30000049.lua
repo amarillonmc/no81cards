@@ -40,7 +40,7 @@ function c30000049.initial_effect(c)
 end
 	
 function c30000049.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x920) and g:IsExists(Card.IsAttackAbove,2,nil,2400)
+	return g:IsExists(Card.IsAttackAbove,2,nil,2400)
 end
 
 function c30000049.spcon1(e,tp,eg,ep,ev,re,r,rp)

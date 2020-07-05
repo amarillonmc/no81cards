@@ -129,13 +129,13 @@ function c79029093.sprop1(e,tp,eg,ep,ev,re,r,rp,c)
 end
 end
 function c79029093.copycost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetFlagEffect(79029093)==0 and Duel.IsCanRemoveCounter(tp,1,0,0x1099,79029010,REASON_COST) end
-	e:GetHandler():RegisterFlagEffect(c79029093,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-	Duel.RemoveCounter(tp,1,0,0x1099,79029010,REASON_COST)
+	if chk==0 then return e:GetHandler():GetFlagEffect(79029093)==0 and Duel.IsCanRemoveCounter(tp,1,0,0x1099,10,REASON_COST) end
+	e:GetHandler():RegisterFlagEffect(79029093,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	Duel.RemoveCounter(tp,1,0,0x1099,10,REASON_COST)
 end
 function c79029093.copycost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(79029093)==0 and Duel.CheckLPCost(tp,6000) end
-	e:GetHandler():RegisterFlagEffect(c79029093,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	e:GetHandler():RegisterFlagEffect(79029093,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	Duel.PayLPCost(tp,6000)
 end
 function c79029093.copyfilter(c)

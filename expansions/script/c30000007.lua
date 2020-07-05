@@ -43,7 +43,7 @@ function c30000007.op(e,tp,eg,ep,ev,re,r,rp)
 		while gc do
 			local e3=Effect.CreateEffect(e:GetHandler())
 			e3:SetType(EFFECT_TYPE_SINGLE)
-			e3:SetCode(EFFECT_CANNOT_TRIGGER)
+			e3:SetCode(EFFECT_CANNOT_TO_GRAVE)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 			gc:RegisterEffect(e3)
 			gc=sg:GetNext()

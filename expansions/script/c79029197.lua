@@ -57,8 +57,7 @@ end
 function c79029197.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(1-tp,aux.Stringid(1474910,0)) then
 	if Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST) then 
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local ht=Duel.GetFieldGroupCount(p,LOCATION_HAND,0)
+	local ht=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 		Duel.Draw(p,4-ht,REASON_EFFECT)
 	local ht1=Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)
 		Duel.Draw(1-tp,4-ht1,REASON_EFFECT)

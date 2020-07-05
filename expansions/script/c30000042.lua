@@ -1,7 +1,7 @@
 --终焉邪魂 感染源核
 function c30000042.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,c30000042.mfilter,4)
+	aux.AddLinkProcedure(c,c30000042.mfilter,3)
 	c:EnableReviveLimit()
 	--tohand
 	 local e1=Effect.CreateEffect(c)

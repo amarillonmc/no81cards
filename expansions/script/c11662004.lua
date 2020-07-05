@@ -95,11 +95,11 @@ function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
         Duel.RegisterEffect(e2,tp)
     end
 end
-function cmcfilter(c)
+function cm.cfilter(c)
     return c:IsFaceup() and c:IsSetCard(0x79) and c:IsType(TYPE_SYNCHRO)
 end
 function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.IsExistingMatchingCard(cmcfilter,tp,LOCATION_MZONE,0,1,nil)
+    return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.desfilter(c)
     return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
@@ -108,9 +108,9 @@ function cm.handes(e,tp,eg,ep,ev,re,r,rp)
     local id=Duel.GetChainInfo(ev,CHAININFO_CHAIN_ID)
     if ep==tp or id==cm[0] or not re:IsActiveType(TYPE_MONSTER) then return end
     cm[0]=id
-    if Duel.IsExistingMatchingCard(cm.desfilter,1-tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil) and Duel.SelectYesNo(1-tp,aux.Stringid(m,3)) then
+    if Duel.IsExistingMatchingCard(cm.desfilter,1-tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.SelectYesNo(1-tp,aux.Stringid(m,3)) then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-        local g=Duel.SelectMatchingCard(1-tp,cm.desfilter,1-tp,LOCATION_HAND+LOCATION_SZONE,0,1,1,nil)
+        local g=Duel.SelectMatchingCard(1-tp,cm.desfilter,1-tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
         Duel.SendtoGrave(g,REASON_EFFECT)
         Duel.BreakEffect()
     else

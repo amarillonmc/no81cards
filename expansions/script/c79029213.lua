@@ -77,7 +77,7 @@ function c79029213.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 		if tc:IsType(TYPE_PENDULUM) then
 	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetDescription(aux.Stringid(20004,5))
+	e1:SetDescription(aux.Stringid(79029213,2))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_EXTRA_PENDULUM_SUMMON)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -124,11 +124,11 @@ function c79029213.spop(e,tp,eg,ep,ev,re,r,rp)
 	local b1=not Duel.IsExistingMatchingCard(c79029213.bfil1,tp,LOCATION_SZONE,0,1,nil)
 	local b2=not Duel.IsExistingMatchingCard(c79029213.bfil2,tp,LOCATION_SZONE,0,1,nil)
 	if b1 and b2 then
-	op=Duel.SelectOption(tp,aux.Stringid(20004,7),aux.Stringid(20004,6))
+	op=Duel.SelectOption(tp,aux.Stringid(79029213,1),aux.Stringid(79029213,0))
 	elseif b1 then
-		op=Duel.SelectOption(tp,aux.Stringid(20004,7))
+		op=Duel.SelectOption(tp,aux.Stringid(79029213,1))
 	elseif b2 then
-		op=Duel.SelectOption(tp,aux.Stringid(20004,6))+1
+		op=Duel.SelectOption(tp,aux.Stringid(79029213,0))+1
 	else
 	return false
 	end

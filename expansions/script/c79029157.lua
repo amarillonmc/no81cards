@@ -63,7 +63,7 @@ function c79029157.econ(e)
 			ct=ct+1
 		end
 	end
-	return e:GetHandler():GetFlagEffect(c79029157+e:GetLabel())>=ct
+	return e:GetHandler():GetFlagEffect(79029157+e:GetLabel())>=ct
 end
 function c79029157.elimit(e,re,tp)
 	return re:IsActiveType(TYPE_MONSTER)

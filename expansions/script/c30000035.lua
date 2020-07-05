@@ -113,9 +113,9 @@ function c30000035.thfilter(c)
 	return c:IsAbleToRemoveAsCost() and not c:IsCode(30000035)
 end
 function c30000035.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c30000035.thfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,7,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c30000035.thfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,5,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c30000035.thfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,7,7,nil)
+	local g=Duel.SelectMatchingCard(tp,c30000035.thfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,5,5,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c30000035.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

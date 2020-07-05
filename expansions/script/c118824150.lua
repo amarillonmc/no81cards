@@ -107,7 +107,7 @@ function c118824150.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function c118824150.scfilter(c,e,tp)
-    return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_DRAGON) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false)
+    return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_DRAGON) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,true)
 end
 function c118824150.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c118824150.scfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
@@ -117,5 +117,6 @@ end
 function c118824150.scop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
     if not g or g:FilterCount(Card.IsRelateToEffect,nil,e)~=1 then return end
-    Duel.SpecialSummon(g,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)
+    Duel.SpecialSummon(g,SUMMON_TYPE_SYNCHRO,tp,tp,false,true,POS_FACEUP)
+    g:GetFirst():CompleteProcedure()
 end

@@ -22,6 +22,7 @@ function c114707556.target(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_PZONE,LOCATION_PZONE)>0 end
     local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,LOCATION_PZONE)
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+    Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c114707556.thfilter1(c)
     return c:IsSetCard(0xc6) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()

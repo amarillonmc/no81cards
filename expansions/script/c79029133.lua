@@ -11,7 +11,7 @@ function c79029133.initial_effect(c)
 	c:RegisterEffect(e1)   
 	--Activate
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_HANDES)
 	e2:SetCode(EVENT_DRAW)
 	e2:SetRange(LOCATION_MZONE)
@@ -63,13 +63,13 @@ function c79029133.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL then return end
 	local sg=Group.CreateGroup()
 	for p=1,1 do
-		local g=Duel.GetMatchingGroup(Card.IsFaceup,p,LOCATION_MZONE,0,nil)
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,1-tp,LOCATION_MZONE,0,nil)
 		local race=1
 		while bit.band(RACE_ALL,race)~=0 do
 			local rg=g:Filter(Card.IsRace,nil,race)
 			local rc=rg:GetCount()
 			if rc>1 then
-				Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOGRAVE)
+				Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
 				local dg=rg:Select(p,rc-1,rc-1,nil)
 				sg:Merge(dg)
 			end

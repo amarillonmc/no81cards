@@ -118,7 +118,7 @@ function c79029034.tgfilter(c)
 	return c:IsType(TYPE_MONSTER)
 end
 function c79029034.tgcon(e)
-	return Duel.IsExistingMatchingCard(c79029034.tgfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,e:GetHandler())
+	return Duel.IsExistingMatchingCard(aux.TRUE,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,e:GetHandler())
 end
 function c79029034.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
