@@ -11,16 +11,6 @@ function c9950000.initial_effect(c)
 	e1:SetOperation(c9950000.thop)
 	c:RegisterEffect(e1)
 	--destroy and summon
-	--destroy
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9950000,0))
-	e3:SetCategory(CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetCountLimit(1,99500001)
-	e3:SetTarget(c9950000.destg)
-	e3:SetOperation(c9950000.desop)
-	c:RegisterEffect(e3)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9950000,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -102,13 +92,4 @@ function c9950000.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(800)
 		c:RegisterEffect(e1)
 	end
-end
-function c9950000.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0,nil)
-end
-function c9950000.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
-	Duel.Destroy(g,REASON_EFFECT)
 end

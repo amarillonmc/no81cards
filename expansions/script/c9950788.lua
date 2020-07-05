@@ -54,6 +54,10 @@ end
 function c9950788.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xcbd3) and c:IsLevelBelow(8)
 end
+function c9950788.xyzop(e,tp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950788.cfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,c9950788.cfilter,1,1,REASON_COST+REASON_DISCARD)
+end
 function c9950788.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end

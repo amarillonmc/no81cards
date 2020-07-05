@@ -90,11 +90,11 @@ function c79029116.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c79029116.eqlimit(e,c)
-	return c:IsSetCard(0xf02) or e:GetHandler():GetEquipTarget()==c
+	return c:IsSetCard(0xa900) or e:GetHandler():GetEquipTarget()==c
 end
 function c79029116.filter(c)
 	local ct1,ct2=c:GetUnionCount()
-	return c:IsFaceup() and c:IsSetCard(0xf02) and ct2==0
+	return c:IsFaceup() and c:IsSetCard(0xa900) and ct2==0
 end
 function c79029116.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

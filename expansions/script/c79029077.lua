@@ -152,7 +152,7 @@ function c79029077.damop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeBattleDamage(1-tp,ev*2)
 end
 function c79029077.sfilter(c,e,tp)
-	return c:IsSetCard(0xf015) and c:IsPosition(POS_FACEUP) and c:IsLocation(LOCATION_EXTRA) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and Duel.GetLocationCountFromEx(tp)>0 or (c:IsSetCard(0xf015) and c:IsLocation(LOCATION_HAND+LOCATION_GRAVE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) )
+	return c:IsSetCard(0x1907) and c:IsPosition(POS_FACEUP) and c:IsLocation(LOCATION_EXTRA) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and Duel.GetLocationCountFromEx(tp)>0 or (c:IsSetCard(0x1907) and c:IsLocation(LOCATION_HAND+LOCATION_GRAVE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) )
 end
 function c79029077.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

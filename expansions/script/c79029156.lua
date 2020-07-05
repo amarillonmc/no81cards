@@ -33,10 +33,10 @@ function c79029156.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c79029156.ffilter(c)
-	 return c:IsSetCard(0xf02) and c:IsLevelBelow(4)
+	 return c:IsSetCard(0xa900) and c:IsLevelBelow(4)
 end
 function c79029156.ffilter1(c)
-	 return c:IsSetCard(0xf02) and c:IsType(TYPE_PENDULUM)
+	 return c:IsSetCard(0xa900) and c:IsType(TYPE_PENDULUM)
 end
 function c79029156.val(e,c)
 	 return e:GetHandler():GetMaterial():GetSum(Card.GetBaseAttack)

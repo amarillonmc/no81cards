@@ -26,7 +26,7 @@ function c79029046.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
 function c79029046.filter(c)
-	return c:IsSetCard(0xf012) and c:IsAbleToRemove()
+	return c:IsSetCard(0x1904) and c:IsAbleToRemove()
 end
 function c79029046.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanRemove(tp) then return end
@@ -41,7 +41,7 @@ end
 end
 end
 function c79029046.filter2(c,e,tp)
-	return c:IsSetCard(0xf02) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029046.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_HAND) and chkc:IsControler(tp) and c79029046.filter(chkc,e,tp) end

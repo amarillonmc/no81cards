@@ -2,7 +2,7 @@
 function c79029199.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xf02),aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_DARK),2,2,true) 
+	aux.AddFusionProcFunFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xa900),aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_DARK),2,2,true) 
 	--atk down + token 
 	local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -32,7 +32,7 @@ function c79029199.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c79029199.tgfilter(c)
-	return c:IsSetCard(0xf02) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c79029199.attg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(79029199)==0

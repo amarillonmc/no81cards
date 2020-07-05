@@ -43,10 +43,10 @@ function c79029126.val(e,c,Counter)
 	return e:GetHandler():GetEquipTarget():GetBaseAttack()/2
 end
 function c79029126.eqlimit(e,c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029126.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsSetCard(0xa900)
 end
 function c79029126.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029126.filter(chkc) end

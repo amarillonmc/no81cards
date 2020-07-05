@@ -16,9 +16,9 @@ function c9950793.cfilter(c)
 	return c:IsSetCard(0x9bd1) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c9950793.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9950793.cfilter,tp,LOCATION_HAND,0,5,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950793.cfilter,tp,+LOCATION_HAND+LOCATION_GRAVE,0,5,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9950793.cfilter,tp,LOCATION_HAND,0,5,5,nil)
+	local g=Duel.SelectMatchingCard(tp,c9950793.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,5,5,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c9950793.filter(c,e,tp)

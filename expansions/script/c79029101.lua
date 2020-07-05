@@ -8,5 +8,5 @@ function c79029101.initial_effect(c)
 	c:RegisterEffect(e5)   
 end
 function c79029101.effcon(e,c)
-	return c:IsSetCard(0xf02) or c:IsAttribute(ATTRIBUTE_WATER)
+	return c:IsSetCard(0xa900) or c:IsAttribute(ATTRIBUTE_WATER)
 end

@@ -14,7 +14,7 @@ function c79029038.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c79029038.cfilter(c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029038.discon(e,tp,eg,ep,ev,re,r,rp)
 	local ex2,g2,gc2,dp2,dv2=Duel.GetOperationInfo(ev,CATEGORY_SPECIAL_SUMMON)

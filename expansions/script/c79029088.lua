@@ -32,7 +32,7 @@ function c79029088.initial_effect(c)
 	c:RegisterEffect(e4)   
 end
 function c79029088.filter(c,e,tp)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029088.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

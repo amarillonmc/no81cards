@@ -69,10 +69,10 @@ function c79029089.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp
 end
 function c79029089.cfilter1(c,ft)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:IsAbleToGraveAsCost() and (ft>0 or c:GetSequence()<5)
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsAbleToGraveAsCost() and (ft>0 or c:GetSequence()<5)
 end
 function c79029089.cfilter2(c)
-	return c:IsSetCard(0xf02) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0xa900) and c:IsAbleToGraveAsCost()
 end
 function c79029089.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)

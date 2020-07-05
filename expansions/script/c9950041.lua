@@ -10,8 +10,8 @@ function c9950041.initial_effect(c)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
-	e4:SetTarget(c9950041.rmtg)
-	e4:SetOperation(c9950041.rmop)
+	e4:SetTarget(c9950041.rmtg2)
+	e4:SetOperation(c9950041.rmop2)
 	c:RegisterEffect(e4)
 	--atklimit
 	local e1=Effect.CreateEffect(c)
@@ -111,11 +111,11 @@ function c9950041.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950041,2))
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950041,4))
 end
-function c9950041.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9950041.rmtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
-function c9950041.rmop(e,tp,eg,ep,ev,re,r,rp)
+function c9950041.rmop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	c:RemoveOverlayCard(tp,1,1,REASON_EFFECT)
 end

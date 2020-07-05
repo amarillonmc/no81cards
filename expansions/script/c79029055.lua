@@ -24,7 +24,7 @@ function c79029055.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 function c79029055.filter(c,e,tp)
-	return c:IsSetCard(0xf010) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsSetCard(0x1902) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c79029055.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -68,7 +68,7 @@ function c79029055.thop1(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c79029055.thfilter(c)
-	return c:IsSetCard(0xf010) and c:IsAbleToHand()
+	return c:IsSetCard(0x1902) and c:IsAbleToHand()
 end
 function c79029055.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029055.thfilter,tp,LOCATION_DECK,0,1,nil) end

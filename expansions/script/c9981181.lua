@@ -15,7 +15,7 @@ function c9981181.tgfilter(c,tp)
 		and Duel.IsExistingMatchingCard(c9981181.thfilter,tp,LOCATION_DECK,0,1,c,c:GetCode())
 end
 function c9981181.thfilter(c,code)
-	return c:IsCode(code) and c:IsAbleToHand()
+	return not c:IsCode(code) and c:IsSetCard(0xabcd) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9981181.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981181.tgfilter,tp,LOCATION_DECK,0,1,nil,tp) end

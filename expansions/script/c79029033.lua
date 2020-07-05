@@ -48,10 +48,10 @@ function c79029033.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c79029033.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029033.spfilter2(c,e,tp)
-	return c:IsSetCard(0xf02) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029033.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c79029033.spfilter2(chkc,e,tp) end
@@ -68,8 +68,8 @@ function c79029033.spop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029033.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsSetCard,1,e:GetHandler(),0xf02) end
-	local g=Duel.SelectReleaseGroup(tp,Card.IsSetCard,1,1,e:GetHandler(),0xf02)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsSetCard,1,e:GetHandler(),0xa900) end
+	local g=Duel.SelectReleaseGroup(tp,Card.IsSetCard,1,1,e:GetHandler(),0xa900)
 	Duel.Release(g,REASON_COST)
 end
 function c79029033.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

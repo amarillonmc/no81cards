@@ -30,7 +30,7 @@ function c79029073.filter2(c,e,tp)
 	return c:IsType(TYPE_FUSION+TYPE_XYZ+TYPE_SYNCHRO+TYPE_LINK)
 end
 function c79029073.filter3(c,e,tp)
-	return c:IsSetCard(0xf014)
+	return c:IsSetCard(0x1906)
 end
 function c79029073.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

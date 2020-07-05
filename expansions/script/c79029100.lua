@@ -40,7 +40,7 @@ function c79029100.initial_effect(c)
   
 end
 function c79029100.filter1(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsSetCard(0xa900)
 end
 function c79029100.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029100.filter1(chkc) end
@@ -57,16 +57,16 @@ function c79029100.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029100.eqlimit(e,c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029100.effcon(e,c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029100.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsType(TYPE_CONTINUOUS)
 end
 function c79029100.filter(c,e,tp)
-	return c:IsSetCard(0xf016)
+	return c:IsSetCard(0x1908)
 end
 function c79029100.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	 if chk==0 then return Duel.IsExistingMatchingCard(c79029100.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) end

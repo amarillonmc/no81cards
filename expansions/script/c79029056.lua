@@ -16,7 +16,7 @@ function c79029056.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029056.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsSetCard(0xa900)
 end
 function c79029056.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c79029056.filter(chkc) end
@@ -53,7 +53,7 @@ function c79029056.atklimit(e,c)
 	return c~=e:GetHandler()
 end
 function c79029056.f(c)
-	return c:IsFaceup() and c:IsSetCard(0xf010) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x1902) and c:IsType(TYPE_MONSTER)
 end
 function c79029056.handcon(e)
 	return Duel.IsExistingMatchingCard(c79029056.f,tp,LOCATION_MZONE,0,1,nil)

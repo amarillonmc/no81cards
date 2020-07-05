@@ -105,7 +105,7 @@ end
 end
 end
 function c79029186.drfilter(c)
-	return c:IsSetCard(0xf010)
+	return c:IsSetCard(0x1902)
 end
 function c79029186.drval(e)
 	local g=Duel.GetMatchingGroup(c79029186.drfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,nil)

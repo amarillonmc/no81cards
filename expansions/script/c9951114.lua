@@ -2,7 +2,7 @@
 function c9951114.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.EnablePendulumAttribute(c,false)
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bd2,0x6ba8),7,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bd2),7,2)
  --pendulum set
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9951114,0))

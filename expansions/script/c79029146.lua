@@ -57,7 +57,7 @@ function c79029146.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029146.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0xf03)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xa901)
 end
 function c79029146.indcon(e)
 	return e:GetHandler():IsLinkState()

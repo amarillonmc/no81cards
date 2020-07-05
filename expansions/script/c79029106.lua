@@ -37,7 +37,7 @@ function c79029106.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c79029106.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:IsRank(8)
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsRank(8)
 end
 function c79029106.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

@@ -48,7 +48,7 @@ function c79029076.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c79029076.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029076.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	 if chk==0 then return true end
@@ -67,7 +67,7 @@ function c79029076.actcon(e)
 	return Duel.GetAttacker()==e:GetHandler()
 end
 function c79029076.filter(c,e,tp)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029076.iop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if Duel.IsExistingMatchingCard(c79029076.filter,tp,LOCATION_PZONE,0,1,nil,e,tp) then

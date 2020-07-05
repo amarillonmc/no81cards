@@ -12,24 +12,34 @@ function c9950018.initial_effect(c)
 	e2:SetTarget(c9950018.sptg)
 	e2:SetOperation(c9950018.spop)
 	c:RegisterEffect(e2)
-	--atk
-	local e6=Effect.CreateEffect(c)
-	e6:SetCategory(CATEGORY_ATKCHANGE)
-	e6:SetType(EFFECT_TYPE_IGNITION)
-	e6:SetRange(LOCATION_MZONE)
-	e6:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e6:SetCountLimit(1)
-	e6:SetTarget(c9950018.atktg)
-	e6:SetOperation(c9950018.atkop)
-	c:RegisterEffect(e6)
-	--xyzlv
+--destroy
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9950018,1))
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,9950018)
+	e2:SetTarget(c9950018.destg)
+	e2:SetOperation(c9950018.desop)
+	c:RegisterEffect(e2)
+ --removed
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_XYZ_LEVEL)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetValue(c9950018.xyzlv)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetOperation(c9950018.rmop)
 	c:RegisterEffect(e1)
+	--special summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9950018,0))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCondition(c9950018.condition)
+	e2:SetTarget(c9950018.target2)
+	e2:SetOperation(c9950018.operation)
+	c:RegisterEffect(e2)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -43,9 +53,6 @@ end
 function c9950018.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950018,0))
   Duel.Hint(HINT_SOUND,0,aux.Stringid(9950018,1))
-end
-function c9950018.xyzlv(e,c,rc)
-	return 0x40000+e:GetHandler():GetLevel()
 end
 function c9950018.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
@@ -87,28 +94,70 @@ function c9950018.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
  Duel.Hint(HINT_SOUND,0,aux.Stringid(9950018,2))
 end
-function c9950018.atkfilter(c,atk)
-	return c:IsFaceup() and not c:IsAttack(atk)
+function c9950018.desfilter(c)
+	return c:IsSetCard(0xba1)
 end
-function c9950018.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local c=e:GetHandler()
-	local atk=c:GetAttack()
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and chkc~=c and c9950018.atkfilter(chkc,atk) end
-	if chk==0 then return Duel.IsExistingTarget(c9950018.atkfilter,tp,LOCATION_MZONE,0,1,c,atk) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,c9950018.atkfilter,tp,LOCATION_MZONE,0,1,1,c,atk)
+function c9950018.spfilter(c,e,tp)
+	return c:IsSetCard(0xba1) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
-function c9950018.atkop(e,tp,eg,ep,ev,re,r,rp)
+function c9950018.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9950018.desfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9950018.desfilter,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.IsExistingMatchingCard(c9950018.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,c9950018.desfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+end
+function c9950018.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	local atk=tc:GetAttack()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() and c:IsRelateToEffect(e) and c:IsFaceup() then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetValue(atk)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		c:RegisterEffect(e1)
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,c9950018.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		local tc=g:GetFirst()
+		if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e2)
+		end
+		Duel.SpecialSummonComplete()
 	end
- Duel.Hint(HINT_SOUND,0,aux.Stringid(9950018,3))
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetTargetRange(0,1)
+	e3:SetValue(HALF_DAMAGE)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e3,tp)
+end
+function c9950018.rmop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsFacedown() then return end
+	e:GetHandler():RegisterFlagEffect(9950018,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+end
+function c9950018.condition(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(9950018)~=0
+end
+function c9950018.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():GetFlagEffect(3773197)==0 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	e:GetHandler():RegisterFlagEffect(3773197,RESET_EVENT+0x4760000+RESET_PHASE+PHASE_END,0,1)
+end
+function c9950018.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then
+			Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
+			return
+		end
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+	end
 end

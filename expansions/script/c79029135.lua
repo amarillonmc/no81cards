@@ -60,7 +60,7 @@ function c79029135.actcon(e)
 	return (ph>PHASE_MAIN1 and ph<PHASE_MAIN2) and e:GetHandler():IsExtraLinkState()
 end
 function c79029135.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0xf02)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xa900)
 end
 function c79029135.cfilter(c,zone)
 	local seq=c:GetSequence()

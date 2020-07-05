@@ -20,7 +20,7 @@ function c79029151.initial_effect(c)
 	c:RegisterEffect(e2)	
 end
 function c79029151.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:GetCode()~=79029151
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:GetCode()~=79029151
 end
 function c79029151.spcon(e,c)
 	if c==nil then return true end

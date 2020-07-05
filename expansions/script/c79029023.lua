@@ -35,7 +35,7 @@ function c79029023.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c79029023.atkfilter(c)
-	return c:IsSetCard(0xf01)
+	return c:IsSetCard(0x1901)
 end
 function c79029023.val(e,c)
 	local g=Duel.GetMatchingGroup(c79029023.atkfilter,c:GetControler(),LOCATION_GRAVE,0,nil)

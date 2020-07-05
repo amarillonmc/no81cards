@@ -30,7 +30,7 @@ function c9951115.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951115,0))
 end
 function c9951115.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3bd2,0x6ba8) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+	return c:IsFaceup() and c:IsSetCard(0x3bd2) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
 end
 function c9951115.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9951115.cfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,2,nil) end
@@ -39,7 +39,7 @@ function c9951115.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function c9951115.spfilter(c,e,tp,mc)
-	return c:IsAttackBelow(2500) and c:IsSetCard(0x3bd2,0x6ba8) and c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false)
+	return c:IsAttackBelow(2500) and c:IsSetCard(0x3bd2) and c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false)
 		and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function c9951115.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

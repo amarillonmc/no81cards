@@ -74,11 +74,11 @@ function c9950677.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9950677.sprfilter,tp,LOCATION_REMOVED,0,5,nil)
+		and Duel.IsExistingMatchingCard(c9950677.sprfilter,tp,LOCATION_REMOVED,0,4,nil)
 end
 function c9950677.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c9950677.sprfilter,tp,LOCATION_REMOVED,0,5,5,nil)
+	local g=Duel.SelectMatchingCard(tp,c9950677.sprfilter,tp,LOCATION_REMOVED,0,4,4,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function c9950677.distg(e,tp,eg,ep,ev,re,r,rp,chk)

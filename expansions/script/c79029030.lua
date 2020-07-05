@@ -47,7 +47,7 @@ function c79029030.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c79029030.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0xf02)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xa900)
 end
 function c79029030.damcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

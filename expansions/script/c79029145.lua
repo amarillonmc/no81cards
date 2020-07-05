@@ -25,7 +25,7 @@ function c79029145.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 function c79029145.cfilter(c,tp)
-	return c:IsSetCard(0xf02) and c:IsType(TYPE_MONSTER) and not c:IsCode(79029145) and c:IsControler(tp)
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_MONSTER) and not c:IsCode(79029145) and c:IsControler(tp)
 end
 function c79029145.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c79029145.cfilter,1,nil,tp)
@@ -47,7 +47,7 @@ function c79029145.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return bc and bc:IsLevelBelow(c:GetLevel()) and bc:IsStatus(STATUS_OPPO_BATTLE) and bc:IsRelateToBattle()
 end
 function c79029145.spfilter(c,e,tp)
-	return c:IsSetCard(0xf02) and not c:IsCode(79029145) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa900) and not c:IsCode(79029145) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029145.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

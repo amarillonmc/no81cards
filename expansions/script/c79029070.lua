@@ -37,7 +37,7 @@ function c79029070.initial_effect(c)
 	c:RegisterEffect(e4) 
 end
 function c79029070.matfilter(c)
-	return c:IsLinkSetCard(0xf02)
+	return c:IsLinkSetCard(0xa900)
 end
 function c79029070.atktg(e,c)
 	return c:GetMutualLinkedGroupCount()==0
@@ -45,7 +45,7 @@ end
 function c79029070.dsop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 		local tc=Duel.GetFirstTarget()
-		if tc and tc:IsRelateToEffect(e) then	 
+		if tc and tc:IsRelateToEffect(e) then	
 		local e4=Effect.CreateEffect(e:GetHandler())
 		e4:SetType(EFFECT_TYPE_SINGLE)
 		e4:SetCode(EFFECT_UPDATE_ATTACK)

@@ -77,22 +77,22 @@ function c79029117.splimit(e,se,sp,st)
 	return st==SUMMON_TYPE_FUSION+0x10
 end
 function c79029117.fusfilter1(c)
-	return c:IsSetCard(0xf02) and c:IsFusionType(TYPE_FUSION)
+	return c:IsSetCard(0xa900) and c:IsFusionType(TYPE_FUSION)
 end
 function c79029117.fusfilter2(c)
-	return c:IsSetCard(0xf02) and c:IsFusionType(TYPE_SYNCHRO)
+	return c:IsSetCard(0xa900) and c:IsFusionType(TYPE_SYNCHRO)
 end
 function c79029117.fusfilter3(c)
-	return c:IsSetCard(0xf02) and c:IsFusionType(TYPE_XYZ)
+	return c:IsSetCard(0xa900) and c:IsFusionType(TYPE_XYZ)
 end
 function c79029117.fusfilter4(c)
-	return c:IsSetCard(0xf02) and c:IsFusionType(TYPE_PENDULUM)
+	return c:IsSetCard(0xa900) and c:IsFusionType(TYPE_PENDULUM)
 end
 function c79029117.fusfilter5(c)
-	return c:IsSetCard(0xf02) and c:IsFusionType(TYPE_RITUAL)
+	return c:IsSetCard(0xa900) and c:IsFusionType(TYPE_RITUAL)
 end
 function c79029117.fusfilter6(c)
-	return c:IsSetCard(0xf02) and c:IsFusionType(TYPE_LINK)
+	return c:IsSetCard(0xa900) and c:IsFusionType(TYPE_LINK)
 end
 function c79029117.filter(c)
 	return c:IsFaceup() and c:GetCode()~=79029117 and not c:IsHasEffect(79029117)

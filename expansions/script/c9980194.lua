@@ -17,11 +17,11 @@ function c9980194.initial_effect(c)
 	--negate
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_NEGATE)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,99801940)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetCondition(c9980194.negcon)
 	e2:SetOperation(c9980194.negop)
 	c:RegisterEffect(e2)
@@ -36,7 +36,7 @@ function c9980194.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980194,0))
 end
 function c9980194.cfilter(c)
-	return (c:IsSetCard(0x95) or c:IsSetCard(0x6bc8))and c:IsDiscardable()
+	return (c:IsSetCard(0x95) or c:IsSetCard(0x6bc8)) and c:IsDiscardable()
 end
 function c9980194.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x6bc8) and c:IsType(TYPE_LINK)
@@ -81,7 +81,9 @@ function c9980194.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9980194.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+	local c=e:GetHandler()
+	if ep==tp or c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
+	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c9980194.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

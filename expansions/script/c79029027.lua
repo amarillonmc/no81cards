@@ -39,7 +39,7 @@ function c79029027.initial_effect(c)
 	e6:SetRange(LOCATION_PZONE)
 	e6:SetTargetRange(LOCATION_MZONE,0)
 	e6:SetCode(EFFECT_UPDATE_ATTACK)
-	e6:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xf02))
+	e6:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa900))
 	e6:SetValue(c79029027.val)
 	c:RegisterEffect(e6)
 	local e7=e6:Clone()
@@ -50,7 +50,7 @@ function c79029027.val(e,c,Counter)
 	return Duel.GetCounter(tp,LOCATION_ONFIELD,0,0x1099)*100
 end
 function c79029027.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xfa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029027.recost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,1,REASON_COST) end
@@ -60,7 +60,7 @@ function c79029027.reop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Recover(tp,800,REASON_EFFECT)
 end
 function c79029027.filter(c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029027.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	   if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c79029027.filter(chkc) end

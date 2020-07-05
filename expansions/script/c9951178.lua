@@ -19,6 +19,12 @@ function c9951178.initial_effect(c)
 	e2:SetTarget(c9951178.thtg)
 	e2:SetOperation(c9951178.thop)
 	c:RegisterEffect(e2)
+ --atk
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetOperation(c9951178.atkop)
+	c:RegisterEffect(e3)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9951178,0))
@@ -78,4 +84,22 @@ function c9951178.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	local sg=g:RandomSelect(tp,1)
 	Duel.Destroy(sg,REASON_EFFECT)
+end
+function c9951178.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=c:GetReleaseGroup()
+	local s=0
+	local tc=g:GetFirst()
+	while tc do
+		local a=tc:GetAttack()
+		if a<0 then a=0 end
+		s=s+a
+		tc=g:GetNext()
+	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(s)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	c:RegisterEffect(e1)
 end

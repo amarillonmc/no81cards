@@ -26,7 +26,7 @@ function c79029035.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xf07))
+	e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa905))
 	e3:SetValue(1200)
 	c:RegisterEffect(e2) 
 	--destroy

@@ -20,6 +20,9 @@ function c9950036.initial_effect(c)
 	e3:SetTarget(c9950036.thtg2)
 	e3:SetOperation(c9950036.thop2)
 	c:RegisterEffect(e3)
+	local e9=e3:Clone()
+	e9:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e9)
  --ritual summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9950036,1))
@@ -64,7 +67,7 @@ function c9950036.thop(e,tp,eg,ep,ev,re,r,rp)
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950036,0))
 end
 function c9950036.thfilter2(c)
-	return c:IsSetCard(0xba1) and not c:IsCode(9950036) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x5ba1) and not c:IsCode(9950036) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9950036.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9950036.thfilter2,tp,LOCATION_DECK,0,1,nil) end

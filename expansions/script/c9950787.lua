@@ -5,9 +5,8 @@ function c9950787.initial_effect(c)
 	e2:SetDescription(aux.Stringid(9950787,0))
 	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_HAND)
+	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,9950787)
-	e2:SetCost(c9950787.cost)
 	e2:SetTarget(c9950787.sptg)
 	e2:SetOperation(c9950787.spop)
 	c:RegisterEffect(e2)
@@ -46,22 +45,24 @@ end
 function c9950787.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUUND,0,aux.Stringid(9950787,0))
 end
-function c9950787.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsDiscardable()
-end
-function c9950787.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9950787.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.Destroy(tp,c9950787.cfilter,1,1,REASON_COST+REASON_DESTROY,e:GetHandler())
+function c9950787.desfilter(c)
+	return  (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsSetCard(0x9bd1)
 end
 function c9950787.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+ if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9950787.desfilter(chkc,tp) end
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.IsExistingTarget(c9950787.desfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,c9950787.desfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil,tp)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9950787.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	  local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 function c9950787.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttackTarget()

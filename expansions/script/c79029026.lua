@@ -1,7 +1,7 @@
 --罗德岛·近卫干员-拉普兰德
 function c79029026.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xf02),3)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xa900),3)
 	--Negate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_NEGATE)
@@ -72,7 +72,7 @@ function c79029026.scondition(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsRelateToBattle() and bc:IsLocation(LOCATION_GRAVE) and bc:IsType(TYPE_MONSTER)
 end
 function c79029026.xfilter(c)
-	return c:IsCode(17) and c:IsAbleToHand()
+	return c:IsCode(79029017) and c:IsAbleToHand()
 end
 function c79029026.starget(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029026.xfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

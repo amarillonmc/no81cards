@@ -70,7 +70,7 @@ function c9981184.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,c9981184.cfilter,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9981184.filter(c)
-	return c:IsCode(9981184) and c:IsAbleToHand()
+	return c:IsCode(9981184,9981183,9981185) and c:IsAbleToHand()
 end
 function c9981184.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9981184.filter,tp,LOCATION_DECK,0,1,nil) end

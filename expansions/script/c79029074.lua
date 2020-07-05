@@ -67,7 +67,7 @@ function c79029074.atktg(e,c)
 	return c:IsType(TYPE_TOKEN)
 end
 function c79029074.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029074.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

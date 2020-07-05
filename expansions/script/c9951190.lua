@@ -37,7 +37,7 @@ function c9951190.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetCountLimit(1,9910606)
+	e2:SetCountLimit(1,9951190)
 	e2:SetCondition(c9951190.rscon)
 --Position+Negate
 	local e1=Effect.CreateEffect(c)

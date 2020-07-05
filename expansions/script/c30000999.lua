@@ -5,10 +5,24 @@ function c30000999.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_REMOVED)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCondition(c30000999.spcon1)
 	e1:SetCost(c30000999.cost)
 	e1:SetTarget(c30000999.sptg)
 	e1:SetOperation(c30000999.spop)
 	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+    e2:SetType(EFFECT_TYPE_QUICK_O)
+    e2:SetCode(EVENT_FREE_CHAIN)
+    e2:SetHintTiming(0,TIMING_END_PHASE)
+    e2:SetCondition(c30000999.spcon2)
+    c:RegisterEffect(e2)
+end
+
+function c30000999.spcon1(e,tp,eg,ep,ev,re,r,rp)
+    return not Duel.IsPlayerAffectedByEffect(tp,30000010)
+end
+function c30000999.spcon2(e,tp,eg,ep,ev,re,r,rp)
+    return Duel.IsPlayerAffectedByEffect(tp,30000010)
 end
 
 function c30000999.cost(e,tp,eg,ep,ev,re,r,rp,chk)

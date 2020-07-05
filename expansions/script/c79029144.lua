@@ -10,7 +10,7 @@ function c79029144.initial_effect(c)
 	e1:SetTargetRange(LOCATION_MZONE+LOCATION_HAND,0)
 	e1:SetCode(EFFECT_ADD_SETCODE)
 	e1:SetTarget(c79029144.tg)
-	e1:SetValue(0xf01)
+	e1:SetValue(0x1901)
 	c:RegisterEffect(e1)
 	--Activate
 	local e2=Effect.CreateEffect(c)
@@ -37,21 +37,21 @@ function c79029144.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c79029144.tg(e,c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029144.tg1(e,c)
-	return c:IsSetCard(0xf02) and c:IsLevelBelow(4)
+	return c:IsSetCard(0xa900) and c:IsLevelBelow(4)
 end
 function c79029144.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
 	if chk==0 then return true end
 end
 function c79029144.costfilter(c,e,tp)
-	return c:IsFaceup() and c:GetOriginalLevel()>0 and Duel.IsExistingMatchingCard(c79029144.spfilter,tp,LOCATION_DECK,0,1,nil,c,e,tp) and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:GetOriginalLevel()>0 and Duel.IsExistingMatchingCard(c79029144.spfilter,tp,LOCATION_DECK,0,1,nil,c,e,tp) and c:IsSetCard(0xa900)
 		and Duel.GetMZoneCount(tp,c)>0
 end
 function c79029144.spfilter(c,tc,e,tp)
-	return c:GetLevel()<tc:GetLevel() and c:IsSetCard(0xf02)
+	return c:GetLevel()<tc:GetLevel() and c:IsSetCard(0xa900)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029144.target(e,tp,eg,ep,ev,re,r,rp,chk)

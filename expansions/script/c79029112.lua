@@ -35,13 +35,13 @@ function c79029112.initial_effect(c)
 	e3:SetOperation(c79029112.operation1)
 	c:RegisterEffect(e3)
 end
-c79029112.card_code_list={0xf08}
+c79029112.card_code_list={0xa906}
 function c79029112.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDestructable() end
 	Duel.SetOperationInfo(0,CATEGORY_SEARCH,e:GetHandler(),1,0,0)
 end
 function c79029112.drfilter(c)
-	return (aux.IsCodeListed(c,0xf08) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()) or c:IsSetCard(0xf08)
+	return (aux.IsCodeListed(c,0xa906) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()) or c:IsSetCard(0xa906)
 end
 function c79029112.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Destroy(e:GetHandler(),REASON_COST) then

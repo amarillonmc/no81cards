@@ -42,7 +42,7 @@ function c79029039.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c79029039.eqlimit(e,c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029039.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsType(TYPE_SPELL+TYPE_EQUIP)
@@ -68,7 +68,7 @@ function c79029039.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029039.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsSetCard(0xa900)
 end
 function c79029039.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029039.filter(chkc) end
@@ -95,14 +95,14 @@ function c79029039.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(e:GetHandler(),REASON_EFFECT+REASON_REPLACE)
 end
 function c79029039.mvfilter1(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsSetCard(0xa900)
 end
 function c79029039.mvfilter2(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:GetSequence()<5
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:GetSequence()<5
 		and Duel.IsExistingMatchingCard(c79029039.mvfilter3,tp,LOCATION_MZONE,0,1,c)
 end
 function c79029039.mvfilter3(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:GetSequence()<5
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:GetSequence()<5
 end
 function c79029039.mvcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsType(TYPE_CONTINUOUS)

@@ -26,7 +26,7 @@ function c79029022.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029022.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:IsRank(6)
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsRank(6)
 end
 function c79029022.dfil(c,e)
 	return c:IsFaceup() and c:IsAttackBelow(e:GetHandler():GetAttack())
@@ -48,7 +48,7 @@ function c79029022.stgoperation(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029022.spfilter(c,e,tp)
 	local a=e:GetHandler():GetCounter(0x1099)
-	return c:IsSetCard(0xf02) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:GetLevel()<=a and c:IsLevelAbove(1)
+	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:GetLevel()<=a and c:IsLevelAbove(1)
 end
 function c79029022.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReleasable()

@@ -43,7 +43,7 @@ function c79029061.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c79029061.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:IsType(TYPE_LINK)
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsType(TYPE_LINK)
 end
 function c79029061.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

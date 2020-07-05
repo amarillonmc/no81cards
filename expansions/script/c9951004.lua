@@ -52,7 +52,7 @@ function c9951004.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 Duel.Hint(HINT_SOUND,0,aux.Stringid(9951004,2))
 end
 function c9951004.ovfilter(c)
-	return c:IsFaceup() and (c:IsSetCard(0xba5) and c:IsType(TYPE_XYZ) and c:IsRank(8)) or (c:IsSetCard(0x9ba8) and c:IsType(TYPE_LINK))
+	return c:IsFaceup() and (c:IsSetCard(0xba5) and c:IsType(TYPE_XYZ) and c:IsRank(8)) or (c:IsSetCard(0x9ba8) and c:IsType(TYPE_LINK+TYPE_FUSION))
 end
 function c9951004.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()

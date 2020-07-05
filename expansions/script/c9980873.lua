@@ -1,7 +1,7 @@
 --装甲骑士斩月·真 蜜瓜能量武装
 function c9980873.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc2),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -79,7 +79,7 @@ function c9980873.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9980873.tdfilter(c)
-	return (c:IsType(TYPE_EQUIP) or c:IsSetCard(0x6bc2)) and c:IsAbleToDeck()
+	return (c:IsType(TYPE_EQUIP) or c:IsSetCard(0xbca)) and c:IsAbleToDeck()
 end
 function c9980873.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c9980873.tdfilter(chkc) end

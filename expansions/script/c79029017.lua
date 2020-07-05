@@ -29,7 +29,7 @@ function c79029017.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c79029017.thfilter(c)
-	return c:IsSetCard(0xf010) and c:IsAbleToHand()
+	return c:IsSetCard(0x1902) and c:IsAbleToHand()
 end
 function c79029017.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029017.thfilter,tp,LOCATION_DECK,0,1,nil) end

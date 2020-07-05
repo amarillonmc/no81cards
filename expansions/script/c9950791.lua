@@ -26,7 +26,7 @@ function c9950791.desfilter1(c)
 	return c:IsSetCard(0x9bd1) and not c:IsCode(9950791)
 end
 function c9950791.spfilter(c,e,tp)
-	return c:IsSetCard(0xabd3) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsSetCard(0xabd3) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c9950791.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

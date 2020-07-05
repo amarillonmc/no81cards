@@ -33,7 +33,7 @@ function c79029184.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029184.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:IsType(TYPE_SYNCHRO)
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsType(TYPE_SYNCHRO)
 end
 function c79029184.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029184.filter(chkc) end
@@ -63,7 +63,7 @@ function c79029184.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029184.filter1(c)
-	return c:IsFaceup() and c:IsType(TYPE_FUSION) and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsType(TYPE_FUSION) and c:IsSetCard(0xa900)
 end
 function c79029184.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029184.filter1(chkc) end
@@ -94,7 +94,7 @@ function c79029184.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029184.fil(c)
-	return c:IsSetCard(0xf04) and c:IsFaceup()
+	return c:IsSetCard(0xa902) and c:IsFaceup()
 end
 function c79029184.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029184.fil,tp,LOCATION_EXTRA,0,1,nil) and e:GetHandler():IsAbleToRemoveAsCost() end
@@ -124,7 +124,7 @@ function c79029184.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c79029184.splimit(e,c)
-	return not c:IsSetCard(0xf02) and c:IsLocation(LOCATION_EXTRA)
+	return not c:IsSetCard(0xa900) and c:IsLocation(LOCATION_EXTRA)
 end
 
 

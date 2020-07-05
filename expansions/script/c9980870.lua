@@ -1,7 +1,7 @@
 --装甲骑士龙玄·黄泉户契武装
 function c9980870.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc2),aux.NonTuner(nil),2)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),aux.NonTuner(nil),2)
 	c:EnableReviveLimit()
 	--tograve
 	local e3=Effect.CreateEffect(c)
@@ -51,7 +51,7 @@ function c9980870.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980870,2))
 end
 function c9980870.tgfilter(c)
-	return c:IsSetCard(0x6bc2) and c:IsAbleToGrave()
+	return c:IsSetCard(0xbca) and c:IsAbleToGrave()
 end
 function c9980870.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9980870.tgfilter,tp,LOCATION_DECK,0,1,nil) end

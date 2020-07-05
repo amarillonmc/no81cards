@@ -24,7 +24,7 @@ function c79029087.spcon(e,c)
 end
 function c79029087.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetReasonCard()
-	return ec:IsSetCard(0xf02)
+	return ec:IsSetCard(0xa900)
 end
 function c79029087.efop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,79029087)

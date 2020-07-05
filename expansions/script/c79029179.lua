@@ -89,7 +89,7 @@ function c79029179.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsReason(REASON_DESTROY) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:GetPreviousControler()==tp
 end
 function c79029179.spfilter(c,e,tp,fusc,mg)
-   return c:IsSetCard(0xf97) and c:IsAbleToHand()
+   return c:IsSetCard(0xc90f) and c:IsAbleToHand()
 end
 function c79029179.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -104,7 +104,7 @@ function c79029179.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,tc)
 end
 function c79029179.spfilter1(c,e,tp)
-	return c:IsSetCard(0xf02) and c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029179.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c79029179.spfilter1(chkc,e,tp) end

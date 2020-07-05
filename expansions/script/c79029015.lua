@@ -59,10 +59,10 @@ function c79029015.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
 function c79029015.ffilter(c)
-	return c:IsFusionSetCard(0xf06)
+	return c:IsFusionSetCard(0xa904)
 end
 function c79029015.cfilter(c)
-	return c:IsSetCard(0xf06) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0xa904 and c:IsAbleToGraveAsCost()
 end
 function c79029015.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)

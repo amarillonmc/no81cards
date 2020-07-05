@@ -67,5 +67,5 @@ end
 end
 function c79029163.synlimit(e,c)
 	if not c then return false end
-	return not c:IsSetCard(0xf02)
+	return not c:IsSetCard(0xa900)
 end

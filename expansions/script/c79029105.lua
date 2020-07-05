@@ -75,7 +75,7 @@ function c79029105.lzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c79029105.drfilter(c)
-	return aux.IsCodeListed(c,0xf08) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return aux.IsCodeListed(c,0xa906) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c79029105.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029105.drfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -133,7 +133,7 @@ function c79029105.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and c:IsLocation(LOCATION_GRAVE)
 end
 function c79029105.spfilter(c,e,tp)
-	return c:IsSetCard(0xf08) and e:GetHandler():IsCanBeXyzMaterial(c)
+	return c:IsSetCard(0xa906) and e:GetHandler():IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and c:IsType(TYPE_XYZ)
 end
 function c79029105.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

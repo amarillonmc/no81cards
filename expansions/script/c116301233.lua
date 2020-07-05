@@ -50,12 +50,12 @@ function c116301233.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     local g=Duel.SelectMatchingCard(tp,c116301233.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
     local tc=g:GetFirst()
     if tc and tc:GetActivateEffect():IsActivatable(tp) then
-        local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+        local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
         if fc then
             Duel.SendtoGrave(fc,REASON_RULE)
             Duel.BreakEffect()
         end
-        Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+        Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
         Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
     end
     e:GetHandler():RegisterFlagEffect(116301230,RESET_PHASE+PHASE_END,0,1)

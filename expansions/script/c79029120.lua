@@ -32,7 +32,7 @@ function c79029120.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c79029120.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and (c:IsType(TYPE_SYNCHRO) or c:IsType(TYPE_FUSION) or c:IsType(TYPE_XYZ))
+	return c:IsFaceup() and c:IsSetCard(0xa900) and (c:IsType(TYPE_SYNCHRO) or c:IsType(TYPE_FUSION) or c:IsType(TYPE_XYZ))
 end
 function c79029120.lzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
@@ -45,13 +45,13 @@ function c79029120.lzop(e,tp,eg,ep,ev,re,r,rp)
 	 local c=e:GetHandler()
 	 Duel.ConfirmDecktop(tp,3)
 	  local g=Duel.GetDecktopGroup(tp,3)
-		local sg=g:Filter(Card.IsSetCard,nil,0xf02)
+		local sg=g:Filter(Card.IsSetCard,nil,0xa900)
 		if sg:GetCount()>0 then
 	Duel.Overlay(e:GetHandler(),sg) 
 	end
 end
 function c79029120.xfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0xa900)
 end
 function c79029120.xtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

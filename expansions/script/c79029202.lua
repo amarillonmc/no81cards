@@ -85,7 +85,7 @@ function c79029202.desop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 end
 function c79029202.eqfil(c)
-	return c:IsFaceup() and c:IsCode(20007)
+	return c:IsFaceup() and c:IsCode(79020007)
 end
 function c79029202.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c79029202.eqfil(chkc) end
@@ -122,13 +122,13 @@ function c79029202.eqop(e,tp,eg,ep,ev,re,r,rp,c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_EQUIP)
 	e2:SetCode(EFFECT_ADD_SETCODE)
-	e2:SetValue(0xf01)
+	e2:SetValue(0x1901)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e2)
 end
 end
 function c79029202.eqlimit(e,c)
-	return c:IsCode(20007)
+	return c:IsCode(79020007)
 end
 
 

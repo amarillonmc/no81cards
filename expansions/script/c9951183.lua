@@ -37,7 +37,7 @@ function c9951183.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951183,0))
 end
 function c9951183.filter2(c)
-	return c:IsSetCard(0x9ba8) and c:IsType(TYPE_RITUAL) and c:IsAbleToHand()
+	return (c:IsSetCard(0x9ba8) and c:IsType(TYPE_RITUAL)) or c:IsCode(24094653) and c:IsAbleToHand()
 end
 function c9951183.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9951183.filter2,tp,LOCATION_DECK,0,1,nil) end

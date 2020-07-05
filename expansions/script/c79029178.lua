@@ -56,7 +56,7 @@ function c79029178.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029178.costfilter(c)
-	return c:IsSetCard(0xf02) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0xa900) and c:IsAbleToGraveAsCost()
 end
 function c79029178.atcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029178.costfilter,tp,LOCATION_EXTRA,0,1,nil) and Duel.GetAttacker()==e:GetHandler() 

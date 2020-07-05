@@ -1,7 +1,7 @@
 --闪珖星尘龙
 function c9981601.initial_effect(c)
 	   --synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1017),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1017,0xa3),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
  --indes
 	local e2=Effect.CreateEffect(c)

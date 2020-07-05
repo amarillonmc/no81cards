@@ -3,7 +3,7 @@ function c79029053.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,
-	0xf010),aux.FilterBoolFunction(Card.IsFusionSetCard,0xf02),true)
+	0x1902),aux.FilterBoolFunction(Card.IsFusionSetCard,0xa900),true)
 	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE,0,Duel.Release,REASON_COST+REASON_FUSION+REASON_MATERIAL)   
 	--atk limit
 	local e2=Effect.CreateEffect(c)

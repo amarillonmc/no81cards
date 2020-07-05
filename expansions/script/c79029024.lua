@@ -34,7 +34,7 @@ function c79029024.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c79029024.thfilter(c)
-	return c:IsSetCard(0xf01) and c:IsAbleToHand()
+	return c:IsSetCard(0x1901) and c:IsAbleToHand()
 end
 function c79029024.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029024.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -53,7 +53,7 @@ function c79029024.indtg(e,c)
 end
 function c79029024.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetReasonCard()
-	return (ec:IsSummonType(SUMMON_TYPE_XYZ) or ec:IsSummonType(SUMMON_TYPE_FUSION) or ec:IsSummonType(SUMMON_TYPE_LINK)) and ec:IsSetCard(0xf02)
+	return (ec:IsSummonType(SUMMON_TYPE_XYZ) or ec:IsSummonType(SUMMON_TYPE_FUSION) or ec:IsSummonType(SUMMON_TYPE_LINK)) and ec:IsSetCard(0xa900)
 end
 function c79029024.efop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,79029024)

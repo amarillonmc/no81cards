@@ -55,7 +55,7 @@ function c79029098.lzop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029098.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetReasonCard()
-	return ec:IsSetCard(0xf02)
+	return ec:IsSetCard(0xa900)
 end
 function c79029098.efop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,79029098)

@@ -32,7 +32,7 @@ function c79029066.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c79029066.condition(e,tp,eg,ep,ev,re,r,rp)
-   return Duel.GetAttacker():IsControler(1-tp) and Duel.GetAttackTarget():IsSetCard(0xf02)
+   return Duel.GetAttacker():IsControler(1-tp) and Duel.GetAttackTarget():IsSetCard(0xa900)
 end
 function c79029066.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

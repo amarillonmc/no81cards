@@ -12,7 +12,7 @@ function c79029016.initial_effect(c)
 end
 function c79029016.condition(e,tp,eg,ep,ev,re,r,rp)
 	local at=Duel.GetAttackTarget()
-	return tp~=Duel.GetTurnPlayer() and at and at:IsFaceup() and at:IsSetCard(0xf02)
+	return tp~=Duel.GetTurnPlayer() and at and at:IsFaceup() and at:IsSetCard(0xa900)
 end
 function c79029016.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end

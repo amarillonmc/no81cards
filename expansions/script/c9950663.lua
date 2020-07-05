@@ -140,6 +140,11 @@ function c9950663.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
  Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950663,1))
 end
+function c9950663.negop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
+	end
+end
 function c9950663.value(e,c)
 	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD)*1000
 end

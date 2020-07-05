@@ -21,16 +21,16 @@ function c79029063.initial_effect(c)
 	c:RegisterEffect(e2)   
 end
 function c79029063.filter(c)
-	return c:IsSetCard(0xf013) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x1905) and c:IsType(TYPE_MONSTER)
 end
 function c79029063.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c79029063.filter,tp,LOCATION_MZONE,0,2,nil)
 end
 function c79029063.tgfilter(c)
-	return c:IsType(TYPE_XYZ) and c:IsSetCard(0xf013)
+	return c:IsType(TYPE_XYZ) and c:IsSetCard(0x1905)
 end
 function c79029063.hfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsSetCard(0xf013)
+	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x1905)
 end
 function c79029063.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029063.tgfilter,tp,LOCATION_EXTRA,0,1,nil) end
@@ -55,7 +55,7 @@ function c79029063.lvcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c79029063.filter2(c)
-	return c:IsSetCard(0xf02) and c:IsFaceup() and c:GetLevel()>0
+	return c:IsSetCard(0xa900) and c:IsFaceup() and c:GetLevel()>0
 end
 function c79029063.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029063.filter(chkc) end

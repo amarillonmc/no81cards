@@ -41,10 +41,10 @@ function c79029185.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c79029185.eqlimit(e,c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029185.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsSetCard(0xa900)
 end
 function c79029185.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029185.filter(chkc) end
@@ -60,7 +60,7 @@ function c79029185.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029185.spfilter(c,lv,e,tp)
-	return c:IsLevelBelow(lv) and c:IsSetCard(0xf02) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelBelow(lv) and c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029185.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and eg:GetFirst()==e:GetHandler():GetEquipTarget() end
@@ -87,7 +87,7 @@ function c79029185.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end
 function c79029185.xfil(c)
-	 return c:IsSetCard(0xf02) and c:IsType(TYPE_XYZ)
+	 return c:IsSetCard(0xa900) and c:IsType(TYPE_XYZ)
 end
 function c79029185.xtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	 if chk==0 then return e:GetHandler():IsType(TYPE_CONTINUOUS) and Duel.IsExistingMatchingCard(c79029185.xfil,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_GRAVE,1,nil) end

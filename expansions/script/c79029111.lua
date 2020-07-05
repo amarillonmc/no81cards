@@ -4,7 +4,7 @@ function c79029111.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,
-	0xf02 and Card.IsFusionType,TYPE_TUNER),aux.FilterBoolFunction(Card.IsFusionSetCard,0xf02),true)
+	0xa900 and Card.IsFusionType,TYPE_TUNER),aux.FilterBoolFunction(Card.IsFusionSetCard,0xa900),true)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -48,11 +48,11 @@ function c79029111.sprfilter(c)
 end
 function c79029111.sprfilter1(c,tp,g,sc)
 	local lv=c:GetLevel()
-	return c:IsType(TYPE_TUNER) and c:IsSetCard(0xf02) and g:IsExists(c79029111.sprfilter2,1,c,tp,c,sc,lv)
+	return c:IsType(TYPE_TUNER) and c:IsSetCard(0xa900) and g:IsExists(c79029111.sprfilter2,1,c,tp,c,sc,lv)
 end
 function c79029111.sprfilter2(c,tp,mc,sc,lv)
 	local sg=Group.FromCards(c,mc)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 		and Duel.GetLocationCountFromEx(tp,tp,sg,sc)>0
 end
 function c79029111.sprcon(e,c)

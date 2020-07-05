@@ -81,10 +81,10 @@ function c9951100.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_EXTRA)
 end
 function c9951100.sfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsType(TYPE_TRAP) and c:IsSSetable()
 end
 function c9951100.fselect(g,ft)
-	local fc=g:FilterCount(Card.IsType,nil,TYPE_FIELD)
+	local fc=g:FilterCount(Card.IsType,nil,TYPE_TRAP)
 	return fc<=1 and #g-fc<=ft
 end
 function c9951100.spop(e,tp,eg,ep,ev,re,r,rp)

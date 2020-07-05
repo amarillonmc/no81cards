@@ -26,7 +26,7 @@ function c79029021.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029021.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf05)
+	return c:IsFaceup() and c:IsSetCard(0xa903)
 end
 function c79029021.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -60,7 +60,7 @@ end
 function c79029021.condition(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	local bc=tc:GetBattleTarget()
-	return tc:IsRelateToBattle() and tc:IsStatus(STATUS_OPPO_BATTLE) and tc:IsControler(tp) and tc:IsSetCard(0xf05)
+	return tc:IsRelateToBattle() and tc:IsStatus(STATUS_OPPO_BATTLE) and tc:IsControler(tp) and tc:IsSetCard(0xa903)
 		and bc:IsLocation(LOCATION_GRAVE) and bc:IsReason(REASON_BATTLE)
 end
 function c79029021.op(e,tp,eg,ep,ev,re,r,rp)

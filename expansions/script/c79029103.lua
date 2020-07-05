@@ -37,7 +37,7 @@ function c79029103.initial_effect(c)
 	e4:SetOperation(c79029103.tdop)
 	c:RegisterEffect(e4)
 end
-c79029103.card_code_list={0xf08}
+c79029103.card_code_list={0xa906}
 function c79029103.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DEATTACHFROM)
@@ -58,10 +58,10 @@ function c79029103.atkcon(e)
 	return Duel.GetCurrentPhase()==PHASE_DAMAGE_CAL
 end
 function c79029103.atktg(e,c)
-	return c:IsSetCard(0xf08)
+	return c:IsSetCard(0xa906)
 end
 function c79029103.sfilter(c)
-	return c:IsSetCard(0xf08)
+	return c:IsSetCard(0xa906)
 end
 function c79029103.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c79029103.sfilter,tp,LOCATION_MZONE,0,1,nil) end

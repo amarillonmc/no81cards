@@ -1,7 +1,7 @@
 --星尘龙·明镜止水之心
 function c9981597.initial_effect(c)
 	 --synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1017),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1017,0xa3),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
  --search
 	local e1=Effect.CreateEffect(c)

@@ -39,16 +39,14 @@ function c9950803.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return  c:IsSetCard(0x9bd1) or c:IsRace(RACE_INSECT)
 end
 function c9950803.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if Duel.GetLocationCount(1-tp,LOCATION_MZONE)<3 then return end
-	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,9950804,0x9bd1,0x4011,1500,0,4,RACE_INSECT,ATTRIBUTE_WIND) end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,3,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,3,0,0)
 end
 function c9950803.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-	if Duel.GetLocationCount(1-tp,LOCATION_MZONE)<3 then return end
-		if not Duel.IsPlayerCanSpecialSummonMonster(tp,9950804,0x9bd1,0x4011,1500,0,4,RACE_INSECT,ATTRIBUTE_WIND) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<3 then return end
+	if not Duel.IsPlayerCanSpecialSummonMonster(tp,9950804,0x9bd1,0x4011,1500,0,4,RACE_INSECT,ATTRIBUTE_WIND) then return end
 		for i=1,3 do
 			local token=Duel.CreateToken(tp,9950804)
 			Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE)

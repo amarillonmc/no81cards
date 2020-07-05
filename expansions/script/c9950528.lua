@@ -31,7 +31,7 @@ function c9950528.filter1(c,e,tp)
 		and Duel.IsExistingMatchingCard(c9950528.filter2,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,c:GetCode())
 end
 function c9950528.filter2(c,e,tp,tcode)
-	return c:IsSetCard(0x9ba6) and c.assault_name==tcode and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsSetCard(0x9ba6) and c.assault_name==tcode and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function c9950528.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -48,7 +48,7 @@ function c9950528.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=Duel.SelectMatchingCard(tp,c9950528.filter2,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,e:GetLabel()):GetFirst()
-	if tc and Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP_ATTACK)>0 then
+	if tc and Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP_ATTACK)>0 then
 		tc:CompleteProcedure()
 	end
 end

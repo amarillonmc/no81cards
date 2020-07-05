@@ -9,6 +9,17 @@ function c9951259.initial_effect(c)
 	e1:SetTarget(c9951259.target)
 	e1:SetOperation(c9951259.activate)
 	c:RegisterEffect(e1)
+ --salvage
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9951259,1))
+	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,9951259)
+	e2:SetCost(c9951259.thcost)
+	e2:SetTarget(c9951259.thtg)
+	e2:SetOperation(c9951259.thop)
+	c:RegisterEffect(e2)
 end
 function c9951259.tgfilter(c,e,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6bd2) and c:IsCanBeFusionMaterial()
@@ -40,5 +51,25 @@ function c9951259.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(sc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 			sc:CompleteProcedure()
 		end
+	end
+end
+function c9951259.thfilter(c)
+	return c:IsSetCard(0x6bd2) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+end
+function c9951259.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9951259.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c9951259.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function c9951259.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToHand() end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+end
+function c9951259.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,c)
 	end
 end

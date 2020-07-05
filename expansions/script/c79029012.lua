@@ -29,7 +29,7 @@ function c79029012.filter(c,e)
 	return c:IsType(TYPE_MONSTER) and not c:IsCode(79029012)
 end
 function c79029012.thfilter(c)
-	return c:IsSetCard(0xf98) and c:IsAbleToHand()
+	return c:IsSetCard(0xb90f) and c:IsAbleToHand()
 end
 function c79029012.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029012.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -45,7 +45,7 @@ function c79029012.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029012.cfilter(c)
-	return c:IsSetCard(0xf98) and c:IsDiscardable()
+	return c:IsSetCard(0xb90f) and c:IsDiscardable()
 end
 function c79029012.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029012.cfilter,tp,LOCATION_HAND,0,1,nil) end

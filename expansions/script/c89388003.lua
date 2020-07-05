@@ -54,14 +54,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
     if not c:IsRelateToEffect(e) then return end
     Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
-function cm.filter1(c)
-    return c:IsFaceup() and c:IsSetCard(0xcc20)
-end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return false end
-    if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingTarget(Card.IsDestructable,tp,0,LOCATION_ONFIELD,1,nil) end
+    if chk==0 then return Duel.IsExistingTarget(Card.IsDestructable,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingTarget(Card.IsDestructable,tp,0,LOCATION_ONFIELD,1,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-    local g1=Duel.SelectTarget(tp,cm.filter1,tp,LOCATION_ONFIELD,0,1,1,nil)
+    local g1=Duel.SelectTarget(tp,Card.IsDestructable,tp,LOCATION_ONFIELD,0,1,1,nil)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
     local g2=Duel.SelectTarget(tp,Card.IsDestructable,tp,0,LOCATION_ONFIELD,1,1,nil)
     g1:Merge(g2)

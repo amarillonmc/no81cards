@@ -57,7 +57,7 @@ function c79029113.initial_effect(c)
 	c:RegisterEffect(e5)  
 end
 function c79029113.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029113.cfilter(c,e,tp)
 	return c:GetSummonPlayer()==tp and c:IsSummonType(SUMMON_TYPE_PENDULUM)
@@ -79,7 +79,7 @@ function c79029113.operation1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029113.drfilter(c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029113.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029113.drfilter,tp,LOCATION_DECK,0,1,nil) end

@@ -52,7 +52,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
     Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function cm.desfilter(c,tp)
-    return c:IsFaceup() and c:IsSetCard(0xcc20) and c:IsDestructable() and (c:IsLocation(LOCATION_PZONE) or Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
+    return c:IsDestructable() and (c:IsLocation(LOCATION_PZONE) or Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
 end
 function cm.thfilter(c)
     return c:IsSetCard(0xcc20) and c:IsType(TYPE_PENDULUM) and not c:IsCode(m) and not c:IsForbidden()

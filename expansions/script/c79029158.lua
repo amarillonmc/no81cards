@@ -74,7 +74,7 @@ function c79029158.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)
 	Duel.SetSynchroMaterial(g)
 end
 function c79029158.cfilter(c,tp)
-	return c:IsSetCard(0xf02) and c:IsType(TYPE_MONSTER) and not c:IsCode(79029158) and c:IsControler(tp)
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_MONSTER) and not c:IsCode(79029158) and c:IsControler(tp)
 end
 function c79029158.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c79029158.cfilter,1,nil,tp)

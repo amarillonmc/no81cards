@@ -22,6 +22,7 @@ function c9980804.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(TIMING_DAMAGE_STEP,TIMING_DAMAGE_STEP+TIMINGS_CHECK_MONSTER)
 	e1:SetCountLimit(1,9980804)
 	e1:SetTarget(c9980804.cttg)
 	e1:SetOperation(c9980804.ctop)
@@ -61,7 +62,7 @@ end
 function c9980804.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then return Duel.IsExistingTarget(c9980804.ctfilter1,tp,0,LOCATION_MZONE,1,nil)
-		and Duel.IsExistingTarget(c9980804.ctfilter2,tp,LOCATION_MZONE,0,1) end
+		and Duel.IsExistingTarget(c9980804.ctfilter2,tp,LOCATION_MZONE,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
 	local g1=Duel.SelectTarget(tp,c9980804.ctfilter1,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)

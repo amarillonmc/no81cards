@@ -12,25 +12,23 @@ function c9950040.initial_effect(c)
 	e1:SetTarget(c9950040.sptg2)
 	e1:SetOperation(c9950040.spop2)
 	c:RegisterEffect(e1)
-	--spsummon
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetCode(EVENT_TO_GRAVE)
-	e3:SetOperation(c9950040.spreg)
-	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(9950040,0))
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetRange(LOCATION_GRAVE)
-	e4:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e4:SetCountLimit(1)
-	e4:SetCondition(c9950040.spcon)
-	e4:SetTarget(c9950040.sptg)
-	e4:SetOperation(c9950040.spop)
-	e4:SetLabelObject(e3)
-	c:RegisterEffect(e4)
+ --removed
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetOperation(c9950040.rmop)
+	c:RegisterEffect(e1)
+	--special summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9950040,0))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCondition(c9950040.condition)
+	e2:SetTarget(c9950040.target2)
+	e2:SetOperation(c9950040.operation)
+	c:RegisterEffect(e2)
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9950040,2))
@@ -118,30 +116,26 @@ function c9950040.spop2(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 end
-function c9950040.spreg(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if bit.band(r,REASON_EFFECT+REASON_DESTROY)~=REASON_EFFECT+REASON_DESTROY then return end
-	if Duel.GetCurrentPhase()==PHASE_STANDBY then
-		e:SetLabel(Duel.GetTurnCount())
-		c:RegisterFlagEffect(9950040,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,0,2)
-	else
-		e:SetLabel(0)
-		c:RegisterFlagEffect(9950040,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,0,1)
-	end
+function c9950040.rmop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsFacedown() then return end
+	e:GetHandler():RegisterFlagEffect(9950040,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
-function c9950040.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetLabelObject():GetLabel()~=Duel.GetTurnCount() and e:GetHandler():GetFlagEffect(9950040)>0
+function c9950040.condition(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(9950040)~=0
 end
-function c9950040.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-	c:ResetFlagEffect(9950040)
+function c9950040.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():GetFlagEffect(3773197)==0 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	e:GetHandler():RegisterFlagEffect(3773197,RESET_EVENT+0x4760000+RESET_PHASE+PHASE_END,0,1)
 end
-function c9950040.spop(e,tp,eg,ep,ev,re,r,rp)
+function c9950040.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then
+			Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
+			return
+		end
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 	end
 end
 function c9950040.thfilter(c)

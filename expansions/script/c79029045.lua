@@ -28,10 +28,10 @@ function c79029045.initial_effect(c)
 	c:RegisterEffect(e4)  
 end
 function c79029045.thfilter(c)
-	return c:IsSetCard(0xf012) and c:IsType(TYPE_TRAP)
+	return c:IsSetCard(0x1904) and c:IsType(TYPE_TRAP)
 end
 function c79029045.thfilter2(c)
-	return c:IsSetCard(0xf02) and c:IsLevelBelow(4)
+	return c:IsSetCard(0xa900) and c:IsLevelBelow(4)
 end
 function c79029045.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c79029045.thfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(c79029045.thfilter2,tp,LOCATION_DECK,0,1,nil) end
@@ -47,7 +47,7 @@ function c79029045.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029045.rfilter(c,tp)
-	return c:IsType(TYPE_TRAP) and c:IsSetCard(0xf012)
+	return c:IsType(TYPE_TRAP) and c:IsSetCard(0x1904)
 end
 function c79029045.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

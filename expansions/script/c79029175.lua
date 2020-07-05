@@ -41,7 +41,7 @@ function c79029175.initial_effect(c)
 	c:RegisterEffect(e5) 
 end
 function c79029175.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029175.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) end
@@ -68,7 +68,7 @@ function c79029175.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,1200)
 end
 function c79029175.fil(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf02) and c:IsAbleToRemove()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa900) and c:IsAbleToRemove()
 end
 function c79029175.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029175.fil,tp,LOCATION_DECK,0,1,nil) end
@@ -142,5 +142,5 @@ function c79029175.exop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c79029175.estg(e,c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end

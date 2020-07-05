@@ -61,7 +61,7 @@ function c79029181.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
 function c79029181.fil(c)
-	return (c:IsSetCard(0xf97) or c:IsSetCard(0xf98)) and c:IsDiscardable()
+	return (c:IsSetCard(0xc90f) or c:IsSetCard(0xb90f)) and c:IsDiscardable()
 end
 function c79029181.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)

@@ -27,7 +27,7 @@ function c79029140.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c79029140.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:GetCode()~=79029140
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:GetCode()~=79029140
 end
 function c79029140.spcon(e,c)
 	if c==nil then return true end
@@ -48,7 +48,7 @@ function c79029140.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029140.tg(e,c)
-	return c:IsSetCard(0xf05)
+	return c:IsSetCard(0xa903)
 end
 
 

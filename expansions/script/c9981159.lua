@@ -52,14 +52,14 @@ function c9981159.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9981159.spfilter2(c,e,tp)
-	return c:IsSetCard(0x6bc3) and not c:IsCode(9981159) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6bc3) and not c:IsCode(9981159) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c9981159.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9981159.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9981159.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
-function c9981159.spop(e,tp,eg,ep,ev,re,r,rp)
+function c9981159.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

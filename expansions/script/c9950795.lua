@@ -42,10 +42,10 @@ end
 function c9950795.subcon(e)
 	return e:GetHandler():IsLocation(0x1e)
 end
-function c9950795.filter1(c,tp,mc)
+function c9950795.tgfilter1(c,tp,mc)
 	local g=Group.FromCards(c)
 	if mc then g:AddCard(mc) end
-	return (c:IsLocation(LOCATION_HAND+LOCATION_DECK) or c:IsFaceup()) and (c:IsCode(9950282) or aux.IsCodeListed(c,9950282)) and not c:IsCode(9950795) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave() and Duel.GetMZoneCount(tp,g)>0
+	return (c:IsLocation(LOCATION_HAND+LOCATION_DECK) or c:IsFaceup()) and ((c:IsCode(9950282) or aux.IsCodeListed(c,9950282)) and not c:IsCode(9950795) or( c:IsSetCard(0x9bd1) and c:IsAttribute(ATTRIBUTE_DARK))) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave() and Duel.GetMZoneCount(tp,g)>0
 end
 function c9950795.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
@@ -55,7 +55,7 @@ end
 function c9950795.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9950795.filter1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,c9950795.tgfilter1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE,0,1,1,nil,tp)
 	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 and g:GetFirst():IsLocation(LOCATION_GRAVE) and c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end

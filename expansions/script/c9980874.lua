@@ -1,7 +1,7 @@
 --装甲骑士斩月·胜哄武装
 function c9980874.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc2),aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),1)
 	c:EnableReviveLimit()
 	--disable
 	local e4=Effect.CreateEffect(c)
@@ -62,7 +62,7 @@ function c9980874.cfilter(c,tp)
 	return c:IsDiscardable() and Duel.IsExistingMatchingCard(c9980874.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,c)
 end
 function c9980874.tgfilter(c)
-	return c:IsSetCard(0x6bc2) and c:IsAbleToGrave()
+	return c:IsSetCard(0xbca) and c:IsAbleToGrave()
 end
 function c9980874.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9980874.cfilter,tp,LOCATION_HAND,0,1,nil,tp) end
@@ -73,10 +73,10 @@ function c9980874.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function c9980874.atkfilter(c)
-	return c:IsSetCard(0x6bc2) and c:IsFaceup()
+	return c:IsSetCard(0xbca) and c:IsFaceup()
 end
 function c9980874.ctfilter(c)
-	return c:IsSetCard(0x6bc2) 
+	return c:IsSetCard(0xbca) 
 end
 function c9980874.atkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

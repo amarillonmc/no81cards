@@ -68,7 +68,7 @@ function c9950802.copycost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RegisterFlagEffect(9950802,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function c9950802.copyfilter(c,e,tp)
-	return c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:GetSummonPlayer()==1-tp and (not e or c:IsRelateToEffect(e))
+	return c:IsFaceup() and (not e or c:IsRelateToEffect(e))
 end
 function c9950802.copytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and c9950802.copyfilter(chkc) end

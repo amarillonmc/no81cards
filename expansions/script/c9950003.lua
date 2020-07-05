@@ -35,16 +35,6 @@ function c9950003.initial_effect(c)
 	e4:SetCode(EVENT_TO_GRAVE)
 	e4:SetCondition(c9950003.spcon2)
 	c:RegisterEffect(e4)
- --destroy
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9950003,0))
-	e3:SetCategory(CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetCountLimit(1,99500031)
-	e3:SetTarget(c9950003.destg)
-	e3:SetOperation(c9950003.desop)
-	c:RegisterEffect(e3)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -105,16 +95,4 @@ function c9950003.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(800)
 		c:RegisterEffect(e1)
 	end
-end
-function c9950003.desfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
-function c9950003.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(c9950003.desfilter,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-end
-function c9950003.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c9950003.desfilter,tp,0,LOCATION_ONFIELD,nil)
-	Duel.Destroy(g,REASON_EFFECT)
 end

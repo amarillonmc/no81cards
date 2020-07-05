@@ -43,12 +43,12 @@ function c79029214.initial_effect(c)
 	e3:SetValue(c79029214.atkval)
 	c:RegisterEffect(e3)
 end
-c79029214.card_code_list={0xf08}
+c79029214.card_code_list={0xa906}
 function c79029214.lpcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsFaceup()
 end
 function c79029214.filter(c,e,tp)
-	return c:IsSetCard(0xf08) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa906) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029214.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -74,7 +74,7 @@ function c79029214.atkcon(e)
 	return Duel.GetCurrentPhase()==PHASE_DAMAGE_CAL
 end
 function c79029214.atktg(e,c)
-	return c:IsSetCard(0xf08) and e:GetHandler():GetLinkedGroup():IsContains(c)
+	return c:IsSetCard(0xa906) and e:GetHandler():GetLinkedGroup():IsContains(c)
 end
 function c79029214.atkval(e,c)
 	return c:GetAttack()*2

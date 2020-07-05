@@ -77,7 +77,7 @@ function c79029134.atkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(p,rt,REASON_EFFECT)
 end
 function c79029134.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029134.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,5,REASON_COST) end
@@ -148,7 +148,7 @@ function c79029134.penop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029134.thfilter(c)
-	return c:IsSetCard(0xf02) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
 end 
 function c79029134.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029134.thfilter,tp,LOCATION_EXTRA,0,1,nil) end
@@ -163,7 +163,7 @@ function c79029134.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029134.cfilter1(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:IsType(TYPE_TUNER) and c:IsAbleToGraveAsCost() and c:IsLevelBelow(7)
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsType(TYPE_TUNER) and c:IsAbleToGraveAsCost() and c:IsLevelBelow(7)
 		and Duel.IsExistingMatchingCard(c79029134.cfilter2,tp,LOCATION_MZONE,0,1,c,c:GetLevel())
 end
 function c79029134.cfilter2(c,lv)

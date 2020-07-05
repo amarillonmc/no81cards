@@ -30,7 +30,7 @@ function c79029069.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c79029069.matfilter(c)
-	return c:IsLinkSetCard(0xf02)
+	return c:IsLinkSetCard(0xa900)
 end
 function c79029069.rdcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

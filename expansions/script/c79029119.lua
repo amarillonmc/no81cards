@@ -1,7 +1,7 @@
 --乌萨斯·辅助干员-真理
 function c79029119.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xf02),2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xa900),2)
 	 --equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(39890958,0))
@@ -64,11 +64,11 @@ function c79029119.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function c79029119.eqlimit(e,c)
-	return c:IsSetCard(0xf02) or e:GetHandler():GetEquipTarget()==c
+	return c:IsSetCard(0xa900) or e:GetHandler():GetEquipTarget()==c
 end
 function c79029119.filter(c)
 	local ct1,ct2=c:GetUnionCount()
-	return c:IsFaceup() and c:IsSetCard(0xf02) and ct2==0
+	return c:IsFaceup() and c:IsSetCard(0xa900) and ct2==0
 end
 function c79029119.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -93,7 +93,7 @@ function c79029119.eqop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029119.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(79029119)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
+	if chk==0 then return c:GetFlagEffect(79029119)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0	   and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	c:RegisterFlagEffect(79029119,RESET_EVENT+0x7e0000+RESET_PHASE+PHASE_END,0,1)
 end

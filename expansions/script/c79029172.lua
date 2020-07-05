@@ -57,7 +57,7 @@ function c79029172.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c79029172.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029172.cfilter(c,tp)
 	return c:GetSummonPlayer()==tp and c:IsPreviousLocation(LOCATION_EXTRA)

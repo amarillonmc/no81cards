@@ -39,10 +39,10 @@ if not c79029013.global_check then
 	end
 end
 function c79029013.eqlimit(e,c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029013.filter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0xf02) 
+	return c:IsFaceup() and c:IsSetCard(0xa900) 
 end
 function c79029013.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029013.filter(chkc) end

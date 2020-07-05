@@ -44,7 +44,7 @@ function c79029048.val(e,c,Counter)
 	else return c:GetLevel()*100 end
 end
 function c79029048.filter(c)
-	return c:IsSetCard(0xf02) and c:IsFaceup() and c:GetLevel()>0
+	return c:IsSetCard(0xa900) and c:IsFaceup() and c:GetLevel()>0
 end
 function c79029048.lvcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,1,REASON_COST) end

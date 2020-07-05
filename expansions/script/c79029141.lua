@@ -31,13 +31,13 @@ function c79029141.initial_effect(c)
 	c:RegisterEffect(e3) 
 end
 function c79029141.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029141.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_PENDULUM)
 end
 function c79029141.thfilter(c)
-	return c:IsSetCard(0xf01) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x1901) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c79029141.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029141.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -52,7 +52,7 @@ function c79029141.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029141.filter(c,tp)
-	return c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0xa900)
 		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function c79029141.reptg(e,tp,eg,ep,ev,re,r,rp,chk)

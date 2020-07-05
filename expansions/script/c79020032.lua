@@ -1,0 +1,128 @@
+--整合运动·狂暴宿主投掷手
+function c79020032.initial_effect(c)
+	--xyz summon
+	aux.AddXyzProcedure(c,nil,9,2,nil,nil,99)
+	c:EnableReviveLimit()  
+	--atk
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(c79020032.atkval)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e2)  
+	--Remove
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_REMOVE)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,79020032)
+	e3:SetTarget(c79020032.contg)
+	e3:SetOperation(c79020032.conop)
+	c:RegisterEffect(e3)	   
+	--ex atk
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1,790200319999999)
+	e4:SetCost(c79020032.gscost)
+	e4:SetOperation(c79020032.gsop)
+	c:RegisterEffect(e4)  
+	--detch Overlay
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(79020031,0))
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e6:SetCode(EVENT_PHASE+PHASE_END)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCountLimit(1)
+	e6:SetOperation(c79020032.mtop)
+	c:RegisterEffect(e6)
+end
+function c79020032.atkval(e,c)
+	return c:GetOverlayCount()*1000
+end
+function c79020032.gscost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
+function c79020032.gsop(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_EXTRA_ATTACK)
+	e2:SetValue(c79020032.raval)
+	c:RegisterEffect(e2)
+	--
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_BATTLE_DESTROYING)
+	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e3:SetOperation(c79020032.xxop)
+	c:RegisterEffect(e3)
+end
+function c79020032.raval(e,c)
+	return e:GetHandler():GetOverlayCount()
+end
+function c79020032.xxop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=e:GetHandler():GetBattleTarget()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_ADD_SETCODE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetValue(0x3904)
+	tc:RegisterEffect(e1)
+	tc:RegisterFlagEffect(79020033,0,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(79020033,4))
+end
+function c79020032.contg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) end
+	local c=e:GetHandler()
+	local x=c:GetOverlayCount()
+	local g=Duel.GetDecktopGroup(1-tp,x)
+	Duel.SetTargetCard(g)
+	Duel.SetTargetPlayer(1-tp)
+	Duel.SetTargetParam(x*500)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,x*500)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),tp,0)
+end
+function c79020032.conop(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tc=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
+	Duel.Damage(p,d,REASON_EFFECT)
+end
+
+function c79020032.mtop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_EFFECT) then
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_EFFECT)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(2000)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e1)
+	else
+	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
+end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

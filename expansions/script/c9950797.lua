@@ -24,6 +24,14 @@ function c9950797.initial_effect(c)
 	e2:SetTarget(c9950797.atktg)
 	e2:SetOperation(c9950797.atkop)
 	c:RegisterEffect(e2)
+ --tohand
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_TODECK)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e3:SetTarget(c9950797.thtg)
+	e3:SetOperation(c9950797.thop)
+	c:RegisterEffect(e3)
  --spsummon bgm
 	 local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -86,4 +94,16 @@ function c9950797.atkop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 		tc=g:GetNext()
 	end
+end
+function c9950797.filter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToDeck()
+end
+function c9950797.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950797.filter,tp,0,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(c9950797.filter,tp,0,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
+end
+function c9950797.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9950797.filter,tp,0,LOCATION_ONFIELD,nil)
+	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 end

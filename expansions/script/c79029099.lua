@@ -54,7 +54,7 @@ function c79029099.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c79029099.ffilter(c)
-	return c:IsFusionSetCard(0xf00)
+	return c:IsFusionSetCard(0xa908)
 end
 function c79029099.negfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_MONSTER) and aux.disfilter1(c)

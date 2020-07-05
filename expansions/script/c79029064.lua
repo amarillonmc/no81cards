@@ -22,7 +22,7 @@ function c79029064.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 function c79029064.filter1(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0xa900)
 		and Duel.IsExistingMatchingCard(c79029064.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,c:GetRank()+1)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end
@@ -57,7 +57,7 @@ function c79029064.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029064.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsType(TYPE_XYZ)
 end
 function c79029064.starget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c79029064.filter(chkc) end

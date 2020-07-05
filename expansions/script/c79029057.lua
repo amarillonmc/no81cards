@@ -27,7 +27,7 @@ function c79029057.desfilter(c,tc,ec)
 end
 function c79029057.costfilter(c,ec,tp)
 	local lk=c:GetLink()
-	if not c:IsType(TYPE_LINK) or not c:IsSetCard(0xf02) then return false end
+	if not c:IsType(TYPE_LINK) or not c:IsSetCard(0xa900) then return false end
 	return Duel.IsExistingTarget(c79029057.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,lk,c,c,ec)
 end
 function c79029057.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -48,7 +48,7 @@ function c79029057.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
 end
 function c79029057.setfilter(c)
-	return c:IsSetCard(0xf97) and c:IsSSetable()
+	return c:IsSetCard(0xc90f) and c:IsSSetable()
 end
 function c79029057.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029057.setfilter,tp,LOCATION_DECK,0,1,nil) end

@@ -32,13 +32,13 @@ function c79029121.initial_effect(c)
 	c:RegisterEffect(e3) 
 end
 function c79029121.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0xf06)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xa904)
 end
 function c79029121.lzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c79029121.drfilter(c)
-	return c:IsSetCard(0xf02) and c:IsDiscardable()
+	return c:IsSetCard(0xa900) and c:IsDiscardable()
 end
 function c79029121.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	   if chk==0 then return true end

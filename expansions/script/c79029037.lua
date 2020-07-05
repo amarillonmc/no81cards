@@ -27,7 +27,7 @@ function c79029037.initial_effect(c)
 	c:RegisterEffect(e0)
 end
 function c79029037.atkfilter(c)
-	return c:IsSetCard(0xf01)
+	return c:IsSetCard(0x1901)
 end
 function c79029037.val(e,c)
 	local g=Duel.GetMatchingGroup(c79029037.atkfilter,c:GetControler(),LOCATION_GRAVE,0,nil)
@@ -38,7 +38,7 @@ function c79029037.lzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c79029037.drfilter(c)
-	return c:IsSetCard(0xf02) and c:IsDiscardable()
+	return c:IsSetCard(0xa900) and c:IsDiscardable()
 end
 function c79029037.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029037.drfilter,tp,LOCATION_HAND,0,1,nil) end
@@ -53,7 +53,7 @@ function c79029037.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardDeck(tp,lv,REASON_EFFECT)
 end
 function c79029037.spfilter(c,e,tp)
-	return c:IsSetCard(0xf02) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelBelow(6)
+	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelBelow(6)
 end
 function c79029037.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(c79029037.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then return end

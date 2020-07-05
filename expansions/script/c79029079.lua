@@ -22,7 +22,7 @@ function c79029079.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029079.filter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xf02)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xa900)
 end
 function c79029079.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and c79029079.filter(chkc,e,tp) end
@@ -39,7 +39,7 @@ function c79029079.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029079.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsSetCard(0xa900)
 		and c:IsOnField() and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function c79029079.reptg(e,tp,eg,ep,ev,re,r,rp,chk)

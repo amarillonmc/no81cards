@@ -13,7 +13,7 @@ function c9980910.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
 	e2:SetCountLimit(1,9980910)
 	e2:SetCondition(c9980910.spcon)
 	c:RegisterEffect(e2)
@@ -69,7 +69,7 @@ end
 function c9980910.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and
-		Duel.IsExistingMatchingCard(Card.IsType,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,0,20,e:GetHandler(),TYPE_MONSTER)
+		Duel.IsExistingMatchingCard(Card.IsType,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,0,15,e:GetHandler(),TYPE_MONSTER)
 end
 function c9980910.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

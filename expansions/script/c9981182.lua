@@ -75,18 +75,18 @@ function c9981182.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ct=g:GetClassCount(Card.GetCode)
 	return ct>9
 end
-function c9981182.filter(c,e,tp)
-	return c:IsSetCard(0x3bce) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+function c9981182.filter2(c,e,tp)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3bce) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c9981182.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9981182.filter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,e,tp) end
+		and Duel.IsExistingMatchingCard(c9981182.filter2,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA)
 end
 function c9981182.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9981182.filter),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9981182.filter2),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
 	end

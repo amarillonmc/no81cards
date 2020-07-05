@@ -1,7 +1,7 @@
 --疾速骑士Drive-特殊型号
 function c9980896.initial_effect(c)
 	 c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,c9980896.matfilter1,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9bc2),3,true,true)
+	aux.AddFusionProcCodeFun(c,c9980896.matfilter1,aux.FilterBoolFunction(Card.IsFusionSetCard,0xbca),3,true,true)
 	--attack all
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -71,7 +71,7 @@ function c9980896.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980896,2))
 end
 function c9980896.matfilter1(c)
-	return c:IsFusionType(TYPE_LINK) and c:IsFusionSetCard(0x9bc2)
+	return c:IsFusionType(TYPE_LINK) and c:IsFusionSetCard(0xbca)
 end
 function c9980896.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

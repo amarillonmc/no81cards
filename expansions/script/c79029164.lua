@@ -26,13 +26,13 @@ function c79029164.initial_effect(c)
 	c:RegisterEffect(e2)	
 end
 function c79029164.mfilter(c)
-	return c:IsLevelBelow(4) and c:IsSetCard(0xf02)
+	return c:IsLevelBelow(4) and c:IsSetCard(0xa900)
 end
 function c79029164.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c79029164.thfilter(c)
-	return c:IsSetCard(0xf99) and c:IsAbleToHand()
+	return c:IsSetCard(0xa90f) and c:IsAbleToHand()
 end
 function c79029164.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029164.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -47,7 +47,7 @@ function c79029164.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029164.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0xf02)
+	return c:IsFaceup() and c:IsSetCard(0xa900)
 		and c:IsOnField() and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function c79029164.reptg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -25,7 +25,7 @@ function c79029047.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029047.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf012) and c:GetLevel()==9
+	return c:IsFaceup() and c:IsSetCard(0x1904) and c:GetLevel()==9
 end
 function c79029047.condition(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(c79029047.cfilter,tp,LOCATION_MZONE,0,1,nil) then return false end
@@ -45,7 +45,7 @@ function c79029047.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029047.setfilter(c,tp)
-	return c:IsSetCard(0xf012) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x1904) and c:IsType(TYPE_MONSTER)
 end
 function c79029047.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c79029047.setfilter,1,nil,tp)

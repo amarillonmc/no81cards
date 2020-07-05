@@ -46,11 +46,11 @@ function c9980197.filter3(c,e,tp)
 	return c:IsFaceup() and c:IsSetCard(0x6bc8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9980197.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(tp) and c9980197.filter3(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c9980197.filter3,tp,LOCATION_SZONE,0,1,nil,e,tp)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9980197.filter3(chkc,e,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c9980197.filter3,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c9980197.filter3,tp,LOCATION_SZONE,0,1,1,nil,e,tp)
+	local g=Duel.SelectTarget(tp,c9980197.filter3,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c9980197.spop(e,tp,eg,ep,ev,re,r,rp)

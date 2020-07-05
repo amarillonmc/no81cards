@@ -33,7 +33,7 @@ function c79029068.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 function c79029068.matfilter(c)
-	return c:IsLinkSetCard(0xf02)
+	return c:IsLinkSetCard(0xa900)
 end
 function c79029068.indtg(e,c)
 	return e:GetHandler():GetLinkedGroup():IsContains(c)
@@ -51,7 +51,7 @@ function c79029068.spfilter1(c,e,tp)
 	else return false end
 end
 function c79029068.spfilter2(c,e,tp,zone)
-	return c:IsSetCard(0xf02) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 end
 function c79029068.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

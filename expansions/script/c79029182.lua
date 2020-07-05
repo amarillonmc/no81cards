@@ -43,7 +43,7 @@ function c79029182.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c79029182.tg(e,c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029182.con(e)
 	return not Duel.IsExistingMatchingCard(Card.IsSetCard,tp,0,LOCATION_MZONE,1,nil,0x62) 

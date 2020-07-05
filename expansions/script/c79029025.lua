@@ -42,13 +42,13 @@ function c79029025.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
 function c79029025.imfilter(c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029025.filter(c)
 	return c:IsType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
 end
 function c79029025.ffilter(c)
-	return c:IsFusionType(TYPE_RITUAL+TYPE_XYZ+TYPE_SYNCHRO+TYPE_LINK) and c:IsSetCard(0xf02)
+	return c:IsFusionType(TYPE_RITUAL+TYPE_XYZ+TYPE_SYNCHRO+TYPE_LINK) and c:IsSetCard(0xa900)
 end
 function c79029025.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local x=e:GetHandler():GetMaterialCount()

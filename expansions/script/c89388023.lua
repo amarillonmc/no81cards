@@ -23,7 +23,7 @@ function cm.initial_effect(c)
     c:RegisterEffect(e2)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-    return e:GetHandler():IsPreviousLocation(LOCATION_HAND+LOCATION_ONFIELD)
+    return e:GetHandler():IsPreviousLocation(LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end

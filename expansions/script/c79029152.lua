@@ -40,7 +40,7 @@ function c79029152.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c79029152.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029152.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,1000) end
@@ -76,7 +76,7 @@ function c79029152.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetTarget(c79029152.chain_target)
 	e1:SetOperation(c79029152.chain_operation)
-	e1:SetValue(aux.FilterBoolFunction(Card.IsSetCard,0xf02))
+	e1:SetValue(aux.FilterBoolFunction(Card.IsSetCard,0xa900))
 	Duel.RegisterEffect(e1,tp)
 end
 function c79029152.fil(c,e)

@@ -50,7 +50,6 @@ function c79029011.initial_effect(c)
 	--back to deck
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e6:SetCode(EVENT_PHASE+PHASE_END)
 	e6:SetRange(LOCATION_FZONE)
 	e6:SetCountLimit(1)
@@ -67,13 +66,13 @@ function c79029011.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function c79029011.spfilter(c,e,tp)
-	return c:IsSetCard(0xf02) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029011.xfilter(e,c)
-	return c:IsSetCard(0xf99)
+	return c:IsSetCard(0xa90f)
 end
 function c79029011.indestg(e,c)
-	return c:IsSetCard(0xf01) or c:IsSetCard(0xf02)
+	return c:IsSetCard(0x1901) or c:IsSetCard(0xa900)
 end
 function c79029011.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
@@ -109,7 +108,7 @@ end
 end
 end
 function c79029011.filter(c,e,tp)
-	return c:IsLevelBelow(6) and c:IsSetCard(0xf01) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelBelow(6) and c:IsSetCard(0x1901) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029011.actar(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -172,7 +171,7 @@ function c79029011.spop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029011.xfilter(c)
-	return c:IsSetCard(0xf99) and not c:IsForbidden() and not c:IsCode(79029011)
+	return c:IsSetCard(0xa90f) and not c:IsForbidden() and not c:IsCode(79029011)
 end
 function c79029011.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029011.xfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil)

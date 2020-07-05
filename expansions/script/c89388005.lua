@@ -35,20 +35,19 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function cm.setfilter(c)
-    return c:IsSetCard(0xcc20) and c:IsAbleToGrave()
+    return c:IsSetCard(0xcc20) and c:IsType(TYPE_PENDULUM)
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():IsAbleToHand() and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-    Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+    Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) then return end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+    Duel.Hint(HINT_SELECTMSG,tp,CATEGORY_TOEXTRA)
     local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil)
-    if g and g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)>0 then
+    if g and g:GetCount()>0 and Duel.SendtoExtraP(g,nil,REASON_EFFECT)>0 then
         Duel.SendtoHand(c,nil,REASON_EFFECT)
     end
 end

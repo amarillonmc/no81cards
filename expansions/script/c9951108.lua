@@ -21,7 +21,8 @@ function c9951108.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetValue(c9951108.atkval)
+	e1:SetCondition(c9951108.atkcon)
+	e1:SetValue(1000)
 	c:RegisterEffect(e1)
   --search
 	local e1=Effect.CreateEffect(c)
@@ -72,4 +73,10 @@ function c9951108.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+end
+function c9951108.filter(c)
+	return c:IsFaceup() and c:IsType(TYPE_TRAP)
+end
+function c9951108.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c9951108.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 end

@@ -49,7 +49,7 @@ function c79029196.initial_effect(c)
 end
 function c79029196.limit(e,c)
 	if not c then return false end
-	return not c:IsSetCard(0xf02)
+	return not c:IsSetCard(0xa900)
 end
 function c79029196.spcon(e,c)
 	if c==nil then return true end
@@ -71,7 +71,7 @@ function c79029196.spop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function c79029196.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetReasonCard()
-	return ec:IsSetCard(0xf02)
+	return ec:IsSetCard(0xa900)
 end
 function c79029196.efop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,79029196)

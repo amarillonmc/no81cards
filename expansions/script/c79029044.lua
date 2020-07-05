@@ -23,7 +23,7 @@ function c79029044.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029044.sprfilter(c)
-	return c:IsLocation(LOCATION_HAND+LOCATION_ONFIELD+LOCATION_REMOVED) and c:IsSetCard(0xf012) and bit.band(c:GetOriginalType(),TYPE_TRAP)~=0 and c:IsAbleToGraveAsCost()
+	return c:IsLocation(LOCATION_HAND+LOCATION_ONFIELD+LOCATION_REMOVED) and c:IsSetCard(0x1904) and bit.band(c:GetOriginalType(),TYPE_TRAP)~=0 and c:IsAbleToGraveAsCost()
 end
 function c79029044.fselect(g,tp)
 	return Duel.GetMZoneCount(tp,g)>0

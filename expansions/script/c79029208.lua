@@ -36,7 +36,7 @@ function c79029208.initial_effect(c)
 	e4:SetRange(LOCATION_REMOVED)
 	e4:SetTargetRange(LOCATION_MZONE,0)
 	e4:SetCode(EFFECT_UPDATE_ATTACK)
-	e4:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xf02))
+	e4:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa900))
 	e4:SetValue(1000)
 	c:RegisterEffect(e4)
 	local e5=e4:Clone()
@@ -55,9 +55,12 @@ function c79029208.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029208.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-	getmetatable(e:GetHandler()).announce_filter={0xf02,OPCODE_ISSETCARD}
+	getmetatable(e:GetHandler()).announce_filter={0xa900,OPCODE_ISSETCARD}
 	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
 	local tc=Duel.CreateToken(tp,ac)
+	if not tc:IsType(TYPE_MONSTER) then
+	tc:AddMonsterAttribute(TYPE_NORMAL)
+	end
 	Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)

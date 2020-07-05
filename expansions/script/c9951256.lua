@@ -101,7 +101,7 @@ function c9951256.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c9951256.tdfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9951256.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c9951256.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,3,nil)
+	local g=Duel.SelectTarget(tp,c9951256.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,5,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
 function c9951256.tdop(e,tp,eg,ep,ev,re,r,rp)

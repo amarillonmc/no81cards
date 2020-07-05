@@ -16,7 +16,7 @@ function c79029161.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c79029161.filter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xf02)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xa900)
 end
 function c79029161.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_HAND) and c79029161.filter(chkc,e,tp) end
@@ -75,7 +75,7 @@ function c79029161.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c79029161.splimit(e,c)
-	return not c:IsSetCard(0xf02)   
+	return not c:IsSetCard(0xa900)   
 end
 
 

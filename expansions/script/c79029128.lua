@@ -43,13 +43,13 @@ function c79029128.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c79029128.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf02) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029128.pcfilter(c)
-	return c:IsSetCard(0xf01) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsSetCard(0x1901) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c79029128.thfilter(c)
-	return c:IsSetCard(0xf01) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
+	return c:IsSetCard(0x1901) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
 end
 function c79029128.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029128.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -87,7 +87,7 @@ function c79029128.pcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029128.splimit1(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xf01) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+	return not c:IsSetCard(0x1901) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029128.pccon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_PZONE,0)==0

@@ -32,7 +32,7 @@ function c79029174.filter(tc,c,tp)
 	return res
 end
 function c79029174.synfilter(c,mg)
-	return c:IsSetCard(0xf02) and c:IsSynchroSummonable(nil,mg)
+	return c:IsSetCard(0xa900) and c:IsSynchroSummonable(nil,mg)
 end
 function c79029174.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c79029174.filter(chkc,e:GetHandler(),tp) end
@@ -62,13 +62,13 @@ function c79029174.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029174.filter1(c,e,tp)
 	local rk=c:GetRank()
-	return rk>1 and c:IsFaceup() and c:IsSetCard(0xf02)
+	return rk>1 and c:IsFaceup() and c:IsSetCard(0xa900)
 		and Duel.IsExistingMatchingCard(c79029174.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk)
 		and Duel.GetLocationCountFromEx(tp,tp,c)>0
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end
 function c79029174.filter2(c,e,tp,mc,rk)
-	return c:IsRankBelow(rk-1) and c:IsSetCard(0xf02) and mc:IsCanBeXyzMaterial(c)
+	return c:IsRankBelow(rk-1) and c:IsSetCard(0xa900) and mc:IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 end
 function c79029174.cost(e,tp,eg,ep,ev,re,r,rp,chk)

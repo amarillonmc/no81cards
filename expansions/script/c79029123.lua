@@ -33,10 +33,10 @@ function c79029123.lzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) or not e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c79029123.thfilter(c)
-	return c:IsSetCard(0xf02) and c:IsAbleToHand()
+	return c:IsSetCard(0xa900) and c:IsAbleToHand()
 end
 function c79029123.spfilter(c,e,tp,att)
-	return c:IsSetCard(0xf02) and c:IsAttribute(att) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa900) and c:IsAttribute(att) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029123.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029123.thfilter,tp,LOCATION_DECK,0,1,nil) end

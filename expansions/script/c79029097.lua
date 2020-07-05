@@ -21,7 +21,7 @@ function c79029097.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c79029097.filter(c,e,tp)
-	return c:IsSetCard(0xf02) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029097.lzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
@@ -41,7 +41,7 @@ function c79029097.lzop(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 function c79029097.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf02) and c:GetBaseAttack()>=0
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:GetBaseAttack()>=0
 end
 function c79029097.atkval(e,c)
 	local lg=c:GetLinkedGroup():Filter(c79029097.atkfilter,nil)

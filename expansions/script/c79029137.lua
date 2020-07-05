@@ -16,11 +16,11 @@ function c79029137.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	return true
 end
 function c79029137.filter1(c,e,tp)
-	return c:IsSetCard(0xf02) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsSetCard(0xa900) and Duel.GetMZoneCount(tp,c)>0
 		and Duel.IsExistingMatchingCard(c79029137.filter2,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,1,nil,e,tp,c:GetCode())
 end
 function c79029137.filter2(c,e,tp,tcode)
-	return c:IsSetCard(0xf96) and c.assault_name==tcode and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsSetCard(0xd90f) and c.assault_name==tcode and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c79029137.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

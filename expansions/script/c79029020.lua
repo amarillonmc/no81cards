@@ -25,7 +25,7 @@ function c79029020.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029020.spfilter(c)
-	return c:IsSetCard(0xf06)
+	return c:IsSetCard(0xa904)
 end
 function c79029020.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttacker():IsControler(1-tp) and Duel.GetAttackTarget()==nil and Duel.IsExistingMatchingCard(c79029020.spfilter,tp,LOCATION_GRAVE,0,1,nil)

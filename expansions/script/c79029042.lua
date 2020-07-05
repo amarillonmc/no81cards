@@ -19,10 +19,10 @@ function c79029042.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029042.sfilter(c)
-	return c:IsSetCard(0xf02)
+	return c:IsSetCard(0xa900)
 end
 function c79029042.sfilter2(c,e,tp)
-	return c:IsSetCard(0xf012) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x1904) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029042.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	   if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c79029042.sfilter(chkc) end
@@ -42,7 +42,7 @@ function c79029042.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029042.filter(c)
-	return c:IsSetCard(0xf02) and c:IsAbleToDeck()
+	return c:IsSetCard(0xa900) and c:IsAbleToDeck()
 end
 function c79029042.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c79029042.filter(chkc) end
