@@ -1,6 +1,7 @@
 --噬界兽LV0-原核形态
 local m=14000200
 local cm=_G["c"..m]
+cm.named_with_Worlde=1
 function cm.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,cm.matfilter,1,1)

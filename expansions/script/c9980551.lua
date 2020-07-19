@@ -1,7 +1,7 @@
 --音击战士·歌舞鬼
 function c9980551.initial_effect(c)
 	 --synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3bca),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--spsummon
 	local e3=Effect.CreateEffect(c)
@@ -75,7 +75,7 @@ function c9980551.disop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9980551.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3bca) and c:IsAbleToRemoveAsCost()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xbca) and c:IsAbleToRemoveAsCost()
 end
 function c9980551.immcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9980551.cfilter,tp,LOCATION_GRAVE,0,1,nil) end

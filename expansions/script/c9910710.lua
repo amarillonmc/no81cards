@@ -1,4 +1,5 @@
 --远古造物 昆士兰克柔龙
+require("expansions/script/c9910106")
 function c9910710.initial_effect(c)
 	c:EnableReviveLimit()
 	--special summon
@@ -54,23 +55,23 @@ function c9910710.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
-function c9910710.tgfilter(c,tp)
-	return c:IsSetCard(0xc950) and c:IsLevelBelow(5) and (c:IsAbleToGrave() or c9910710.filter2(c,tp))
+function c9910710.tgfilter(c,e,tp)
+	return c:IsSetCard(0xc950) and c:IsLevelBelow(5) and (c:IsAbleToGrave() or c9910710.filter2(c,e,tp))
 end
-function c9910710.filter2(c,tp)
-	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not c:IsForbidden()
+function c9910710.filter2(c,e,tp)
+	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Zcd.SetFilter(c,e)
 end
 function c9910710.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910710.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910710.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,0,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function c9910710.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9910710.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,c9910710.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if not tc then return end
 	if tc:IsAbleToGrave()
-		and (not c9910710.filter2(tc,tp) or Duel.SelectOption(tp,1191,aux.Stringid(9910710,0))==0) then
+		and (not c9910710.filter2(tc,e,tp) or Duel.SelectOption(tp,1191,aux.Stringid(9910710,0))==0) then
 		Duel.SendtoGrave(tc,REASON_EFFECT)
 	else
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)

@@ -23,7 +23,7 @@ function c79029204.cop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029204.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetCounter(0x1019)>=0 and Duel.IsPlayerCanDraw(tp,2) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),79029096)
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
 function c79029204.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

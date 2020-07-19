@@ -107,6 +107,8 @@ function c79029180.tgop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		if Duel.SendtoGrave(cg,REASON_EFFECT)~=0 then 
 		Duel.Damage(1-tp,cg:GetCount()*500,REASON_EFFECT)
+	Debug.Message("小姐有仁慈之心，我没有。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029180,0))
 	end
 end
 end
@@ -123,4 +125,6 @@ function c79029180.seqop(e,tp,eg,ep,ev,re,r,rp)
 	local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 	local nseq=math.log(s,2)
 	Duel.MoveSequence(tc,nseq)
+	Debug.Message("这个位置......不错。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029180,1))
 end

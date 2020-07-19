@@ -1,4 +1,5 @@
 --远古造物 巨型羽翅鲎
+require("expansions/script/c9910106")
 function c9910704.initial_effect(c)
 	c:EnableReviveLimit()
 	--special summon
@@ -94,7 +95,8 @@ function c9910704.hdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoGrave(sg,REASON_DISCARD+REASON_EFFECT)
 end
 function c9910704.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanTurnSet() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Zcd.SetFilter(e:GetHandler(),e) end
 end
 function c9910704.setop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end

@@ -16,6 +16,18 @@ function c9950652.initial_effect(c)
 	e2:SetTarget(c9950652.distg)
 	e2:SetOperation(c9950652.disop)
 	c:RegisterEffect(e2)
+ --damage
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9950652,0))
+	e1:SetCategory(CATEGORY_DAMAGE+CATEGORY_DECKDES)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,9950652)
+	e1:SetCondition(c9950652.damcon)
+	e1:SetTarget(c9950652.damtg)
+	e1:SetOperation(c9950652.damop)
+	c:RegisterEffect(e1)
 --spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -55,4 +67,22 @@ function c9950652.disop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
  Duel.Hint(HINT_SOUND,0,aux.Stringid(9950652,2))
+end
+function c9950652.damcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+end
+function c9950652.damfilter(c)
+	return c:GetBaseAttack()>0 and c:IsAbleToGrave()
+end
+function c9950652.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9950652.damfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,0)
+end
+function c9950652.damop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9950652.damfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	local tc=g:GetFirst()
+	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
+		Duel.Damage(tp,math.floor(g:GetFirst():GetBaseAttack()/2),REASON_EFFECT)
+	end
 end

@@ -2,12 +2,16 @@
 local m=33401058
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	 --Activate
+	--Activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetOperation(cm.activate)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,m)
+	e1:SetCondition(cm.condition)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
  --set
 	local e2=Effect.CreateEffect(c)
@@ -21,32 +25,35 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.setop)
 	c:RegisterEffect(e2)
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
---special summon
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetCategory(CATEGORY_DAMAGE)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_BATTLE_DAMAGE)
-	e2:SetCondition(cm.dmcon)
-	e2:SetTarget(cm.dmtg)
-	e2:SetOperation(cm.dmop)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp) 
+function cm.cfilter(c,tp)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsSetCard(0x9341) and c:GetPreviousControler()==tp
 end
-function cm.dmcon(e,tp,eg,ep,ev,re,r,rp)
-	local a=Duel.GetAttacker()
-	local d=Duel.GetAttackTarget()
-	return ep==tp and ((a:IsControler(tp) and  a:IsSetCard(0x9341)) or (d:IsControler(tp) and d and d:IsSetCard(0x9341)))
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.cfilter,1,nil,tp)
 end
-function cm.dmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local  dam=Duel.GetBattleDamage(tp)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,1,1-tp,dam)
+function cm.thfilter(c)
+	return c:IsSetCard(0xdf) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function cm.dmop(e,tp,eg,ep,ev,re,r,rp)
-	local  dam=Duel.GetBattleDamage(tp)
-	Duel.Damage(1-tp,2*dam,REASON_EFFECT)
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chkc then return false end
+	if chk==0 then return  Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g1=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)  
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,g1:GetCount(),0,0)
+  Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,PLAYER_ALL,1000)
 end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
+	if tg:GetCount()>0 then
+		Duel.Destroy(tg,REASON_EFFECT)
+	end
+	Duel.Damage(1-tp,1000,REASON_EFFECT,true)
+	Duel.Damage(tp,1000,REASON_EFFECT,true)
+	Duel.RDComplete()
+end
+
+
 
 function cm.filter(c,e,tp)
 	return  c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_MZONE)

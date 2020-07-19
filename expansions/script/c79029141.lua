@@ -59,7 +59,7 @@ function c79029141.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return eg:IsExists(c79029141.filter,1,nil,tp)
 		and c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED) end
-	return Duel.SelectEffectYesNo(tp,c,79029096)
+	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function c79029141.repval(e,c)
 	return c79029141.filter(c,e:GetHandlerPlayer())

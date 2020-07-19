@@ -25,7 +25,7 @@ function c79029047.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029047.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x1904) and c:GetLevel()==9
+	return c:IsFaceup() and c:IsSetCard(0x1904) and c:GetLevel()>=9
 end
 function c79029047.condition(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(c79029047.cfilter,tp,LOCATION_MZONE,0,1,nil) then return false end
@@ -58,7 +58,6 @@ function c79029047.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsSSetable() then
 		Duel.SSet(tp,c)
-		Duel.ConfirmCards(1-tp,c)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)

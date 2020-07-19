@@ -1,5 +1,6 @@
 --光之国·赛罗-月神奇迹
 function c9951200.initial_effect(c)
+c:SetSPSummonOnce(9951200)
 	   --fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xcbd1),aux.FilterBoolFunction(Card.IsFusionSetCard,0x9bd1),true)
@@ -20,6 +21,7 @@ function c9951200.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,9951200)
+	e1:SetCondition(c9951200.thcon)
 	e1:SetTarget(c9951200.drtg)
 	e1:SetOperation(c9951200.drop)
 	c:RegisterEffect(e1)
@@ -72,6 +74,9 @@ function c9951200.initial_effect(c)
 end
 function c9951200.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951200,0))
+end
+function c9951200.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
 end
 function c9951200.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

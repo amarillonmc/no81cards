@@ -35,6 +35,8 @@ function c79029200.op(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetHandler():GetControler()
 	local g=Duel.GetDecktopGroup(p,5)
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	 Debug.Message("你们回不了家了。")
+	 Duel.Hint(HINT_SOUND,0,aux.Stringid(79029200,0))
 end
 
 

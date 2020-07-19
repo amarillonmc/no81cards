@@ -69,7 +69,7 @@ function c79029100.filter(c,e,tp)
 	return c:IsSetCard(0x1908)
 end
 function c79029100.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	 if chk==0 then return Duel.IsExistingMatchingCard(c79029100.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) end
+	 if chk==0 then return Duel.IsExistingMatchingCard(c79029100.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>=1 and Duel.IsPlayerCanSpecialSummonMonster(tp,79029101,0,0x4011,0,0,1,RACE_CYBERSE,ATTRIBUTE_WATER)  end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_DECK)
 
 end

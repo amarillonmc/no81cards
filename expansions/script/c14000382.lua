@@ -67,7 +67,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(cm.sfilter,tp,LOCATION_GRAVE,0,c,e,tp)
 		local mg=g:Filter(cm.ffilter,nil,e)
 		mg:AddCard(c)
-		if mg:GetCount()<2 or Duel.GetLocationCountFromEx(tp,tp,c)<=0 then return end
+		if mg:GetCount()<2 then return end
 		local sg=Duel.GetMatchingGroup(cm.ffilter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg,c)
 		if sg:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()
@@ -93,7 +93,7 @@ function cm.ffilter(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function cm.ffilter2(c,e,tp,mg,gc)
-	return cm.Grava(c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(mg,gc)
+	return cm.Grava(c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(mg,gc) and Duel.GetLocationCountFromEx(tp,tp,mg:Filter(Card.IsLocation,nil,LOCATION_MZONE),c)
 end
 function cm.ffilter3(c,e,tp,gc)
 	local mg=Group.FromCards(c,gc)

@@ -74,7 +74,7 @@ Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950969,0))
 Duel.Hint(HINT_SOUND,0,aux.Stringid(9950969,2))
 end
 function c9950969.filter(c,e,tp)
-	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelBelow(4) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950969.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

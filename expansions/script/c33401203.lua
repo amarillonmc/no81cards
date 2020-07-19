@@ -78,30 +78,7 @@ function c33401203.activate(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
-	tc:RegisterFlagEffect(33401203,RESET_EVENT+RESETS_STANDARD,0,1)
-local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_PHASE+PHASE_END)
-		e2:SetCountLimit(1)
-		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e2:SetLabelObject(tc)
-		e2:SetCondition(c33401203.descon)
-		e2:SetOperation(c33401203.desop)
-		Duel.RegisterEffect(e2,tp)
 	end
-end
-function c33401203.descon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc:GetFlagEffect(33401203)~=0 then
-		return true
-	else
-		e:Reset()
-		return false
-	end
-end
-function c33401203.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	Duel.Destroy(tc,REASON_EFFECT)
 end
 
 

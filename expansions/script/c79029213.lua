@@ -23,7 +23,7 @@ function c79029213.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function c79029213.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0xf02) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0xa900) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c79029213.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -89,7 +89,7 @@ function c79029213.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 function c79029213.penfilter(c,e,tp) 
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xf02)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xa900)
 end
 function c79029213.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

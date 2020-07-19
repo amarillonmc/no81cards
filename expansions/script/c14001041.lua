@@ -6,7 +6,6 @@ if not Goned then
 	go=Goned
 	function go.effect(c)
 		local code=c:GetOriginalCodeRule()
-		c:SetSPSummonOnce(code)
 		--special summon from hand
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(code,0))

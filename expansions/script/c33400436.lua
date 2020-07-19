@@ -1,6 +1,6 @@
 --DEM 爱莲·米拉·梅瑟斯
 function c33400436.initial_effect(c)
-	 aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xc343),8,3)
+	 aux.AddXyzProcedure(c,nil,8,3)
 	 --Equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33400436,0))
@@ -72,7 +72,7 @@ end
 
 function c33400436.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return  c:GetAttack()<c:GetBaseAttack()and (Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()) and c:GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x6343)
+	return   (Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()) and c:GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x6343)
 end
 function c33400436.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -88,6 +88,18 @@ function c33400436.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(3000)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
+   local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_IMMUNE_EFFECT)
+		e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e3:SetRange(LOCATION_MZONE)
+		e3:SetValue(c33400436.efilter)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e3:SetOwnerPlayer(tp)
+		c:RegisterEffect(e3)
+end
+function c33400436.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 
 function c33400436.cfilter2(c,tp)

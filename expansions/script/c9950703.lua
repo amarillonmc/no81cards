@@ -41,7 +41,7 @@ function c9950703.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
+	e3:SetCondition(c9950703.thcon)
 	e3:SetTarget(c9950703.hdtg2)
 	e3:SetOperation(c9950703.hdop2)
 	c:RegisterEffect(e3)
@@ -104,6 +104,9 @@ function c9950703.atkup(e,c)
 end
 function c9950703.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
+end
+function c9950703.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
 end
 function c9950703.hdtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) end

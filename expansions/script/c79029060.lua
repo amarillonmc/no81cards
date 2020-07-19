@@ -50,7 +50,7 @@ function c79029060.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return eg:IsExists(c79029060.repfilter,1,nil,tp)
 		and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
-	return Duel.SelectEffectYesNo(tp,c,79029096)
+	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function c79029060.desrepval(e,c)
 	return c79029060.repfilter(c,e:GetHandlerPlayer())

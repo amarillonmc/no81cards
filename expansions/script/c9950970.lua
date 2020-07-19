@@ -46,7 +46,7 @@ function c9950970.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c9950970.filter(c,e,tp,zone)
-	return c:IsType(TYPE_LINK) and not c:IsCode(9950970)
+	return c:IsSetCard(0x101) and c:IsType(TYPE_LINK) and not c:IsCode(9950970)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 end
 function c9950970.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

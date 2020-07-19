@@ -15,6 +15,13 @@ function c9951214.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetValue(1000)
 	c:RegisterEffect(e2)
+	--Untargetable
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_EQUIP)
+	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e3:SetValue(aux.tgoval)
+	c:RegisterEffect(e3)
 --chain atk
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(9951214,1))

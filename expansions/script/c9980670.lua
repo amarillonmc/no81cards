@@ -11,6 +11,15 @@ function c9980670.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e2)
+ --special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_GRAVE)
+	e1:SetCountLimit(1,9980670)
+	e1:SetCondition(c9980670.spcon)
+	c:RegisterEffect(e1)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -24,6 +33,14 @@ end
 function c9980670.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980670,0))
 end 
+function c9980670.spfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x6bc1) and c:GetCode()~=9980670
+end
+function c9980670.spcon(e,c)
+	if c==nil then return true end
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9980670.spfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
+end
 function c9980670.costfilter(c,ec)
 	return c:IsSetCard(0x6bc1) and not c:IsCode(9980670) and not c:IsCode(ec:GetCode()) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
 end

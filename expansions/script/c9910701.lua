@@ -1,4 +1,5 @@
 --远古造物 狄更逊水母
+require("expansions/script/c9910106")
 function c9910701.initial_effect(c)
 	--to deck top
 	local e1=Effect.CreateEffect(c)
@@ -69,7 +70,8 @@ function c9910701.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910701.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanTurnSet() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Zcd.SetFilter(e:GetHandler(),e) end
 end
 function c9910701.setop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end

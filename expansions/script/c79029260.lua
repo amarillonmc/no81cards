@@ -47,5 +47,7 @@ function c79029260.winop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():GetFlagEffect(79029260)==0 then return end
 	local WIN_REASON_AYMIA=0x0a
 	local p=e:GetHandler():GetSummonPlayer()
+	Debug.Message("那一天所看到的光景，想要呐喊却无法发出声音的绝望......希望能把这些，永远藏在记忆的最深处......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029260,0))
 	Duel.Win(p,WIN_REASON_AYMIA) 
 end

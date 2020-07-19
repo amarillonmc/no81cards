@@ -1,7 +1,7 @@
 --Decade装甲-气泡兔子坦克形态
 function c9981142.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc3),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--remove
 	local e1=Effect.CreateEffect(c)

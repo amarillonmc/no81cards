@@ -64,8 +64,8 @@ function c9950416.lvop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() or c:IsImmuneToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9950416.tgfilter,tp,LOCATION_DECK,0,1,1,nil,c:GetLevel())
-	if g:GetCount()>0 and Duel.SendtoHand(g,REASON_EFFECT)~=0 and g:GetFirst():IsLocation(LOCATION_HAND)
+	local g=Duel.SelectMatchingCard(tp,c9950416.tgfilter,tp,LOCATION_DECK,0,1,1,nil,c:GetLevel()):GetFirst()
+	if g:GetCount()>0 and Duel.SendtoHand(g,REASON_EFFECT)~=0 and g:IsLocation(LOCATION_HAND)
 		and c:IsFaceup() then
 		local lv=g:GetFirst():GetLevel()
 		local e1=Effect.CreateEffect(c)

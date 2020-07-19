@@ -1,7 +1,7 @@
 --欲望硬币核心体·恐龙
 function c9980802.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xabc1),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)

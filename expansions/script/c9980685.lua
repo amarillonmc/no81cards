@@ -26,6 +26,26 @@ function c9980685.initial_effect(c)
 	e4:SetTarget(c9980685.hdtg)
 	e4:SetOperation(c9980685.hdop)
 	c:RegisterEffect(e4)
+ --damage
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9980685,0))
+	e1:SetCategory(CATEGORY_DAMAGE)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_BATTLE_CONFIRM)
+	e1:SetCondition(c9980685.damcon)
+	e1:SetTarget(c9980685.damtg)
+	e1:SetOperation(c9980685.damop)
+	c:RegisterEffect(e1)
+--SpecialSummon
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,9980685)
+	e3:SetCost(c9980685.spcost)
+	e3:SetTarget(c9980685.sptg)
+	e3:SetOperation(c9980685.spop)
+	c:RegisterEffect(e3)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -74,4 +94,37 @@ function c9980685.hdop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=g:RandomSelect(1-tp,1)
 	Duel.SendtoGrave(sg,REASON_EFFECT)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980685,2))
+end
+function c9980685.damcon(e,tp,eg,ep,ev,re,r,rp)
+	local bc=e:GetHandler():GetBattleTarget()
+	return bc and bc:IsControler(1-tp)
+end
+function c9980685.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,e:GetHandler():GetBattleTarget():GetAttack())
+end
+function c9980685.damop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetHandler():GetBattleTarget()
+	if tc and tc:IsFaceup() and tc:IsControler(1-tp) and tc:IsRelateToBattle() then
+		local atk=tc:GetAttack()
+		Duel.Damage(1-tp,atk,REASON_EFFECT)
+	end
+end
+function c9980685.cfilter(c,tp)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6bc1,0xbca) and Duel.GetMZoneCount(tp,c)>0
+end
+function c9980685.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,c9980685.cfilter,1,nil,tp) end
+	local g=Duel.SelectReleaseGroup(tp,c9980685.cfilter,1,1,nil,tp)
+	Duel.Release(g,REASON_COST)
+end
+function c9980685.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c9980685.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+	end
 end

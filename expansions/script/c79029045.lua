@@ -38,6 +38,8 @@ function c79029045.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c79029045.thfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	Debug.Message("我一定......不会辜负您的信任。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029045,0))
 end
 function c79029045.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -55,6 +57,8 @@ function c79029045.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c79029045.rfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_HAND,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
+	Debug.Message("这次我要证明自己......！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029045,1))
 end
 function c79029045.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
   if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

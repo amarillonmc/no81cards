@@ -55,15 +55,17 @@ function c79029030.damcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029030.damop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeBattleDamage(ep,ev*2)
+	Debug.Message("真显眼。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029030,1))
 end
 function c79029030.posfilter(c)
 	return c:IsAttackPos() and c:IsCanChangePosition()
 end
 function c79029030.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029030.posfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c79029030.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c79029030.posfilter,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-	local g=Duel.SelectTarget(tp,c79029030.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,c79029030.posfilter,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 	Duel.SetChainLimit(c79029030.chlimit)
 end
@@ -75,6 +77,8 @@ function c79029030.posop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsAttackPos() and tc:IsRelateToEffect(e) then
 		Duel.ChangePosition(tc,POS_FACEUP_DEFENSE)
+	Debug.Message("他们跑不了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029030,0))
 	end
 end
 function c79029030.discon1(e,tp,eg,ep,ev,re,r,rp)

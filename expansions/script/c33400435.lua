@@ -1,6 +1,6 @@
 --DEM 鸢一折纸 莫德雷德
 function c33400435.initial_effect(c)
-	  aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xc343),6,2)
+	  aux.AddXyzProcedure(c,nil,6,2)
 	--Equip
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(33400435,1))
@@ -74,7 +74,7 @@ function c33400435.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(atk)
 		c:RegisterEffect(e1)
 	end

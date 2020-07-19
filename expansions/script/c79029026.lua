@@ -53,6 +53,8 @@ function c79029026.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetLabelObject(tc)
 		e2:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e2,tp)
+	Debug.Message("试着抵抗我吧！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029026,1))
 	end
 end
 function c79029026.distg(e,c)
@@ -85,5 +87,7 @@ function c79029026.soperation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 		Duel.Recover(tp,e:GetHandler():GetAttack()/2,REASON_EFFECT)
+	Debug.Message("把德克萨斯放到我的小队来！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029026,0))
 	end
 end

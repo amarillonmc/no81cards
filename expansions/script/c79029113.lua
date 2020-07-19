@@ -89,6 +89,7 @@ function c79029113.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,c79029113.drfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
+	Duel.ConfirmCards(1-tp,g)
 	local tc=g:GetFirst()
 	local x=tc:GetAttack()
 	Duel.Recover(tp,x,REASON_EFFECT)

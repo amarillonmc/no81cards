@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x1406) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and (Duel.GetLocationCountFromEx(tp)>0 or not c:IsLocation(LOCATION_EXTRA))
+	return c:IsSetCard(0x1406) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or not c:IsLocation(LOCATION_EXTRA))
 end
 function cm.cfilter(c,e,tp)
 	return (c:IsSetCard(0x1406) or (c:IsFacedown() and c:IsLocation(LOCATION_MZONE))) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave() and not c:IsImmuneToEffect(e) and Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c)

@@ -21,6 +21,7 @@ function cm.initial_effect(c)
 --counter
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_BECOME_TARGET)
 	e3:SetRange(LOCATION_MZONE)
@@ -40,7 +41,6 @@ function cm.initial_effect(c)
 	e5:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_TO_GRAVE)
-	e5:SetCountLimit(1,m+10000)
 	e5:SetTarget(cm.rectg)
 	e5:SetOperation(cm.recop)
 	c:RegisterEffect(e5)
@@ -68,6 +68,7 @@ function cm.indop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(0,LOCATION_MZONE)
 	e1:SetValue(cm.limit)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
 	--
 	local e2=Effect.CreateEffect(c)
@@ -78,6 +79,7 @@ function cm.indop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetTargetRange(LOCATION_MZONE,0)
 	e2:SetTarget(cm.limit)
 	e2:SetValue(aux.tgoval)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e2)
 end
 function cm.limit(e,c)
@@ -94,10 +96,27 @@ function cm.thfilter(c,tp)
 	return c:IsSetCard(0x340,0x341) and c:IsType(TYPE_FIELD+TYPE_CONTINUOUS)
 		and  c:GetActivateEffect():IsActivatable(tp)
 end
+function cm.spfilter(c,e,tp)
+	return c:IsSetCard(0x3342)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
 function cm.counttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) or (Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) end
+	if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	  local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,e,tp)
+	 Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,LOCATION_DECK+LOCATION_GRAVE)
+	end
 end
 function cm.countop(e,tp,eg,ep,ev,re,r,rp)
+ local s1=0
+ local s2=0
+if  Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp)
+then s1=1 
+end
+if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+then s2=1
+end
+if s1==0 and s2==0 then return end
+  if s1==1 and (s2==0 or Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))==0) then
    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
@@ -111,6 +130,13 @@ function cm.countop(e,tp,eg,ep,ev,re,r,rp)
 			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 		end
 	end
+  else
+	  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g2=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local tc2=g2:GetFirst()
+	 Duel.SpecialSummon(tc2,0,tp,tp,false,false,POS_FACEUP)
+  end
+   
 end
 
 function cm.rcfilter(c)

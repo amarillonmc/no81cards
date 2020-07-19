@@ -16,6 +16,7 @@ function c79029046.initial_effect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,079029046)
 	e2:SetTarget(c79029046.sptg)
 	e2:SetOperation(c79029046.spop)
@@ -33,10 +34,12 @@ function c79029046.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(c79029046.filter,tp,LOCATION_DECK,0,1,nil) then return end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	Debug.Message("香草会助大家一臂之力的！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029046,0))
 	local g=Duel.SelectMatchingCard(tp,c79029046.filter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 end
 end
 end
@@ -44,11 +47,14 @@ function c79029046.filter2(c,e,tp)
 	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029046.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_HAND) and chkc:IsControler(tp) and c79029046.filter(chkc,e,tp) end
+	if chkc then return chkc:IsLocation(LOCATION_HAND) and chkc:IsControler(tp) and c79029046.filter2(chkc,e,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c79029046.filter2,tp,LOCATION_HAND,0,1,nil,e,tp) end
+		and Duel.IsExistingMatchingCard(c79029046.filter2,tp,LOCATION_HAND,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c79029046.filter2,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	Debug.Message("不能给黑钢的各位丢脸！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029046,1))
+	local g=Duel.SelectMatchingCard(tp,c79029046.filter2,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c79029046.spop(e,tp,eg,ep,ev,re,r,rp)

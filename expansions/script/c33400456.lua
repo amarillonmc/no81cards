@@ -22,14 +22,12 @@ function c33400456.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3:SetValue(c33400456.eqlimit)
 	c:RegisterEffect(e3)
-	  --move
+	   --indestructable
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetRange(LOCATION_SZONE)
+	e4:SetType(EFFECT_TYPE_EQUIP)
+	e4:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
 	e4:SetCountLimit(1)
-	e4:SetTarget(c33400456.seqtg)
-	e4:SetOperation(c33400456.seqop)
+	e4:SetValue(c33400456.valcon)
 	c:RegisterEffect(e4)
 	--equip
 	local e5=Effect.CreateEffect(c)
@@ -63,17 +61,9 @@ function c33400456.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Equip(tp,c,tc)
 	end
 end
-function c33400456.seqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return  Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0 end
-end
-function c33400456.seqop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=c:GetEquipTarget()
-	if not tc or not  c:IsRelateToEffect(e) or tc:IsControler(1-tp) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-	local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
-	local nseq=math.log(s,2)
-	Duel.MoveSequence(tc,nseq)
+
+function c33400456.valcon(e,re,r,rp)
+	return bit.band(r,REASON_BATTLE)~=0
 end
 
 function c33400456.eqcon(e,tp,eg,ep,ev,re,r,rp)

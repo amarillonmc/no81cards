@@ -48,7 +48,31 @@ function cm.matfilter(c)
 	return c:IsLinkCode(14060014,14060013,14060012,14060006)
 end
 function cm.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkCode,1,nil,14060014) and g:IsExists(Card.IsLinkCode,1,nil,14060013) and g:IsExists(Card.IsLinkCode,1,nil,14060012) and g:IsExists(Card.IsLinkCode,1,nil,14060006)
+	return g:IsExists(cm.lcheck1,1,nil,g)
+end
+function cm.lcheck(g,lc)
+	return g:IsExists(cm.lcheck1,1,nil,g)
+end
+function cm.lcheck1(c,g)
+	local mg=Group.FromCards(c)
+	return c:IsLinkCode(14060014) and g:IsExists(cm.lcheck2,1,mg,g,mg)
+end
+function cm.lcheck2(c,g,mg)
+	mg:AddCard(c)
+	local checknum=0
+	if g:IsExists(cm.lcheck3,1,mg,g,mg) then checknum=1 end
+	mg:RemoveCard(c)
+	return c:IsLinkCode(14060013) and checknum==1--and g:IsExists(cm.lcheck3,1,mg,g,mg)
+end
+function cm.lcheck3(c,g,mg)
+	mg:AddCard(c)
+	local checknum=0
+	if g:IsExists(cm.lcheck4,1,mg,g,mg) then checknum=1 end
+	mg:RemoveCard(c)
+	return c:IsLinkCode(14060012) and checknum==1
+end
+function cm.lcheck4(c)
+	return c:IsLinkCode(14060006)
 end
 function cm.atkfilter(c,e,tp)
 	return c:IsSetCard(0x1406) and c:IsFaceup()

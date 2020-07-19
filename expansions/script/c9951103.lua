@@ -73,16 +73,16 @@ function c9951103.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA+LOCATION_GRAVE)
 end
 function c9951103.spop(e,tp,eg,ep,ev,re,r,rp)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g=Duel.GetMatchingGroup(c9951103.filter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,nil,e,tp)
-	if ft<=0 or g:GetCount()==0 then return end
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
-	local ct=math.min(g:GetClassCount(Card.GetCode),ft)
+	if ct<=0 or g:GetCount()==0 then return end
+	ct=math.min(ct,g:GetClassCount(Card.GetCode))
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	aux.GCheckAdditional=aux.dlvcheck
-	local sg=g:SelectSubGroup(tp,aux.TRUE,false,ct,ct)
-	aux.GCheckAdditional=nil
-	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	local sg=g:SelectSubGroup(tp,aux.dncheck,false,ct,ct)
+	if sg and sg:GetCount()>0 then
+		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 function c9951103.atkval(e,c)
 	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,LOCATION_MZONE)*1000

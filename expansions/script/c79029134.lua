@@ -1,6 +1,6 @@
 --维多利亚·医疗干员-微风
 function c79029134.initial_effect(c)
-	 aux.EnablePendulumAttribute(c)
+	aux.EnablePendulumAttribute(c)
 	 --synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()  
@@ -89,7 +89,7 @@ function c79029134.desfilter2(c,s,tp)
 end
 function c79029134.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-	if chk==0 then return c:IsDestructable() and g:GetCount()>0 end
+	if chk==0 then return  g:GetCount()>0 end
 	local tc=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
 end
 function c79029134.desop(e,tp,eg,ep,ev,re,r,rp)

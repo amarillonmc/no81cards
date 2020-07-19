@@ -70,7 +70,7 @@ function c79029178.atop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029178.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetDefense()>=1000 end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),79029096)
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
 function c79029178.repop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

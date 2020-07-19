@@ -11,6 +11,15 @@ function c9950818.initial_effect(c)
 	e2:SetTargetRange(1,0)
 	e2:SetValue(HALF_DAMAGE)
 	c:RegisterEffect(e2)
+ --atk
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_REFLECT_DAMAGE)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(c9950818.refval)
+	c:RegisterEffect(e1)
  --atkup
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -64,6 +73,9 @@ function c9950818.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9950818.atkfilter(c)
 	return c:GetType()==TYPE_SPELL
+end
+function c9950818.refval(e,re,val,r,rp,rc)
+	return rp==1-e:GetHandlerPlayer() and bit.band(r,REASON_EFFECT)~=0
 end
 function c9950818.atkval(e,c)
 	return Duel.GetMatchingGroupCount(c9950818.atkfilter,c:GetControler(),LOCATION_GRAVE,0,nil)*1000

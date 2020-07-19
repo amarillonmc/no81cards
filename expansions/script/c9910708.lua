@@ -1,4 +1,5 @@
 --远古造物 异齿龙
+require("expansions/script/c9910106")
 function c9910708.initial_effect(c)
 	c:EnableReviveLimit()
 	--special summon
@@ -51,13 +52,14 @@ function c9910708.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c9910708.spfilter2(c,e,tp)
-	return c:IsSetCard(0xc950) and c:IsLevelBelow(4) and (c9910708.filter1(c,e,tp) or c9910708.filter2(c,tp))
+	return c:IsSetCard(0xc950) and c:IsLevelBelow(4)
+		and (c9910708.filter1(c,e,tp) or c9910708.filter2(c,e,tp))
 end
 function c9910708.filter1(c,e,tp)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c9910708.filter2(c,tp)
-	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not c:IsForbidden()
+function c9910708.filter2(c,e,tp)
+	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Zcd.SetFilter(c,e)
 end
 function c9910708.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910708.spfilter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
@@ -69,7 +71,7 @@ function c9910708.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if not tc then return end
 	if c9910708.filter1(tc,e,tp)
-		and (not c9910708.filter2(tc,tp) or Duel.SelectOption(tp,1152,aux.Stringid(9910708,0))==0) then
+		and (not c9910708.filter2(tc,e,tp) or Duel.SelectOption(tp,1152,aux.Stringid(9910708,0))==0) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	else
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)

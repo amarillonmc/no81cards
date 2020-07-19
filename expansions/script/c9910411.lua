@@ -86,10 +86,10 @@ function c9910411.thfilter(c)
 	return c:IsFaceup() and c:IsAbleToHand()
 end
 function c9910411.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsAbleToHand() end
+	if chkc then return c:IsFaceup() and chkc:IsControler(1-tp) and chkc:IsAbleToHand() end
 	if chk==0 then return Duel.IsExistingTarget(c9910411.thfilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,c9910411.thfilter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,c9910411.thfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	g:AddCard(e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
 end

@@ -64,6 +64,9 @@ function c79029035.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c79029035.tgfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,2,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,tp,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	Debug.Message("除了武器，您也别忘记准备防灾用具哦~")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029035,0))  
 	end
 end
 function c79029035.descon(e,tp,eg,ep,ev,re,r,rp)
@@ -81,6 +84,8 @@ function c79029035.desop(e,tp,eg,ep,ev,re,r,rp)
 	if bc:IsRelateToBattle() then
 		Duel.Destroy(bc,REASON_EFFECT)
 		Duel.Damage(1-tp,x,REASON_EFFECT)
+	Debug.Message("可能有点热哦？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029035,1)) 
 	end
 end
 function c79029035.immcon(e)

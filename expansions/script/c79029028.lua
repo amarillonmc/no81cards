@@ -35,7 +35,6 @@ function c79029028.initial_effect(c)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e5:SetCode(EVENT_TO_GRAVE)
-	e5:SetCondition(c79029028.condition)
 	e5:SetCountLimit(1,790290289999999999999999999)
 	e5:SetTarget(c79029028.target)
 	e5:SetOperation(c79029028.operation)
@@ -45,7 +44,7 @@ function c79029028.splimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c79029028.recon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.GetTurnPlayer()==tp and Duel.GetCounter(tp,LOCATION_ONFIELD,0,0x1099)~=0
 end
 function c79029028.reop(e,tp,eg,ep,ev,re,r,rp)  
 		Duel.Recover(tp,Duel.GetCounter(tp,LOCATION_ONFIELD,nil,0x1099)*100,REASON_EFFECT)
@@ -68,9 +67,6 @@ function c79029028.toop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029028.reop(e,tp,eg,ep,ev,re,r,rp)  
 		Duel.Recover(tp,Duel.GetCounter(tp,LOCATION_ONFIELD,nil,0x1099)*100,REASON_EFFECT)
-end
-function c79029028.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsReason(REASON_DESTROY)
 end
 function c79029028.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

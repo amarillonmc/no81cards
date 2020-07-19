@@ -1,6 +1,7 @@
 --噬界兽LV9-虚无形态
 local m=14000205
 local cm=_G["c"..m]
+cm.named_with_Worlde=1
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--cannot special summon

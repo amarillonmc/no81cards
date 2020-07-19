@@ -55,9 +55,9 @@ function c9950998.efilter(e,re)
 	return re:IsActiveType(TYPE_MONSTER) and re:GetOwner()~=e:GetOwner()
 end
 function c9950998.tgfilter(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0xba5)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0xba5) and not c:IsCode(9950998)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
-		and Duel.IsExistingMatchingCard(c9950998.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetRank()+2,c)
+		and Duel.IsExistingMatchingCard(c9950998.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetRank()+1,c)
 end
 function c9950998.spfilter(c,e,tp,rank,mc)
 	return c:IsSetCard(0xba5) and c:IsType(TYPE_XYZ) and c:IsRank(rank) and mc:IsCanBeXyzMaterial(c,tp)
@@ -75,7 +75,7 @@ function c9950998.operation(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) and tc:IsControler(tp) and tc:IsFaceup()
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c9950998.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc:GetRank()+2,tc)
+		local g=Duel.SelectMatchingCard(tp,c9950998.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc:GetRank()+1,tc)
 		local sc=g:GetFirst()
 		if sc then
 			local mg=tc:GetOverlayGroup()

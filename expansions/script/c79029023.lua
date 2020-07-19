@@ -8,6 +8,7 @@ function c79029023.initial_effect(c)
 	e1:SetDescription(aux.Stringid(79029023,0))
 	e1:SetCategory(CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCondition(c79029023.descon)
 	e1:SetTarget(c79029023.destg)
@@ -62,6 +63,8 @@ function c79029023.desop(e,tp,eg,ep,ev,re,r,rp)
 		local g=tg:Filter(Card.IsRelateToEffect,nil,e)
 		if g:GetCount()>0 then
 			Duel.SendtoGrave(g,nil,REASON_EFFECT)
+	Debug.Message("在这天火的威光前拜伏吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029023,0))
 		end
 	end
 end
@@ -85,4 +88,6 @@ end
 function c79029023.damop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
+	Debug.Message("天空将你点燃！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029023,1))
 end

@@ -13,7 +13,7 @@ function c9951094.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_CHANGE_CODE)
+	e1:SetCode(EFFECT_ADD_CODE)
 	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e1:SetValue(9951075)
 	c:RegisterEffect(e1)
@@ -49,7 +49,7 @@ function c9951094.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951094,2))
 end
 function c9951094.spfilter2(c)
-	return c:IsFaceup() and c:IsSetCard(0x9bd1) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and c:IsSetCard(0x9bd1) and c:IsType(TYPE_XYZ+TYPE_SYNCHRO+TYPE_FUSION)
 end
 function c9951094.spcon(e,c)
 	if c==nil then return true end

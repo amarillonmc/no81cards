@@ -5,12 +5,15 @@ function c9950838.initial_effect(c)
 	c:EnableReviveLimit()
    --special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,9950838+EFFECT_COUNT_CODE_OATH)
+	e1:SetDescription(aux.Stringid(9950838,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DAMAGE+CATEGORY_RECOVER)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetCode(EVENT_DAMAGE)
+	e1:SetCountLimit(1,9950838)
 	e1:SetCondition(c9950838.spcon)
+	e1:SetTarget(c9950838.sptg)
+	e1:SetOperation(c9950838.spop)
 	c:RegisterEffect(e1)
 --destroy
 	local e3=Effect.CreateEffect(c)
@@ -18,6 +21,7 @@ function c9950838.initial_effect(c)
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,99508380)
 	e3:SetTarget(c9950838.destg)
 	e3:SetOperation(c9950838.desop)
@@ -48,13 +52,25 @@ function c9950838.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950838,0))
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950838,1))
 end
-function c9950838.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xcba5) and not c:IsCode(9950838)
+function c9950838.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return ep==tp and bit.band(r,REASON_EFFECT)~=0
 end
-function c9950838.spcon(e,c)
-	if c==nil then return true end
-	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9950838.cfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
+function c9950838.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,ev)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,math.ceil(ev/2))
+end
+function c9950838.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		Duel.BreakEffect()
+		local val=Duel.Damage(1-tp,ev,REASON_EFFECT)
+		if val>0 then
+			Duel.Recover(tp,math.ceil(val/2),REASON_EFFECT)
+		end
+	end
 end
 function c9950838.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end

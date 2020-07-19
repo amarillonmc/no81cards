@@ -68,10 +68,6 @@ function c9950324.disop(e,tp)
 		if c>2 and Duel.SelectYesNo(tp,aux.Stringid(9950324,3)) then
 			local dis3=Duel.SelectDisableField(tp,1,0,LOCATION_MZONE,dis1)
 			dis1=bit.bor(dis1,dis3)
-			if c>3 and Duel.SelectYesNo(tp,aux.Stringid(9950324,3)) then
-			local dis4=Duel.SelectDisableField(tp,1,0,LOCATION_MZONE,dis1)
-			dis1=bit.bor(dis1,dis4)
-			end
 		end
 	end
 	return dis1

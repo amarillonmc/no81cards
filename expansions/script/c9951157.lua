@@ -39,6 +39,9 @@ end
 function c9951157.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951157,0))
 end
+function c9951157.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+end
 function c9951157.thfilter(c)
 	return c:IsRace(RACE_CYBERSE) and c:IsAbleToHand()
 end

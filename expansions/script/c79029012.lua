@@ -29,7 +29,7 @@ function c79029012.filter(c,e)
 	return c:IsType(TYPE_MONSTER) and not c:IsCode(79029012)
 end
 function c79029012.thfilter(c)
-	return c:IsSetCard(0xb90f) and c:IsAbleToHand()
+	return c:IsSetCard(0xb90d) and c:IsAbleToHand()
 end
 function c79029012.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029012.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -42,10 +42,11 @@ function c79029012.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	Debug.Message("好好看着吧，接下来可是我的表演时间！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029012,0))
 	end
 end
 function c79029012.cfilter(c)
-	return c:IsSetCard(0xb90f) and c:IsDiscardable()
+	return c:IsSetCard(0xb90d) and c:IsDiscardable()
 end
 function c79029012.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029012.cfilter,tp,LOCATION_HAND,0,1,nil) end
@@ -75,6 +76,7 @@ function c79029012.operation(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e4,tp)
 	Debug.Message("管敌人变得有多强大，都不能让我停止演奏！啊，不，是战斗！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029012,1))
 end
 end
 function c79029012.val(e,re,dam,r,rp,rc)

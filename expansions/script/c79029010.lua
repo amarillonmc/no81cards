@@ -81,6 +81,7 @@ function c79029010.ttop(e,tp,eg,ep,ev,re,r,rp,c)
 	c:SetMaterial(g)
 	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
 	Debug.Message("我倒也挺擅长团队作战，只是......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029010,1))
 end
 function c79029010.setcon(e,c,minc)
 	if not c then return true end
@@ -103,6 +104,7 @@ function c79029010.operation(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	Duel.Destroy(sg,REASON_EFFECT)
 	Debug.Message("和我面对过的灾厄相比，你们也太弱了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029010,2))
 end
 function c79029010.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return tp==Duel.GetTurnPlayer()
@@ -117,4 +119,5 @@ function c79029010.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 	c:RegisterEffect(e1)
 	Debug.Message("谁知道潮湿的海草间蛰伏着什么？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029010,3))
 end

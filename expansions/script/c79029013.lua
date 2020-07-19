@@ -33,10 +33,13 @@ if not c79029013.global_check then
 		ge1:SetType(EFFECT_TYPE_FIELD)
 		ge1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
 		ge1:SetTargetRange(LOCATION_SZONE,LOCATION_SZONE)   
-		ge1:SetTarget(aux.TargetBoolFunction(Card.IsCode,79029013 and Card.IsType,TYPE_EQUIP+TYPE_SPELL))
+		ge1:SetTarget(c79029013.retg)
 		ge1:SetValue(LOCATION_REMOVED)
 		Duel.RegisterEffect(ge1,0)
 	end
+end
+function c79029013.retg(e,c)
+	return c:IsCode(79029013) and c:IsType(TYPE_EQUIP)
 end
 function c79029013.eqlimit(e,c)
 	return c:IsSetCard(0xa900)
@@ -57,13 +60,14 @@ function c79029013.operation(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		Duel.Equip(tp,c,tc)
 		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetCode(EFFECT_CHANGE_CODE)
+		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetValue(TYPE_EQUIP+TYPE_SPELL)
 		e1:SetReset(RESET_EVENT+EVENT_REMOVE)
 		e:GetHandler():RegisterEffect(e1)
 	Debug.Message("既然你嘱咐过我，我就不会再忽视别人的生命......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029013,0))
 	end
 end
 function c79029013.costchange(e,re,rp,val)

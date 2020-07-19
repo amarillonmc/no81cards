@@ -38,6 +38,8 @@ function c79029032.rdcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029032.rdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeBattleDamage(ep,ev/2)
+	Debug.Message("正面对决可不适合我啊。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029032,0))
 end
 function c79029032.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
@@ -60,5 +62,7 @@ function c79029032.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)
+	Debug.Message("被这钩子勾中可就跑不了了！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029032,1))
 end
 end 

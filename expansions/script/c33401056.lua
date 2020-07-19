@@ -58,32 +58,19 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.efilter(e,re)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() 
 end
 
-function cm.desfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	 if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(500)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)   
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
  local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
-	if Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then 
-		if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local g=Duel.SelectMatchingCard(tp,cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-			if g:GetCount()>0 then
-			   Duel.Destroy(g,REASON_EFFECT)
-			end
-		end
-	end
+	 Duel.ChainAttack()
 end
 
 function cm.filter(c,e,tp,re)

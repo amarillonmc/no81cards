@@ -102,35 +102,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat2)
 		end
-		tc:CompleteProcedure()
-	   local fid=e:GetHandler():GetFieldID()
-		 tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,fid)
-		 local e3=Effect.CreateEffect(e:GetHandler())
-		  e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		  e3:SetCode(EVENT_PHASE+PHASE_END)
-		  e3:SetCountLimit(1)
-		  e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		  e3:SetLabel(fid)
-		  e3:SetLabelObject(tc)
-		  e3:SetCondition(cm.tgcon)
-		  e3:SetOperation(cm.tgop)
-		  Duel.RegisterEffect(e3,tp)
+		tc:CompleteProcedure()	 
 		if ss==1 and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil)  then
 		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g6=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 		Duel.SendtoGrave(g6,REASON_EFFECT)
 		end  
 	end
-end
-function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc:GetFlagEffectLabel(m)~=e:GetLabel() then
-		e:Reset()
-		return false
-	else return true end
-end
-function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SendtoGrave(e:GetLabelObject(),REASON_EFFECT)
 end
 function cm.ckfilter(c)
 	return c:GetCode()~=c:GetOriginalCode()

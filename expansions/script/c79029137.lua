@@ -20,7 +20,7 @@ function c79029137.filter1(c,e,tp)
 		and Duel.IsExistingMatchingCard(c79029137.filter2,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,1,nil,e,tp,c:GetCode())
 end
 function c79029137.filter2(c,e,tp,tcode)
-	return c:IsSetCard(0xd90f) and c.assault_name==tcode and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsSetCard(0xd90c) and c.assault_name==tcode and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c79029137.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

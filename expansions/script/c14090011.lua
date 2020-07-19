@@ -1,7 +1,7 @@
 --禁忌之壶魔神
 local m=14090011
 local cm=_G["c"..m]
-cm.card_code_list={14090001}
+cm.card_code_list={99284890}
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
@@ -32,7 +32,7 @@ function cm.matfilter(c)
 	return c:IsLinkRace(RACE_ROCK) and c:IsLinkAttribute(ATTRIBUTE_EARTH)
 end
 function cm.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and aux.IsCodeListed(c,14090001) and c:IsAbleToRemoveAsCost()
+	return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_ROCK) and c:IsAbleToRemoveAsCost()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,5,e:GetHandler()) end

@@ -78,13 +78,6 @@ function c79029034.initial_effect(c)
 	e9:SetCost(c79029034.cost)
 	e9:SetOperation(c79029034.negop)
 	c:RegisterEffect(e9)
-	--atk up
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_QUICK_F)
-	e0:SetRange(LOCATION_MZONE)
-	e0:SetCode(EVENT_REMOVE_COUNTER+0x001)
-	e0:SetOperation(c79029034.atkop)
-	c:RegisterEffect(e0)
 end
 function c79029034.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
@@ -112,6 +105,8 @@ function c79029034.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if ct>0 then
 		c:AddCounter(0x001,ct)
+	Debug.Message("痛苦，我从未忘记。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029034,3))		
 	end
 end
 function c79029034.tgfilter(c)
@@ -146,6 +141,8 @@ end
 function c79029034.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
+	Debug.Message("无论繁荣，还是灭亡。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029034,2))
 	end
 end
 function c79029034.dscon(e,tp,eg,ep,ev,re,r,rp)
@@ -159,6 +156,8 @@ end
 function c79029034.dsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
 	Duel.Destroy(eg,REASON_EFFECT)
+	Debug.Message("只是一瞬间而已。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029034,1))
 end
 function c79029034.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
@@ -166,6 +165,8 @@ end
 function c79029034.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateAttack() then
 		Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
+	Debug.Message("你，由我来守护。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029034,0))
 	end
 end
 function c79029034.atkcon(e,tp,eg,ep,ev,re,r,rp)

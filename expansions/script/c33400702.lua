@@ -3,17 +3,20 @@ local m=33400702
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	 --special summon
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_CHAIN_NEGATED)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCountLimit(1,m)
-	e2:SetCondition(cm.spcon1)
-	e2:SetTarget(cm.sptg1)
-	e2:SetOperation(cm.spop1)
-	c:RegisterEffect(e2)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_CHAIN_NEGATED)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,m)
+	e1:SetCondition(cm.spcon1)
+	e1:SetTarget(cm.sptg1)
+	e1:SetOperation(cm.spop1)
+	c:RegisterEffect(e1)
+	local e4=e1:Clone()
+	e4:SetCode(EVENT_CHAIN_DISABLED)
+	c:RegisterEffect(e4)
  --
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_DESTROY)
@@ -26,7 +29,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return  rp==tp
+	return  rp==tp 
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

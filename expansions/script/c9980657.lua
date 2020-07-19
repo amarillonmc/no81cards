@@ -1,7 +1,7 @@
 --假面驾驭·鄂门-闪耀华形态
 function c9980657.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,9980639,c9980659.ffilter,2,true,true)
+	aux.AddFusionProcCodeFun(c,9980639,c9980657.ffilter,2,true,true)
 	aux.AddContactFusionProcedure(c,c9980657.cfilter,LOCATION_ONFIELD,0,aux.tdcfop(c))
 	--special summon condition
 	local e1=Effect.CreateEffect(c)
@@ -61,7 +61,7 @@ end
 function c9980657.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980657,1))
 end 
-function c9980659.ffilter(c)
+function c9980657.ffilter(c)
 	return c:IsFusionSetCard(0x9bcd,0x5bca) and c:IsType(TYPE_MONSTER)
 end
 function c9980657.cfilter(c)

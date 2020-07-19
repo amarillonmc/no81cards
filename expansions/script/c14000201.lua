@@ -1,6 +1,7 @@
 --噬界兽LV1-原始形态
 local m=14000201
 local cm=_G["c"..m]
+cm.named_with_Worlde=1
 function cm.initial_effect(c)
 	--c:EnableUnsummonable()
 	--splimit

@@ -47,11 +47,11 @@ function c9950651.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950651,1))
 end
 function c9950651.negfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_EFFECT) and not c:IsDisabled()
+	return c:IsFaceup() and not c:IsDisabled()
 end
 function c9950651.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c9950651.negfilter,tp,0,LOCATION_MZONE,aux.ExceptThisCard(e))
+	local g=Duel.GetMatchingGroup(c9950651.negfilter,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	local tc=g:GetFirst()
 	while tc do
 		local e1=Effect.CreateEffect(c)

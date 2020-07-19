@@ -28,9 +28,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		local ct=Duel.GetMatchingGroupCount(cm.filter,tp,LOCATION_GRAVE,0,nil)
 		if ct<=2 or not Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
-			while ct>0 do
+			local opt={aux.Stringid(m,1),aux.Stringid(m,2),aux.Stringid(m,3)}
+			local opc={1,2,3}
+			while ct>0 or #opt>0 do
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPTION)
-				sel=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2),aux.Stringid(m,3))+1
+				sel=opc[Duel.SelectOption(tp,table.unpack(opt))+1]
 				if sel==1 then
 					local e1=Effect.CreateEffect(c)
 					e1:SetType(EFFECT_TYPE_FIELD)
@@ -43,6 +45,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					e1:SetReset(RESET_EVENT+0x1fe0000)
 					tc:RegisterEffect(e1,true)
 					tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+					table.remove(opt,1)
+					table.remove(opc,1)
 				elseif sel==2 then
 					local e2=Effect.CreateEffect(c)
 					e2:SetType(EFFECT_TYPE_FIELD)
@@ -54,6 +58,13 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					e2:SetReset(RESET_EVENT+0x1fe0000)
 					tc:RegisterEffect(e2)
 					tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+					if opc[1]~=2 then 
+						table.remove(opt,2)
+						table.remove(opc,2)
+					else
+						table.remove(opt,1)
+						table.remove(opc,1)
+					end
 				elseif sel==3 then
 					local e3=Effect.CreateEffect(c)
 					e3:SetType(EFFECT_TYPE_FIELD)
@@ -66,6 +77,16 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					e3:SetReset(RESET_EVENT+0x1fe0000)
 					tc:RegisterEffect(e3)
 					tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
+					if #opc==3 then
+						table.remove(opt,3)
+						table.remove(opc,3)
+					elseif opc[1]~=3 then 
+						table.remove(opt,2)
+						table.remove(opc,2)
+					else
+						table.remove(opt,1)
+						table.remove(opc,1)
+					end
 				end
 				ct=ct-1
 				if ct>0 and not Duel.SelectYesNo(tp,aux.Stringid(m,5)) then ct=0 end

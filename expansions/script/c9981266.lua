@@ -1,7 +1,7 @@
 --暗叛逆异色眼超量龙
 function c9981266.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_DRAGON),7,2,,c9981266.ovfilter,aux.Stringid(9981266,1))
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_DRAGON),7,2,c9981266.ovfilter,aux.Stringid(9981266,1))
 	c:EnableReviveLimit()
  --immune
 	local e1=Effect.CreateEffect(c)

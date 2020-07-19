@@ -1,7 +1,7 @@
 --强欲之壶魔神
 local m=14090001
 local cm=_G["c"..m]
-cm.card_code_list={14090001}
+cm.card_code_list={99284890}
 function cm.initial_effect(c)
 	--summon
 	local e1=Effect.CreateEffect(c)
@@ -124,7 +124,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.thfilter(c)
-	return aux.IsCodeListed(c,14090001) and c:IsAbleToHand()
+	return c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -132,9 +132,9 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_REMOVED,0,nil)
-	if #g>=3 then
+	if #g>=5 then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
-		local sg=g:Select(tp,3,3,nil)
+		local sg=g:Select(tp,5,5,nil)
 		Duel.ConfirmCards(1-tp,sg)
 		local tg=sg:RandomSelect(1-tp,1)
 		local tc=tg:GetFirst()

@@ -46,6 +46,8 @@ function c79029024.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
+	Debug.Message("各位，让我们把胜利带回罗德岛！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029024,2))
 	end
 end
 function c79029024.indtg(e,c)
@@ -74,6 +76,8 @@ function c79029024.efop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(c79029024.catktg)
 		rc:RegisterEffect(e2,true)
 		rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(79029024,0))
+	Debug.Message("以我的枪尖开路！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029024,3))
 end
 function c79029024.catktg(e,c)
 	return c:IsFaceup() and not c:GetMaterial():IsExists(Card.IsCode,1,nil,79029024)

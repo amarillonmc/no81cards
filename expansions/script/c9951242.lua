@@ -105,7 +105,7 @@ function c9951242.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c9951242.filter(c,e,tp)
-	return c:IsSetCard(0xba5) and not c:IsCode(9951242) and c:IsType(TYPE_TUNER) and and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xba5) and not c:IsCode(9951242) and c:IsType(TYPE_TUNER)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9951242.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

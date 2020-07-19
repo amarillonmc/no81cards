@@ -62,7 +62,7 @@ function c79029015.ffilter(c)
 	return c:IsFusionSetCard(0xa904)
 end
 function c79029015.cfilter(c)
-	return c:IsSetCard(0xa904 and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0xa904) and c:IsAbleToGraveAsCost()
 end
 function c79029015.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
@@ -82,6 +82,7 @@ function c79029015.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateActivation(ev)
 	Duel.Destroy(eg,REASON_EFFECT)
 	Debug.Message("我也，讨厌，这样做......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029015,0))
 end
 function c79029015.poscon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler()==Duel.GetAttacker() and e:GetHandler():IsRelateToBattle()
@@ -91,5 +92,6 @@ function c79029015.posop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsAttackPos() then
 		Duel.ChangePosition(c,POS_FACEUP_DEFENSE)
 	Debug.Message("伏击，准备......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029015,1))
 	end
 end

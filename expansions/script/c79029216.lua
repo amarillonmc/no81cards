@@ -72,6 +72,8 @@ function c79029216.initial_effect(c)
 	e5:SetOperation(c79029216.spop)
 	c:RegisterEffect(e5)  
 end
+c79029216.card_code_list={79029137}
+c79029216.assault_name=79029051
 function c79029216.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
@@ -116,7 +118,7 @@ end
 function c79029216.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c79029186.filter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c79029216.filter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 	end

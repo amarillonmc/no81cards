@@ -5,8 +5,8 @@ function c79029066.initial_effect(c)
 	aux.AddFusionProcFunRep2(c,c79029066.ffilter,2,2,false)
 	 --SpecialSummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e1:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_FIELD)
+	e1:SetCode(EVENT_BE_BATTLE_TARGET)
 	e1:SetRange(LOCATION_EXTRA)
 	e1:SetCountLimit(1,79029066)
 	e1:SetCondition(c79029066.condition)
@@ -31,8 +31,11 @@ function c79029066.initial_effect(c)
 	e3:SetOperation(c79029066.operation2)
 	c:RegisterEffect(e3)
 end
+function c79029066.ffilter(c)
+	return c:IsFusionSetCard(0xa900)
+end
 function c79029066.condition(e,tp,eg,ep,ev,re,r,rp)
-   return Duel.GetAttacker():IsControler(1-tp) and Duel.GetAttackTarget():IsSetCard(0xa900)
+   return eg:GetFirst():IsSetCard(0xa900)
 end
 function c79029066.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

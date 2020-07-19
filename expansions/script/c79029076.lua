@@ -99,6 +99,7 @@ function c79029076.damop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ChangeBattleDamage(tp,0)
 end
 function c79029076.iop2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if Duel.GetAttackTarget()==nil then return end
 	local c=e:GetHandler()
 	if Duel.IsExistingMatchingCard(c79029076.filter,tp,LOCATION_HAND,0,2,nil,e,tp) then
 	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then

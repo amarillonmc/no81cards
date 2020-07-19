@@ -28,7 +28,7 @@ function c79029064.filter1(c,e,tp)
 end
 function c79029064.filter2(c,e,tp,mc,rk)
 	if c:GetOriginalCode()==6165656 and not mc:IsCode(48995978) then return false end
-	return c:IsRank(rk) and mc:IsCanBeXyzMaterial(c)
+	return c:IsRank(rk) and mc:IsCanBeXyzMaterial(c) and c:IsSetCard(0xa900)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 end
 function c79029064.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

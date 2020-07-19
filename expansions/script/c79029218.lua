@@ -13,7 +13,6 @@ function c79029218.initial_effect(c)
 	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_NEGATE)
-	e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_PZONE)
@@ -81,6 +80,7 @@ function c79029218.posop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_DISABLE_EFFECT)
 	tc:RegisterEffect(e2)
 	Debug.Message("暮夜沉溺，再无归路。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029218,1))   
 	end
 end
 function c79029218.ducon(e,tp,eg,ep,ev,re,r,rp)
@@ -107,6 +107,7 @@ function c79029218.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateActivation(ev)
 	Duel.Destroy(eg,REASON_EFFECT)
 	Debug.Message("墨焰升腾，身寸尽去。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029218,2))   
 end
 function c79029218.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return r==REASON_SYNCHRO and e:GetHandler():GetReasonCard():IsSetCard(0xa900)
@@ -146,6 +147,7 @@ function c79029218.rcop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Recover(p,d,REASON_EFFECT)
 	Debug.Message("此耀高昂，他者勿涉！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029218,3))   
 end
 
 

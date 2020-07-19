@@ -76,18 +76,18 @@ function cm.cfilter(c,tp)
 	return ((c:IsFusionSetCard(0x1406) or c:IsFacedown() or (c:IsRace(RACE_ZOMBIE) and c:IsAttribute(ATTRIBUTE_DARK))) and c:IsType(TYPE_MONSTER))
 		and c:IsCanBeFusionMaterial() 
 end
-function cm.fcheck(c,sg)
-	return c:IsFusionSetCard(0x1406) and c:IsType(TYPE_MONSTER) and sg:FilterCount(cm.fcheck2,c)+1==sg:GetCount()
+function cm.fcheck(c,sg,tp)
+	return c:IsFusionSetCard(0x1406) and (c:IsControler(tp) or c:IsFaceup())and sg:FilterCount(cm.fcheck2,c)+1==sg:GetCount()
 end
 function cm.fcheck2(c)
-	return (c:IsFacedown() or (c:IsRace(RACE_ZOMBIE) and c:IsAttribute(ATTRIBUTE_DARK))) and c:IsType(TYPE_MONSTER)
+	return c:IsFacedown() or (c:IsRace(RACE_ZOMBIE) and c:IsAttribute(ATTRIBUTE_DARK))
 end
-function cm.fgoal(c,tp,sg)
-	return sg:GetCount()>1 and Duel.GetLocationCountFromEx(tp,tp,sg)>0 and sg:IsExists(cm.fcheck,1,nil,sg)
+function cm.fgoal(c,tp,sg,fc)
+	return sg:GetCount()>1 and Duel.GetLocationCountFromEx(tp,tp,sg,fc)>0 and sg:IsExists(cm.fcheck,1,nil,sg,tp)
 end
-function cm.fselect(c,tp,mg,sg)
+function cm.fselect(c,tp,mg,sg,fc)
 	sg:AddCard(c)
-	local res=cm.fgoal(c,tp,sg) or mg:IsExists(cm.fselect,1,sg,tp,mg,sg)
+	local res=cm.fgoal(c,tp,sg,fc) or mg:IsExists(cm.fselect,1,sg,tp,mg,sg,fc)
 	sg:RemoveCard(c)
 	return res
 end
@@ -98,7 +98,7 @@ function cm.sprcon(e,c)
 	local mg1=Duel.GetReleaseGroup(1-tp):Filter(cm.cfilter,nil,c)
 	mg:Merge(mg1)
 	local sg=Group.CreateGroup()
-	return mg:IsExists(cm.fselect,1,nil,tp,mg,sg)
+	return mg:IsExists(cm.fselect,1,nil,tp,mg,sg,c)
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local mg=Duel.GetReleaseGroup(tp):Filter(cm.cfilter,nil,c)
@@ -106,14 +106,14 @@ function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	mg:Merge(mg1)
 	local sg=Group.CreateGroup()
 	while true do
-		local cg=mg:Filter(cm.fselect,sg,tp,mg,sg)
+		local cg=mg:Filter(cm.fselect,sg,tp,mg,sg,c)
 		if cg:GetCount()==0
-			or (cm.fgoal(c,tp,sg) and not Duel.SelectYesNo(tp,210)) then break end
+			or (cm.fgoal(c,tp,sg,c) and not Duel.SelectYesNo(tp,210)) then break end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 		local g=cg:Select(tp,1,1,nil)
 		sg:Merge(g)
 	end
-	Duel.Release(sg,REASON_COST+REASON_FUSION+REASON_MATERIAL)
+	Duel.Release(sg,REASON_COST)
 end
 function cm.atkfilter(c,e,tp)
 	return c:IsSetCard(0x1406) and c:IsFaceup()

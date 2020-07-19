@@ -71,40 +71,41 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sel=e:GetLabel()
 	if sel==1 then
-		if Duel.GetLocationCount(1-tp,LOCATION_MZONE)<=0 then return end
-		if not Duel.IsExistingMatchingCard(cm.spfilter,1-tp,LOCATION_GRAVE,0,1,nil,e,1-tp) then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(1-tp,cm.spfilter,1-tp,LOCATION_GRAVE,0,1,1,nil,e,1-tp)
-		local tc=g:GetFirst()
-		if tc then
-			Duel.HintSelection(g)
-			if Duel.SpecialSummon(tc,0,1-tp,1-tp,false,false,POS_FACEDOWN_DEFENSE)~=0 then
-				local e1=Effect.CreateEffect(c)
-				e1:SetDescription(aux.Stringid(m,4))
-				e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				tc:RegisterEffect(e1)
+		if Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,1-tp,LOCATION_GRAVE,0,1,nil,e,1-tp) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local g=Duel.SelectMatchingCard(1-tp,cm.spfilter,1-tp,LOCATION_GRAVE,0,1,1,nil,e,1-tp)
+			local tc=g:GetFirst()
+			if tc then
+				Duel.HintSelection(g)
+				if Duel.SpecialSummon(tc,0,1-tp,1-tp,false,false,POS_FACEDOWN_DEFENSE)~=0 then
+					local e1=Effect.CreateEffect(c)
+					e1:SetDescription(aux.Stringid(m,4))
+					e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e1)
+				end
 			end
 		end
 	elseif sel==2 then
 		if Duel.GetLocationCount(1-tp,LOCATION_SZONE)<=0 then return end
-		if not Duel.IsExistingMatchingCard(cm.setfilter,tp,0,LOCATION_GRAVE,1,nil,e,tp) then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,0,LOCATION_GRAVE,1,1,nil,e,tp)
-		local tc=g:GetFirst()
-		if tc then
-			Duel.HintSelection(g)
-			Duel.SSet(tp,tc,1-tp)
-			Duel.ConfirmCards(1-tp,tc)
-			local e1=Effect.CreateEffect(c)
-			e1:SetDescription(aux.Stringid(m,5))
-			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CANNOT_TRIGGER)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1,true)
+		if Duel.IsExistingMatchingCard(cm.setfilter,tp,0,LOCATION_GRAVE,1,nil,e,tp) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+			local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,0,LOCATION_GRAVE,1,1,nil,e,tp)
+			local tc=g:GetFirst()
+			if tc then
+				Duel.HintSelection(g)
+				Duel.SSet(tp,tc,1-tp)
+				Duel.ConfirmCards(1-tp,tc)
+				local e1=Effect.CreateEffect(c)
+				e1:SetDescription(aux.Stringid(m,5))
+				e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_CANNOT_TRIGGER)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1,true)
+			end
 		end
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

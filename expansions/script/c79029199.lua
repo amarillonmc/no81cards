@@ -60,9 +60,11 @@ function c79029199.atop(e,tp,eg,ep,ev,re,r,rp)
 		tc=tg:GetNext()
 	 end
 	 if Duel.GetLocationCount(1-tp,LOCATION_SZONE)<=0
-	 or not Duel.IsPlayerCanSpecialSummonMonster(tp,79029200,0,0x4011,0,0,1,RACE_CYBERSE,ATTRIBUTE_DARK) then return end
+	 or not Duel.IsPlayerCanSpecialSummonMonster(tp,79029200,0,0x4011,0,0,1,RACE_CYBERSE,ATTRIBUTE_DARK,POS_FACEUP,1-tp) then return end
 	 local x=Duel.CreateToken(tp,79029200)
-	 Duel.MoveToField(x,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(x,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
+	 Debug.Message("玩耍的时间到了，小莫提。")
+	 Duel.Hint(HINT_SOUND,0,aux.Stringid(79029199,0))
 end
 end
 function c79029199.rmtg(e,c)
@@ -75,6 +77,8 @@ function c79029199.hcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029199.hop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetLP(1-tp,Duel.GetLP(1-tp)/2)
+	 Debug.Message("安息吧，让大地拥抱一切。")
+	 Duel.Hint(HINT_SOUND,0,aux.Stringid(79029199,1))
 end
 
 

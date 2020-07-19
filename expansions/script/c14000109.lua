@@ -96,6 +96,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,function(c) return c:IsFaceup() and not c:IsType(TYPE_TOKEN) end,tp,0,LOCATION_ONFIELD,1,1,nil)
 	local tc=g:GetFirst()
 	if not tc then return end
+	local bool1=1
 	if tc:IsCanTurnSet() and not tc:IsType(TYPE_PENDULUM) then
 		tc:CancelToGrave()
 		if tc:IsType(TYPE_MONSTER) then
@@ -103,14 +104,11 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		else
 			Duel.ChangePosition(tc,POS_FACEDOWN)
 		end
-	elseif tc:IsType(TYPE_TOKEN) then
-		return
-	elseif tc:IsType(TYPE_PENDULUM) then
+		local g=Duel.GetOperatedGroup()
+		if #g>0 then bool1=0 end
+	end
+	if not tc:IsType(TYPE_TOKEN) and (tc:IsFaceup() or not tc:IsLocation(LOCATION_REMOVED)) and bool1==1 then
 		Duel.Remove(tc,POS_FACEDOWN,REASON_RULE)
-	elseif tc:IsFaceup() or not tc:IsLocation(LOCATION_REMOVED) then
-		Duel.Remove(tc,POS_FACEDOWN,REASON_RULE)
-	else
-		return
 	end
 end
 function cm.setfilter(c,e,tp)
@@ -138,7 +136,6 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,tc)
 		else
 			Duel.SSet(tp,tc)
-			Duel.ConfirmCards(1-tp,tc)
 		end
 	end
 end

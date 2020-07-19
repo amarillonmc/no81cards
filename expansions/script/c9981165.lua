@@ -1,7 +1,7 @@
 --Decade装甲-鸟系联组形态
 function c9981165.initial_effect(c)
 	 --synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc3),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--destroy all
 	local e4=Effect.CreateEffect(c)

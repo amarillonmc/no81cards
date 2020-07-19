@@ -38,4 +38,6 @@ end
 function c79029038.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 	Duel.Destroy(eg,REASON_EFFECT)
+	Debug.Message("狩猎，开始。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029038,0))
 end

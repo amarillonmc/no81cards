@@ -42,6 +42,7 @@ function c79029017.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	Debug.Message("了解。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029017,0))
 	end
 end
 function c79029017.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -72,6 +73,7 @@ function c79029017.atkop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	Debug.Message("斩尽杀绝。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029017,1))
 	end
 end
 end

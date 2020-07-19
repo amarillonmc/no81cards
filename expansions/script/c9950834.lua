@@ -40,6 +40,18 @@ function c9950834.initial_effect(c)
 	e2:SetTarget(c9950834.atktg)
 	e2:SetOperation(c9950834.atkop)
 	c:RegisterEffect(e2)
+--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9950834,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetCountLimit(1,9950834)
+	e1:SetCondition(c9950834.spcon)
+	e1:SetTarget(c9950834.sptg)
+	e1:SetOperation(c9950834.spop)
+	c:RegisterEffect(e1)
 	--spsummon bgm
 	 local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -122,4 +134,22 @@ function c9950834.atkop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e3)
 	end
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(9950834,3))
+end
+function c9950834.cfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER)
+end
+function c9950834.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9950834.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	return #g>0 and g:GetSum(Card.GetAttack)>=10000
+end
+function c9950834.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c9950834.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 end

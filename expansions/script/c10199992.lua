@@ -1,6 +1,6 @@
 --Record Author
 local am=10199992
-local Version_Number=20200310
+local Version_Number=20200323
 #Scl
 local rsdka =   Dakyria
 local rsdio =   Diablo
@@ -13,6 +13,8 @@ local rssp  =   Stellar_Pearl
 //local rsgd	=   Ghostdom_Dragon
 local rsed  =   Epic_Dragon
 local rsdh  =   Devil_Hunter
+local rsds  =   Dark_Souls
+local rsca  =   Corona
 
 #Scl - Special Mode
 local rssm  =   Special_Mode
@@ -25,18 +27,18 @@ local rssmf =   Special_Mode_Fast_Duel
 local rssmm =   Special_Mode_Multiple_Duel
 local rssmu =   Special_Mode_Universal_Duel
 
-#Gale
+#Gale 1472676207
 local rsve  =   Voison
 local rsneov=   Neons
 local tfrsv =   T.Fairies
 local rsss  =   Star_Spirit
 
-#ChiJiang
+#ChiJiang 626386490
 local rsnm  =   Nightmare
 local rslf  =   Little_Fox 
 local rccv  =   Thermonuclear
 
-#XiaoMi
+#XiaoMi 643865567
 local rssg  =   Sex_Gun
 local rsps  =   Pseudo_Soul
 local rsdcc =   Dragon_Chess_Corps
@@ -50,28 +52,45 @@ local rsvw  =   Virus_Wrom
 local rsia  =   Indolent_Angel
 local rsso  =   Simulated_Organism
 
-#NianBao
+#NianBao 583322404
 local rslap =   Lapin
+local rskh  =   Karehana
 
-#XiaoDaoHeng
+#XiaoDaoHeng 1614895649
 local rslrd =   Life_DeathRound_Dance
 
-#Huang
+#Huang 1184387005
 local rsts  =   Trinity_Sword
 
-#Luoxing
+#Luoxing 1151483512
 local rsdt  =   Dark_Tale
 local rsod  =   Order
 
-#YunZeZhun
+#YunZeZhun 1587361112
 local rsphh =   Phantom_Thieves_Of_Hearts
 local rsgc  =   Guard_City
 
-#ZhenDong
+#ZhenDong 
 local rsfv  =   Fgo/Assassin
 
-#JingJing
+#JingJing 1772438857
 local rsba  =   BlueAngel
+
+#Akashic 3204027606
+local rszg  =   Zogu
+local rsgs  =   Gran_Sphere
+local rsoc  =   Oligocene_Civilization
+local rsgol =   Giant_of_Light
+local rssb  =   Space_Beasts
+
+#HeiBai 1172777968
+local rstm  =   Toaru_Majutsu_no_Index
+
+#2558566212
+local rsgod =   God
+
+#02 1164477469
+local rsva  =   VR_Aqua
 
 --Set Code
 #Scl
@@ -108,7 +127,7 @@ local Stellar_Pearl  =   0xa333
 local Utoland   =   0xc333
 
 --local  =   0x1334
-local   =   0x3334
+local	 =   0x3334
 local Summerlover   =   0x5334
 local Quasi_Beast   =   0x6334
 local Bite_Teech	 =   0x9334
@@ -119,9 +138,9 @@ local   =   0xc334
 local Oraclesmith =   0x3335
 local DevilHunter =   0x5335
 local DevilSlayer =   0x6335
-local   =   0x9335
-local   =   0xa335
-local   =   0xc335
+local DMC   =   0x9335
+local Ashenone  =   0xa335
+local Cinderlord  =   0xc335
 
 --local =   0x1336
 local   =   0x3336

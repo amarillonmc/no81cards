@@ -96,7 +96,7 @@ function cm.XyzLevelFreeTarget(f,gf,minct,maxct)
 				local g=mg:SelectSubGroup(tp,cm.XyzLevelFreeGoal,true,minc,maxc,tp,c,gf)
 				cm.GCheckAdditional=nil
 				if g and #g>0 then
-					local g1=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,g,tp,c)
+					local g1=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,g,tp,c,g)
 					if g1 and #g1>0 then
 						g1:GetFirst():CancelToGrave()
 						g:Merge(g1)
@@ -146,9 +146,11 @@ function cm.XyzLevelFreeOperation(f,gf,minct,maxct)
 				end
 			end
 end
-function cm.filter(c,tp,xyzc)
+function cm.filter(c,tp,xyzc,matg)
+	local og=Group.FromCards(c)
+	if matg then og:Merge(matg) end
 	return not c:IsType(TYPE_TOKEN)
-		and (c:IsControler(tp) or c:IsAbleToChangeControler()) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and (not xyzc:IsLocation(LOCATION_EXTRA) or Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0)
+		and (c:IsControler(tp) or c:IsAbleToChangeControler()) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and (not xyzc:IsLocation(LOCATION_EXTRA) or Duel.GetLocationCountFromEx(tp,tp,og,xyzc)>0)
 end
 function cm.spcost(e,c,tp)
 	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler(),tp,e:GetHandler())

@@ -72,20 +72,21 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sel=e:GetLabel()
 	if sel==1 then
-		if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
-		local tc=g:GetFirst()
-		if tc then
-			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
-			Duel.ConfirmCards(1-tp,tc)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetCode(EFFECT_CHANGE_TYPE)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-			e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-			tc:RegisterEffect(e1)
+		if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+			local tc=g:GetFirst()
+			if tc then
+				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
+				Duel.ConfirmCards(1-tp,tc)
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetCode(EFFECT_CHANGE_TYPE)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+				e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+				tc:RegisterEffect(e1)
+			end
 		end
 	elseif sel==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)

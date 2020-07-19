@@ -4,8 +4,10 @@ function c79029037.initial_effect(c)
 	c:EnableReviveLimit()
 	--send to grave
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCondition(c79029037.lzcon)
 	e1:SetTarget(c79029037.lztg)
 	e1:SetOperation(c79029037.lzop)
@@ -51,6 +53,8 @@ function c79029037.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lv=gc:GetLevel()
 	Duel.SendtoGrave(g,REASON_EFFECT)
 	Duel.DiscardDeck(tp,lv,REASON_EFFECT)
+	Debug.Message("来了！大家，请做好战斗准备！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029037,0))
 end
 function c79029037.spfilter(c,e,tp)
 	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelBelow(6)
@@ -58,6 +62,8 @@ end
 function c79029037.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(c79029037.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then return end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
+	Debug.Message("大家可都相信着我！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029037,1))
 	local tg=Duel.SelectMatchingCard(tp,c79029037.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
 end

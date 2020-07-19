@@ -50,7 +50,7 @@ function c46250024.tgfilter(c)
     return bit.band(c:GetSummonLocation(),LOCATION_EXTRA)==LOCATION_EXTRA
 end
 function c46250024.tgcon(e,tp,eg,ep,ev,re,r,rp)
-    return eg:IsExists(c46250024.tgfilter,1,e:GetHandler())
+    return not eg:IsContains(e:GetHandler()) and eg:IsExists(c46250024.tgfilter,1,nil)
 end
 function c46250024.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()

@@ -14,7 +14,7 @@ function c9951025.filter(c,e,tp)
 	return c:IsType(TYPE_XYZ) and c:IsSetCard(0xba5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9951025.filter2(c)
-	return c:IsFaceup() and c:IsSetCard(0x106e) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsCanOverlay()
+	return c:IsFaceup() and c:IsSetCard(0xba5) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsCanOverlay()
 end
 function c9951025.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

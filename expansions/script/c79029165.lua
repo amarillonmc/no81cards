@@ -18,8 +18,10 @@ function c79029165.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029165.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,4,REASON_COST) end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,4,REASON_COST)
+	and e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.RemoveCounter(tp,1,0,0x1099,4,REASON_COST)
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c79029165.desfilter2(c,s,tp)
 	local seq=c:GetSequence()
@@ -27,7 +29,7 @@ function c79029165.desfilter2(c,s,tp)
 end
 function c79029165.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
-	if chk==0 then return c:IsDestructable() and g:GetCount()>0 end
+	if chk==0 then return g:GetCount()>0 end
 	local tc=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tc,1,0,0)
 end
@@ -41,7 +43,7 @@ function c79029165.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 		e1:SetValue(a:GetAttack()/2)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		a:RegisterEffect(e1)
 		if dg:GetCount()>0 then
 		local tc=dg:GetFirst()
@@ -50,10 +52,10 @@ function c79029165.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 		e1:SetValue(tc:GetAttack()/2)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 		tc=dg:GetNext() 
-end	
+end 
 	end
 end
 

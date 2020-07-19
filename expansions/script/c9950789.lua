@@ -62,6 +62,19 @@ function c9950789.initial_effect(c)
 	e2:SetTarget(c9950789.negtg)
 	e2:SetOperation(c9950789.negop)
 	c:RegisterEffect(e2)
+ --recover
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9950789,2))
+	e3:SetCategory(CATEGORY_RECOVER)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_PHASE+PHASE_END)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCountLimit(1)
+	e3:SetCondition(c9950789.reccon)
+	e3:SetTarget(c9950789.rectg)
+	e3:SetOperation(c9950789.recop)
+	c:RegisterEffect(e3)
  --spsummon bgm
 	 local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -110,4 +123,22 @@ function c9950789.negop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SendtoGrave(g,REASON_EFFECT)
   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950789,1))
+end
+function c9950789.reccon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
+end
+function c9950789.recfilter(c)
+	return c:IsFaceup() and (c:IsRace(RACE_WARRIOR) or c:IsAttribute(ATTRIBUTE_LIGHT))
+end
+function c9950789.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local rec=Duel.GetMatchingGroupCount(c9950789.recfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,nil)*1000
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(rec)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,rec)
+end
+function c9950789.recop(e,tp,eg,ep,ev,re,r,rp)
+	local rec=Duel.GetMatchingGroupCount(c9950789.recfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,nil)*1000
+	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	Duel.Recover(p,rec,REASON_EFFECT)
 end

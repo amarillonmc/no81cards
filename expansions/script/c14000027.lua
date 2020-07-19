@@ -64,12 +64,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			local tc=g:GetFirst()
 			if tc then
 				local te=tc:GetActivateEffect()
-				local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+				local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 				if fc then
 					Duel.SendtoGrave(fc,REASON_RULE)
 					Duel.BreakEffect()
 				end
-				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+				Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 				te:UseCountLimit(tp,1,true)
 				local tep=tc:GetControler()
 				local cost=te:GetCost()

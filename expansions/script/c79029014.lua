@@ -26,7 +26,7 @@ function c79029014.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029014.thfilter(c)
-	return c:IsSetCard(0xf98) and c:IsAbleToHand()
+	return c:IsSetCard(0xb90d) and c:IsAbleToHand()
 end
 function c79029014.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029014.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -39,6 +39,7 @@ function c79029014.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	Debug.Message("战火，会烧尽荒野......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029014,0))
 	end
 end
 function c79029014.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -60,5 +61,6 @@ function c79029014.operation(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e2)
 	Debug.Message("活着的火焰会净化你们污浊的内在。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029014,1))
 	end
 end

@@ -1,4 +1,5 @@
 --远古造物 加拿大奇虾
+require("expansions/script/c9910106")
 function c9910702.initial_effect(c)
 	c:EnableReviveLimit()
 	--special summon
@@ -83,7 +84,8 @@ function c9910702.desop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910702.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanTurnSet() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Zcd.SetFilter(e:GetHandler(),e) end
 end
 function c9910702.setop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end

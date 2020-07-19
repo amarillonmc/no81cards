@@ -45,6 +45,8 @@ function c79029022.stgoperation(e,tp,eg,ep,ev,re,r,rp)
 	local x=Duel.GetMatchingGroupCount(c79029022.dfil,tp,0,LOCATION_MZONE,nil,e)
 	local x1=Duel.Destroy(g,REASON_EFFECT)
 	e:GetHandler():AddCounter(0x1099,x1)
+	Debug.Message("闪开。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029022,3))
 end
 function c79029022.spfilter(c,e,tp)
 	local a=e:GetHandler():GetCounter(0x1099)
@@ -64,6 +66,8 @@ function c79029022.spop(e,tp,eg,ep,ev,re,r,rp)
 	if tg then
 		Duel.Release(e:GetHandler(),REASON_COST)
 		Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
+	Debug.Message("丢了一个钉子......死了一个国王。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029022,4))
 end
 end
 

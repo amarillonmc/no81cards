@@ -25,11 +25,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and (not c:IsType(TYPE_TUNER)) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+	return c:IsType(TYPE_TUNER) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.cfilter,1,nil) end
-	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,nil)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.cfilter,1,e:GetHandler()) end
+	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,e:GetHandler())
 	Duel.Release(g,REASON_COST)
 end
 function cm.filter(c,e,tp)

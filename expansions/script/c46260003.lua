@@ -77,7 +77,7 @@ function c46260003.rop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function c46260003.descon(e,tp,eg,ep,ev,re,r,rp)
-    return eg:IsExists(Card.IsSummonType,1,nil,SUMMON_TYPE_RITUAL) and eg:GetCount()==1
+    return eg:IsExists(Card.IsSummonType,1,nil,SUMMON_TYPE_RITUAL)
 end
 function c46260003.destg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasableByEffect,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) end
@@ -90,7 +90,8 @@ function c46260003.desop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
     local g=Duel.SelectMatchingCard(tp,Card.IsReleasableByEffect,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil)
     if g and Duel.Release(g,REASON_EFFECT)>0 then
-        Duel.Damage(1-tp,eg:GetFirst():GetLevel()*200,REASON_EFFECT)
+        local lv=eg:Filter(Card.IsSummonType,nil,SUMMON_TYPE_RITUAL):GetSum(Card.GetLevel)
+        Duel.Damage(1-tp,lv*200,REASON_EFFECT)
     end
 end
 function c46260003.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

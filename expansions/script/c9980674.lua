@@ -1,7 +1,7 @@
 --昭和骑士·强人-充电形态
 function c9980674.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc1),4,3)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc1),4,3,c9980674.ovfilter,aux.Stringid(9980674,2),3,c9980674.xyzop)
 	c:EnableReviveLimit()
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
@@ -56,6 +56,13 @@ function c9980674.initial_effect(c)
 end
 function c9980674.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9980674,0))
+end
+function c9980674.ovfilter(c)
+	return c:IsFaceup() and c:IsCode(9980673)
+end
+function c9980674.xyzop(e,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,9980674)==0 end
+	Duel.RegisterFlagEffect(tp,9980674,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c9980674.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

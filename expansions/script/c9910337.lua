@@ -31,12 +31,9 @@ function c9910337.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c9910337.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local ct=c:GetMaterial():FilterCount(Card.IsType,nil,TYPE_TUNER)
 	local p=Duel.GetTurnPlayer()
-	local g=Duel.GetFieldGroup(p,LOCATION_ONFIELD,0):Filter(Card.IsAbleToHand,nil)
-	if chk==0 then return ct>0 and g:GetCount()>0 end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,ct,0,0)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,p,1)
 end
 function c9910337.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -58,6 +58,8 @@ end
 function c79029043.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=e:GetLabelObject()
 	Duel.SendtoGrave(g,REASON_COST)
+	Debug.Message("雷蛇，准备完毕。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029043,1))
 	g:DeleteGroup()
 end
 function c79029043.discon(e,tp,eg,ep,ev,re,r,rp)
@@ -73,10 +75,12 @@ end
 function c79029043.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return bit.band(r,REASON_RULE)==0
 		and Duel.GetCounter(tp,LOCATION_ONFIELD,nil,0x1099)>=5 end
-	if Duel.SelectEffectYesNo(tp,e:GetHandler(),79029096) then
+	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
 	return true
 end
 end
 function c79029043.repop(e,tp,eg,ep,ev,re,r,rp,chk)
 	 Duel.RemoveCounter(tp,1,0,0x1099,5,REASON_EFFECT+REASON_REPLACE)
+	Debug.Message("这算什么，我和芙兰卡可经历过更惨烈的战斗。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029043,0))
 end

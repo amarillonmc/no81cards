@@ -87,7 +87,7 @@ function c79029071.efop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(tp,g)
 	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,79029072) then
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOGRAVE)
-		local sg=g:Select(p,1,1,nil)
+		local sg=g:Select(tp,1,1,nil)
 	   Duel.SendtoGrave(sg,REASON_EFFECT)
 end
 end

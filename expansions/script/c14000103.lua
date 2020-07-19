@@ -113,7 +113,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ConfirmCards(1-tp,tc)
 			else
 				Duel.SSet(tp,tc)
-				Duel.ConfirmCards(1-tp,tc)
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
@@ -133,12 +132,12 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				Duel.SendtoHand(tc,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,tc)
 			else
-				local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+				local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 				if fc then
 					Duel.SendtoGrave(fc,REASON_RULE)
 					Duel.BreakEffect()
 				end
-				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+				Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 				te:UseCountLimit(tp,1,true)
 				local tep=tc:GetControler()
 				local cost=te:GetCost()

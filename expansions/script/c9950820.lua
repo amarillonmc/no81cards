@@ -15,6 +15,15 @@ function c9950820.initial_effect(c)
 	e3:SetCondition(c9950820.effcon)
 	e3:SetOperation(c9950820.effop)
 	c:RegisterEffect(e3)
+ --atk
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_REFLECT_DAMAGE)
+	e1:SetRange(LOCATION_DECK)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(c9950820.refval)
+	c:RegisterEffect(e1)
  --spsummon bgm
 	 local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -55,4 +64,7 @@ function c9950820.effop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(1)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
+end
+function c9950820.refval(e,re,val,r,rp,rc)
+	return rp==1-e:GetHandlerPlayer() and bit.band(r,REASON_EFFECT)~=0
 end

@@ -42,6 +42,22 @@ function c79029214.initial_effect(c)
 	e3:SetTarget(c79029214.atktg)
 	e3:SetValue(c79029214.atkval)
 	c:RegisterEffect(e3)
+	--self Destroy
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_SINGLE)
+	e7:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e7:SetRange(LOCATION_SZONE)
+	e7:SetCode(EFFECT_SELF_DESTROY)
+	e7:SetCondition(c79029214.sdcon)
+	c:RegisterEffect(e7)
+	--ConfirmCards
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetCountLimit(1)
+	e4:SetTarget(c79029214.cctg)
+	e4:SetOperation(c79029214.ccop)
+	c:RegisterEffect(e4)
 end
 c79029214.card_code_list={0xa906}
 function c79029214.lpcon(e,tp,eg,ep,ev,re,r,rp)
@@ -78,6 +94,22 @@ function c79029214.atktg(e,c)
 end
 function c79029214.atkval(e,c)
 	return c:GetAttack()*2
+end
+function c79029214.sdcon(e,tp)
+	local ph=Duel.GetCurrentPhase()
+	return ph>=PHASE_END and ph<=PHASE_END
+	and not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
+end
+function c79029214.silter(c,e,tp)
+	return c:IsSetCard(0xa906)
+end
+function c79029214.cctg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029214.silter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+end
+function c79029214.ccop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c79029214.silter,tp,LOCATION_DECK,0,nil,e,tp)
+	Debug.Message("再次确认，我们果然很适合搭档。")
+	Duel.ConfirmCards(tp,g)
 end
 
 

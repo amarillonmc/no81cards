@@ -1,6 +1,7 @@
 --噬界兽LV5-天际形态
 local m=14000203
 local cm=_G["c"..m]
+cm.named_with_Worlde=1
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--cannot special summon

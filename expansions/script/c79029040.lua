@@ -46,5 +46,7 @@ function c79029040.tdop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsControler(1-tp) and tc:IsFaceup() then
 		Duel.SendtoHand(tc,nil,0,REASON_EFFECT)
+	Debug.Message("走开走开！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029040,0))
 	end
 end

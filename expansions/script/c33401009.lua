@@ -42,34 +42,11 @@ function cm.matfilter(c)
 end
 
 function cm.indcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=c:GetMaterial()
-	local res=0
-	local tc=g:GetFirst()
-	while tc do
-	   if  tc:IsType(TYPE_FUSION) and tc:IsType(TYPE_MONSTER) then res=1 end
-		tc=g:GetNext()
-	end
-	return c:IsSummonType(SUMMON_TYPE_FUSION) and res==1
+	local c=e:GetHandler()  
+	return c:IsSummonType(SUMMON_TYPE_FUSION) 
 end
 function cm.indop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
---cannot target
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e4:SetValue(aux.tgoval)
-	c:RegisterEffect(e4)
- --indes
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e3:SetValue(1)
-	c:RegisterEffect(e3)
 --recover conversion
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -85,7 +62,7 @@ function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local bc=e:GetHandler():GetBattleTarget()
 	Duel.SetTargetCard(bc)
-	local dam=bc:GetAttack()
+	local dam=bc:GetBaseAttack()
 	if dam<0 then dam=0 end
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(dam)

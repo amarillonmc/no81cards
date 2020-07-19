@@ -24,6 +24,9 @@ function c9981078.initial_effect(c)
 	e1:SetTarget(c9981078.sptg2)
 	e1:SetOperation(c9981078.spop2)
 	c:RegisterEffect(e1)
+	local e9=e1:Clone()
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e9)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -55,7 +58,7 @@ function c9981078.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9981078.spfilter(c,e,tp)
-	return c:IsSetCard(0xc008) and c:IsAttackBelow(1700) and not c:IsCode(9981078) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsSetCard(0xc008)  and c:IsType(TYPE_MONSTER) and not c:IsCode(9981078) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c9981078.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

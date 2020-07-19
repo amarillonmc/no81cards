@@ -103,6 +103,8 @@ function c79029054.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c79029054.thfilter,1-tp,LOCATION_DECK,0,nil)
 	Duel.NegateSummon(eg)
 	Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
+	Debug.Message("嗯？我还以为会漏掉几个。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029054,1))
 end
 function c79029054.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
@@ -135,5 +137,7 @@ function c79029054.drop(e,tp,eg,ep,ev,re,r,rp)
 	if gc>0 then
 		Duel.Draw(p,gc,REASON_EFFECT)
 		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
+	Debug.Message("虽说无冤无仇，不过这就是生活呢。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029054,0))
 	end
 end

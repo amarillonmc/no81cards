@@ -106,6 +106,7 @@ if s>0 then
 	e9:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e9:SetCountLimit(1)
 	e9:SetOperation(cm.cpop)
+	e9:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e9)
 end
 if s>1 then 
@@ -119,6 +120,7 @@ if s>1 then
 	e10:SetCountLimit(1)
 	e10:SetTarget(cm.thtg)
 	e10:SetOperation(cm.thop)
+	e10:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e10)
 end
 if s>2 then
@@ -134,6 +136,7 @@ if s>2 then
 	e11:SetCondition(cm.condition)
 	e11:SetTarget(cm.target)
 	e11:SetOperation(cm.operation)
+	e11:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e11)
 end
 end

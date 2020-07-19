@@ -62,6 +62,7 @@ function c79029020.spop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
 	Debug.Message("大展拳脚咯！")   
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029020,0))
 	end
 end
 end
@@ -85,5 +86,6 @@ function c79029020.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.Overlay(c,Group.FromCards(tc))
 	Debug.Message("曲中生直，柔能生刚！")  
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029020,1))
 	end
 end

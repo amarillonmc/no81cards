@@ -59,8 +59,9 @@ end
 function c79029050.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	if Duel.MoveToField(c,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true) then
-	end
+	Duel.MoveToField(c,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
+	Debug.Message("命运变幻无常，唯有胜者永存于世。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029050,0))
 end
 function c79029050.counter(e,tp,eg,ep,ev,re,r,rp)
 local tc=eg:GetFirst()
@@ -73,4 +74,6 @@ function c79029050.rmcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029050.rmop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RemoveCounter(tp,0x1099,e:GetHandler():GetCounter(0x1099),REASON_EFFECT)
+	Debug.Message("不要违抗你的命运。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029050,1))
 end

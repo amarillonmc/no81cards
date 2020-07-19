@@ -1,7 +1,7 @@
 --大欲之壶魔神
 local m=14090002
 local cm=_G["c"..m]
-cm.card_code_list={14090001}
+cm.card_code_list={99284890}
 function cm.initial_effect(c)
 	--summon
 	local e1=Effect.CreateEffect(c)
@@ -94,7 +94,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.thfilter1(c)
-	return aux.IsCodeListed(c,14090001) and c:IsAbleToHand()
+	return c:IsRace(RACE_ROCK) and c:IsSummonableCard() and c:IsAbleToHand()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil) end

@@ -51,11 +51,11 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and not Duel.IsExistingMatchingCard(Card.IsType,c:GetControler(),LOCATION_GRAVE,0,1,nil,TYPE_MONSTER)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x1406) and ((c:IsFaceup() and c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp)>0) or c:IsLocation(LOCATION_HAND)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
+	return c:IsSetCard(0x1406) and ((c:IsFaceup() and c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0) or c:IsLocation(LOCATION_HAND)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp)==0 then return end
+	if c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)==0 then return end
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -70,9 +70,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,c,e,tp)
 	local tc=g:GetFirst()
-	if c:IsLocation(LOCATION_EXTRA) and tc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil)<2 then
+	if c:IsLocation(LOCATION_EXTRA) and tc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)<2 then
 		return
-	elseif ((c:IsLocation(LOCATION_EXTRA) and tc:IsLocation(LOCATION_HAND)) or (c:IsLocation(LOCATION_HAND) and tc:IsLocation(LOCATION_EXTRA))) and Duel.GetLocationCountFromEx(tp,tp,nil)<1 then
+	elseif ((c:IsLocation(LOCATION_EXTRA) and tc:IsLocation(LOCATION_HAND)) or (c:IsLocation(LOCATION_HAND) and tc:IsLocation(LOCATION_EXTRA))) and Duel.GetLocationCountFromEx(tp,tp,nil,c)<1 then
 		return
 	end
 	if g:GetCount()>0 then

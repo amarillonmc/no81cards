@@ -38,6 +38,7 @@ function c9910014.initial_effect(c)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e4:SetRange(LOCATION_MZONE)
+	e4:SetCost(c9910014.discost)
 	e4:SetCondition(c9910014.codisable)
 	e4:SetTarget(c9910014.tgdisable)
 	e4:SetOperation(c9910014.opdisable)
@@ -69,10 +70,13 @@ function c9910014.codisable(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler()~=e:GetHandler()
 		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
 end
+function c9910014.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,9910014)==0 end
+	Duel.RegisterFlagEffect(tp,9910014,RESET_CHAIN,0,1)
+end
 function c9910014.tgdisable(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(9910014)==0 end
-	c:RegisterFlagEffect(9910014,RESET_CHAIN,0,1)
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)

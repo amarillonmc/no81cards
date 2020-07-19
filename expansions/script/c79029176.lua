@@ -1,5 +1,6 @@
 --深海猎人·近卫干员-幽灵鲨·肉斩骨断
 function c79029176.initial_effect(c)
+	c:EnableReviveLimit()
 	--Cannot special summon
 	local e0=Effect.CreateEffect(c)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -26,9 +27,16 @@ function c79029176.initial_effect(c)
 	e5:SetValue(1)
 	c:RegisterEffect(e5)
 	--damage val
-	local e7=e5:Clone()
-	e7:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
-	c:RegisterEffect(e7)  
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_NO_BATTLE_DAMAGE)
+	e5:SetValue(1)
+	c:RegisterEffect(e5)
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	e8:SetValue(1)
+	c:RegisterEffect(e8)
 	--half
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)

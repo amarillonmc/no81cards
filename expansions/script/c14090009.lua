@@ -1,7 +1,7 @@
 --电子之壶魔神
 local m=14090009
 local cm=_G["c"..m]
-cm.card_code_list={14090001}
+cm.card_code_list={99284890}
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()

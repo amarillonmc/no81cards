@@ -1,7 +1,7 @@
 --无欲之壶魔神
 local m=14090010
 local cm=_G["c"..m]
-cm.card_code_list={14090001}
+cm.card_code_list={99284890}
 function cm.initial_effect(c)
 	--summon
 	local e1=Effect.CreateEffect(c)

@@ -39,6 +39,8 @@ function c79029067.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c79029067.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	Debug.Message("绝不辱没雪境之名。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029067,0))
 end
 function c79029067.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -52,7 +54,7 @@ function c79029067.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c79029067.thfilter2(c,tp)
-	return c:IsSetCard(0xc90f) and c:IsAbleToHand()
+	return c:IsSetCard(0xc90e) and c:IsAbleToHand()
 		and Duel.IsExistingMatchingCard(c79029067.thfilter3,tp,LOCATION_DECK,0,1,c)
 end
 function c79029067.thfilter3(c)
@@ -71,5 +73,7 @@ function c79029067.thop2(e,tp,eg,ep,ev,re,r,rp)
 		g1:Merge(g2)
 		Duel.SendtoHand(g1,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g1)
+	Debug.Message("加速！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029067,1))
 	end
 end

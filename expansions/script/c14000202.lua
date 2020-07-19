@@ -1,6 +1,7 @@
 --噬界兽LV3-原野形态
 local m=14000202
 local cm=_G["c"..m]
+cm.named_with_Worlde=1
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--cannot special summon

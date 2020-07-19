@@ -55,7 +55,7 @@ function c79029094.desfilter2(c,s,tp)
 end
 function c79029094.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
-	if chk==0 then return c:IsDestructable() and g:GetCount()>0 end
+	if chk==0 then return g:GetCount()>0 end
 	local tc=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tc,1,0,0)
 end

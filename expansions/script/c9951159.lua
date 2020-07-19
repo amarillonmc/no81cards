@@ -43,11 +43,11 @@ end
 function c9951159.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9951159.spfilter,c:GetControler(),0,LOCATION_ONFIELD,2,nil)
+		and Duel.IsExistingMatchingCard(c9951159.spfilter,c:GetControler(),0,LOCATION_ONFIELD,3,nil)
 end
 function c9951159.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9951159.spfilter,tp,0,LOCATION_ONFIELD,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c9951159.spfilter,tp,0,LOCATION_ONFIELD,1,3,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9951159.distg(e,c)

@@ -53,12 +53,12 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local te=c:GetActivateEffect()
 	local b1=te:IsActivatable(tp)
 	if b1 then
-		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then
 			Duel.SendtoGrave(fc,REASON_RULE)
 			Duel.BreakEffect()
 		end
-		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		te:UseCountLimit(tp,1,true)
 		local tep=c:GetControler()
 		local cost=te:GetCost()

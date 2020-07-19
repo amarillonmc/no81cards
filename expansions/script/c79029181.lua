@@ -1,7 +1,7 @@
 --罗德岛·近卫干员-柏喙
 function c79029181.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WIND),4,3)
+	aux.AddXyzProcedure(c,nil,4,3)
 	c:EnableReviveLimit()   
 	--change position
 	local e1=Effect.CreateEffect(c)
@@ -61,7 +61,7 @@ function c79029181.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
 function c79029181.fil(c)
-	return (c:IsSetCard(0xc90f) or c:IsSetCard(0xb90f)) and c:IsDiscardable()
+	return (c:IsSetCard(0xc90e) or c:IsSetCard(0xb90d)) and c:IsDiscardable()
 end
 function c79029181.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)

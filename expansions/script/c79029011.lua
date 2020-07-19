@@ -171,7 +171,7 @@ function c79029011.spop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029011.xfilter(c)
-	return c:IsSetCard(0xa90f) and not c:IsForbidden() and not c:IsCode(79029011)
+	return c:IsSetCard(0xa90f) and not c:IsForbidden() and not c:IsCode(79029011) and c:IsType(TYPE_EQUIP)
 end
 function c79029011.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029011.xfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil)
@@ -189,7 +189,7 @@ function c79029011.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_CONTINUOUS)
+		e1:SetValue(TYPE_CONTINUOUS+TYPE_SPELL)
 		tc:RegisterEffect(e1)
 	end
 end

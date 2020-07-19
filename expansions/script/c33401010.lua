@@ -4,12 +4,15 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 aux.AddFusionProcFunFunRep(c,cm.matfilter1,cm.matfilter,2,2,true)
 c:EnableReviveLimit()
-	  --indes
+  --destroy
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCondition(cm.indcon)
-	e1:SetOperation(cm.indop)
+	e1:SetCategory(CATEGORY_DAMAGE+CATEGORY_ATKCHANGE)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(cm.descon1)
+	e1:SetOperation(cm.desop)
 	c:RegisterEffect(e1)  
 	 --negate
 	local e3=Effect.CreateEffect(c)
@@ -42,46 +45,6 @@ function cm.matfilter(c)
 	return c:IsSetCard(0x9341)
 end
 
-function cm.indcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=c:GetMaterial()
-	local res=0
-	local tc=g:GetFirst()
-	while tc do
-	   if  tc:IsType(TYPE_FUSION) and tc:IsType(TYPE_MONSTER) then res=1 end
-		tc=g:GetNext()
-	end
-	return c:IsSummonType(SUMMON_TYPE_FUSION) and res==1
-end
-function cm.indop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
---cannot target
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e4:SetValue(aux.tgoval)
-	c:RegisterEffect(e4)
- --indes
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e3:SetValue(1)
-	c:RegisterEffect(e3)
---destroy
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DAMAGE+CATEGORY_ATKCHANGE)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_DESTROYED)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(cm.descon1)
-	e1:SetOperation(cm.desop)
-	c:RegisterEffect(e1)
-end
 function cm.cfilter2(c,tp)
 	return   c:IsPreviousLocation(LOCATION_ONFIELD) and c:GetPreviousControler()==1-tp
 end

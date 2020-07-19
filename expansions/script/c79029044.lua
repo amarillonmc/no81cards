@@ -47,6 +47,8 @@ end
 function c79029044.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=e:GetLabelObject()
 	Duel.SendtoGrave(g,REASON_COST)
+	Debug.Message("那么，我们出发。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029044,0))
 	g:DeleteGroup()
 end
 function c79029044.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -61,6 +63,8 @@ function c79029044.thop(e,tp,eg,ep,ev,re,r,rp)
 	if c==tc then tc=Duel.GetAttackTarget() end
 	if tc and tc:IsRelateToBattle() then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	Debug.Message("重装甲好可怕......骗你的~")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029044,1))
 	end
 	if c:IsRelateToEffect(e) and c:IsChainAttackable() then
 		Duel.ChainAttack()

@@ -38,6 +38,8 @@ function c79029097.lzop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	Debug.Message("准备妥当了，出发。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029097,0))
 end
 end
 function c79029097.atkfilter(c)

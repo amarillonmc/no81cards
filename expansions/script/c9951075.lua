@@ -21,6 +21,17 @@ function c9951075.initial_effect(c)
 	e2:SetTarget(c9951075.atktg)
 	e2:SetOperation(c9951075.atkop2)
 	c:RegisterEffect(e2)
+ --spsummon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9951075,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_REMOVE)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,99510750)
+	e2:SetTarget(c9951075.sptg)
+	e2:SetOperation(c9951075.spop)
+	c:RegisterEffect(e2)
 	--spsummon bgm
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -99,4 +110,21 @@ function c9951075.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9951075.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
+end
+function c9951075.spfilter(c,e,tp)
+	return c:IsFaceup() and c:IsSetCard(0x9bd1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c9951075.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c9951075.spfilter(chkc,e,tp) and chkc~=e:GetHandler() end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c9951075.spfilter,tp,LOCATION_REMOVED,0,1,e:GetHandler(),e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,c9951075.spfilter,tp,LOCATION_REMOVED,0,1,1,e:GetHandler(),e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+end
+function c9951075.spop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	end
 end

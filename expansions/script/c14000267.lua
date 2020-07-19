@@ -50,6 +50,7 @@ function cm.tfilter(c,e,tp)
 	return c:IsFacedown() or not c:IsType(TYPE_TUNER)
 end
 function cm.thcon(e)
+	local tp=e:GetHandlerPlayer()
 	return not Duel.IsExistingMatchingCard(cm.tfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.filter(c,e,tp)

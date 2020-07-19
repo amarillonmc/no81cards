@@ -61,9 +61,10 @@ function c79029217.eqop(e,tp,eg,ep,ev,re,r,rp)
 	if tc then
 	if not Duel.SendtoGrave(tc,REASON_EFFECT) then return end
 	if e:GetHandler():IsPosition(POS_DEFENSE) then
-	Duel.ChangePosition(e:GetHandler(),POS_FACEUP_ATTACK)	 
+	Duel.ChangePosition(e:GetHandler(),POS_FACEUP_ATTACK)	
 	end
 	Debug.Message("跟不上就自个找点事做吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029217,0))   
 	e:GetHandler():SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_LINK+TYPE_EFFECT)
 	e:GetHandler():SetCardData(CARDDATA_LINK_MARKER,tc:GetLinkMarker())
 	local x=tc:GetLink()
@@ -97,6 +98,7 @@ function c79029217.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateActivation(ev)
 	Duel.Destroy(eg,REASON_EFFECT)
 	Debug.Message("吃屎去吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029217,1))   
 end
 function c79029217.damcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttacker()==e:GetHandler() and Duel.GetAttackTarget()
@@ -110,6 +112,7 @@ function c79029217.damop(e,tp,eg,ep,ev,re,r,rp)
 	if bc and bc:IsRelateToBattle() and bc:IsFaceup() then
 		Duel.Damage(1-tp,bc:GetBaseAttack(),REASON_EFFECT)
 	Debug.Message("赏你们一门板。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029217,2))   
 	end
 end
 

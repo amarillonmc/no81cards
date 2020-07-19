@@ -2,8 +2,8 @@
 function c9951209.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,9951199,c9951209.matfilter,2,false,false)
-	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_GRAVE+LOCATION_MZONE,0,Duel.Remove,POS_FACEUP,REASON_COST)
+	aux.AddFusionProcFunFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xcbd1),c9951209.matfilter,2,false,false)
+	aux.AddContactFusionProcedure(c,c9951209.cfilter,LOCATION_ONFIELD+LOCATION_GRAVE,0,aux.tdcfop(c))
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -27,6 +27,14 @@ function c9951209.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetValue(aux.indoval)
 	c:RegisterEffect(e3)
+ --immune  
+	local e1=Effect.CreateEffect(c)  
+	e1:SetType(EFFECT_TYPE_SINGLE)  
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)  
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)  
+	e1:SetRange(LOCATION_MZONE)  
+	e1:SetValue(c9951209.efilter)  
+	c:RegisterEffect(e1)
  --atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9951209,1))
@@ -45,9 +53,12 @@ function c9951209.initial_effect(c)
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(9951209,2))
 	e5:SetCategory(CATEGORY_DISABLE)
-	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCountLimit(1)
+	e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e5:SetHintTiming(TIMING_DAMAGE_STEP,TIMING_DAMAGE_STEP+TIMING_END_PHASE)
 	e5:SetTarget(c9951209.target)
 	e5:SetOperation(c9951209.operation)
 	c:RegisterEffect(e5)
@@ -62,6 +73,17 @@ function c9951209.initial_effect(c)
 	e4:SetTarget(c9951209.target2)
 	e4:SetOperation(c9951209.operation2)
 	c:RegisterEffect(e4)
+ --tohand
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_PHASE+PHASE_END)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetCountLimit(1)
+	e3:SetCondition(c9951209.thcon)
+	e3:SetTarget(c9951209.thtg)
+	e3:SetOperation(c9951209.thop)
+	c:RegisterEffect(e3)
 --spsummon bgm
 	 local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -76,11 +98,21 @@ function c9951209.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951209,0))
 end
 function c9951209.matfilter(c)
-	return c:IsLevelAbove(8) and c:IsSetCard(0x9bd1)
+	return c:IsRankAbove(8) and c:IsSetCard(0x9bd1)
+end
+function c9951209.cfilter(c)
+	return c:IsFusionSetCard(0x9bd1,0xcbd1) and c:IsType(TYPE_MONSTER)
+		and c:IsAbleToDeckOrExtraAsCost()
 end
 function c9951209.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
+function c9951209.efilter(e,te)  
+	local c=e:GetHandler()  
+	local ec=te:GetHandler() 
+	if ec:IsHasCardTarget(c) or (te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te)) then return false end  
+	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() 
+end 
 function c9951209.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
@@ -109,7 +141,7 @@ function c9951209.atkop(e,tp,eg,ep,ev,re,r,rp)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(ct*300)
+			e1:SetValue(ct*500)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1)
@@ -156,4 +188,23 @@ function c9951209.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9951209.filter,tp,0,LOCATION_MZONE,nil)
 	Duel.Destroy(g,REASON_EFFECT)
 Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951209,4))
+end
+function c9951209.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
+end
+function c9951209.filter2(c)
+	return c:IsSetCard(0x9bd1) and c:IsAbleToHand()
+end
+function c9951209.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9951209.filter2,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9951209.thop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9951209.filter2,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end

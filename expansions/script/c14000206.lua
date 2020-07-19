@@ -1,6 +1,7 @@
 --噬界兽LV11-星噬形态
 local m=14000206
 local cm=_G["c"..m]
+cm.named_with_Worlde=1
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--cannot special summon

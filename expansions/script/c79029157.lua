@@ -18,14 +18,14 @@ function c79029157.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_MZONE)
+	e3:SetRange(LOCATION_SZONE)
 	e3:SetOperation(c79029157.counterop)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e4:SetRange(LOCATION_MZONE)
+	e4:SetRange(LOCATION_SZONE)
 	e4:SetTargetRange(1,0)
 	e4:SetCondition(c79029157.econ)
 	e4:SetValue(c79029157.elimit)
@@ -48,9 +48,9 @@ end
 function c79029157.counterop(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsActiveType(TYPE_MONSTER) then return end
 	if ep==tp then
-		e:GetHandler():RegisterFlagEffect(c79029157,RESET_EVENT+0x3ff0000+RESET_PHASE+PHASE_END,0,1)
+		e:GetHandler():RegisterFlagEffect(79029157,RESET_EVENT+0x3ff0000+RESET_PHASE+PHASE_END,0,1)
 	else
-		e:GetHandler():RegisterFlagEffect(c79029157,RESET_EVENT+0x3ff0000+RESET_PHASE+PHASE_END,0,1)
+		e:GetHandler():RegisterFlagEffect(79029157,RESET_EVENT+0x3ff0000+RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c79029157.cfilter(c,type)

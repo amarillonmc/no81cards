@@ -61,7 +61,7 @@ function c9910414.matfilter(c)
 	return c:IsFusionType(TYPE_FUSION) and c:IsFusionSetCard(0x6950)
 end
 function c9910414.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) and c9910414[tp]>0
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c9910414.spfilter(c,lv,e,tp)
 	return c:IsFusionSetCard(0x6950) and c:IsLevelBelow(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)

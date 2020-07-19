@@ -33,5 +33,6 @@ function cm.winop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.winop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	Duel.Damage(1-tp,10000,REASON_EFFECT)
+	local WIN_REASON_CHRONO_BLADE=0x24
+	Duel.Win(tp,WIN_REASON_CHRONO_BLADE)
 end

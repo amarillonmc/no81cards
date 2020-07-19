@@ -1,5 +1,6 @@
 --光之国·赛罗-强壮日冕
 function c9951201.initial_effect(c)
+c:SetSPSummonOnce(9951201)
 	  --fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9bd1),aux.FilterBoolFunction(Card.IsFusionSetCard,0xcbd1),true)
@@ -77,7 +78,7 @@ function c9951201.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951201,0))
 end
 function c9951201.tgfilter(c)
-	return c:IsSetCard(0xcbd1) and c:IsAbleToGrave()
+	return c:IsSetCard(0x9bd1) and c:IsAbleToGrave()
 end
 function c9951201.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9951201.tgfilter,tp,LOCATION_DECK,0,1,nil) end

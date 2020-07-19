@@ -32,13 +32,14 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD)   end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler(),TYPE_SPELL+TYPE_TRAP) end
+	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,0,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
-	 local tg=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,TYPE_SPELL+TYPE_TRAP)
+Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	 local tg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
 	 local tc=tg:GetFirst()
 		Duel.SendtoGrave(tc,REASON_EFFECT)
 		Duel.Damage(1-tp,500,REASON_EFFECT)

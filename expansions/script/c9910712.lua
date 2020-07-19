@@ -1,4 +1,5 @@
 --远古造物 风神翼龙
+require("expansions/script/c9910106")
 function c9910712.initial_effect(c)
 	c:EnableReviveLimit()
 	--special summon
@@ -54,23 +55,23 @@ function c9910712.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
-function c9910712.thfilter(c,tp)
-	return c:IsSetCard(0xc950) and c:IsLevelBelow(6) and (c:IsAbleToHand() or c9910712.filter2(c,tp))
+function c9910712.thfilter(c,e,tp)
+	return c:IsSetCard(0xc950) and c:IsLevelBelow(6) and (c:IsAbleToHand() or c9910712.filter2(c,e,tp))
 end
-function c9910712.filter2(c,tp)
-	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not c:IsForbidden()
+function c9910712.filter2(c,e,tp)
+	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Zcd.SetFilter(c,e)
 end
 function c9910712.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910712.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910712.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c9910712.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910712.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910712.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if not tc then return end
 	if tc:IsAbleToHand()
-		and (not c9910712.filter2(tc,tp) or Duel.SelectOption(tp,1190,aux.Stringid(9910712,0))==0) then
+		and (not c9910712.filter2(tc,e,tp) or Duel.SelectOption(tp,1190,aux.Stringid(9910712,0))==0) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 	else

@@ -17,12 +17,11 @@ function cm.filter1(c,e,tp)
 	local rk=c:GetRank()
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsRace(RACE_WARRIOR)
 		and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk+1)
-		and Duel.GetLocationCountFromEx(tp,tp,c)>0
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end
 function cm.filter2(c,e,tp,mc,rk)
 	return c:IsRank(rk) and c:IsRace(RACE_WARRIOR) and mc:IsCanBeXyzMaterial(c)
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.filter1(chkc,e,tp) end

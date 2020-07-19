@@ -66,10 +66,10 @@ function c9951109.efilter(e,te)
 	return te:IsActiveType(TYPE_TRAP)
 end
 function c9951109.atkfilter(c)
-	return c:GetType()==TYPE_TRAP
+	return c:IsFaceup() and c:IsType(TYPE_TRAP)
 end
 function c9951109.atkval(e,c)
-	return Duel.GetMatchingGroupCount(c9951109.atkfilter,c:GetControler(),LOCATION_GRAVE,0,nil)*1000
+	return Duel.GetMatchingGroupCount(c9951109.atkfilter,e:GetHandlerPlayer(),LOCATION_GRAVE,LOCATION_GRAVE,nil)*1000
 end
 function c9951109.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)

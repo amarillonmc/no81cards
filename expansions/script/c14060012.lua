@@ -97,7 +97,8 @@ function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsFaceup()
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	local g=Duel.GetFieldGroup(tp,LOCATION_REMOVED+LOCATION_GRAVE,LOCATION_REMOVED+LOCATION_GRAVE)
+	if chk==0 then return #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,PLAYER_ALL,LOCATION_REMOVED+LOCATION_GRAVE)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)

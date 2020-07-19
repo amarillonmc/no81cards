@@ -73,7 +73,7 @@ function c9980684.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousPosition(POS_FACEUP) and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9980684.filter(c,e,tp)
-	return c:IsCode(9980682) and c:IsCanBeSpecialSummoned(e,0,tp,false,true)
+	return c:IsCode(9980682) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function c9980684.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCountFromEx(tp)>0
@@ -84,6 +84,6 @@ function c9980684.sumop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCountFromEx(tp)<=0 then return end
 	local tg=Duel.GetFirstMatchingCard(c9980684.filter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,nil,e,tp)
 	if tg then
-		Duel.SpecialSummon(tg,0,tp,tp,false,true,POS_FACEUP)
+		Duel.SpecialSummon(tg,0,tp,tp,true,true,POS_FACEUP)
 	end
 end

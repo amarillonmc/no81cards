@@ -1,7 +1,7 @@
 --装甲骑士铠武·胜哄武装
 function c9980864.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc2),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xbca),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--indes
 	local e3=Effect.CreateEffect(c)

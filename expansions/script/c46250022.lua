@@ -58,30 +58,36 @@ function c46250022.discost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsPlayerCanDiscardDeckAsCost(tp,1) end
     Duel.DiscardDeck(tp,1,REASON_COST)
 end
-function c46250022.filter(c,e,tp,mg)
-    if bit.band(c:GetOriginalType(),0x81)~=0x81 or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
-    local mg1=mg:Clone()
-    mg1:RemoveCard(c)
-    return mg1:CheckWithSumGreater(Card.GetRitualLevel,c:GetLevel(),c)
+function c46250022.filter(c,e,tp,mg,tc)
+    if bit.band(c:GetOriginalType(),0x81)~=0x81 or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) or c:IsLocation(LOCATION_PZONE) and c~=tc then return false end
+    mg:RemoveCard(c)
+    local lv=c:GetOriginalLevel()
+    aux.GCheckAdditional=aux.RitualCheckAdditional(c,lv,"Greater")
+    local res=mg:CheckSubGroup(aux.RitualCheck,1,lv,tp,c,lv,"Greater")
+    aux.GCheckAdditional=nil
+    return res
 end
 function c46250022.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then
-        if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
-        local mg1=Duel.GetRitualMaterial(tp)
-        return Duel.IsExistingMatchingCard(c46250022.filter,tp,LOCATION_HAND+LOCATION_PZONE,0,1,nil,e,tp,mg1)
+        local mg=Duel.GetRitualMaterial(tp)
+        return Duel.IsExistingMatchingCard(c46250022.filter,tp,LOCATION_HAND+LOCATION_PZONE,0,1,nil,e,tp,mg,e:GetHandler())
     end
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_PZONE)
 end
 function c46250022.rop(e,tp,eg,ep,ev,re,r,rp)
-    if not e:GetHandler():IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-    local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsCanBeRitualMaterial,tc,tc)
+    if not e:GetHandler():IsRelateToEffect(e) then return end
+    local mg=Duel.GetRitualMaterial(tp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-    local tg=Duel.SelectMatchingCard(tp,c46250022.filter,tp,LOCATION_HAND+LOCATION_PZONE,0,1,1,nil,e,tp,mg)
+    local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c46250022.filter),tp,LOCATION_HAND+LOCATION_PZONE,0,1,1,nil,e,tp,mg,e:GetHandler())
     local tc=tg:GetFirst()
     if tc then
+        mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
         mg:RemoveCard(tc)
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-        local mat=mg:SelectWithSumGreater(tp,Card.GetRitualLevel,tc:GetLevel(),tc)
+        local lv=tc:GetOriginalLevel()
+        aux.GCheckAdditional=aux.RitualCheckAdditional(tc,lv,"Greater")
+        local mat=mg:SelectSubGroup(tp,aux.RitualCheck,false,1,lv,tp,tc,lv,"Greater")
+        aux.GCheckAdditional=nil
         tc:SetMaterial(mat)
         Duel.ReleaseRitualMaterial(mat)
         Duel.BreakEffect()
@@ -112,8 +118,8 @@ function c46250022.lvop(e,tp,eg,ep,ev,re,r,rp)
     Duel.RegisterEffect(e2,tp)
 end
 function c46250022.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local g=eg:Filter(Card.IsAbleToRemove,e:GetHandler())
-    if chk==0 then return g and g:GetCount()>0 and Duel.CheckReleaseGroup(tp,aux.TRUE,1,g) end
+    local g=eg:Filter(Card.IsAbleToRemove,nil)
+    if chk==0 then return not eg:IsContains(e:GetHandler()) and g and g:GetCount()>0 and Duel.CheckReleaseGroup(tp,aux.TRUE,1,g) end
     Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end
 function c46250022.tgop(e,tp,eg,ep,ev,re,r,rp)

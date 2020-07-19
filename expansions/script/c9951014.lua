@@ -1,7 +1,7 @@
 --深海电脑乐土·溶解莉莉丝
 function c9951014.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_CYBERSE),10,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_CYBERSE),9,2)
 	c:EnableReviveLimit()
 	--immune
 	local e1=Effect.CreateEffect(c)

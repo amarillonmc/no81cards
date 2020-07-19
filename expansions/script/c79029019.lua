@@ -36,5 +36,6 @@ function c79029019.spop(e,tp,eg,ep,ev,re,r,rp)
 		c:AddMonsterAttribute(TYPE_NORMAL)
 		Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
 	Debug.Message("只要我们将博士的战术坚持到底，就绝不会发生任何问题。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029019,0))
 end
 end

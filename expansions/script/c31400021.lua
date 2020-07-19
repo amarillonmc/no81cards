@@ -1,0 +1,54 @@
+local m=31400021
+local cm=_G["c"..m]
+cm.name="娱乐伙伴 异色眼星霜之灵摆魔术师"
+function cm.initial_effect(c)
+  aux.EnablePendulumAttribute(c)
+
+  local e2=Effect.CreateEffect(c)
+  e2:SetType(EFFECT_TYPE_FIELD)
+  e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+  e2:SetRange(LOCATION_PZONE)
+  e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+  e2:SetTargetRange(LOCATION_MZONE,0)
+  e2:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_SPELLCASTER))
+  e2:SetValue(cm.evalue)
+  c:RegisterEffect(e2)
+
+  local e3=Effect.CreateEffect(c)
+  e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+  e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+  e3:SetCode(EVENT_LEAVE_FIELD)
+  e3:SetRange(LOCATION_PZONE)
+  e3:SetCountLimit(1,31400021)
+  e3:SetCondition(cm.thcon)
+  e3:SetTarget(cm.thtg)
+  e3:SetOperation(cm.thop)
+  c:RegisterEffect(e3)
+end
+function cm.evalue(e,re,rp)
+	return re:IsActiveType(TYPE_SPELL) and rp==1-e:GetHandlerPlayer()
+end
+function cm.thcfilter(c,tp)
+	return c:IsType(TYPE_PENDULUM) and c:IsPreviousSetCard(0x98)
+		and c:GetPreviousControler()==tp and c:IsPreviousPosition(POS_FACEUP)
+		and c:IsPreviousLocation(LOCATION_MZONE+LOCATION_PZONE)
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.thcfilter,1,nil,tp)
+end
+function cm.thfilter(c)
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x98) and c:IsAbleToHand()
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end

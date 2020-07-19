@@ -58,6 +58,8 @@ function c79029033.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingTarget(c79029033.spfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	Debug.Message("准备输血！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029033,0))
 	local g=Duel.SelectTarget(tp,c79029033.spfilter2,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
@@ -83,6 +85,8 @@ function c79029033.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	Debug.Message("准战场是一个只会制造可怕悲剧的地方，希望那些人也能理解到这点。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029033,1))
 	end
 end
 function c79029033.tocost(e,tp,eg,ep,ev,re,r,rp,chk)

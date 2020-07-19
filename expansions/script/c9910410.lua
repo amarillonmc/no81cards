@@ -27,7 +27,8 @@ function c9910410.condition(e,tp,eg,ep,ev,re,r,rp)
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c9910410.cfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0x6950) and c:IsAbleToRemoveAsCost()
+	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0x6950) and c:IsType(TYPE_MONSTER)
+		and c:IsAbleToRemoveAsCost()
 end
 function c9910410.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910410.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end

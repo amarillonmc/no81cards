@@ -15,19 +15,16 @@ function c79029163.initial_effect(c)
 	--disable
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetCode(EVENT_CHAIN_SOLVING)
+	e5:SetCode(EVENT_CHAINING)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetOperation(c79029163.disop)
 	e5:SetLabel(c:GetSequence())
 	c:RegisterEffect(e5)
 end
 function c79029163.disop(e,tp,eg,ep,ev,re,r,rp)
-	local tseq=e:GetHandler():GetSequence()
-	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
-	if loc&LOCATION_ONFIELD~=0 and seq<=4 and re:IsActiveType(TYPE_SPELL+TYPE_TRAP+TYPE_MONSTER)
-	and seq==tseq or (tseq==5 and seq==2) or (tseq==6 and seq==3) then
+	if e:GetHandler():GetColumnGroup():IsContains(re:GetHandler()) and re:GetHandler():IsControler(1-tp) then
 		Duel.NegateEffect(ev)
-	end
+end	
 end
 function c79029163.filter(c)
 	return c:IsFaceup() and (c:IsCanBeSynchroMaterial() or c:IsCanBeXyzMaterial(nil))

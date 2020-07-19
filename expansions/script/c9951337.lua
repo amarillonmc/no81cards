@@ -57,7 +57,7 @@ function c9951337.spcon(e,c)
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c9951337.filter(c)
-	return c:IsSetCard(0xba5) and c:IsLevelBelow(10) and not c:IsCode(9951337) and c:IsAbleToHand()
+	return c:IsSetCard(0xba5) and c:IsLevelAbove(10) and not c:IsCode(9951337) and c:IsAbleToHand()
 end
 function c9951337.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9951337.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -72,7 +72,7 @@ function c9951337.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9951337.spfilter(c,e,tp)
-	return c:IsSetCard(0xba5) and c:IsLevelBelow(10) and not c:IsCode(9951337) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xba5) and c:IsLevelAbove(10) and not c:IsCode(9951337) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9951337.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c9951337.spfilter(chkc,e,tp) end

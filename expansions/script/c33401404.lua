@@ -65,8 +65,11 @@ end
 function cm.splimit1(e,c)
 	return not (c:IsSetCard(0x341,0x5344))
 end
+function cm.ckfilter3(c)
+	return c:IsFaceup()  and c:IsSetCard(0x341) and c:IsType(TYPE_FIELD)
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,3) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,3) and Duel.IsExistingMatchingCard(cm.ckfilter3,tp,LOCATION_ONFIELD,0,1,nil)  end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(3)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,3)
@@ -74,44 +77,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
    local c=e:GetHandler()
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	if Duel.Draw(p,d,REASON_EFFECT)~=0 then 
-	local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetTargetRange(1,0)
-		e1:SetCode(EFFECT_CANNOT_DRAW)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-	local g=Duel.GetOperatedGroup()
-	local tc=g:GetFirst()
-		while tc do
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_PUBLIC)
-		e2:SetReset(RESET_EVENT+0x1fe0000)
-		tc:RegisterEffect(e2)
-		tc:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,1,0,66)
-	 --cannot set
-		local e4=Effect.CreateEffect(c)
-		e4:SetType(EFFECT_TYPE_FIELD)
-		e4:SetCode(EFFECT_CANNOT_MSET)
-		e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e4:SetTargetRange(1,0)
-		e4:SetTarget(cm.splimit)
-		Duel.RegisterEffect(e4,tp)
-		local e5=e4:Clone()
-		e5:SetCode(EFFECT_CANNOT_SSET)
-		Duel.RegisterEffect(e5,tp)
-		local e6=e4:Clone()
-		e6:SetCode(EFFECT_CANNOT_TURN_SET)
-		Duel.RegisterEffect(e6,tp)
-		local e7=e4:Clone()
-		e7:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-		e7:SetTarget(cm.sumlimit)
-		Duel.RegisterEffect(e7,tp)
-		tc=g:GetNext()
-		end
-	end
+	Duel.Draw(p,d,REASON_EFFECT)			
 	local e9=Effect.CreateEffect(e:GetHandler())
 	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e9:SetCode(EVENT_PHASE+PHASE_END)

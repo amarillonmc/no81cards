@@ -102,6 +102,7 @@ function c79029187.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	g1:Merge(g2)
 	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
 	Debug.Message("你们就是敌人？那就拜托你们进攻用点力了，别让我太无聊！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029187,0))
 end
 end
 function c79029187.condition(e,tp,eg,ep,ev,re,r,rp)
@@ -118,6 +119,8 @@ function c79029187.operation(e,tp,eg,ep,ev,re,r,rp)
 	if coin==1 then
 		if Duel.NegateAttack() then
 			Duel.Damage(1-tp,math.ceil(tc:GetAttack()),REASON_EFFECT)
+	Debug.Message("加油！还差一点。你就能干掉我了！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029187,1))
 		end
 	end
 end
@@ -143,6 +146,8 @@ function c79029187.disop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2)
 		Duel.MajesticCopy(c,tc)
+	Debug.Message("让我见识见识你的能耐。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029187,2))
 	end
 end
 

@@ -40,10 +40,10 @@ function cm.setfilter(c)
 	return cm.ARC(c) and c:IsType(TYPE_TRAP) and c:IsSSetable()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMatchingGroupCount(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil)>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local ct,ft=Duel.GetMatchingGroupCount(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil),Duel.GetLocationCount(tp,LOCATION_SZONE)
+	local ct,ft=Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_ONFIELD,nil),Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if ct>ft then ct=ft end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,ct,nil)

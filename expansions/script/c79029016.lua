@@ -22,5 +22,6 @@ function c79029016.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateAttack() then
 		Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
 	Debug.Message("鼠群，聚集起来吧！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029016,1))
 	end
 end

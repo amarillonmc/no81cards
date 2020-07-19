@@ -2,8 +2,8 @@
 function c9981265.initial_effect(c)
 	 --fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,53025096,aux.FilterBoolFunction(Card.IsFusionSetCard,0x99,0x9f),1,true,true)
-	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_ONFIELD+LOCATION_GRAVE,0,Duel.Remove,POS_FACEUP,REASON_COST)
+	aux.AddFusionProcCodeFun(c,c9981265.ffilter,aux.FilterBoolFunction(Card.IsFusionSetCard,0x99,0x9f),1,true,true)
+	aux.AddContactFusionProcedure(c,c9981265.cfilter,LOCATION_ONFIELD+LOCATION_GRAVE,0,Duel.Remove,POS_FACEUP,REASON_COST)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)
 	--pendulum set
@@ -59,6 +59,13 @@ function c9981265.initial_effect(c)
 end
 function c9981265.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981265,0))
+end
+function c9981265.ffilter(c)
+	return c:IsFusionCode(53025096,16178681) 
+end
+function c9981265.cfilter(c)
+	return (c:IsFusionCode(53025096,16178681) or c:IsFusionSetCard(0x99,0x9f) and c:IsType(TYPE_MONSTER))
+		and c:IsAbleToRemoveAsCost()
 end
 function c9981265.pcfilter(c)
 	return c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
