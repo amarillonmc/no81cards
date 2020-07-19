@@ -45,7 +45,7 @@ function c33401309.thop2(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c33401309.cptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(c33401309.matfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c33401309.matfilter,tp,LOCATION_EXTRA,0,1,nil) end
 end
 function c33401309.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

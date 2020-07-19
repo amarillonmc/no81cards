@@ -87,7 +87,7 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function cm.dfilter(c)
-    return c:IsSetCard(0xe6f) and c:IsType(TYPE_MONSTER) and c:IsDiscardable() and c:IsAbleToGraveAsCost()
+    return c:IsSetCard(0xe6f) and c:IsType(TYPE_MONSTER) and c:IsDiscardable()
 end
 function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():IsDiscardable() and e:GetHandler():IsAbleToGraveAsCost()

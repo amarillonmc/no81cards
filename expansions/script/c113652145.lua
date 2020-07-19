@@ -124,7 +124,7 @@ function c113652145.fop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c113652145.tgcon(e,tp,eg,ep,ev,re,r,rp)
     local tc=eg:GetFirst()
-    return eg:GetCount()==1 and tc:IsPreviousLocation(LOCATION_DECK+LOCATION_EXTRA) and tc:IsControler(tp) and tc:IsType(TYPE_MONSTER)
+    return eg:GetCount()==1 and tc:IsPreviousLocation(LOCATION_DECK+LOCATION_EXTRA) and tc:IsControler(tp) and tc:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function c113652145.tgfilter(c)
     return c:IsFaceup() and c:IsSetCard(0x23) and c:GetEquipCount()==0

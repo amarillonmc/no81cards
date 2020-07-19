@@ -24,7 +24,7 @@ function c79029212.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 function c79029212.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0xf02)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xa900)
 end
 function c79029212.lzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)

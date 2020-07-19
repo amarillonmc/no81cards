@@ -64,7 +64,7 @@ function c118824150.drop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Draw(p,d,REASON_EFFECT)
 end
 function c118824150.spcostfilter(c)
-    return c:IsSetCard(0xdd) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+    return c:IsSetCard(0xdd) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckOrExtraAsCost()
 end
 function c118824150.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c118824150.spcostfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
