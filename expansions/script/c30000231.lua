@@ -20,9 +20,9 @@ end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	for i=0,1 do
 		if rp==i and eg:IsExists(cm.cfilter,1,nil,rp) then
+			local flag=0
 			for tc in aux.Next(eg) do 
 				if cm.cfilter(tc,rp) then
-					local flag=0
 					if not flag then flag=0 end
 					if tc:IsOriginalComplexType(TYPE_SPELL) then
 						flag=TYPE_SPELL 
@@ -90,7 +90,7 @@ function cm.tgop(e,tp)
 	rsop.SelectToGrave(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,{})
 end
 function cm.thop(e,tp)
-	rsop.SelectToHand(tp,Card.IsAbleToHand,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,{})
+	rsop.SelectToHand(tp,Card.IsAbleToHand,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,{tp})
 end
 function cm.drop(e,tp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
