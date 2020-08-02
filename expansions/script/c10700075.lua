@@ -75,7 +75,7 @@ function c10700075.filter2(c,e,tp)
 	return c:IsCode(10700076) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,tc,c)>0
 end
 function c10700075.spcon(e)
-	return not Duel.IsExistingMatchingCard(c10700060.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,e:GetHandler())
+	return not Duel.IsExistingMatchingCard(c10700075.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,e:GetHandler())
 end
 function c10700075.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3911)

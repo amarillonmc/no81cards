@@ -135,7 +135,7 @@ function cm.penop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) then b1=1 end
 	if Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 		and Duel.IsExistingMatchingCard(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,0x1015,1) then b2=1 end 
-	if b1==1 and b2==1 then	 
+	if b1==1 and b2==1 then  
 			op=Duel.SelectOption(tp,aux.Stringid(m,3),aux.Stringid(m,4))				 
 	elseif b1==1 then
 		op=0	 
@@ -143,7 +143,7 @@ function cm.penop(e,tp,eg,ep,ev,re,r,rp)
 		op=1	  
 	end
 	if c:IsRelateToEffect(e) and op==0 then
-		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 	if op==1 then 
 	 local g1=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)

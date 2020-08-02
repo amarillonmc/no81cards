@@ -55,5 +55,5 @@ function cm.spop(e,tp)
 	if not c or rssf.SpecialSummon(c)<=0 then return end
 	Duel.RegisterFlagEffect(tp,m,0,0,1)
 	local ct=Duel.GetFlagEffect(tp,m)
-	local e1=rscf.QuickBuff({c,true},"atk+,def+",500*ct)
+	local e1=rscf.QuickBuff({c,nil,true},"atk+,def+",500*ct)
 end

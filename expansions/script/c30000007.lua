@@ -30,25 +30,16 @@ function c30000007.initial_effect(c)
 	e4:SetCode(EVENT_DESTROYED)
 	c:RegisterEffect(e4)
 end
+
 function c30000007.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil) end
-	local num=Duel.GetMatchingGroupCount(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,num,tp,LOCATION_GRAVE)
+	if chk==0 then return true end
+    local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,c)
+    Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0) 
 end
+
 function c30000007.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,nil)
-	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then
-		local sg=g:Filter(Card.IsLocation,nil,LOCATION_REMOVED)
-		local gc=sg:GetFirst()
-		while gc do
-			local e3=Effect.CreateEffect(e:GetHandler())
-			e3:SetType(EFFECT_TYPE_SINGLE)
-			e3:SetCode(EFFECT_CANNOT_TO_GRAVE)
-			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-			gc:RegisterEffect(e3)
-			gc=sg:GetNext()
-		end
-	end
+    Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 end
 
 function c30000007.ctfilter(c)

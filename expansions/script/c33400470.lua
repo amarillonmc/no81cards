@@ -25,17 +25,17 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.desop)
 	c:RegisterEffect(e2)
 	--origami
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetType(EFFECT_TYPE_ACTIVATE)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW+CATEGORY_COUNTER)
-	e2:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH) 
-	e2:SetCondition(cm.descon)
-	e2:SetTarget(cm.destg2)
-	e2:SetOperation(cm.desop2)
-	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetType(EFFECT_TYPE_ACTIVATE)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW+CATEGORY_COUNTER)
+	e3:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH) 
+	e3:SetCondition(cm.descon)
+	e3:SetTarget(cm.destg2)
+	e3:SetOperation(cm.desop2)
+	c:RegisterEffect(e3)
 
 end
 function cm.desfilter(c)
@@ -46,13 +46,13 @@ function cm.ctfilter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField()   end
-	if chk==0 then return Duel.IsExistingTarget(cm.desfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return Duel.IsExistingTarget(cm.desfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(cm.ctfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g1=Duel.SelectTarget(tp,cm.desfilter,tp,LOCATION_ONFIELD,0,1,2,nil)   
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,g1:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-function cm.activate(e)
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
  Duel.Draw(tp,1,REASON_EFFECT)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
@@ -62,7 +62,7 @@ function cm.activate(e)
 	end
    if  Duel.IsExistingMatchingCard(cm.ctfilter,tp,LOCATION_ONFIELD,0,1,nil) then 
 	  Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
-	 local tg=Duel.SelectMatchingCard(tp,cm.ctfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	 local tg=Duel.SelectMatchingCard(tp,cm.ctfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	 local tc=tg:GetFirst()
 	 tc:AddCounter(0x34f,3*ss)
    end
@@ -74,10 +74,10 @@ function cm.desfilter2(c)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(cm.desfilter2,tp,LOCATION_ONFIELD,0,1,nil)
+	if chk==0 then return Duel.IsExistingTarget(cm.desfilter2,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 		and Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g1=Duel.SelectTarget(tp,cm.desfilter2,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g1=Duel.SelectTarget(tp,cm.desfilter2,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g2=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,2,nil)
 	g1:Merge(g2)
@@ -101,10 +101,10 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(cm.desfilter2,tp,LOCATION_ONFIELD,0,1,nil)
-		and Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil)and Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return Duel.IsExistingTarget(cm.desfilter2,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
+		and Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil)and Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(cm.ctfilter,tp,LOCATION_ONFIELD,0,1,nil)end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g1=Duel.SelectTarget(tp,cm.desfilter2,tp,LOCATION_ONFIELD,0,1,2,nil)
+	local g1=Duel.SelectTarget(tp,cm.desfilter2,tp,LOCATION_ONFIELD,0,1,2,e:GetHandler())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g2=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,2,nil)
 	g1:Merge(g2)

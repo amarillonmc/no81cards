@@ -4,7 +4,7 @@ function c79029078.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep2(c,c79029078.ffilter,3,3,false)  
 	--synchro summon
-	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),aux.Tuner(nil),nil,aux.NonTuner(nil),2,99)
+	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),aux.Tuner(nil),nil,aux.NonTuner(nil),1,99)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--splimit

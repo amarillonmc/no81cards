@@ -138,7 +138,7 @@ function cm.penop(e,tp,eg,ep,ev,re,r,rp)
 		op=1	  
 	end
 	if c:IsRelateToEffect(e) and op==0 then
-		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 	if op==1 then 
 	 local g1=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)

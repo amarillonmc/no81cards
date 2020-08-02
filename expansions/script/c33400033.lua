@@ -234,7 +234,14 @@ function c33400033.disop(e,tp,eg,ep,ev,re,r,rp)
 		end 
 	end
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	 Duel.SelectTarget(tp,c33400033.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	 local tc=Duel.GetFirstTarget()
+	 local tg=Duel.SelectMatchingCard(tp,c33400033.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	 local tc=tg:GetFirst()
 	 tc:AddCounter(0x34f,2)
 end
+
+
+
+
+
+
+

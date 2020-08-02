@@ -5,7 +5,8 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	rscf.SetSummonCondition(c)
 	aux.AddXyzProcedureLevelFree(c,cm.mfilter,aux.TRUE,40,40)  
-	local e1=rsef.I(c,{m,0},{1,m,2},"sp",nil,LOCATION_EXTRA+LOCATION_GRAVE,nil,rscost.lpcost(true),cm.sptg,cm.spop)
+	local e0=rsef.I(c,{m,0},{1,m,2},"sp",nil,LOCATION_EXTRA,nil,rscost.lpcost(true),cm.sptg,cm.spop)
+	local e1=rsef.I(c,{m,0},{1,m,2},"sp",nil,LOCATION_GRAVE,nil,rscost.lpcost(true),cm.sptg,cm.spop)
 	local e3=rsef.SV_ADD(c,"att",cm.attfilter)
 	local e5=rsef.SV_INDESTRUCTABLE(c,"battle",1,cm.con(ATTRIBUTE_LIGHT))
 	local e8=rsef.I(c,{m,2},1,"th","tg",LOCATION_MZONE,cm.con(ATTRIBUTE_WATER),nil,rstg.target({Card.IsAbleToHand,"th",LOCATION_ONFIELD,0,1,1,c}),cm.thop)
@@ -77,7 +78,7 @@ function cm.rfilter(c,e,tp)
 end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local og=e:GetLabelObject():GetLabelObject()
-	if chk==0 then return og:IsExists(cm.rfilter,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	if chk==0 then return og and og:IsExists(cm.rfilter,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetTargetCard(og)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_GRAVE)
 end

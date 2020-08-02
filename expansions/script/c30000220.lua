@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c10199990") end) then require
 local m,cm=rscf.DefineCard(30000220)
 function cm.initial_effect(c)
 	local e1=rsef.ACT(c,nil,nil,nil,"td,dr",nil,nil,nil,cm.tg,cm.act)
-	local e2=rsef.I(c,{m,0},nil,"td,dr","tg",LOCATION_GRAVE,aux.exccon,nil,rstg.target({cm.tdfilter,"td",LOCATION_GRAVE+LOCATION_REMOVED,0,2 },rsop.list(Card.IsAbleToDeck,"td"),rsop.list(nil,"dr",1)),cm.drop)
+	local e2=rsef.I(c,{m,0},nil,"td,dr","tg",LOCATION_GRAVE,aux.exccon,nil,rstg.target({cm.tdfilter,"td",LOCATION_GRAVE+LOCATION_REMOVED,0,2 },rsop.list(Card.IsAbleToDeck,"td"),rsop.list(1,"dr")),cm.drop)
 	if cm.actct then return end
 	cm.actct=0
 	local ge1=Effect.CreateEffect(c)
@@ -43,6 +43,10 @@ function cm.act(e,tp)
 	end
 	Duel.HintSelection(tg-hg)
 	if Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)>0 then
+		local og=Duel.GetOperatedGroup()
+		if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then
+			Duel.ShuffleDeck(tp)
+		end
 		Duel.Draw(tp,cm.actct+2,REASON_EFFECT)
 	end
 end
