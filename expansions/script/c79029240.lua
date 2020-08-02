@@ -62,7 +62,7 @@ function c79029240.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029240.efilter(e,te)
-	return te:GetOwner():GetControler()~=tp 
+	return te:GetOwner():GetControler()~=e:GetOwner():GetControler()
 end
 function c79029240.thfil(c,e,tp)
 	return c:IsSetCard(0x1904) and c:IsType(TYPE_MONSTER)

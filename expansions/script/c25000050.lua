@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c25000033") end) then require
 local m,cm=rscf.DefineCard(25000050)
 function cm.initial_effect(c)
 	local e2=rsef.I(c,{m,0},{1,m+100},"sp",nil,LOCATION_FZONE,nil,cm.spcost,rsop.target(rssb.ssfilter(true),"sp",LOCATION_REMOVED),cm.spop)
-	local e3,e4=rsef.FV_UPDATE(c,"atk,def",300,cm.tg,{LOCATION_MZONE,LOCATION_MZONE })
+	local e3,e4=rsef.FV_UPDATE(c,"atk,def",800,cm.tg,{LOCATION_MZONE,LOCATION_MZONE })
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_REMOVE)

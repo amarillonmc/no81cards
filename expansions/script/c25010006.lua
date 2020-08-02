@@ -10,7 +10,7 @@ function cm.filter(e,tp,re,rp,tg,loc)
 	return rp~=tp and re:IsActiveType(TYPE_MONSTER) and loc&LOCATION_ONFIELD >0
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
-	local c=rscf.GetRelationThisCard(e)
+	local c=rscf.GetFaceUpSelf(e)
 	local rc=re:GetHandler()
 	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) then
 		local atk=rc:GetAttack()

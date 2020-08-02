@@ -13,5 +13,5 @@ function cm.disop(e,tp)
 	rsop.SelectSolve(HINTMSG_FACEUP,tp,cm.disfilter,tp,0,LOCATION_MZONE,1,1,nil,{cm.disfun,e:GetHandler()})
 end
 function cm.disfun(g,c)
-	local e1,e2,e3,e4=rscf.QuickBuff({c,g:GetFirst()},"dis,dise",true,"atk,def",0)
+	local e1,e2,e3,e4=rscf.QuickBuff({c,g:GetFirst()},"dis,dise",true,"atkf,deff",0)
 end

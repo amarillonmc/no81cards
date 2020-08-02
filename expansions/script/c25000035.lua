@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c25000033") end) then require
 local m,cm=rscf.DefineCard(25000035)
 function cm.initial_effect(c)
 	rssb.SummonCondition(c)  
-	local e1=rsef.I(c,{m,0},{1,m},"rm,td,dr",nil,LOCATION_HAND,rssb.cfcon,nil,rsop.target({Card.IsAbleToDeck,"td",LOCATION_HAND,0,true,true,c},{nil,"dr",cm.fun},{rssb.rmfilter,"rm"}),cm.drop)
+	local e1=rsef.I(c,{m,0},{1,m},"rm,td,dr",nil,LOCATION_HAND,rssb.cfcon,nil,rsop.target({Card.IsAbleToDeck,"td",LOCATION_HAND,0,true,true,c},{cm.fun,"dr"},{rssb.rmfilter,"rm"}),cm.drop)
 	local e2=rsef.FC(c,EVENT_SPSUMMON_SUCCESS)
 	e2:SetOperation(cm.addop)
 end

@@ -1,12 +1,6 @@
 --雷神工业·医疗干员-Lancet-2
 function c79029172.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
-	--check 
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CUSTOM+79029172)
-	e1:SetOperation(c79029172.regop)
-	c:RegisterEffect(e1)
 	--change
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
@@ -42,19 +36,12 @@ function c79029172.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetCategory(CATEGORY_RECOVER)
+	e4:SetHintTiming(0,TIMING_BATTLE_STEP_END)
 	e4:SetCountLimit(1)
 	e4:SetRange(LOCATION_EXTRA)
 	e4:SetCondition(c79029172.ctcon)
 	e4:SetOperation(c79029172.ctop)
 	c:RegisterEffect(e4) 
-	--self destroy
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCode(EFFECT_SELF_DESTROY)
-	e5:SetCondition(c79029172.descon)
-	c:RegisterEffect(e5)
 end
 function c79029172.splimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
@@ -88,7 +75,15 @@ function c79029172.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	Duel.Recover(tp,500,REASON_EFFECT)
-	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+79029172,e,0,tp,0,0)
+	--self destroy
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e5:SetCode(EFFECT_SELF_DESTROY)
+	e5:SetCondition(c79029172.descon)
+	c:RegisterEffect(e5)
 end
 function c79029172.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>0
@@ -99,14 +94,8 @@ function c79029172.ctop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Recover(tp,x*100,REASON_EFFECT)
 	end
 end
-function c79029172.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler():GetBattleTarget()
-	if c:IsRelateToBattle() then
-		c:RegisterFlagEffect(79029172,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,0)
-	end
-end
 function c79029172.descon(e)
-	return e:GetHandler():GetFlagEffect(79029172)~=0 and Duel.GetCurrentPhase()==PHASE_BATTLE 
+	return Duel.GetCurrentPhase()==PHASE_BATTLE 
 end
 
 

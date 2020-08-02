@@ -58,8 +58,7 @@ function c9981454.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	end
 end
 function c9981454.discon(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return ep~=tp and Duel.IsChainDisablable(ev) and loc==LOCATION_GRAVE+LOCATION_HAND
+	return ep~=tp and re:GetActivateLocation()==LOCATION_GRAVE+LOCATION_HAND and Duel.IsChainNegatable(ev)
 end
 function c9981454.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end

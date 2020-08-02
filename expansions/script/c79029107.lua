@@ -38,14 +38,14 @@ function c79029107.reop(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetHandler():GetOwner()
 	if e:GetHandler():GetFlagEffect(79029107)~=0 then return end
 	Duel.SendtoDeck(e:GetHandler(),1-p,2,REASON_EFFECT)
+	if e:GetHandler():GetPreviousLocation()==LOCATION_HAND then
+	Duel.Draw(tp,1,REASON_EFFECT)
+	end  
 	e:GetHandler():RegisterFlagEffect(79029107,0,0,0)
 	if Duel.GetFlagEffect(tp,79029107)==0 then 
 	Debug.Message("你在这里~")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029107,0)) 
 	Duel.RegisterFlagEffect(tp,79029107,0,0,0)
-	if e:GetHandler():GetPreviousLocation()==LOCATION_HAND then
-	Duel.Draw(tp,1,REASON_EFFECT)
-	end  
 end   
 end
 function c79029107.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

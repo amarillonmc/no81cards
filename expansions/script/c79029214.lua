@@ -70,6 +70,8 @@ function c79029214.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	and Duel.IsExistingMatchingCard(c79029214.filter,tp,LOCATION_DECK,0,1,nil,e,tp)
 	end
+	Debug.Message("以主之名，聚集于此旗之下——嗯，我一直都想尝试说一次这种台词。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029214,0))
 	local g=Duel.SelectMatchingCard(tp,c79029214.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK)
@@ -78,7 +80,6 @@ function c79029214.acop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():CancelToGrave()
 	local tc=Duel.GetFirstTarget()
 	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	Debug.Message("以主之名，聚集于此旗之下——嗯，我一直都想尝试说一次这种台词。")
 end
 function c79029214.indtg(e,c)
 	return e:GetHandler():GetLinkedGroup():IsContains(c)
@@ -109,6 +110,7 @@ end
 function c79029214.ccop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c79029214.silter,tp,LOCATION_DECK,0,nil,e,tp)
 	Debug.Message("再次确认，我们果然很适合搭档。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029214,1))
 	Duel.ConfirmCards(tp,g)
 end
 

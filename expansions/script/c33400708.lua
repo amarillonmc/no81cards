@@ -54,34 +54,34 @@ function cm.indcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.indop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-  --inactivatable
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,0))
-	e4:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_CANNOT_INACTIVATE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(cm.efcon)
-	e4:SetReset(RESET_EVENT+RESETS_STANDARD)
-	e4:SetValue(cm.effectfilter)
-	c:RegisterEffect(e4)
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_CANNOT_DISEFFECT)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCondition(cm.efcon)
-	e5:SetValue(cm.effectfilter)
-	e5:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e5)
+ --Destroy
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(cm.descon1)
+	e1:SetTarget(cm.destg1)
+	e1:SetOperation(cm.desop1)
+	c:RegisterEffect(e1)
 end
-function cm.efcon(e)
-	local ph=Duel.GetCurrentPhase()
-	return  ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+function cm.descon1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetAttacker():IsSetCard(0x3342) and  Duel.GetAttacker():GetControler()==tp 
 end
-function cm.effectfilter(e,ct)
-	local p=e:GetHandler():GetControler()
-	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return p==tp and te:GetHandler():IsSetCard(0x3342) 
+function cm.destg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+end
+function cm.desop1(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.HintSelection(g)
+		Duel.Destroy(g,REASON_EFFECT)
+	end
 end
 
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)

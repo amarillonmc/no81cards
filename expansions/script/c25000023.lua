@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c25000000") end) then require
 local m,cm=rscf.DefineCard(25000023)
 function cm.initial_effect(c)
 	local e1=rsef.QO(c,nil,{m,0},{1,m},"sp",nil,LOCATION_HAND,nil,rscost.cost(cm.tdfilter,"td",rsloc.og),rsop.target(rscf.spfilter2(),"sp"),cm.spop)
-	local e2=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,1},{1,m+100},"dish,des","de,dsp",nil,nil,rsop.target({nil,"dish",0,1},{aux.TRUE,"des"}),cm.dishop)
+	local e2=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,1},{1,m+100},"dish,des","de,dsp",nil,nil,rsop.target({1,"dish",0,LOCATION_HAND},{aux.TRUE,"des"}),cm.dishop)
 	local e5=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,2},{1,m+100},"se,th,des","de,dsp",nil,nil,rsop.target({cm.thfilter,"th",LOCATION_DECK},{aux.TRUE,"des"}),cm.thop)
 	local e6=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,0},{1,m+100},"sp,des","de,dsp",nil,nil,rsop.target({rscf.spfilter2(Card.IsSetCard,0xaf1),"sp",LOCATION_HAND},{aux.TRUE,"des"}),cm.spop2)
 	local e8=rsef.RegisterClone(c,e2,"code",EVENT_SUMMON_SUCCESS)

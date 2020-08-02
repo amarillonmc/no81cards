@@ -62,7 +62,7 @@ function c79029018.ccon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp and e:GetHandler():IsType(TYPE_SPELL+TYPE_EQUIP)
 end
 function c79029018.ctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return e:GetHandler():IsType(TYPE_EQUIP) end
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x99)
 end
 function c79029018.coper(e,tp,eg,ep,ev,re,r,rp)

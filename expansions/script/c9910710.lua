@@ -62,7 +62,7 @@ function c9910710.filter2(c,e,tp)
 	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Zcd.SetFilter(c,e)
 end
 function c9910710.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910710.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910710.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,e:GetHandler(),e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,0,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function c9910710.tgop(e,tp,eg,ep,ev,re,r,rp)

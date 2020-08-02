@@ -137,6 +137,7 @@ end
 
 --is able to set
 function Zcd.SetFilter(c,e)
+	if c:IsType(TYPE_TOKEN) then return false end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_MONSTER_SSET)

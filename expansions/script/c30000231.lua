@@ -4,7 +4,7 @@ local m,cm=rscf.DefineCard(30000231)
 function cm.initial_effect(c)
 	rscf.SetSummonCondition(c,false,aux.FALSE)
 	c:SetSPSummonOnce(m)
-	local e1=rsef.FTO(c,m,{m,1},nil,"sp","de",LOCATION_HAND+LOCATION_GRAVE,cm.spcon,nil,rsop.target(cm.spfilter,"sp"),cm.spop)
+	local e1=rsef.FTO(c,m,{m,1},nil,"sp","de,dsp",LOCATION_HAND+LOCATION_GRAVE,cm.spcon,nil,rsop.target(cm.spfilter,"sp"),cm.spop)
 	if cm.gf then return end
 	cm.gf=true  
 	local ge1=rsef.FC({c,0},EVENT_DESTROYED)

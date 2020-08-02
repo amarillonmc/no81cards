@@ -20,6 +20,7 @@ function c79029159.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_EXTRA)
+	e1:SetValue(SUMMON_TYPE_SYNCHRO)
 	e1:SetCondition(c79029159.sprcon)
 	e1:SetOperation(c79029159.sprop)
 	c:RegisterEffect(e1)
@@ -73,32 +74,31 @@ function c79029159.initial_effect(c)
 	e4:SetOperation(c79029159.sdop)
 	c:RegisterEffect(e4)  
 end
-function c79029159.sprfilter(c)
-	return c:IsFaceup()
-end
-function c79029159.sprfilter1(c,tp,g,sc)
+function c79029159.cfilter1(c,e,tp)
+	local g=Duel.GetMatchingGroup(c79029159.cfilter2,tp,LOCATION_MZONE,0,nil)
 	local lv=c:GetLevel()
-	return not c:IsType(TYPE_TUNER) and g:IsExists(c79029159.sprfilter2,2,c,tp,c,sc) and g:Filter(c79029159.sprfilter2,nil):GetSum(Card.GetLevel)-lv==6
+	return c:IsFaceup() and not c:IsType(TYPE_TUNER) and g:CheckWithSumEqual(Card.GetLevel,6+lv,1,99)
 end
-function c79029159.sprfilter2(c,tp,g,sc)
-	return c:IsType(TYPE_TUNER) 
+function c79029159.cfilter2(c,e,tp,tc)
+	return c:IsFaceup() and c:IsType(TYPE_TUNER) 
 end
 function c79029159.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c79029159.sprfilter,tp,LOCATION_MZONE,0,nil)
-	return g:IsExists(c79029159.sprfilter1,1,nil,tp,g,c)
+	return Duel.IsExistingMatchingCard(c79029159.cfilter1,tp,LOCATION_MZONE,0,1,nil)
 end
 function c79029159.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(c79029159.sprfilter,tp,LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g1=g:FilterSelect(tp,c79029159.sprfilter1,1,1,nil,tp,g,c)
+	local g1=Duel.SelectMatchingCard(tp,c79029159.cfilter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	local mc=g1:GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g2=g:FilterSelect(tp,c79029159.sprfilter2,2,2,mc,tp,mc,c,mc:GetLevel())
+	local g=Duel.GetMatchingGroup(c79029159.cfilter2,tp,LOCATION_MZONE,0,nil)
+	local lv=mc:GetLevel()
+	local g2=g:SelectWithSumEqual(tp,Card.GetLevel,6+lv,1,99)
 	g1:Merge(g2)
 	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
 	Debug.Message("敢站到我面前，有胆量！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029159,0))
 end
 end
 function c79029159.atkcon(e,tp,eg,ep,ev,re,r,rp)
@@ -115,6 +115,8 @@ function c79029159.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(ev)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e1)
+	Debug.Message("让他们颤抖吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029159,2))
 	end
 end
 function c79029159.regop(e,tp,eg,ep,ev,re,r,rp)
@@ -135,6 +137,8 @@ function c79029159.sdop(e,tp,eg,ep,ev,re,r,rp)
 	 local x=tc:GetAttack()
 	 Duel.SendtoGrave(tc,REASON_EFFECT)
 	 Duel.Recover(tp,x,REASON_EFFECT)
+	Debug.Message("就把你连武器一起切碎！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029159,1))
 end
 
 

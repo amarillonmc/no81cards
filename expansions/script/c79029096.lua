@@ -52,6 +52,8 @@ function c79029096.dsop(e,tp,eg,ep,ev,re,r,rp)
 	e6:SetCode(EFFECT_DIRECT_ATTACK)
 	e6:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e6)
+	Debug.Message("战场的全貌，尽收眼底。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029096,0))
 end
 function c79029096.olcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetOverlayCount()==0 and e:GetHandler():IsType(TYPE_XYZ)
@@ -70,6 +72,8 @@ function c79029096.olop(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 then
 			Duel.Overlay(c,g)
 			Duel.NegateAttack()
+	Debug.Message("靠技巧足以解决这些问题。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029096,1))
 		end
 	end
 end

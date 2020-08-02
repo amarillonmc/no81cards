@@ -99,7 +99,7 @@ function c9952015.negop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCondition(c9952015.discon)
 		e1:SetOperation(c9952015.disop)
 		e1:SetReset(RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
+		 Duel.RegisterEffect(e1,tp)
 		tc=g:GetNext()
 	end
 	local e1=Effect.CreateEffect(c)

@@ -3,6 +3,14 @@ function c9952009.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,5,4,c9952009.ovfilter,aux.Stringid(9952009,0))
 	c:EnableReviveLimit()
+  --special summon limit
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(59822133)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+	c:RegisterEffect(e1)
  --atkup
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9952009,3))
@@ -16,20 +24,6 @@ function c9952009.initial_effect(c)
 	e2:SetTarget(c9952009.atktg)
 	e2:SetOperation(c9952009.atkop)
 	c:RegisterEffect(e2)
- --copy
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9952009,4))
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMING_MAIN_END)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,99520091)
-	e1:SetCondition(c9952009.spcon1)
-	e1:SetCost(c9952009.cpcost)
-	e1:SetTarget(c9952009.cptg)
-	e1:SetOperation(c9952009.cpop)
-	c:RegisterEffect(e1)
 --search
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -89,43 +83,6 @@ function c9952009.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
 		tc=g:GetNext()
-	end
-end
-function c9952009.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
-end
-function c9952009.cpfilter(c)
-	return c:GetType()==TYPE_SPELL+TYPE_TRAP and c:IsSetCard(0x14a,0x73) and c:IsAbleToGraveAsCost()
-		and c:CheckActivateEffect(false,true,false)~=nil
-end
-function c9952009.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	e:SetLabel(1)
-	if chk==0 then return true end
-end
-function c9952009.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		if e:GetLabel()==0 then return false end
-		e:SetLabel(0)
-		return Duel.IsExistingMatchingCard(c9952009.cpfilter,tp,LOCATION_DECK,0,1,nil)
-	end
-	e:SetLabel(0)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9952009.cpfilter,tp,LOCATION_DECK,0,1,1,nil)
-	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
-	Duel.SendtoGrave(g,REASON_COST)
-	e:SetProperty(te:GetProperty())
-	local tg=te:GetTarget()
-	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
-	te:SetLabelObject(e:GetLabelObject())
-	e:SetLabelObject(te)
-	Duel.ClearOperationInfo(0)
-end
-function c9952009.cpop(e,tp,eg,ep,ev,re,r,rp)
-	local te=e:GetLabelObject()
-	if te then
-		e:SetLabelObject(te:GetLabelObject())
-		local op=te:GetOperation()
-		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end
 end
 function c9952009.filter(c,mc)

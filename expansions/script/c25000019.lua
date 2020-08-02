@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c25000011") end) then require
 local m,cm=rscf.DefineCard(25000019)
 function cm.initial_effect(c)
 	local e1,e2,e3,e4=rsgs.FusProcFun(c,m,TYPE_FUSION,"se,th",nil,rsop.target(cm.thfilter,"th",LOCATION_DECK),cm.thop)
-	local e5=rsef.QO(c,nil,{m,0},{1,m},"des,dam","tg",LOCATION_MZONE,nil,nil,rstg.target({aux.TRUE,"des",0,LOCATION_ONFIELD},rsop.list(nil,"dam",0,1000)),cm.desop)
+	local e5=rsef.QO(c,nil,{m,0},{1,m},"des,dam","tg",LOCATION_MZONE,nil,nil,rstg.target({aux.TRUE,"des",0,LOCATION_ONFIELD},rsop.list(1000,"dam",0,1)),cm.desop)
 end
 function cm.thfilter(c)
 	return c:IsSetCard(0xaf2) and c:IsAbleToHand()

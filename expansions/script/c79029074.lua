@@ -80,6 +80,8 @@ function c79029074.thop(e,tp,eg,ep,ev,re,r,rp)
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,79029075,0,0x4011,500,800,1,RACE_CYBERSE,ATTRIBUTE_EARTH) then return end
 	local token=Duel.CreateToken(tp,79029075)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+	Debug.Message("咪波们，该上场咯！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029074,0))
 end
 function c79029074.recost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x1099,1,REASON_COST) end
@@ -103,8 +105,10 @@ function c79029074.reop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(x*1000)
-		e1:SetReset(RESET_EVENT+RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e:GetHandler():RegisterEffect(e1)
+	Debug.Message("去吧，咪波三号！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029074,1))
 end
 function c79029074.atkfilter(c)
 	return c:IsFaceup() and c:IsCode(79029075)

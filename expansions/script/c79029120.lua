@@ -1,6 +1,6 @@
 --乌萨斯·重装干员-古米
 function c79029120.initial_effect(c)
-	aux.AddXyzProcedure(c,nil,4,3,c79029120.ovfilter,aux.Stringid(79029120,1),99) 
+	aux.AddXyzProcedure(c,nil,4,2,c79029120.ovfilter,aux.Stringid(79029120,1),99) 
 	--serch
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)

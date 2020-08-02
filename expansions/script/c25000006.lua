@@ -29,7 +29,7 @@ function cm.eqfilter(c,e,tp,eg)
 	return eg:IsContains(c) and c:IsPreviousLocation(LOCATION_EXTRA) and c:GetSummonPlayer()~=tp and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and c:IsAbleToChangeControler()
 end
 function cm.eqop(e,tp)
-	local c,tc=rscf.GetRelationThisCard(e),rscf.GetTargetCard()
+	local c,tc=rscf.GetFaceUpSelf(e),rscf.GetTargetCard()
 	if not c or not tc or not rsop.eqop(e,tc,c) then return end
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
 	e:SetLabelObject(tc)
@@ -51,7 +51,7 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
-	local c=rscf.GetRelationThisCard(e)
+	local c=rscf.GetFaceUpSelf(e)
 	if #eg<=Duel.GetLocationCount(tp,LOCATION_SZONE) and c then
 		for tc in aux.Next(eg) do
 			rsop.eqop(e,tc,c)

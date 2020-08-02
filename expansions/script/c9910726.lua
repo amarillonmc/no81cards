@@ -41,12 +41,12 @@ function c9910726.spcon(e,c)
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(c9910726.spfilter,tp,LOCATION_GRAVE,0,nil)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and g:CheckWithSumGreater(Card.GetLevel,3)
+		and g:CheckWithSumGreater(Card.GetLevel,4)
 end
 function c9910726.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(c9910726.spfilter,tp,LOCATION_GRAVE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local mg=g:SelectWithSumGreater(tp,Card.GetLevel,3)
+	local mg=g:SelectWithSumGreater(tp,Card.GetLevel,4)
 	Duel.Remove(mg,POS_FACEUP,REASON_COST)
 end
 function c9910726.discon(e,tp,eg,ep,ev,re,r,rp)

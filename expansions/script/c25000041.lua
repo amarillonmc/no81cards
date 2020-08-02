@@ -10,7 +10,7 @@ function cm.spop(e,tp)
 	local c=aux.ExceptThisCard(e)
 	local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)
 	if #g>0 then
-		Duel.ConfirmCards(1-tp,g)
+		Duel.ConfirmCards(tp,g)
 		if rsop.SelectSpecialSummon(tp,rssb.ssfilter(true),tp,LOCATION_REMOVED,0,1,1,nil,{},e,tp)>0 and c then
 			Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)
 		end

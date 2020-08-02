@@ -68,32 +68,31 @@ function c79029153.initial_effect(c)
 	e5:SetValue(1)
 	c:RegisterEffect(e5)
 end
-function c79029153.sprfilter(c)
-	return c:IsFaceup()
-end
-function c79029153.sprfilter1(c,tp,g,sc)
+function c79029153.cfilter1(c,e,tp)
+	local g=Duel.GetMatchingGroup(c79029153.cfilter2,tp,LOCATION_MZONE,0,nil)
 	local lv=c:GetLevel()
-	return not c:IsType(TYPE_TUNER) and g:IsExists(c79029153.sprfilter2,3,c,tp,c,sc) and g:Filter(c79029153.sprfilter2,nil):GetSum(Card.GetLevel)-lv==8
+	return c:IsFaceup() and not c:IsType(TYPE_TUNER) and g:CheckWithSumEqual(Card.GetLevel,8+lv,1,99)
 end
-function c79029153.sprfilter2(c,tp,g,sc)
-	return c:IsType(TYPE_TUNER) 
+function c79029153.cfilter2(c,e,tp,tc)
+	return c:IsFaceup() and c:IsType(TYPE_TUNER) 
 end
 function c79029153.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c79029153.sprfilter,tp,LOCATION_MZONE,0,nil)
-	return g:IsExists(c79029153.sprfilter1,1,nil,tp,g,c)
+	return Duel.IsExistingMatchingCard(c79029153.cfilter1,tp,LOCATION_MZONE,0,1,nil)
 end
 function c79029153.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(c79029153.sprfilter,tp,LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g1=g:FilterSelect(tp,c79029153.sprfilter1,1,1,nil,tp,g,c)
+	local g1=Duel.SelectMatchingCard(tp,c79029153.cfilter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	local mc=g1:GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g2=g:FilterSelect(tp,c79029153.sprfilter2,3,3,mc,tp,mc,c,mc:GetLevel())
+	local g=Duel.GetMatchingGroup(c79029153.cfilter2,tp,LOCATION_MZONE,0,nil)
+	local lv=mc:GetLevel()
+	local g2=g:SelectWithSumEqual(tp,Card.GetLevel,8+lv,1,99)
 	g1:Merge(g2)
 	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
 	Debug.Message("暴行，就位！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029153,0))
 end
 end
 function c79029153.con(e,tp,eg,ep,ev,re,r,rp)
@@ -109,5 +108,7 @@ function c79029153.op(e,tp,eg,ep,ev,re,r,rp,c)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
 	Duel.Damage(1-tp,ev,REASON_EFFECT)
+	Debug.Message("突击开始！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029153,1))
 end
 

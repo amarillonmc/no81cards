@@ -35,7 +35,7 @@ function c79029199.tgfilter(c)
 	return c:IsSetCard(0xa900) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c79029199.attg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetFlagEffect(79029199)==0
+	if chk==0 then return e:GetHandler():GetFlagEffect(79029199)==0 and e:GetHandler():GetBattleTarget()~=nil
 		and Duel.IsExistingMatchingCard(c79029199.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	e:GetHandler():RegisterFlagEffect(79029199,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
@@ -71,8 +71,8 @@ function c79029199.rmtg(e,c)
 	return c:GetOwner()~=e:GetHandlerPlayer()
 end
 function c79029199.hcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_REMOVED,LOCATION_REMOVED,10,nil) end
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_REMOVED,LOCATION_REMOVED,10,10,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,10,nil) end
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,10,10,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function c79029199.hop(e,tp,eg,ep,ev,re,r,rp)

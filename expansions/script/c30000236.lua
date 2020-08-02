@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c10199990") end) then require
 local m,cm=rscf.DefineCard(30000236)
 function cm.initial_effect(c)
 	rscf.SetSummonCondition(c,false,aux.FALSE)
-	local e1=rsef.FTO(c,m,{m,1},nil,"sp,rm","de",LOCATION_HAND+LOCATION_GRAVE,cm.spcon,nil,rsop.target(cm.spfilter,"sp"),cm.spop)
+	local e1=rsef.FTO(c,m,{m,1},nil,"sp,rm","de,dsp",LOCATION_HAND+LOCATION_GRAVE,cm.spcon,nil,rsop.target(cm.spfilter,"sp"),cm.spop)
 	local e2=rsef.SV_UPDATE(c,"atk",cm.atkval)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -51,13 +51,13 @@ function cm.spfilter(c,e,tp)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.spop(e,tp,eg)
-	local c=rscf.GetSelf(e)
-	if not c or rssf.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)<=0 then return end
-	c:CompleteProcedure()
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
-	if #g>0 then
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	end
+    local c=rscf.GetSelf(e)
+    if not c or rssf.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)<=0 then return end
+    c:CompleteProcedure()
+    local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
+    if #g>0 then
+        Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+    end
 end
 function cm.atkval(e,c)
 	return Duel.GetFieldGroupCount(0,LOCATION_REMOVED,LOCATION_REMOVED)*800

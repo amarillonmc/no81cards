@@ -6,7 +6,7 @@ function cm.initial_effect(c)
 	local e2=rsef.QO(c,nil,{m,0},{1,m+600},"des","tg",LOCATION_MZONE,nil,rscost.rmxyz(1),rstg.target(aux.TRUE,"des",0,LOCATION_ONFIELD),cm.desop)
 end
 function cm.spfilter(c)
-	return c:IsRank(8) and c:IsSetCard(0xaf1) 
+	return c:IsRank(6) and c:IsSetCard(0xaf1) 
 end
 function cm.desop(e,tp)
 	local tc=rscf.GetTargetCard()

@@ -23,22 +23,16 @@ function c30001002.initial_effect(c)
 	c:RegisterEffect(e2)
 	--link module
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetCategory(CATEGORY_TOEXTRA)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetRange(LOCATION_REMOVED)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCountLimit(1,30001003)
-	e3:SetCondition(c30001002.spcon3)
 	e3:SetCost(c30001002.spcost)
 	e3:SetTarget(c30001002.sptg)
 	e3:SetOperation(c30001002.spop)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN)
-	e3:SetCondition(c30001002.spcon4)
-	e4:SetHintTiming(0,TIMING_END_PHASE)
-	c:RegisterEffect(e4)
 end
 
 function c30001002.costfilter(c,ec)
@@ -72,12 +66,6 @@ function c30001002.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,30000010)
 end
 function c30001002.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,30000010)
-end
-function c30001002.spcon3(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsPlayerAffectedByEffect(tp,30000010)
-end
-function c30001002.spcon4(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,30000010)
 end
 

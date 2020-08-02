@@ -86,7 +86,7 @@ function c79029230.cfil(c)
 end
 function c79029230.pencost(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingTarget(c79029230.cfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029230.cfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c,e,tp) end
 	local g=Duel.SelectMatchingCard(tp,c79029230.cfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,c,e,tp)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end 

@@ -85,7 +85,7 @@ function c9910727.setcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910727.setfilter(c,id,e)
 	local op=c:GetOwner()
-	return c:GetTurnID()==id and c:IsType(TYPE_MONSTER)
+	return c:GetTurnID()==id and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 		and Duel.GetLocationCount(op,LOCATION_SZONE)>0 and Zcd.SetFilter(c,e)
 end
 function c9910727.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

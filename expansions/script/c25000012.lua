@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c25000011") end) then require
 local m,cm=rscf.DefineCard(25000012)
 function cm.initial_effect(c)
 	local e1=rsef.ACT(c,nil,nil,nil,"sp,an",nil,nil,nil,rsop.target2(cm.fun,cm.spfilter,"sp",0,LOCATION_EXTRA),cm.spop)
-	local e3=rsef.QO(c,nil,{m,1},nil,"dr","ptg",LOCATION_GRAVE,aux.exccon,aux.bfgcost,rsop.target(nil,"dr",cm.drct),cm.drop)
+	local e3=rsef.QO(c,nil,{m,1},nil,"dr","ptg",LOCATION_GRAVE,aux.exccon,aux.bfgcost,rsop.target(cm.drct,"dr"),cm.drop)
 	--act in hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)

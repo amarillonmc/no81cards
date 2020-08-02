@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c25010001") end) then require
 local m,cm=rscf.DefineCard(25010004)
 function cm.initial_effect(c)
 	rsgol.TigaSummonFun(c,m,m+1,m+2,rscon.turno,cm.sprcon,cm.sprop)
-	local e1=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,0},{1,m},"dr,dish","ptg,de,dsp",nil,nil,rsop.target2(cm.fun,nil,"dr",1),cm.drop)
+	local e1=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,0},{1,m},"dr,dish","ptg,de,dsp",nil,nil,rsop.target2(cm.fun,1,"dr"),cm.drop)
 end
 function cm.sprcon(e,c,tp)
 	return Duel.IsExistingMatchingCard(cm.sprcfilter,tp,LOCATION_MZONE,0,1,nil,tp,c)

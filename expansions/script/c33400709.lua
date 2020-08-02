@@ -59,32 +59,40 @@ function cm.indcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.indop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-  --can't be target
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(0,LOCATION_MZONE)
-	e1:SetValue(cm.limit)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e1)
-	--
+	 --destroy replace
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_DESTROY_REPLACE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(cm.limit)
-	e2:SetValue(aux.tgoval)
-	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e2:SetCountLimit(1,m+10000)
+	e2:SetTarget(cm.reptg)
+	e2:SetValue(cm.repval)
+	e2:SetOperation(cm.repop)
 	c:RegisterEffect(e2)
 end
-function cm.limit(e,c)
-	return  not c:IsCode(m)
+function cm.repfilter(c,tp)
+	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and c:IsSetCard(0x341,0x340) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
+function cm.tgfilter(c)
+	   return c:IsAbleToGrave() and c:IsSetCard(0x3342)
+end
+function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp)
+		and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+  Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_EXTRA)
+end
+function cm.repval(e,c)
+	return cm.repfilter(c,e:GetHandlerPlayer())
+end
+function cm.repop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_EFFECT+REASON_REPLACE)
+end
+
 
 function cm.countcon1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler())
