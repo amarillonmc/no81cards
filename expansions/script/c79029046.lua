@@ -6,7 +6,6 @@ function c79029046.initial_effect(c)
 	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_TO_GRAVE)
-	e1:SetCountLimit(1,79029046)
 	e1:SetTarget(c79029046.target)
 	e1:SetOperation(c79029046.operation)
 	c:RegisterEffect(e1)
@@ -17,13 +16,13 @@ function c79029046.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,079029046)
 	e2:SetTarget(c79029046.sptg)
 	e2:SetOperation(c79029046.spop)
 	c:RegisterEffect(e2)	
 end
 function c79029046.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetFlagEffect(tp,79029046)==0 end
+	Duel.RegisterFlagEffect(tp,79029046,RESET_PHASE+PHASE_END,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
 function c79029046.filter(c)
@@ -47,9 +46,10 @@ function c79029046.filter2(c,e,tp)
 	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029046.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_HAND) and chkc:IsControler(tp) and c79029046.filter2(chkc,e,tp) end
+	if chkc then return chkc:IsLocation(LOCATION_HAND) and chkc:IsControler(tp) and c79029046.filter2(chkc,e,tp) and Duel.GetFlagEffect(tp,79029046)==0 end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c79029046.filter2,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.RegisterFlagEffect(tp,79029046,RESET_PHASE+PHASE_END,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	Debug.Message("不能给黑钢的各位丢脸！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029046,1))

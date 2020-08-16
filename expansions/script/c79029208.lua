@@ -56,6 +56,9 @@ end
 function c79029208.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 	getmetatable(e:GetHandler()).announce_filter={0xa900,OPCODE_ISSETCARD}
+	table.insert(getmetatable(e:GetHandler()).announce_filter,TYPE_MONSTER)
+	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_ISTYPE)
+	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_AND)
 	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
 	local tc=Duel.CreateToken(tp,ac)
 	if not tc:IsType(TYPE_MONSTER) then

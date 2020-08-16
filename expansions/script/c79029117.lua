@@ -1,7 +1,7 @@
 --龙门·重装干员-年
 function c79029117.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcMix(c,false,true,c79029117.fusfilter1,c79029117.fusfilter2,c79029117.fusfilter3,c79029117.fusfilter4,c79029117.fusfilter5,c79029117.fusfilter6)
+	aux.AddFusionProcMix(c,false,false,c79029117.fusfilter1,c79029117.fusfilter2,c79029117.fusfilter3,c79029117.fusfilter4,c79029117.fusfilter5,c79029117.fusfilter6)
 	 aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_MZONE,0,Duel.Remove,POS_FACEUP,REASON_COST+REASON_FUSION+REASON_MATERIAL)   
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)

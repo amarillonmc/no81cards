@@ -52,7 +52,7 @@ function c79029111.sprfilter1(c,tp,g,sc)
 end
 function c79029111.sprfilter2(c,tp,mc,sc,lv)
 	local sg=Group.FromCards(c,mc)
-	return c:IsSetCard(0xa900)
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_MONSTER)
 		and Duel.GetLocationCountFromEx(tp,tp,sg,sc)>0
 end
 function c79029111.sprcon(e,c)

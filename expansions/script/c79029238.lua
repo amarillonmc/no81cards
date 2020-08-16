@@ -1,7 +1,7 @@
 --罗德岛·辅助干员-波登可
 function c79029238.initial_effect(c)
 	--pendulum summon
-	aux.AddFusionProcFunRep2(c,c79029238.ffilter,2,2,false)
+	aux.AddFusionProcFunRep2(c,c79029238.ffilter,2,2,true)
 	aux.EnablePendulumAttribute(c)  
 	c:EnableReviveLimit()
 	--splimit

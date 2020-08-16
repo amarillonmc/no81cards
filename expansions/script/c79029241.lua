@@ -79,7 +79,7 @@ function c79029241.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029241.spfil(c,e,tp)
-	return c:IsSetCard(0x1907) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,false,false)
+	return c:IsSetCard(0x1907) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function c79029241.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(c79029241.spfil,tp,LOCATION_DECK,0,1,nil,e,tp)

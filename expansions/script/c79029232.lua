@@ -128,7 +128,7 @@ function c79029232.loop(e,tp,eg,ep,ev,re,r,rp)
 	 Duel.SetLP(1-tp,lp-8000)
 end
 function c79029232.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0xa900) and c:IsLocation(LOCATION_EXTRA) and c:IsLocation(LOCATION_DECK) and c:IsLocation(LOCATION_HAND) and c:IsLocation(LOCATION_GRAVE) and c:IsLocation(LOCATION_REMOVED)
+	return not c:IsSetCard(0xa900) and (c:IsLocation(LOCATION_EXTRA) or c:IsLocation(LOCATION_DECK) or c:IsLocation(LOCATION_HAND) or c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED))
 end
 function c79029232.cfilter(c,tp,typ)
 	return c:IsFaceup() and c:IsType(typ) and c:IsSetCard(0xa900) and c:IsControler(tp) and (c:GetSummonLocation()==LOCATION_HAND or c:GetSummonLocation()==LOCATION_EXTRA)
@@ -137,13 +137,12 @@ function c79029232.effcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c79029232.cfilter,1,nil,tp,e:GetLabel())
 end
 function c79029232.futg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.GetFlagEffect(tp,790292329)==0 end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c79029232.fuop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,790292329)~=0 then return end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(79029232,0)) then
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
@@ -156,8 +155,7 @@ end
 function c79029232.sytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_HAND+LOCATION_GRAVE) and chkc:IsControler(tp) and c79029232.spfilter(chkc,e,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	and Duel.IsExistingMatchingCard(c79029232.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
-	if Duel.GetFlagEffect(tp,7902923299)~=0 then return end
+	and Duel.IsExistingMatchingCard(c79029232.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp)  and Duel.GetFlagEffect(tp,7902923299)==0 end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(79029232,1)) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c79029232.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
@@ -176,18 +174,17 @@ function c79029232.xyzfil(c)
 end
 function c79029232.xyztg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=eg:Filter(c79029232.xyzfil,nil)
-	if chk==0 then return g:GetSum(Card.GetOverlayCount)>0 end
+	if chk==0 then return g:GetSum(Card.GetOverlayCount)>0 and Duel.GetFlagEffect(tp,79029232999)==0 end
 	local x=g:GetSum(Card.GetOverlayCount)*500
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(x)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,x)
+	Duel.RegisterFlagEffect(tp,79029232999,RESET_PHASE+PHASE_END,0,1)  
 end
 function c79029232.xyzop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,79029232999)~=0 then return end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(79029232,2)) then
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT) 
-	Duel.RegisterFlagEffect(tp,79029232999,RESET_PHASE+PHASE_END,0,1)  
 end
 end
 function c79029232.thfilter(c,e,tp)
@@ -195,8 +192,7 @@ function c79029232.thfilter(c,e,tp)
 end
 function c79029232.ritg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_DECK) and chkc:IsControler(tp) and c79029232.thfilter(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029232.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	if Duel.GetFlagEffect(tp,790292329999)~=0 then return end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029232.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,790292329999)==0 end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(79029232,3)) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,c79029232.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
@@ -212,26 +208,25 @@ function c79029232.riop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,tc)
 end
 function c79029232.pefil(c,tp)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0xa900) and (c:IsPreviousLocation(LOCATION_HAND) or c:IsPreviousLocation(LOCATION_EXTRA) and c:IsPreviousPosition(POS_FACEDOWN) ) and c:IsControler(tp)
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0xa900) and c:IsControler(tp)
 end
 function c79029232.tefilter(c,e,tp)
 	return c:IsSetCard(0xa900) and c:IsAbleToExtra()
 end
 function c79029232.petg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=eg:Filter(c79029232.pefil,nil,tp)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029232.tefilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029232.tefilter,tp,LOCATION_DECK,0,1,nil,e,tp)and Duel.GetFlagEffect(tp,7902923299999)==0 end
 	local x=g:GetCount()
-	if Duel.GetFlagEffect(tp,7902923299999)~=0 then return end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(79029232,4)) then
 	local g=Duel.SelectMatchingCard(tp,c79029232.tefilter,tp,LOCATION_DECK,0,1,x,nil,e,tp)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,g,1,0,0)
-	Duel.RegisterFlagEffect(tp,7902923299999,RESET_PHASE+PHASE_END,0,1)
 end
 end
 function c79029232.peop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	Duel.SendtoExtraP(g,tp,REASON_EFFECT)
+	Duel.RegisterFlagEffect(tp,7902923299999,RESET_PHASE+PHASE_END,0,1)
 end
 function c79029232.lifilter(c,tp,typ)
 	return c:IsSetCard(0xa900) and c:IsControler(tp) and c:IsType(TYPE_LINK) and c:IsPreviousLocation(LOCATION_EXTRA)

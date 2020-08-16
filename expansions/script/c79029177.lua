@@ -11,8 +11,9 @@ function c79029177.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_EXTRA)
+	e1:SetValue(SUMMON_TYPE_SYNCHRO)
 	e1:SetCondition(c79029177.sprcon)
 	e1:SetOperation(c79029177.sprop)
 	c:RegisterEffect(e1)
@@ -101,6 +102,7 @@ function c79029177.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g2=g:FilterSelect(tp,c79029177.sprfilter2,3,3,mc,tp,mc,c,mc:GetLevel())
 	g1:Merge(g2)
 	if Duel.SendtoGrave(g1,REASON_COST)~=0 then 
+	e:GetHandler():SetMaterial(g1)
 	Debug.Message("毁灭，终将来临！")
 end
 end

@@ -1,17 +1,13 @@
 --罗德岛·近卫干员-拉普兰德·日晷
 function c79029187.initial_effect(c)
-	--spsummon condition
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	c:RegisterEffect(e1)
+	c:EnableReviveLimit()  
 	--special summon rule
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_EXTRA)
+	e1:SetValue(SUMMON_TYPE_SYNCHRO)
 	e1:SetCondition(c79029187.sprcon)
 	e1:SetOperation(c79029187.sprop)
 	c:RegisterEffect(e1)
@@ -29,13 +25,7 @@ function c79029187.initial_effect(c)
 	e1:SetCode(EFFECT_CHANGE_TYPE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetValue(TYPE_SYNCHRO+TYPE_EFFECT)
-	c:RegisterEffect(e1) 
-	--dark SynchroSummon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	c:RegisterEffect(e1)	
+	c:RegisterEffect(e1)   
 	--cannot target
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -76,31 +66,30 @@ function c79029187.initial_effect(c)
 	e5:SetOperation(c79029187.disop)
 	c:RegisterEffect(e5)
 end
-function c79029187.sprfilter(c)
-	return c:IsFaceup()
+function c79029187.cfilter2(c,e,tp,tc)
+	return c:IsFaceup() and c:IsType(TYPE_TUNER) 
 end
-function c79029187.sprfilter1(c,tp,g,sc)
+function c79029187.cfilter1(c,e,tp)
+	local g=Duel.GetMatchingGroup(c79029187.cfilter2,tp,LOCATION_MZONE,0,nil)
 	local lv=c:GetLink()
-	return c:IsType(TYPE_LINK) and g:IsExists(c79029187.sprfilter2,2,c,tp,c,sc) and g:Filter(c79029187.sprfilter2,nil):GetSum(Card.GetLevel)-lv==7
+	return c:IsFaceup() and g:CheckWithSumEqual(Card.GetLevel,7+lv,2,2) and c:IsType(TYPE_LINK)
 end
-function c79029187.sprfilter2(c,tp,g,sc)
-	return c:IsType(TYPE_TUNER) 
-end
-function c79029187.sprcon(e,c)
+function c79029187.sprcon(e,c,tp)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c79029187.sprfilter,tp,LOCATION_MZONE,0,nil)
-	return g:IsExists(c79029187.sprfilter1,1,nil,tp,g,c)
+	return Duel.IsExistingMatchingCard(c79029187.cfilter1,tp,LOCATION_MZONE,0,1,nil,e,tp)
 end
 function c79029187.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(c79029187.sprfilter,tp,LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g1=g:FilterSelect(tp,c79029187.sprfilter1,1,1,nil,tp,g,c)
+	local g1=Duel.SelectMatchingCard(tp,c79029187.cfilter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	local mc=g1:GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g2=g:FilterSelect(tp,c79029187.sprfilter2,2,2,mc,tp,mc,c,mc:GetLink())
+	local g=Duel.GetMatchingGroup(c79029187.cfilter2,tp,LOCATION_MZONE,0,nil)
+	local lv=mc:GetLevel()
+	local g2=g:SelectWithSumEqual(tp,Card.GetLevel,7+lv,2,2)
 	g1:Merge(g2)
 	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
+	e:GetHandler():SetMaterial(g1)
 	Debug.Message("你们就是敌人？那就拜托你们进攻用点力了，别让我太无聊！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029187,0))
 end

@@ -49,7 +49,7 @@ function c79029045.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029045.rfilter(c,tp)
-	return c:IsType(TYPE_TRAP) and c:IsSetCard(0x1904)
+	return c:IsType(TYPE_TRAP) and c:IsSetCard(0x1904) and c:IsAbleToGraveAsCost()
 end
 function c79029045.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

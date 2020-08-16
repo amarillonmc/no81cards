@@ -46,7 +46,7 @@ function c79029229.toop(e,tp,eg,ep,ev,re,r,rp)
 	if ct>0 and not Duel.IsPlayerAffectedByEffect(tp,59822133)
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,tp,79029234,0,0x4011,2000,0,1,RACE_CYBERSE,ATTRIBUTE_DARK,POS_FACEUP)
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,79029234,0,0x4011,2000,0,1,RACE_CYBERSE,ATTRIBUTE_DARK,POS_FACEUP,1-tp) then
-		for i=1,ct do
+		for i=1,ft2 do
 		local x=Duel.CreateToken(tp,79029234)
 		Duel.MoveToField(x,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
 	--self destroy
@@ -57,6 +57,8 @@ function c79029229.toop(e,tp,eg,ep,ev,re,r,rp)
 	e7:SetCode(EFFECT_SELF_DESTROY)
 	e7:SetCondition(c79029229.sdcon)
 	x:RegisterEffect(e7)
+		end
+		for i=1,ft1 do
 		x=Duel.CreateToken(tp,79029234)
 		Duel.MoveToField(x,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	--self destroy
@@ -67,7 +69,7 @@ function c79029229.toop(e,tp,eg,ep,ev,re,r,rp)
 	e7:SetCode(EFFECT_SELF_DESTROY)
 	e7:SetCondition(c79029229.sdcon)
 	x:RegisterEffect(e7)
-		end
+	end
 end
 end
 function c79029229.sdcon(e)

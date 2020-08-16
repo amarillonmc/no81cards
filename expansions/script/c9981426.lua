@@ -7,8 +7,8 @@ function c9981426.initial_effect(c)
 	e3:SetCode(EFFECT_SPSUMMON_PROC)
 	e3:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e3:SetRange(LOCATION_HAND)
-	e3:SetCondition(c9981426.spcon)
-	e3:SetOperation(c9981426.spop)
+	e3:SetCondition(c9981426.spcon3)
+	e3:SetOperation(c9981426.spop3)
 	c:RegisterEffect(e3)
 --draw
 	local e2=Effect.CreateEffect(c)
@@ -68,13 +68,13 @@ end
 function c9981426.cfilter(c)
 	return c:IsSetCard(0x3bd4) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToRemoveAsCost()
 end
-function c9981426.spcon(e,c)
+function c9981426.spcon3(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9981426.cfilter,tp,LOCATION_GRAVE,0,2,nil)
 end
-function c9981426.spop(e,tp,eg,ep,ev,re,r,rp,c)
+function c9981426.spop3(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c9981426.cfilter,tp,LOCATION_GRAVE,0,2,2,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)

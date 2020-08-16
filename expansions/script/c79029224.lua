@@ -86,6 +86,7 @@ function c79029224.cotg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rg=Duel.SelectReleaseGroup(tp,c79029224.filter1,1,1,nil,e,tp)
 	e:SetLabel(rg:GetFirst():GetCode())
 	Duel.Release(rg,REASON_COST)
+	Duel.Remove(rg,POS_FACEUP,REASON_COST)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA)
 end
 function c79029224.coop(e,tp,eg,ep,ev,re,r,rp)

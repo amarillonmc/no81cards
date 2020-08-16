@@ -72,15 +72,15 @@ function c79029054.initial_effect(c)
 	e8:SetValue(c79029054.rev)
 	c:RegisterEffect(e8)
 	--Remove and draw
-	local e9=Effect.CreateEffect(c)
-	e9:SetCategory(CATEGORY_RECOVER)
-	e9:SetCode(EVENT_FREE_CHAIN)
-	e9:SetType(EFFECT_TYPE_IGNITION)
-	e9:SetRange(LOCATION_MZONE)
-	e9:SetTarget(c79029054.drtg)
-	e9:SetOperation(c79029054.drop)
-	e9:SetCountLimit(1,79029054999999)
-	c:RegisterEffect(e9)
+	local e0=Effect.CreateEffect(c)
+	e0:SetCategory(CATEGORY_DRAW+CATEGORY_REMOVE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetType(EFFECT_TYPE_IGNITION)
+	e0:SetRange(LOCATION_MZONE)
+	e0:SetCountLimit(1,7902905)
+	e0:SetTarget(c79029054.drtg)
+	e0:SetOperation(c79029054.drop)
+	c:RegisterEffect(e0)
 end
 function c79029054.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK 
@@ -125,10 +125,10 @@ function c79029054.rev(e,re,r,rp,rc)
 	return val
 end
 function c79029054.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetLinkedGroupCount()>0 end
-	local gc=e:GetHandler():GetLinkedGroup():FilterCount(aux.TRUE,nil)
+	local x=e:GetHandler():GetLinkedGroupCount()
+	if chk==0 then return x>0 and Duel.IsPlayerCanDraw(tp,x) end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,gc)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,x)
 end
 function c79029054.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)

@@ -46,5 +46,5 @@ function c65010121.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c65010121.aclimit(e,re,tp)
-	return re:GetActiveType()==e:GetLabel()
+	return bit.band(re:GetActiveType(),e:GetLabel())~=0
 end

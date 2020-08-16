@@ -15,17 +15,7 @@ function c79029239.initial_effect(c)
 	e1:SetCost(c79029239.ticost)
 	e1:SetTarget(c79029239.titg)
 	e1:SetOperation(c79029239.tiop)
-	c:RegisterEffect(e1)   
-	--to hand
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_LEAVE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetCondition(c79029239.spcon)
-	e2:SetTarget(c79029239.sptg)
-	e2:SetOperation(c79029239.spop)
-	c:RegisterEffect(e2)  
+	c:RegisterEffect(e1)  
 end
 function c79029239.ticost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -51,7 +41,7 @@ end
 function c79029239.tiop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if re:GetHandler():GetControler()==tp then return end
-	if e:GetHandler():GetFlagEffect(79029239)==10 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	if e:GetHandler():GetFlagEffect(79029239)==9 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,true,false,POS_FACEUP)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	local tc=g:GetFirst()
@@ -68,7 +58,6 @@ function c79029239.tiop2(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e3)
 	tc=g:GetNext()
 	end
-	e:GetHandler():RegisterFlagEffect(790292399,0,0,0)
 	if Duel.GetCurrentPhase()==PHASE_STANDBY then
 	Duel.SkipPhase(1-tp,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
 	Duel.SkipPhase(1-tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
@@ -90,17 +79,23 @@ function c79029239.tiop2(e,tp,eg,ep,ev,re,r,rp)
 	else
 	e:GetHandler():RegisterFlagEffect(79029239,RESET_PHASE+PHASE_END,0,1)
 	end 
-end
-function c79029239.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPreviousPosition(POS_FACEUP) and e:GetHandler():GetFlagEffect(790292399)~=0
+	--to hand
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1+EFFECT_COUNT_CODE_DUEL)
+	e2:SetTarget(c79029239.sptg)
+	e2:SetOperation(c79029239.spop)
+	c:RegisterEffect(e2) 
 end
 function c79029239.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,tp,0)
 end
 function c79029239.spop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():ResetFlagEffect(790292399)
+	if Duel.SelectYesNo(tp,aux.Stringid(79029239,3)) then
 	Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,e:GetHandler())
 	if Duel.GetTurnPlayer()==1-tp then
@@ -136,14 +131,11 @@ function c79029239.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
 	end  
 	end 
+	else  
+	end
 	Debug.Message("天气不错。")   
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029239,2))
 end
-
-
-
-
-
 
 
 

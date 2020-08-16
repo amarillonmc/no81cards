@@ -85,7 +85,7 @@ function c79029033.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
-	Debug.Message("准战场是一个只会制造可怕悲剧的地方，希望那些人也能理解到这点。")
+	Debug.Message("战场是一个只会制造可怕悲剧的地方，希望那些人也能理解到这点。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029033,1))
 	end
 end

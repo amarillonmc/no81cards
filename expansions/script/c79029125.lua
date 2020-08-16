@@ -1,18 +1,13 @@
 --罗德岛·近卫干员-煌
 function c79029125.initial_effect(c)
 	c:EnableReviveLimit()  
-	--spsummon condition
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	c:RegisterEffect(e1)
 	--special summon rule
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_EXTRA)
+	e1:SetValue(SUMMON_TYPE_SYNCHRO)
 	e1:SetCondition(c79029125.sprcon)
 	e1:SetOperation(c79029125.sprop)
 	c:RegisterEffect(e1)
@@ -76,31 +71,30 @@ end
 function c79029125.actcon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_HAND,0)==0 and Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
 end
-function c79029125.sprfilter(c)
-	return c:IsFaceup()
+function c79029125.cfilter2(c,e,tp,tc)
+	return c:IsFaceup() and c:IsType(TYPE_TUNER) 
 end
-function c79029125.sprfilter1(c,tp,g,sc)
+function c79029125.cfilter1(c,e,tp)
+	local g=Duel.GetMatchingGroup(c79029125.cfilter2,tp,LOCATION_MZONE,0,nil)
 	local lv=c:GetLevel()
-	return not c:IsType(TYPE_TUNER) and g:IsExists(c79029125.sprfilter2,3,c,tp,c,sc) and g:Filter(c79029125.sprfilter2,nil):GetSum(Card.GetLevel)-lv==10
+	return c:IsFaceup() and g:CheckWithSumEqual(Card.GetLevel,10+lv,3,3) and not c:IsType(TYPE_TUNER)
 end
-function c79029125.sprfilter2(c,tp,g,sc)
-	return c:IsType(TYPE_TUNER) 
-end
-function c79029125.sprcon(e,c)
+function c79029125.sprcon(e,c,tp)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c79029125.sprfilter,tp,LOCATION_MZONE,0,nil)
-	return g:IsExists(c79029125.sprfilter1,1,nil,tp,g,c)
+	return Duel.IsExistingMatchingCard(c79029125.cfilter1,tp,LOCATION_MZONE,0,1,nil,e,tp)
 end
 function c79029125.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(c79029125.sprfilter,tp,LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g1=g:FilterSelect(tp,c79029125.sprfilter1,1,1,nil,tp,g,c)
+	local g1=Duel.SelectMatchingCard(tp,c79029125.cfilter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	local mc=g1:GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g2=g:FilterSelect(tp,c79029125.sprfilter2,3,3,mc,tp,mc,c,mc:GetLevel())
+	local g=Duel.GetMatchingGroup(c79029125.cfilter2,tp,LOCATION_MZONE,0,nil)
+	local lv=mc:GetLevel()
+	local g2=g:SelectWithSumEqual(tp,Card.GetLevel,10+lv,3,3)
 	g1:Merge(g2)
 	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
+	e:GetHandler():SetMaterial(g1)
 	local a=Duel.GetFieldGroup(tp,LOCATION_HAND,LOCATION_HAND)
 	Duel.SendtoGrave(a,REASON_EFFECT)
 	Debug.Message("听见这链锯的轰鸣了吗？")

@@ -19,6 +19,8 @@ function c9950706.initial_effect(c)
  --redirect
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EFFECT_BATTLE_DESTROY_REDIRECT)
 	e2:SetCondition(c9950706.discon)
 	e2:SetValue(LOCATION_REMOVED)
@@ -33,7 +35,8 @@ function c9950706.initial_effect(c)
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(9950706,0))
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e5:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e5:SetCondition(c9950706.condition)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCountLimit(1)
 	e5:SetTarget(c9950706.acttg)
@@ -92,6 +95,12 @@ function c9950706.disop(e,tp,eg,ep,ev,re,r,rp)
 		d:RegisterEffect(e1)
 	end
 end
+function c9950706.cfilter(c,tp)
+	return c:GetSummonPlayer()==1-tp
+end
+function c9950706.condition(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c9950706.cfilter,1,nil,tp)
+end
 function c9950706.actfilter(c,tp)
 	return c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
@@ -121,7 +130,7 @@ function c9950706.actop(e,tp,eg,ep,ev,re,r,rp)
 			local tep=tc:GetControler()
 			local cost=te:GetCost()
 			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-			Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+			Duel.RaiseEvent(tc,9950706,te,0,tp,tp,Duel.GetCurrentChain())
 		end
 	end
 end

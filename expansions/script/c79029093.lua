@@ -35,7 +35,7 @@ function c79029093.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,09029093)
 	e3:SetCost(c79029093.copycost)
 	e3:SetTarget(c79029093.copytg)
 	e3:SetOperation(c79029093.copyop)
@@ -46,7 +46,7 @@ function c79029093.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,09029093)
 	e3:SetCost(c79029093.copycost1)
 	e3:SetTarget(c79029093.copytg)
 	e3:SetOperation(c79029093.copyop)
@@ -108,6 +108,8 @@ function c79029093.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	g1:Merge(g2)
 	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
 	Duel.Recover(tp,Duel.GetLP(1-tp),REASON_EFFECT)
+	Debug.Message("要不要让我来当你们的对手呢？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029093,0))
 end
 end
 function c79029093.sprcon1(e,c)
@@ -126,6 +128,8 @@ function c79029093.sprop1(e,tp,eg,ep,ev,re,r,rp,c)
 	g1:Merge(g2)
 	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
 	Duel.Recover(tp,Duel.GetLP(1-tp),REASON_EFFECT)
+	Debug.Message("要不要让我来当你们的对手呢？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029093,0))
 end
 end
 function c79029093.copycost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -159,6 +163,8 @@ function c79029093.copyop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(0,1)
 	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 	Duel.RegisterEffect(e1,tp)
+	Debug.Message("各位，都会展现出什么样的精彩能力呢？我很期待啊~")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029093,3))
 end
 function c79029093.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
@@ -170,6 +176,8 @@ function c79029093.operation2(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 	   a=g:RandomSelect(tp,1)
 	   Duel.GetControl(a,tp)
+	Debug.Message("啊哈哈，为什么这么严肃呢？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029093,1))
 end
 end
 function c79029093.filter(c,e,tp)
@@ -187,6 +195,8 @@ function c79029093.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
+	Debug.Message("我一个人不行的......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029093,2))
 end
 end
 

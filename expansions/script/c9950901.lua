@@ -39,7 +39,7 @@ function c9950901.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9950901,0))
 end
 function c9950901.spfilter(c,e,tp)
-	return c:IsType(TYPE_NORMAL) and c:IsLevelBelow(8) and c:IsSetCard(0xba5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelBelow(8) and ((c:IsType(TYPE_NORMAL) and c:IsSetCard(0xba5)) or c:IsSetCard(0x3ba9)) and and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950901.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9950901.spfilter(chkc,e,tp) end
@@ -56,7 +56,7 @@ function c9950901.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9950901.spfilter2(c,e,tp)
-	return c:IsType(TYPE_NORMAL) and c:IsLevelBelow(8) and c:IsSetCard(0xba5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsLevelBelow(8) and ((c:IsType(TYPE_NORMAL) and c:IsSetCard(0xba5)) or c:IsSetCard(0x3ba9)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c9950901.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

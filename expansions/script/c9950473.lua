@@ -134,7 +134,7 @@ function c9950473.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9950473.spfilter2(c,e,tp)
 	return c:IsCode(32491822,6007213,69890967)
-		and (c:IsAbleToHand() or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,true,false)))
+		and (c:IsAbleToHand() or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,true,true)))
 end
 function c9950473.cfilter(c)
 	return c:IsType(TYPE_TRAP) and c:IsAbleToGraveAsCost()
@@ -156,9 +156,9 @@ function c9950473.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9950473.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	local sc=sg:GetFirst()
 	if sc then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and sc:IsCanBeSpecialSummoned(e,0,tp,true,false)
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and sc:IsCanBeSpecialSummoned(e,0,tp,true,true)
 			and (not sc:IsAbleToHand() or Duel.SelectOption(tp,1190,1152)==1) then
-			Duel.SpecialSummon(sc,0,tp,tp,true,false,POS_FACEUP)
+			Duel.SpecialSummon(sc,0,tp,tp,true,true,POS_FACEUP)
 		else
 			Duel.SendtoHand(sc,nil,REASON_EFFECT)
 		end

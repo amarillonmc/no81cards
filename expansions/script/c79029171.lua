@@ -76,11 +76,11 @@ function c79029171.cpop0(e,tp,eg,ep,ev,re,r,rp)
 				while tg do
 					tg:ReleaseEffectRelation(te)
 					tg=g:GetNext()
+				end
 	if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,79029171,0xf02,0x11,1300,500,2,RACE_CYBERSE,ATTRIBUTE_DARK) then
 		c:AddMonsterAttribute(TYPE_NORMAL)
 		Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
-end
-				end
+			   end
 			end
 		end
 	end

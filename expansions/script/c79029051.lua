@@ -2,7 +2,7 @@
 function c79029051.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,c79029051.ffilter,3,3,false)
+	aux.AddFusionProcFunRep2(c,c79029051.ffilter,3,3,true)
 	--atk def
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -60,6 +60,7 @@ end
 function c79029051.atop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChainAttack()
 	Debug.Message("弹幕！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029051,0))
 end
 function c79029051.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)

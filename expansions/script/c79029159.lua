@@ -8,12 +8,6 @@ function c79029159.initial_effect(c)
 	e1:SetCode(EVENT_BATTLE_DAMAGE)
 	e1:SetOperation(c79029159.regop)
 	c:RegisterEffect(e1)
-	--spsummon condition
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	c:RegisterEffect(e1)
 	--special summon rule
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -38,12 +32,6 @@ function c79029159.initial_effect(c)
 	e1:SetCode(EFFECT_CHANGE_TYPE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetValue(TYPE_SYNCHRO+TYPE_EFFECT)
-	c:RegisterEffect(e1) 
-	--dark SynchroSummon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	c:RegisterEffect(e1) 
 	--indes
 	local e1=Effect.CreateEffect(c)
@@ -74,18 +62,18 @@ function c79029159.initial_effect(c)
 	e4:SetOperation(c79029159.sdop)
 	c:RegisterEffect(e4)  
 end
-function c79029159.cfilter1(c,e,tp)
-	local g=Duel.GetMatchingGroup(c79029159.cfilter2,tp,LOCATION_MZONE,0,nil)
-	local lv=c:GetLevel()
-	return c:IsFaceup() and not c:IsType(TYPE_TUNER) and g:CheckWithSumEqual(Card.GetLevel,6+lv,1,99)
-end
 function c79029159.cfilter2(c,e,tp,tc)
 	return c:IsFaceup() and c:IsType(TYPE_TUNER) 
 end
-function c79029159.sprcon(e,c)
+function c79029159.cfilter1(c,e,tp)
+	local g=Duel.GetMatchingGroup(c79029159.cfilter2,tp,LOCATION_MZONE,0,nil)
+	local lv=c:GetLevel()
+	return c:IsFaceup() and g:CheckWithSumEqual(Card.GetLevel,6+lv,1,99) and not c:IsType(TYPE_TUNER)
+end
+function c79029159.sprcon(e,c,tp)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(c79029159.cfilter1,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(c79029159.cfilter1,tp,LOCATION_MZONE,0,1,nil,e,tp)
 end
 function c79029159.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -97,6 +85,7 @@ function c79029159.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g2=g:SelectWithSumEqual(tp,Card.GetLevel,6+lv,1,99)
 	g1:Merge(g2)
 	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
+	e:GetHandler():SetMaterial(g1)
 	Debug.Message("敢站到我面前，有胆量！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029159,0))
 end

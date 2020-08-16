@@ -13,16 +13,20 @@ function c9950793.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9950793.cfilter(c)
-	return c:IsSetCard(0x9bd1) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsFaceup() and c:IsSetCard(0x9bd1) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+end
+function c9950793.cfilter1(c,cg,e,tp)
+	return cg:IsExists(c9950793.cfilter2,1,c,c,e,tp)
+end
+function c9950793.cfilter2(c,mc,e,tp)
+	return Duel.IsExistingMatchingCard(c9950793.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp,Group.FromCards(c,mc))
 end
 function c9950793.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9950793.cfilter,tp,+LOCATION_HAND+LOCATION_GRAVE,0,5,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9950793.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,5,5,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	e:SetLabel(100)
+	return true
 end
-function c9950793.filter(c,e,tp)
-	return c:IsCode(9950789,9951209,9950703,9951080) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+function c9950793.filter(c,e,tp,mg)
+	return c:IsCode(9950789,9951209,9950703,9951080) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
 function c9950793.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_EXTRA+LOCATION_DECK) and c9950793.filter(chkc,e,tp) end

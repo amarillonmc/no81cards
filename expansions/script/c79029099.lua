@@ -3,7 +3,7 @@ function c79029099.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)  
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,c79029099.ffilter,3,false)
+	aux.AddFusionProcFunRep(c,c79029099.ffilter,3,true)
 	--pendulum
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(13331639,3))

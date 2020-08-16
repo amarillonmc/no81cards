@@ -65,7 +65,7 @@ function c79029156.filter(c,tp)
 end
 function c79029156.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029156.filter,tp,LOCATION_MZONE,0,1,nil) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),79029096)
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
 function c79029156.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

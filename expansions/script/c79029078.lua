@@ -2,7 +2,7 @@
 function c79029078.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,c79029078.ffilter,3,3,false)  
+	aux.AddFusionProcFunRep2(c,c79029078.ffilter,3,3,true)  
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),aux.Tuner(nil),nil,aux.NonTuner(nil),1,99)
 	--pendulum summon

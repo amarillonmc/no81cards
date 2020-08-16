@@ -72,7 +72,7 @@ end
 function c9950110.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsRace(RACE_ZOMBIE)
+	if tc:IsRelateToEffect(e) and tc:IsType(TYPE_MONSTER)
 		and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_ATTACK)~=0 then
 		if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
 		c:SetCardTarget(tc)

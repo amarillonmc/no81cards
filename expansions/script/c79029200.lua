@@ -27,7 +27,7 @@ end
 function c79029200.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=e:GetHandler():GetControler()
 	local p1=e:GetHandler():GetOwner()
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,p,LOCATION_MZONE,0,1,e:GetHandler()) and Duel.GetTurnPlayer()~=p end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,p,LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.GetTurnPlayer()~=p end
 	local g=Duel.SelectMatchingCard(p1,Card.IsReleasable,p,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.Release(g,REASON_COST)
 end

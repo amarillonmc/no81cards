@@ -26,10 +26,10 @@ function c9950992.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 
 end
 function c9950992.spfilter1(c,e,tp)
-	return c:IsLevel(4) and (c:IsSetCard(0x9bd1) or c:IsAttribute(ATTRIBUTE_LIGHT))and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevel(4,7) and (c:IsSetCard(0x9bd1) or c:IsAttribute(ATTRIBUTE_LIGHT))and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950992.spfilter2(c,e,tp)
-	return c:IsFaceup() and c:IsLevel(4) and (c:IsSetCard(0x9bd1) or c:IsAttribute(ATTRIBUTE_LIGHT)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceup() and c:IsLevel(4,7) and (c:IsSetCard(0x9bd1) or c:IsAttribute(ATTRIBUTE_LIGHT)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9950992.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
