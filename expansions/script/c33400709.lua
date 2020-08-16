@@ -82,7 +82,6 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp)
 		and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_EXTRA,0,1,nil) end
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
-  Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.repval(e,c)
 	return cm.repfilter(c,e:GetHandlerPlayer())

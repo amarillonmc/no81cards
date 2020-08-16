@@ -84,6 +84,13 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
+	if tc:IsType(TYPE_FIELD) and tc:IsPreviousLocation(LOCATION_FZONE) then
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+	elseif tc:IsType(TYPE_PENDULUM) and tc:IsPreviousLocation(LOCATION_PZONE) then
+		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+	else
+		Duel.ReturnToField(e:GetLabelObject())
+	end
 	Duel.ReturnToField(tc) 
 end
 

@@ -1,4 +1,7 @@
 --天知龙 暗黑残星龙
+--Lua by Hui_lan, fix by scl 
+if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+local m,cm=rscf.DefineCard(65010552,"TianZhi")
 function c65010552.initial_effect(c)
 	 --disable
 	local e1=Effect.CreateEffect(c)

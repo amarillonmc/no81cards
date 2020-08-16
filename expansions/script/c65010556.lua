@@ -1,4 +1,6 @@
 --天知之翼的骑行
+if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+local m,cm=rscf.DefineCard(65010556,"TianZhi")
 function c65010556.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -23,7 +25,7 @@ function c65010556.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c65010556.filter(c,e,tp)
-	return (c:IsCode(65010558) or c:IsCode(65010552) or c:IsCode(65010554)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:CheckSetCard("TianZhi") and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c65010556.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -35,7 +37,8 @@ function c65010556.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c65010556.filter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)~=0 then
+	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+		--Duel.SpecialSummonStep(g,0,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CANNOT_TRIGGER)
@@ -47,7 +50,7 @@ function c65010556.spop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e2:SetReset(RESET_EVENT+RESETS_REDIRECT)
 			e2:SetValue(LOCATION_DECKBOT)
-			tc:RegisterEffect(e2)
+			c:RegisterEffect(e2)
 	end
 		Duel.SpecialSummonComplete()
 end
@@ -59,9 +62,11 @@ function c65010556.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function c65010556.filter2(c,e,tp,m,f,chkf)
-	local m2=Duel.GetMatchingGroup(c65010556.filter0,tp,LOCATION_GRAVE,0,nil)
-	m2:Merge(m)
-	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and (c:CheckFusionMaterial(m,nil,chkf) or (c:IsCode(65010554) and c:CheckFusionMaterial(m2,nil,chkf)))
+	if c:CheckSetCard("TianZhi") then
+		local mg=Duel.GetMatchingGroup(c65010556.filter0,tp,LOCATION_GRAVE,0,nil)
+		m:Merge(mg)
+	end
+	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c65010556.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

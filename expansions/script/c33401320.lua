@@ -24,7 +24,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)   
 end
 function cm.ckfilter(c,e,tp)
-	return c:IsLevel(4) and  c:IsSetCard(0x341) and ((c:IsType(TYPE_RITUAL) and  c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,false)) or c:IsCanBeSpecialSummoned(e,0,tp,false,false) )
+	return c:IsLevel(4) and  c:IsSetCard(0x341) and ((c:IsType(TYPE_RITUAL) and  c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true)) or c:IsCanBeSpecialSummoned(e,0,tp,false,false) )
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp) 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

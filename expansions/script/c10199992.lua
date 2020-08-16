@@ -51,6 +51,7 @@ local rsik  =   Infernal_Knight
 local rsvw  =   Virus_Wrom
 local rsia  =   Indolent_Angel
 local rsso  =   Simulated_Organism
+local rstr  =   True_Ritual
 
 #NianBao 583322404
 local rslap =   Lapin
@@ -91,6 +92,11 @@ local rsgod =   God
 
 #02 1164477469
 local rsva  =   VR_Aqua
+//local   =   Tian_Zhi
+
+#ReiKai 2404873791
+local rsch  =   Churck
+
 
 --Set Code
 #Scl
@@ -127,7 +133,7 @@ local Stellar_Pearl  =   0xa333
 local Utoland   =   0xc333
 
 --local  =   0x1334
-local	 =   0x3334
+local   =   0x3334
 local Summerlover   =   0x5334
 local Quasi_Beast   =   0x6334
 local Bite_Teech	 =   0x9334

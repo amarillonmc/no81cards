@@ -1,4 +1,6 @@
 --天知之翼骑士
+if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+local m,cm=rscf.DefineCard(65010558,"TianZhi")
 function c65010558.initial_effect(c)
 	 --set
 	local e1=Effect.CreateEffect(c)
@@ -23,7 +25,7 @@ function c65010558.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(65010558,1))
-	e3:SetCategory(CATEGORY_TODECK)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e3:SetRange(LOCATION_REMOVED)
@@ -49,7 +51,7 @@ function c65010558.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetLabelObject():GetLabel()==Duel.GetTurnCount() and e:GetHandler():GetFlagEffect(65010558)>0
 end
 function c65010558.tdfil(c)
-	return c:IsCode(65010556) and c:IsAbleToDeck()
+	return c:CheckSetCard("TianZhi") and c:IsType(TYPE_SPELL) and c:IsAbleToDeck()
 end
 function c65010558.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65010558.tdfil,tp,LOCATION_REMOVED,0,1,nil) and e:GetHandler():IsAbleToDeck() end

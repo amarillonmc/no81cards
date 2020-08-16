@@ -41,10 +41,11 @@ function c46260003.initial_effect(c)
 end
 function c46260003.filter(c,e,tp,mg)
     if bit.band(c:GetOriginalType(),0x81)~=0x81 or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
-    mg:RemoveCard(c)
+    local tg=mg:Clone()
+    tg:RemoveCard(c)
     local lv=c:GetOriginalLevel()
     aux.GCheckAdditional=aux.RitualCheckAdditional(c,lv,"Greater")
-    local res=mg:CheckSubGroup(aux.RitualCheck,1,lv,tp,c,lv,"Greater")
+    local res=tg:CheckSubGroup(aux.RitualCheck,1,lv,tp,c,lv,"Greater")
     aux.GCheckAdditional=nil
     return res
 end
@@ -59,7 +60,7 @@ function c46260003.rop(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end
     local mg=Duel.GetRitualMaterial(tp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-    local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c46260003.filter),tp,LOCATION_HAND+LOCATION_PZONE,0,1,1,nil,e,tp,mg)
+    local tg=Duel.SelectMatchingCard(tp,c46260003.filter,tp,LOCATION_HAND+LOCATION_PZONE,0,1,1,nil,e,tp,mg)
     local tc=tg:GetFirst()
     if tc then
         mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)

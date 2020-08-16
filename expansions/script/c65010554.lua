@@ -1,4 +1,6 @@
 --天知骑士王 冈格尼尔龙王
+if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+local m,cm=rscf.DefineCard(65010554,"TianZhi")
 function c65010554.initial_effect(c)
 	 c:EnableReviveLimit()
 	aux.AddFusionProcCodeFun(c,65010558,c65010554.fusfilter,1,true,true)

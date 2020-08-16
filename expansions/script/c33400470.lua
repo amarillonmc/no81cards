@@ -96,7 +96,7 @@ function cm.ckfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x5342) and c:IsType(TYPE_XYZ) and c:IsType(TYPE_MONSTER)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return   Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,nil) and 
+	return   Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,nil,0x3341) and 
 	Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

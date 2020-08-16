@@ -40,7 +40,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.matcheck(e,c)
-	if  c:GetMaterial():Filter(Card.IsAttribute,nil,ATTRIBUTE_DARK) then
+	if  c:GetMaterial():Filter(Card.IsAttribute,nil,ATTRIBUTE_DARK):GetCount()~=0 then
 		 --
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -52,9 +52,9 @@ function cm.matcheck(e,c)
 	e1:SetOperation(cm.atkop2)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 	c:RegisterEffect(e1)
- c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,0))
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,0))
 	end
-	if c:GetMaterial():Filter(Card.IsAttribute,nil,ATTRIBUTE_LIGHT) then
+	if c:GetMaterial():Filter(Card.IsAttribute,nil,ATTRIBUTE_LIGHT):GetCount()~=0 then
 	 --special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
@@ -69,7 +69,7 @@ function cm.matcheck(e,c)
 	c:RegisterEffect(e2)
 	c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,1))
 	end
-	if c:GetMaterial():Filter(Card.IsAttribute,nil,ATTRIBUTE_WIND) then
+	if c:GetMaterial():Filter(Card.IsAttribute,nil,ATTRIBUTE_WIND):GetCount()~=0 then
 	   --move
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,2))
@@ -84,7 +84,7 @@ function cm.matcheck(e,c)
 	c:RegisterEffect(e1)
    c:RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,2))
 	end
-	if c:GetMaterial():Filter(Card.IsAttribute,nil,ATTRIBUTE_WATER) then
+	if c:GetMaterial():Filter(Card.IsAttribute,nil,ATTRIBUTE_WATER):GetCount()~=0 then
 	 --destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,3))
@@ -100,7 +100,7 @@ function cm.matcheck(e,c)
 	c:RegisterEffect(e2)
    c:RegisterFlagEffect(m+3,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,3))
 	end
-	if c:GetMaterial():Filter(Card.IsAttribute,nil,ATTRIBUTE_FIRE) then
+	if c:GetMaterial():Filter(Card.IsAttribute,nil,ATTRIBUTE_FIRE):GetCount()~=0 then
 	 --destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,4))

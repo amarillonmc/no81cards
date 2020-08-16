@@ -21,7 +21,7 @@ function c49950009.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c49950009.filter(c)
-	return c:IsSetCard(0x823) and not c:IsCode(49950009) and c:IsAbleToHand()
+	return c:IsSetCard(0x823) and c:IsType(TYPE_MONSTER) and not c:IsCode(49950009) and c:IsAbleToHand()
 end
 function c49950009.descon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

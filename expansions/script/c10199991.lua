@@ -98,10 +98,10 @@ rshint.drct=aux.Stringid(m,5) --"select draw number"
 rshint.isss=aux.Stringid(17535764,1)	--"would you SS a monster?"
 rshint.istg=aux.Stringid(62834295,2)	--"would you send to GY?"
 rshint.isdes=aux.Stringid(20590515,2)   --"would you destroy?"
-rshint.istd=aux.Stringid(m,1)	--"would you send to Deck?"
+rshint.istd=aux.Stringid(m,1)   --"would you send to Deck?"
 rshint.isrm=aux.Stringid(93191801,2)	--"would you reomve?"
 rshint.isset=aux.Stringid(m,5)  --"would you set?"
-rshint.istf=aux.Stringid(m,6)	--"would you place to field?"
+rshint.istf=aux.Stringid(m,6)   --"would you place to field?"
 rshint.isth=aux.Stringid(26118970,1)	--"would you send to hand?"
 rshint.isrh=aux.Stringid(31102447,2)	--"would you return to hand"
 rshint.isdr=aux.Stringid(3679218,1)  --"would you draw?"
@@ -160,6 +160,7 @@ rsloc.all=0xff
 
 --Escape Old Functions
 function rsof.Escape_Old_Functions()
+	--//
 	rsof.DefineCard  =   rscf.DefineCard
 	rscf.FilterFaceUp =  rscf.fufilter
 	rsof.SendtoHand  =   rsop.SendtoHand
@@ -174,6 +175,8 @@ function rsof.Escape_Old_Functions()
 	rsof.SelectNumber_List= rsop.AnnounceNumber_List
 	rsof.IsSet   =   rscf.DefineSet
 	rscf.GetRelationThisCard = rscf.GetFaceUpSelf
+	rsop.eqop = rsop.Equip
+	--//
 	--some card use old SummonBuff's phase leave field parterment, must fix them in their luas
 	rssf.SummonBuff=function(attlist,isdis,isdistig,selfleave,phaseleave)
 		local bufflist={}
@@ -201,6 +204,10 @@ function rsof.Escape_Old_Functions()
 			table.insert(bufflist,selfleave)
 		end
 		return bufflist
+	end
+	--//
+	rscf.SetSpecialSummonProduce=function(reg_list,range,con,op,desc_list,lim_list,reset_list)
+		return rscf.AddSpecialSummonProcdure(reg_list,range,con,nil,op,desc_list,lim_list,nil,reset_list)
 	end
 end
 
