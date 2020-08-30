@@ -1,7 +1,7 @@
 --昭和骑士·BLACK RX-悲伤王子
 function c9980683.initial_effect(c)
 	 --synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc1),aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6bc1),aux.NonTuner(Card.IsSynchroType,TYPE_MONSTER),1)
 	c:EnableReviveLimit()
 	--destroy
 	local e1=Effect.CreateEffect(c)

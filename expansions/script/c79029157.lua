@@ -40,6 +40,8 @@ function c79029157.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,e:GetHandler(),1,0,0)
 end
 function c79029157.operation(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("目标锁定！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029157,0))
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.MoveToField(c,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true) then

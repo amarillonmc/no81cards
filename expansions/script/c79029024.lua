@@ -75,7 +75,7 @@ function c79029024.efop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		e2:SetValue(c79029024.catktg)
 		rc:RegisterEffect(e2,true)
-		rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(79029024,0))
+		rc:RegisterFlagEffect(79029024,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(79029024,0))
 	Debug.Message("以我的枪尖开路！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029024,3))
 end

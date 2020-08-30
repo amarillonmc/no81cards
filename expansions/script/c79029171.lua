@@ -22,6 +22,8 @@ function c79029171.cptg0(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c79029171.cpfilter,tp,0,LOCATION_DECK,1,e:GetHandler()) end
 	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	Duel.NegateActivation(ev)
+	Debug.Message("真麻烦。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029171,0))
 	local a=Duel.GetMatchingGroup(c79029171.cpfilter,tp,0,LOCATION_DECK,nil)
 	local x=a:RandomSelect(tp,1)
 	local tc=x:GetFirst()

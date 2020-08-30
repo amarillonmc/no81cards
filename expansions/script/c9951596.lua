@@ -20,18 +20,6 @@ function c9951596.initial_effect(c)
 	e2:SetTarget(c9951596.rettg)
 	e2:SetOperation(c9951596.retop)
 	c:RegisterEffect(e2)
---instant(chain)
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9951596,1))
-	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetCondition(c9951596.condition)
-	e2:SetTarget(c9951596.target)
-	e2:SetOperation(c9951596.operation)
-	c:RegisterEffect(e2)
 end
 function c9951596.splimit(e,se,sp,st)
 	return e:GetHandler():GetLocation()~=LOCATION_EXTRA
@@ -48,10 +36,10 @@ function c9951596.retfilter2(c)
 end
 function c9951596.rettg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c9951596.retfilter1,tp,LOCATION_GRAVE,0,2,nil)
+	if chk==0 then return Duel.IsExistingTarget(c9951596.retfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,2,nil)
 		and Duel.IsExistingTarget(c9951596.retfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g1=Duel.SelectTarget(tp,c9951596.retfilter1,tp,LOCATION_GRAVE,0,2,2,nil)
+	local g1=Duel.SelectTarget(tp,c9951596.retfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,2,2,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g2=Duel.SelectTarget(tp,c9951596.retfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g1,g1:GetCount(),0,0)
@@ -65,28 +53,5 @@ function c9951596.retop(e,tp,eg,ep,ev,re,r,rp)
 		if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 		local g2=g:Filter(Card.IsLocation,nil,LOCATION_ONFIELD)
 		Duel.SendtoHand(g2,nil,REASON_EFFECT)
-	end
-end
-function c9951596.condition(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp 
-end
-function c9951596.thfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x6) and c:IsAbleToHand()
-end
-function c9951596.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9951596.thfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9951596.thfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,c9951596.thfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
-end
-function c9951596.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
-		local g=Group.CreateGroup()
-		Duel.ChangeTargetCard(ev,g)
-		Duel.ChangeChainOperation(ev,c9951596.repop)
 	end
 end

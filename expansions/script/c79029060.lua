@@ -40,6 +40,8 @@ function c79029060.matop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,1)
 	if c:IsRelateToEffect(e) and g:GetCount()==1 then
 		Duel.Overlay(c,g)
+	Debug.Message("我的战场，可不只是这里！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029060,0))
 	end
 end
 function c79029060.repfilter(c,tp)
@@ -69,6 +71,8 @@ end
 function c79029060.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c79029060.filter,tp,LOCATION_MZONE,0,nil)
 	local tc=g:GetFirst()
+	Debug.Message("快点快点，都动起来！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029060,1))
 	while tc do
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)

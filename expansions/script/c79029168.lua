@@ -27,6 +27,8 @@ function c79029168.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c79029168.operation(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("俺，来了！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029168,0))
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
 	end

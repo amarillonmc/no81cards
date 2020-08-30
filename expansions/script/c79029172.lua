@@ -56,6 +56,8 @@ function c79029172.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 end
 function c79029172.operation(e,tp,eg,ep,ev,re,r,rp,chk)
+	Debug.Message("请小心应战！紧急治疗的任务请放心交给我。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029172,2))
 	  local x=eg:Select(tp,1,1,nil)
 	  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	  local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
@@ -71,6 +73,8 @@ function c79029172.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c79029172.spop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("紧急治疗启动！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029172,1))
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
@@ -89,6 +93,8 @@ function c79029172.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>0
 end
 function c79029172.ctop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("开始治疗。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029172,0))
 	local x=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)
 	if e:GetHandler():IsRelateToEffect(e) then
 		Duel.Recover(tp,x*100,REASON_EFFECT)

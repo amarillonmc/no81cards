@@ -89,6 +89,8 @@ function c79029195.scon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029195.spop(e,tp,eg,ep,ev,re,r,rp,val)
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,true,true,POS_FACEUP)
+	Debug.Message("你死时会呼唤谁的名字？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029195,0))
 end
 function c79029195.scon1(e,tp,eg,ep,ev,re,r,rp)
    local at=Duel.GetAttacker()
@@ -98,6 +100,8 @@ function c79029195.spop1(e,tp,eg,ep,ev,re,r,rp,val)
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,true,true,POS_FACEUP)
 end
 function c79029195.lose(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("与我无关。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029195,1))
 	Duel.Win(1-tp,0x4)
 end
 

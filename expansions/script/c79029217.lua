@@ -61,7 +61,7 @@ function c79029217.eqop(e,tp,eg,ep,ev,re,r,rp)
 	if tc then
 	if not Duel.SendtoGrave(tc,REASON_EFFECT) then return end
 	if e:GetHandler():IsPosition(POS_DEFENSE) then
-	Duel.ChangePosition(e:GetHandler(),POS_FACEUP_ATTACK)	
+	Duel.ChangePosition(e:GetHandler(),POS_FACEUP_ATTACK)   
 	end
 	Debug.Message("跟不上就自个找点事做吧。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029217,0))   
@@ -73,7 +73,6 @@ function c79029217.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SET_BASE_ATTACK)
 	e1:SetValue(e:GetHandler():GetBaseAttack()+tc:GetBaseAttack())
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
 end
 end

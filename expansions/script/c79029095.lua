@@ -62,13 +62,13 @@ function c79029095.setcon(e,c,minc)
 	return false
 end
 function c79029095.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND,0,2,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	x=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_HAND,0,2,2,nil)
-	Duel.SendtoGrave(x,REASON_COST+REASON_DISCARD)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST,nil)
 end
 function c79029095.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	Debug.Message("是不是看到幻觉了呢？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029095,0))
 	--disable
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -95,6 +95,8 @@ function c79029095.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029095.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+	Debug.Message("我之蜜糖，汝之砒霜。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029095,1))
 		Duel.Destroy(eg,REASON_EFFECT)
 		Duel.Damage(1-tp,1000,REASON_EFFECT)
 	end

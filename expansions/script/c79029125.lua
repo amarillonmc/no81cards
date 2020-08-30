@@ -93,7 +93,7 @@ function c79029125.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local lv=mc:GetLevel()
 	local g2=g:SelectWithSumEqual(tp,Card.GetLevel,10+lv,3,3)
 	g1:Merge(g2)
-	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
+	if Duel.SendtoGrave(g1,REASON_MATERIAL+REASON_SYNCHRO)~=0 then
 	e:GetHandler():SetMaterial(g1)
 	local a=Duel.GetFieldGroup(tp,LOCATION_HAND,LOCATION_HAND)
 	Duel.SendtoGrave(a,REASON_EFFECT)

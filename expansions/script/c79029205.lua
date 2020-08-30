@@ -28,6 +28,8 @@ function c79029205.cop(e,tp,eg,ep,ev,re,r,rp)
    e:GetHandler():AddCounter(0x18,8)
 end
 function c79029205.rcop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("有罪者......当受罚。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029205,0))
    e:GetHandler():RemoveCounter(tp,0x18,1,REASON_EFFECT)
 end
 

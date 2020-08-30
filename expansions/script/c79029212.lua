@@ -31,6 +31,8 @@ function c79029212.lzcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029212.lzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	Debug.Message("电磁脉冲立场准备就绪。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029212,1))
 	local x1=Duel.AnnounceType(tp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -72,7 +74,6 @@ function c79029212.lzop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e4)
 end
-	Debug.Message("电磁脉冲立场准备就绪。")
 end
 function c79029212.disable(e,c)
 	local x=e:GetLabel()
@@ -94,6 +95,8 @@ function c79029212.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029212.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	Debug.Message("满功率输出！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029124,1))
 	local tc=Duel.GetFirstTarget()
 	local g=e:GetHandler():GetMaterial()
 	Duel.Overlay(tc,e:GetHandler())
@@ -121,7 +124,6 @@ function c79029212.spop(e,tp,eg,ep,ev,re,r,rp)
 		tx:RegisterEffect(e3)
 		tx=g1:GetNext()
 end
-	Debug.Message("满功率输出！")
 end
 function c79029212.discon(e,tp,eg,ep,ev,re,r,rp)
 	local x=e:GetLabel()

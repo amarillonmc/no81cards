@@ -50,6 +50,7 @@ function c79029035.initial_effect(c)
 	e5:SetValue(c79029035.efilter)
 	c:RegisterEffect(e5)
 end
+c79029035.material_type=TYPE_SYNCHRO
 function c79029035.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end

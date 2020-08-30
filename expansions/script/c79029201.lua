@@ -42,6 +42,7 @@ function c79029201.initial_effect(c)
 	e4:SetValue(1)
 	c:RegisterEffect(e4)
 end
+c79029201.material_type=TYPE_SYNCHRO
 function c79029201.ecost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,2000) end
 	Duel.PayLPCost(tp,2000)
@@ -54,6 +55,8 @@ function c79029201.eop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
+	Debug.Message("倾覆吧！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029201,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,0,1,1,nil,tp,c)
 	local tc=g:GetFirst()
@@ -87,6 +90,8 @@ function c79029201.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
 function c79029201.disop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("休想再进一步。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029201,1))
 	Duel.NegateActivation(ev)
 end
 function c79029201.spfil(c,e,tp)
@@ -94,6 +99,8 @@ function c79029201.spfil(c,e,tp)
 end
 function c79029201.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029201.spfil,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil,e,tp) end
+	Debug.Message("让你们见识一下米诺斯的战技！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029201,2))
 	local g=Duel.SelectTarget(tp,c79029201.spfil,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,nil,e,tp)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_SZONE)

@@ -39,6 +39,8 @@ function c79029164.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c79029164.thop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("了解！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029164,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c79029164.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
@@ -58,5 +60,7 @@ function c79029164.repval(e,c)
 	return c79029164.repfilter(c,e:GetHandlerPlayer())
 end
 function c79029164.repop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("你们的攻击毫无意义！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029164,1))
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
 end

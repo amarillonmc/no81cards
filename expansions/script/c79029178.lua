@@ -41,6 +41,8 @@ end
 function c79029178.spop(e,tp,eg,ep,ev,re,r,rp)
 	 local c=e:GetHandler()
 	 if Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)~=0 then
+	Debug.Message("我开动了~")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029178,0))
 	 local e1=Effect.CreateEffect(c)
 	 e1:SetType(EFFECT_TYPE_SINGLE)
 	 e1:SetCode(EFFECT_UPDATE_ATTACK)
@@ -61,6 +63,8 @@ end
 function c79029178.atcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029178.costfilter,tp,LOCATION_EXTRA,0,1,nil) and Duel.GetAttacker()==e:GetHandler() 
 	and e:GetHandler():IsChainAttackable(0) end
+	Debug.Message("不要的零件，就送给我吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029178,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c79029178.costfilter,tp,LOCATION_EXTRA,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
@@ -73,6 +77,8 @@ function c79029178.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
 function c79029178.repop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("哼哼。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029178,2))
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

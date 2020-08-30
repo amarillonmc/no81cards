@@ -12,6 +12,8 @@ function c79029169.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and (re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:IsActiveType(TYPE_MONSTER)) and aux.damcon1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029169.operation(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("燃烧吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029169,0))
 	local c=e:GetHandler()
 	local cid=Duel.GetChainInfo(ev,CHAININFO_CHAIN_ID)
 	local e1=Effect.CreateEffect(e:GetHandler())

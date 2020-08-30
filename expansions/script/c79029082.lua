@@ -18,6 +18,8 @@ function c79029082.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,600)
 end
 function c79029082.operation(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("就是现在！雪盲可是很可怕的哦！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029082,0))
 	 local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
 end

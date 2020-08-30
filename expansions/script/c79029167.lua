@@ -1,5 +1,6 @@
 --罗德岛·重装干员-米格鲁
 function c79029167.initial_effect(c)
+	aux.EnableUnionAttribute(c,c79029167.eqlimit)
 	 --equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(39890958,0))
@@ -62,6 +63,8 @@ function c79029167.eqop(e,tp,eg,ep,ev,re,r,rp)
 		return
 	end
 	if not Duel.Equip(tp,c,tc,false) then return end
+	Debug.Message("各位，出发了！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029167,0))
 	aux.SetUnionState(c)
 end
 function c79029167.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -75,6 +78,8 @@ function c79029167.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
+	Debug.Message("要我上吗？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029167,1))
 end
 function c79029167.repval(e,re,r,rp)
 	return bit.band(r,REASON_BATTLE)~=0 or bit.band(r,REASON_EFFECT)~=0
@@ -85,6 +90,8 @@ function c79029167.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return ec and tc and tc:IsFaceup() and tc:IsControler(1-tp)
 end
 function c79029167.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("看我~的！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029167,2))
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local ec=e:GetHandler():GetEquipTarget()
 	local tc=ec:GetBattleTarget()

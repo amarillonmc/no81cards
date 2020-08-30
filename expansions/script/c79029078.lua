@@ -125,6 +125,8 @@ function c79029078.lzop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 	local x=g:GetCount()
 	if g:GetCount()>0 then
+	Debug.Message("大地，沸腾吧！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029078,0))
 		Duel.Destroy(g,REASON_EFFECT)
 		Duel.Damage(1-tp,x*1000,REASON_EFFECT)
 	end
@@ -141,6 +143,8 @@ function c79029078.lzop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	local x=g:GetCount()
 	if g:GetCount()>0 then
+	Debug.Message("地狱，随时填装！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029078,1))
 		Duel.Destroy(g,REASON_EFFECT)
 		Duel.Damage(1-tp,x*1000,REASON_EFFECT)
 	end
@@ -159,6 +163,8 @@ function c79029078.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetCard(eg)
 end
 function c79029078.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("疼吗？疼吗！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029078,2))
 	local g=eg:Filter(c79029078.atkfilter,nil,e,1-tp)
 	local dg=Group.CreateGroup()
 	local c=e:GetHandler()
@@ -187,6 +193,8 @@ function c79029078.atktg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetCard(eg)
 end
 function c79029078.atkop2(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("疼吗？疼吗！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029078,2))
 	local g=eg:Filter(c79029078.atkfilter2,nil,e,1-tp)
 	local dg=Group.CreateGroup()
 	local c=e:GetHandler()
@@ -215,10 +223,14 @@ function c79029078.penop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return false end
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
+	Debug.Message("知道啦知道啦！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029078,4))
 		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end
 function c79029078.disop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("哟，来一次久违的BBQ吧！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029078,3))
 	Duel.Damage(1-tp,2000,REASON_EFFECT)
 end
 function c79029078.con(e,tp,eg,ep,ev,re,r,rp)

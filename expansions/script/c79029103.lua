@@ -1,5 +1,6 @@
 --罗德岛·部署-远程火力打击
 function c79029103.initial_effect(c)
+	aux.AddCodeList(c,0xa906)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -37,7 +38,6 @@ function c79029103.initial_effect(c)
 	e4:SetOperation(c79029103.tdop)
 	c:RegisterEffect(e4)
 end
-c79029103.card_code_list={0xa906}
 function c79029103.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DEATTACHFROM)

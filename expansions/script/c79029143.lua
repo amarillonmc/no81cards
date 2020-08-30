@@ -58,6 +58,8 @@ function c79029143.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029143.atkop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	Debug.Message("看这、这招！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029143,1))
 	if c:IsFaceup() and c:IsRelateToEffect(e) then
 		local atk=c:GetAttack()*2
 		local e1=Effect.CreateEffect(c)
@@ -74,6 +76,8 @@ function c79029143.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function c79029143.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("别再作恶了！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029143,0))
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
 	local tc=g:GetFirst()
 		while tc do

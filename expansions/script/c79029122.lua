@@ -9,6 +9,7 @@ function c79029122.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_EXTRA)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCost(c79029122.drcost)
 	e1:SetTarget(c79029122.drtg)
 	e1:SetOperation(c79029122.dsop)
 	e1:SetCountLimit(1,79029122)
@@ -23,10 +24,16 @@ function c79029122.initial_effect(c)
 	e2:SetCountLimit(1,79029122999999)
 	c:RegisterEffect(e2)  
 end
+function c79029122.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.ConfirmCards(tp,e:GetHandler())
+end
 function c79029122.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCountFromEx(tp)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE}
+	Debug.Message("诛恶义举，在所不辞！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029122,0))
 	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
 	Duel.SetTargetParam(ac)
 	Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,0)
@@ -44,6 +51,8 @@ function c79029122.cfilter(c)
 end
 function c79029122.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029122.cfilter,tp,0,LOCATION_MZONE,1,nil) end
+	Debug.Message("心思所指，拳意所至！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029122,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 	local tc=Duel.SelectMatchingCard(tp,c79029122.cfilter,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
 	local flag=0

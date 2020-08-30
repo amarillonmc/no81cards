@@ -47,9 +47,11 @@ function c79029152.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,1000)
 end
 function c79029152.con(e,c)
-	return e:GetHandler():GetRightScale()<13
+	return e:GetHandler():GetRightScale()<=13
 end
 function c79029152.op(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("别怕！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029152,0))
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -67,6 +69,8 @@ function c79029152.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c79029152.activate(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("我知道了！大家的生命就由我来守护！首先，应该准备好特制缓释秘药......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029152,1))
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetDescription(aux.Stringid(1264319,0))
 	e1:SetType(EFFECT_TYPE_FIELD)

@@ -38,6 +38,8 @@ function c79029069.rdcon(e,tp,eg,ep,ev,re,r,rp)
 		and c:GetEffectCount(EFFECT_DIRECT_ATTACK)<2 and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
 end
 function c79029069.rdop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("完全没问题！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029069,4))
 	Duel.ChangeBattleDamage(ep,ev/2)
 end
 function c79029069.condition(e,tp,eg,ep,ev,re,r,rp)
@@ -54,6 +56,8 @@ function c79029069.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 	local b1=Duel.IsExistingMatchingCard(aux.TRUE,1-tp,LOCATION_HAND,0,1,nil)
 	local b2=Duel.IsExistingTarget(c79029069.filter2,1-tp,LOCATION_MZONE,0,1,nil)
+	Debug.Message("逮·住·你·了！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029069,3))
 	if chk==0 then return b1 or b2 end
 	local op=0
 	if b1 and b2 then

@@ -63,7 +63,9 @@ function c79029202.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 end
 function c79029202.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=e:GetLabelObject()
-	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+	Duel.SendtoGrave(g,REASON_COST)
+	Debug.Message("彼此，都尽量活下来吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029202,0))
 	g:DeleteGroup()
 end
 function c79029202.conop(e,tp,eg,ep,ev,re,r,rp,c)
@@ -79,13 +81,15 @@ function c79029202.desfil(c)
 end
 function c79029202.desop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(c79029202.desfil,tp,0,LOCATION_MZONE,nil)
+	Debug.Message("嗯，又是美好的一天。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029202,1))
 	Duel.Damage(1-tp,g:GetSum(Card.GetAttack),REASON_EFFECT)
 	if Duel.Destroy(g,REASON_EFFECT)~=g:GetCount() then
 	Duel.GetControl(g,tp)
 end
 end
 function c79029202.eqfil(c)
-	return c:IsFaceup() and c:IsCode(79020007)
+	return c:IsFaceup() and c:IsCode(79029207)
 end
 function c79029202.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c79029202.eqfil(chkc) end
@@ -96,6 +100,8 @@ function c79029202.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
 end
 function c79029202.eqop(e,tp,eg,ep,ev,re,r,rp,c)
+	Debug.Message("我倒是想过无数种回到这里的可能性，看见她当日看见的这幅风景......可怎么也没想到会和你站在一起，这还真过分啊，“博士”。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029202,2))
 	local c=e:GetHandler()
 	if c:IsLocation(LOCATION_MZONE) and c:IsFacedown() then return end
 	local tc=Duel.GetFirstTarget()
@@ -119,16 +125,10 @@ function c79029202.eqop(e,tp,eg,ep,ev,re,r,rp,c)
 	e1:SetValue(c:GetEquipTarget():GetAttack()*2)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_EQUIP)
-	e2:SetCode(EFFECT_ADD_SETCODE)
-	e2:SetValue(0x1901)
-	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e2)
 end
 end
 function c79029202.eqlimit(e,c)
-	return c:IsCode(79020007)
+	return c:IsCode(79029207)
 end
 
 

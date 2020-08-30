@@ -74,6 +74,8 @@ function c79029113.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,0,tp,a)
 end
 function c79029113.operation1(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("辅助就交给我吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029113,1))
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		local a=eg:GetCount()   
@@ -88,6 +90,8 @@ function c79029113.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c79029113.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
+	Debug.Message("放心吧，我还挺擅长指挥的。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029113,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,c79029113.drfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
@@ -102,6 +106,8 @@ function c79029113.lztg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c79029113.lzop1(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("等等，我头发都要乱了！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029113,2))
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.Draw(tp,1,REASON_EFFECT)

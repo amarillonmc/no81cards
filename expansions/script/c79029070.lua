@@ -30,7 +30,7 @@ function c79029070.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_TO_GRAVE)
-	e4:SetCountLimit(1,7902907099999999999)
+	e4:SetCountLimit(1,09029070)
 	e4:SetCondition(c79029070.thcon2)
 	e4:SetTarget(c79029070.thtg2)
 	e4:SetOperation(c79029070.thop2)
@@ -43,9 +43,11 @@ function c79029070.atktg(e,c)
 	return c:GetMutualLinkedGroupCount()==0
 end
 function c79029070.dsop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	Debug.Message("铃声已至，风雪缠足。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029070,0))
 		Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 		local tc=Duel.GetFirstTarget()
-		if tc and tc:IsRelateToEffect(e) then	
+		if tc and tc:IsRelateToEffect(e) then   
 		local e4=Effect.CreateEffect(e:GetHandler())
 		e4:SetType(EFFECT_TYPE_SINGLE)
 		e4:SetCode(EFFECT_UPDATE_ATTACK)
@@ -70,6 +72,8 @@ function c79029070.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
 end
 function c79029070.thop2(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("如有神助，正是此般。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029070,1))
 	local sg=Duel.GetMatchingGroup(c79029070.filter,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	Duel.Destroy(sg,REASON_EFFECT)
 end

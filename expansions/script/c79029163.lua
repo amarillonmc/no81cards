@@ -23,8 +23,9 @@ function c79029163.initial_effect(c)
 end
 function c79029163.disop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():GetColumnGroup():IsContains(re:GetHandler()) and re:GetHandler():IsControler(1-tp) then
-		Duel.NegateEffect(ev)
-end	
+	Duel.Hint(HINT_CARD,0,79029163)
+	Duel.NegateEffect(ev)
+end 
 end
 function c79029163.filter(c)
 	return c:IsFaceup() and (c:IsCanBeSynchroMaterial() or c:IsCanBeXyzMaterial(nil))
@@ -37,6 +38,8 @@ function c79029163.dstg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c79029163.dsop(e,c,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tc=Duel.GetFirstTarget()
+	Debug.Message("各位，开始狩猎吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029163,0))
 	if tc and tc:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)

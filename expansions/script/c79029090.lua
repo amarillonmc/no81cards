@@ -91,6 +91,8 @@ function c79029090.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function c79029090.desop1(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("最大火力。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029090,2))
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	Duel.Destroy(g,REASON_EFFECT)
 end
@@ -113,6 +115,8 @@ function c79029090.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,1-tp,1)
 end
 function c79029090.desop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("我完成生者与死者的嘱托。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029090,1))
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0)
 	if g:GetCount()>0 then
@@ -130,6 +134,8 @@ function c79029090.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c79029090.negop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("只有条律是真实的。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029090,0))
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 	end

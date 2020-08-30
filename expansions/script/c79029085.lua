@@ -56,9 +56,7 @@ function c79029085.initial_effect(c)
 	--spsummon
 	local e9=Effect.CreateEffect(c)
 	e9:SetDescription(aux.Stringid(21187631,1))
-	e9:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e9:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e9:SetProperty(EFFECT_FLAG_DELAY)
+	e9:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e9:SetCode(EVENT_TO_GRAVE)
 	e9:SetCountLimit(1,79029085)
 	e9:SetCondition(c79029085.spcon)
@@ -73,36 +71,18 @@ function c79029085.ttop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.SelectTribute(tp,c,3,3)
 	c:SetMaterial(g)
 	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
+	Debug.Message("这将是一条，充满牺牲的道路。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029085,0))
 end
 function c79029085.setcon(e,c,minc)
 	if not c then return true end
 	return false
 end
 function c79029085.lpop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,79029085)
 	Duel.SetLP(1-tp,math.ceil(Duel.GetLP(1-tp)/2))
-end
-function c79029085.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	if not g or not g:IsContains(c) then return false end
-end
-function c79029085.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE+LOCATION_HAND)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_MZONE+LOCATION_HAND)
-	Duel.SetChainLimit(c79029085.chlimit)
-end
-function c79029085.chlimit(e,ep,tp)
-	return tp==ep
-end
-function c79029085.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsType,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil,TYPE_MONSTER)
-	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
-		local sg=g:Select(1-tp,1,1,nil)
-		Duel.HintSelection(sg)
-		Duel.SendtoGrave(sg,REASON_RULE)
-	end
+	Debug.Message("回归深渊吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029085,1))
 end
 function c79029085.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
@@ -119,6 +99,8 @@ function c79029085.spop(e,tp,eg,ep,ev,re,r,rp)
 	local e3=e1:Clone()
 	e3:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	Duel.RegisterEffect(e3,1-tp)
+	Debug.Message("请将迷失的灵魂们，引渡到安息之地吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029085,2))
 end
 
 

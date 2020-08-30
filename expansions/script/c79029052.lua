@@ -46,6 +46,8 @@ function c79029052.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029052.filter,tp,LOCATION_MZONE,0,1,nil) end
 end
 function c79029052.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("大家加油~！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029052,0))
 	local g=Duel.GetMatchingGroup(c79029052.filter,tp,LOCATION_MZONE,0,nil)
 	local tc=g:GetFirst()
 	while tc do

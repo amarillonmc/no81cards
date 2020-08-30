@@ -65,6 +65,7 @@ function c79029215.thop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e4,tp)
 	Debug.Message("斩！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029215,0))
 end
 function c79029215.val(e,re,dam,r,rp,rc)
 	if bit.band(r,REASON_BATTLE)~=0 then
@@ -82,6 +83,8 @@ function c79029215.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	c:RegisterFlagEffect(79029215,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
 end
 function c79029215.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("放下你的武器！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029215,1))
 	local bc=e:GetHandler():GetBattleTarget()
 	if bc and bc:IsFaceup() and bc:IsRelateToBattle() then
 		local e1=Effect.CreateEffect(e:GetHandler())

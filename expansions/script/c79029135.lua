@@ -81,6 +81,8 @@ function c79029135.hdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,0,tp,ev)
 end
 function c79029135.hdop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("听！雷声隆隆！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029135,0))
 	e:GetHandler():AddCounter(0x192,1)
 end
 function c79029135.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -96,6 +98,8 @@ function c79029135.lzop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 	local x=g:GetCount()
 	if g:GetCount()>0 then
+	Debug.Message("一气白雷正法，纵贯方圆三化！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029135,1))
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end

@@ -36,4 +36,6 @@ function c79029087.efop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(1000)
 	rc:RegisterEffect(e1)
+	Debug.Message("了解了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029087,0))
 end

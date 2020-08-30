@@ -32,6 +32,8 @@ function c79029173.atkcon1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c79029173.atkop1(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("该打架了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029173,0))
 	local c=e:GetHandler()
 	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
 	local g=c:GetMaterial()
@@ -52,6 +54,8 @@ function c79029173.posfilter(c)
 end
 function c79029173.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c79029173.posfilter,tp,0,LOCATION_MZONE,1,nil) end
+	Debug.Message("闭嘴。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029173,1))
 	Duel.SetChainLimit(c79029173.chlimit)
 end
 function c79029173.chlimit(e,ep,tp)

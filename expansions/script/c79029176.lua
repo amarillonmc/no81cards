@@ -78,7 +78,10 @@ function c79029176.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029176.lpop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,79029176)
 	Duel.SetLP(1-tp,math.ceil(Duel.GetLP(1-tp)/2))
+	Debug.Message("回归深渊吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029085,1))
 end
 function c79029176.con(e,tp,eg,ep,ev,re,r,rp)
 	local zone=e:GetHandler():GetLinkedGroup()
@@ -93,6 +96,8 @@ function c79029176.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c79029176.fil,tp,LOCATION_MZONE,0,2,2,nil,zone)
 	if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
 	Duel.SetLP(1-tp,100)
+	Debug.Message("呵呵呵......哈哈......哈哈哈哈......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029176,0))
 end
 end
 

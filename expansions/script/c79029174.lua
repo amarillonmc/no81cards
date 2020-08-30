@@ -37,6 +37,8 @@ end
 function c79029174.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c79029174.filter(chkc,e:GetHandler(),tp) end
 	if chk==0 then return Duel.IsExistingTarget(c79029174.filter,tp,0,LOCATION_MZONE,1,nil,e:GetHandler(),tp) end
+	Debug.Message("细数你的罪恶吧！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029174,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c79029174.filter,tp,0,LOCATION_MZONE,1,1,nil,e:GetHandler(),tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
@@ -78,6 +80,8 @@ end
 function c79029174.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c79029174.filter1(chkc,e,tp) end
 	if chk==0 then return Duel.IsExistingTarget(c79029174.filter1,tp,LOCATION_MZONE,0,1,nil,e,tp) end
+	Debug.Message("接下来，Castle-3要展现下工业级作战平台的实力了！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029174,2))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,c79029174.filter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)

@@ -65,6 +65,8 @@ end
 function c79029203.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 	if Duel.Destroy(eg,REASON_EFFECT) and Duel.IsPlayerCanSpecialSummonMonster(tp,79029206,nil,nil,2000,2000,10,RACE_CYBERSE,ATTRIBUTE_DARK) then
+	Debug.Message("我自暗影中现身。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029203,1))
 	local x=Duel.CreateToken(tp,79029206)
 	Duel.SpecialSummon(x,0,tp,tp,false,false,POS_FACEUP)
 	end
@@ -81,6 +83,8 @@ end
 function c79029203.dsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
 	if Duel.Destroy(eg,REASON_EFFECT) and Duel.IsPlayerCanSpecialSummonMonster(tp,79029205,nil,nil,2000,2000,10,RACE_CYBERSE,ATTRIBUTE_DARK) then
+	Debug.Message("那么，潜入夜幕吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029203,0))
 	local x=Duel.CreateToken(tp,79029205)
 	Duel.SpecialSummon(x,0,tp,tp,false,false,POS_FACEUP)
 end
@@ -92,6 +96,8 @@ function c79029203.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateAttack() then
 		Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
 	if Duel.IsPlayerCanSpecialSummonMonster(tp,79029204,nil,nil,2000,2000,10,RACE_CYBERSE,ATTRIBUTE_DARK) then
+	Debug.Message("戏剧该揭开它的帷幕了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029203,2))
 	local x=Duel.CreateToken(tp,79029204)
 	Duel.SpecialSummon(x,0,tp,tp,false,false,POS_FACEUP)
 	end

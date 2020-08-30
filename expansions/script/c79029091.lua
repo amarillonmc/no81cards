@@ -34,6 +34,8 @@ end
 function c79029091.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
+	Debug.Message("在这里，在这里！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029091,0))
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029091.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -50,7 +52,9 @@ function c79029091.tgop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
 		local sg=g:Select(1-tp,1,1,nil)
 		Duel.HintSelection(sg)
-		Duel.SendtoGrave(sg,REASON_RULE)
+	Debug.Message("暴力解决不了问题，但解决你没什么问题！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029091,1))
+		Duel.SendtoGrave(sg,REASON_RULE+REASON_EFFECT)
 	end
 end
 

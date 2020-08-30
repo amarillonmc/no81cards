@@ -51,13 +51,20 @@ function cm.spfilter(c,e,tp)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.spop(e,tp,eg)
-    local c=rscf.GetSelf(e)
-    if not c or rssf.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)<=0 then return end
-    c:CompleteProcedure()
-    local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
-    if #g>0 then
-        Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-    end
+	local c=rscf.GetSelf(e)
+	if not c then return end
+	local res=false
+	if c:IsLocation(LOCATION_GRAVE) then
+		res=rssf.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP,nil,{"leave",LOCATION_REMOVED })>0 
+	else
+		res=rssf.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)>0 
+	end
+	if not res then return end
+	c:CompleteProcedure()
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
+	if #g>0 then
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	end
 end
 function cm.atkval(e,c)
 	return Duel.GetFieldGroupCount(0,LOCATION_REMOVED,LOCATION_REMOVED)*800

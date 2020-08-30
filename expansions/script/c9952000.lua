@@ -74,7 +74,7 @@ function c9952000.spop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9952000.eqlimit(e,c)
-	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT) or e:GetHandler():GetEquipTarget()==c
+	return (c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT)) or e:GetHandler():GetEquipTarget()==c
 end
 function c9952000.filter2(c)
 	local ct1,ct2=c:GetUnionCount()

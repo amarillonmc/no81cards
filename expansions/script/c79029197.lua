@@ -39,6 +39,8 @@ function c79029197.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(2061963,0)) then
 		Duel.Hint(HINT_CARD,0,79029197)
 		if Duel.NegateEffect(ev) then
+	Debug.Message("断罪！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029197,0))
 		Duel.SendtoDeck(e:GetHandler(),1-tp,0,REASON_EFFECT)
 	end
 end
@@ -56,6 +58,8 @@ function c79029197.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029197.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(1-tp,aux.Stringid(1474910,0)) then
+	Debug.Message("审判时间！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029197,1))
 	if Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST) then 
 	local ht=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 		Duel.Draw(p,4-ht,REASON_EFFECT)

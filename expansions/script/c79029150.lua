@@ -79,6 +79,7 @@ function c79029150.operation(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	Duel.Destroy(sg,REASON_EFFECT)
 	Debug.Message("纠缠着我的噩梦啊，唱个歌吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029150,0))   
 end
 function c79029150.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return tp==Duel.GetTurnPlayer()
@@ -93,6 +94,7 @@ function c79029150.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 	c:RegisterEffect(e1)
 	Debug.Message("敌人怎么说，怎么想，都与我无关。我只知道他们会怎么倒下。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029150,1))   
 end
 function c79029150.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -113,6 +115,7 @@ function c79029150.spop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 	Debug.Message("这样渴求我的力量，真的让我很困扰......如果你真的无所畏惧，那么做好准备，和我一起直面无边无际的黑暗吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029150,2))   
 	end
 end
 

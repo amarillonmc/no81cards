@@ -121,6 +121,8 @@ function c79029117.copytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,c79029117.copyfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,1,c)
 end
 function c79029117.copyop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("“明王圣帝，谁能去兵哉？”")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029117,0))
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc and c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and (tc:IsFaceup() or tc:IsLocation(LOCATION_GRAVE)) then
@@ -158,6 +160,8 @@ function c79029117.cptg0(e,tp,eg,ep,ev,re,r,rp,chk)
 		return Duel.IsExistingMatchingCard(c79029117.cpfilter,tp,LOCATION_DECK,0,1,nil)
 	end
 	e:SetLabel(0)
+	Debug.Message("“生杀之机，焉能拱手相让？”")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029117,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c79029117.cpfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)

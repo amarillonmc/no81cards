@@ -28,6 +28,8 @@ function c79029132.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,800)
 end
 function c79029132.operation1(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("离、离我远点！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029132,0))
 	 local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
 end
@@ -48,6 +50,8 @@ function c79029132.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,1,1-tp,atk)
 end
 function c79029132.operation(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("你、你绝对会后悔的......！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029132,1))
 	local tc=Duel.GetFirstTarget()
 	local atk=math.abs(tc:GetAttack()-tc:GetBaseAttack())
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)

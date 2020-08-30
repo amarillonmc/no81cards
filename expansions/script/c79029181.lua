@@ -49,6 +49,8 @@ function c79029181.postg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 end
 function c79029181.posop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("像引线穿针一样......出剑！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029181,0))
 	local g=Duel.GetMatchingGroup(c79029181.posfilter,tp,0,LOCATION_MZONE,nil)
 	Duel.ChangePosition(g,POS_FACEUP_DEFENSE)
 end
@@ -72,6 +74,8 @@ function c79029181.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c79029181.op(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("生命难道也可以裁剪吗？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029181,1))
 	if Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP) then
 	local tc=Duel.GetExtraTopGroup(1-tp,1)
 	Duel.Overlay(e:GetHandler(),tc)

@@ -110,7 +110,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and tc:GetAttack()<tc:GetBaseAttack() then
+	if tc:IsRelateToEffect(e)  and tc:GetAttack()<tc:GetBaseAttack() and Duel.Destroy(tc,REASON_EFFECT)~=0 then
 		if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then 
 		Duel.Draw(tp,1,REASON_EFFECT)
 		end 

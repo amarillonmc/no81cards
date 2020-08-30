@@ -33,6 +33,8 @@ function c79029149.filter(c)
 	return c:IsCode(79029148)
 end 
 function c79029149.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("慢慢来吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029149,0))
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c79029149.filter,tp,LOCATION_MZONE,0,nil)
 	local tc=g:GetFirst()

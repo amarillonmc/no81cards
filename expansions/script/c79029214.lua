@@ -1,5 +1,6 @@
 --罗德岛·先锋干员-极境
 function c79029214.initial_effect(c)
+	aux.AddCodeList(c,0xa906)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

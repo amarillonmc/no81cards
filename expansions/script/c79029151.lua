@@ -11,7 +11,7 @@ function c79029151.initial_effect(c)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DAMAGE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_BE_MATERIAL)
 	e2:SetCountLimit(1,79029151)
 	e2:SetCondition(c79029151.damcon)
@@ -35,6 +35,8 @@ function c79029151.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 end
 function c79029151.damop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("大家跟着我！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029151,0))
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 end
 

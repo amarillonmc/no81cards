@@ -60,7 +60,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3) 
 end
-function cm.thfilter(c)
+function cm.thfilter1(c)
 	return c:IsType(TYPE_MONSTER) and (c:IsSetCard(0x5342) or c:IsSetCard(0xc342)) and c:IsAbleToHand()
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
@@ -69,7 +69,7 @@ end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,0))
    if not e:GetHandler():IsRelateToEffect(e) then return end
-	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetMatchingGroup(cm.thfilter1,tp,LOCATION_DECK,0,nil)
 	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)

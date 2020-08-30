@@ -66,6 +66,8 @@ function c79029196.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 end
 function c79029196.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=e:GetLabelObject()
+	Debug.Message("了解。刻刀入队了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029196,1))
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 	g:DeleteGroup()
 end
@@ -74,6 +76,8 @@ function c79029196.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return ec:IsSetCard(0xa900)
 end
 function c79029196.efop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("刀子，擦亮了吗？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029196,2))
 	Duel.Hint(HINT_CARD,0,79029196)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
@@ -94,6 +98,8 @@ function c79029196.atcon(e,tp,eg,ep,ev,re,r,rp)
 	return bc:IsLocation(LOCATION_GRAVE) and bc:IsType(TYPE_MONSTER) and c:IsChainAttackable() and c:IsStatus(STATUS_OPPO_BATTLE) and Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_DECKSHF,0,1,nil)
 end  
 function c79029196.dpop(e,tp,eg,ep,ev,re,r,rp,c)
+	Debug.Message("你慢了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029196,3))
 	local g=Duel.GetDecktopGroup(tp,1)
 	if Duel.SendtoGrave(g,REASON_COST)~=0 then
 	Duel.ChainAttack()

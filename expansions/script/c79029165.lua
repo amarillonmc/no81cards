@@ -12,11 +12,6 @@ function c79029165.initial_effect(c)
 	e1:SetCountLimit(1,79029165)
 	c:RegisterEffect(e1)	  
 end
-function c79029165.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-end
 function c79029165.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,4,REASON_COST)
 	and e:GetHandler():IsAbleToGraveAsCost() end
@@ -34,6 +29,8 @@ function c79029165.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tc,1,0,0)
 end
 function c79029165.desop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("就用这一发子弹，看准了！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029165,0))
 	local c=e:GetHandler()
 	local a=Duel.GetFirstTarget()
 	local seq=a:GetSequence()

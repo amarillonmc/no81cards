@@ -57,8 +57,10 @@ function c79029076.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
 end
 function c79029076.operation(e,tp,eg,ep,ev,re,r,rp)
-	 local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
+	Debug.Message("游禽翱翔星海，借您羽翼一用！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029076,1))   
 end
 function c79029076.aclimit(e,re,tp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE)
@@ -92,6 +94,8 @@ function c79029076.iop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e3:SetOperation(c79029076.damop)
 	e3:SetReset(RESET_PHASE+PHASE_DAMAGE)
 	Duel.RegisterEffect(e3,tp)
+	Debug.Message("敦实的坚牛，同我一起守护。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029076,0))   
 end
 end
 end
@@ -122,6 +126,8 @@ function c79029076.iop2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e3:SetOperation(c79029076.damop2)
 	e3:SetReset(RESET_PHASE+PHASE_DAMAGE)
 	Duel.RegisterEffect(e3,tp)
+	Debug.Message("敦实的坚牛，同我一起守护。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029076,0))   
 end
 end
 end

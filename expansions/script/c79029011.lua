@@ -74,9 +74,6 @@ end
 function c79029011.indestg(e,c)
 	return c:IsSetCard(0x1901) or c:IsSetCard(0xa900)
 end
-function c79029011.efilter(e,te)
-	return te:GetOwner()~=e:GetOwner()
-end
 function c79029011.oper(e,tp,eg,ep,ev,re,r,rp)
 	c=e:GetHandler()
 	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
@@ -91,8 +88,7 @@ function c79029011.oper(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c79029011.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
-	then
+	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	local e4=Effect.CreateEffect(tc)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -101,9 +97,6 @@ function c79029011.oper(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetReset(RESET_PHASE+PHASE_END)
 	e4:SetValue(c79029011.efilter)
 	tc:RegisterEffect(e4)
-	Duel.SpecialSummonComplete()
-	else return false
-end
 end
 end
 end
@@ -123,9 +116,8 @@ function c79029011.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c79029011.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
-	then
-local e4=Effect.CreateEffect(tc)
+	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	local e4=Effect.CreateEffect(tc)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e4:SetRange(LOCATION_MZONE)
@@ -133,11 +125,11 @@ local e4=Effect.CreateEffect(tc)
 	e4:SetReset(RESET_PHASE+PHASE_END)
 	e4:SetValue(c79029011.efilter)
 	tc:RegisterEffect(e4)
-		Duel.SpecialSummonComplete()
-	else return false
-end   
 end
 end
+end
+function c79029011.efilter(e,te)
+	return te:GetOwner():GetControler()~=e:GetOwner():GetControler()
 end
 function c79029011.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
@@ -194,13 +186,12 @@ function c79029011.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029011.mtcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.GetTurnPlayer()==tp and not Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)==0
 end
 function c79029011.qfilter(c)
 	return c:IsType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
 end
 function c79029011.mtop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)==0 then return end
 	local c=e:GetHandler()
 	Duel.HintSelection(Group.FromCards(c))
 	local g=Duel.GetMatchingGroup(c79029011.qfilter,tp,LOCATION_GRAVE,0,nil)

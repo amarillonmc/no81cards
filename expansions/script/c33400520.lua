@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	--pendulum set
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(m,0))
-	e0:SetCategory(CATEGORY_TOHAND)
+	e0:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e0:SetType(EFFECT_TYPE_IGNITION)
 	e0:SetRange(LOCATION_PZONE)
 	e0:SetCountLimit(1,m)

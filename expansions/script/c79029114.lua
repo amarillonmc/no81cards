@@ -25,6 +25,8 @@ function c79029114.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c79029114.spfilter1(chkc,e,tp) and chkc~=c end
 	if chk==0 then return Duel.IsExistingTarget(c79029114.spfilter1,tp,LOCATION_MZONE,0,1,c,e,tp) and c:IsAbleToRemoveAsCost() end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
+	Debug.Message("要是我能像黑一样，肯定不会让他们跑了......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029114,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c79029114.spfilter1,tp,LOCATION_MZONE,0,1,1,c,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_EXTRA+LOCATION_DECK)

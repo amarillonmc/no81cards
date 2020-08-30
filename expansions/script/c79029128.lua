@@ -36,7 +36,7 @@ function c79029128.initial_effect(c)
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_EXTRA)
-	e5:SetCountLimit(1,79029128999999)
+	e5:SetCountLimit(1,09029128)
 	e5:SetCondition(c79029128.pccon)
 	e5:SetTarget(c79029128.sptg)
 	e5:SetOperation(c79029128.spop)
@@ -56,6 +56,8 @@ function c79029128.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c79029128.thop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("就从努力直视大家的眼睛开始......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029128,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c79029128.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
@@ -68,6 +70,8 @@ function c79029128.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.IsExistingMatchingCard(c79029128.pcfilter,tp,LOCATION_DECK,0,1,nil) end
 end
 function c79029128.pcop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("那个，我尽量不拖大家的后腿......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029128,1))
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local e1=Effect.CreateEffect(c)
@@ -97,6 +101,8 @@ function c79029128.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 end
 function c79029128.spop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("啊，博士，我要出发了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029128,2))
 	local c=e:GetHandler()
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return false end
 		Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)

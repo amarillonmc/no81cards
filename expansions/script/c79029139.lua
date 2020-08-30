@@ -28,6 +28,8 @@ function c79029139.lzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) and Duel.GetFieldGroupCount(tp,LOCATION_PZONE,0)~=0
 end
 function c79029139.lzop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("大家可以自由作战哦~")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029139,0))
 	local c=e:GetHandler()
 	local a=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
 	if Duel.SpecialSummon(a,0,tp,tp,true,true,POS_FACEUP)~0 then 
@@ -67,6 +69,8 @@ function c79029139.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetLabel(0)
 		return Duel.CheckReleaseGroup(tp,c79029139.filter1,1,nil,e,tp)
 	end
+	Debug.Message("像影子一样~")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029139,1))
 	local rg=Duel.SelectReleaseGroup(tp,c79029139.filter1,1,1,nil,e,tp)
 	e:SetLabel(rg:GetFirst():GetLevel())
 	Duel.Release(rg,REASON_COST)

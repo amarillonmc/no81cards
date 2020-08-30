@@ -90,6 +90,8 @@ function c79029111.scop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsControler(1-tp) or not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local g=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,c)
 	if g:GetCount()>0 then
+	Debug.Message("支援就拜托你们了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029111,0))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SynchroSummon(tp,sg:GetFirst(),c)

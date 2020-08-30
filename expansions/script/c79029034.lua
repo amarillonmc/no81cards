@@ -1,6 +1,6 @@
 --使徒·医疗干员-闪灵
 function c79029034.initial_effect(c)
-	c:EnableCounterPermit(0x001)
+	c:EnableCounterPermit(0x190)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)
 	c:EnableReviveLimit()
@@ -92,7 +92,7 @@ function c79029034.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 			ct=ct+1
 		end
 	end
-	if chk==0 then return ct>0 and e:GetHandler():IsCanAddCounter(0x001,ct) end
+	if chk==0 then return ct>0 and e:GetHandler():IsCanAddCounter(0x190,ct) end
 end
 function c79029034.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -104,7 +104,7 @@ function c79029034.ctop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if ct>0 then
-		c:AddCounter(0x001,ct)
+		c:AddCounter(0x190,ct)
 	Debug.Message("痛苦，我从未忘记。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029034,3))		
 	end
@@ -119,8 +119,8 @@ function c79029034.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function c79029034.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x001,1,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,0x001,1,REASON_COST)
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x190,1,REASON_COST) end
+	e:GetHandler():RemoveCounter(tp,0x190,1,REASON_COST)
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(1412158,0))

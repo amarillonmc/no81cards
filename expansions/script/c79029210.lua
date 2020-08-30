@@ -35,7 +35,8 @@ function c79029210.initial_effect(c)
 	--damage
 	local e5=Effect.CreateEffect(c)
 	e5:SetCategory(CATEGORY_DAMAGE)
-	e5:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e5:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_FIELD)
+	e5:SetProperty(EFFECT_FLAG_DELAY)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCode(EVENT_TO_DECK)
 	e5:SetCondition(c79029210.dacon)
@@ -61,6 +62,7 @@ function c79029210.ttop(e,tp,eg,ep,ev,re,r,rp,c)
 	c:SetMaterial(g)
 	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
 	Debug.Message("一切都跟战前预想的一样，开始作战！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029210,0))
 end
 function c79029210.setcon(e,c,minc)
 	if not c then return true end
@@ -85,12 +87,12 @@ function c79029210.posop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 	Debug.Message("锁定敌人！攻击！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029210,1))
 end
 function c79029210.dacon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsControler,1,nil,1-tp)
 end
 function c79029210.daop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
 	local g=eg:Filter(Card.IsControler,nil,1-tp)
 	Duel.ConfirmCards(tp,eg)
 	local tc=g:GetFirst()   
@@ -106,7 +108,7 @@ function c79029210.daop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(1-tp,seq*300,REASON_EFFECT)
 	tc=g:GetNext()
 	Debug.Message("工程学的作用不可小觑！")
-end
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029210,2))
 end
 end
 end
@@ -116,6 +118,7 @@ function c79029210.toop(e,tp,eg,ep,ev,re,r,rp)
 	local x=Duel.CreateToken(tp,79029211)
 	Duel.SpecialSummon(x,0,tp,tp,false,false,POS_FACEUP)
 	Debug.Message("小叶，我们加油！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029210,3))
 end
 end
 

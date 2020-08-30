@@ -1,5 +1,6 @@
 --罗德岛·近卫干员-炎客
 function c79029116.initial_effect(c)
+	aux.EnableUnionAttribute(c,c79029116.eqlimit)
 	 --equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(39890958,0))
@@ -107,6 +108,8 @@ function c79029116.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	c:RegisterFlagEffect(79029116,RESET_EVENT+0x7e0000+RESET_PHASE+PHASE_END,0,1)
 end
 function c79029116.eqop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("我做过队长，下场不怎么好。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029116,0))
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
@@ -128,6 +131,8 @@ function c79029116.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
+	Debug.Message("啊，久违的腥风血雨。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029116,1))
 end
 function c79029116.repval(e,re,r,rp)
 	return bit.band(r,REASON_BATTLE)~=0 or bit.band(r,REASON_EFFECT)~=0
@@ -141,6 +146,8 @@ function c79029116.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetTargetCard(e:GetHandler():GetBattleTarget())
 end
 function c79029116.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("刀与火，先行。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029116,2))
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() or tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
@@ -173,6 +180,8 @@ function c79029116.atktg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetTargetCard(e:GetHandler():GetEquipTarget():GetBattleTarget())
 end
 function c79029116.atkop1(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("刀与火，先行。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029116,2))
 	local c=e:GetHandler():GetEquipTarget()
 	local tc=Duel.GetFirstTarget()
 		local atk=tc:GetAttack()
@@ -201,6 +210,8 @@ function c79029116.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c79029116.drop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("血与骨，后至。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029116,3))
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
 end

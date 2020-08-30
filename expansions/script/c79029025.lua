@@ -59,6 +59,8 @@ function c79029025.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c79029025.desop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("闪！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029025,0))
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	if tg then
 		local g=tg:Filter(Card.IsRelateToEffect,nil,e)

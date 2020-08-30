@@ -43,6 +43,8 @@ function c79029140.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029140.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local x=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD+LOCATION_HAND,0)
+	Debug.Message("大家快来我身边~")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029140,0))
 	if e:GetHandler():IsRelateToEffect(e) then
 		e:GetHandler():AddCounter(0x1099,x)
 	end

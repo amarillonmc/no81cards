@@ -45,6 +45,8 @@ function c79029088.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c79029088.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then
+	Debug.Message("请将我的力量，尽数收下。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029088,0))
 		Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
 end
 end

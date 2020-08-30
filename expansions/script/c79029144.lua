@@ -70,6 +70,8 @@ function c79029144.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
+	Debug.Message("通知全体人员，这一次，不是训练！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029144,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c79029144.spfilter,tp,LOCATION_DECK,0,1,1,nil,tc,e,tp)
 	if g:GetCount()>0 then

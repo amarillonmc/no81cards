@@ -45,6 +45,7 @@ function c79029209.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Overlay(tc,g)
 	Duel.SpecialSummon(tc,SUMMON_TYPE_XYZ,tp,tp,true,true,POS_FACEUP_ATTACK)
 	Debug.Message("看起来，这儿多了很多东西，也少了很多人。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029209,1))
 end
 function c79029209.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:GetFirst():GetReasonEffect():GetHandler():IsCode(79029207) 
@@ -57,6 +58,7 @@ function c79029209.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_DECK,1,1,nil)
 	Duel.SendtoDeck(tc,1-tp,0,REASON_EFFECT)
 	Debug.Message("我数到三，你们还有投降的机会，三~")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029209,2))
 	e:GetHandler():RegisterFlagEffect(79029209,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,0)
 end 
 end

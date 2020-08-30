@@ -59,6 +59,14 @@ function c9980917.rmop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
+function c9980917.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetAttacker()
+	if tc:IsControler(1-tp) then tc=Duel.GetAttackTarget() end
+	if not tc then return false end
+	e:SetLabelObject(tc)
+	local bc=tc:GetBattleTarget()
+	return bc and tc:IsSetCard(0x4)
+end
 function c9980917.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)

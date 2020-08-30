@@ -48,6 +48,8 @@ function c79029098.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 end
 function c79029098.lzop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("不能让他们再这样滥用源石。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029098,1))
 		local g2=Duel.GetMatchingGroup(c79029098.posfilter,tp,0,LOCATION_MZONE,nil)
 		if g2:GetCount()>0 then
 			Duel.ChangePosition(g2,POS_FACEDOWN_DEFENSE)
@@ -59,6 +61,8 @@ function c79029098.efcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029098.efop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,79029098)
+	Debug.Message("科研方法也有不断精进的必要呢。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029098,2))
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
 	--to grave

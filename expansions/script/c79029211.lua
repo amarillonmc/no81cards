@@ -62,6 +62,7 @@ function c79029211.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c79029211.tdfil,tp,0,LOCATION_ONFIELD,nil,zone)   
 	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	Debug.Message("发射！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029211,0))
 end
 end
 function c79029211.sdfilter(c)

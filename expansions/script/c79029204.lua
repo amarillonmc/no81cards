@@ -26,7 +26,8 @@ function c79029204.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
 function c79029204.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	Debug.Message("看到镜中你自己的脸了吗。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029204,0))
 	e:GetHandler():RemoveCounter(tp,0x1019,1,REASON_EFFECT+REASON_REPLACE)
 	Duel.Draw(tp,2,REASON_EFFECT+REASON_REPLACE)
 end

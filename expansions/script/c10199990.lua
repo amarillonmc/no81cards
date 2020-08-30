@@ -106,8 +106,9 @@ function rsef.GetRegisterRange(reg_list)
 	local reg_range
 	local reg_owner,reg_handler=rsef.GetRegisterCard(reg_list)
 	if aux.GetValueType(reg_handler)~="Card" then return nil end
-	local type_list={ TYPE_MONSTER,TYPE_PENDULUM,TYPE_FIELD,TYPE_SPELL+TYPE_TRAP }
-	local reg_list={ LOCATION_MZONE,LOCATION_PZONE,LOCATION_FZONE,LOCATION_SZONE }
+	--(TYPE_PENDULUM , LOCATION_PZONE must manual input)
+	local type_list={ TYPE_MONSTER,TYPE_FIELD,TYPE_SPELL+TYPE_TRAP }
+	local reg_list={ LOCATION_MZONE,LOCATION_FZONE,LOCATION_SZONE }
 	for idx,card_type in pairs(type_list) do
 		if reg_handler:IsType(card_type) then 
 			reg_range=reg_list[idx]
@@ -125,7 +126,7 @@ end
 rsflag.GetRegisterProperty=rsef.GetRegisterProperty
 --Effect: Get Category for SetCategory or SetOperationInfo
 function rsef.GetRegisterCategory(cate_param)
-	local cate_str_list={"des","res","rm","th","td","tg","disd","dish","sum","sp","tk","pos","con","dis","diss","dr","se","eq","dam","rec","atk","def","ct","coin","dice","lg","lv","neg","an","fus","te","ga"}
+	local cate_str_list={"des","res","rm","th","td","tg","disd","dish","sum","sp","tk","pos","ctrl","dis","diss","dr","se","eq","dam","rec","atk","def","ct","coin","dice","lg","lv","neg","an","fus","te","ga"}
 	return rsof.Mix_Value_To_Table(cate_param,cate_str_list,rscate.catelist)
 end
 rscate.GetRegisterCategory=rsef.GetRegisterCategory
@@ -751,8 +752,8 @@ function rsef.FV_INDESTRUCTABLE(reg_list,inds_list,val_list,tg,tg_range_list,con
 end
 --Field Val Effect: Other Limit
 function rsef.FV_LIMIT(reg_list,lim_list,val_list,tg,tg_range_list,con,reset_list,flag,desc_list) 
-	local code_list_1={"dis","dise","tri","atk","atkan","datk","res","ress","resns","td","th","cp","cpe"}
-	local code_list_2={ EFFECT_DISABLE,EFFECT_DISABLE_EFFECT,EFFECT_CANNOT_TRIGGER,EFFECT_CANNOT_ATTACK,EFFECT_CANNOT_ATTACK_ANNOUNCE,EFFECT_CANNOT_DIRECT_ATTACK,EFFECT_CANNOT_RELEASE,EFFECT_UNRELEASABLE_SUM,EFFECT_UNRELEASABLE_NONSUM,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_CHANGE_POSITION,EFFECT_CANNOT_CHANGE_POS_E }
+	local code_list_1={"dis","dise","tri","atk","atkan","datk","res","ress","resns","td","th","cp","cpe","ctrl"}
+	local code_list_2={ EFFECT_DISABLE,EFFECT_DISABLE_EFFECT,EFFECT_CANNOT_TRIGGER,EFFECT_CANNOT_ATTACK,EFFECT_CANNOT_ATTACK_ANNOUNCE,EFFECT_CANNOT_DIRECT_ATTACK,EFFECT_CANNOT_RELEASE,EFFECT_UNRELEASABLE_SUM,EFFECT_UNRELEASABLE_NONSUM,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_CHANGE_POSITION,EFFECT_CANNOT_CHANGE_POS_E,EFFECT_CANNOT_CHANGE_CONTROL }
 	local code_list,val_list2=rsof.Table_Suit(lim_list,code_list_1,code_list_2,val_list)
 	local eff_list={}
 	local range=rsef.GetRegisterRange(reg_list) 
@@ -2092,11 +2093,11 @@ function rsop.operationcard(selected_group,category_str,reason,e,tp,eg,ep,ev,re,
 		ct=Duel.SendtoGrave(selected_group,reason|REASON_DISCARD)
 	elseif category_str=="res" then
 		ct=Duel.Release(selected_group,reason)
-	elseif category_str=="con" then
+	elseif category_str=="ctrl" then
 		if Duel.GetControl(selected_group,tp) then
 			 ct=Duel.GetOperatedGroup():GetCount()
 		end
-	elseif category_str=="con_ep" then
+	elseif category_str=="ctrl_ep" then
 		if Duel.GetControl(selected_group,tp,PHASE_END,1) then
 			 ct=Duel.GetOperatedGroup():GetCount()
 		end
@@ -2314,7 +2315,10 @@ function rscost.regflag2(flag_code,reset_list)
 	end
 end
 -------------------"Part_Condition_Function"---------------------
-
+--function check "Blue-Eyes Spirit Dragon"
+function rscon.bsdcheck(tp)
+	return Duel.IsPlayerAffectedByEffect(tp,59822133)
+end
 --Condition in Self Turn
 function rscon.turns(e)
 	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
@@ -2382,6 +2386,13 @@ end
 --Condition: Phase damage calculate,but not calculate 
 function rscon.dambdcal(e)
 	return rscon.phase("dambdcal")(e)
+end
+--Condition: face-up card leaves the field 
+function rscon.fuleave(e)
+	return function(e,tp,eg)
+		local c=e:GetHandler()
+		return c:IsPreviousPosition(POS_FACEUP)
+	end
 end
 --Condition in ADV or SP Summon Sucess
 function rscon.sumtype(sum_list,card_filter,is_match_all)
@@ -4441,6 +4452,20 @@ function rscf.fufilter(f,...)
 				return f(target,table.unpack(ext_paramms)) and target:IsFaceup()
 			end
 end
+--zone filter : get location count
+function rszsf.GetUseAbleMZoneCount(c,reason_pl,leave_val,use_pl,sc,zone)
+	if not c:IsType(TYPE_MONSTER) then return 0 end
+	reason_pl = reason_pl or c:GetControler()
+	use_pl = use_pl or reason_pl
+	zone = zone or 0xff
+	if c:IsLocation(LOCATION_EXTRA) then return 
+		Duel.GetLocationCountFromEx(use_pl,reason_pl,leave_val,sc,zone)
+	elseif leave_val then return 
+		Duel.GetMZoneCount(reason_pl,leave_val,use_pl,LOCATION_REASON_TOFIELD,zone)
+	else
+		return Duel.GetLocationCount(reason_pl,LOCATION_MZONE,use_pl,LOCATION_REASON_TOFIELD,zone)
+	end
+end
 --Card filter function: Special Summon Filter
 function rscf.spfilter(f,...)
 	local ext_paramms={...}
@@ -4451,11 +4476,19 @@ end
 function rscf.spfilter2(f,...)
 	local ext_paramms={...}
 	return function(c,e,tp)
-		if c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)<=0 then return false end
-		if not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
-		return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not f or f(c,table.unpack(rsof.Table_Mix(ext_paramms,{e,tp}))))
+		return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not f or f(c,table.unpack(rsof.Table_Mix(ext_paramms,{e,tp})))) and rszsf.GetUseAbleMZoneCount(c,tp)>0 
 	end
 end
+--Card filter function : Face-up from Remove 
+function rscf.RemovePosCheck(c)
+	return not c:IsLocation(LOCATION_REMOVED) or c:IsFaceup()
+end 
+Card.RemovePosCheck = rscf.RemovePosCheck 
+--Card filter function : Face-up from field 
+function rscf.FieldPosCheck(c) 
+	return not c:IsOnField() or c:IsFaceup()
+end 
+Card.FieldPosCheck = rscf.FieldPosCheck 
 --Card function: Get same type base set
 function rscf.GetSameType_Base(c,way_str,type1,...)
 	local type_fun=Card.GetType

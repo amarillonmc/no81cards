@@ -24,6 +24,8 @@ end
 function c79029053.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:IsAttackPos() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsAttackPos,tp,0,LOCATION_MZONE,1,nil) end
+	Debug.Message("这招对我没用！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029053,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTACK)
 	Duel.SelectTarget(tp,Card.IsAttackPos,tp,0,LOCATION_MZONE,1,1,nil)
 end
@@ -81,6 +83,8 @@ function c79029053.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029053.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
+	Debug.Message("雷霆一击！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029053,1))
 	Duel.Hint(HINT_CARD,0,79029053)
 	Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
 end

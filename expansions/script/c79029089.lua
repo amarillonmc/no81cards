@@ -78,6 +78,8 @@ function c79029089.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if chk==0 then return ft>-1 and Duel.IsExistingMatchingCard(c79029089.cfilter1,tp,LOCATION_MZONE,0,1,nil,ft)
 		and Duel.IsExistingMatchingCard(c79029089.cfilter2,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Debug.Message("战斗曾是我的天职。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029089,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g1=Duel.SelectMatchingCard(tp,c79029089.cfilter1,tp,LOCATION_MZONE,0,1,1,nil,ft)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -99,6 +101,8 @@ function c79029089.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
+	Debug.Message("如果能够结束这一切，赔上我的生命也无妨。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029089,2))
 		c:CompleteProcedure()
 	end
 end
@@ -112,6 +116,8 @@ function c79029089.thop(e,tp,eg,ep,ev,re,r,rp)
 	local b=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD+LOCATION_HAND)
 	local p=b:GetCount()
 	local q=a:GetCount()
+	Debug.Message("只有屠夫才渴血。我们是在付出生存的代价。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029089,1))
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
 	local g1=Duel.SelectMatchingCard(1-tp,aux.TRUE,tp,0,LOCATION_EXTRA,p,p,e:GetHandler())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -143,6 +149,8 @@ end
 function c79029089.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsPreviousLocation(LOCATION_ONFIELD) then
+	Debug.Message("我没法真正离开这里。我知道。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029089,4))
 		Duel.SpecialSummon(e:GetHandler(),1,tp,tp,true,true,POS_FACEUP)
 	end
 end
@@ -152,6 +160,8 @@ function c79029089.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,bc:GetDefense())
 end
 function c79029089.damop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("以刀为鞭，可撩皮肉。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029089,3))
 	local bc=e:GetHandler():GetBattleTarget()
 	local def=bc:GetAttack()
 	if def<0 then def=0 end

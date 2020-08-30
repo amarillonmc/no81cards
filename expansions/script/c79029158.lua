@@ -67,7 +67,7 @@ function c79029158.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)
 			minct=0
 		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-		local sg=cg:Select(tp,minct,1,79029099,nil)
+		local sg=cg:Select(tp,minct,1,nil)
 		if sg:GetCount()==0 then break end
 		g:Merge(sg)
 	end
@@ -85,6 +85,8 @@ function c79029158.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c79029158.spop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("挺好的。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029158,0))
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)

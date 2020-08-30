@@ -17,7 +17,7 @@ function c79029092.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,7902909299999)
+	e2:SetCountLimit(1,09029092)
 	e2:SetTarget(c79029092.target)
 	e2:SetOperation(c79029092.operation)
 	c:RegisterEffect(e2)
@@ -56,6 +56,8 @@ function c79029092.atop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e3:SetReset(RESET_PHASE+PHASE_DAMAGE)
 	Duel.RegisterEffect(e3,tp)
 	Duel.Destroy(c:GetBattleTarget(),REASON_EFFECT)
+	Debug.Message("迎战。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029092,0))
 end
 function c79029092.damop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabelObject()==Duel.GetAttacker() then
@@ -78,5 +80,7 @@ function c79029092.operation(e,tp,eg,ep,ev,re,r,rp)
 		op=Duel.SelectOption(tp,aux.Stringid(69394324,1))+1
 	end
 	local p=op==0 and tp or 1-tp
+	Debug.Message("很好啊，已经让我十分享受了呢！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029092,1))
 	Duel.SortDecktop(tp,p,5)
 end

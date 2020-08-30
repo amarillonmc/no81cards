@@ -64,6 +64,7 @@ function c79029147.spop(e,tp,eg,ep,ev,re,r,rp,c)
 		e1:SetReset(RESET_PHASE+PHASE_END,2)
 		c:RegisterEffect(e1)
 	Debug.Message("别眨眼，你会错过自己的死状。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029147,0))   
 end
 function c79029147.descon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -78,6 +79,7 @@ function c79029147.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
 	Duel.Destroy(g,REASON_EFFECT)
 	Debug.Message("生疏了吗？到手的赏金会变少哟。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029147,1))  
 end
 function c79029147.filter(c)
 	return (c:IsCode(79029010) or c:IsCode(79029150)) and c:IsFaceup()
@@ -98,6 +100,7 @@ function c79029147.tdop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 	Debug.Message("起舞吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029147,2))  
 	end
 end
 

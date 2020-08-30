@@ -19,6 +19,8 @@ function c79029206.initial_effect(c)
    c:RegisterEffect(e2) 
 end
 function c79029206.cop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("为了我——歌唱吧！歌唱吧！歌唱吧！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029206,0))
    local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
    local tc=g:GetFirst()
    while tc do
@@ -38,6 +40,8 @@ function c79029206.thfil(c)
 end
 function c79029206.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
    if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDisabled,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(c79029206.thfil,tp,LOCATION_GRAVE,0,1,nil) end
+	Debug.Message("听我的声音。听我歌唱。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029206,1))
    local g=Duel.SelectMatchingCard(tp,Card.IsDisabled,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
    Duel.SendtoGrave(g,REASON_EFFECT+REASON_COST)
 end

@@ -1,6 +1,7 @@
 --罗德岛·狙击干员-红云
 function c79029105.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
+	aux.AddCodeList(c,0xa906)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,4,2)
 	c:EnableReviveLimit()
@@ -9,6 +10,7 @@ function c79029105.initial_effect(c)
 	e1:SetDescription(aux.Stringid(23232295,0))
 	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_DETACH_MATERIAL)
 	e1:SetTarget(c79029105.atktg)
 	e1:SetOperation(c79029105.atkop)
@@ -39,7 +41,8 @@ function c79029105.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(23998625,1))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_DESTROYED)
 	e4:SetCondition(c79029105.spcon)
 	e4:SetTarget(c79029105.sptg)
@@ -48,7 +51,6 @@ function c79029105.initial_effect(c)
 	--Overlay
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(12744567,0))
-	e5:SetCategory(CATEGORY_DAMAGE)
 	e5:SetCode(EVENT_BATTLE_DESTROYING)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCondition(c79029105.damcon)
@@ -60,6 +62,8 @@ function c79029105.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsRelateToEffect(e) end
 end
 function c79029105.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("别小看荒野的子民！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029105,4))
 	local c=e:GetHandler()
 	if c:IsFaceup() then
 		local e1=Effect.CreateEffect(c)
@@ -82,6 +86,8 @@ function c79029105.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c79029105.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
+	Debug.Message("大捕猎，即将开幕！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029105,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,c79029105.drfilter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
@@ -104,6 +110,8 @@ function c79029105.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,800)
 end
 function c79029105.operation(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("踏入陷阱的你们，还没明白自己的处境吗？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029105,2))
 	if Duel.NegateActivation(ev) and Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)>0
 		and Duel.SelectYesNo(tp,aux.Stringid(22530212,0)) then
 		local g=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0):RandomSelect(1-tp,1)
@@ -123,6 +131,8 @@ function c79029105.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetCard(bc)
 end
 function c79029105.damop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("再强大的猎物，也只是猎物而已。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029105,0))
 	local bc=Duel.GetFirstTarget()
 	if bc:IsRelateToEffect(e) then
 	Duel.Overlay(e:GetHandler(),bc)
@@ -145,7 +155,9 @@ end
 function c79029105.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or Duel.GetLocationCountFromEx(tp)<=0 or not aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) then return end
-	local tc=Duel.GetFirstMatchingCard(c79029105.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp)
+	Debug.Message("不能就这样结束......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029105,3))
+	local tc=Duel.SelectMatchingCard(tp,c79029105.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
 	if tc then
 		local cg=Group.FromCards(c)
 		tc:SetMaterial(cg)

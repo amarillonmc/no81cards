@@ -53,6 +53,8 @@ function c79029156.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,tc,1,0,0)
 end
 function c79029156.ctop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("跟随帅气的我吧！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029156,0))
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local tc=c:GetBattleTarget()
@@ -68,6 +70,8 @@ function c79029156.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
 function c79029156.repop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("大家都拿出干劲来！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029156,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectTarget(tp,c79029156.filter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()

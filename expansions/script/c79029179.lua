@@ -58,7 +58,7 @@ function c79029179.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c79029179.matfilter(c)
-	return c:IsFusionSetCard(0xf05)
+	return c:IsFusionSetCard(0xa903)
 end
 function c79029179.splimit(e,se,sp,st)
 	return e:GetHandler():GetLocation()~=LOCATION_EXTRA
@@ -75,6 +75,8 @@ function c79029179.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
 function c79029179.disop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("“战术使人思维明晰！”")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029179,0))
 	Duel.NegateActivation(ev)
 end
 function c79029179.cntg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -82,6 +84,8 @@ function c79029179.cntg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,e:GetHandler(),1,0,0)
 end
 function c79029179.cnop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("“勇敢能够击溃邪恶！”")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029179,2))
 	e:GetHandler():AddCounter(0x4b,1)
 end
 function c79029179.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -94,6 +98,8 @@ end
 function c79029179.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029179.spfilter,tp,LOCATION_DECK,0,1,nil) end
+	Debug.Message("“纪律使人意志坚定！”")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029179,1))
 	local g=Duel.SelectMatchingCard(tp,c79029179.spfilter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
@@ -110,6 +116,8 @@ function c79029179.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c79029179.spfilter1(chkc,e,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingTarget(c79029179.spfilter1,tp,LOCATION_GRAVE,0,1,e:GetHandler(),e,tp) end
+	Debug.Message("“仁慈能够拯救生命！”")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029179,3))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c79029179.spfilter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)

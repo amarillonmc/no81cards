@@ -22,6 +22,8 @@ function c79029161.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_HAND) and c79029161.filter(chkc,e,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1
 		and Duel.IsExistingTarget(c79029161.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Debug.Message("泡普卡，在这呢。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029161,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c79029161.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)

@@ -117,6 +117,7 @@ function c79029124.operation(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
 		Debug.Message("坠落吧！")
+		Duel.Hint(HINT_SOUND,0,aux.Stringid(79029124,0))
 end
 end
 function c79029124.actcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -133,6 +134,7 @@ function c79029124.actop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	Debug.Message("满功率输出！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029124,1))
 end
 function c79029124.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,3,REASON_COST) end
@@ -143,6 +145,7 @@ function c79029124.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local x=a:RandomSelect(tp,1)
 	Duel.Overlay(e:GetHandler(),x)
 	Debug.Message("这次能捡到什么有趣的东西呢？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029124,2))
 end 
 
 

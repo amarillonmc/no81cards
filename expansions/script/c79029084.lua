@@ -20,6 +20,8 @@ end
 function c79029084.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_EXTRA,nil)
+	Debug.Message("“花啊！绽放吧！”")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029084,0))
 	local a=g:RandomSelect(tp,1)
 	Duel.Remove(a,POS_FACEUP,REASON_EFFECT)
 end

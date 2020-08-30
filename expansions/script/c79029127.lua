@@ -59,6 +59,8 @@ function c79029127.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029127.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
+	Debug.Message("这会是一场怎样的战斗呢。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029127,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c79029127.filter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil)
 	if g:GetCount()>0 then
@@ -68,6 +70,7 @@ function c79029127.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029127.recop(e,tp,eg,ep,ev,re,r,rp)
 	if rp~=tp then return end
+	Duel.Hint(HINT_CARD,0,79029127)
 	Duel.Recover(tp,500,REASON_EFFECT)
 end
 function c79029127.costchange(e,re,rp,val)

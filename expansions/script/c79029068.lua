@@ -57,6 +57,8 @@ function c79029068.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c79029068.spfilter1(chkc,e,tp) and chkc~=c end
 	if chk==0 then return Duel.IsExistingTarget(c79029068.spfilter1,tp,LOCATION_MZONE,0,1,c,e,tp) end
+	Debug.Message("各位，由我护卫。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029068,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c79029068.spfilter1,tp,LOCATION_MZONE,0,1,1,c,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)

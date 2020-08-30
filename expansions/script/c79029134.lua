@@ -72,6 +72,8 @@ function c79029134.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,0)
 end
 function c79029134.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("医护工作就交给我吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029134,0))
 	local rt=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)*800
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	Duel.Recover(p,rt,REASON_EFFECT)
@@ -95,6 +97,8 @@ end
 function c79029134.desop(e,tp,eg,ep,ev,re,r,rp)
 	local a=Duel.GetFirstTarget()
 	local seq=a:GetSequence()
+	Debug.Message("悼词回响！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029134,1))
 		local dg=Group.CreateGroup()
 		if seq<5 then dg=Duel.GetMatchingGroup(c79029134.desfilter2,tp,LOCATION_MZONE,0,nil,seq,a:GetControler()) end
 		local e4=Effect.CreateEffect(e:GetHandler())
@@ -141,6 +145,8 @@ function c79029134.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
 end
 function c79029134.penop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("起风了......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029134,2))
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return false end
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
@@ -155,6 +161,8 @@ function c79029134.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_EXTRA)
 end
 function c79029134.thop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("每一次胜利都将成为火种，生生不息。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029134,3))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c79029134.thfilter,tp,LOCATION_EXTRA,0,1,1,nil)
 	if g:GetCount()>0 then
@@ -186,6 +194,8 @@ end
 function c79029134.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
+	Debug.Message("风唱挽歌......")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029134,4))
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 

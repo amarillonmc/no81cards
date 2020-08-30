@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	e1:SetDescription(aux.Stringid(m,4))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetCondition(cm.con)
 	e1:SetTarget(cm.tg)
@@ -70,7 +70,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
- local c=e:GetHandler()
+	local c=e:GetHandler()
 	 local sel=e:GetLabel()
 	if sel==1 then
 		local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

@@ -100,10 +100,9 @@ function c79029241.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK)
 	else
-	local g=Duel.SelectMatchingCard(tp,c79029241.penfil,tp,LOCATION_DECK,0,2,2,nil,e,tp)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,tp,LOCATION_PZONE)
 	end
+	local sg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,2,tp,LOCATION_PZONE)
 end
 function c79029241.ckfil(c)
 	return c:IsSetCard(0x1907) and c:GetSummonLocation()==LOCATION_EXTRA 
@@ -116,12 +115,12 @@ function c79029241.penfil2(c)
 end
 function c79029241.activate(e,tp,eg,ep,ev,re,r,rp)
 	local op=e:GetLabel()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	if op==0 then
 	Duel.SpecialSummon(g,SUMMON_TYPE_PENDULUM,tp,tp,false,false,POS_FACEUP)
 	else
 	local sg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
 	Duel.Destroy(sg,REASON_EFFECT)
+	local g=Duel.SelectMatchingCard(tp,c79029241.penfil,tp,LOCATION_DECK,0,2,2,nil,e,tp)
 	local tc1=g:GetFirst()
 	local tc2=g:GetNext()
 	Duel.MoveToField(tc1,tp,tp,LOCATION_PZONE,POS_FACEUP,true)

@@ -121,6 +121,8 @@ function c79029081.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,79029082,0,0x4011,2000,0,6,RACE_CYBERSE,ATTRIBUTE_WATER) then return end
 	local token=Duel.CreateToken(tp,79029082)
+	Debug.Message("需要我的技术了吗？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029081,3))
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029081.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -133,6 +135,8 @@ function c79029081.thop1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,79029083,0,0x4011,0,2000,6,RACE_CYBERSE,ATTRIBUTE_WATER) then return end
 	local token=Duel.CreateToken(tp,79029083)
+	Debug.Message("开始工作！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029081,4))
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029081.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -145,6 +149,8 @@ function c79029081.thop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,79029084,0,0x4011,3000,1000,6,RACE_CYBERSE,ATTRIBUTE_WATER) then return end
 	local token=Duel.CreateToken(tp,79029084)
+	Debug.Message("设备运行良好！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029081,5))
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029081.icon1(e,tp,eg,ep,ev,re,r,rp)

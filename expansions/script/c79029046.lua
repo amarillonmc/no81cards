@@ -6,7 +6,6 @@ function c79029046.initial_effect(c)
 	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_TO_GRAVE)
-	e1:SetTarget(c79029046.target)
 	e1:SetOperation(c79029046.operation)
 	c:RegisterEffect(e1)
 	--spsummon
@@ -20,18 +19,15 @@ function c79029046.initial_effect(c)
 	e2:SetOperation(c79029046.spop)
 	c:RegisterEffect(e2)	
 end
-function c79029046.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,79029046)==0 end
-	Duel.RegisterFlagEffect(tp,79029046,RESET_PHASE+PHASE_END,0,1)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
-end
 function c79029046.filter(c)
 	return c:IsSetCard(0x1904) and c:IsAbleToRemove()
 end
 function c79029046.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanRemove(tp) then return end
 	if not Duel.IsExistingMatchingCard(c79029046.filter,tp,LOCATION_DECK,0,1,nil) then return end
+	if Duel.GetFlagEffect(tp,79029046)~=0 then return end 
 	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
+	Duel.RegisterFlagEffect(tp,79029046,RESET_PHASE+PHASE_END,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	Debug.Message("香草会助大家一臂之力的！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029046,0))

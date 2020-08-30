@@ -30,10 +30,12 @@ function c79029062.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029062.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,3,REASON_COST) end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,3,REASON_COST) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.RemoveCounter(tp,1,0,0x1099,3,REASON_COST)
 end
 function c79029062.dsop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	Debug.Message("风雪将掩埋这片战场。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029062,0))
 		Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 		local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)

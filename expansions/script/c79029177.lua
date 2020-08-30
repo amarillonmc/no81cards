@@ -101,9 +101,10 @@ function c79029177.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g2=g:FilterSelect(tp,c79029177.sprfilter2,3,3,mc,tp,mc,c,mc:GetLevel())
 	g1:Merge(g2)
-	if Duel.SendtoGrave(g1,REASON_COST)~=0 then 
+	if Duel.SendtoGrave(g1,REASON_MATERIAL+REASON_SYNCHRO)~=0 then 
 	e:GetHandler():SetMaterial(g1)
 	Debug.Message("毁灭，终将来临！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029177,0))
 end
 end
 function c79029177.iccost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -112,6 +113,8 @@ function c79029177.iccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,lp-1)
 end
 function c79029177.icop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("将武器从躯壳中解放——")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029177,1))
 	local a=Duel.CreateToken(tp,66957584)
 	local b=Duel.CreateToken(tp,66957584)
 	local c=Duel.CreateToken(tp,66957584)
@@ -135,6 +138,8 @@ function c79029177.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029177.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Debug.Message("灵魂啊！共鸣吧！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029177,2))
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)

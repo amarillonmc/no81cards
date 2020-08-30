@@ -48,6 +48,8 @@ function c79029121.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local dc=Duel.TossDice(tp,1)
 	if dc==2 or dc==5 then
+	Debug.Message("放心，有我在，你们想死都难。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029121,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil,aux.ExceptThisCard(e))
 	local tc=Duel.GetFirstTarget()
@@ -98,6 +100,8 @@ function c79029121.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
 		tc:RegisterEffect(e3)
 	end
 	elseif dc==1 or dc==6 then 
+	Debug.Message("我下的药可不轻。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029121,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil,aux.ExceptThisCard(e))
 	local tc=Duel.GetFirstTarget()
@@ -126,6 +130,8 @@ function c79029121.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
 		c:RegisterEffect(e1)
 		end
 	elseif dc==3 or dc==4 then
+	Debug.Message("一旦我开始动手术，可就没人能阻止我了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029121,2))
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
 	local a=g:RandomSelect(tp,dc)
 	Duel.Remove(a,POS_FACEDOWN,REASON_EFFECT) 
@@ -137,10 +143,12 @@ function c79029121.desfilter2(c,s,tp)
 end
 function c79029121.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(tp,c79029121.desfilter2,tp,LOCATION_MZONE,0,1,nil,seq,e:GetHandler():GetControler()) end
 end
 function c79029121.activate(e,tp,eg,ep,ev,re,r,rp)
 	local seq=e:GetHandler():GetSequence()
+	Debug.Message("就让我们临床实验一下新成果吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029121,3))
 		 local dg=Group.CreateGroup()
 		if seq<5 then dg=Duel.GetMatchingGroup(c79029121.desfilter2,tp,LOCATION_MZONE,0,nil,seq,e:GetHandler():GetControler()) end
 		local tc=dg:GetFirst()
@@ -170,9 +178,13 @@ function c79029121.cop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	local res=Duel.TossCoin(tp,1)
 	if res~=0 then
+	Debug.Message("所有的生命都平等，但你的好像有点例外。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029121,4))
 	Duel.Damage(1-tp,2000,REASON_EFFECT)
 end
 	if res==0 then
+	Debug.Message("医学，就是一旦打开就没法关上的恶毒匣子。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029121,5))
    local g=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
 	local sg=g:RandomSelect(ep,2)
 	Duel.SendtoGrave(sg,REASON_DISCARD+REASON_EFFECT)

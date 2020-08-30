@@ -2,7 +2,7 @@
 function c79029115.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_SYNCHRO),aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),2)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_SYNCHRO),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--to extra
 	local e1=Effect.CreateEffect(c)
@@ -46,6 +46,7 @@ function c79029115.initial_effect(c)
 	e6:SetOperation(c79029115.spop)
 	c:RegisterEffect(e6)  
 end
+c79029115.material_type=TYPE_SYNCHRO
 function c79029115.target(e,c)
 	return c:IsRace(RACE_INSECT) or c:IsRace(RACE_REPTILE)
 end
@@ -58,11 +59,13 @@ function c79029115.drfilter(c)
 	return c:IsType(TYPE_MONSTER)
 end
 function c79029115.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsPreviousLocation(LOCATION_OVERLAY) end
+	if chk==0 then return e:GetHandler():IsPreviousLocation(LOCATION_OVERLAY) and Duel.IsExistingMatchingCard(c79029115.drfilter,tp,0,LOCATION_EXTRA,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_EXTRA)
 end
 function c79029115.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c79029115.drfilter,tp,0,LOCATION_EXTRA,1,nil)
+	local g=Duel.GetMatchingGroup(c79029115.drfilter,tp,0,LOCATION_EXTRA,nil)
+	Debug.Message("好、好重！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029115,0))
 	local a=g:RandomSelect(tp,1)
 	Duel.Remove(a,POS_FACEDOWN,REASON_EFFECT)
 	Duel.SendtoDeck(a,tp,2,REASON_EFFECT)
@@ -80,6 +83,8 @@ function c79029115.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,3)
 end
 function c79029115.spop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("“天道酬勤”，你说对吧，博士？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029115,1))
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if Duel.Draw(p,d,REASON_EFFECT)==4 then
 		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,p,LOCATION_HAND,0,nil)

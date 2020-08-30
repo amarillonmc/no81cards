@@ -47,6 +47,8 @@ function c79029148.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local a=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,79029149,0,0x4011,0,0,2,RACE_CYBERSE,ATTRIBUTE_WATER) then return end
+	Debug.Message("和我的“助手”们过两招吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029148,0))
 	 local token=Duel.CreateToken(tp,79029149)
 	 Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 end

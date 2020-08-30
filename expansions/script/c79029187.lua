@@ -88,7 +88,7 @@ function c79029187.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local lv=mc:GetLevel()
 	local g2=g:SelectWithSumEqual(tp,Card.GetLevel,7+lv,2,2)
 	g1:Merge(g2)
-	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
+	if Duel.SendtoGrave(g1,REASON_MATERIAL+REASON_SYNCHRO)~=0 then
 	e:GetHandler():SetMaterial(g1)
 	Debug.Message("你们就是敌人？那就拜托你们进攻用点力了，别让我太无聊！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029187,0))

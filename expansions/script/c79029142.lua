@@ -5,6 +5,7 @@ function c79029142.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,79029142+EFFECT_COUNT_CODE_OATH)
 	e1:SetCost(c79029142.cost)
 	e1:SetTarget(c79029142.target)
@@ -40,6 +41,8 @@ function c79029142.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029142.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Debug.Message("这把武器里，寄托了我的信念！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029142,0))
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,79029142,0xf02,0x11,1200,1300,3,RACE_CYBERSE,ATTRIBUTE_WIND) then
 		c:AddMonsterAttribute(TYPE_NORMAL)
@@ -56,6 +59,8 @@ end
 function c79029142.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
+	Debug.Message("重整队列！我会小心剩下的敌人！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029142,1))
 		Duel.ShuffleDeck(tp)
 		Duel.BreakEffect()
 		Duel.Draw(tp,1,REASON_EFFECT)

@@ -48,6 +48,8 @@ function c79029251.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
 	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT}   
 	e:SetLabel(ac)
+	Debug.Message("各位，为这个世界，带来更多和平吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029251,3))
 end
 function c79029251.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ac=e:GetLabel()

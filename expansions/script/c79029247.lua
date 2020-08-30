@@ -103,7 +103,7 @@ function c79029247.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local lv=mc:GetLevel()
 	local g2=g:SelectWithSumEqual(tp,Card.GetLevel,10+lv,1,99)
 	g1:Merge(g2)
-	if Duel.SendtoGrave(g1,REASON_COST)~=0 then
+	if Duel.SendtoGrave(g1,REASON_MATERIAL+REASON_SYNCHRO)~=0 then
 	e:GetHandler():SetMaterial(g1)
 	Debug.Message("所站立之地，即为神灵眷土。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029247,4))
