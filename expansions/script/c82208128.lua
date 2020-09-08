@@ -35,7 +35,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 function cm.matfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToDeckOrExtraAsCost()
+	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckOrExtraAsCost()
 end
 function cm.splimit(e,se,sp,st)  
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)  

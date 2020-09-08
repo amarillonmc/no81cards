@@ -187,7 +187,7 @@ local c=e:GetHandler()
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetValue(cm.immval)
 	e1:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
-	c:RegisterEffect(e1)
+	tc:RegisterEffect(e1)
 end
 function cm.immval(e,te)
 	 return te:GetOwner()~=e:GetOwner() 

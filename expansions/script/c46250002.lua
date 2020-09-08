@@ -60,7 +60,7 @@ function c46250002.trfilter(c)
 end
 function c46250002.tspcost(e,tp,eg,ep,ev,re,r,rp,chk)
     local n=math.floor(Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD+LOCATION_HAND)/3) 
-    if chk==0 then return n>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>=n and Duel.IsExistingMatchingCard(c46250002.trfilter,tp,LOCATION_DECK,0,n,nil) end
+    if chk==0 then return n>0 and (n<2 or not Duel.IsPlayerAffectedByEffect(tp,59822133)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>=n and Duel.IsExistingMatchingCard(c46250002.trfilter,tp,LOCATION_DECK,0,n,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
     local g=Duel.SelectMatchingCard(tp,c46250002.trfilter,tp,LOCATION_DECK,0,n,n,nil)
     Duel.SendtoGrave(g,REASON_COST)

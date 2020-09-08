@@ -69,15 +69,18 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e5:SetCode(EVENT_ATTACK_ANNOUNCE)
 		e5:SetLabelObject(tc)
-		e5:SetOperation(cm.ckop)	  
+		e5:SetOperation(cm.ckop)	
+		e5:SetReset(RESET_EVENT+RESETS_STANDARD)  
 		tc:RegisterEffect(e5,true)
 		local e6=Effect.CreateEffect(c)
 		e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e6:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 		e6:SetRange(LOCATION_MZONE)
 		e6:SetLabelObject(tc)
-		e6:SetOperation(cm.ckop)	 
+		e6:SetOperation(cm.ckop)  
+		e6:SetReset(RESET_EVENT+RESETS_STANDARD)	 
 		tc:RegisterEffect(e6,true)
+		tc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1)
 		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_PHASE+PHASE_END)
@@ -96,10 +99,14 @@ end
 
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	if  tc:GetFlagEffect(m)~=0 then
-		return false	  
-	else
-		 return true
+	if tc:GetFlagEffect(m+1)==0 then
+		  e:Reset()
+		return false
+	end
+	if  tc:GetFlagEffect(m)~=0  then
+		return false	 
+	else		 
+		return true
 	end
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
