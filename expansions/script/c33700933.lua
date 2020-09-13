@@ -65,8 +65,8 @@ function c33700933.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c33700933.activate(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lp=Duel.GetLP(tp)-1
-	if lp<=0 then return end
-	Duel.SetLP(tp,lp)
+	if Duel.GetLP(tp)<=1 then return end
+	Duel.SetLP(tp,1)
 	local b1=lp<9999 
 	local b2=lp>=9999 and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 	local b3=lp>=15000 and Duel.IsExistingMatchingCard(nil,tp,LOCATION_HAND,LOCATION_HAND,1,nil)

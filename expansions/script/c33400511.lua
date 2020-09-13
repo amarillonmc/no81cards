@@ -11,7 +11,6 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
-	e1:SetCondition(cm.con)
 	e1:SetCost(cm.thcost)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
@@ -23,7 +22,6 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCondition(cm.con)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(cm.cttg)
 	e2:SetOperation(cm.ctop)
@@ -35,14 +33,14 @@ end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=0
 	if e:GetHandler():GetFlagEffect(33401301)>0 then ft=1 end
-	if chk==0 then return ft==1 or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	if chk==0 then return (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)) and  
+   (ft==1 or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)) end
 	if ft==0 then e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST) end 
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x3344) and c:IsFaceup()
-end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function cm.thfilter(c)
 	return c:IsSetCard(0x341) and c:IsAbleToHand()
@@ -62,7 +60,9 @@ end
 
 function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
-		and Duel.IsExistingMatchingCard(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,0x1015,1) end
+		and Duel.IsExistingMatchingCard(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,0x1015,1)  and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil))end
+	 if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetMatchingGroupCount(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)

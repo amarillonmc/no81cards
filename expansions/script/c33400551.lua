@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(cm.con)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -17,8 +17,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCondition(cm.con)
-	e2:SetCost(cm.cost)
+	e2:SetCost(cm.cost2)
 	e2:SetTarget(cm.tg)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
@@ -51,15 +50,17 @@ end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x6341) and c:IsFaceup()
 end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return  Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp):Filter(cm.filter0,nil,e)
 		local mg2=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_EXTRA,0,nil,e)
-		mg1:Merge(mg2)	  
+		mg1:Merge(mg2)  
 		local res=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		if res then return true end
 		local mg5=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_SZONE,0,nil,e)
@@ -108,11 +109,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			if tc:IsSetCard(0x3342) then
 				local mat1=Duel.SelectFusionMaterial(tp,tc,mg5,nil,chkf)
 				tc:SetMaterial(mat1)			 
-				Duel.Destroy(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)			 
+				Duel.Destroy(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)		   
 			else
 			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
 			tc:SetMaterial(mat1)
-			Duel.Destroy(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)		
+			Duel.Destroy(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)	  
 			end
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
@@ -125,8 +126,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
+function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)) end
+	 if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)

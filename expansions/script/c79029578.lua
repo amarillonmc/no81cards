@@ -37,8 +37,11 @@ function c79029578.initial_effect(c)
 	e2:SetOperation(c79029578.spop)
 	c:RegisterEffect(e2)
 end
+function c79029578.chfil(c)
+	return c:IsSetCard(0x119) and c:IsType(TYPE_XYZ)
+end
 function c79029578.descon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetMaterial():IsExists(Card.IsSetCard,1,nil,0x119)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetMaterial():IsExists(c79029578.chfil,1,nil)
 end
 function c79029578.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end

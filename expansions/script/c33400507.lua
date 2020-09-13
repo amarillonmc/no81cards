@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.thcon)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.thtg1)
 	e1:SetOperation(cm.thop1)
 	c:RegisterEffect(e1)
@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetCountLimit(1,m+10000)
-	e2:SetCondition(cm.thcon)
+	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.drtg)
 	e2:SetOperation(cm.drop)
 	c:RegisterEffect(e2)
@@ -65,7 +65,7 @@ function cm.tnop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_ADD_TYPE)
 			e1:SetValue(TYPE_TUNER)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)		  
+			tc:RegisterEffect(e1)		 
 		end
 	end
 end
@@ -73,8 +73,10 @@ end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x6341) and c:IsFaceup()
 end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
 function cm.thfilter1(c)
 	return c:IsSetCard(0x3344,0x6341) and c:IsAbleToHand()

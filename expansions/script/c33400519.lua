@@ -21,6 +21,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCost(cm.cost)
 	e2:SetCondition(cm.thcon)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
@@ -32,7 +33,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_DESTROYED)
-	e3:SetCondition(cm.con)
+	e3:SetCost(cm.cost)
 	e3:SetTarget(cm.target)
 	e3:SetOperation(cm.operation)
 	c:RegisterEffect(e3)
@@ -60,35 +61,34 @@ end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x3344) and c:IsFaceup()
 end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
-function cm.thfilter1(c,e,tp)
-	return c:GetCounter(0x1015)~=0 and c:IsAbleToHand()
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) 
 end
 function cm.thfilter2(c,e,tp)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_SZONE,0,1,nil)  end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_SZONE,0,1,nil)  end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(cm.thfilter1,tp,0,LOCATION_ONFIELD,nil)
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,nil)
 	local g2=Duel.GetMatchingGroup(cm.thfilter2,tp,LOCATION_SZONE,0,nil)
 	if g1:GetCount()<=0 or g2:GetCount()<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local sg2=g2:Select(tp,1,1,nil)
-	local sg1=g1:Select(tp,1,2,nil)  
+	local sg1=g1:Select(tp,1,3,nil)  
 	sg2:Merge(sg1) 
 	Duel.SendtoHand(sg2,nil,REASON_EFFECT)  
 end
 
 function cm.setfilter(c)
 	return c:IsSetCard(0x3344) and c:IsType(TYPE_SPELL) and  (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and not c:IsForbidden()
-end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_GRAVE,0,1,nil) end

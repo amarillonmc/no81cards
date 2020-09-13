@@ -7,6 +7,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
+	e1:SetCost(cm.cost)
 	e1:SetCondition(cm.condition1)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
@@ -22,7 +23,7 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
 	e3:SetCode(EVENT_DESTROYED)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetCost(cm.cost)
+	e3:SetCost(cm.cost2)
 	e3:SetCondition(cm.descon)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
@@ -32,14 +33,6 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_REMAIN_FIELD)
 	c:RegisterEffect(e4)
-  --accumulate
-  --  local e5=Effect.CreateEffect(c)
- --   e5:SetType(EFFECT_TYPE_FIELD)
-  --  e5:SetCode(0x10000000+m)
-  --  e5:SetRange(LOCATION_ONFIELD+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_HAND)
-  --  e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_SET_AVAILABLE)
-   -- e5:SetTargetRange(0,1)
-  --  c:RegisterEffect(e5)
  if not cm.global_check then
 	cm.global_check=true
   local ge1=Effect.CreateEffect(c)
@@ -71,14 +64,19 @@ end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x6341) and c:IsFaceup()
 end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
+end
 function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return end	
 	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)and  tg and tg:IsExists(cm.cfilter,1,nil) and Duel.IsChainNegatable(ev) 
+	return   tg and tg:IsExists(cm.cfilter,1,nil) and Duel.IsChainNegatable(ev) 
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	if  re:GetHandler():GetFlagEffect(m)==0 then return end   
-	return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) and  Duel.IsChainNegatable(ev)
+	return   Duel.IsChainNegatable(ev)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -98,15 +96,17 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
    end 
 end
 
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
+function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)) end
+	 if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.cfilter2(c,tp)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:GetPreviousControler()==tp
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return  Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) and eg:IsExists(cm.cfilter2,1,nil,tp)
+	return   eg:IsExists(cm.cfilter2,1,nil,tp)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end

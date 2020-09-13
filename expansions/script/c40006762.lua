@@ -80,7 +80,7 @@ function c40006762.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40006762.slfilter(c,e,tp)
-	return c:IsLevelBelow(3) and c:IsType(TYPE_TUNER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,nil) and c:IsSetCard(0xf24)
+	return c:IsLevelBelow(3) and c:IsType(TYPE_TUNER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xf24)
 end
 function c40006762.sltg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c40006762.slfilter(chkc,e,tp) end
@@ -91,25 +91,25 @@ function c40006762.sltg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c40006762.slop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
+
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,nil) and tc:IsFaceup() and c:IsRelateToEffect(e) and c:IsFaceup() then
-		local e2=Effect.CreateEffect(c)
+	if tc:IsRelateToEffect(e) then
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	end
+		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_DISABLE)
 		e2:SetReset(RESET_EVENT+0x1fe0000)
 		tc:RegisterEffect(e2)
-		local e3=Effect.CreateEffect(c)
+		local e3=Effect.CreateEffect(e:GetHandler())
 		e3:SetType(EFFECT_TYPE_SINGLE)
 		e3:SetCode(EFFECT_DISABLE_EFFECT)
 		e3:SetReset(RESET_EVENT+0x1fe0000)
 		tc:RegisterEffect(e3)
-		local e1=Effect.CreateEffect(c)
+		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_LEVEL)
 		e1:SetValue(tc:GetLevel())
 		e1:SetReset(RESET_EVENT+0x1ff0000)
-		c:RegisterEffect(e1) 
-	end
-	Duel.SpecialSummonComplete()
+		e:GetHandler():RegisterEffect(e1) 
 end

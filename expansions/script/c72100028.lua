@@ -16,7 +16,7 @@ function c72100028.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c72100028.cpfilter(c)
-	return c:GetType(TYPE_TRAP) and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_TRAP) and c:IsAbleToGraveAsCost()
 		and c:CheckActivateEffect(false,true,false)~=nil
 end
 function c72100028.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)

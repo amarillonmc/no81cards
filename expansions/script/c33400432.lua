@@ -1,6 +1,6 @@
 --AST 冈峰美纪惠 
 function c33400432.initial_effect(c)
-	 aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x9343),aux.NonTuner(Card.IsRace,RACE_WARRIOR),1)
+	 aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	 c:EnableReviveLimit()
  --Destroy
 	local e1=Effect.CreateEffect(c)
@@ -32,7 +32,7 @@ function c33400432.filter(c)
 	return c:IsFaceup() and c:IsSetCard(0x9343)
 end
 function c33400432.filter2(c)
-	return c:IsSetCard(0x6343)   and c:IsAbleToHand()
+	return c:IsSetCard(0x6343,0x9343)   and c:IsAbleToHand()
 end
 function c33400432.spcfilter(c)
 	return c:IsSetCard(0x341) and c:IsFaceup()

@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,m)
+	e1:SetCost(cm.cost)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -39,7 +40,6 @@ function cm.initial_effect(c)
 	e0:SetRange(LOCATION_MZONE)
 	e0:SetCountLimit(1,m+10000)
 	e0:SetCost(cm.spcost)
-	e0:SetCondition(cm.con)
 	e0:SetTarget(cm.destg)
 	e0:SetOperation(cm.desop)
 	c:RegisterEffect(e0)
@@ -48,6 +48,7 @@ function cm.initial_effect(c)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e6:SetCode(EVENT_DESTROYED)
 	e6:SetProperty(EFFECT_FLAG_DELAY)
+	e6:SetCost(cm.cost)
 	e6:SetCondition(cm.pencon)
 	e6:SetTarget(cm.pentg)
 	e6:SetOperation(cm.penop)
@@ -63,8 +64,13 @@ end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x3344) and c:IsFaceup()
 end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
+end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) 
 end
 function cm.spfilter(c,e,tp)
 	return c:IsType(TYPE_MONSTER) and (c:IsSetCard(0x341)or c:IsAttribute(ATTRIBUTE_WATER)) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -96,17 +102,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
-end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=0
 	if e:GetHandler():GetFlagEffect(33401301)>0 then ft=1 end
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x1015,3,REASON_COST) and ((ft==1) or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)) end   
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x1015,3,REASON_COST) and ((ft==1) or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)) and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)) end   
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.RemoveCounter(tp,1,1,0x1015,3,REASON_COST)
 	if ft==0 then 
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	end
+   if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
 	end
 end
 function cm.thfilter(c,e,tp)
@@ -148,7 +153,7 @@ end
 
 function cm.pencon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsFaceup() and Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsFaceup() 
 end
 function cm.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) or (Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)

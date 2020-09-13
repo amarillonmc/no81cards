@@ -24,6 +24,7 @@ function c40009005.initial_effect(c)
 	e2:SetCode(EFFECT_CANNOT_FLIP_SUMMON)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(0,1)
+	e2:SetCondition(c40009005.spcon)
 	c:RegisterEffect(e2) 
 	--cannot trigger
 	local e3=Effect.CreateEffect(c)
@@ -32,6 +33,7 @@ function c40009005.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(0,LOCATION_ONFIELD)
+	e3:SetCondition(c40009005.spcon)
 	e3:SetTarget(c40009005.distg)
 	c:RegisterEffect(e3)
 end
@@ -56,6 +58,9 @@ function c40009005.desop(e,tp,eg,ep,ev,re,r,rp)
 		tc:CancelToGrave()
 		Duel.ChangePosition(tc,POS_FACEDOWN)
 	end
+end
+function c40009005.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetOverlayCount()>0
 end
 function c40009005.distg(e,c)
 	return c:IsFacedown()

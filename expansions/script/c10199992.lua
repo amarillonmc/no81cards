@@ -52,6 +52,7 @@ local rsvw  =   Virus_Wrom
 local rsia  =   Indolent_Angel
 local rsso  =   Simulated_Organism
 local rstr  =   True_Ritual
+local rssww =   Sheng_Wo_Wang
 
 #NianBao 583322404
 local rslap =   Lapin
@@ -75,7 +76,7 @@ local rsgc  =   Guard_City
 local rsfv  =   Fgo/Assassin
 
 #JingJing 1772438857
-local rsba  =   BlueAngel
+local rsba  =   Blue_Angel
 
 #Akashic 3204027606
 local rszg  =   Zogu
@@ -93,6 +94,7 @@ local rsgod =   God
 #02 1164477469
 local rsva  =   VR_Aqua
 //local   =   Tian_Zhi
+local rswk =  White_Moon_Knight
 
 #ReiKai 2404873791
 local rsch  =   Churck

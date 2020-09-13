@@ -1,14 +1,19 @@
 --真红眼渊龙
-function c10700001.initial_effect(c)   
+function c10700001.initial_effect(c) 
+	--cannot special summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c10700001.splimit)
+	c:RegisterEffect(e0)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(10700001,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCost(c10700001.spcost)
-	e1:SetTarget(c10700001.sptg)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCondition(c10700001.spcon)
 	e1:SetOperation(c10700001.spop)
 	c:RegisterEffect(e1)
 	--atkup
@@ -19,14 +24,6 @@ function c10700001.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(c10700001.val)
 	c:RegisterEffect(e2)
-	--code
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetCode(EFFECT_CHANGE_CODE)
-	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e3:SetValue(96561011)
-	c:RegisterEffect(e3)
 	--tohand
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(10700001,2))
@@ -38,27 +35,26 @@ function c10700001.initial_effect(c)
 	e5:SetOperation(c10700001.thop)
 	c:RegisterEffect(e5)
 end
+function c10700001.splimit(e,se,sp,st)
+	return se:IsHasType(EFFECT_TYPE_ACTIONS)
+end
 function c10700001.val(e,c)
 	return Duel.GetMatchingGroupCount(Card.IsRace,c:GetControler(),LOCATION_GRAVE,0,nil,RACE_DRAGON)*300
 end
-function c10700001.cfilter(c,ft,tp)
-	return c:IsFaceup() and c:IsCode(74677422)
-		and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5))
+function c10700001.rfilter(c,ft,tp)
+	return c:IsCode(74677422)
+		and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5)) and (c:IsControler(tp) or c:IsFaceup())
 end
-function c10700001.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c10700001.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if chk==0 then return ft>-1 and Duel.CheckReleaseGroup(tp,c10700001.cfilter,1,nil,ft,tp) end
-	local g=Duel.SelectReleaseGroup(tp,c10700001.cfilter,1,1,nil,ft,tp)
+	return ft>-1 and Duel.CheckReleaseGroup(tp,c10700001.rfilter,1,nil,ft,tp)
+end
+function c10700001.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local g=Duel.SelectReleaseGroup(tp,c10700001.rfilter,1,1,nil,ft,tp)
 	Duel.Release(g,REASON_COST)
-end
-function c10700001.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function c10700001.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function c10700001.thfilter(c)
 	return c:IsSetCard(0x3b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()

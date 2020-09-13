@@ -116,7 +116,6 @@ function c40009212.eqopq(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e2)
 		c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
-		end
 	end
 end
 function c40009212.eqlimitq(e,c)

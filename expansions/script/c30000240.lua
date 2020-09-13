@@ -20,11 +20,9 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	for i=0,1 do
 		if rp==i and eg:IsExists(cm.cfilter,1,nil,rp) then
 			Duel.RegisterFlagEffect(1-rp,m,rsreset.pend,0,1)
-		end
-	end
-	for i=0,1 do
-		if Duel.GetFlagEffect(i,m)>=2 then 
-			Duel.RaiseEvent(eg,m,re,r,rp,ep,ev)
+			if Duel.GetFlagEffect(1-rp,m)>=2 then 
+				Duel.RaiseEvent(eg,m,re,r,rp,1-rp,ev)
+			end
 		end
 	end
 end
@@ -35,7 +33,7 @@ function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return rp~=tp 
+	return ep==tp 
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCode(30000231,30000236) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -49,16 +47,7 @@ function cm.act(e,tp)
 		if #g>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 then
 			Duel.BreakEffect()
 			local e1=rsef.SV_IMMUNE_EFFECT({c,tc},cm.imval)
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE) 
-			e2:SetCode(EFFECT_EXTRA_ATTACK)
-			e2:SetValue(cm.acval)
-			c:RegisterEffect(e2)
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_SINGLE)
-			e3:SetCode(EFFECT_CANNOT_ATTACK)
-			e3:SetCondition(cm.cacon)
-			c:RegisterEffect(e3)
+			tc:RegisterFlagEffect(m,rsreset.est,0,1)
 		end
 	end
 	if tc:IsOriginalCodeRule(30000231) then
@@ -68,12 +57,6 @@ function cm.act(e,tp)
 end 
 function cm.imval(e,re)
 	return e:GetHandler()~=re:GetOwner()
-end
-function cm.acval(e,c)
-	return Duel.GetFieldGroupCount(0,LOCATION_REMOVED,LOCATION_REMOVED)-1
-end
-function cm.cacon(e,tp)
-	return Duel.GetFieldGroupCount(0,LOCATION_REMOVED,LOCATION_REMOVED)==0
 end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local de,dp=Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON,CHAININFO_DISABLE_PLAYER)

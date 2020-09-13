@@ -30,20 +30,34 @@ function c33400037.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetOperation(c33400037.Eqop1)
 	c:RegisterEffect(e4)
-	--Destroy
+	 --
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(33400037,2))
-	e3:SetCategory(CATEGORY_DESTROY)
+	e3:SetDescription(aux.Stringid(33400037,4))
+	e3:SetCategory(CATEGORY_DISABLE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetCountLimit(1,33400037+10000)
+	e3:SetCountLimit(1)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCost(c33400037.descost)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e3:SetCost(c33400037.cost)
 	e3:SetTarget(c33400037.destg)
 	e3:SetOperation(c33400037.desop)
 	c:RegisterEffect(e3)
+   --
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(33400037,5))
+	e5:SetCategory(CATEGORY_CONTROL)
+	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetCode(EVENT_FREE_CHAIN)
+	e5:SetCountLimit(1)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e5:SetCost(c33400037.cost)
+	e5:SetTarget(c33400037.cttg)
+	e5:SetOperation(c33400037.ctop)
+	c:RegisterEffect(e5)
 end
 function c33400037.cfilter(c,tp)
 	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0x341)
@@ -153,33 +167,64 @@ function c33400037.operation3(e,tp,eg,ep,ev,re,r,rp)
 	 tc:AddCounter(0x34f,2)
 end
 
-function c33400037.costfilter(c)
-	return  c:IsDiscardable() and c:IsSetCard(0x3340) and c:IsType(TYPE_QUICKPLAY)
-end
-function c33400037.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,4,REASON_COST) 
-	and Duel.IsExistingMatchingCard(c33400037.costfilter,tp,LOCATION_HAND,0,1,nil)end
+function c33400037.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ct=e:GetLabel()
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,2,REASON_COST) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
-end
-function c33400037.desfilter(c)
-	return c:IsFaceup() and (c:IsSetCard(0x341) or c:IsSetCard(0x340))
+	Duel.RemoveCounter(tp,1,0,0x34f,2,REASON_COST)
 end
 function c33400037.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c33400037.desfilter,tp,LOCATION_ONFIELD,0,1,nil)
-		and Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g1=Duel.SelectTarget(tp,c33400037.desfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g2=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,3,nil)
-	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,g1:GetCount(),0,0)
+	if chkc then return  chkc:IsOnField() and aux.disfilter1(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local g=Duel.SelectTarget(tp,aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function c33400037.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
-	if tg:GetCount()>0 then
-		Duel.Destroy(tg,REASON_EFFECT)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if ((tc:IsFaceup() and not tc:IsDisabled()) or tc:IsType(TYPE_TRAPMONSTER)) and tc:IsRelateToEffect(e) then
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e2)
+		if tc:IsType(TYPE_TRAPMONSTER) then
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e3)
+		end
 	end
 end
+
+function c33400037.ctfilter(c)
+	return c:IsFaceup() and (c:IsDisabled() or c:IsType(TYPE_NORMAL)) and c:IsControlerCanBeChanged()
+end
+function c33400037.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return  chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c33400037.ctfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c33400037.ctfilter,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local g=Duel.SelectTarget(tp,c33400037.ctfilter,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_CONTROL,g,1,0,0)
+end
+function c33400037.ctop(e,tp,eg,ep,ev,re,r,rp)
+	 local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if c:IsRelateToEffect(e) and c:IsFaceup() and tc and tc:IsRelateToEffect(e)
+		and not tc:IsImmuneToEffect(e) then
+	   Duel.GetControl(tc,tp)
+	end
+end
+

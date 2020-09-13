@@ -25,8 +25,6 @@ function c40006826.initial_effect(c)
 	e2:SetOperation(c40006826.operation)
 	c:RegisterEffect(e2)
 end
-c40006826.lvupcount=1
-c40006826.lvup={40006762}
 function c40006826.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsDiscardable() end
@@ -50,7 +48,7 @@ function c40006826.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c40006826.filter1(c,e,tp,lv)
 	local clv=c:GetLevel()
-	return clv>0 and c:IsType(TYPE_TUNER) and c:IsAbleToHand()
+	return clv>0 and c:IsType(TYPE_TUNER) and c:IsAbleToRemove()
 		and Duel.IsExistingMatchingCard(c40006826.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,lv+clv)
 end
 function c40006826.filter2(c,e,tp,lv)
@@ -60,10 +58,10 @@ function c40006826.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c40006826.filter1(chkc,e,tp,e:GetHandler():GetLevel()) end
 	if chk==0 then return Duel.GetLocationCountFromEx(tp)>0 and e:GetHandler():IsAbleToHand()
 		and Duel.IsExistingTarget(c40006826.filter1,tp,LOCATION_GRAVE,0,1,nil,e,tp,e:GetHandler():GetLevel()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,c40006826.filter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,e:GetHandler():GetLevel())
 	g:AddCard(e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,2,tp,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c40006826.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -72,7 +70,7 @@ function c40006826.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) or not tc:IsRelateToEffect(e) then return end
 	local lv=c:GetLevel()+tc:GetLevel()
 	local g=Group.FromCards(c,tc)
-	if Duel.SendtoHand(g,nil,REASON_EFFECT)==2 then
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)==2 then
 		if Duel.GetLocationCountFromEx(tp)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=Duel.SelectMatchingCard(tp,c40006826.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,lv)

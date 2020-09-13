@@ -8,7 +8,7 @@ aux.AddCodeList(c,33400519,33400520)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(cm.con)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -19,8 +19,7 @@ aux.AddCodeList(c,33400519,33400520)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCondition(cm.con)
-	e2:SetCost(cm.cost)
+	e2:SetCost(cm.cost2)
 	e2:SetTarget(cm.drtg)
 	e2:SetOperation(cm.drop)
 	c:RegisterEffect(e2)
@@ -33,8 +32,10 @@ end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x6341) and c:IsFaceup()
 end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return  Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
 function cm.mfilter(c,e)
 	return c:IsFaceup() and c:GetLevel()>0 and not c:IsImmuneToEffect(e) and c:IsReleasable() and c:GetCounter(0x1015)~=0
@@ -92,8 +93,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
+function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)) end
+	 if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.drfil(c)

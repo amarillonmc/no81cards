@@ -13,7 +13,7 @@ function c77771003.initial_effect(c)
 	e1:SetOperation(c77771003.activate)
 	c:RegisterEffect(e1)
 	Duel.AddCustomActivityCounter(77771003,ACTIVITY_SPSUMMON,c77771003.counterfilter)
-    --to hand
+	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
@@ -46,7 +46,7 @@ function c77771003.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c77771003.filter(c)
-	return c:IsSetCard(0x77a) and c:IsType(TYPE_MONSTER) and not c:IsCode(77771003) and c:IsAbleToHand()
+	return c:IsSetCard(0x77a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c77771003.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c77771003.filter,tp,LOCATION_DECK,0,1,nil) end

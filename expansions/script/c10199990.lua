@@ -1,8 +1,8 @@
---version 20.07.28
+--version 20.08.25
 if not pcall(function() require("expansions/script/c10199991") end) then require("script/c10199991") end
 local m=10199990
 local vm=10199991
-local Version_Number=20200728
+local Version_Number=20200825
 -----------------------"Part_Effect_Base"-----------------------
 --Creat "EVENT_SET"
 function rsef.CreatEvent_Set()
@@ -115,7 +115,7 @@ function rsef.GetRegisterRange(reg_list)
 		end
 	end
 	--after begain duel 
-	if Duel.GetTurnCount()>0 then reg_range=reg_handler:GetLocation() end
+	--if Duel.GetTurnCount()>0 then reg_range=reg_handler:GetLocation() end
 	return reg_range 
 end
 --Effect: Get Flag for SetProperty 
@@ -543,7 +543,7 @@ function rsef.SV_EXTRA_MATERIAL(reg_list,mat_list,val_list,con,reset_list,flag,d
 	val_list = val_list or { aux.TRUE } 
 	local code_list,val_list2=rsof.Table_Suit(mat_list,code_list_1,code_list_2,val_list)
 	local eff_list={}
-	for idx,eff_code in ipairs(code_list) do
+	for idx,eff_code in ipairs(code_list) do 
 		local e1=rsef.SV(reg_list,eff_code,val_list2[idx],range,con,reset_list,flag,desc_list,lim_list)
 		table.insert(eff_list,e1)
 	end
@@ -552,6 +552,7 @@ end
 
 --Single Val Effect: Utility Procedure Materials
 function rsef.SV_UTILITY_XYZ_MATERIAL(reg_list,val,con,reset_list,flag,desc_list,lim_list,range)
+	rssf.EnableSpecialXyzProcedure()
 	val = val or 2
 	range = range or LOCATION_HAND+LOCATION_ONFIELD+LOCATION_EXTRA+LOCATION_DECK+LOCATION_GRAVE 
 	local e1=rsef.SV(reg_list,rscode.Utility_Xyz_Material,val,range,con,reset_list,flag,desc_list,lim_list)
@@ -1605,20 +1606,7 @@ function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,target_list)
 
 	--8.specially player target effect value
 	local player_list1={ CATEGORY_RECOVER,CATEGORY_DAMAGE,CATEGORY_DECKDES,CATEGORY_DRAW,CATEGORY_HANDES }
-	if rsof.Table_Intersection(category_list,player_list1) then 
-		if type(filter_card)=="number" then 
-			minct = filter_card
-			maxct = filter_card
-			filter_card = aux.TRUE 
-			if rsof.Table_List(category_list,CATEGORY_HANDES) and filter_card == 0 then
-				minct = 1
-				maxct = 1
-			end
-		elseif type(filter_card)=="function" and not rsof.Table_List(category_list,CATEGORY_HANDES) then
-			minct = filter_card(e,tp,eg,ep,ev,re,r,rp)
-			maxct = filter_card(e,tp,eg,ep,ev,re,r,rp)
-			filter_card = aux.TRUE 
-		end
+	if rsof.Table_Intersection(category_list,player_list1) then
 		if not rsof.Table_List(category_list,CATEGORY_HANDES) then
 			if not loc_self and not loc_oppo then loc_self=0xff end
 			if loc_self and type(loc_self)=="number" and loc_self>0 then loc_self=0xff end
@@ -1633,6 +1621,19 @@ function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,target_list)
 			end
 			if loc_self and type(loc_self)=="number" and loc_self>0 then loc_self=LOCATION_HAND end
 			if loc_oppo and type(loc_oppo)=="number" and loc_oppo>0 then loc_oppo=LOCATION_HAND end
+		end 
+		if type(filter_card)=="number" then 
+			minct = filter_card
+			maxct = filter_card
+			filter_card = aux.TRUE 
+			if rsof.Table_List(category_list,CATEGORY_HANDES) and filter_card == 0 then
+				minct = 1
+				maxct = 1
+			end
+		elseif type(filter_card)=="function" and not rsof.Table_List(category_list,CATEGORY_HANDES) then
+			minct = filter_card(e,tp,eg,ep,ev,re,r,rp)
+			maxct = filter_card(e,tp,eg,ep,ev,re,r,rp)
+			filter_card = aux.TRUE 
 		end
 	end
 	--9.Fix for solve self 
@@ -1703,17 +1704,37 @@ function rstg.TargetCheck(e,tp,eg,ep,ev,re,r,rp,chk,chkc,target_list_total)
 			if rsof.Table_Intersection(category_list,player_list1) then 
 				minct2=1
 			end
-			if minct2==999 then return false end
-			if not filter_group then
-				local res=target_fun(rstg.TargetFilter,tp,loc_self,loc_oppo,minct2,except_group,e,tp,eg,ep,ev,re,r,rp,used_group,used_count_list,table.unpack(target_list_total))
-				return res
+			if minct2==999 then return false end 
+			local rg=rsgf.CheckReleaseGroup(list_type,category_list,loc_self)
+			if not filter_group then 
+				if #rg==0 then 
+					return target_fun(rstg.TargetFilter,tp,loc_self,loc_oppo,minct2,except_group,e,tp,eg,ep,ev,re,r,rp,used_group,used_count_list,table.unpack(target_list_total))
+				else
+					return rg:IsExists(rstg.TargetFilter,minct2,except_group,e,tp,eg,ep,ev,re,r,rp,used_group,used_count_list,table.unpack(target_list_total))
+				end
 			else
-				local target_group=Duel.GetMatchingGroup(filter_card,tp,loc_self,loc_oppo,except_group,e,tp,eg,ep,ev,re,r,rp)
+				local target_group= #rg==0 and Duel.GetMatchingGroup(filter_card,tp,loc_self,loc_oppo,except_group,e,tp,eg,ep,ev,re,r,rp) or rg
 				if list_type=="target" then target_group=target_group:Filter(Card.IsCanBeEffectTarget,nil,e) end
 				return target_group:CheckSubGroup(rstg.GroupFilter,minct2,maxct,e,tp,eg,ep,ev,re,r,rp,used_group,used_count_list,table.unpack(target_list_total))
 			end
 		end
 	end
+end
+function rsgf.CheckReleaseGroup(list_type,category_list,loc_self)
+	local g=Group.CreateGroup()
+	if list_type ~= "cost" or not rsof.Table_List(category_list,CATEGORY_RELEASE) or loc_self ~= "number" then return g end
+	local rg=Duel.GetReleaseGroup(tp,true) 
+	--Tribute from your hand or Mzone 
+	if loc_self & LOCATION_MZONE ~=0 then
+		g:Merge(rg:Filter(Card.IsLocation,except_group,LOCATION_MZONE))
+	end
+	if loc_self & LOCATION_HAND ~=0 then
+		g:Merge(rg:Filter(Card.IsLocation,except_group,LOCATION_HAND))
+	end
+	--Tribute from other loc
+	local rg2=Duel.GetMatchingGroup(Card.IsReleasable,tp,loc_self,loc_oppo,except_group)
+	g:Merge(rg2)
+	return g
 end
 --Effect target: Select Cards
 function rstg.TargetSelect(e,tp,eg,ep,ev,re,r,rp,target_list_total)
@@ -1751,33 +1772,9 @@ function rstg.TargetSelect(e,tp,eg,ep,ev,re,r,rp,target_list_total)
 			must_sel_group=Duel.GetMatchingGroup(filter_card,tp,loc_self,loc_oppo,except_group,e,tp,eg,ep,ev,re,r,rp)
 		end
 		--2.4.1. Special case - Tribute 
-		if rsof.Table_List(category_list,CATEGORY_RELEASE) then
-			--2.4.1.1 Tribute self 
-			if type(loc_self)=="number" then
-				local rg0=Group.CreateGroup()
-				local rg=Duel.GetReleaseGroup(tp,true)
-				local rg2=Duel.GetReleaseGroup(1-tp,true)
-				--2.4.1.2.1. Tribute from hand or Mzone 
-				if loc_self & LOCATION_MZONE ~=0 then
-					must_sel_group:Merge(rg:Filter(Card.IsLocation,nil,LOCATION_MZONE))
-				end
-				if loc_self & LOCATION_HAND ~=0 then
-					must_sel_group:Merge(rg:Filter(Card.IsLocation,nil,LOCATION_HAND))
-				end
-				--[[
-				if loc_oppo & LOCATION_MZONE ~=0 then
-					must_sel_group:Merge(rg2:Filter(Card.IsLocation,nil,LOCATION_MZONE))
-				end
-				if loc_oppo & LOCATION_HAND ~=0 then
-					must_sel_group:Merge(rg2:Filter(Card.IsLocation,nil,LOCATION_HAND))
-				end
-				]]--
-			end
-			--2.4.1.2.2. Tribute from other zone
-			if loc_oppo and loc_oppo & 0xff-LOCATION_HAND+LOCATION_MZONE ~=0 then
-				local rg3=Duel.GetMatchingGroup(Card.IsReleasable,tp,loc_self,loc_oppo,except_group)
-				must_sel_group:Merge(rg3)
-			end
+		local rg=rsgf.CheckReleaseGroup(list_type,category_list,loc_self)
+		if #rg>0 then 
+			must_sel_group:Merge(rg)
 		end
 		--Self
 		if type(loc_self)=="boolean" then
@@ -1925,10 +1922,15 @@ function rstg.TargetFilter(c,e,tp,eg,ep,ev,re,r,rp,used_group,used_count_list,ta
 				minct2=1
 			end
 			if minct2==999 then return false end 
+			local rg=rsgf.CheckReleaseGroup(list_type,category_list,loc_self)
 			if not filter_group then
-				return target_fun(rstg.TargetFilter,tp,loc_self,loc_oppo,minct2,except_group,e,tp,eg,ep,ev,re,r,rp,used_group2,used_count_list2,target_list2,...)
+				if #rg==0 then 
+					return target_fun(rstg.TargetFilter,tp,loc_self,loc_oppo,minct2,except_group,e,tp,eg,ep,ev,re,r,rp,used_group2,used_count_list2,target_list2,...)
+				else
+					return rg:IsExists(rstg.TargetFilter,minct2,except_group,e,tp,eg,ep,ev,re,r,rp,used_group2,used_count_list2,target_list2,...)
+				end
 			else
-				local target_group=Duel.GetMatchingGroup(filter_card,tp,loc_self,loc_oppo,except_group,e,tp,eg,ep,ev,re,r,rp)
+				local target_group= #rg==0 and Duel.GetMatchingGroup(filter_card,tp,loc_self,loc_oppo,except_group,e,tp,eg,ep,ev,re,r,rp) or rg
 				if list_type=="target" then target_group=target_group:Filter(Card.IsCanBeEffectTarget,nil,e) end
 				return target_group:CheckSubGroup(rstg.GroupFilter,minct2,maxct,e,tp,eg,ep,ev,re,r,rp,used_group2,used_count_list2,target_list2,...)
 			end
@@ -1959,10 +1961,15 @@ function rstg.GroupFilter(g,e,tp,eg,ep,ev,re,r,rp,used_group,used_count_list,tar
 				minct2=1
 			end
 			if minct2==999 then return false end 
+			local rg=rsgf.CheckReleaseGroup(list_type,category_list,loc_self)
 			if not filter_group then
-				return target_fun(rstg.TargetFilter,tp,loc_self,loc_oppo,minct2,except_group,e,tp,eg,ep,ev,re,r,rp,used_group2,used_count_list2,target_list2,...)
+				if #rg==0 then 
+					return target_fun(rstg.TargetFilter,tp,loc_self,loc_oppo,minct2,except_group,e,tp,eg,ep,ev,re,r,rp,used_group2,used_count_list2,target_list2,...)
+				else
+					return rg:IsExists(rstg.TargetFilter,minct2,except_group,e,tp,eg,ep,ev,re,r,rp,used_group2,used_count_list2,target_list2,...)
+				end
 			else
-				local target_group=Duel.GetMatchingGroup(filter_card,tp,loc_self,loc_oppo,except_group,e,tp,eg,ep,ev,re,r,rp)
+				local target_group= #rg==0 and Duel.GetMatchingGroup(filter_card,tp,loc_self,loc_oppo,except_group,e,tp,eg,ep,ev,re,r,rp) or rg
 				if list_type=="target" then target_group=target_group:Filter(Card.IsCanBeEffectTarget,nil,e) end
 				return target_group:CheckSubGroup(rstg.GroupFilter,minct2,maxct,e,tp,eg,ep,ev,re,r,rp,used_group2,used_count_list2,target_list2,...)
 			end
@@ -3650,26 +3657,14 @@ function rscf.CheckPreviousSetCard(c,series1,...)
 end
 Card.CheckPreviousSetCard=rscf.CheckPreviousSetCard
 --Card/Summon effect:Record Summon Procedure
-function rscf.RecordSummonProcedure()
-	if rscf.RecordSummonProcedure_Switch then return end
-	rscf.RecordSummonProcedure_Switch=true
-	local f=Effect.CreateEffect
-	Effect.CreateEffect=function(c)
-		local e0=f(c)
-		local e1=Effect.GlobalEffect()
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_ADJUST)
-		e1:SetOperation(rscf.RecordSummonProcedure_Operation)
-		Duel.RegisterEffect(e1,0)
-		Effect.CreateEffect=f
-		return e0
-	end
+function rssf.EnableSpecialProcedure()
+	if rssf.EnableSpecialProcedure_Switch then return end
+	local e1=rsef.FC({true,0},EVENT_ADJUST)
+	e1:SetOperation(rssf.EnableSpecialProcedure_Op)
+	rssf.EnableSpecialProcedure_Switch=e1
 end
-rssf.RecordSummonProcedure=rscf.RecordSummonProcedure
---directly enable will cause bugs, but i am lazy to find what cards i have used this function
---rssf.RecordSummonProcedure()
-function rscf.RecordSummonProcedure_Operation(e,tp)
-	local g=Duel.GetMatchingGroup(Card.IsType,0,0xff,0xff,nil,rscf.extype)
+function rssf.EnableSpecialProcedure_Op(e,tp)
+	local g=Duel.GetMatchingGroup(Card.IsType,0,0xff,0xff,nil,TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)
 	local f6=aux.AddSynchroProcedure
 	local f7=aux.AddSynchroMixProcedure
 	local f8=aux.AddXyzProcedure
@@ -3687,7 +3682,6 @@ function rscf.RecordSummonProcedure_Operation(e,tp)
 		if mt.initial_effect then
 			mt.initial_effect(tc) 
 		end
-		
 	end
 	aux.AddSynchroProcedure=f6
 	aux.AddSynchroMixProcedure=f7
@@ -3769,7 +3763,7 @@ end
 rscf.AddSynchroProcedure=aux.AddSynchroProcedure
 function rscf.AddSynchroProcedureSpecial(c,f1,f2,f3,f4,minc,maxc,gc)
 	local mt=getmetatable(c)
-	if not rscf.AddSynchroProcedureSpecial_Switch then
+	if not rscf.AddSynchroProcedureSpecial_Switch then 
 		rscf.AddSynchroProcedureSpecial_Switch=true
 		rscf.GetSynMaterials	=   aux.GetSynMaterials
 		aux.GetSynMaterials  =  rscf.GetSynMaterials2
@@ -3779,8 +3773,6 @@ function rscf.AddSynchroProcedureSpecial(c,f1,f2,f3,f4,minc,maxc,gc)
 		aux.SynMixCondition  =  rscf.SynMixCondition2
 		rscf.SynMixTarget   =   aux.SynMixTarget
 		aux.SynMixTarget  =  rscf.SynMixTarget2
-		rscf.SynMixFilter4  = aux.SynMixFilter4
-		aux.SynMixFilter4   = rscf.SynMixFilter42
 		rscf.SynMixOperation	=   aux.SynMixOperation
 		aux.SynMixOperation = rscf.SynMixOperation2  
 	end
@@ -3830,7 +3822,8 @@ function rscf.SynMixCheckGoal2(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
 	--step 1, check extra material
 	if mg:IsExists(rscf.SUncompatibilityFilter,1,nil,mg,syncard,tp) then return false end
 	--step 2, check material group filter function
-	if syncard.rs_synchro_material_check and not syncard.rs_synchro_material_check(mg,syncard,tp) then return false end
+	--useless 
+	--if syncard.rs_synchro_material_check and not syncard.rs_synchro_material_check(mg,syncard,tp) then return false end
 	--step 3, check level fo dark_synchro and non-level_synchro 
 	local f=Card.GetLevel
 	local darktunerg=mg:Filter(Card.IsType,nil,TYPE_TUNER)
@@ -3876,9 +3869,6 @@ function rscf.SynMixTarget2(f1,f2,f3,f4,minc,maxc,gc)
 		end
 		return rscf.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc)(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
 	end
-end
-function rscf.SynMixFilter42(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc,mgchk)
-	return rscf.SynMixFilter4(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc,mgchk)
 end
 function rscf.SynMixOperation2(f1,f2,f3,f4,minct,maxc,gc)
 	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
@@ -3945,17 +3935,6 @@ function rscf.AddSynchroProcedureSpecial_Ladian(c,f1,lv,f2,f3,f4,minc,maxc,extra
 	local e1=rscf.AddSynchroProcedureSpecial(c,f1,f2,f3,f4,minc,maxc)
 	return e1
 end
---Check Synchro Material Group for Synchro Procedure
-function rscf.AddSynchroProcedureSpecial_MaterialCheck(c,checkfilter,...)
-	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
-	if not c.rs_synchro_material_check then
-		local mt=getmetatable(c)
-		mt.rs_synchro_material_check=checkfilter
-	end
-	local e1=rscf.AddSynchroProcedureSpecial(c,...)
-	return e1
-end
-
 --Custom Synchro Materials' Action
 function rscf.AddSynchroProcedureSpecial_CustomAction(c,actionfun,...)
 	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
@@ -4842,3 +4821,5 @@ function rsof.Check_Boolean(check_val,bool_val)
 end 
 -------------------"Hape"---------------------
 rsof.Escape_Old_Functions()
+--directly enable will cause bugs, but i am lazy to find what cards i have used this function
+rssf.EnableSpecialProcedure()

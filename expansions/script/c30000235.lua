@@ -58,11 +58,9 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	for i=0,1 do
 		if rp==i and eg:IsExists(cm.cfilter,1,nil,rp) then
 			Duel.RegisterFlagEffect(1-rp,m,rsreset.pend,0,1)
-		end
-	end
-	for i=0,1 do
-		if Duel.GetFlagEffect(i,m)>=2 then
-			Duel.RaiseEvent(eg,m,re,r,rp,ep,ev)
+			if Duel.GetFlagEffect(1-rp,m)>=2 then 
+				Duel.RaiseEvent(eg,m,re,r,rp,1-rp,ev)
+			end
 		end
 	end
 end
@@ -73,7 +71,7 @@ function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp~=tp and Duel.GetTurnPlayer()==tp
+	return ep==tp and Duel.GetTurnPlayer()==tp
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,m+100)==0 end

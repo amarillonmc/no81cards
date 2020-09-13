@@ -51,17 +51,7 @@ function c40009011.synop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local tc=Duel.GetFirstTarget()
-	if Duel.ChangePosition(tc,POS_FACEUP)~=0 and tc:GetRace(RACE_ROCK) and Duel.SelectYesNo(tp,aux.Stringid(40009011,1)) then
-			Duel.BreakEffect()
-	if not tc:IsRelateToEffect(e) or tc:IsFacedown() then return end
-	local mg=Group.FromCards(c,tc)
-	local g=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,nil,mg)
-	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SynchroSummon(tp,sg:GetFirst(),nil,mg)
-	end
-end
+	Duel.ChangePosition(tc,POS_FACEUP)
 end
 function c40009011.cardiansynlevel(c)
 	return 3

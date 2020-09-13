@@ -151,20 +151,20 @@ function c33400320.atkop(e,tp,eg,ep,ev,re,r,rp)
 		ec:RegisterEffect(e1)
 	end
 end
-function c33400320.thfilter1(c)
-	return  c:IsAbleToHand() and c:IsSetCard(0x5341)
-end
 function c33400320.refilter(c)
 	return  c:IsAbleToRemove() 
 end
 function c33400320.desop(e,tp,eg,ep,ev,re,r,rp)  
 	 local g1=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
-	 local g2=Duel.GetMatchingGroup(c33400320.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	 if Duel.SelectYesNo(tp,aux.Stringid(33400320,0)) then
-		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		 local tc2=g2:Select(tp,1,1,nil)
-		 Duel.SendtoHand(tc2,tp,REASON_EFFECT)
-	 end
+	 local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetValue(1000)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+			c:RegisterEffect(e1)
+	 if c:IsChainAttackable() then
+			Duel.ChainAttack()
+		end
 	if Duel.SelectYesNo(tp,aux.Stringid(33400320,1)) then
 		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		 local tc=g1:Select(tp,1,1,nil)

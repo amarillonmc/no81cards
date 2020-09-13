@@ -56,14 +56,12 @@ function c33401201.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCountFromEx(tp,tp,tc)<=0 or not aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) then return end
 	if tc:IsFacedown() or not tc:IsRelateToEffect(e) or tc:IsControler(1-tp) or tc:IsImmuneToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g1
-	local g2
 	if tc:IsSetCard(0x341) then 
-	 g1=Duel.GetMatchingGroup(c33401201.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+2)
-	 g2=Duel.GetMatchingGroup(c33401201.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+4)
+	local g1=Duel.GetMatchingGroup(c33401201.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+2)
+	local g2=Duel.GetMatchingGroup(c33401201.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+4)
 	else
-	 g1=Duel.GetMatchingGroup(c33401201.filter22,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+2)
-	 g2=Duel.GetMatchingGroup(c33401201.filter22,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+4)
+	local g1=Duel.GetMatchingGroup(c33401201.filter22,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+2)
+	local g2=Duel.GetMatchingGroup(c33401201.filter22,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+4)
 	end
 	g2:Merge(g1)
 	local g3=g2:Select(tp,1,1,nil)

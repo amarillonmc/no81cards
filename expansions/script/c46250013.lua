@@ -26,7 +26,6 @@ function c46250013.initial_effect(c)
     e5:SetRange(LOCATION_MZONE)
     e5:SetCondition(c46250013.spcon)
     e5:SetCost(c46250013.spcost)
-    e5:SetTarget(c46250013.sptg)
     e5:SetOperation(c46250013.spop)
     c:RegisterEffect(e5)
     local e6=Effect.CreateEffect(c)
@@ -98,9 +97,6 @@ function c46250013.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     g:KeepAlive()
     e:SetLabelObject(g)
     Duel.Release(c,REASON_COST)
-end
-function c46250013.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return true end
 end
 function c46250013.spop(e,tp,eg,ep,ev,re,r,rp)
     local g=e:GetLabelObject():Filter(Card.IsLocation,nil,LOCATION_GRAVE)

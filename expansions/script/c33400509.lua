@@ -12,6 +12,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,m)
+	e1:SetCost(cm.cost)
 	e1:SetCondition(cm.setcon)
 	e1:SetTarget(cm.settg)
 	e1:SetOperation(cm.setop)
@@ -37,8 +38,13 @@ end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x3344) and c:IsFaceup()
 end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
+end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) 
 end
 function cm.setfilter(c)
 	return c:IsCode(33400502) and c:IsSSetable()
@@ -60,13 +66,15 @@ function cm.cfilter(c,tp)
 		and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsSetCard(0x341)
 end
 function cm.dscon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp) and Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return eg:IsExists(cm.cfilter,1,nil,tp) 
 end
 function cm.dsfilter(c)
 	return c:IsSetCard(0x341) 
 end
 function cm.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.dsfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.dsfilter,tp,LOCATION_DECK,0,1,nil) and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)) end
+   if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 	local g=Duel.GetMatchingGroup(cm.dsfilter,tp,LOCATION_DECK,0,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end

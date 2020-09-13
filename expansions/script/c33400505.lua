@@ -19,7 +19,6 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCondition(cm.spcon)
 	e1:SetCost(cm.spcost)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -32,7 +31,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetCountLimit(1,m+10000)
-	e2:SetCondition(cm.spcon)
+	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
@@ -54,11 +53,10 @@ end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x3344) and c:IsFaceup()
 end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
-end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return  Duel.IsCanRemoveCounter(tp,1,1,0x1015,3,REASON_COST) end
+	if chk==0 then return  Duel.IsCanRemoveCounter(tp,1,1,0x1015,3,REASON_COST) and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil))  end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end 
 	Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,1))
 	Duel.RemoveCounter(tp,1,1,0x1015,3,REASON_COST)
 end
@@ -72,6 +70,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)  end
 end
 
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
+end
 function cm.thfilter(c)
 	return c:IsSetCard(0x341) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand() and not c:IsCode(m)
 end

@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e0:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e0:SetCountLimit(1,m)
-	e0:SetCondition(cm.spcon)
+	e0:SetCost(cm.cost)
 	e0:SetTarget(cm.sptg1)
 	e0:SetOperation(cm.spop1)
 	c:RegisterEffect(e0)
@@ -34,6 +34,7 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e3:SetCode(EVENT_DESTROYED)
 	e3:SetCountLimit(1,m)
+	e3:SetCost(cm.cost)
 	e3:SetCondition(cm.spcon2)
 	e3:SetTarget(cm.sptg2)
 	e3:SetOperation(cm.spop2)
@@ -66,8 +67,10 @@ end
 function cm.cnfilter(c)
 	return c:IsSetCard(0x3344)  and c:IsFaceup()
 end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.cnfilter,tp,LOCATION_ONFIELD,0,1,nil)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.cnfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.cnfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
 function cm.spfilter1(c,e,tp)
 	return c:IsSetCard(0x341) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
@@ -106,7 +109,7 @@ function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and Duel.IsExistingMatchingCard(cm.cnfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 
 end
 function cm.spfilter(c,e,tp)
 	return  c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsAttribute(ATTRIBUTE_WATER)or  c:IsSetCard(0x341) )

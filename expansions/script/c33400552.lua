@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN) 
 	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
-	e1:SetCondition(cm.con)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -18,8 +18,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCondition(cm.con)
-	e2:SetCost(cm.cost)
+	e2:SetCost(cm.cost2)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
 --remain field
@@ -31,8 +30,10 @@ end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x6341) and c:IsFaceup()
 end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return  Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
@@ -48,7 +49,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		for i=1,2 do
 			local token=Duel.CreateToken(tp,m+1)
 			Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP) 
-			token:AddCounter(0x1015,1)
+			token:AddCounter(0x1015,2)
 		end
 		Duel.SpecialSummonComplete()
 	end
@@ -60,14 +61,16 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	   for i=1,ct1 do
 			local token=Duel.CreateToken(tp,m+1)
 			Duel.SpecialSummonStep(token,0,tp,1-tp,false,false,POS_FACEUP) 
-			token:AddCounter(0x1015,1)   
+			token:AddCounter(0x1015,2)   
 		end
 		Duel.SpecialSummonComplete()
    end 
 end
 
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
+function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)) end
+	 if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)

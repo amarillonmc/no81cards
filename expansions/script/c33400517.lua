@@ -37,8 +37,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_DESTROYED)
-	e4:SetCountLimit(1,9024199)
-	e4:SetCondition(cm.spcon)
+	e4:SetCost(cm.cost)
 	e4:SetTarget(cm.sptg)
 	e4:SetOperation(cm.spop)
 	c:RegisterEffect(e4)
@@ -58,12 +57,14 @@ function cm.ckfilter(c)
 	return c:IsSetCard(0x3344) and c:IsFaceup()
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) and  not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)  and ep~=tp and  Duel.IsChainNegatable(ev) and  re:GetHandler():GetCounter(0x1015)~=0
+	return   not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)  and ep~=tp and  Duel.IsChainNegatable(ev) and  re:GetHandler():GetCounter(0x1015)~=0
 end
 function cm.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.ckfilter1,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.ckfilter1,tp,LOCATION_ONFIELD,0,1,nil) and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)) end
 	local tg=Duel.SelectMatchingCard(tp,cm.ckfilter1,tp,LOCATION_ONFIELD,0,1,1,nil)
 	Duel.SendtoHand(tg,tp,REASON_COST)
+   if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
 function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -87,8 +88,10 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-  return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x341) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)

@@ -12,6 +12,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetCost(cm.cost)
 	e1:SetCondition(cm.con)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
@@ -30,8 +31,13 @@ function cm.thcfilter(c,ec)
 		return bit.extract(ec:GetLinkedZone(c:GetPreviousControler()),c:GetPreviousSequence())~=0
 	end
 end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
+end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.thcfilter,1,nil,e:GetHandler()) and Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return eg:IsExists(cm.thcfilter,1,nil,e:GetHandler()) 
 end
 function cm.cfilter1(c)
 	return c:IsType(TYPE_RITUAL)and c:IsType(TYPE_MONSTER)
@@ -116,7 +122,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 				  if op[op1]==0 then
 				  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 				  local tc3=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-				  Duel.Destroy(tc3,REASON_EFFECT)	 
+				  Duel.Destroy(tc3,REASON_EFFECT)   
 				  Duel.RegisterFlagEffect(tp,m+10000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 					if op1~=i then 
 						for i2=op1,i-1 do
@@ -139,9 +145,9 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					i=i-1
 					xz=1
 				  end
-				  if op[op1]==2 and xz==0 then			  
+				  if op[op1]==2 and xz==0 then		  
 				   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				   local  g=Duel.SelectMatchingCard(tp,cm.filter3,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp)			 
+				   local  g=Duel.SelectMatchingCard(tp,cm.filter3,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp)		 
 					if g:GetCount()>0 then
 						Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 					end
@@ -163,7 +169,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 							Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 							local g=Duel.SelectMatchingCard(tp,cm.pcfilter,tp,LOCATION_EXTRA,0,1,1,nil)
 							if g:GetCount()>0 then
-								Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+								Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 							end 
 						end
 					end

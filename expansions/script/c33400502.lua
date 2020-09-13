@@ -29,7 +29,7 @@ function c33400502.cnfilter(c)
 	return c:IsSetCard(0x6341) and c:IsFaceup()
 end
 function c33400502.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(c33400502.cnfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.cnfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	if not Duel.IsExistingMatchingCard(cm.cnfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
 	end
 end

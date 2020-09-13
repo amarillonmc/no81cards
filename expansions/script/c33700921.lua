@@ -86,9 +86,9 @@ function c33700921.operation(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(33700921,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,0)
 end
 function c33700921.dop(e,tp,eg,ep,ev,re,r,rp) 
+	Duel.ChangeBattleDamage(ep,0)  
 	if Duel.SelectYesNo(tp,aux.Stringid(33700921,0)) then
 		Duel.Recover(tp,ev,REASON_EFFECT)
-	end
-	Duel.ChangeBattleDamage(ep,0)  
+	end	
 end
 

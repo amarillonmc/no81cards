@@ -51,7 +51,7 @@ function c79029571.initial_effect(c)
 	e7:SetType(EFFECT_TYPE_FIELD)
 	e7:SetRange(LOCATION_MZONE)
 	e7:SetCode(EFFECT_DISABLE_FIELD)
-	e7:SetProperty(EFFECT_FLAG_REPEAT+EFFECT_FLAG_CLIENT_HINT)
+	e7:SetProperty(EFFECT_FLAG_REPEAT)
 	e7:SetOperation(c79029571.disop)
 	c:RegisterEffect(e7)
 	--atk def

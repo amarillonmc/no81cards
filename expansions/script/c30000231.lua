@@ -34,9 +34,11 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 			Duel.RegisterFlagEffect(1-rp,m,rsreset.pend,0,1,flag)
-			if Duel.GetFlagEffect(1-rp,m)>=2 then 
-				Duel.RaiseEvent(eg,m,re,r,rp,1-rp,ev)
-			end
+		end
+	end
+	for i=0,1 do
+		if Duel.GetFlagEffect(i,m)>=2 then
+			Duel.RaiseEvent(eg,m,re,r,rp,ep,ev)
 		end
 	end
 end
@@ -56,7 +58,7 @@ function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==tp
+	return rp~=tp
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,m+100)==0 end
@@ -67,31 +69,21 @@ function cm.spfilter(c,e,tp)
 end
 function cm.spop(e,tp,eg)
 	local c=rscf.GetSelf(e)
-	if not c then return end
-	local res=false
-	if c:IsLocation(LOCATION_GRAVE) then
-		res=rssf.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP,nil,{"leave",LOCATION_REMOVED })>0
-	else
-		res=rssf.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)>0
-	end
-	if not res then return end
+	if not c or rssf.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)<=0 then return end
 	c:CompleteProcedure()
-	cm.gainop(c,tp,true)
-end
-function cm.gainop(c,tp,ignore,extra)
 	local flaglist={Duel.GetFlagEffectLabel(tp,m)}
 	local flag=0
 	for _,v in pairs(flaglist) do
 		flag=flag|v
 	end
-	if flag & TYPE_MONSTER ~=0 or extra then
-		local e1=rsef.QO({c,nil,ignore},nil,{m,0},1,"dr","ptg",LOCATION_MZONE,nil,nil,rsop.target(1,"dr"),cm.drop,nil,rsreset.est)
+	if flag & TYPE_MONSTER ~=0 then
+		local e1=rsef.QO({c,nil,true},nil,{m,0},1,"dr","ptg",LOCATION_MZONE,nil,nil,rsop.target(1,"dr"),cm.drop,nil,rsreset.est)
 	end
-	if flag & TYPE_SPELL ~=0 or extra then
-		local e2=rsef.QO({c,nil,ignore},nil,{m,2},1,"tg",nil,LOCATION_MZONE,nil,nil,rsop.target(Card.IsAbleToGrave,"tg",LOCATION_ONFIELD,LOCATION_ONFIELD),cm.tgop,nil,rsreset.est)
+	if flag & TYPE_SPELL ~=0 then
+		local e2=rsef.QO({c,nil,true},nil,{m,2},1,"tg",nil,LOCATION_MZONE,nil,nil,rsop.target(Card.IsAbleToGrave,"tg",LOCATION_ONFIELD,LOCATION_ONFIELD),cm.tgop,nil,rsreset.est)
 	end
-	if flag & TYPE_TRAP ~=0 or extra then
-		local e3=rsef.QO({c,nil,ignore},nil,{m,3},1,"tg",nil,LOCATION_MZONE,nil,nil,rsop.target(Card.IsAbleToHand,"th",LOCATION_GRAVE,LOCATION_GRAVE),cm.thop,nil,rsreset.est)
+	if flag & TYPE_TRAP ~=0 then
+		local e3=rsef.QO({c,nil,true},nil,{m,3},1,"tg",nil,LOCATION_MZONE,nil,nil,rsop.target(Card.IsAbleToHand,"th",LOCATION_GRAVE,LOCATION_GRAVE),cm.thop,nil,rsreset.est)
 	end
 end
 function cm.tgop(e,tp)
