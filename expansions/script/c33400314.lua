@@ -39,6 +39,7 @@ function c33400314.spfilter(c,fc,tp)
 end
 function c33400314.sprcon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	return  Duel.IsExistingMatchingCard(c33400314.spfilter,tp,LOCATION_ONFIELD,0,1,nil,c,tp)
 end
 function c33400314.sprop(e,tp,eg,ep,ev,re,r,rp,c)

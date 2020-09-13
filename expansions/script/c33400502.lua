@@ -20,7 +20,7 @@ c:SetUniqueOnField(1,0,33400502)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCondition(c33400502.condition2)
+	e2:SetCost(c33400502.cost)
 	e2:SetTarget(c33400502.thtg2)
 	e2:SetOperation(c33400502.thop2)
 	c:RegisterEffect(e2)
@@ -28,8 +28,10 @@ end
 function c33400502.cnfilter(c)
 	return c:IsSetCard(0x6341) and c:IsFaceup()
 end
-function c33400502.condition2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c33400502.cnfilter,tp,LOCATION_ONFIELD,0,1,nil)
+function c33400502.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(c33400502.cnfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.cnfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
+	end
 end
 
 function c33400502.condition(e,tp,eg,ep,ev,re,r,rp)

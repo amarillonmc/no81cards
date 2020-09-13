@@ -18,7 +18,7 @@ function c33401201.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetCountLimit(1,33401201+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,33401201)
 	e2:SetCondition(c33401201.spcd)
 	e2:SetCost(c33401201.spcost)
 	e2:SetTarget(c33401201.sptg)
@@ -27,14 +27,21 @@ function c33401201.initial_effect(c)
 end
 function c33401201.filter1(c,e,tp)
 	local rk=c:GetRank()
-	return c:IsFaceup() and c:IsSetCard(0x341) and c:IsType(TYPE_XYZ)
-		and (Duel.IsExistingMatchingCard(c33401201.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk+2) or
-		Duel.IsExistingMatchingCard(c33401201.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk+4))
+	return c:IsFaceup()  and c:IsType(TYPE_XYZ)
+		and ((c:IsSetCard(0x341) and  (Duel.IsExistingMatchingCard(c33401201.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk+2) or
+		Duel.IsExistingMatchingCard(c33401201.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk+4)))
+		or (Duel.IsExistingMatchingCard(c33401201.filter22,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk+2) or
+		Duel.IsExistingMatchingCard(c33401201.filter22,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk+4)))
 		and Duel.GetLocationCountFromEx(tp,tp,c)>0
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end
 function c33401201.filter2(c,e,tp,mc,rk)
 	return c:IsRank(rk) and c:IsSetCard(0x341) and mc:IsCanBeXyzMaterial(c)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
+end
+function c33401201.filter22(c,e,tp,mc,rk)
+	return c:IsRank(rk) and c:IsSetCard(0x341) and mc:IsCanBeXyzMaterial(c)
+	 and c:GetOriginalAttribute()==mc:GetOriginalAttribute() and c:GetOriginalRace()==mc:GetOriginalRace()
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 end
 function c33401201.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -49,8 +56,15 @@ function c33401201.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCountFromEx(tp,tp,tc)<=0 or not aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) then return end
 	if tc:IsFacedown() or not tc:IsRelateToEffect(e) or tc:IsControler(1-tp) or tc:IsImmuneToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g1=Duel.GetMatchingGroup(c33401201.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+2)
-	local g2=Duel.GetMatchingGroup(c33401201.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+4)
+	local g1
+	local g2
+	if tc:IsSetCard(0x341) then 
+	 g1=Duel.GetMatchingGroup(c33401201.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+2)
+	 g2=Duel.GetMatchingGroup(c33401201.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+4)
+	else
+	 g1=Duel.GetMatchingGroup(c33401201.filter22,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+2)
+	 g2=Duel.GetMatchingGroup(c33401201.filter22,tp,LOCATION_EXTRA,0,nil,e,tp,tc,tc:GetRank()+4)
+	end
 	g2:Merge(g1)
 	local g3=g2:Select(tp,1,1,nil)
 	local sc=g3:GetFirst()
