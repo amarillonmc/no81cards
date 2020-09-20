@@ -1,0 +1,106 @@
+--KDA-至臻伊芙琳
+function c9981575.initial_effect(c)
+	--fusion material
+	c:EnableReviveLimit()
+	aux.AddFusionProcCodeFun(c,9981571,aux.FilterBoolFunction(Card.IsFusionType,TYPE_XYZ),1,true,true)
+	--spsummon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.fuslimit)
+	c:RegisterEffect(e1)
+	--to hand
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9981575,0))
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCountLimit(1,9981575)
+	e1:SetTarget(c9981575.thtg)
+	e1:SetOperation(c9981575.thop)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2)
+   --special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9981575,0))
+	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1)
+	e1:SetOperation(c9981575.atkop)
+	c:RegisterEffect(e1)
+	--spsummon bgm
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e8:SetOperation(c9981575.sumsuc)
+	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e9)
+end
+function c9981575.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981575,0))
+end
+function c9981575.thfilter(c)
+	return c:IsType(TYPE_EQUIP) and c:IsAbleToHand()
+end
+function c9981575.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9981575.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+end
+function c9981575.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9981575.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end
+function c9981575.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsFacedown() or not c:IsRelateToEffect(e) or c:IsAttack(0) then return end
+	local tg=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+	local tc=tg:GetFirst()
+	while tc do
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+	e1:SetValue(0)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e1)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+	e1:SetValue(2000)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	tc:RegisterEffect(e1)
+	tc=tg:GetNext()
+	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e1:SetValue(1)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_PRE_BATTLE_DAMAGE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(c9981575.damcon)
+	e2:SetOperation(c9981575.damop)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e2)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9981575,0))
+end
+function c9981575.damcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return ep==tp and c:IsRelateToBattle() and eg:GetFirst()==c:GetBattleTarget()
+end
+function c9981575.damop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ChangeBattleDamage(1-tp,ev,false)
+end

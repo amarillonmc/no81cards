@@ -1,0 +1,102 @@
+--光之国-梦比优斯凤凰勇者
+function c9951073.initial_effect(c)
+	 --xyz summon
+	aux.AddXyzProcedure(c,c9951073.mfilter,6,4)
+	c:EnableReviveLimit()
+   --cannot target
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e2:SetValue(aux.tgoval)
+	c:RegisterEffect(e2)
+	--indes
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(aux.indoval)
+	c:RegisterEffect(e3)
+  --damage&recover
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9951073,0))
+	e3:SetCategory(CATEGORY_DAMAGE+CATEGORY_RECOVER)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_DAMAGE_STEP_END)
+	e3:SetTarget(c9951073.damtg)
+	e3:SetOperation(c9951073.damop)
+	c:RegisterEffect(e3)
+ --act limit
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9951073,1))
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,9951073)
+	e2:SetCondition(c9951073.discon)
+	e2:SetCost(c9951073.cost)
+	e2:SetOperation(c9951073.operation2)
+	c:RegisterEffect(e2)
+ --spsummon bgm
+	 local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e8:SetOperation(c9951073.sumsuc)
+	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e9)
+end
+function c9951073.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951073,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(9951073,2))
+end
+function c9951073.mfilter(c)
+	return c:IsSetCard(0x9bd1) or c:IsAttribute(ATTRIBUTE_LIGHT)
+end
+function c9951073.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetAttackTarget()~=nil end
+	local bc=e:GetHandler():GetBattleTarget()
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,bc:GetAttack())
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,bc:GetDefense())
+end
+function c9951073.damop(e,tp,eg,ep,ev,re,r,rp)
+	local bc=e:GetHandler():GetBattleTarget()
+	local atk=bc:GetAttack()
+	local def=bc:GetDefense()
+	if atk<0 then atk=0 end
+	if def<0 then def=0 end
+	Duel.Damage(1-tp,atk,REASON_EFFECT,true)
+	Duel.Recover(tp,def,REASON_EFFECT,true)
+	Duel.RDComplete()
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951073,0))
+end
+function c9951073.discon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0xabd1)
+end
+function c9951073.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
+function c9951073.operation2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(0,LOCATION_MZONE)
+	e1:SetValue(-3000)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetTargetRange(0,1)
+	e2:SetValue(1)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+   Duel.Hint(HINT_MUSIC,0,aux.Stringid(9951073,1))
+end
