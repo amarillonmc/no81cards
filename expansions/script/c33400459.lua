@@ -53,16 +53,14 @@ function c33400459.initial_effect(c)
 	e6:SetTarget(c33400459.destg) 
 	e6:SetOperation(c33400459.desop)
 	c:RegisterEffect(e6)
- --destroy&damage
+   --maintain
 	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(33400459,1))
-	e7:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
-	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e7:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e7:SetCode(EVENT_PHASE+PHASE_END)
 	e7:SetRange(LOCATION_SZONE)
-	e7:SetCountLimit(1,33400459+20000)
-	e7:SetTarget(c33400459.destg1)
-	e7:SetOperation(c33400459.desop1)
+	e7:SetCountLimit(1)
+	e7:SetOperation(c33400459.mtop)
 	c:RegisterEffect(e7)
 end
 function c33400459.eqlimit(e,c)
@@ -120,20 +118,10 @@ function c33400459.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
 end
 
-function c33400459.destg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local ec=e:GetHandler():GetEquipTarget()
-	ec:CreateEffectRelation(e)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,ec,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,1000)
-end
-function c33400459.desop1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local ec=c:GetEquipTarget()
-	if ec:IsRelateToEffect(e) and ec:IsFaceup() then
-		if  Duel.SendtoGrave(ec,REASON_EFFECT)~=0 then 
-		 Duel.Damage(tp,1000,REASON_EFFECT)  
-		end 
+function c33400459.mtop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.CheckLPCost(tp,1000) and Duel.SelectYesNo(tp,aux.Stringid(33400459,0)) then
+		Duel.PayLPCost(tp,1000)
+	else 
+		Duel.SendtoGrave(e:GetHandler():GetEquipTarget(),REASON_COST)
 	end
 end

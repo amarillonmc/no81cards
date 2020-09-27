@@ -57,7 +57,7 @@ function cm.desfilter(c)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(12,0,aux.Stringid(m,7))
-	local g=Duel.GetMatchingGroup(cm.acfilter,tp,0,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 		local sc=g:GetFirst()
 		while sc do

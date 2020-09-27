@@ -104,5 +104,5 @@ function c65000000.spzop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c65000000.val(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)*300
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,e:GetHandlerPlayer(),LOCATION_REMOVED,0,nil)*300
 end

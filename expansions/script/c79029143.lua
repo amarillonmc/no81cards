@@ -25,7 +25,6 @@ function c79029143.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_ATKCHANGE)
 	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
 	e3:SetCost(c79029143.atkcost)
@@ -40,10 +39,6 @@ function c79029143.val(e,c)
 	local g=Duel.GetMatchingGroup(c79029143.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	return g:GetSum(Card.GetLink)*200
 end
-function c79029143.val1(e,c)
-	local g=Duel.GetMatchingGroup(c79029143.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	return g:GetSum(Card.GetLink)*-200
-end
 function c79029143.atkcon2(e,tp,eg,ep,ev,re,r,rp)
 	local bc=e:GetHandler():GetBattleTarget()
 	return bc~=nil and bc:GetAttack()~=bc:GetBaseAttack()
@@ -54,7 +49,7 @@ function c79029143.atkcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	c:RegisterFlagEffect(79029143,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
 end
 function c79029143.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TURE,tp,0,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(c79029143.cfilter,tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TURE,tp,0,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(c79029143.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 end
 function c79029143.atkop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -88,9 +83,12 @@ function c79029143.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e4)
 		tc=g:GetNext()
+	end
 end
+function c79029143.val1(e,c)
+	local g=Duel.GetMatchingGroup(c79029143.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	return g:GetSum(Card.GetLink)*-200
 end
-
 
 
 

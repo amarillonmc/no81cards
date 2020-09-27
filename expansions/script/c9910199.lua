@@ -40,7 +40,8 @@ function c9910199.filter(c,loc)
 	return c:IsStatus(STATUS_SPSUMMON_TURN) and bit.band(c:GetSummonLocation(),loc)~=0
 end
 function c9910199.spfilter(c,e,tp)
-	return c:IsCode(9910199) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevel(5) and c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_WIND)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910199.lkfilter(c)
 	return c:IsLinkSummonable(nil)

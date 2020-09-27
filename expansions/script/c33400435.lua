@@ -1,6 +1,6 @@
 --DEM 鸢一折纸 莫德雷德
 function c33400435.initial_effect(c)
-	  aux.AddXyzProcedure(c,nil,6,2)
+	  aux.AddXyzProcedure(c,nil,6,3)
 	--Equip
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(33400435,1))
@@ -35,6 +35,15 @@ function c33400435.initial_effect(c)
 	e4:SetValue(1)
 	e4:SetCondition(c33400435.actcon)
 	c:RegisterEffect(e4)
+  --immune
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_IMMUNE_EFFECT)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(c33400435.eqcon)
+	e5:SetValue(c33400435.efilter)
+	c:RegisterEffect(e5)
 end
 function c33400435.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
@@ -70,6 +79,8 @@ end
 function c33400435.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local atk=e:GetHandler():GetBattleTarget():GetAttack()
+	local def=e:GetHandler():GetBattleTarget():GetDefense()
+	if def>atk then atk=def end
 	if c:IsRelateToEffect(e) and c:IsFaceup() then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -88,6 +99,13 @@ function c33400435.cccfilter2(c)
 end
 function c33400435.actcon(e)
 local tc=e:GetHandler():GetBattleTarget()
-	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler() and (tc:IsSetCard(0x341) or (Duel.IsExistingMatchingCard(c33400435.cccfilter1,tp,LOCATION_SZONE,0,1,nil) or 
-	Duel.IsExistingMatchingCard(c33400435.cccfilter2,tp,LOCATION_MZONE,0,1,nil)))
+	return tc:IsFaceup() and (Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()) and (tc:IsSetCard(0x341) or (Duel.IsExistingMatchingCard(c33400435.cccfilter1,tp,LOCATION_SZONE,0,1,nil) or  Duel.IsExistingMatchingCard(c33400435.cccfilter2,tp,LOCATION_MZONE,0,1,nil)))
+end
+
+function c33400435.eqcon(e)
+	local eg=e:GetHandler():GetEquipGroup()
+	return eg:IsExists(Card.IsSetCard,1,nil,0x6343)
+end
+function c33400435.efilter(e,re,tp)
+	return re:GetHandlerPlayer()~=e:GetHandlerPlayer()
 end

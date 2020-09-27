@@ -41,10 +41,10 @@ function c33400422.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and  not Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x341) then 
 		if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,0,LOCATION_MZONE,1,nil,0x341)   
 		or (  Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) and 
-			(Duel.IsExistingMatchingCard(c33400421.cccfilter1,tp,LOCATION_ONFIELD,0,1,nil) or 
-			Duel.IsExistingMatchingCard(c33400421.cccfilter2,tp,LOCATION_MZONE,0,1,nil))) 
+			(Duel.IsExistingMatchingCard(c33400422.cccfilter1,tp,LOCATION_ONFIELD,0,1,nil) or 
+			Duel.IsExistingMatchingCard(c33400422.cccfilter2,tp,LOCATION_MZONE,0,1,nil))) 
 		then
-		Duel.SetChainLimit(aux.FALSE)
+		   Duel.SetChainLimit(aux.FALSE)
 		end
 	end
 end
@@ -55,14 +55,23 @@ function c33400422.thop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+	--ChainLimit
+			local e3=Effect.CreateEffect(e:GetHandler())
+			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e3:SetCode(EVENT_CHAINING)
+			e3:SetOperation(c33400422.chainop)
+			e3:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e3,tp)
+end
+function c33400422.chainop(e,tp,eg,ep,ev,re,r,rp)
+	if re:GetHandler():IsSetCard(0x3342) and ep==tp then
+		Duel.SetChainLimit(c33400422.chainlm)
+	end
+end
+function c33400422.chainlm(e,rp,tp)
+	return tp==rp
 end
 
-function c33400422.cccfilter1(c)
-	return c:IsCode(33400428) and c:IsFaceup()
-end
-function c33400422.cccfilter2(c)
-	return c:IsCode(33400425) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_XYZ)
-end
 function c33400422.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=c:GetBattleTarget()
@@ -86,26 +95,20 @@ function c33400422.eqop(e,tp,eg,ep,ev,re,r,rp)
 		if not Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x341) then 
 			if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,0,LOCATION_MZONE,1,nil,0x341)   
 			or (  Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) and 
-				(Duel.IsExistingMatchingCard(c33400421.cccfilter1,tp,LOCATION_ONFIELD,0,1,nil) or 
-				Duel.IsExistingMatchingCard(c33400421.cccfilter2,tp,LOCATION_MZONE,0,1,nil))) 
+				(Duel.IsExistingMatchingCard(c33400422.cccfilter1,tp,LOCATION_ONFIELD,0,1,nil) or 
+				Duel.IsExistingMatchingCard(c33400422.cccfilter2,tp,LOCATION_MZONE,0,1,nil))) 
 			then
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-				e1:SetRange(LOCATION_MZONE)
-				e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
-				e1:SetCountLimit(1)
-				e1:SetValue(c33400422.valcon)
-				e1:SetReset(RESET_PHASE+PHASE_END)
-				e:GetHandler():RegisterEffect(e1)  
+			   if Duel.IsExistingMatchingCard(c33400422.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and   Duel.SelectYesNo(tp,aux.Stringid(33400422,2))then
+				 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+				 local g2=Duel.SelectMatchingCard(tp,c33400422.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+				 if #g2>0 then
+					 Duel.SendtoHand(g2,nil,REASON_EFFECT)
+					 Duel.ConfirmCards(1-tp,g2)
+				 end 
+			   end
 			end
 		end
 end
-function c33400422.valcon(e,re,r,rp)
-	if bit.band(r,REASON_EFFECT)~=0 then
-		return 1
-	else return 0 end
-end
-function c33400422.filter(c,e,tp,ec)
-	return c:IsSetCard(0x6343)  and c:CheckEquipTarget(ec)and c:CheckUniqueOnField(tp)
+function c33400422.thfilter(c)
+	return c:IsSetCard(0x9343,0x6343)  and c:IsAbleToHand()
 end

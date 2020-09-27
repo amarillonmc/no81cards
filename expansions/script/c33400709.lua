@@ -18,6 +18,19 @@ function cm.initial_effect(c)
 	e0:SetValue(cm.valcheck)
 	e0:SetLabelObject(e1)
 	c:RegisterEffect(e0)
+  --
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
+	e2:SetCondition(cm.rpcon)
+	e2:SetCost(cm.spcost1)
+	e2:SetTarget(cm.reptg)
+	e2:SetOperation(cm.repop)
+	c:RegisterEffect(e2)
 --counter
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
@@ -25,16 +38,16 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_BECOME_TARGET)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,m)
+	e3:SetCountLimit(1)
 	e3:SetCondition(cm.countcon1)
 	e3:SetTarget(cm.counttg)
 	e3:SetOperation(cm.countop)
 	c:RegisterEffect(e3)
-	local e2=e3:Clone()
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_BE_BATTLE_TARGET)
-	e2:SetCondition(cm.countcon2)
-	c:RegisterEffect(e2)
+	local e4=e3:Clone()
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_BE_BATTLE_TARGET)
+	e4:SetCondition(cm.countcon2)
+	c:RegisterEffect(e4)
 --recover
 	local e5=Effect.CreateEffect(c)
 	e5:SetCategory(CATEGORY_RECOVER)
@@ -59,39 +72,56 @@ function cm.indcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.indop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	 --destroy replace
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_DESTROY_REPLACE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,m+10000)
-	e2:SetTarget(cm.reptg)
-	e2:SetValue(cm.repval)
-	e2:SetOperation(cm.repop)
-	c:RegisterEffect(e2)
-end
-function cm.repfilter(c,tp)
-	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and c:IsSetCard(0x341,0x340) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
-end
-function cm.tgfilter(c)
-	   return c:IsAbleToGrave() and c:IsSetCard(0x3342)
-end
-function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp)
-		and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_EXTRA,0,1,nil) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
-end
-function cm.repval(e,c)
-	return cm.repfilter(c,e:GetHandlerPlayer())
-end
-function cm.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_EXTRA,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_EFFECT+REASON_REPLACE)
+	c:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,5))
 end
 
+function cm.cfilter1(c)
+	return c:IsSetCard(0x3342) and c:IsAbleToGraveAsCost() 
+end
+function cm.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter1,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
+	local tc=g:GetFirst()
+	e:SetLabel(tc:GetCode())
+	Duel.SendtoGrave(g,REASON_COST)
+end
+function cm.rpcon(e,tp,eg,ep,ev,re,r,rp)  
+	return   e:GetHandler():GetFlagEffect(33400707)>0
+end
+function cm.repfilter(c,tp)
+	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and c:IsSetCard(0x341,0x340) 
+end
+function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+   if chkc then return chkc:IsOnField() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
+end
+function cm.repop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	local cd=e:GetLabel()
+	if tc:IsRelateToEffect(e) then
+	 local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetCode(EFFECT_CHANGE_CODE)
+		e1:SetValue(cd)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1) 
+		local e4=Effect.CreateEffect(e:GetHandler())
+		e4:SetType(EFFECT_TYPE_SINGLE)
+		e4:SetCode(EFFECT_IMMUNE_EFFECT)
+		e4:SetValue(cm.efilter)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+Duel.GetCurrentPhase())
+		e4:SetOwnerPlayer(tp)
+		tc:RegisterEffect(e4)		
+	end
+end
+function cm.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+end
 
 function cm.countcon1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler())

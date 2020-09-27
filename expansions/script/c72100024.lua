@@ -26,7 +26,6 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e3:SetCondition(cm.thcon)
 	e3:SetTarget(cm.target)
 	e3:SetOperation(cm.operation)
@@ -36,7 +35,7 @@ function cm.atkval(e,c)
 	return Duel.GetMatchingGroupCount(Card.IsCode,c:GetControler(),LOCATION_GRAVE,0,nil,32274490,36021814)*1000
 end
 function cm.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsAttribute(RACE_ZOMBIE) and c:IsAbleToGrave()
+	return (c:IsCode(32274490) or c:IsCode(36021814)) and c:IsAbleToGrave()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) end

@@ -1,7 +1,7 @@
 --杰西卡·生命之地收藏-燃灰
 function c79029258.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xa900),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1904),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()   
 	--add code
 	local e2=Effect.CreateEffect(c)

@@ -23,7 +23,6 @@ function cm.initial_effect(c)
     e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
     e4:SetRange(LOCATION_MZONE)
     e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-    e4:SetCondition(cm.imcon)
     e4:SetValue(cm.indvalue)
     c:RegisterEffect(e4)
     local e5=Effect.CreateEffect(c)
@@ -103,9 +102,6 @@ function cm.elimit(e,te,tp)
     if te:IsActiveType(TYPE_SPELL) then n=n+10000 end
     if te:IsActiveType(TYPE_TRAP) then n=n+20000 end
     return Duel.GetFlagEffect(tp,m+n)>0
-end
-function cm.imcon(e)
-    return e:GetHandler():GetSequence()<5
 end
 function cm.indvalue(e,re)
     return re:GetHandlerPlayer()~=e:GetHandlerPlayer()

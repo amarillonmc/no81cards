@@ -48,10 +48,13 @@ function c79029039.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsType(TYPE_SPELL+TYPE_EQUIP)
 end
 function c79029039.atkval(e,c)
+   if e:GetHandler():GetEquipTarget()==nil then return false end
    local c=e:GetHandler():GetEquipTarget()
-   if c:IsType(TYPE_XYZ) then return c:GetRank()*c:GetOverlayCount()*-200
-   else return c:GetLevel()*-200
-end
+   if c:IsType(TYPE_XYZ) then 
+   return c:GetRank()*c:GetOverlayCount()*-200
+   else 
+   return c:GetLevel()*-200
+   end
 end
 function c79029039.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029039.filter(chkc) end

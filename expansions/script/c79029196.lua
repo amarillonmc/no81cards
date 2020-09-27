@@ -90,7 +90,7 @@ function c79029196.efop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCondition(c79029196.atcon)
 	e1:SetOperation(c79029196.dpop)
 	rc:RegisterEffect(e1)
-	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(79029196,0))
+	rc:RegisterFlagEffect(79029196,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(79029196,0))
 end
 function c79029196.atcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

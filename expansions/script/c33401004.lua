@@ -41,7 +41,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,0)
 	e2:SetValue(cm.rev)
-	e2:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
+	e2:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+Duel.GetCurrentPhase())
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.rev(e,re,r,rp,rc)

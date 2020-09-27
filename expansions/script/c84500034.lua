@@ -1,4 +1,4 @@
-function c84500034.initial_effect(c)
+ function c84500034.initial_effect(c)
     c:EnableReviveLimit()
     local e1=Effect.CreateEffect(c)
     e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -57,9 +57,9 @@ function c84500034.rop(e,tp,eg,ep,ev,re,r,rp)
             e1:SetValue(tc:GetAttribute())
             e1:SetReset(RESET_EVENT+RESETS_STANDARD)
             c:RegisterEffect(e1)
-            c:CopyEffect(tc:GetCode(),RESET_EVENT+RESETS_STANDARD,1)
+            c:CopyEffect(tc:GetOriginalCode(),RESET_EVENT+RESETS_STANDARD)
             if tc:IsCode(84500028,84500029,84500031,84500032,84500033) then
-                c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(tc:GetCode(),1))
+                c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(tc:GetOriginalCode(),1))
             end
         end
     end

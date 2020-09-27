@@ -63,6 +63,33 @@ function c33400203.spop1(e,tp,eg,ep,ev,re,r,rp)
 			if g:GetCount()>0 then
 				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 			end
+	else 
+		local b1=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
+		local b2=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
+		if  (not b1) and (not b2) then return  end
+		local op
+		if b1 and b2 then		
+			op=Duel.SelectOption(tp,aux.Stringid(33400203,1),aux.Stringid(33400203,2))			 
+		elseif b1 then
+			op=Duel.SelectOption(tp,aux.Stringid(33400203,1))
+			Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())   
+		else
+			op=Duel.SelectOption(tp,aux.Stringid(33400203,2))+1
+			Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())   
+		end		
+		ct1=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
+		ct2=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
+		if ct1>2 then ct1=2 end
+		if ct2>2 then ct2=2 end
+		if op==0 then
+			local g=Duel.GetDecktopGroup(tp,ct1)
+			Duel.ConfirmCards(tp,g)  
+			Duel.SortDecktop(tp,tp,ct1)   
+		else 
+			  local g=Duel.GetDecktopGroup(1-tp,ct2)
+			  Duel.ConfirmCards(tp,g)
+			  Duel.SortDecktop(tp,1-tp,ct2) 
+		end
 	end
 	
 end

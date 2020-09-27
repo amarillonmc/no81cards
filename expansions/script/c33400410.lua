@@ -11,26 +11,12 @@ function c33400410.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e1:SetRange(LOCATION_MZONE)   
-	e1:SetCountLimit(1,33400410+10000) 
+	e1:SetCountLimit(1,33400410) 
 	e1:SetCondition(c33400410.condition1) 
 	e1:SetCost(c33400410.spcost)
 	e1:SetTarget(c33400410.target)
 	e1:SetOperation(c33400410.operation)
 	c:RegisterEffect(e1)
-	--Equip
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(33400410,1))
-	e2:SetCategory(CATEGORY_EQUIP)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,33400410)
-	e2:SetCondition(c33400410.condition2)
-	e2:SetCost(c33400410.spcost)
-	e2:SetTarget(c33400410.eqtg)
-	e2:SetOperation(c33400410.eqop)
-	c:RegisterEffect(e2)
 	--set
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(33400410,2))
@@ -56,7 +42,7 @@ function c33400410.xyzfilter(c)
 	return c:IsSetCard(0x341) 
 end
 function c33400410.condition1(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+	return  re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function c33400410.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
    local ft=0
@@ -71,7 +57,7 @@ function c33400410.spfilter(c,e,tp)
 end
 function c33400410.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c33400410.spfilter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(c33400410.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c33400410.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c33400410.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -79,63 +65,14 @@ function c33400410.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c33400410.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
-	if  Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1,true)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2,true)
-		Duel.SpecialSummonComplete()
-	end
+	 Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) 
 end
+
 function c33400410.condition2(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
-end
-function c33400410.eqfilter(c,e,tp,ec)
-	return ((c:IsSetCard(0x6343) and c:IsType(TYPE_EQUIP)) or c:IsSetCard(0x5343)) and c:CheckUniqueOnField(tp)
-end
-function c33400410.eqfilter2(c)
-	return c:IsSetCard(0xc343)  
-end
-function c33400410.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	 if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c33400410.eqfilter(chkc,e,tp,e:GetHandler()) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(c33400410.eqfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,e:GetHandler()) end
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,0,0,0,0)
-end
-function c33400410.eqop(e,tp,eg,ep,ev,re,r,rp)
-   if not Duel.IsExistingMatchingCard(c33400410.eqfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,e:GetHandler())
-	or Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or not Duel.IsExistingMatchingCard(c33400410.eqfilter2,tp,LOCATION_MZONE,0,1,nil) then return false end
-	local g=Duel.GetMatchingGroup(c33400410.eqfilter,tp,LOCATION_GRAVE,0,nil,e,tp,e:GetHandler())
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g1=g:Select(tp,1,1,nil)
-	local tc=g1:GetFirst()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-	local tc2=Duel.SelectMatchingCard(tp,c33400410.eqfilter2,tp,LOCATION_MZONE,0,1,1,nil)
-	 local tc1=tc2:GetFirst()
-	 Duel.Equip(tp,tc,tc1)
-	if tc:IsSetCard(0x5343) then
-	   local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_EQUIP_LIMIT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetValue(c33400410.eqlimit)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)	 
-   end
-end
-function c33400410.eqlimit(e,c)
-	return c:GetControler()==e:GetHandlerPlayer() and c:IsSetCard(0x5342)
+	return  re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function c33400410.setfilter(c)
-	return c:IsSetCard(0x95)  and c:IsSSetable()
+	return c:IsSetCard(0x95,0x6343,0x5343) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function c33400410.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33400410.setfilter,tp,LOCATION_GRAVE,0,1,nil) end

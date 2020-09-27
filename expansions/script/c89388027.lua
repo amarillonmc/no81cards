@@ -3,7 +3,7 @@ local m=89388027
 local cm=_G["c"..m]
 function cm.initial_effect(c)
     local e1=Effect.CreateEffect(c)
-    e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+    e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
     e1:SetTarget(cm.target)
@@ -29,8 +29,9 @@ function cm.filter(c,e,tp)
     return c:IsSetCard(0xcc22) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetMatchingGroupCount(Card.IsAbleToDeck,tp,LOCATION_HAND,0,e:GetHandler())>0 end
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+    Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
     if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
@@ -38,7 +39,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
     if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0 then
         local dg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND,0,nil)
-        if not dg or dg:GetCount()==0 or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then return end
+        if not dg or dg:GetCount()==0 then return end
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
         local dg1=dg:Select(tp,1,1,nil)
         Duel.SendtoDeck(dg1,nil,2,REASON_EFFECT)
