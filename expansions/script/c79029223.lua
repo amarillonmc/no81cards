@@ -80,7 +80,7 @@ function c79029223.mtop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()~=0 then 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local tg=g:Select(tp,1,1,nil)
-		Duel.SendtoDeck(tg,nil,2,REASON_COST)
+		Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)
 end
 end
 function c79029223.sdcon(e)
@@ -103,7 +103,7 @@ function c79029223.toop(e,tp,eg,ep,ev,re,r,rp)
 	local tc1=g:Select(tp,1,1,tc)
 	Duel.SendtoGrave(tc,REASON_EFFECT)
 	Duel.SendtoHand(tc1,nil,REASON_EFFECT)
-	Duel.ConfirmCards(tp,tc1)	
+	Duel.ConfirmCards(tp,tc1)   
 end
 
 

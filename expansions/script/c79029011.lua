@@ -186,19 +186,16 @@ function c79029011.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029011.mtcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and not Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)==0
-end
-function c79029011.qfilter(c)
-	return c:IsType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
+	return Duel.GetTurnPlayer()==tp 
 end
 function c79029011.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.HintSelection(Group.FromCards(c))
-	local g=Duel.GetMatchingGroup(c79029011.qfilter,tp,LOCATION_GRAVE,0,nil)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_GRAVE,0,nil)
 	if g:GetCount()~=0 then 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local tg=g:Select(tp,1,1,nil)
-		Duel.SendtoDeck(tg,nil,2,REASON_COST)
+		Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)
 end
 end
 function c79029011.sdcon(e)

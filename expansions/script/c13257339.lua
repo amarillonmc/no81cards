@@ -118,7 +118,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	e5:SetType(EFFECT_TYPE_SINGLE)
 	e5:SetCode(EFFECT_UPDATE_ATTACK)
 	e5:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
-	e5:SetValue(700)
+	e5:SetValue(500)
 	c:RegisterEffect(e5)
 	local g1=Duel.GetMatchingGroup(cm.acfilter,tp,0,LOCATION_MZONE,nil)
 	if g1:GetCount()>0 then

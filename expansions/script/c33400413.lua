@@ -32,12 +32,12 @@ function c33400413.initial_effect(c)
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(33400413,2))
 	e5:SetCategory(CATEGORY_DESTROY)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e5:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
-	e5:SetCode(EVENT_DESTROYED)
+	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
+	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e5:SetCountLimit(1,33400413)
-	e5:SetCondition(c33400413.descon1)
 	e5:SetTarget(c33400413.destg)
 	e5:SetOperation(c33400413.desop)
 	c:RegisterEffect(e5)
@@ -165,12 +165,6 @@ function c33400413.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function c33400413.cfilter(c)
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsReason(REASON_EFFECT+REASON_BATTLE)
-end
-function c33400413.descon1(e,tp,eg,ep,ev,re,r,rp)
-	return   eg:IsExists(c33400413.cfilter,1,nil)
-end
 function c33400413.desfilter1(c)
 	return  c:IsReleasable() and  (c:IsSetCard(0x341) or c:IsSetCard(0x340) or c:IsSetCard(0x6343))
 end

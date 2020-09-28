@@ -12,7 +12,7 @@ function c79029296.initial_effect(c)
 end
 function c79029296.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local dcount=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
-	if chk==0 then return dcount~=0 end
+	if chk==0 then return dcount~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
 	local ag=Group.CreateGroup()
 	local codes={}

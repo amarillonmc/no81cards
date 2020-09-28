@@ -26,8 +26,8 @@ function c79029240.fil(c)
 	return c:IsSetCard(0x1904) and c:IsAbleToGraveAsCost() and c:IsType(TYPE_TRAP)
 end
 function c79029240.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029220.fil,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED,0,2,nil) end
-	local g=Duel.SelectMatchingCard(tp,c79029220.fil,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED,0,2,2,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029240.fil,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED,0,2,nil) end
+	local g=Duel.SelectMatchingCard(tp,c79029240.fil,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED,0,2,2,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c79029240.sfil(c,e,tp)

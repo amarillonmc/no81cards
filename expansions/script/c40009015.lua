@@ -1,23 +1,8 @@
 --天兵团 琳媞斯
 function c40009015.initial_effect(c)
-	--pendulum summon
-	aux.EnablePendulumAttribute(c)
-  
-	--link summon
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(40009015,0))
-	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_FREE_CHAIN)
-	e5:SetRange(LOCATION_PZONE)
-	e5:SetCountLimit(1,40009015)
-	e5:SetCondition(c40009015.lkcon)
-	e5:SetTarget(c40009015.sctg)
-	e5:SetOperation(c40009015.scop)
-	c:RegisterEffect(e5) 
 	--spsummon
 	local e6=Effect.CreateEffect(c)
-	e6:SetDescription(aux.Stringid(40009015,1))
+	e6:SetDescription(aux.Stringid(40009015,0))
 	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_QUICK_O)
 	e6:SetCode(EVENT_TO_GRAVE)
@@ -29,7 +14,7 @@ function c40009015.initial_effect(c)
 	c:RegisterEffect(e6)
 	--to hand
 	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(40009015,2))
+	e7:SetDescription(aux.Stringid(40009015,1))
 	e7:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e7:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e7:SetProperty(EFFECT_FLAG_DELAY)

@@ -3,8 +3,8 @@ local m=13257340
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x1015)
-	c:SetCounterLimit(0x1015,10)
+	c:EnableCounterPermit(0x352)
+	c:SetCounterLimit(0x352,10)
 	c:EnableCounterPermit(0x351)
 	c:SetCounterLimit(0x351,5)
 	--add counter
@@ -65,17 +65,17 @@ end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	if e:GetHandler():GetFlagEffect(1)>0 then
-		e:GetHandler():AddCounter(0x1015,1)
+		e:GetHandler():AddCounter(0x352,1)
 	end
 end
 function cm.acop1(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():AddCounter(0x1015,1)
+	e:GetHandler():AddCounter(0x352,1)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetCounter(0x1015)>=2 end
-	local ct=e:GetHandler():GetCounter(0x1015)
+	if chk==0 then return e:GetHandler():GetCounter(0x352)>=2 end
+	local ct=e:GetHandler():GetCounter(0x352)
 	e:SetLabel(ct/2)
-	e:GetHandler():RemoveCounter(tp,0x1015,ct,REASON_COST)
+	e:GetHandler():RemoveCounter(tp,0x352,ct,REASON_COST)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local val=e:GetLabel()
@@ -229,14 +229,6 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 				Duel.RegisterEffect(e4,tp)
 			end
 			if e:GetOwner():GetFlagEffect(m) then
-				local e5=Effect.CreateEffect(c)
-				e5:SetType(EFFECT_TYPE_SINGLE)
-				e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
-				e5:SetRange(LOCATION_MZONE)
-				e5:SetCode(EFFECT_IMMUNE_EFFECT)
-				e5:SetValue(cm.efilter)
-				e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-				e:GetOwner():RegisterEffect(e5)
 				local e6=Effect.CreateEffect(c)
 				e6:SetType(EFFECT_TYPE_SINGLE)
 				e6:SetProperty(EFFECT_FLAG_COPY_INHERIT)
@@ -254,7 +246,7 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCode(EFFECT_IMMUNE_EFFECT)
 	e4:SetValue(cm.efilter)
-	e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
+	e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
 	e:GetHandler():RegisterEffect(e4)
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)

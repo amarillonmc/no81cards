@@ -18,26 +18,61 @@ function cm.initial_effect(c)
 	e0:SetValue(cm.valcheck)
 	e0:SetLabelObject(e1)
 	c:RegisterEffect(e0)
+		--can not be effect target
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetTargetRange(LOCATION_MZONE,0)
+	e4:SetCondition(cm.indcon2)
+	e4:SetTarget(cm.etlimit)
+	e4:SetValue(aux.tgoval)
+	c:RegisterEffect(e4)
+   --Avoid battle damage
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetCondition(cm.indcon2)
+	e2:SetTarget(cm.etlimit)
+	e2:SetValue(1)
+	c:RegisterEffect(e2)
  --direct attack
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_DIRECT_ATTACK)
+	e3:SetCondition(cm.ckcon)
 	c:RegisterEffect(e3)
    --cannot be target
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,0))
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
-	e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(cm.ckcon)
-	e4:SetValue(aux.imval1)
-	e4:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e5:SetValue(1)
-	e5:SetReset(RESET_EVENT+RESETS_STANDARD)
+	local e8=Effect.CreateEffect(c)
+	e8:SetDescription(aux.Stringid(m,0))
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
+	e8:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
+	e8:SetRange(LOCATION_MZONE)
+	e8:SetCondition(cm.ckcon)
+	e8:SetValue(aux.imval1)
+	e8:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e9:SetValue(1)
+	e9:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e9)
+   --special summon
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,2))
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCode(EVENT_DAMAGE)
+	e5:SetProperty(EFFECT_FLAG_DELAY)
+	e5:SetCountLimit(1,m)
+	e5:SetCondition(cm.setcon)
+	e5:SetTarget(cm.settg)
+	e5:SetOperation(cm.setop)
 	c:RegisterEffect(e5)
 --
 	local e7=Effect.CreateEffect(c)
@@ -62,35 +97,14 @@ function cm.indcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.indop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-  --indes
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(cm.target)
-	e1:SetValue(cm.indct)
-	c:RegisterEffect(e1)
-   --Avoid battle damage
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
-	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(cm.target)
-	e2:SetValue(1)
-	c:RegisterEffect(e2)
+   c:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,4))
 end
-function cm.target(e,c)
-	return c:IsSetCard(0x3342)
+
+function cm.indcon2(e,tp,eg,ep,ev,re,r,rp)  
+	return   e:GetHandler():GetFlagEffect(33400707)>0
 end
-function cm.indct(e,re,r,rp)
-	if bit.band(r,REASON_BATTLE)~=0 then
-		return 1
-	else return 0 end
+function cm.etlimit(e,c)
+	return  c:IsFaceup() and c:IsSetCard(0x3342)
 end
 
 function cm.ckfilter(c)
@@ -119,6 +133,22 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 		  Duel.Damage(1-tp,ss,REASON_EFFECT)
 		end
 	end
+end
+
+function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
+	return  ep~=tp
+end
+function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	 if chkc then return chkc:IsLocation(LOCATION_GRAVE) and cm.filter(chkc) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil) end
+	local g=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
+	 Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
+end
+function cm.setop(e,tp,eg,ep,ev,re,r,rp)
+   if not Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil) then return end 
+	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.SSet(tp,tc)
 end
 
 function cm.rcfilter(c)

@@ -125,7 +125,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCode(EFFECT_IMMUNE_EFFECT)
 	e4:SetValue(cm.efilter)
-	e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
+	e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
 	e:GetHandler():RegisterEffect(e4)
 end
 function cm.skipcon(e)

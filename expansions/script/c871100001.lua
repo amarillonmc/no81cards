@@ -1,14 +1,6 @@
 --东风幼龙
 function c871100001.initial_effect(c)
 	--special summon
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_SPSUM_PARAM+EFFECT_FLAG_UNCOPYABLE)
-	e3:SetCode(EFFECT_SPSUMMON_PROC)
-	e3:SetTargetRange(POS_FACEUP_ATTACK,0)
-	e3:SetRange(LOCATION_HAND)
-	e3:SetCondition(c871100001.sprcon)
-	c:RegisterEffect(e3)
    --special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(871100001,0))
@@ -23,11 +15,6 @@ function c871100001.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-end
-function c871100001.sprcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return  Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function c871100001.thfilter(c)
 	return c:IsSetCard(0xfec1) and not c:IsCode(871100001) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

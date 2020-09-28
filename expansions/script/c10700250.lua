@@ -44,7 +44,7 @@ function c10700250.xyzop2(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("阶级8  真红眼黑鳞兽-深渊之龙！")
 end
 function c10700250.ovfilter(c)
-	return c:IsFaceup() and c:IsRankBelow(7) and c:IsSetCard(0x3b)
+	return c:IsFaceup() and c:IsRankBelow(7) and (c:IsSetCard(0x3b) or c:GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0x3b))
 end
 function c10700250.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,10700250)==0 end

@@ -40,23 +40,22 @@ end
 function c116301233.splimit(e,se,sp,st)
     return se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
-function c116301233.spfilter(c,tp)
-    return c:IsCode(04064256) and c:GetActivateEffect():IsActivatable(tp)
+function c116301233.spfilter(c)
+    return c:IsCode(04064256) and not c:IsForbidden()
 end
 function c116301233.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and e:GetHandler():GetFlagEffect(116301230)==0 and Duel.IsExistingMatchingCard(c116301233.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+    if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and e:GetHandler():GetFlagEffect(116301230)==0 and Duel.IsExistingMatchingCard(c116301233.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
     Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-    local g=Duel.SelectMatchingCard(tp,c116301233.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
+    local g=Duel.SelectMatchingCard(tp,c116301233.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
     local tc=g:GetFirst()
-    if tc and tc:GetActivateEffect():IsActivatable(tp) then
+    if tc then
         local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
         if fc then
             Duel.SendtoGrave(fc,REASON_RULE)
             Duel.BreakEffect()
         end
         Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-        Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
     end
     e:GetHandler():RegisterFlagEffect(116301230,RESET_PHASE+PHASE_END,0,1)
 end
@@ -72,7 +71,7 @@ function c116301233.filter(c)
     return c:IsFaceup() and c:IsRace(RACE_ZOMBIE)
 end
 function c116301233.condition(e,tp,eg,ep,ev,re,r,rp)
-    return eg:IsExists(c116301233.filter,1,nil)
+    return not eg:IsContains(e:GetHandler()) and eg:IsExists(c116301233.filter,1,nil)
 end
 function c116301233.thfilter(c)
     return not c:IsType(TYPE_PENDULUM) or c:IsLocation(LOCATION_EXTRA)
@@ -131,7 +130,7 @@ function c116301233.op(e,tp,eg,ep,ev,re,r,rp)
         end
         tc=eg:GetNext()
     end
-    if Duel.GetLP(tp)>atk then
+    if Duel.GetLP(tp)>=atk then
         Duel.SetLP(tp,Duel.GetLP(tp)-atk)
     end
 end

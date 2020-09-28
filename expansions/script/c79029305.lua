@@ -22,9 +22,7 @@ function c79029305.psfil(c)
 	return c:IsSetCard(0xa900) and (c:IsLocation(LOCATION_HAND) or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup())) and c:IsType(TYPE_PENDULUM)
 end
 function c79029305.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if not aux.PendulumChecklist then aux.PendulumChecklist=0 end
-	if chk==0 then return (aux.PendulumChecklist&(0x1<<tp)==0 or Duel.IsPlayerAffectedByEffect(tp,EFFECT_EXTRA_PENDULUM_SUMMON)) and Duel.GetFieldGroupCount(tp,LOCATION_PZONE,LOCATION_PZONE)>0 and Duel.IsExistingMatchingCard(c79029305.psfil,tp,LOCATION_HAND+LOCATION_EXTRA,0,2,nil) end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_PZONE,LOCATION_PZONE)>0 and Duel.IsExistingMatchingCard(c79029305.psfil,tp,LOCATION_HAND+LOCATION_EXTRA,0,2,nil) end
 	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,LOCATION_PZONE)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),tp,LOCATION_PZONE)

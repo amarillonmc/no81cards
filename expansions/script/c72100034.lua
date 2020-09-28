@@ -28,8 +28,8 @@ function c72100034.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c72100034.mtop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.CheckLPCost(tp,2000) then
-		Duel.PayLPCost(tp,2000)
+	if Duel.CheckLPCost(tp,10000) then
+		Duel.PayLPCost(tp,10000)
 	else
 		Duel.Destroy(e:GetHandler(),REASON_COST)
 	end

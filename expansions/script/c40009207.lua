@@ -99,7 +99,6 @@ function c40009207.tdop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.HintSelection(sg)
 		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
-		end
 	end
 end
 function c40009207.retcon(e,tp,eg,ep,ev,re,r,rp)

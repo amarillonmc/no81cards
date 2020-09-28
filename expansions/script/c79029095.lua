@@ -63,7 +63,7 @@ function c79029095.setcon(e,c,minc)
 end
 function c79029095.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST,nil)
+	Duel.DiscardHand(tp,Card.IsDiscardable,2,2,REASON_COST,nil)
 end
 function c79029095.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -75,9 +75,8 @@ function c79029095.dsop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_DISABLE)
 	e2:SetTargetRange(0,LOCATION_MZONE)
 	e2:SetReset(RESET_PHASE+PHASE_END,2)
-	e2:SetRange(LOCATION_ONFIELD+LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_OVERLAY)
 	e2:SetTarget(c79029095.distarget)
-	c:RegisterEffect(e2)
+	Duel.RegisterEffect(e2,tp)
 end
 function c79029095.distarget(e,c)
 	return c~=e:GetHandler() and c:IsType(TYPE_MONSTER)

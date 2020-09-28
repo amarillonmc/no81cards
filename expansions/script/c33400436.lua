@@ -47,6 +47,15 @@ function c33400436.initial_effect(c)
 	e4:SetValue(1)
 	e4:SetCondition(c33400436.actcon)
 	c:RegisterEffect(e4)
+--immune
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_IMMUNE_EFFECT)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(c33400436.efcon2)
+	e5:SetValue(c33400436.efilter2)
+	c:RegisterEffect(e5)
 end
 function c33400436.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
@@ -126,4 +135,12 @@ end
 
 function c33400436.actcon(e)
 	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
+end
+
+function c33400436.efcon2(e)
+	local eg=e:GetHandler():GetEquipGroup()
+	return eg:IsExists(Card.IsSetCard,1,nil,0x6343)
+end
+function c33400436.efilter2(e,re,tp)
+	return re:GetHandlerPlayer()~=e:GetHandlerPlayer()
 end

@@ -37,10 +37,26 @@ function c33400423.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
+function c33400423.spfilter(c,e,tp)
+	return   c:IsSetCard(0x9343)  and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
 function c33400423.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,0,LOCATION_MZONE,1,nil,0x341)   
+		or (  Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) and 
+			(Duel.IsExistingMatchingCard(c33400423.cccfilter1,tp,LOCATION_ONFIELD,0,1,nil) or 
+			Duel.IsExistingMatchingCard(c33400423.cccfilter2,tp,LOCATION_MZONE,0,1,nil))) 
+		then
+		   if Duel.IsExistingMatchingCard(c33400423.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and 
+		   Duel.SelectYesNo(tp,aux.Stringid(33400423,2)) then 
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local g=Duel.SelectMatchingCard(tp,c33400423.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+			local tc=g:GetFirst()
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) 
+		   end 
+		end
 end
 
 function c33400423.cnfilter(c)

@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_EQUIP)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(700)
+	e1:SetValue(1000)
 	c:RegisterEffect(e1)
 	--pierce
 	local e3=Effect.CreateEffect(c)
@@ -65,7 +65,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local ec=c:GetEquipTarget()
 	if not c:IsRelateToEffect(e) or not ec then return end
 	local g=ec:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
-	tc=g:GetFirst()
+	local tc=g:GetFirst()
 	if g:GetCount()>0 then
 		while tc do
 			if tc:IsFaceup() and not tc:IsDisabled() then
@@ -93,7 +93,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetRange(LOCATION_MZONE)
 		e4:SetCode(EFFECT_IMMUNE_EFFECT)
 		e4:SetValue(cm.efilter1)
-		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
+		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
 		ec:RegisterEffect(e4,true)
 	end
 end

@@ -116,6 +116,7 @@ end
 function c79029241.activate(e,tp,eg,ep,ev,re,r,rp)
 	local op=e:GetLabel()
 	if op==0 then
+	local g=Duel.GetFirstTarget()
 	Duel.SpecialSummon(g,SUMMON_TYPE_PENDULUM,tp,tp,false,false,POS_FACEUP)
 	else
 	local sg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)

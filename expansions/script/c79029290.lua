@@ -40,7 +40,7 @@ function c79029290.initial_effect(c)
 end
 function c79029290.sprfilter(c,tp,g,sc)
 	local lv=c:GetLevel()
-	return c:IsFaceup() and (lv==9  or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_SZONE)))
+	return c:IsFaceup() and (lv==9  or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_SZONE))) and Duel.GetLocationCountFromEx(tp,tp,c)
 end
 function c79029290.sprcon(e,c)
 	if c==nil then return true end
@@ -110,8 +110,8 @@ function c79029290.atop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029290.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,79029290)~=0
-	and	Duel.GetFlagEffect(tp,09029290)~=0
-	and	Duel.GetFlagEffect(tp,00029290)~=0
+	and Duel.GetFlagEffect(tp,09029290)~=0
+	and Duel.GetFlagEffect(tp,00029290)~=0
 end
 function c79029290.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,3) end

@@ -19,23 +19,13 @@ function c79029310.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_CANNOT_TO_HAND)
-	c:RegisterEffect(e3)	
-	--
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e1:SetRange(LOCATION_REMOVED)
-	e1:SetCountLimit(1,79029310)
-	e1:SetOperation(c79029310.xop)
-	c:RegisterEffect(e1)	
+	c:RegisterEffect(e3)	  
 end
 function c79029310.reop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_RULE)
 	if e:GetHandler():GetPreviousLocation()==LOCATION_HAND then
 	Duel.Draw(tp,1,REASON_RULE)
-end   
-end
-function c79029310.xop(e,tp,eg,ep,ev,re,r,rp)
+	end   
 	local c=e:GetHandler()
 	if Duel.GetTurnPlayer()~=tp then return end
 	if not Duel.SelectEffectYesNo(tp,e:GetHandler()) then return end
@@ -51,7 +41,6 @@ function c79029310.xop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(0,LOCATION_MZONE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetValue(1000)
-	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,tp)
 	table.insert(getmetatable(e:GetHandler()).announce_filter,79029311)
 	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_ISCODE)
@@ -62,7 +51,6 @@ function c79029310.xop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_USE_EXTRA_MZONE)
-	e2:SetReset(RESET_PHASE+PHASE_END,2)
 	e2:SetValue(2)
 	Duel.RegisterEffect(e2,tp)
 	table.insert(getmetatable(e:GetHandler()).announce_filter,79029312)
@@ -76,6 +64,7 @@ function c79029310.xop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	end
 end
+
 
 
 
