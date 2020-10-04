@@ -135,11 +135,11 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 			sc:RegisterEffect(e2)
 			sc=g1:GetNext()
 		end
-		g1=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
-		if g1:GetCount()>0 then
-			Duel.BreakEffect()
-			Duel.Destroy(g1,REASON_EFFECT)
-		end
+	end
+	g1=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
+	if g1:GetCount()>0 then
+		Duel.BreakEffect()
+		Duel.Destroy(g1,REASON_EFFECT)
 	end
 	local e4=Effect.CreateEffect(e:GetHandler())
 	e4:SetType(EFFECT_TYPE_SINGLE)

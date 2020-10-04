@@ -108,7 +108,7 @@ function cm.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
 function cm.filter(c)
-	return (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup()) or (c:IsType(TYPE_MONSTER) and c:IsAttackBelow(0))
+	return (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup()) or (c:IsType(TYPE_MONSTER) and (c:GetAttack()==0 or (c:GetDefense()==0 and not c:IsType(TYPE_LINK))))
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

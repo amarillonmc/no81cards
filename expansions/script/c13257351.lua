@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.eqlimit(e,c)
-	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x3352)
+	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x6352)
 end
 function cm.bfilter(c)
 	return c:IsAbleToChangeControler() and c:IsFaceup()
@@ -54,6 +54,7 @@ function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ec=e:GetHandler():GetEquipTarget()
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) or not c:IsRelateToEffect(e) or not ec then return end
 	if ec and ec:IsFaceup() then

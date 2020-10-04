@@ -125,11 +125,11 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			tc=g:GetNext()
 		end
-		local sg=g:Filter(cm.desfilter,nil)
-		if sg:GetCount()>0 then
-			Duel.BreakEffect()
-			Duel.Destroy(sg,REASON_EFFECT)
-		end
+	end
+	local sg=g:Filter(cm.desfilter,nil)
+	if sg:GetCount()>0 then
+		Duel.BreakEffect()
+		Duel.Destroy(sg,REASON_EFFECT)
 	end
 	local e4=Effect.CreateEffect(e:GetHandler())
 	e4:SetType(EFFECT_TYPE_SINGLE)

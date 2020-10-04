@@ -132,7 +132,7 @@ function c500007.stg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c500007.setfilter2,tp,LOCATION_GRAVE,0,1,nil) end
 end
 function c500007.sop2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c500007.setfilter3,tp,LOCATION_GRAVE,0,nil)
+	local g=Duel.GetMatchingGroup(c500007.setfilter2,tp,LOCATION_GRAVE,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
@@ -141,7 +141,7 @@ function c500007.sop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c500007.sop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c500007.setfilter3,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetMatchingGroup(c500007.setfilter2,tp,LOCATION_DECK,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
@@ -150,7 +150,7 @@ function c500007.sop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c500007.stg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c500007.setfilter3,tp,LOCATION_DECK,0,1,nil,tp) and Duel.GetFlagEffect(tp,500007)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(c500007.setfilter2,tp,LOCATION_DECK,0,1,nil,tp) and Duel.GetFlagEffect(tp,500007)==0 end
 end
 function c500007.scost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end

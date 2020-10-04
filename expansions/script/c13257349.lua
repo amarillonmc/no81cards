@@ -68,11 +68,11 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 			sc:RegisterEffect(e1)
 			sc=g:GetNext()
 		end
-		g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
-		if g:GetCount()>0 then
-			Duel.BreakEffect()
-			Duel.Destroy(g,REASON_EFFECT)
-		end
+	end
+	g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
+	if g:GetCount()>0 then
+		Duel.BreakEffect()
+		Duel.Destroy(g,REASON_EFFECT)
 	end
 	if ec then
 		local e4=Effect.CreateEffect(e:GetHandler())

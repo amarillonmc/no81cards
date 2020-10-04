@@ -47,16 +47,17 @@ end
 function cm.eqlimit(e,c)
 	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x3352)
 end
-function cm.cafilter(c,e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsContains(c) and aux.bdogcon(e,tp,eg,ep,ev,re,r,rp) and c:IsChainAttackable()
+function cm.cafilter(c,e,eg)
+	local bc=c:GetBattleTarget()
+	return eg:IsContains(c) and c:IsRelateToBattle() and c:IsStatus(STATUS_OPPO_BATTLE) and bc:IsLocation(LOCATION_GRAVE) and bc:IsType(TYPE_MONSTER) and c:IsChainAttackable()
 end
 function cm.catg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())
-		return f and f:IsExists(cm.cafilter,1,nil,e,tp,eg,ep,ev,re,r,rp) 
+		return f and f:IsExists(cm.cafilter,1,nil,e,eg) 
 	end
 	local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())
-	local a=f:Filter(cm.cafilter,nil,e,tp,eg,ep,ev,re,r,rp):GetFirst()
+	local a=f:Filter(cm.cafilter,nil,e,eg):GetFirst()
 	Duel.SetTargetCard(a)
 end
 function cm.caop(e,tp,eg,ep,ev,re,r,rp)

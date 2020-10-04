@@ -72,11 +72,11 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			sc:RegisterEffect(e2)
 			sc=g:GetNext()
 		end
-		g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
-		if g:GetCount()>0 then
-			Duel.BreakEffect()
-			Duel.Destroy(g,REASON_EFFECT)
-		end
+	end
+	g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
+	if g:GetCount()>0 then
+		Duel.BreakEffect()
+		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
 function cm.filter(c)
