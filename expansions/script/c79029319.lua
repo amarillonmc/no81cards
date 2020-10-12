@@ -59,6 +59,7 @@ function c79029319.activate(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("别乱动，让我们都省些功夫。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029319,0))
 	local c=e:GetHandler()
+	c:CancelToGrave()
 	if not c:IsLocation(LOCATION_SZONE) then return end
 	if not c:IsRelateToEffect(e) or c:IsStatus(STATUS_LEAVE_CONFIRMED) then return end
 	local tc=Duel.GetFirstTarget()

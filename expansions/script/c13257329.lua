@@ -11,6 +11,16 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_DESTROYED)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetCondition(cm.tdcon)
+	e2:SetTarget(cm.tdtg)
+	e2:SetOperation(cm.tdop)
+	c:RegisterEffect(e2)
 	--[[
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -87,4 +97,20 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,c)
 	end
+end
+function cm.tdfilter(c,tp)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp and c:IsSetCard(0x351)
+end
+function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.tdfilter,1,nil,tp)
+end
+function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToDeck() end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
+end
+function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	Duel.SendtoDeck(c,nil,0,REASON_EFFECT)~=0
 end

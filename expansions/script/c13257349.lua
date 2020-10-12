@@ -15,14 +15,8 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_EQUIP)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(700)
+	e1:SetValue(1200)
 	c:RegisterEffect(e1)
-	--def up
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_EQUIP)
-	e2:SetCode(EFFECT_UPDATE_DEFENSE)
-	e2:SetValue(100)
-	c:RegisterEffect(e2)
 	--equip bomb
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
@@ -50,30 +44,13 @@ function cm.desfilter(c)
 	return c:IsFaceup() and c:GetAttack()==0
 end
 function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000) end
+	local ec=e:GetHandler():GetEquipTarget()
+	if chk==0 then return ec and Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,ec:GetBaseAttack()) end
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ec=c:GetEquipTarget()
 	if not c:IsRelateToEffect(e) then return end
-	local g=Duel.GetMatchingGroup(cm.acfilter,tp,0,LOCATION_MZONE,nil)
-	if g:GetCount()>0 then
-		local sc=g:GetFirst()
-		while sc do
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetReset(RESET_EVENT+0x1fe0000)
-			e1:SetValue(-1000)
-			sc:RegisterEffect(e1)
-			sc=g:GetNext()
-		end
-	end
-	g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
-	if g:GetCount()>0 then
-		Duel.BreakEffect()
-		Duel.Destroy(g,REASON_EFFECT)
-	end
 	if ec then
 		local e4=Effect.CreateEffect(e:GetHandler())
 		e4:SetType(EFFECT_TYPE_SINGLE)
@@ -83,6 +60,25 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetValue(cm.efilter1)
 		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
 		ec:RegisterEffect(e4,true)
+	end
+	Duel.Damage(1-tp,ec:GetBaseAttack(),REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(cm.acfilter,tp,0,LOCATION_MZONE,nil)
+	if g:GetCount()>0 then
+		local sc=g:GetFirst()
+		while sc do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetReset(RESET_EVENT+0x1fe0000)
+			e1:SetValue(ec:GetBaseAttack())
+			sc:RegisterEffect(e1)
+			sc=g:GetNext()
+		end
+	end
+	g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
+	if g:GetCount()>0 then
+		Duel.BreakEffect()
+		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
 function cm.efilter1(e,re)

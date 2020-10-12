@@ -99,6 +99,7 @@ function c79029326.thop(e,tp,eg,ep,ev,re,r,rp)
 	if not tc then return end
 	tc:SetMaterial(nil)
 	Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
+	tc:CompleteProcedure()
 	Debug.Message("希望众人这次都能平安归来。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029326,1))
 end

@@ -1,7 +1,7 @@
 --汐斯塔·狙击干员-黑
 function c79029030.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3,79029099,c79029030.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3,99,c79029030.lcheck)
 	c:EnableReviveLimit()
 	--pierce
 	local e1=Effect.CreateEffect(c)

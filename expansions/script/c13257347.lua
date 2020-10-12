@@ -64,6 +64,22 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ec=c:GetEquipTarget()
 	if not c:IsRelateToEffect(e) or not ec then return end
+	if ec then
+		local e4=Effect.CreateEffect(e:GetHandler())
+		e4:SetType(EFFECT_TYPE_SINGLE)
+		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e4:SetRange(LOCATION_MZONE)
+		e4:SetCode(EFFECT_IMMUNE_EFFECT)
+		e4:SetValue(cm.efilter1)
+		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+		ec:RegisterEffect(e4,true)
+		local e5=Effect.CreateEffect(e:GetHandler())
+		e5:SetType(EFFECT_TYPE_SINGLE)
+		e5:SetCode(EFFECT_UPDATE_ATTACK)
+		e5:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+		e5:SetValue(1000)
+		ec:RegisterEffect(e5,true)
+	end
 	local g=ec:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
 	local tc=g:GetFirst()
 	if g:GetCount()>0 then
@@ -85,16 +101,6 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 			tc=g:GetNext()
 		end
 		Duel.Destroy(g,REASON_EFFECT)
-	end
-	if ec then
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e4:SetRange(LOCATION_MZONE)
-		e4:SetCode(EFFECT_IMMUNE_EFFECT)
-		e4:SetValue(cm.efilter1)
-		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
-		ec:RegisterEffect(e4,true)
 	end
 end
 function cm.efilter1(e,re)

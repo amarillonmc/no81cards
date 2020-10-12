@@ -41,6 +41,7 @@ function c79029258.cofil(c)
 end
 function c79029258.thcost(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029258.cofil,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c79029258.cofil,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
@@ -51,6 +52,7 @@ function c79029258.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029258.thfil,tp,LOCATION_DECK,0,1,nil) end
 	Debug.Message("不会退缩。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029258,0))
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,c79029258.thfil,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)

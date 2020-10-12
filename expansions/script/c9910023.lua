@@ -92,7 +92,7 @@ function c9910023.xfilter(c)
 end
 function c9910023.tdfilter(c,tp)
 	return c:IsFaceup() and (c:IsSetCard(0x3950) or c:IsSetCard(0x5950))
-		and (c:IsAbleToDeck() or Duel.IsExistingTarget(c9910023.xfilter,tp,LOCATION_MZONE,0,1,nil))
+		and (c:IsAbleToDeck() or Duel.IsExistingMatchingCard(c9910023.xfilter,tp,LOCATION_MZONE,0,1,nil))
 end
 function c9910023.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c9910023.tdfilter(chkc,tp) end

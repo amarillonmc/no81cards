@@ -24,7 +24,7 @@ function c79029316.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c79029316.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_HAND)
@@ -75,13 +75,13 @@ function c79029316.spop(e,tp,eg,ep,ev,re,r,rp)
 	tc:RegisterEffect(e4)
 end
 function c79029316.desop(e,tp,eg,ep,ev,re,r,rp)
+	e:Reset()
 	local tc=e:GetLabelObject()
 	if tc:GetFlagEffect(79029316)==0 then return end
 	Debug.Message("呿，那种小喽啰，逃了就逃了吧，没必要追。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029316,2))
 	Duel.Hint(HINT_CARD,0,79029316)
 	Duel.SendtoHand(tc,nil,REASON_EFFECT)
-	e:Reset()
 end
 function c79029316.imfilter(e,te)
 	local g=e:GetLabelObject()

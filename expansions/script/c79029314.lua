@@ -131,6 +131,7 @@ function c79029314.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Overlay(tc,e:GetHandler())
 	tc:SetMaterial(Group.FromCards(e:GetHandler()))
 	Duel.SpecialSummon(tc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+	tc:CompleteProcedure()
 	Debug.Message("跳吧！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029314,1))
 end

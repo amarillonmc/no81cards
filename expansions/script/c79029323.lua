@@ -52,6 +52,8 @@ function c79029323.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and Duel.IsExistingMatchingCard(c79029323.fil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) 
 end
 function c79029323.op(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("听我指挥。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029323,5))
 	local g=Duel.SelectMatchingCard(tp,c79029323.fil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,99,nil)
 	Duel.Overlay(e:GetHandler(),g)
 end

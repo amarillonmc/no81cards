@@ -76,7 +76,7 @@ function c79029325.edop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029325.xfil(c,e,tp)
 	local seq=e:GetHandler():GetSequence()
-	return  c:IsPreviousLocation(LOCATION_OVERLAY)
+	return  c:IsPreviousLocation(LOCATION_OVERLAY) and (c:IsReason(REASON_EFFECT) or c:IsReason(REASON_COST))
 end
 function c79029325.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -101,7 +101,7 @@ function c79029325.lzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local xg=eg:Filter(c79029325.xfil,nil,e,tp)
 
-	if xg:IsExists(Card.IsType,1,nil,TYPE_SPELL) then	
+	if xg:IsExists(Card.IsType,1,nil,TYPE_SPELL) then   
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
 	end
@@ -125,7 +125,7 @@ function c79029325.lzop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 	c:RegisterEffect(e1)
-	end		   
+	end		
 end
 function c79029325.incon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetOverlayCount()==0

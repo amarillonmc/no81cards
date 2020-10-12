@@ -60,7 +60,7 @@ function c79029315.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	local b1=Duel.CheckLocation(tp,LOCATION_MZONE,5)
 	local b2=Duel.CheckLocation(tp,LOCATION_MZONE,6)
-	local b3=c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)~=nil
+	local b3=c:GetColumnGroup():FilterCount(Card.IsControler,nil,1-tp)~=0
 	if (b1 or b2 or b3) then
 	if not Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) then return end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
@@ -69,9 +69,9 @@ function c79029315.spop(e,tp,eg,ep,ev,re,r,rp)
 	if (b1 or b2) and b3 then
 	op=Duel.SelectOption(tp,aux.Stringid(79029315,0),aux.Stringid(79029315,1),aux.Stringid(79029315,2))
 	elseif (b1 or b2) and b3 then
-	op=Duel.SelectOption(tp,aux.Stringid(79029315,0),aux.Stringid(79029315,1))	
+	op=Duel.SelectOption(tp,aux.Stringid(79029315,0),aux.Stringid(79029315,1))  
 	elseif (b1 or b2) then
-	op=Duel.SelectOption(tp,aux.Stringid(79029315,0),aux.Stringid(79029315,2))	 if op==1 then
+	op=Duel.SelectOption(tp,aux.Stringid(79029315,0),aux.Stringid(79029315,2))   if op==1 then
 	op=2
 	end
 	elseif b3 then
@@ -115,7 +115,7 @@ function c79029315.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(c79029315.imfilter)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
-	end	
+	end 
   end
 end
 end

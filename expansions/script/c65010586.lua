@@ -77,16 +77,8 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
-	if not rscon.excard2(Card.IsSetCard,LOCATION_MZONE,0,1,nil,0x9da0)(e,tp) then
-		Duel.SetChainLimit(cm.chainlm1)
-	end
-	if not rscon.excard2(Card.IsSetCard,LOCATION_MZONE,0,1,nil,0x9da0)(e,1-tp) then
-		Duel.SetChainLimit(cm.chainlm2)
-	end 
+	Duel.SetChainLimit(cm.chainlm)
 end
-function cm.chainlm1(e,rp,tp)
-	return rp~=tp
-end
-function cm.chainlm2(e,rp,tp)
-	return rp==tp
+function cm.chainlm(e,rp,tp)
+	return not rscon.excard2(Card.IsSetCard,LOCATION_MZONE,0,1,nil,0x9da0)(e,rp)
 end

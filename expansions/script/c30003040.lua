@@ -57,7 +57,6 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCountLimit(1,m+100)
-	e3:SetCondition(aux.exccon)
 	e3:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
 		if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
 		Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)

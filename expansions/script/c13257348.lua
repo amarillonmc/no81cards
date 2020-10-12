@@ -23,17 +23,31 @@ function cm.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_DEFENSE)
 	e2:SetValue(800)
 	c:RegisterEffect(e2)
-	--cannot be destroyed
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_EQUIP)
+	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetTarget(cm.indtg)
+	e3:SetCountLimit(4)
 	e3:SetValue(cm.valcon)
-	e3:SetCountLimit(1)
 	c:RegisterEffect(e3)
+	--cannot be destroyed
+	--local e3=Effect.CreateEffect(c)
+	--e3:SetType(EFFECT_TYPE_EQUIP)
+	--e3:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	--e3:SetValue(cm.valcon)
+	--e3:SetCountLimit(1)
+	--c:RegisterEffect(e3)
 	
 end
 function cm.eqlimit(e,c)
 	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x6352)
+end
+function cm.indtg(e,c)
+	local bool=e:GetHandler():GetEquipTarget()==c or (e:GetHandler():GetEquipTarget() and e:GetHandler():GetEquipTarget():GetEquipGroup():IsContains(c))
+	if bool then Duel.HintSelection(Group.CreateGroup(c)) end
+	return bool and Duel.SelectYesNo(e:GetHandler():GetControler(),aux.Stringid(m,0))
 end
 function cm.valcon(e,re,r,rp)
 	return bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0

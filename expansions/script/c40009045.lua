@@ -13,10 +13,10 @@ function c40009045.initial_effect(c)
 end
 function c40009045.spfilter1(c,e,tp)
 	local zone=bit.band(c:GetLinkedZone(tp),0x1f)
-	return c:IsFaceup() and c:IsSetCard(0xf22) and c:IsType(TYPE_LINK) and zone>0 and Duel.IsExistingMatchingCard(c40009045.spfilter2,tp,LOCATION_EXTRA,0,1,c,e,tp,zone)
+	return c:IsFaceup() and c:IsSetCard(0xf13) and c:IsType(TYPE_LINK) and zone>0 and Duel.IsExistingMatchingCard(c40009045.spfilter2,tp,LOCATION_EXTRA,0,1,c,e,tp,zone)
 end
 function c40009045.spfilter2(c,e,tp,zone)
-	return c:IsSetCard(0xf22) and c:IsType(TYPE_LINK) and c:IsLink(1) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false,POS_FACEUP,tp,zone)
+	return c:IsSetCard(0xf13) and c:IsType(TYPE_LINK) and c:IsLink(1) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false,POS_FACEUP,tp,zone)
 end
 function c40009045.sptarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return c40009045.spfilter1(chkc,e,tp) and chkc:IsLocation(LOCATION_MZONE) end
@@ -34,7 +34,6 @@ function c40009045.spoperation(e,tp,eg,ep,ev,re,r,rp)
 		local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c40009045.spfilter2),tp,LOCATION_EXTRA,0,1,1,c,e,tp,zone)
 		if sg:GetCount()>0 then
 			Duel.SpecialSummon(sg,SUMMON_TYPE_LINK,tp,tp,false,false,POS_FACEUP,zone)
-			Duel.ConfirmCards(1-tp,sg)
 		end
 	end
 end

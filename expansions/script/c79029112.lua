@@ -38,7 +38,7 @@ function c79029112.initial_effect(c)
 end
 c79029112.card_code_list={0xa906}
 function c79029112.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDestructable() end
+	if chk==0 then return e:GetHandler():IsDestructable() and Duel.IsExistingMatchingCard(c79029112.drfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SEARCH,e:GetHandler(),1,0,0)
 end
 function c79029112.drfilter(c)

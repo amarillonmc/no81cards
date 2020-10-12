@@ -41,10 +41,10 @@ function c40009035.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c40009035.etarget(e,c)
-	return c:IsSetCard(0xf22)
+	return c:IsSetCard(0xf13)
 end
 function c40009035.cfilter(c,tp)
-	return c:IsControler(tp) and c:IsSetCard(0xf22) and c:IsType(TYPE_LINK) and c:IsSummonType(SUMMON_TYPE_LINK)
+	return c:IsControler(tp) and c:IsSetCard(0xf13) and c:IsType(TYPE_LINK) and c:IsSummonType(SUMMON_TYPE_LINK)
 end
 function c40009035.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c40009035.cfilter,1,nil,tp)

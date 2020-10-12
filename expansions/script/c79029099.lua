@@ -67,6 +67,8 @@ function c79029099.negtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function c79029099.negop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("有没有感觉身体变重了？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029099,2))
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if ((tc:IsFaceup() and not tc:IsDisabled()) or tc:IsType(TYPE_TRAPMONSTER)) and tc:IsRelateToEffect(e) then
@@ -103,6 +105,8 @@ function c79029099.penop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return false end
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
+	Debug.Message("处境越是艰难，我们就越不能气馁！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029099,3))
 		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end
@@ -111,6 +115,8 @@ function c79029099.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,nil,1,tp,LOCATION_MZONE)
 end
 function c79029099.tdop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("请大家一定要小心谨慎！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029099,1))
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 	local g=Duel.SelectMatchingCard(tp,aux.TURE,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
@@ -127,6 +133,8 @@ end
 end
 function c79029099.recop(e,tp,eg,ep,ev,re,r,rp)
 	if ep~=tp then return end
+	Debug.Message("就算不怎么擅长，我也会努力去做的。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029099,0))
 	Duel.Recover(tp,500,REASON_EFFECT)
 end
 function c79029099.actlimit(e,re,tp)

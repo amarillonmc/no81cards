@@ -107,8 +107,18 @@ function cm.efilter(e,te)
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
-	if not ct then return end
 	local c=e:GetHandler()
+	if not ct then return end
+	if c:IsRelateToEffect(e) then
+		local e4=Effect.CreateEffect(e:GetHandler())
+		e4:SetType(EFFECT_TYPE_SINGLE)
+		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e4:SetRange(LOCATION_MZONE)
+		e4:SetCode(EFFECT_IMMUNE_EFFECT)
+		e4:SetValue(cm.efilter)
+		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e4)
+
 		local e5=Effect.CreateEffect(e:GetHandler())
 		e5:SetType(EFFECT_TYPE_SINGLE)
 		e5:SetCode(EFFECT_UPDATE_ATTACK)
@@ -123,14 +133,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,ct)
 		e4:SetValue(cm.efilter1)
 		c:RegisterEffect(e4)
-	local e4=Effect.CreateEffect(e:GetHandler())
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EFFECT_IMMUNE_EFFECT)
-	e4:SetValue(cm.efilter)
-	e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
-	e:GetHandler():RegisterEffect(e4)
+	end
 end
 function cm.efilter1(e,te)
 	return te:GetHandler()~=e:GetHandler()

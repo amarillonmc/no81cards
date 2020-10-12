@@ -36,8 +36,7 @@ function c79029322.zop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c79029322.xxfil(c,seq)
-	local tc=Duel.GetMatchingGroup(c79029322.fil,tp,LOCATION_MZONE,0,nil,seq):GetFirst()
-	return c:GetLinkedGroup():IsContains(tc) and c:IsSetCard(0xa900)
+	return c:GetLinkedGroup():IsExists(c79029322.fil,1,nil,seq) and c:IsSetCard(0xa900)
 end
 function c79029322.fil(c,seq)
 	return c:IsSetCard(0xa900) and c:GetSequence()==seq

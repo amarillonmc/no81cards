@@ -35,7 +35,7 @@ function c40009025.matfilter(c)
 	return not c:IsLink(1) and c:GetBaseAttack()==0 and c:IsType(TYPE_EFFECT)
 end
 function c40009025.eqfilter(c,tp)
-	return c:IsType(TYPE_QUICKPLAY) and c:IsSetCard(0xf22) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
+	return c:IsType(TYPE_QUICKPLAY) and c:IsSetCard(0xf13) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function c40009025.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
@@ -64,7 +64,7 @@ function c40009025.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function c40009025.costfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf22) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
+	return c:IsFaceup() and c:IsSetCard(0xf13) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
 function c40009025.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c40009025.costfilter,tp,LOCATION_ONFIELD,0,1,nil) end
@@ -76,7 +76,7 @@ function c40009025.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c40009025.thfilter(c)
-	return c:IsSetCard(0xf22) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0xf13) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c40009025.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c40009025.thfilter,tp,LOCATION_DECK,0,1,nil) end

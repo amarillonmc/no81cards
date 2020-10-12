@@ -17,6 +17,10 @@ end
 function c79029016.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
+	Duel.SetChainLimit(c79029016.chlimit)
+end
+function c79029016.chlimit(e,ep,tp)
+	return tp==ep
 end
 function c79029016.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateAttack() then

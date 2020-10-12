@@ -11,7 +11,7 @@ function c79029321.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1)
 	e2:SetTarget(c79029321.target)
 	e2:SetOperation(c79029321.activate)
@@ -76,7 +76,7 @@ function c79029321.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.GetMatchingGroup(c79029321.txfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 		return g:GetClassCount(Card.GetCode)>=3
 	end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,0)	 
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,0)  
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c79029321.activate1(e,tp,eg,ep,ev,re,r,rp)

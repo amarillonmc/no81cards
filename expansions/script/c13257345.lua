@@ -81,13 +81,6 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ec=c:GetEquipTarget()
 	if not c:IsRelateToEffect(e) then return end
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local tg=g:Select(tp,1,1,nil)
-	if tg:GetCount()>0 then
-		Duel.HintSelection(tg)
-		Duel.Destroy(tg,REASON_EFFECT)
-	end
 	if ec then
 		local e4=Effect.CreateEffect(e:GetHandler())
 		e4:SetType(EFFECT_TYPE_SINGLE)
@@ -97,6 +90,25 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetValue(cm.efilter1)
 		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
 		ec:RegisterEffect(e4,true)
+	end
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local tg=g:Select(tp,1,1,nil)
+	if tg:GetCount()>0 then
+		Duel.HintSelection(tg)
+		if Duel.Destroy(tg,REASON_EFFECT)>0 then
+			local tc=tg:GetFirst()
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+0x17a0000)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetReset(RESET_EVENT+0x17a0000)
+			tc:RegisterEffect(e2)
+		end
 	end
 end
 function cm.efilter1(e,re)

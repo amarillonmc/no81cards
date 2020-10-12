@@ -58,6 +58,7 @@ function c9910065.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
 function c9910065.tdop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(c9910065.tdfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 end

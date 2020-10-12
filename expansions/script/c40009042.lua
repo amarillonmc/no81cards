@@ -21,7 +21,7 @@ function c40009042.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 function c40009042.filter2(c)
-	return c:IsSetCard(0xf13) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand() and not c:IsCode(40009042)
+	return c:IsSetCard(0xf13) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c40009042.filter1(c)
 	return c:IsCode(40009035) and c:IsAbleToHand()

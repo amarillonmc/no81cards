@@ -60,7 +60,7 @@ function c40009039.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40009039.filter(c)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf22)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf13)
 end
 function c40009039.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c40009039.filter(chkc) end
@@ -77,7 +77,7 @@ function c40009039.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 end
 function c40009039.eqlimit(e,c)
-	return c:GetControler()==e:GetHandlerPlayer() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf22)
+	return c:GetControler()==e:GetHandlerPlayer() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf13)
 end
 function c40009039.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -87,12 +87,6 @@ function c40009039.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)~=0 and tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		Duel.BreakEffect()
 		Duel.Equip(tp,c,tc)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_EQUIP)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_EQUIP)
 		e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)

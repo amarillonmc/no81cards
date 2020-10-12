@@ -15,6 +15,7 @@ function c79029227.initial_effect(c)
 	c:RegisterEffect(e1)
 	--seq
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(79029227,10)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetCountLimit(1)
 	e2:SetRange(LOCATION_MZONE) 
@@ -115,7 +116,7 @@ function c79029227.mvop(e,tp,eg,ep,ev,re,r,rp)
 	if op==0 then
 	Duel.MoveSequence(e:GetHandler(),5)
 	else
-	Duel.MoveSequence(e:GetHandler(),6)	
+	Duel.MoveSequence(e:GetHandler(),6) 
 	end
 		Debug.Message("早露，相信自己，你可以的。")
 		Duel.Hint(HINT_SOUND,0,aux.Stringid(79029227,9))
