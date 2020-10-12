@@ -64,15 +64,16 @@ function c40009175.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c40009175.atkktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return true end
 	Duel.SetChainLimit(c40009175.chlimit)
 end
-function c40009175.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
-	local flag=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
-	e:SetLabel(flag)
-	Duel.Hint(HINT_ZONE,tp,flag)
-end
+--function c40009175.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+   -- local c=e:GetHandler()
+   -- if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
+   -- local flag=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
+   -- e:SetLabel(flag)
+	--Duel.Hint(HINT_ZONE,tp,flag)
+--end
 function c40009175.chlimit(e,ep,tp)
 	return tp==ep
 end
@@ -84,7 +85,7 @@ function c40009175.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTarget(c40009175.atktg1)
 	e1:SetValue(aux.ChangeBattleDamage(1,DOUBLE_DAMAGE))
 	Duel.RegisterEffect(e1,tp)
-	Duel.SetChainLimit(c40009175.chlimit)
+  -- Duel.SetChainLimit(c40009175.chlimit)
 end
 function c40009175.atktg1(e,c)
 	return c:GetSequence()>=5

@@ -55,14 +55,13 @@ function c40009170.efilter(e,te)
 	end
 	return true
 end
-function c40009170.atkktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c40009170.atkktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 	Duel.SetChainLimit(c40009170.chlimit)
 end
-function c40009170.chlimit(e,ep,tp)
-	return tp==ep
-end
 function c40009170.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetTargetRange(LOCATION_MZONE,0)
@@ -70,11 +69,14 @@ function c40009170.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTarget(c40009170.atktg)
 	e1:SetValue(2000)
 	Duel.RegisterEffect(e1,tp)
-	Duel.SetChainLimit(c40009170.chlimit)
+	--Duel.SetChainLimit(c40009170.chlimit)
+end
+function c40009170.chlimit(e,ep,tp)
+	return tp==ep
 end
 function c40009170.discon(e)
 	local ph=Duel.GetCurrentPhase()
-	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE 
 end
 function c40009170.atktg(e,c)
 	return c:GetSequence()>=5

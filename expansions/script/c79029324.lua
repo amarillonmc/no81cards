@@ -42,9 +42,9 @@ function c79029324.cofil3(c,e,tp)
 end
 function c79029324.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local xg=Duel.GetMatchingGroup(c79029324.cofil1,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,nil)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029324.spfil,tp,LOCATION_EXTRA,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c79029324.cofil2,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(c79029324.cofil3,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) and xg:CheckWithSumGreater(Card.GetLevel,9) end
-	local g1=Duel.SelectMatchingCard(tp,c79029324.cofil2,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
-	local g2=Duel.SelectMatchingCard(tp,c79029324.cofil3,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)  
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029324.spfil,tp,LOCATION_EXTRA,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c79029324.cofil2,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(c79029324.cofil3,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) and xg:CheckWithSumGreater(Card.GetLevel,9) end
+	local g1=Duel.SelectMatchingCard(tp,c79029324.cofil2,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil)
+	local g2=Duel.SelectMatchingCard(tp,c79029324.cofil3,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil)  
 	local g3=Group.SelectWithSumGreater(xg,tp,Card.GetLevel,9)
 	g1:Merge(g2)
 	g1:Merge(g3)
@@ -73,6 +73,7 @@ function c79029324.acop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(c79029324.roop)
 	tc:RegisterEffect(e1)
 	Duel.SpecialSummonComplete()
+	tc:CompleteProcedure()
 end
 function c79029324.rotg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -91,7 +92,9 @@ end
 function c79029324.rop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("不要多说，我知道。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029324,3))
-	Duel.Overlay(re:GetHandler(),e:GetHandler())
+	local tc=re:GetHandler()
+	local c=e:GetHandler()
+	return Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 
 

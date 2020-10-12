@@ -42,7 +42,7 @@ function c79029578.chfil(c)
 end
 function c79029578.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetMaterial():IsExists(c79029578.chfil,1,nil)
-end
+	end
 function c79029578.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
 	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
@@ -100,6 +100,7 @@ function c79029578.spop(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 	e4:SetValue(c79029578.efilter)
 	tc:RegisterEffect(e4)   
+	Duel.SpecialSummonComplete()
 end
 end
 function c79029578.efilter(e,te)

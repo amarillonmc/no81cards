@@ -9,11 +9,9 @@ function c40009152.initial_effect(c)
 	e2:SetCategory(CATEGORY_ATKCHANGE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e2:SetCountLimit(1,40009152+EFFECT_COUNT_CODE_DUEL)
-	e2:SetHintTiming(TIMING_DAMAGE_STEP,TIMING_DAMAGE_STEP+TIMINGS_CHECK_MONSTER)
 	e2:SetCondition(c40009152.thcon)
-	e2:SetTarget(c40009152.atkktg)
+	e2:SetTarget(c40009152.atkktg)  
 	e2:SetOperation(c40009152.atkop)
 	c:RegisterEffect(e2)  
 	--special summon  
@@ -43,14 +41,13 @@ end
 function c40009152.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
-function c40009152.atkktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c40009152.atkktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 	Duel.SetChainLimit(c40009152.chlimit)
 end
-function c40009152.chlimit(e,ep,tp)
-	return tp==ep
-end
 function c40009152.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetTargetRange(LOCATION_MZONE,0)
@@ -58,11 +55,14 @@ function c40009152.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTarget(c40009152.atktg)
 	e1:SetValue(2000)
 	Duel.RegisterEffect(e1,tp)
-	Duel.SetChainLimit(c40009152.chlimit)
+	--Duel.SetChainLimit(c40009152.chlimit)
+end
+function c40009152.chlimit(e,ep,tp)
+	return tp==ep
 end
 function c40009152.discon(e)
 	local ph=Duel.GetCurrentPhase()
-	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE 
 end
 function c40009152.atktg(e,c)
 	return c:GetSequence()>=5

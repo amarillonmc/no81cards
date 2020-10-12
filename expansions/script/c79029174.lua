@@ -12,7 +12,6 @@ function c79029174.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCost(c79029174.cost)
@@ -79,11 +78,12 @@ function c79029174.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029174.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c79029174.filter1(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c79029174.filter1,tp,LOCATION_MZONE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029174.filter1,tp,LOCATION_MZONE,0,1,nil,e,tp) end
 	Debug.Message("接下来，Castle-3要展现下工业级作战平台的实力了！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029174,2))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,c79029174.filter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c79029174.filter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
+	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c79029174.activate(e,tp,eg,ep,ev,re,r,rp)

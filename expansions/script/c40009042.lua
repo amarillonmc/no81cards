@@ -21,7 +21,7 @@ function c40009042.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 function c40009042.filter2(c)
-	return c:IsSetCard(0xf22) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0xf13) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand() and not c:IsCode(40009042)
 end
 function c40009042.filter1(c)
 	return c:IsCode(40009035) and c:IsAbleToHand()
@@ -41,7 +41,7 @@ function c40009042.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40009042.cfilter(c)
-	return c:IsSetCard(0xf22) and c:IsFaceup() and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0xf13) and c:IsFaceup() and c:IsAbleToGraveAsCost()
 end
 function c40009042.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c40009042.cfilter,tp,LOCATION_ONFIELD,0,2,nil) and e:GetHandler():IsAbleToRemoveAsCost() end
@@ -51,7 +51,7 @@ function c40009042.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c40009042.thfilter(c)
-	return c:IsSetCard(0xf22) and c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand()
+	return c:IsSetCard(0xf13) and c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand()
 end
 function c40009042.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c40009042.thfilter,tp,LOCATION_GRAVE,0,1,nil) end

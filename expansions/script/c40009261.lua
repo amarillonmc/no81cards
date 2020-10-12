@@ -24,11 +24,11 @@ end
 function c40009261.cfilter(c,code)
 	return c:IsFaceup() and c:IsOriginalCodeRule(code)
 end
-function c40009261.cfilter1(c)
-	return c:IsCode(40009249) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(c40009261.cfilter,tp,LOCATION_MZONE,0,1,nil,40009154)
+function c40009261.cfilter1(c,e,tp)
+	return c:IsCode(40009249)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c40009261.cfilter,tp,LOCATION_MZONE,0,1,nil,40009154)
 end
-function c40009261.cfilter2(c)
-	return c:IsCode(40009154) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(c40009261.cfilter,tp,LOCATION_MZONE,0,1,nil,40009249)
+function c40009261.cfilter2(c,e,tp)
+	return c:IsCode(40009154) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c40009261.cfilter,tp,LOCATION_MZONE,0,1,nil,40009249)
 end
 function c40009261.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
@@ -42,33 +42,33 @@ function c40009261.disrmcon(e,tp,eg,ep,ev,re,r,rp)
 		or Duel.IsExistingMatchingCard(c40009261.cfilter,tp,LOCATION_MZONE,0,1,nil,40009249)
 end
 function c40009261.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
-		local b1=Duel.IsExistingMatchingCard(c40009261.cfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,40009261)==0
-		local b2=Duel.IsExistingMatchingCard(c40009261.cfilter2,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,40009262)==0
+		local b1=Duel.IsExistingMatchingCard(c40009261.cfilter1,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,40009261)==0
+		local b2=Duel.IsExistingMatchingCard(c40009261.cfilter2,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,40009262)==0
 	if chk==0 then return b1 or b2 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c40009261.effop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local c=e:GetHandler()
-		local b1=Duel.IsExistingMatchingCard(c40009261.cfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,40009261)==0
-		local b2=Duel.IsExistingMatchingCard(c40009261.cfilter2,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,40009262)==0
+		local b1=Duel.IsExistingMatchingCard(c40009261.cfilter1,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,40009261)==0
+		local b2=Duel.IsExistingMatchingCard(c40009261.cfilter2,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,40009262)==0
 	local op=0
 	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(40009261,0),aux.Stringid(40009261,1))
 	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(40009261,0))
 	elseif b2 then op=Duel.SelectOption(tp,aux.Stringid(40009261,1))+1
 	else return end
 	if op==0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local g1=Duel.SelectMatchingCard(tp,c40009261.cfilter1,tp,LOCATION_DECK,0,1,1,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g1=Duel.SelectMatchingCard(tp,c40009261.cfilter1,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		if g1:GetCount()>0 then
-			Duel.SendtoHand(g1,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g1)
+			Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
 		end
 		Duel.RegisterFlagEffect(tp,40009261,RESET_PHASE+PHASE_END,0,1)
 	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local g2=Duel.SelectMatchingCard(tp,c40009261.cfilter2,tp,LOCATION_DECK,0,1,1,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g2=Duel.SelectMatchingCard(tp,c40009261.cfilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		if g2:GetCount()>0 then
-			Duel.SendtoHand(g2,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g2)
+			Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
 		end
 		Duel.RegisterFlagEffect(tp,40009262,RESET_PHASE+PHASE_END,0,1)
 	end

@@ -27,7 +27,6 @@ function c79029582.initial_effect(c)
 	e2:SetDescription(aux.Stringid(79029582,0))
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCost(c79029582.copycost)
 	e2:SetTarget(c79029582.copytg)
 	e2:SetOperation(c79029582.copyop)
 	c:RegisterEffect(e2)
@@ -58,8 +57,8 @@ function c79029582.cofil(c,e,tp)
 	return e:GetHandler():GetMaterial():IsContains(c) and c:IsAbleToRemoveAsCost()
 end
 function c79029582.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029582.cofil,tp,LOCATION_GRAVE,0,1,nil) end
-	local tc=Duel.SelectMatchingCard(tp,c79029582.cofil,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029582.cofil,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp) end
+	local tc=Duel.SelectMatchingCard(tp,c79029582.cofil,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp):GetFirst()
 	e:SetLabel(tc:GetAttribute())
 	Duel.Remove(tc,POS_FACEUP,REASON_COST)
 end
@@ -93,7 +92,7 @@ function c79029582.copyfilter(c)
 	return c:IsAbleToDeck()
 end
 function c79029582.copytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(c79029582.copyfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029582.copyfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) end
 	local g=Duel.SelectMatchingCard(tp,c79029582.copyfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil)
 	Duel.SetTargetCard(g)
 end
