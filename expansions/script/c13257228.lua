@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	e5:SetDescription(aux.Stringid(m,2))
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e5:SetCode(EVENT_CHAIN_SOLVING)
-	e5:SetRange(LOCATION_MZONE)
+	e5:SetRange(LOCATION_GRAVE)
 	e5:SetCondition(cm.condition)
 	e5:SetOperation(cm.operation)
 	c:RegisterEffect(e5)
@@ -122,7 +122,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsSetCard(0x353)
+	return re:GetHandler():IsRace(RACE_FIEND)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -102,7 +102,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.codisable(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetEquipTarget()
-	return ec and not e:GetHandler():IsStatus(STATUS_CHAINING)
+	return ec and not e:GetHandler():IsStatus(STATUS_CHAINING) and ep~=tp
 end
 function cm.tgdisable(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

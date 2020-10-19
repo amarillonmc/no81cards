@@ -79,7 +79,7 @@ end
 function cm.cacon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetEquipTarget()
 	if ec and ec:IsRelateToBattle() and ec:IsStatus(STATUS_OPPO_BATTLE) then
-		local bc=c:GetBattleTarget()
+		local bc=ec:GetBattleTarget()
 		return bc and bc:IsLocation(LOCATION_GRAVE) and bc:IsType(TYPE_MONSTER)
 	else return false end
 end

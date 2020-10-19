@@ -99,7 +99,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(11,0,aux.Stringid(sc:GetCode(),4))
 		local tep=sc:GetControler()
 		local mt=getmetatable(sc)
-		if mt then
+		if mt and type(mt[sc]) == "table" then
 			local eflist=mt[sc]
 			local i=1
 			while eflist[i] do

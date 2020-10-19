@@ -50,7 +50,7 @@ function c33400305.bacost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 	end
 end
-function c33400355.bafilter1(c)
+function c33400305.bafilter1(c)
 	return c:IsAttackable() and c:IsSetCard(0x5341) and c:IsFaceup()
 end
 function c33400305.batg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

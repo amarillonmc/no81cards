@@ -14,7 +14,28 @@ function cm.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e0:SetValue(aux.fuslimit)
 	c:RegisterEffect(e0)
- 
+   --
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(2,m)
+	e1:SetCost(cm.cost)
+	e1:SetOperation(cm.op)
+	c:RegisterEffect(e1)
+ --
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_NEGATE+CATEGORY_REMOVE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetCountLimit(2,m)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(cm.negcon)
+	e2:SetTarget(cm.negtg)
+	e2:SetOperation(cm.negop)
+	c:RegisterEffect(e2)
  --Equip Okatana
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -150,7 +171,7 @@ end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
    local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
 	if Duel.Destroy(g,REASON_EFFECT)~=0 and e:GetHandler():IsRelateToEffect(e) then
-		Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+		Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	end
 end
  
@@ -196,7 +217,7 @@ function cm.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 			local e2=Effect.CreateEffect(ec)
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 			e2:SetCategory(CATEGORY_COUNTER)
-			e2:SetProperty(EFFECT_FLAG_DELAY)
+			e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 			e2:SetCode(EVENT_DESTROYED)
 			e2:SetRange(LOCATION_SZONE)
 			e2:SetCountLimit(2,m+1)
