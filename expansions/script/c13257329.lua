@@ -113,5 +113,5 @@ end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	Duel.SendtoDeck(c,nil,0,REASON_EFFECT)~=0
+	Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 end

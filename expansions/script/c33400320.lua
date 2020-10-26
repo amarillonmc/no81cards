@@ -155,6 +155,7 @@ function c33400320.refilter(c)
 	return  c:IsAbleToRemove() 
 end
 function c33400320.desop(e,tp,eg,ep,ev,re,r,rp)  
+local c=e:GetHandler()
 	 local g1=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	 local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

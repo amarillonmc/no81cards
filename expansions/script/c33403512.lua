@@ -18,9 +18,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-  local ss=Duel.GetFlagEffect(tp,33403501)/2  
-	if ss<4 then ss=4 end 
-	return Duel.GetFlagEffect(tp,33413501)<ss and Duel.GetFlagEffect(tp,m+30000)==0  and Duel.GetFlagEffect(tp,33443500)==0
+  local ss=Duel.GetTurnCount()
+	return Duel.GetFlagEffect(tp,33413501)<ss and  Duel.GetFlagEffect(tp,m+30000)==0 and Duel.GetFlagEffect(tp,33443500)==0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
 e:SetLabel(1)
@@ -66,7 +65,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetTargetRange(0,1)
 		e1:SetValue(1)
 		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)		
+		Duel.RegisterEffect(e1,tp)  
 	end
 	if op==1 then 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -77,7 +76,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_DISABLE)
-		e1:SetTargetRange(0,LOCATION_ONFIELD)
+		e1:SetTargetRange(0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_DECK+LOCATION_EXTRA+LOCATION_HAND)
 		e1:SetTarget(cm.distg)
 		e1:SetLabelObject(tc2)
 		e1:SetReset(RESET_PHASE+PHASE_END)
@@ -106,7 +105,7 @@ function cm.distg(e,c)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsOriginalCodeRule(tc:GetOriginalCodeRule())
+	return  re:GetHandler():IsOriginalCodeRule(tc:GetOriginalCodeRule())
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
