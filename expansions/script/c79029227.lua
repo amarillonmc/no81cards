@@ -71,15 +71,9 @@ end
 function c79029227.mvfilter1(c)
 	return c:IsFaceup() and c:IsSetCard(0xa900)
 end
-function c79029227.bfil1(c)
-	return c:GetSequence()==5
-end
-function c79029227.bfil2(c)
-	return c:GetSequence()==6
-end
 function c79029227.mvtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local x1=not Duel.IsExistingMatchingCard(c79029227.bfil1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-	local x2=not Duel.IsExistingMatchingCard(c79029227.bfil2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	local x1=Duel.CheckLocation(tp,LOCATION_MZONE,5)
+	local x2=Duel.CheckLocation(tp,LOCATION_MZONE,6)
 	local x3=x1 or x2
 	local b1=Duel.IsExistingMatchingCard(c79029227.mvfilter1,tp,LOCATION_MZONE,0,1,e:GetHandler())
 		and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0
@@ -102,8 +96,8 @@ function c79029227.mvop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SOUND,0,aux.Stringid(79029227,8))
 		end
 	else
-	local x1=not Duel.IsExistingMatchingCard(c79029227.bfil1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-	local x2=not Duel.IsExistingMatchingCard(c79029227.bfil2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	local x1=Duel.CheckLocation(tp,LOCATION_MZONE,5)
+	local x2=Duel.CheckLocation(tp,LOCATION_MZONE,6)
 	if x1 and x2 then
 	op=Duel.SelectOption(tp,aux.Stringid(79029227,4),aux.Stringid(79029227,5))
 	elseif x1 then

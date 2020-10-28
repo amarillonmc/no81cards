@@ -57,6 +57,7 @@ function c79029248.initial_effect(c)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetRange(LOCATION_HAND+LOCATION_DECK)
 	e2:SetCountLimit(1,7902924)
+	e2:SetCondition(c79029248.linkcon)
 	e2:SetOperation(c79029248.linkop)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
@@ -147,7 +148,11 @@ function c79029248.deop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("好了好了，你们已经很努力了。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029248,2))
 end
-
+function c79029248.linkcon(e,c,tp)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0	
+	end
 function c79029248.linkop(e,tp,eg,ep,ev,re,r,rp,c,og,lmat,min,max)
 	Debug.Message("听我说，各位，我有个计划！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029248,4))

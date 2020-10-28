@@ -85,7 +85,7 @@ function c79029048.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(Duel.AnnounceLevel(tp,1,8))
 end
 function c79029048.op(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_MZONE,0,0xa900)
 	local tc=g:GetFirst()
 	local c=e:GetHandler()
 	while tc do

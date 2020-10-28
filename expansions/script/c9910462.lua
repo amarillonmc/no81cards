@@ -12,18 +12,18 @@ function c9910462.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910462.ctfilter(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x950,1)
+	return c:IsFaceup() and c:IsCanAddCounter(0x1950,1)
 end
 function c9910462.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910462.ctfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910462.ctfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,c9910462.ctfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x950)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x1950)
 end
 function c9910462.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:AddCounter(0x950,1) and tc:IsType(TYPE_FUSION) then
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:AddCounter(0x1950,1) and tc:IsType(TYPE_FUSION) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)

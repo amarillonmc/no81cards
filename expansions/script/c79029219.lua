@@ -26,21 +26,15 @@ function c79029219.fil(c)
 	return c:GetSequence()<=4
 end
 function c79029219.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029219.fil,tp,LOCATION_MZONE,0,1,nil) and (not Duel.IsExistingMatchingCard(c79029219.bfil1,tp,LOCATION_MZONE,0,1,nil) or not Duel.IsExistingMatchingCard(c79029219.bfil2,tp,LOCATION_MZONE,0,1,nil)) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029219.fil,tp,LOCATION_MZONE,0,1,nil) and (Duel.CheckLocation(tp,LOCATION_MZONE,5) or Duel.CheckLocation(tp,LOCATION_MZONE,6)) end
 	local g=Duel.SelectMatchingCard(tp,c79029219.fil,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetTargetCard(g)
-end
-function c79029219.bfil1(c)
-	return c:GetSequence()==6
-end
-function c79029219.bfil2(c)
-	return c:GetSequence()==5
 end
 function c79029219.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local op=0 
-	local b1=not Duel.IsExistingMatchingCard(c79029219.bfil1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-	local b2=not Duel.IsExistingMatchingCard(c79029219.bfil2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	local b1=Duel.CheckLocation(tp,LOCATION_MZONE,6)
+	local b2=Duel.CheckLocation(tp,LOCATION_MZONE,5)
 	if b1 and b2 then
 	op=Duel.SelectOption(tp,aux.Stringid(79029219,1),aux.Stringid(79029219,0))
 	elseif b1 then

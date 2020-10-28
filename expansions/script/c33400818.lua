@@ -442,7 +442,7 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g1=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_DECK,0,1,ct,nil,e,tp)
 			if g1:GetCount()>0 then
-			Duel.SpecialSummon(g1,nil,tp,tp,true,false,POS_FACEUP)
+			Duel.SpecialSummon(g1,nil,tp,tp,false,false,POS_FACEUP)
 			end
 		end
 	end 

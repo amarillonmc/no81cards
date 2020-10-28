@@ -100,12 +100,6 @@ function c79029213.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_PZONE)
 end
-function c79029213.bfil1(c)
-	return c:GetSequence()==4
-end
-function c79029213.bfil2(c)
-	return c:GetSequence()==0
-end
 function c79029213.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e2=Effect.CreateEffect(c)
@@ -121,8 +115,8 @@ function c79029213.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	if c:GetSequence()==0 or c:GetSequence()==4 then return end
 	local op=0 
-	local b1=not Duel.IsExistingMatchingCard(c79029213.bfil1,tp,LOCATION_SZONE,0,1,nil)
-	local b2=not Duel.IsExistingMatchingCard(c79029213.bfil2,tp,LOCATION_SZONE,0,1,nil)
+	local b1=Duel.CheckLocation(tp,LOCATION_PZONE,1)
+	local b2=Duel.CheckLocation(tp,LOCATION_PZONE,0)
 	if b1 and b2 then
 	op=Duel.SelectOption(tp,aux.Stringid(79029213,1),aux.Stringid(79029213,0))
 	elseif b1 then

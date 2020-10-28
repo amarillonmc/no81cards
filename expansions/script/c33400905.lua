@@ -2,30 +2,30 @@
 local m=33400905
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	  --to hand
+	  --special summon
 	local e3=Effect.CreateEffect(c)  
-	e3:SetCategory(CATEGORY_TOHAND)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SUMMON_SUCCESS)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,m)
-	e3:SetTarget(cm.thtg)
-	e3:SetOperation(cm.thop)
+	e3:SetTarget(cm.sptg1)
+	e3:SetOperation(cm.spop1)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
-	--special summon
+	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,m+10000)
 	e2:SetCondition(cm.con)
-	e2:SetTarget(cm.sptg1)
-	e2:SetOperation(cm.spop1)
+	e2:SetTarget(cm.thtg)
+	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 end
 function cm.thfilter(c)

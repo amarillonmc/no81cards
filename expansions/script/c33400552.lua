@@ -65,6 +65,17 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.SpecialSummonComplete()
    end 
+local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.splimit(e,c)
+	return not (c:IsSetCard(0x341) or  c:IsAttribute(ATTRIBUTE_WATER))
 end
 
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)

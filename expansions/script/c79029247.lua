@@ -190,9 +190,9 @@ function c79029247.zoop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	while tc do
 	local x=tc:GetSequence()
-	if x==seq+1 then
+	if x==seq+1 and Duel.CheckLocation(tp,LOCATION_MZONE,x+1) then
 	Duel.MoveSequence(tc,x+1)
-	else
+	elseif x==seq-1 and Duel.CheckLocation(tp,LOCATION_MZONE,x-1) then
 	Duel.MoveSequence(tc,x-1)
 	end
 	if tc:GetSequence()==x then

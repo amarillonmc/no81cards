@@ -35,32 +35,40 @@ function c40008844.initial_effect(c)
 	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
-	e4:SetCost(c40008844.spcost)
+	e4:SetCost(c40008844.atkcost)
 	e4:SetCondition(c40008844.atkcon)
 	e4:SetOperation(c40008844.atkop)
 	c:RegisterEffect(e4)	
 end
+c40008844.xyz_number=96
 function c40008844.actcon(e)
 	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
 end
-function c40008844.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+function c40008844.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) and c:GetFlagEffect(40008844)==0 end
+	c:RemoveOverlayCard(tp,1,1,REASON_COST)
+	c:RegisterFlagEffect(40008844,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
 end
 function c40008844.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local bc=c:GetBattleTarget()
-	return c:IsRelateToBattle() and bc and bc:IsFaceup() and bc:IsRelateToBattle() and bc:GetAttack()>0
+	return c:IsRelateToBattle() and bc and bc:IsFaceup() and bc:IsRelateToBattle() and bc:GetAttack()>0 
 end
-function c42160203.atkop(e,tp,eg,ep,ev,re,r,rp)
+function c40008844.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=c:GetBattleTarget()
-	if tc:IsFaceup() and tc:IsRelateToBattle() and not tc:IsImmuneToEffect(e) then
+	local bc=c:GetBattleTarget()
+	if c:IsFaceup() and c:IsRelateToBattle() and bc:IsFaceup() and bc:IsRelateToBattle() then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(bc:GetAttack())
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(tc:GetAttack()*2)
-		tc:RegisterEffect(e1)
+		bc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_UPDATE_DEFENSE)
+		e2:SetValue(bc:GetDefense())
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		bc:RegisterEffect(e2)
 	end
 end

@@ -57,7 +57,7 @@ function c79029037.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029037,0))
 end
 function c79029037.spfilter(c,e,tp)
-	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelBelow(6)
+	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelBelow(6) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0	
 end
 function c79029037.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(c79029037.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then return end
@@ -65,6 +65,7 @@ function c79029037.checkop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("大家可都相信着我！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029037,1))
 	local tg=Duel.SelectMatchingCard(tp,c79029037.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0  then return end
 	Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
 end
 end

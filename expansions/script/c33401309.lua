@@ -1,7 +1,7 @@
 --五河士道 暴走形态
 function c33401309.initial_effect(c)
 	aux.AddFusionProcFunFunRep(c,c33401309.matfilter1,c33401309.matfilter,2,2,true)
-	c:SetUniqueOnField(1,0,33401309)
+	 c:SetUniqueOnField(1,1,c33401309.uqfilter,LOCATION_MZONE)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33401309,1))
@@ -27,6 +27,10 @@ function c33401309.matfilter1(c)
 end
 function c33401309.matfilter(c)
 	return c:IsSetCard(0x341)
+end
+
+function c33401309.uqfilter(c)
+		return c:GetOriginalCode(33401309) 
 end
 
 function c33401309.thfilter2(c)
@@ -61,7 +65,7 @@ function c33401309.cpop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,2)
-		e1:SetCode(EFFECT_ADD_CODE)
+		e1:SetCode(EFFECT_CHANGE_CODE)
 		e1:SetValue(code)
 		c:RegisterEffect(e1)
 		c:CopyEffect(code,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,2)

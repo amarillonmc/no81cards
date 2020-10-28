@@ -27,6 +27,7 @@ function c9910433.initial_effect(c)
 	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -56,7 +57,7 @@ end
 function c9910433.filter(c,id)
 	return c:GetTurnID()==id and not c:IsReason(REASON_RETURN) and c:IsAbleToRemove()
 end
-function c9910433.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910433.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local id=Duel.GetTurnCount()
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and c9910433.filter(chkc,id) end
 	if chk==0 then return Duel.IsExistingTarget(c9910433.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,id) end

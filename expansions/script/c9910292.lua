@@ -63,6 +63,7 @@ function c9910292.recfilter(c)
 	return c:IsSetCard(0x957) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function c9910292.spop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local code=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

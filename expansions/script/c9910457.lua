@@ -1,6 +1,6 @@
 --韶光歌后 玛丽亚·毕肖普
 function c9910457.initial_effect(c)
-	c:EnableCounterPermit(0x950)
+	c:EnableCounterPermit(0x1950)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9950),c9910457.matfilter,2,63,true)
@@ -53,17 +53,17 @@ function c9910457.adop(e,tp,eg,ep,ev,re,r,rp)
 	if c:GetMaterial():IsExists(c9910457.cfilter,1,nil,LOCATION_EXTRA) then ct=ct+1 end
 	if c:GetMaterial():IsExists(c9910457.cfilter,1,nil,LOCATION_REMOVED) then ct=ct+1 end
 	if c:GetMaterial():IsExists(c9910457.cfilter,1,nil,LOCATION_SZONE) then ct=ct+1 end
-	if ct>0 and c:IsCanAddCounter(0x950,ct) then
+	if ct>0 and c:IsCanAddCounter(0x1950,ct) then
 		Duel.Hint(HINT_CARD,0,9910457)
-		c:AddCounter(0x950,ct)
+		c:AddCounter(0x1950,ct)
 	end
 end
 function c9910457.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function c9910457.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x950,1,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,0x950,1,REASON_COST)
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x1950,1,REASON_COST) end
+	e:GetHandler():RemoveCounter(tp,0x1950,1,REASON_COST)
 end
 function c9910457.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -77,15 +77,15 @@ function c9910457.rctcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910457.rcttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if not e:GetHandler():IsCanRemoveCounter(tp,0x950,1,REASON_EFFECT) then
+	if not e:GetHandler():IsCanRemoveCounter(tp,0x1950,1,REASON_EFFECT) then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
 	end
 end
 function c9910457.rctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		if c:IsCanRemoveCounter(tp,0x950,1,REASON_EFFECT) then
-			c:RemoveCounter(tp,0x950,1,REASON_EFFECT)
+		if c:IsCanRemoveCounter(tp,0x1950,1,REASON_EFFECT) then
+			c:RemoveCounter(tp,0x1950,1,REASON_EFFECT)
 		else
 			Duel.Destroy(c,REASON_EFFECT)
 		end

@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_SYNCHRO),aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),1)
 	c:EnableReviveLimit()  
 	local e1=rsef.SC(c,EVENT_SPSUMMON_SUCCESS,nil,nil,"cd",rscon.sumtype("syn"),cm.regop)
-	local e2=rsef.STO(c,EVENT_TO_GRAVE,{m,4},nil,"sp","de,dsp",cm.spcon,nil,rsop.target(cm.spfilter,"sp",LOCATION_GRAVE),cm.spop)
+   -- local e2=rsef.STO(c,EVENT_TO_GRAVE,{m,4},nil,"sp","de,dsp",cm.spcon,nil,rsop.target(cm.spfilter,"sp",LOCATION_GRAVE),cm.spop)
 	if not cm.gbl then
 		cm.gbl=true
 		cm[0]=0
@@ -25,15 +25,16 @@ function cm.resetcount(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+
 	local mat0=c:GetMaterial()
-	local mat=mat:Filter(Card.IsType,nil,TYPE_SYNCHRO)
-	if #mat>=3 then
+	local mat=mat0:Filter(Card.IsType,nil,TYPE_SYNCHRO)
+	if #mat>=3 or re:GetHandler():IsCode(40009385) then
 		local e1=rsef.QO(c,nil,{m,0},1,"dis",nil,LOCATION_MZONE,nil,nil,nil,cm.disop,nil,rsreset.est)
 	end
-	if #mat>=4 then
+	if #mat>=4 or re:GetHandler():IsCode(40009385) then
 		local e2=rsef.SV_SET(c,"batk",c:GetBaseAttack()*2,nil,rsreset.est_d)
 	end
-	if #mat>=5 then
+	if #mat>=5 or re:GetHandler():IsCode(40009385) then
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_SINGLE)
 		e3:SetCode(EFFECT_EXTRA_ATTACK)
@@ -42,7 +43,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetValue(#mat0-1)
 		c:RegisterEffect(e3)
 	end
-	if #mat>=6 then
+	if #mat>=6 or re:GetHandler():IsCode(40009385) then
 		local e4=rsef.QO(c,nil,{m,1},1,"td",nil,LOCATION_MZONE,nil,nil,rsop.target(Card.IsAbleToDeck,"td",0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,true),cm.tdop)
 	end
 end

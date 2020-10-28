@@ -1,6 +1,6 @@
 --积聚希望的韶光
 function c9910454.initial_effect(c)
-	c:EnableCounterPermit(0x950)
+	c:EnableCounterPermit(0x1950)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -21,7 +21,7 @@ function c9910454.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>2
 end
 function c9910454.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=Duel.GetCounter(tp,1,0,0x950)+3-Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
+	local ct=Duel.GetCounter(tp,1,0,0x1950)+3-Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 	if chk==0 then return (ct<=0 or Duel.IsPlayerCanDraw(tp,ct))
 		and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
@@ -35,13 +35,13 @@ function c9910454.drop(e,tp,eg,ep,ev,re,r,rp)
 		if og:IsExists(Card.IsControler,1,nil,tp) then Duel.ShuffleDeck(tp) end
 		if og:IsExists(Card.IsControler,1,nil,1-tp) then Duel.ShuffleDeck(1-tp) end
 		Duel.BreakEffect()
-		local ct=Duel.GetCounter(tp,1,0,0x950)+3
+		local ct=Duel.GetCounter(tp,1,0,0x1950)+3
 		Duel.Draw(tp,ct,REASON_EFFECT)
 		local sg=Duel.GetOperatedGroup()
 		Duel.ConfirmCards(1-tp,sg)
 		if sg:GetClassCount(Card.GetCode)==sg:GetCount() then
 			if sg:IsExists(Card.IsSetCard,1,nil,0x9950) then
-				e:GetHandler():AddCounter(0x950,1)
+				e:GetHandler():AddCounter(0x1950,1)
 				Duel.ShuffleHand(tp)
 			end
 		else

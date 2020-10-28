@@ -157,7 +157,7 @@ function c79029305.pendop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 		ce=eset[op+1]
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=tg:FilterSelect(tp,aux.PConditionExtraFilterSpecific,0,ft,nil,e,tp,lscale,rscale,ce)
+	local g=tg:FilterSelect(tp,aux.PConditionFilter,0,ft,nil,e,tp,lscale,rscale,ce)
 	if #g==0 then return end
 	if ce then
 		Duel.Hint(HINT_CARD,0,ce:GetOwner():GetOriginalCode())

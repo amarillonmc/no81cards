@@ -81,14 +81,17 @@ function c9910024.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	end
 end
+function c9910024.thfilter(c)
+	return c:IsFaceup() and c:IsAbleToHand()
+end
 function c9910024.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		if Duel.Destroy(eg,REASON_EFFECT)~=0 then
-			local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_PZONE,0,aux.ExceptThisCard(e))
-			if g:GetCount()>0 then
-				Duel.BreakEffect()
-				Duel.SendtoHand(g,nil,REASON_EFFECT)
-			end
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)>0 then
+		local g=Duel.GetMatchingGroup(c9910024.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
+		if g:GetCount()>1 and Duel.SelectYesNo(tp,aux.Stringid(9910024,0)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			local sg=g:Select(tp,2,2,nil)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		end
 	end
 end

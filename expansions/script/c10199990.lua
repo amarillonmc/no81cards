@@ -1,31 +1,47 @@
---version 20.08.25
+--version 20.10.11
 if not pcall(function() require("expansions/script/c10199991") end) then require("script/c10199991") end
 local m=10199990
 local vm=10199991
-local Version_Number=20200825
+local Version_Number=20201011
+if rsv.Library_Switch then return end
+rsv.Library_Switch = true 
 -----------------------"Part_Effect_Base"-----------------------
---Creat "EVENT_SET"
-function rsef.CreatEvent_Set()
-	if rsef.CreatEvent_Set_Switch then return end
-	rsef.CreatEvent_Set_Switch=true 
-	local e1=rsef.FC({true,0},EVENT_MSET)
-	e1:SetOperation(rsop.CreatEvent_Set)
-	local e2=rsef.RegisterClone({true,0},e1,"code",EVENT_SSET)
-	local e3=rsef.RegisterClone({true,0},e1,"code",EVENT_SPSUMMON_SUCCESS,"con",rscon.CreatEvent_Set)
-	local e4=rsef.RegisterClone({true,0},e3,"code",EVENT_CHANGE_POS)
-	return e1,e2,e3,e4
+--Creat Event 
+function rsef.CreatEvent(event_code,event1,con1,...)
+	rsef.CreatEvent_Switch = rsef.CreatEvent_Switch or {}
+	if rsef.CreatEvent_Switch[event_code] then return end
+	rsef.CreatEvent_Switch[event_code]=true
+	local creat_list={event1,con1,...}
+	local eff_list={}
+	for idx,val in pairs(creat_list) do 
+		if type(val)=="number" then 
+			local e1=rsef.FC({true,0},val)
+			e1:SetOperation(rsop.CreatEvent(creat_list[idx+1],event_code))
+			table.insert(eff_list,e1)
+		end
+	end
+	return table.unpack(eff_list)
 end
-function rsop.CreatEvent_Set(e,tp,eg,ep,ev,re,r,rp)
-	local sg=eg:Filter(Card.IsFacedown,nil)
-	Duel.RaiseEvent(sg,rscode.Set,re,r,rp,ep,ev)
-	for tc in aux.Next(sg) do
-		Duel.RaiseSingleEvent(tc,rscode.Set,re,r,rp,ep,ev)
+function rsop.CreatEvent(con,event_code)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+		con = con or aux.TRUE 
+		local res,sg=con(e,tp,eg,ep,ev,re,r,rp)
+		if not res then return end
+		sg = sg or eg 
+		Duel.RaiseEvent(sg,event_code,re,r,rp,ep,ev)
+		for tc in aux.Next(sg) do
+			Duel.RaiseSingleEvent(tc,event_code,re,r,rp,ep,ev)
+		end
 	end
 end
-function rscon.CreatEvent_Set(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsFacedown,1,nil)
+--Creat "EVENT_SET"
+function rsef.CreatEvent_Set()
+	return rsef.CreatEvent(rscode.Set,EVENT_MSET,nil,EVENT_SSET,nil,EVENT_SPSUMMON_SUCCESS,rscon.CreatEvent_Set,EVENT_CHANGE_POS,rscon.CreatEvent_Set)
 end
-
+function rscon.CreatEvent_Set(e,tp,eg,ep,ev,re,r,rp)
+	local sg=eg:Filter(Card.IsFacedown,nil)
+	return #sg>0,sg
+end
 --Effect: Get default hint string for Duel.Hint ,use in effect target
 function rsef.GetDefaultHintString(cate_list,loc_self,loc_oppo,hint_list)
 	if hint_list then 
@@ -753,14 +769,14 @@ function rsef.FV_INDESTRUCTABLE(reg_list,inds_list,val_list,tg,tg_range_list,con
 end
 --Field Val Effect: Other Limit
 function rsef.FV_LIMIT(reg_list,lim_list,val_list,tg,tg_range_list,con,reset_list,flag,desc_list) 
-	local code_list_1={"dis","dise","tri","atk","atkan","datk","res","ress","resns","td","th","cp","cpe","ctrl"}
-	local code_list_2={ EFFECT_DISABLE,EFFECT_DISABLE_EFFECT,EFFECT_CANNOT_TRIGGER,EFFECT_CANNOT_ATTACK,EFFECT_CANNOT_ATTACK_ANNOUNCE,EFFECT_CANNOT_DIRECT_ATTACK,EFFECT_CANNOT_RELEASE,EFFECT_UNRELEASABLE_SUM,EFFECT_UNRELEASABLE_NONSUM,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_CHANGE_POSITION,EFFECT_CANNOT_CHANGE_POS_E,EFFECT_CANNOT_CHANGE_CONTROL }
+	local code_list_1={"dis","dise","tri","atk","atkan","datk","res","ress","resns","td","th","cp","cpe","ctrl","distm"}
+	local code_list_2={ EFFECT_DISABLE,EFFECT_DISABLE_EFFECT,EFFECT_CANNOT_TRIGGER,EFFECT_CANNOT_ATTACK,EFFECT_CANNOT_ATTACK_ANNOUNCE,EFFECT_CANNOT_DIRECT_ATTACK,EFFECT_CANNOT_RELEASE,EFFECT_UNRELEASABLE_SUM,EFFECT_UNRELEASABLE_NONSUM,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_CHANGE_POSITION,EFFECT_CANNOT_CHANGE_POS_E,EFFECT_CANNOT_CHANGE_CONTROL,EFFECT_DISABLE_TRAPMONSTER }
 	local code_list,val_list2=rsof.Table_Suit(lim_list,code_list_1,code_list_2,val_list)
 	local eff_list={}
 	local range=rsef.GetRegisterRange(reg_list) 
 	if not tg_range_list then tg_range_list={ 0,LOCATION_MZONE } end
 	for idx,eff_code in ipairs(code_list) do 
-		local flag2=rsef.GetRegisterProperty(flag)|EFFECT_FLAG_SET_AVAILABLE 
+		local flag2=rsef.GetRegisterProperty(flag)--|EFFECT_FLAG_SET_AVAILABLE 
 		flag2=eff_code==EFFECT_CANNOT_CHANGE_POSITION and flag2 or flag2|EFFECT_FLAG_IGNORE_IMMUNE 
 		local e1=rsef.FV(reg_list,eff_code,val_list2[idx],tg,tg_range_list,range,con,reset_list,flag2,desc_list)
 		table.insert(eff_list,e1)
@@ -1170,7 +1186,7 @@ function rsef.FC_AttachEffect_ChangeOp2(baseop)
 end
 
 --Effect Function:XXX card/group will leave field in XXX Phase , often use in special summon
-function rsef.FC_PHASELEAVE(reg_list,sg,times,whos,phase,leaveway,reset_list)
+function rsef.FC_PHASELEAVE(reg_list,leave_val,times,whos,phase,leaveway,reset_list)
 	--times: nil  every phase 
 	--   0  next  phase
 	--   1 or +  times  phase 
@@ -1189,6 +1205,7 @@ function rsef.FC_PHASELEAVE(reg_list,sg,times,whos,phase,leaveway,reset_list)
 	if times==0 and whos==1 and turnp~=tp then 
 		times=cphase<=phase and 2 or 1
 	end
+	local sg = rsgf.Mix2(leave_val)
 	local fid=reg_owner:GetFieldID()
 	for tc in aux.Next(sg) do
 		tc:RegisterFlagEffect(rscode.Phase_Leave_Flag,rsreset.est+RESET_PHASE+phase,0,0,fid)
@@ -1496,28 +1513,34 @@ function rstg.negsumtg(way_str)
 end
 --Effect target: Target Cards Main Set 
 --effect parameter table main set
-function rsef.list(list_type_str,parameter1,...)
+--warning:
+--bugs in {{A,B,C},{A2,B2,C2}},{A3,B3,C3} ,plz use {A3,B3,C3},{{A,B,C},{A2,B2,C2}}
+--bugs in {filter,nil,loc},{filter,nil,loc} , plz use "" no nil
+function rsef.list(list_type_str,...)
 	--{cfilter,gfilter}, if you use table, gfilter must be function, if you use gfilter, loc_self must be number !!!!!!!!!
-	local parameter2,parameter3=({...})[1],({...})[2]
-	local mix_list={parameter1,...}
-	local len=#mix_list
+	local parameter1,parameter2,parameter3=({...})[1],({...})[2],({...})[3]
+	local mix_list={...}
+	local len=select('#', ...)
 	local target_list_total={}  
 	--1.  cfilter,category,loc_self 
 	if type(parameter1)~="table" then 
-		target_list_total={{parameter1,...}} 
+		target_list_total={{...}} 
 	--2. { cfilter,gfilter }, { category_fun,category_str,sel_hint } ,loc_self 
-	elseif type(parameter1)=="table" and len>1 and type(parameter1[1])=="function" and (type(parameter1[2])=="nil" or type(parameter1[2])=="function") and (type(parameter1[2])~="function" or type(parameter3)=="number") then
-		target_list_total={{parameter1,...}}
+	elseif 
+		type(parameter1)=="table" and type(parameter1[1])=="function" and type(parameter1[2])=="function" and type(parameter3)=="number" then
+		target_list_total={{...}}
 	--3. {A,B,C},{{D,E,F}} OR {A,B,C},{D,E,F} OR {{A,B,C}},{D,E,F}, to {{A,B,C},{D,E,F}}
 	else
 		for _,mix_parammeter in pairs(mix_list) do 
+				--Debug.Message(#mix_parammeter[1])
 			if rsof.Check_Boolean(mix_parammeter[0],true) then
 				for idx,mix_parammeter2 in pairs(mix_parammeter) do
 					if idx~=0 then
 						table.insert(target_list_total,mix_parammeter2)
 					end
-				end 
+				end
 			else
+				mix_parammeter[2]=mix_parammeter[2] or ""
 				table.insert(target_list_total,mix_parammeter)
 			end
 		end
@@ -1573,7 +1596,7 @@ function rsop.target2(endfun,...)
 	return rstg.target2(endfun,rsop.list(...))
 end
 function rsop.target3(checkfun,...)
-	return rstg.target2(checkfun,rsop.list(...))
+	return rstg.target3(checkfun,rsop.list(...))
 end
 --Target function: Get target attributes
 function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,target_list)
@@ -1849,12 +1872,12 @@ function rstg.TargetSelect(e,tp,eg,ep,ev,re,r,rp,target_list_total)
 				if not is_player then 
 					info_count = type(minct)=="number" and minct or #selected_group
 				end
-				if aux.GetValueType(selected_group)~="Group" then
+				if aux.GetValueType(selected_group)~="Group" or category==CATEGORY_HANDES then
 					if (type(loc_self)=="number" and loc_self>0) and (type(loc_oppo)=="number" and loc_oppo>0) then
 						info_player = PLAYER_ALL 
 					elseif (type(loc_self)=="number" and loc_self>0) and (type(loc_oppo)~="number" or loc_oppo<=0) then
 						info_player = tp 
-					elseif (type(loc_self)=="number" or loc_self<=0) and (type(loc_oppo)=="number" and loc_oppo>0) then 
+					elseif (type(loc_self)~="number" or loc_self<=0) and (type(loc_oppo)=="number" and loc_oppo>0) then 
 						info_player = 1-tp 
 					end
 				end
@@ -3675,21 +3698,64 @@ function rssf.EnableSpecialProcedure_Op(e,tp)
 	aux.AddXyzProcedure=rscf.GetBaseXyzProduce1
 	aux.AddXyzProcedureLevelFree=rscf.GetBaseXyzProduce2
 	aux.AddLinkProcedure=rscf.GetBaseLinkProduce1
+	Card.RegisterEffect=rscf.RegisterEffect2
+
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTarget(rssf.EnableSpecialProcedure_Op_regop)
+	e1:SetTargetRange(1,1)
+	Duel.RegisterEffect(e1,0) 
+
 	for tc in aux.Next(g) do
-		--Method ResetEffect/ReplaceEffect will cause issue at Raise Event
-		tc:ReplaceEffect(80316585,0)
-		local mt=getmetatable(tc)
-		if mt.initial_effect then
-			mt.initial_effect(tc) 
-		end
+		tc:IsSpecialSummonable()
+		local cid=tc:CopyEffect(tc:GetOriginalCode(),0,1)
 	end
+
 	aux.AddSynchroProcedure=f6
 	aux.AddSynchroMixProcedure=f7
 	aux.AddXyzProcedure=f8
 	aux.AddXyzProcedureLevelFree=f9
 	aux.AddLinkProcedure=f10
+	Card.RegisterEffect=rscf.RegisterEffect
 	e:Reset()
 end 
+function rssf.EnableSpecialProcedure_Op_regop(e,c,tp,st,sp,stp,se)
+	if not c:IsType(rscf.extype) then return false end
+	rscf.ssproce[c] = rscf.ssproce[c] or {[1]={},[2]={}}
+	if se and se:GetCode()==EFFECT_SPSUMMON_PROC and not rsof.Table_List(rscf.ssproce[c][1],se) then 
+		c:RegisterFlagEffect(rscode.Special_Procedure,0,0,1)
+		table.insert(rscf.ssproce[c][1],se)
+		table.insert(rscf.ssproce[c][1],se:GetCondition() or aux.TRUE)
+	end
+	if se and rscf.ssproce[se] then return false end
+	return se and se:GetCode()==EFFECT_SPSUMMON_PROC 
+end
+rscf.RegisterEffect=Card.RegisterEffect
+function rscf.RegisterEffect2(c,e,ignore)
+	rscf.ssproce[c] = rscf.ssproce[c] or {[1]={},[2]={}}
+	if e:GetCode()==EFFECT_SPSUMMON_PROC then 
+		local flag1,flag2=e:GetProperty()
+		local flag1_uc = flag1
+		if flag1 & EFFECT_FLAG_UNCOPYABLE ~=0 then
+			flag1_uc = flag1 - EFFECT_FLAG_UNCOPYABLE 
+		end
+		e:SetProperty(flag1_uc,flag2)
+		rscf.RegisterEffect(c,e,ignore)
+		e:SetProperty(flag1,flag2)
+		rscf.ssproce[e]=true 
+		table.insert(rscf.ssproce[c][2],e)
+		table.insert(rscf.ssproce[c][2],e:GetCondition() or aux.TRUE)
+	end
+	return 
+end
+function rscf.SwitchSpecialProcedure_filter(c)
+	return c:GetFlagEffect(rscode.Special_Procedure)>0
+end
+function rssf.SwitchSpecialProcedure(dis_idx,enb_idx)
+
+end
 function rscf.GetBaseSynchroProduce1(c,f1,f2,minc,maxc)
 	if c.dark_synchro==true then
 		rscf.AddSynchroProcedureSpecial(c,aux.NonTuner(f1),nil,nil,rscf.DarkTuner(f2),minc,maxc or 99)

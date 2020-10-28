@@ -9,6 +9,7 @@ function c9910628.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,9910628)
+	e3:SetCost(c9910628.thcost)
 	e1:SetTarget(c9910628.thtg)
 	e1:SetOperation(c9910628.thop)
 	c:RegisterEffect(e1)
@@ -19,11 +20,14 @@ function c9910628.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,9910629)
-	e2:SetCondition(aux.exccon)
 	e2:SetCost(c9910628.drcost)
 	e2:SetTarget(c9910628.drtg)
 	e2:SetOperation(c9910628.drop)
 	c:RegisterEffect(e2)
+end
+function c9910628.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9910628.thfilter(c)
 	return c:IsSetCard(0x46) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
@@ -53,14 +57,10 @@ function c9910628.thop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 			e1:SetTargetRange(1,0)
-			e1:SetTarget(c9910628.splimit)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
 		end
 	end
-end
-function c9910628.splimit(e,c)
-	return not c:IsRace(RACE_FAIRY)
 end
 function c9910628.cfilter(c)
 	return c:IsType(TYPE_SYNCHRO) and c:IsAbleToRemoveAsCost()

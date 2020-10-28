@@ -71,13 +71,13 @@ function c79029318.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c79029318.xfil(c)
+function c79029318.xfil(c,e,tp)
 	local lk=c:GetLink()
 	return c:IsType(TYPE_LINK) and c:IsAbleToRemove() and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,lk,nil)
 end
 function c79029318.retg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(c79029318.xfil,tp,LOCATION_GRAVE,0,1,nil) end
-	local g=Duel.SelectTarget(tp,c79029318.xfil,tp,LOCATION_GRAVE,0,1,1,nil)
+	if chk==0 then return Duel.IsExistingTarget(c79029318.xfil,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	local g=Duel.SelectTarget(tp,c79029318.xfil,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,tp,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,5,tp,LOCATION_EXTRA)

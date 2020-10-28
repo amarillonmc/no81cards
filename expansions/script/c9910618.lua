@@ -6,7 +6,6 @@ function c9910618.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCost(c9910618.cost)
 	e1:SetTarget(c9910618.target)
 	e1:SetOperation(c9910618.activate)
 	c:RegisterEffect(e1)
@@ -33,10 +32,6 @@ function c9910618.filter2(c,e,tp,m,f,chkf)
 end
 function c9910618.filter3(c,e)
 	return c:IsOnField() and not c:IsImmuneToEffect(e)
-end
-function c9910618.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9910618.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -93,7 +88,7 @@ function c9910618.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetRange(LOCATION_MZONE)
-		e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+		e1:SetTargetRange(0,LOCATION_MZONE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1,true)
 	end
