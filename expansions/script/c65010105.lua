@@ -1,5 +1,4 @@
 --白色相册
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
 local m=65010105
 local cm=_G["c"..m]
 function cm.initial_effect(c)
