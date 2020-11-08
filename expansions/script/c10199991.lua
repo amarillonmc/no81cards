@@ -1,7 +1,8 @@
 --Real Scl Version - Variable
-local Version_Number=20200409
+local Version_Number=20201030
 local m=10199990
 local vm=10199991
+if rsv then return end
 rsv={}  --"Base Function"
 rscf={}   --"Card Function"
 rsgf={}   --"Group Function"
@@ -33,6 +34,7 @@ rsef.attacheffect ={} --"Effect information for attach effects"
 rsef.attacheffectf ={}
 rsef.solveeffect ={}
 rsop.baseop={}
+rscf.ssproce ={}
 
 rscf.synchro_material_action={} --"Custom syn material's action"
 rscf.xyz_material_action={} --"Custom xyz material's action" 
@@ -69,43 +71,93 @@ rscode.Utility_Xyz_Material =   m+400 --"Utility Xyz Material"
 rscode.Previous_Set_Code	=   m+500 --"Previous Set Code" 
 rscode.Synchro_Material =   m+600  --"Record synchro proceudre target"
 rscode.Pre_Complete_Proc = m+700 --"Previous c:CompleteProcedure" 
+rscode.Special_Procedure = m+900
 
 rscode.Set  =   m+800   --"EVENT_SET"
 
 --Hint Message Variable
-rshint.act=aux.Stringid(m,0) --"activate spell/trap"
-rshint.dis=aux.Stringid(38265153,3) --"cards will be disable effects "
-rshint.ad=aux.Stringid(m,2)  --"cards will be change Atk/Def"
-rshint.rtg=aux.Stringid(48976825,0) --"return to grave"
-rshint.spproc=aux.Stringid(m,4) --"SS by self produce"
-rshint.negeffect=aux.Stringid(19502505,1) --"negate activation"
-rshint.eq=aux.Stringid(68184115,0)  --"cards will equip"
-rshint.te=aux.Stringid(24094258,3) --"add to extra deck"
-rshint.xyz=HINTMSG_XMATERIAL   --"cards will become overlay cards"
-rshint.diseffect=aux.Stringid(39185163,1) --"negate effect"
-rshint.negsum=aux.Stringid(m+1,1) --"negate summon"
-rshint.negsp=aux.Stringid(74892653,0) --"negate special summon"
-rshint.darktuner=aux.Stringid(m,14) --"treat as dark tuner"
-rshint.darksynchro=aux.Stringid(m,15) --"treat as dark synchro"
-rshint.choose=aux.Stringid(23912837,1) --"choose 1 effect"
-rshint.epleave=aux.Stringid(m,3)	--"end phase leave field"
-rshint.finshcopy=aux.Stringid(43387895,1) --"reset copy effect"
-rshint.act2=aux.Stringid(m,1)   --"select card to activate"
-rshint.tgct=aux.Stringid(83531441,2) --"select send to the GY number"
-rshint.drct=aux.Stringid(m,5) --"select draw number"
+rshint.act  =aux.Stringid(m,0) --"activate card"
+rshint.sact =aux.Stringid(m,1) --"select cards to activate"
 
---[[
-rshint.isss=aux.Stringid(17535764,1)	--"would you SS a monster?"
-rshint.istg=aux.Stringid(62834295,2)	--"would you send to GY?"
-rshint.isdes=aux.Stringid(20590515,2)   --"would you destroy?"
-rshint.istd=aux.Stringid(m,1)   --"would you send to Deck?"
-rshint.isrm=aux.Stringid(93191801,2)	--"would you reomve?"
-rshint.isset=aux.Stringid(m,5)  --"would you set?"
-rshint.istf=aux.Stringid(m,6)   --"would you place to field?"
-rshint.isth=aux.Stringid(26118970,1)	--"would you send to hand?"
-rshint.isrh=aux.Stringid(31102447,2)	--"would you return to hand"
-rshint.isdr=aux.Stringid(3679218,1)  --"would you draw?"
---]]
+rshint.ce   =aux.Stringid(23912837,1)   --"choose 1 effect"
+
+rshint.neg  =aux.Stringid(19502505,1)   --"negate activation"
+rshint.negsum =aux.Stringid(m+1,1)	--"negate summon"
+rshint.negsp  =aux.Stringid(74892653,0) --"negate special summon"
+
+rshint.dis  =aux.Stringid(39185163,1) --"negate effect"
+rshint.sdis =aux.Stringid(38265153,3) --"Select cards to disable"
+rshint.wdis =aux.Stringid(25166510,2) --"would you disable?"
+
+rshint.sp   =aux.Stringid(74892653,2) --"special summon"
+rshint.wsp  =aux.Stringid(17535764,1) --"would you SS a monster?"
+rshint.sum  =aux.Stringid(65247798,0) --"face-up attack position summon"
+rshint.tk   =aux.Stringid(9929398,0)  --"special summon token"
+
+rshint.pos  =aux.Stringid(3648368,0)  --"change position"
+rshint.ctrl =aux.Stringid(4941482,0)  --"get control"
+rshint.set  =aux.Stringid(2521011,0)  --"set"
+
+rshint.dr   =aux.Stringid(4732017,0)  --"draw card"
+rshint.wdr=aux.Stringid(3679218,1)  --"would you draw?"
+
+rshint.dish =aux.Stringid(18407024,0) --"discard card from hand"
+rshint.disd =aux.Stringid(15939448,0) --"send decktop card to GY"
+
+rshint.dam  =aux.Stringid(3775068,0)  --"effect damage"
+rshint.rec  =aux.Stringid(16259549,0) --"effect recover"
+
+rshint.ct   =aux.Stringid(3070049,0)  --"add counter"
+
+rshint.an   =aux.Stringid(10809984,0) --"announce"
+
+rshint.coin =aux.Stringid(2196767,0)  --"toss coin"
+rshint.dice =aux.Stringid(3493058,0)  --"toss dice"
+
+rshint.se   =aux.Stringid(135598,0)   --"search card from deck"
+rshint.th   =aux.Stringid(1249315,0)  --"send to hand"
+rshint.wth  =aux.Stringid(26118970,1) --"would you send to hand?"
+rshint.rth  =aux.Stringid(13890468,0) --"return to hand"
+rshint.wrth =aux.Stringid(9464441,2)  --"would you return to hand?"
+
+rshint.des  =aux.Stringid(1571945,0)  --"destroy"
+rshint.wdes =aux.Stringid(20590515,2) --"would you destroy?"
+
+rshint.res  =aux.Stringid(33779875,0) --"Tribute monster"
+
+rshint.rm   =aux.Stringid(612115,0)   --"remove"
+rshint.wrm  =aux.Stringid(93191801,2) --"would you reomve?"
+
+rshint.tg=aux.Stringid(1050186,0)   --"send to GY"
+rshint.wtg=aux.Stringid(62834295,2)  --"would you send to GY?"
+rshint.rtg=aux.Stringid(28039390,1)  --"return to GY" 
+rshint.srtg=aux.Stringid(48976825,0) --"select cards to return to GY"
+
+rshint.td=aux.Stringid(4779823,1)   --"return to deck"
+rshint.wtd=aux.Stringid(m,6)		--"would you send to Deck?"
+rshint.te=aux.Stringid(18210764,0)  --"face-up add to EX"
+rshint.ste=aux.Stringid(24094258,3) --"select cards to face-up add to EX"
+
+rshint.eq   =aux.Stringid(68184115,0) --"equip"
+rshint.seq  =rshint.eq			  --"select cards to equip"
+rshint.weq  =aux.Stringid(35100834,0) --"would you equip?"
+
+--rshint.ua=aux.Stringid(1412158,0)  --"Update ATK"
+--rshint.ud=aux.Stringid(4997565,2)   --"update DEF"
+--rshint.uad=aux.Stringid(18563744,0) --"update ATK and DEF"
+rshint.ad  =aux.Stringid(7194917,0)  --"change ATK and DEF"
+rshint.cad =aux.Stringid(m,2)	   --"select cards to change Atk/Def"
+rshint.clv  =aux.Stringid(9583383,0) --"change level"
+
+rshint.spproc=aux.Stringid(m,4)	--"SS by self produce"
+rshint.rstcp=aux.Stringid(43387895,1) --"reset copy effect"
+rshint.epleave=aux.Stringid(m,3)	  --"end phase leave field buff"
+
+rshint.stgct=aux.Stringid(83531441,2) --"select send to the GY number"
+rshint.sdrct=aux.Stringid(m,5)	  --"select draw number"
+
+rshint.darktuner=aux.Stringid(m,14)   --"treat as dark tuner"
+rshint.darksynchro=aux.Stringid(m,15) --"treat as dark synchro"
 
 --Property Variable
 rsflag.flaglist =   { EFFECT_FLAG_CARD_TARGET,EFFECT_FLAG_PLAYER_TARGET,EFFECT_FLAG_DELAY,EFFECT_FLAG_DAMAGE_STEP,EFFECT_FLAG_DAMAGE_CAL,
@@ -210,5 +262,3 @@ function rsof.Escape_Old_Functions()
 		return rscf.AddSpecialSummonProcdure(reg_list,range,con,nil,op,desc_list,lim_list,nil,reset_list)
 	end
 end
-
-

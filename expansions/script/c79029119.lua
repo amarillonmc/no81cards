@@ -91,15 +91,19 @@ function c79029119.eqop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if not Duel.Equip(tp,c,tc,false) then return end
 	aux.SetUnionState(c)
+	Debug.Message("胜利的星，一定会照耀着我们。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029119,0))
 end
 function c79029119.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(79029119)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0	  and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
+	if chk==0 then return c:GetFlagEffect(79029119)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0	 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	c:RegisterFlagEffect(79029119,RESET_EVENT+0x7e0000+RESET_PHASE+PHASE_END,0,1)
 end
 function c79029119.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	Debug.Message("让我们拿出决心、热忱、以及十二万分的热情吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029119,1))
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)
 end
@@ -111,8 +115,6 @@ function c79029119.chcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029119.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
-	e:SetLabel(Duel.AnnounceType(tp))
 end
 function c79029119.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
@@ -120,21 +122,23 @@ function c79029119.chop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,c79029119.repop)
 end
 function c79029119.repop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("见识一下吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029119,2))
 	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CARDTYPE)
+	local x=Duel.AnnounceType(1-tp)
+	e:SetLabel(x)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e1:SetTargetRange(1,1)
 	if e:GetLabel()==0 then
-		e1:SetDescription(aux.Stringid(54719828,2))
-		e1:SetValue(c79029119.aclimit1)
+	e1:SetValue(c79029119.aclimit1)
 	elseif e:GetLabel()==1 then
-		e1:SetDescription(aux.Stringid(54719828,3))
-		e1:SetValue(c79029119.aclimit2)
+	e1:SetValue(c79029119.aclimit2)
 	else
-		e1:SetDescription(aux.Stringid(54719828,4))
-		e1:SetValue(c79029119.aclimit3)
+	e1:SetValue(c79029119.aclimit3)
 	end
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)

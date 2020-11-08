@@ -13,7 +13,23 @@ function c79029343.initial_effect(c)
 	e1:SetTarget(c79029343.chtg)
 	e1:SetOperation(c79029343.chop)
 	c:RegisterEffect(e1)
-   
+	--
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCode(EFFECT_INDESTRUCTABLE)
+	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e2:SetTarget(c79029343.idtg)
+	c:RegisterEffect(e2)
+	--Atk
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SET_ATTACK)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e2:SetTarget(c79029343.idtg)
+	e2:SetValue(c79029343.val)
+	c:RegisterEffect(e2)
 end
 function c79029333.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x1909)
@@ -84,5 +100,19 @@ function c79029343.chop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	end 
 end
+function c79029343.idtg(e,c)
+	return e:GetHandler():GetLinkedGroup():IsContains(c) and c:GetMaterialCount()>=2
+end
+function c79029343.val(e,c)
+	return c:GetAttack()*2
+end
+
+
+
+
+
+
+
+
 
 

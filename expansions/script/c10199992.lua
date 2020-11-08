@@ -37,6 +37,7 @@ local rsss  =   Star_Spirit
 local rsnm  =   Nightmare
 local rslf  =   Little_Fox 
 local rccv  =   Thermonuclear
+local rsfn  =   Fake_News
 
 #XiaoMi 643865567
 local rssg  =   Sex_Gun
@@ -67,6 +68,7 @@ local rsts  =   Trinity_Sword
 #Luoxing 1151483512
 local rsdt  =   Dark_Tale
 local rsod  =   Order
+local rsyzt  =   YanZeTown
 
 #YunZeZhun 1587361112
 local rsphh =   Phantom_Thieves_Of_Hearts
@@ -84,6 +86,7 @@ local rsgs  =   Gran_Sphere
 local rsoc  =   Oligocene_Civilization
 local rsgol =   Giant_of_Light
 local rssb  =   Space_Beasts
+local rsufo =   UFO_Saucer_Monster
 
 #HeiBai 1172777968
 local rstm  =   Toaru_Majutsu_no_Index
@@ -95,10 +98,16 @@ local rsgod =   God
 local rsva  =   VR_Aqua
 //local   =   Tian_Zhi
 local rswk =  White_Moon_Knight
+local rsisr = Israel
 
 #ReiKai 2404873791
 local rsch  =   Churck
 
+#XueXiao 3234454893
+local rsmd  =   Mrs_Dice
+
+#HuangWu 1103516856
+local rsdc  =   Dragon_Caller
 
 --Set Code
 #Scl

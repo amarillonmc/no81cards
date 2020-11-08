@@ -15,7 +15,7 @@ function cm.imval(e,re)
 	return re:GetOwnerPlayer()~=e:GetHandlerPlayer() and re:IsActiveType(TYPE_MONSTER)
 end
 function cm.adval(e,c)
-	return e:GetHandler():GetOverlayCount()*5000
+	return e:GetHandler():GetOverlayCount()*1000
 end
 function cm.alcon(e)
 	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()

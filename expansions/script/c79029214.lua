@@ -83,7 +83,7 @@ function c79029214.acop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029214.indtg(e,c)
-	return e:GetHandler():GetLinkedGroup():IsContains(c)
+	return e:GetHandler():GetLinkedGroup():IsContains(c) and c:IsSetCard(0xa906)
 end
 function c79029214.efilter(e,te)
 	return te:GetOwner():GetControler()~=e:GetOwner():GetControler()

@@ -1,31 +1,47 @@
---version 20.08.25
+--version 20.10.30
 if not pcall(function() require("expansions/script/c10199991") end) then require("script/c10199991") end
 local m=10199990
 local vm=10199991
-local Version_Number=20200825
+local Version_Number=20201030
+if rsv.Library_Switch then return end
+rsv.Library_Switch = true 
 -----------------------"Part_Effect_Base"-----------------------
---Creat "EVENT_SET"
-function rsef.CreatEvent_Set()
-	if rsef.CreatEvent_Set_Switch then return end
-	rsef.CreatEvent_Set_Switch=true 
-	local e1=rsef.FC({true,0},EVENT_MSET)
-	e1:SetOperation(rsop.CreatEvent_Set)
-	local e2=rsef.RegisterClone({true,0},e1,"code",EVENT_SSET)
-	local e3=rsef.RegisterClone({true,0},e1,"code",EVENT_SPSUMMON_SUCCESS,"con",rscon.CreatEvent_Set)
-	local e4=rsef.RegisterClone({true,0},e3,"code",EVENT_CHANGE_POS)
-	return e1,e2,e3,e4
+--Creat Event 
+function rsef.CreatEvent(event_code,event1,con1,...)
+	rsef.CreatEvent_Switch = rsef.CreatEvent_Switch or {}
+	if rsef.CreatEvent_Switch[event_code] then return end
+	rsef.CreatEvent_Switch[event_code]=true
+	local creat_list={event1,con1,...}
+	local eff_list={}
+	for idx,val in pairs(creat_list) do 
+		if type(val)=="number" then 
+			local e1=rsef.FC({true,0},val)
+			e1:SetOperation(rsop.CreatEvent(creat_list[idx+1],event_code))
+			table.insert(eff_list,e1)
+		end
+	end
+	return table.unpack(eff_list)
 end
-function rsop.CreatEvent_Set(e,tp,eg,ep,ev,re,r,rp)
-	local sg=eg:Filter(Card.IsFacedown,nil)
-	Duel.RaiseEvent(sg,rscode.Set,re,r,rp,ep,ev)
-	for tc in aux.Next(sg) do
-		Duel.RaiseSingleEvent(tc,rscode.Set,re,r,rp,ep,ev)
+function rsop.CreatEvent(con,event_code)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+		con = con or aux.TRUE 
+		local res,sg=con(e,tp,eg,ep,ev,re,r,rp)
+		if not res then return end
+		sg = sg or eg 
+		Duel.RaiseEvent(sg,event_code,re,r,rp,ep,ev)
+		for tc in aux.Next(sg) do
+			Duel.RaiseSingleEvent(tc,event_code,re,r,rp,ep,ev)
+		end
 	end
 end
-function rscon.CreatEvent_Set(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsFacedown,1,nil)
+--Creat "EVENT_SET"
+function rsef.CreatEvent_Set()
+	return rsef.CreatEvent(rscode.Set,EVENT_MSET,nil,EVENT_SSET,nil,EVENT_SPSUMMON_SUCCESS,rscon.CreatEvent_Set,EVENT_CHANGE_POS,rscon.CreatEvent_Set)
 end
-
+function rscon.CreatEvent_Set(e,tp,eg,ep,ev,re,r,rp)
+	local sg=eg:Filter(Card.IsFacedown,nil)
+	return #sg>0,sg
+end
 --Effect: Get default hint string for Duel.Hint ,use in effect target
 function rsef.GetDefaultHintString(cate_list,loc_self,loc_oppo,hint_list)
 	if hint_list then 
@@ -37,11 +53,11 @@ function rsef.GetDefaultHintString(cate_list,loc_self,loc_oppo,hint_list)
 	if (type(loc_oppo)=="number" and loc_oppo>0) and (not loc_self or loc_self==0) then hint=HINTMSG_OPPO end
 	local hint_list= { HINTMSG_DESTROY,HINTMSG_RELEASE,HINTMSG_REMOVE,HINTMSG_ATOHAND,HINTMSG_TODECK,
 	HINTMSG_TOGRAVE,0,HINTMSG_DISCARD,HINTMSG_SUMMON,HINTMSG_SPSUMMON,
-	0,HINTMSG_POSCHANGE,HINTMSG_CONTROL,rshint.dis,0,
+	0,HINTMSG_POSCHANGE,HINTMSG_CONTROL,rshint.sdis,0,
 	0,0,HINTMSG_EQUIP,0,0,
-	rshint.ad,rshint.ad,HINTMSG_FACEUP,0,0, 
+	rshint.sad,rshint.sad,HINTMSG_FACEUP,0,0, 
 	0,HINTMSG_FACEUP,0,0,0,
-	rshint.te } 
+	rshint.ste } 
 	for _,cate in pairs(cate_list) do 
 		local bool,idx=rsof.Table_List(rscate.catelist,cate) 
 		if bool then
@@ -60,7 +76,12 @@ function rsef.GetDefaultHintString(cate_list,loc_self,loc_oppo,hint_list)
 	-- return to grave
 	if rsof.Table_List(cate_list,"tg") and
 		((type(loc_self)=="number" and loc_self&LOCATION_REMOVED  ~=0) or (loc_oppo and loc_oppo&LOCATION_REMOVED ~=0)) then
-		hint=rshint.rtg
+		hint=rshint.srtg
+	end
+	-- return to hand 
+	if rsof.Table_List(cate_list,"th") and
+		((type(loc_self)=="number" and loc_self&(rsloc.og+LOCATION_REMOVED)  ~=0) or (loc_oppo and loc_oppo&(rsloc.og+LOCATION_REMOVED) ~=0)) then
+		hint=rshint.srth
 	end
 	return hint 
 end
@@ -112,6 +133,7 @@ function rsef.GetRegisterRange(reg_list)
 	for idx,card_type in pairs(type_list) do
 		if reg_handler:IsType(card_type) then 
 			reg_range=reg_list[idx]
+			break 
 		end
 	end
 	--after begain duel 
@@ -216,11 +238,22 @@ function rsef.RegisterCateFlag(reg_eff,cate,flag)
 	end
 end
 --Effect: Register Effect Description
-function rsef.RegisterDescription(reg_eff,desc_list,is_return)
+function rsef.RegisterDescription(reg_eff,desc_list,cate_str,is_return)
+	--default desc(nil for desc and string for cate)
+	if not desc_list and cate_str_list then 
+		if type(cate_str_list)=="string" then
+			desc_list = (rsof.String_Split(cate_str_list))[1]
+		elseif type(cate_str_list)=="table" and type(cate_str_list[1])=="string" then
+			desc_list = (rsof.String_Split(cate_str_list[1]))[1]
+		end
+	end
 	if desc_list then
 		if type(desc_list)=="table" then
 			if is_return then return aux.Stringid(desc_list[1],desc_list[2]) end
 			reg_eff:SetDescription(aux.Stringid(desc_list[1],desc_list[2]))
+		elseif type(desc_list)=="string" then
+			if is_return then return rshint[desc_list] end
+			reg_eff:SetDescription(rshint[desc_list])
 		else
 			if is_return then return desc_list end
 			reg_eff:SetDescription(desc_list)
@@ -341,7 +374,7 @@ function rsef.Register(reg_list,eff_type,eff_code,desc_list,lim_list,cate,flag,r
 	if eff_code then
 		reg_eff:SetCode(eff_code)
 	end
-	rsef.RegisterDescription(reg_eff,desc_list)
+	rsef.RegisterDescription(reg_eff,desc_list,cate,false)
 	rsef.RegisterCountLimit(reg_eff,lim_list)
 	rsef.RegisterCateFlag(reg_eff,cate,flag)
 	if range then
@@ -753,14 +786,14 @@ function rsef.FV_INDESTRUCTABLE(reg_list,inds_list,val_list,tg,tg_range_list,con
 end
 --Field Val Effect: Other Limit
 function rsef.FV_LIMIT(reg_list,lim_list,val_list,tg,tg_range_list,con,reset_list,flag,desc_list) 
-	local code_list_1={"dis","dise","tri","atk","atkan","datk","res","ress","resns","td","th","cp","cpe","ctrl"}
-	local code_list_2={ EFFECT_DISABLE,EFFECT_DISABLE_EFFECT,EFFECT_CANNOT_TRIGGER,EFFECT_CANNOT_ATTACK,EFFECT_CANNOT_ATTACK_ANNOUNCE,EFFECT_CANNOT_DIRECT_ATTACK,EFFECT_CANNOT_RELEASE,EFFECT_UNRELEASABLE_SUM,EFFECT_UNRELEASABLE_NONSUM,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_CHANGE_POSITION,EFFECT_CANNOT_CHANGE_POS_E,EFFECT_CANNOT_CHANGE_CONTROL }
+	local code_list_1={"dis","dise","tri","atk","atkan","datk","res","ress","resns","td","th","cp","cpe","ctrl","distm","rm"}
+	local code_list_2={ EFFECT_DISABLE,EFFECT_DISABLE_EFFECT,EFFECT_CANNOT_TRIGGER,EFFECT_CANNOT_ATTACK,EFFECT_CANNOT_ATTACK_ANNOUNCE,EFFECT_CANNOT_DIRECT_ATTACK,EFFECT_CANNOT_RELEASE,EFFECT_UNRELEASABLE_SUM,EFFECT_UNRELEASABLE_NONSUM,EFFECT_CANNOT_TO_DECK,EFFECT_CANNOT_TO_HAND,EFFECT_CANNOT_CHANGE_POSITION,EFFECT_CANNOT_CHANGE_POS_E,EFFECT_CANNOT_CHANGE_CONTROL,EFFECT_DISABLE_TRAPMONSTER,EFFECT_CANNOT_REMOVE }
 	local code_list,val_list2=rsof.Table_Suit(lim_list,code_list_1,code_list_2,val_list)
 	local eff_list={}
 	local range=rsef.GetRegisterRange(reg_list) 
 	if not tg_range_list then tg_range_list={ 0,LOCATION_MZONE } end
 	for idx,eff_code in ipairs(code_list) do 
-		local flag2=rsef.GetRegisterProperty(flag)|EFFECT_FLAG_SET_AVAILABLE 
+		local flag2=rsef.GetRegisterProperty(flag)--|EFFECT_FLAG_SET_AVAILABLE 
 		flag2=eff_code==EFFECT_CANNOT_CHANGE_POSITION and flag2 or flag2|EFFECT_FLAG_IGNORE_IMMUNE 
 		local e1=rsef.FV(reg_list,eff_code,val_list2[idx],tg,tg_range_list,range,con,reset_list,flag2,desc_list)
 		table.insert(eff_list,e1)
@@ -939,13 +972,13 @@ function rsef.QO_NEGATE(reg_list,negtype,lim_list,way_str,range,con,cost,desc_li
 	if not range then range=rsef.GetRegisterRange(reg_list) end
 	if not negtype then negtype="neg" end
 	if negtype=="dis" or nettype=="effect" then
-		if not desc_list then desc_list=rshint.diseffect end
+		if not desc_list then desc_list=rshint.dise end
 		local flag2=rsef.GetRegisterProperty(flag)|EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DAMAGE_STEP  
 		cate2=cate2|CATEGORY_DISABLE 
 		if not con then con=rscon.negcon(0) end 
 		return rsef.QO(reg_list,EVENT_CHAINING,desc_list,lim_list,cate2,flag2,range,con,cost,rstg.distg(way_str),rsop.disop(way_str),nil,reset_list)   
 	elseif negtype=="neg" or nettype=="act" then
-		if not desc_list then desc_list=rshint.negeffect end
+		if not desc_list then desc_list=rshint.neg end
 		local flag2=rsef.GetRegisterProperty(flag)|EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DAMAGE_STEP  
 		cate2=cate2|CATEGORY_NEGATE  
 		if not con then con=rscon.discon(0) end
@@ -1000,7 +1033,7 @@ function rsef.FC_AttachEffect(reg_list,force,attach_time,desc_list,lim_list,flag
 	local e1=rsef.FC(reg_list,attach_code,desc_list,nil,flag,range,rsef.FC_AttachEffect_Con(e0,attach_con),rsef.FC_AttachEffect_Op(e0,force),reset_list)
 	e1:SetValue(attach_op)
 	e1:SetLabelObject(e0)
-	local desc=not desc_list and 0 or rsef.RegisterDescription(nil,desc_list,true)
+	local desc=not desc_list and 0 or rsef.RegisterDescription(nil,desc_list,nil,true)
 	if aux.GetValueType(reg_handler)=="Card" then
 		reg_handler:RegisterFlagEffect(attach_code,reset,EFFECT_FLAG_CLIENT_HINT,reset_tct,e1:GetFieldID(),desc)
 	else
@@ -1170,7 +1203,7 @@ function rsef.FC_AttachEffect_ChangeOp2(baseop)
 end
 
 --Effect Function:XXX card/group will leave field in XXX Phase , often use in special summon
-function rsef.FC_PHASELEAVE(reg_list,sg,times,whos,phase,leaveway,reset_list)
+function rsef.FC_PHASELEAVE(reg_list,leave_val,times,whos,phase,leaveway,reset_list)
 	--times: nil  every phase 
 	--   0  next  phase
 	--   1 or +  times  phase 
@@ -1189,6 +1222,7 @@ function rsef.FC_PHASELEAVE(reg_list,sg,times,whos,phase,leaveway,reset_list)
 	if times==0 and whos==1 and turnp~=tp then 
 		times=cphase<=phase and 2 or 1
 	end
+	local sg = rsgf.Mix2(leave_val)
 	local fid=reg_owner:GetFieldID()
 	for tc in aux.Next(sg) do
 		tc:RegisterFlagEffect(rscode.Phase_Leave_Flag,rsreset.est+RESET_PHASE+phase,0,0,fid)
@@ -1496,28 +1530,34 @@ function rstg.negsumtg(way_str)
 end
 --Effect target: Target Cards Main Set 
 --effect parameter table main set
-function rsef.list(list_type_str,parameter1,...)
+--warning:
+--bugs in {{A,B,C},{A2,B2,C2}},{A3,B3,C3} ,plz use {A3,B3,C3},{{A,B,C},{A2,B2,C2}}
+--bugs in {filter,nil,loc},{filter,nil,loc} , plz use "" no nil
+function rsef.list(list_type_str,...)
 	--{cfilter,gfilter}, if you use table, gfilter must be function, if you use gfilter, loc_self must be number !!!!!!!!!
-	local parameter2,parameter3=({...})[1],({...})[2]
-	local mix_list={parameter1,...}
-	local len=#mix_list
+	local parameter1,parameter2,parameter3=({...})[1],({...})[2],({...})[3]
+	local mix_list={...}
+	local len=select('#', ...)
 	local target_list_total={}  
 	--1.  cfilter,category,loc_self 
 	if type(parameter1)~="table" then 
-		target_list_total={{parameter1,...}} 
+		target_list_total={{...}} 
 	--2. { cfilter,gfilter }, { category_fun,category_str,sel_hint } ,loc_self 
-	elseif type(parameter1)=="table" and len>1 and type(parameter1[1])=="function" and (type(parameter1[2])=="nil" or type(parameter1[2])=="function") and (type(parameter1[2])~="function" or type(parameter3)=="number") then
-		target_list_total={{parameter1,...}}
+	elseif 
+		type(parameter1)=="table" and type(parameter1[1])=="function" and type(parameter1[2])=="function" and type(parameter3)=="number" then
+		target_list_total={{...}}
 	--3. {A,B,C},{{D,E,F}} OR {A,B,C},{D,E,F} OR {{A,B,C}},{D,E,F}, to {{A,B,C},{D,E,F}}
 	else
 		for _,mix_parammeter in pairs(mix_list) do 
+				--Debug.Message(#mix_parammeter[1])
 			if rsof.Check_Boolean(mix_parammeter[0],true) then
 				for idx,mix_parammeter2 in pairs(mix_parammeter) do
 					if idx~=0 then
 						table.insert(target_list_total,mix_parammeter2)
 					end
-				end 
+				end
 			else
+				mix_parammeter[2]=mix_parammeter[2] or ""
 				table.insert(target_list_total,mix_parammeter)
 			end
 		end
@@ -1573,7 +1613,7 @@ function rsop.target2(endfun,...)
 	return rstg.target2(endfun,rsop.list(...))
 end
 function rsop.target3(checkfun,...)
-	return rstg.target2(checkfun,rsop.list(...))
+	return rstg.target3(checkfun,rsop.list(...))
 end
 --Target function: Get target attributes
 function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,target_list)
@@ -1631,8 +1671,10 @@ function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,target_list)
 				maxct = 1
 			end
 		elseif type(filter_card)=="function" and not rsof.Table_List(category_list,CATEGORY_HANDES) then
-			minct = filter_card(e,tp,eg,ep,ev,re,r,rp)
-			maxct = filter_card(e,tp,eg,ep,ev,re,r,rp)
+			local minct2   =   filter_card(e,tp,eg,ep,ev,re,r,rp)
+			local maxct2   =   minct2
+			if type(minct2) == "number" then minct = minct2 end
+			if type(maxct2) == "number" then maxct = maxct2 end
 			filter_card = aux.TRUE 
 		end
 	end
@@ -1833,9 +1875,9 @@ function rstg.TargetSelect(e,tp,eg,ep,ev,re,r,rp,target_list_total)
 			end
 		end  
 		--2.5. Solve cost to selected_group   
-		if list_type=="cost" then
-			local cost_result=rscost.CostSolve(selected_group,category_str_list,category_fun,e,tp,eg,ep,ev,re,r,rp,used_group,used_count_list)   
-			if not cost_result or (aux.GetValueType(cost_result)=="Group" and #cost_result<=0) then return end
+		if list_type=="cost" then 
+			local cost_result,cost_result_count,ignore_nil=rscost.CostSolve(selected_group,category_str_list,category_fun,e,tp,eg,ep,ev,re,r,rp,used_group,used_count_list)   
+			if not cost_result or (aux.GetValueType(cost_result)=="Group" and #cost_result<=0 and not ignore_nil) then return end
 			if aux.GetValueType(cost_result)=="Group" and #cost_result>0 then
 				costed_group_total:Merge(cost_result)
 			end
@@ -1849,12 +1891,12 @@ function rstg.TargetSelect(e,tp,eg,ep,ev,re,r,rp,target_list_total)
 				if not is_player then 
 					info_count = type(minct)=="number" and minct or #selected_group
 				end
-				if aux.GetValueType(selected_group)~="Group" then
+				if aux.GetValueType(selected_group)~="Group" or category==CATEGORY_HANDES then
 					if (type(loc_self)=="number" and loc_self>0) and (type(loc_oppo)=="number" and loc_oppo>0) then
 						info_player = PLAYER_ALL 
 					elseif (type(loc_self)=="number" and loc_self>0) and (type(loc_oppo)~="number" or loc_oppo<=0) then
 						info_player = tp 
-					elseif (type(loc_self)=="number" or loc_self<=0) and (type(loc_oppo)=="number" and loc_oppo>0) then 
+					elseif (type(loc_self)~="number" or loc_self<=0) and (type(loc_oppo)=="number" and loc_oppo>0) then 
 						info_player = 1-tp 
 					end
 				end
@@ -1981,6 +2023,10 @@ end
 function rscost.CostSolve(selected_group,category_str_list,category_fun,e,tp,eg,ep,ev,re,r,rp,used_group,used_count_list)
 	local cost_sucess_group
 	local cost_sucess_count=0
+	local solve_string = category_str_list[1]
+	if #category_str_list==1 and (not solve_string or (type(solve_string)=="string" and solve_string=="")) and not category_fun then
+		return Group.CreateGroup(),0,true
+	end
 	if category_fun then
 		local value=category_fun(selected_group,e,tp,eg,ep,ev,re,r,rp,used_group,used_count_list)
 		if aux.GetValueType(value)=="Card" or aux.GetValueType(value)=="Group" then
@@ -1991,7 +2037,7 @@ function rscost.CostSolve(selected_group,category_str_list,category_fun,e,tp,eg,
 		return cost_sucess_group,#cost_sucess_group
 	end
 	if not category_str_list or #category_str_list==0 then return true end
-	return rsop.operationcard(selected_group,category_str_list[1],REASON_COST,e,tp,eg,ep,ev,re,r,rp)
+	return rsop.operationcard(selected_group,solve_string,REASON_COST,e,tp,eg,ep,ev,re,r,rp)
 end
 --cost: togarve/remove/discard/release/tohand/todeck as cost
 function rscost.cost0(checkfun,costfun,...)
@@ -2021,14 +2067,14 @@ function rsop.operationcard(selected_group,category_str,reason,e,tp,eg,ep,ev,re,
 				local maxct=selected_group[p+2]
 				local dct=minct
 				if maxct < minct then return nil,0 end 
-				if maxct > minct then 
+				if maxcdarktunert > minct then 
 					local ct_list={}
 					for i=minct,maxct do 
 						if Duel.IsPlayerCanDraw(p,i) then
 							table.insert(ct_list,i)
 						end
 					end
-					rshint.Select(p,rshint.drct)
+					rshint.Select(p,rshint.sdrct)
 					dct=Duel.AnnounceNumber(p,table.unpack(ct_list))
 				end
 				if dct>0 then
@@ -2065,7 +2111,7 @@ function rsop.operationcard(selected_group,category_str,reason,e,tp,eg,ep,ev,re,
 							table.insert(ct_list,i)
 						end
 					end
-					rshint.Select(p,rshint.tgct)
+					rshint.Select(p,rshint.stgct)
 					dct=Duel.AnnounceNumber(p,table.unpack(ct_list))
 				end
 				if dct>0 then
@@ -2589,6 +2635,9 @@ function rsop.SelectCheck_Solve(solve_fun)
 end
 --Function:outer case function for SelectSolve 
 function rsop.SelectOC(chk_hint,is_break,sel_hint)
+	if type(chk_hint) == "string" then
+		chk_hint = rshint["w"..chk_hint]
+	end
 	rsop.SelectOC_checkhint=chk_hint
 	rsop.SelectOC_isbreak=is_break
 	rsop.SelectOC_selecthint=sel_hint
@@ -2714,7 +2763,7 @@ function rsop.SelectMoveToField_Activate(sp,filter,tp,loc_self,loc_oppo,minct,ma
 	solve_parama[1]=solve_parama[1] or sp
 	maxct=1
 	rsop.nohint=true
-	return rsop.SelectSolve(rshint.act2,sp,filter,tp,loc_self,loc_oppo,minct,maxct,except_obj,{rsop.MoveToField_Activate,table.unpack(solve_parama)},...)
+	return rsop.SelectSolve(rshint.act,sp,filter,tp,loc_self,loc_oppo,minct,maxct,except_obj,{rsop.MoveToField_Activate,table.unpack(solve_parama)},...)
 end 
 --Function:Select card and SSet
 function rsop.SelectSSet(sp,filter,tp,loc_self,loc_oppo,minct,maxct,except_obj,solve_parama,...)
@@ -2904,18 +2953,16 @@ function rsop.MoveToField(corg,movep,targetp,loc,pos,enable,zone,hint,confirm)
 end
 --Operation function:MoveToField and treat activate and hint 
 --if you don't neet hint, best use normal Duel.MoveToField
-function rsop.MoveToField_Activate(tc,movep,targetp,loc,pos,enable,zone,hint)
-	if aux.GetValueType(tc)~="Card" then
-		Debug.Message("rsop.Activate can only activate 1 card, don't use group as the first parameter!")
-		return false
-	end
+function rsop.MoveToField_Activate(corg,movep,targetp,loc,pos,enable,zone,hint)
+	local g=rsgf.Mix2(corg)
+	local tc=g:GetFirst()
 	targetp=targetp or movep 
 	pos=POS_FACEUP 
 	rsop.CheckOperationHint(g,hint)
 	if tc:IsType(TYPE_PENDULUM) then 
 		ploc=loc or LOCATION_PZONE 
 	else
-		ploc=loc or rsef.GetRegisterRange(tc)  
+		ploc=loc or rsef.GetRegisterRange(tc)
 	end
 	if ploc==LOCATION_MZONE then
 		Debug.Message("rsop.Activate can only activate Spell/Trap!")
@@ -2949,7 +2996,11 @@ function rsop.MoveToField_Activate(tc,movep,targetp,loc,pos,enable,zone,hint)
 end
 --Function: Select Yes or No
 function rsop.SelectYesNo(p,par,hintcode)
-	local string=type(par)=="table" and aux.Stringid(par[1],par[2]) or par
+	local string 
+	if type(par)=="table" then string = aux.Stringid(par[1],par[2]) 
+	elseif type(par)=="number" then string = par
+	elseif type(par)=="string" then string = rshint["w"..par]
+	end
 	local res=Duel.SelectYesNo(p,string)
 	if res and type(hintcode)=="number" then
 		rshint.Card(hintcode)
@@ -2966,6 +3017,7 @@ function rsop.SelectOption(p,...)
 		if rsof.Check_Boolean(val) and idx~=#functionlist then
 			local sel_hint=functionlist[idx+1]
 			if type(sel_hint)=="table" then ops[off]=aux.Stringid(sel_hint[1],sel_hint[2])
+			elseif type(sel_hint)=="string" then ops[off]=rshint[sel_hint]
 			else
 				ops[off]=sel_hint
 			end
@@ -3675,21 +3727,64 @@ function rssf.EnableSpecialProcedure_Op(e,tp)
 	aux.AddXyzProcedure=rscf.GetBaseXyzProduce1
 	aux.AddXyzProcedureLevelFree=rscf.GetBaseXyzProduce2
 	aux.AddLinkProcedure=rscf.GetBaseLinkProduce1
+	Card.RegisterEffect=rscf.RegisterEffect2
+
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTarget(rssf.EnableSpecialProcedure_Op_regop)
+	e1:SetTargetRange(1,1)
+	Duel.RegisterEffect(e1,0) 
+
 	for tc in aux.Next(g) do
-		--Method ResetEffect/ReplaceEffect will cause issue at Raise Event
-		tc:ReplaceEffect(80316585,0)
-		local mt=getmetatable(tc)
-		if mt.initial_effect then
-			mt.initial_effect(tc) 
-		end
+		tc:IsSpecialSummonable()
+		local cid=tc:CopyEffect(tc:GetOriginalCode(),0,1)
 	end
+
 	aux.AddSynchroProcedure=f6
 	aux.AddSynchroMixProcedure=f7
 	aux.AddXyzProcedure=f8
 	aux.AddXyzProcedureLevelFree=f9
 	aux.AddLinkProcedure=f10
+	Card.RegisterEffect=rscf.RegisterEffect
 	e:Reset()
 end 
+function rssf.EnableSpecialProcedure_Op_regop(e,c,tp,st,sp,stp,se)
+	if not c:IsType(rscf.extype) or c:IsType(TYPE_FUSION) then return false end
+	rscf.ssproce[c] = rscf.ssproce[c] or {[1]={},[2]={}}
+	if se and se:GetCode()==EFFECT_SPSUMMON_PROC and not rsof.Table_List(rscf.ssproce[c][1],se) then 
+		c:RegisterFlagEffect(rscode.Special_Procedure,0,0,1)
+		table.insert(rscf.ssproce[c][1],se)
+		table.insert(rscf.ssproce[c][1],se:GetCondition() or aux.TRUE)
+	end
+	if se and rscf.ssproce[se] then return false end
+	return se and se:GetCode()==EFFECT_SPSUMMON_PROC 
+end
+rscf.RegisterEffect=Card.RegisterEffect
+function rscf.RegisterEffect2(c,e,ignore)
+	rscf.ssproce[c] = rscf.ssproce[c] or {[1]={},[2]={}}
+	if e:GetCode()==EFFECT_SPSUMMON_PROC then 
+		local flag1,flag2=e:GetProperty()
+		local flag1_uc = flag1
+		if flag1 & EFFECT_FLAG_UNCOPYABLE ~=0 then
+			flag1_uc = flag1 - EFFECT_FLAG_UNCOPYABLE 
+		end
+		e:SetProperty(flag1_uc,flag2)
+		rscf.RegisterEffect(c,e,ignore)
+		e:SetProperty(flag1,flag2)
+		rscf.ssproce[e]=true 
+		table.insert(rscf.ssproce[c][2],e)
+		table.insert(rscf.ssproce[c][2],e:GetCondition() or aux.TRUE)
+	end
+	return 
+end
+function rscf.SwitchSpecialProcedure_filter(c)
+	return c:GetFlagEffect(rscode.Special_Procedure)>0
+end
+function rssf.SwitchSpecialProcedure(dis_idx,enb_idx)
+
+end
 function rscf.GetBaseSynchroProduce1(c,f1,f2,minc,maxc)
 	if c.dark_synchro==true then
 		rscf.AddSynchroProcedureSpecial(c,aux.NonTuner(f1),nil,nil,rscf.DarkTuner(f2),minc,maxc or 99)
@@ -4822,4 +4917,4 @@ end
 -------------------"Hape"---------------------
 rsof.Escape_Old_Functions()
 --directly enable will cause bugs, but i am lazy to find what cards i have used this function
-rssf.EnableSpecialProcedure()
+--rssf.EnableSpecialProcedure()

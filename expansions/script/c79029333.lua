@@ -44,7 +44,7 @@ function c79029333.atkval(e,c)
 	return lg:GetSum(Card.GetBaseAttack)
 end
 function c79029333.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x2902)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x4902)
 end
 function c79029333.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)

@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
 	e3:SetCondition(cm.rdcon)
 	e3:SetValue(aux.ChangeBattleDamage(1,HALF_DAMAGE))
-	c:RegisterEffect(e3)
+	--c:RegisterEffect(e3)
 	--draw
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))

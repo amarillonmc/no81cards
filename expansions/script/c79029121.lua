@@ -137,13 +137,14 @@ function c79029121.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(a,POS_FACEDOWN,REASON_EFFECT) 
 end
 end
-function c79029121.desfilter2(c,s,tp)
-	local seq=c:GetSequence()
-	return seq<5 and  math.abs(seq-s)==1
+function c79029121.desfilter2(c,seq,tp)
+	local s=c:GetSequence()
+	return s<5 and  math.abs(seq-s)==1
 end
 function c79029121.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local seq=e:GetHandler():GetSequence()
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
-	if chk==0 then return Duel.IsExistingMatchingCard(tp,c79029121.desfilter2,tp,LOCATION_MZONE,0,1,nil,seq,e:GetHandler():GetControler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029121.desfilter2,tp,LOCATION_MZONE,0,1,nil,seq,e:GetHandler():GetControler()) end
 end
 function c79029121.activate(e,tp,eg,ep,ev,re,r,rp)
 	local seq=e:GetHandler():GetSequence()

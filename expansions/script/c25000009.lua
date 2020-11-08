@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 end
 function cm.fun(g,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,PLAYER_ALL,LOCATION_ONFIELD)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,2000)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1500)
 end
 function cm.disop(e,tp)
 	local tc,ct=rsop.SelectSolve(HINTMSG_FACEUP,tp,aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,aux.ExceptThisCard(e),{cm.disfun,e:GetHandler(),tp})

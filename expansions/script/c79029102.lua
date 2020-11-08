@@ -53,7 +53,7 @@ function c79029102.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsReason(REASON_DESTROY) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEDOWN)
 end
 function c79029102.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x2909)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x4909)
 end
 function c79029102.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -76,7 +76,7 @@ function c79029102.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029102.sfilter(c)
-	return c:IsSetCard(0x2909)
+	return c:IsSetCard(0x4909)
 end
 function c79029102.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c79029102.sfilter,tp,LOCATION_MZONE,0,1,nil) end

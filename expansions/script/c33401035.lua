@@ -84,16 +84,11 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local ct3=0
 	if ct>0 then
 		 ct2=Duel.Destroy(g,REASON_EFFECT)
-		 Duel.Recover(tp,ct2,REASON_EFFECT)
-		if ct2~=ct then 
-			 ct3=Duel.SendtoGrave(g,REASON_EFFECT)
-			 Duel.Recover(tp,ct3*10,REASON_EFFECT)
-		end   
+		 ct3=Duel.SendtoGrave(g,REASON_EFFECT) 
 	end
 	local ct4=ct2+ct3
 	Duel.Recover(tp,ct4*100,REASON_EFFECT)
 	Duel.Damage(1-tp,500*ct4,REASON_EFFECT)
-  --  Duel.Damage(tp,500*ct4,REASON_EFFECT)
 end
 
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
@@ -198,12 +193,18 @@ function cm.con3(e,tp,eg,ep,ev,re,r,rp)
 	return  re:GetHandler()~=tc
 end
 function cm.op3(e,tp,eg,ep,ev,re,r,rp)   
-	 local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CHANGE_DAMAGE)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetValue(0)
-	e1:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
-	Duel.RegisterEffect(e1,tp)
+	  local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetCategory(CATEGORY_RECOVER)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_DAMAGE)
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		e2:SetCondition(cm.con11)
+		e2:SetOperation(cm.op11)
+		Duel.RegisterEffect(e2,tp)
+end
+function cm.con11(e,tp,eg,ep,ev,re,r,rp)
+	return bit.band(r,REASON_EFFECT)~=0 and ep==tp
+end
+function cm.op11(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Recover(tp,ev,REASON_EFFECT)
 end

@@ -21,14 +21,11 @@ function c33700905.initial_effect(c)
 	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e3:SetTargetRange(1,1)
-	e3:SetValue(c33700905.aclimit)
+	e3:SetValue(aux.TRUE)
 	c:RegisterEffect(e3)
 end
 function c33700905.disable(e,c)
 	return c~=e:GetHandler()
-end
-function c33700905.aclimit(e,re,tp)
-	return not re:GetHandler():IsImmuneToEffect(e)
 end
 function c33700905.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

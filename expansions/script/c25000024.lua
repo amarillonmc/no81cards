@@ -1,5 +1,5 @@
 --超古代遗迹 露露耶
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000024)
 if rsoc then return end
 rsoc=cm 

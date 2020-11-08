@@ -2,7 +2,7 @@
 function c79029332.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x2901),2,2)   
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x4901),2,2)   
 	--change damage
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)

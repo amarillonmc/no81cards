@@ -2,7 +2,7 @@
 if not pcall(function() require("expansions/script/c25000024") end) then require("script/c25000024") end
 local m,cm=rscf.DefineCard(25000030)
 function cm.initial_effect(c)
-	local e1,e2,e3=rsoc.SpSummonFun(c,m,2,"con","tg",rstg.target(Card.IsControlerCanBeChanged,"con",0,LOCATION_MZONE),cm.conop)
+	local e1,e2,e3=rsoc.SpSummonFun(c,m,2,"ctrl","tg",rstg.target(Card.IsControlerCanBeChanged,"ctrl",0,LOCATION_MZONE),cm.conop)
 	local e4=rsoc.TributeFun(c,m,"sp",nil,rsop.target(cm.spfilter,"sp",0,LOCATION_EXTRA),cm.spop)   
 end
 function cm.conop(e,tp,eg,ep,ev,re,r,rp)

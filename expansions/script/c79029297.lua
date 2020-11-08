@@ -46,7 +46,7 @@ function c79029297.initial_effect(c)
 end
 function c79029297.sprfilter(c,tp,g,sc)
 	local lv=c:GetLevel()
-	return c:IsFaceup() and (lv==9  or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_SZONE)))
+	return c:IsFaceup() and (lv==9  or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_SZONE))) and (Duel.GetLocationCountFromEx(tp,tp,c)>0 or Duel.GetMZoneCount(tp,c)>0)
 end
 function c79029297.sprcon(e,c)
 	if c==nil then return true end

@@ -1,9 +1,9 @@
 --梦的极致
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000084)
 function cm.initial_effect(c)
-	local e1=rsef.FC(c,EVENT_PHASE_START+PHASE_DRAW,nil,nil,nil,LOCATION_HAND+LOCATION_DECK,cm.tdcon,cm.tdop)   
-	local e2=rsef.FC(c,EVENT_ADJUST)
+	local e1=rsef.FC(c,EVENT_PHASE_START+PHASE_DRAW,nil,{1,m,2},nil,LOCATION_HAND+LOCATION_DECK,cm.tdcon,cm.tdop)   
+	local e2=rsef.FC(c,EVENT_ADJUST) 
 	e2:SetOperation(cm.tdop2)
 end
 function cm.tdop2(e,tp)
@@ -16,11 +16,10 @@ function cm.tdop2(e,tp)
 end
 function cm.tdcon(e,tp)
 	local c=e:GetHandler()
-	return Duel.GetFlagEffect(tp,m)==0 and not c:IsPublic() and not c:IsFaceup() and (not c:IsLocation(LOCATION_HAND) or Duel.IsPlayerCanSendtoDeck(tp,c))
+	return not c:IsPublic() and not c:IsFaceup() and (not c:IsLocation(LOCATION_HAND) or Duel.IsPlayerCanSendtoDeck(tp,c))
 end
 function cm.tdop(e,tp)
 	local c=e:GetHandler()
-	Duel.RegisterFlagEffect(tp,m,0,0,1)
 	rshint.Card(m)
 	Duel.ConfirmCards(1-tp,c)
 	if c:IsLocation(LOCATION_HAND) then 
@@ -78,6 +77,7 @@ function cm.nop(e,tp)
 	Duel.ConfirmCards(1-tp,g)
 	rshint.Select(1-tp,HINTMSG_OPPO)
 	local hg=g:Select(1-tp,1,1,nil) 
+	Duel.ConfirmCards(tp,hg)
 	hg:ForEach(cm.nfun,c)
 	local e1=rsef.FC({c,0},EVENT_ADJUST)
 	e1:SetOperation(cm.winop)

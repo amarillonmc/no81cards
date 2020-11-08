@@ -1,17 +1,18 @@
 --液态型异生兽 佩德隆
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000033)
 if rssb then return end
 rssb=cm
 rscf.DefineSet(rssb,0xaf4)
 function rssb.SummonCondition(c)
+	--[[
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(cm.splimit)
 	c:RegisterEffect(e1)	
-	return e1
+	return e1]]--
 end
 function cm.splimit(e,se,sp,st)
 	return se:IsActiveType(TYPE_MONSTER) and rssb.IsSet(se:GetHandler())

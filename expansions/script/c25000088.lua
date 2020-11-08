@@ -1,5 +1,5 @@
 --雪之圆舞曲
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000088)
 function cm.initial_effect(c)
 	local e1=rsef.ACT(c,nil,{m,0},{3,m,1},"td,se,th,dr",nil,nil,nil,cm.tg,cm.act)

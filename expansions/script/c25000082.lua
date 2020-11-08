@@ -1,5 +1,5 @@
 --白色的物体
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000082)
 function cm.initial_effect(c)
 	--cannot material

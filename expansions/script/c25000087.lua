@@ -1,5 +1,5 @@
 --往复交织而无法离舍的奇迹
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000087)
 function cm.initial_effect(c)
 	local e1=rsef.ACT(c,EVENT_CHAINING,nil,{1,m,1},"td,con","tg",cm.con,nil,rstg.target(cm.tfilter,nil,LOCATION_MZONE),cm.act)
@@ -30,14 +30,14 @@ function cm.act(e,tp,eg,ep,ev,re,r,rp)
 	local e1=rsef.SV_IMMUNE_EFFECT({c,tc},rsval.imes,nil,rsreset.est_pend)
 	local e2=rsef.FV_LIMIT_PLAYER({c,tp},"sp",nil,cm.limittg,{0,1},nil,rsreset.pend)
 	e2:SetLabel(lv)
-	local tg1=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,nil)
+	local tg1=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,nil)
 	local cg1=Duel.GetMatchingGroup(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,nil)
-	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE,1-tp,LOCATION_REASON_CONTROL)
+	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)
 	if ft1>0 and #cg1>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.BreakEffect()
-		local ct,og=rsgf.SelectToDeck(tg1,tp,aux.TRUE,1,ft1,nil)
+		local ct,og=rsgf.SelectToDeck(tg1,tp,aux.TRUE,1,math.min(ft1,#cg1),nil)
 		if ct<=0 then return end
-		rshint.Select(tp,"con")
+		rshint.Select(tp,"ctrl")
 		local cg2=cg1:Select(tp,ct,ct,nil)
 		Duel.HintSelection(cg2)
 		Duel.GetControl(cg2,tp,PHASE_END,1)
@@ -45,4 +45,7 @@ function cm.act(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.limittg(e,c)
 	return c:IsLevelAbove(e:GetLabel())
+end
+function cm.tdfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end

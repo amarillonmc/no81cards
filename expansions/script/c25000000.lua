@@ -1,5 +1,5 @@
 --根源性破灭招来体
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000000)
 if rszg then return end
 rszg=cm 

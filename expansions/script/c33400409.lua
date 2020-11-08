@@ -5,7 +5,7 @@ function c33400409.initial_effect(c)
 	c:EnableReviveLimit()
    --search
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)

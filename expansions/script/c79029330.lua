@@ -45,7 +45,7 @@ function c79029330.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local seq=e:GetLabel()
 	if not eg:IsExists(c79029330.fil,1,nil,seq) then return end 
 	local tc=eg:GetFirst()
-	return eg:IsExists(c79029330.fil,1,nil,seq) and Duel.IsExistingMatchingCard(c79029330.xspfil,tp,LOCATION_EXTRA,0,1,nil,tc,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return eg:IsExists(c79029330.fil,1,nil,seq) and Duel.IsExistingMatchingCard(c79029330.xspfil,tp,LOCATION_EXTRA,0,1,nil,tc,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and rp~=tp
 end
 function c79029330.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,79029330)

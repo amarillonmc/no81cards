@@ -1,10 +1,10 @@
 --蝴蝶梦
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000085)
 function cm.initial_effect(c)
 	c:SetUniqueOnField(1,1,m)
 	local e0=rsef.ACT(c)
-	local e1=rsef.FC(c,EVENT_PHASE+PHASE_STANDBY,nil,1,nil,LOCATION_DECK,cm.thcon,cm.thop)   
+	local e1=rsef.FC(c,EVENT_PHASE+PHASE_STANDBY,nil,{1,m},nil,LOCATION_DECK,cm.thcon,cm.thop)   
 	local e2=rsef.FTF(c,EVENT_PHASE+PHASE_STANDBY,{m,3},1,"rm,td",nil,LOCATION_SZONE,nil,nil,cm.rmtg,cm.rmop)
 	local e3=rsef.QO(c,nil,{m,4},nil,nil,nil,LOCATION_SZONE,nil,rscost.cost(Card.IsAbleToGrave,"tg"),nil,cm.damop)
 end

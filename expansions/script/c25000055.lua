@@ -1,17 +1,17 @@
 --镜中龙 生存烈火
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000055)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddSynchroProcedure(c,nil,cm.sfilter,1)
-	local e1=rsef.QO(c,nil,{m,0},{1,m},"des,dis",nil,LOCATION_MZONE,rscon.phmp,nil,rsop.target(aux.TRUE,"des",0,LOCATION_ONFIELD),cm.desop)
+	local e1=rsef.QO(c,nil,{m,0},{1,m},"tg,dis",nil,LOCATION_MZONE,rscon.phmp,nil,rsop.target(Card.IsAbleToGrave,"tg",0,LOCATION_ONFIELD),cm.tgop)
 	local e2=rsef.SV_UPDATE(c,"atk",cm.val)
 end
 function cm.sfilter(c)
 	return c:IsRace(RACE_WARRIOR) or c:IsAttribute(ATTRIBUTE_FIRE)
 end
-function cm.desop(e,tp)
-	local ct,og,tc=rsop.SelectDestroy(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil,{})
+function cm.tgop(e,tp)
+	local ct,og,tc=rsop.SelectToGrave(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,1,nil,{})
 	if not tc then return end
 	if tc:IsPreviousLocation(LOCATION_MZONE) then
 		Duel.BreakEffect()

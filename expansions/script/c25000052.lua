@@ -48,5 +48,5 @@ function cm.spop(e,tp)
 	local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)
 	if #g<=0 then return end
 	Duel.ConfirmCards(1-tp,g)
-	rsop.SelectSpecialSummon(tp,rssb.ssfilter(true),tp,LOCATION_REMOVED,0,1,1,nil,{0,tp,tp,true,false,POS_FACEUP},e,tp)
+	rsop.SelectSpecialSummon(tp,rssb.ssfilter(true),tp,LOCATION_REMOVED,0,1,1,nil,{0,tp,tp,false,false,POS_FACEUP},e,tp)
 end

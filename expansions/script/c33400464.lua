@@ -2,9 +2,8 @@
 function c33400464.initial_effect(c)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_EQUIP)
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,33400464)
 	e1:SetTarget(c33400464.target)
@@ -21,21 +20,22 @@ function c33400464.initial_effect(c)
 	e2:SetOperation(c33400464.thop)
 	c:RegisterEffect(e2)
 end
-function c33400464.filter(c,tp)
-	return c:IsSetCard(0x6343) and c:IsType(TYPE_EQUIP)
+function c33400464.filter(c)
+	return c:IsSetCard(0x6343) and c:IsAbleToGrave()
 end
 function c33400464.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_SZONE+LOCATION_HAND) and chkc:IsControler(tp) and c33400464.filter(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c33400464.filter,tp,LOCATION_SZONE+LOCATION_HAND,0,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c33400464.filter,tp,LOCATION_SZONE+LOCATION_HAND,0,1,1,nil,tp)
+	if chk==0 then return Duel.IsExistingMatchingCard(c33400464.filter,tp,LOCATION_SZONE+LOCATION_HAND,0,1,nil) end	
+ Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_SZONE+LOCATION_HAND)
 end
 function c33400464.activate(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then 
-		if Duel.Destroy(tc,REASON_EFFECT)~=0 then 
-		   Duel.Draw(tp,2,REASON_EFFECT)
-		end
+	if Duel.IsExistingMatchingCard(c33400464.filter,tp,LOCATION_SZONE+LOCATION_HAND,0,1,nil) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local tc=Duel.SelectMatchingCard(tp,c33400464.filter,tp,LOCATION_SZONE+LOCATION_HAND,0,1,1,nil)		
+			if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 then 
+			   Duel.Draw(tp,2,REASON_EFFECT)
+			end
 	end
 end
 

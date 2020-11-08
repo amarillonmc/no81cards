@@ -1,5 +1,5 @@
 --颚门龙 闪耀进化
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000054)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
@@ -55,5 +55,5 @@ function cm.spop(e,tp)
 	if not c or rssf.SpecialSummon(c)<=0 then return end
 	Duel.RegisterFlagEffect(tp,m,0,0,1)
 	local ct=Duel.GetFlagEffect(tp,m)
-	local e1=rscf.QuickBuff({c,nil,true},"atk+,def+",500*ct)
+	local e1=rscf.QuickBuff({c,nil,true},"atk+,def+",1000*ct)
 end

@@ -1,5 +1,5 @@
 --音击龙 舞甲响鬼
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000058)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(cm.splimit)
 	c:RegisterEffect(e1)
-	local e2=rsef.QO(c,EVENT_CHAINING,{m,0},{1,m},"neg,pos","dsp,dcal",LOCATION_MZONE,rscon.negcon(2,true),nil,rstg.negtg("nil"),cm.negop)
+	local e2=rsef.QO(c,EVENT_CHAINING,{m,0},{1,m},"neg,rm,dam","dsp,dcal",LOCATION_MZONE,rscon.negcon(2,true),nil,rstg.negtg("rm"),cm.negop)
 	local e3=rsef.STO(c,EVENT_PRE_DAMAGE_CALCULATE,{m,2},{1,m+100},"rm,dis",nil,cm.rmcon,nil,cm.rmtg,cm.rmop)
 end
 function cm.splimit(e,se,sp,st)
@@ -19,8 +19,8 @@ function cm.splimit(e,se,sp,st)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) and rc:IsType(TYPE_MONSTER) and rc:IsCanChangePosition() and not rc:IsPosition(POS_FACEUP_DEFENSE) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-		Duel.ChangePosition(rc,POS_FACEUP_DEFENSE)
+	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) and Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)>0 and rc:IsLocation(LOCATION_REMOVED) then
+		Duel.Damage(1-tp,2000,REASON_EFFECT)
 	end
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)

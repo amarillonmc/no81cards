@@ -1,5 +1,5 @@
 --第三行星的奇迹
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000083)
 function cm.initial_effect(c)
 	local e1=rsef.FC(c,EVENT_PHASE_START+PHASE_DRAW,nil,nil,nil,LOCATION_DECK,cm.thcon,cm.thop)

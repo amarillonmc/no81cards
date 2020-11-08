@@ -1,5 +1,5 @@
 --超科学星人 黑暗巴尔坦
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000080)
 function cm.initial_effect(c)
 	rscf.SetSummonCondition(c,false,aux.FALSE)

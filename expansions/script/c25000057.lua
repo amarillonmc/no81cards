@@ -1,5 +1,5 @@
 --重醒龙 帝王剑斩
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
 local m,cm=rscf.DefineCard(25000057)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
@@ -14,8 +14,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)	
 	local e2=rsef.QO(c,nil,{m,0},{1,m},"des","tg",LOCATION_MZONE,nil,nil,rstg.target2(cm.fun,cm.cfilter,nil,LOCATION_ONFIELD,LOCATION_ONFIELD),cm.desop)
 	local e3=rsef.SV_CANNOT_BE_TARGET(c,"effect",aux.tgoval)
-	local e4=rsef.SV_INDESTRUCTABLE(c,"battle,effect")
+	local e4=rsef.SV_INDESTRUCTABLE(c,"all")
 	local e5,e6=rsef.SV_UPDATE(c,"atk,def",cm.val)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_SINGLE)
+	e7:SetCode(EFFECT_ATTACK_ALL)
+	e7:SetValue(1)
+	c:RegisterEffect(e7)
 end
 function cm.ffilter(c,fc,sub,mg,sg)
 	return not sg or not sg:IsExists(Card.IsRace,1,c,c:GetRace())

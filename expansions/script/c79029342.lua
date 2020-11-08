@@ -47,11 +47,11 @@ function c79029342.costfilter(c)
 	return c:IsAbleToDeckAsCost()
 end
 function c79029342.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029342.costfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029342.costfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,e:GetHandler()) end
 	Debug.Message("在这幅假面之下，我认不出自己是谁。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029342,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c79029342.costfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,c79029342.costfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,1,e:GetHandler())
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function c79029342.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

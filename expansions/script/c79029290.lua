@@ -1,4 +1,4 @@
---
+--能天使·KFC收藏-城市骑手
 function c79029290.initial_effect(c)
 	c:EnableReviveLimit()
 	--add code
@@ -6,7 +6,7 @@ function c79029290.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_ADD_CODE)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetValue(79029290)
+	e2:SetValue(79029051)
 	c:RegisterEffect(e2)
 	--
 	local e1=Effect.CreateEffect(c)
@@ -40,7 +40,7 @@ function c79029290.initial_effect(c)
 end
 function c79029290.sprfilter(c,tp,g,sc)
 	local lv=c:GetLevel()
-	return c:IsFaceup() and (lv==9  or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_SZONE))) and Duel.GetLocationCountFromEx(tp,tp,c)
+	return c:IsFaceup() and (lv==9  or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_SZONE))) and (Duel.GetLocationCountFromEx(tp,tp,c)>0 or Duel.GetMZoneCount(tp,c)>0)
 end
 function c79029290.sprcon(e,c)
 	if c==nil then return true end
