@@ -73,15 +73,15 @@ function c33400427.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c33400427.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-		if  Duel.IsExistingMatchingCard(c33400427.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and not Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x341)and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,0,LOCATION_MZONE,1,nil,0x341)   
+		if  Duel.IsExistingMatchingCard(c33400427.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and ((not Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x341)and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,0,LOCATION_MZONE,1,nil,0x341) )
 		or (  Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) and 
 			(Duel.IsExistingMatchingCard(c33400427.cccfilter1,tp,LOCATION_ONFIELD,0,1,nil) or 
-			Duel.IsExistingMatchingCard(c33400427.cccfilter2,tp,LOCATION_MZONE,0,1,nil))) 
+			Duel.IsExistingMatchingCard(c33400427.cccfilter2,tp,LOCATION_MZONE,0,1,nil))) )
 		then
 			if Duel.SelectYesNo(tp,aux.Stringid(33400427,3)) then 
 				  local g2=Duel.SelectMatchingCard(tp,c33400427.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 				  Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
-			end			
+			end		 
 		end
 	end
 end
@@ -137,7 +137,7 @@ function c33400427.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c33400427.xyzfilter,tp,LOCATION_EXTRA,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tg=g:Select(tp,1,1,nil)	
+		local tg=g:Select(tp,1,1,nil)   
 		 if Duel.XyzSummon(tp,tg:GetFirst(),nil) and  not Duel.IsExistingMatchingCard(c33400427.spcfilter,tp,LOCATION_MZONE,0,1,nil) then
 				if  Duel.IsExistingMatchingCard(c33400427.spcfilter,tp,0,LOCATION_MZONE,1,nil)   
 				or

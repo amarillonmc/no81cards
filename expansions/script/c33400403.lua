@@ -18,7 +18,7 @@ function c33400403.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,33400403)
+	e2:SetCountLimit(1,33400403+10000)
 	e2:SetTarget(c33400403.settg)
 	e2:SetOperation(c33400403.setop)
 	c:RegisterEffect(e2)
@@ -30,7 +30,7 @@ function c33400403.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c33400403.thfilter(c)
-	return (c:IsSetCard(0x5342) or c:IsSetCard(0x6343) or c:IsSetCard(0x5343)) and c:IsAbleToHand()
+	return ((c:IsSetCard(0x5342) and c:IsType(TYPE_MONSTER)) or (c:IsSetCard(0x6343) or c:IsSetCard(0x5343))) and c:IsAbleToHand()
 end
 function c33400403.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33400403.thfilter,tp,LOCATION_DECK,0,1,nil)  end
@@ -44,7 +44,7 @@ function c33400403.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g2=Duel.SelectMatchingCard(tp,c33400403.thfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g2=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
 	Duel.Destroy(g2,REASON_EFFECT)
 end
 

@@ -75,23 +75,24 @@ function c33400426.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			Duel.IsExistingMatchingCard(c33400426.cccfilter2,tp,LOCATION_MZONE,0,1,nil))) 
 	then
 	   e:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	end	
+	end 
 end
 function c33400426.thfilter2(c,code)
 	return c:IsSetCard(0x9343)  and not c:IsCode(code) and c:IsAbleToHand()
 end
 function c33400426.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,2,REASON_EFFECT) and Duel.IsExistingTarget(c33400426.thfilter2,tp,LOCATION_DECK,0,1,nil,tc:GetCode())then
+	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,2,REASON_EFFECT) and Duel.IsExistingMatchingCard(c33400426.thfilter2,tp,LOCATION_DECK,0,1,nil,tc:GetCode())then
 		if Duel.SelectYesNo(tp,aux.Stringid(33400426,0)) then 
 			 Duel.BreakEffect()
 			 local g=Duel.SelectMatchingCard(tp,c33400426.thfilter2,tp,LOCATION_DECK,0,1,1,nil,tc:GetCode())
 			 if g:GetCount()>0 then
 				Duel.SendtoHand(g,tp,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,g)		  
+				Duel.ConfirmCards(1-tp,g)		
 			 end
 		end
 	end
+local c=e:GetHandler()
 	 --inactivatable
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)

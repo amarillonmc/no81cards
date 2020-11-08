@@ -30,7 +30,7 @@ function c33401309.matfilter(c)
 end
 
 function c33401309.uqfilter(c)
-		return c:GetOriginalCode(33401309) 
+		return c:GetOriginalCode()==33401309 
 end
 
 function c33401309.thfilter2(c)

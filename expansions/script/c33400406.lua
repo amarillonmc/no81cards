@@ -37,7 +37,7 @@ function c33400406.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c33400406.thfilter(c,tp)
-	return c:IsSetCard(0x5343)  and (c:IsAbleToHand() or c:GetActivateEffect():IsActivatable(tp))
+	return c:IsSetCard(0x5343)  and (c:IsAbleToHand() or not c:IsForbidden())
 end
 function c33400406.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33400406.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
@@ -48,7 +48,7 @@ function c33400406.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc then
 		local b1=tc:IsAbleToHand()
-		local b2=tc:GetActivateEffect():IsActivatable(tp)
+		local b2=not tc:IsForbidden()
 		if b1 and (not b2 or Duel.SelectOption(tp,1190,1150)==0) then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)

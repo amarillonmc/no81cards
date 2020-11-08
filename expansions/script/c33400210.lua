@@ -47,7 +47,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_DECK) and cm.filter(chkc,e,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,nil,e,tp)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -60,10 +60,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsCode(ac) then 
 	   if Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) then 
 		  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		  local g1=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
+		  local g1=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		  if g1:GetCount()>0 then
+		  Duel.DisableShuffleCheck()
 		  Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
 		  end
+		  Duel.ShuffleDeck(tp)
 		   local ct1=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
 			if ct1>2 then ct1=2 end
 			local g=Duel.GetDecktopGroup(tp,ct1)
@@ -73,7 +75,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	else  
 		if Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) then 
 		  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		  local g1=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil)
+		  local g1=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 		  if g1:GetCount()>0 then
 		  Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
 		  end

@@ -19,7 +19,7 @@ function c33400402.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_TO_GRAVE)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,33400402)
+	e1:SetCountLimit(1,33400402+10000)
 	e1:SetCondition(c33400402.thcon)
 	e1:SetOperation(c33400402.thop)
 	c:RegisterEffect(e1)
@@ -28,7 +28,7 @@ function c33400402.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSetCard,1,nil,0x6343) or eg:IsExists(Card.IsSetCard,1,nil,0x5343)
 end
 function c33400402.spfilter1(c,e,tp)
-	return  c:IsSetCard(0x341) or c:IsSetCard(0x5342) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return  (c:IsSetCard(0x341) or c:IsSetCard(0x5342)) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c33400402.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -60,7 +60,7 @@ function c33400402.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c33400402.thfilter(c)
-	return (c:IsSetCard(0x341) or c:IsSetCard(0x5342)) and c:IsAbleToHand() and not c:IsCode(33400402)
+	return (c:IsSetCard(0x341) or c:IsSetCard(0x5342)) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(33400402)
 end
 function c33400402.thcon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c33400402.thfilter,tp,LOCATION_GRAVE,0,1,nil)
