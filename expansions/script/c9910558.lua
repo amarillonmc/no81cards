@@ -45,7 +45,7 @@ function c9910558.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c:IsDiscardable()
 		and Duel.IsExistingMatchingCard(c9910558.costfilter,tp,LOCATION_HAND,0,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local g=Duel.SelectMatchingCard(tp,c9910558.ostfilter,tp,LOCATION_HAND,0,1,1,c)
+	local g=Duel.SelectMatchingCard(tp,c9910558.costfilter,tp,LOCATION_HAND,0,1,1,c)
 	g:AddCard(c)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end

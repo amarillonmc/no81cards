@@ -54,7 +54,7 @@ function c79029345.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029345.ffilter(c)
-	return c:IsFusionSetCard(0xa904)
+	return c:IsFusionSetCard(0xa906)
 end
 function c79029345.atcost(e,c,tp)
 	local ct=Duel.GetFlagEffect(tp,79029345)

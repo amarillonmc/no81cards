@@ -53,6 +53,9 @@ end
 function c9910553.rmfilter(c)
 	return c:IsSetCard(0x3951) and c:IsAbleToRemove() and not c:IsCode(9910553)
 end
+function c9910553.thfilter(c)
+	return c:IsSetCard(0x3951) and c:IsAbleToHand()
+end
 function c9910553.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
