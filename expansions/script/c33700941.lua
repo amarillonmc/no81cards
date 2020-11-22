@@ -23,7 +23,7 @@ function c33700941.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c33700941.getg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
 end
 function c33700941.geop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

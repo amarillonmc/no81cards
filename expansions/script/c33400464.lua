@@ -21,21 +21,20 @@ function c33400464.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c33400464.filter(c)
-	return c:IsSetCard(0x6343) and c:IsAbleToGrave()
+	return c:IsSetCard(0x6343) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsAbleToGrave()
 end
 function c33400464.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_SZONE+LOCATION_HAND) and chkc:IsControler(tp) and c33400464.filter(chkc,tp) end
-	if chk==0 then return Duel.IsExistingMatchingCard(c33400464.filter,tp,LOCATION_SZONE+LOCATION_HAND,0,1,nil) end	
- Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
-Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_SZONE+LOCATION_HAND)
+	if chk==0 then return Duel.IsExistingMatchingCard(c33400464.filter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) end 
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_SZONE+LOCATION_HAND)
 end
 function c33400464.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(c33400464.filter,tp,LOCATION_SZONE+LOCATION_HAND,0,1,nil) then
+	if Duel.IsExistingMatchingCard(c33400464.filter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local tc=Duel.SelectMatchingCard(tp,c33400464.filter,tp,LOCATION_SZONE+LOCATION_HAND,0,1,1,nil)		
-			if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 then 
-			   Duel.Draw(tp,2,REASON_EFFECT)
-			end
+		local tc=Duel.SelectMatchingCard(tp,c33400464.filter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,e:GetHandler())   
+		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 then 
+			Duel.Draw(tp,2,REASON_EFFECT)
+		end
 	end
 end
 
