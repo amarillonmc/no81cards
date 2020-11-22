@@ -87,7 +87,7 @@ function c79029326.filter(c,e,tp)
 	return c:IsType(TYPE_FUSION) and c:CheckFusionMaterial() and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsSetCard(0xa900)
 end
 function c79029326.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return ux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_FMATERIAL)
+	if chk==0 then return aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_FMATERIAL)
 	and Duel.IsExistingMatchingCard(c79029326.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp)end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end

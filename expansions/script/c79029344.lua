@@ -141,12 +141,14 @@ function c79029344.atkcon(e)
 	return Duel.GetCurrentPhase()==PHASE_DAMAGE_CAL 
 end
 function c79029344.atktg(e,c)
+	if c:GetBattleTarget()==nil then return false end
 	return c:IsSetCard(0xa907) and c:GetBattleTarget():GetFlagEffect(79029344)~=0
 end
 function c79029344.atkval(e,c)
 	return c:GetAttack()*2
 end
 function c79029344.damtg(e,c)
+	if c:GetBattleTarget()==nil then return false end
 	return c:IsSetCard(0xa907) and c:GetBattleTarget():GetFlagEffect(79029344)~=0
 end
 function c79029344.efilter(e,te)
@@ -161,6 +163,7 @@ function c79029344.val(e,c)
 end
 function c79029344.damcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if c:GetBattleTarget()==nil then return false end
 	local a=Duel.GetAttacker()
 	local b=Duel.GetAttackTarget()
 	local g=Group.FromCards(a,b)

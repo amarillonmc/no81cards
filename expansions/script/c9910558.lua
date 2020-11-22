@@ -6,6 +6,7 @@ function c9910558.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,9910550+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c9910558.spcon)
 	e1:SetOperation(c9910558.spop)
 	c:RegisterEffect(e1)
@@ -52,14 +53,11 @@ end
 function c9910558.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
 end
-function c9910558.rmfilter(c)
-	return c:IsSetCard(0x3951) and c:IsAbleToRemove() and not c:IsCode(9910558)
-end
 function c9910558.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,c9910558.repop)
-	local g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910558.rmfilter),tp,LOCATION_GRAVE,0,nil)
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,0,nil)
 	if g1:GetCount()>0 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(9910558,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

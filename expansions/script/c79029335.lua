@@ -39,7 +39,7 @@ function c79029335.initial_effect(c)
 end 
 end
 function c79029335.filter(c,e,tp,re)
-	return c:GetPreviousControler()==tp and c:IsReason(REASON_COST) and c==re:GetHandler() 
+	return c:GetPreviousControler()==tp and c:IsReason(REASON_COST) and c==re:GetHandler() and c:IsSetCard(0xa904)
 end
 function c79029335.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c79029335.filter,1,nil,e,tp,re)

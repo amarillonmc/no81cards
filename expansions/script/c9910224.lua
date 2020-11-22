@@ -5,14 +5,13 @@ function c9910224.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,9910224)
 	e1:SetCondition(c9910224.condition)
 	e1:SetTarget(c9910224.target)
 	e1:SetOperation(c9910224.activate)
 	c:RegisterEffect(e1)
-	--to deck
+	--draw & to deck
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
@@ -57,16 +56,23 @@ function c9910224.tdfilter(c)
 	return c:IsSetCard(0x955) and c:IsAbleToDeck()
 end
 function c9910224.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c9910224.tdfilter(chkc)
-		and not chkc==e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(c9910224.tdfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
+	local c=e:GetHandler()
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c9910224.tdfilter(chkc) and chkc~=c end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
+		and Duel.IsExistingTarget(c9910224.tdfilter,tp,LOCATION_GRAVE,0,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c9910224.tdfilter,tp,LOCATION_GRAVE,0,1,1,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+	Duel.SelectTarget(tp,c9910224.tdfilter,tp,LOCATION_GRAVE,0,1,1,c)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,2)
 end
 function c9910224.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
+	if Duel.Draw(tp,1,REASON_EFFECT)==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+	if tc:IsRelateToEffect(e) then g:AddCard(tc) end
+	if g:GetCount()>0 then
+		Duel.BreakEffect()
+		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
 end

@@ -6,6 +6,7 @@ function c9910551.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,9910550+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c9910551.spcon)
 	e1:SetOperation(c9910551.spop)
 	c:RegisterEffect(e1)
@@ -50,7 +51,7 @@ function c9910551.thfilter(c)
 	return c:IsSetCard(0x3951) and c:IsAbleToHand()
 end
 function c9910551.rmfilter(c)
-	return c:IsSetCard(0x3951) and c:IsAbleToRemove() and not c:IsCode(9910551)
+	return c:IsSetCard(0x3951) and c:IsAbleToRemove()
 end
 function c9910551.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=4 then return end
@@ -67,10 +68,10 @@ function c9910551.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleDeck(tp)
 	local g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910551.rmfilter),tp,LOCATION_GRAVE,0,nil)
 	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g1:GetCount()>0 and g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910551,2)) then
+	if g1:GetCount()>1 and g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910551,2)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg1=g1:Select(tp,1,1,nil)
+		local sg1=g1:Select(tp,2,2,nil)
 		if Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local tc2=g2:Select(tp,1,1,nil):GetFirst()

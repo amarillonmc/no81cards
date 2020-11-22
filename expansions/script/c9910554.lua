@@ -6,6 +6,7 @@ function c9910554.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,9910550+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c9910554.spcon)
 	e1:SetOperation(c9910554.spop)
 	c:RegisterEffect(e1)
@@ -51,16 +52,16 @@ function c9910554.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),1-tp,LOCATION_GRAVE)
 end
 function c9910554.rmfilter(c)
-	return c:IsSetCard(0x3951) and c:IsAbleToRemove() and not c:IsCode(9910554)
+	return c:IsSetCard(0x3951) and c:IsAbleToRemove()
 end
 function c9910554.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if g:GetCount()==0 or Duel.Remove(g,POS_FACEUP,REASON_EFFECT)==0 then return end
 	local g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910554.rmfilter),tp,LOCATION_GRAVE,0,nil)
-	if g1:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910554,1)) then
+	if g1:GetCount()>1 and Duel.SelectYesNo(tp,aux.Stringid(9910554,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg1=g1:Select(tp,1,1,nil)
+		local sg1=g1:Select(tp,2,2,nil)
 		if Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)==0 then return end
 		local ct=Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 		Duel.Recover(tp,ct*500,REASON_EFFECT)

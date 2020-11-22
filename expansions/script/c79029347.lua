@@ -70,6 +70,7 @@ function c79029347.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029347.xcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetHandler():GetBattleTarget()
+	if tc==nil then return false end
 	local lv=e:GetHandler():GetMaterial():GetSum(Card.GetLevel)
 	return tc:IsLevelAbove(lv)
 end
@@ -137,7 +138,7 @@ function c79029347.RitualCheckAdditional(c,atk,greater_or_equal)
 	end
 end
 function c79029347.RitualUltimateFilter(c,filter,e,tp,m1,m2,attack_function,greater_or_equal,chk)
-	if bit.band(c:GetType(),0x81)~=0x81 or (filter and not filter(c,e,tp,chk)) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
+	if bit.band(c:GetType(),0x81)~=0x81 or (filter and not filter(c,e,tp,chk)) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) or not c:IsCode(79029346) then return false end
 	local mg=m1:Filter(Card.IsCanBeRitualMaterial,c,c)
 	if m2 then
 		mg:Merge(m2)

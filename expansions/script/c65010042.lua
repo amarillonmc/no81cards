@@ -32,11 +32,11 @@ function c65010042.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) 
 end
 function c65010042.thfil(c)
-	return c:IsRace(RACE_CYBERSE) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsRace(RACE_CYBERSE) and c:IsAbleToHand()
 end
 function c65010042.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and chkc:IsSetCard(0x3da0) and chkc:IsAbleToHand() end
-	if chk==0 then return Duel.IsExistingTarget(c65010042.thfil,tp,LOCATION_GRAVE,0,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c65010042.thfil(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c65010042.thfil,tp,LOCATION_REMOVED,0,1,nil) end
 	local g=Duel.SelectTarget(tp,c65010042.thfil,tp,LOCATION_REMOVED,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_REMOVED)
 end
@@ -44,6 +44,7 @@ function c65010042.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,tp,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
 	end
 end
 function c65010042.cfilter(c,tp)

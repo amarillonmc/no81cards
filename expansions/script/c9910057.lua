@@ -14,12 +14,10 @@ function c9910057.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetCountLimit(1,9910057)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetCondition(c9910057.thcon)
 	e2:SetCost(c9910057.thcost)
 	e2:SetTarget(c9910057.thtg)
 	e2:SetOperation(c9910057.thop)
 	c:RegisterEffect(e2)
-	Duel.AddCustomActivityCounter(9910057,ACTIVITY_SPSUMMON,c9910057.counterfilter)
 	--return to hand
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOHAND)
@@ -31,33 +29,16 @@ function c9910057.initial_effect(c)
 	e3:SetOperation(c9910057.operation)
 	c:RegisterEffect(e3)
 end
-function c9910057.counterfilter(c)
-	return c:IsRace(RACE_FAIRY)
-end
-function c9910057.cfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_FAIRY)
-end
-function c9910057.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c9910057.cfilter,tp,LOCATION_MZONE,0,1,nil)
-end
 function c9910057.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(9910057,tp,ACTIVITY_SPSUMMON)==0
-		and e:GetHandler():IsDiscardable() end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c9910057.splimit)
-	Duel.RegisterEffect(e1,tp)
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function c9910057.splimit(e,c)
 	return not c:IsRace(RACE_FAIRY)
 end
 function c9910057.spfilter(c,e,tp)
-	return c:IsAttack(0) and c:IsDefense(1000) and c:IsType(TYPE_TUNER)
+	return c:IsDefense(1000) and c:IsRace(RACE_FAIRY) and c:IsType(TYPE_TUNER)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910057.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -68,6 +49,14 @@ function c9910057.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK)
 end
 function c9910057.thop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c9910057.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 	local g=Duel.GetMatchingGroup(c9910057.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or g:GetClassCount(Card.GetCode)<3 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
@@ -79,6 +68,9 @@ function c9910057.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		Duel.ShuffleDeck(tp)
 	end
+end
+function c9910057.splimit(e,c)
+	return not c:IsRace(RACE_FAIRY)
 end
 function c9910057.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToHand() end

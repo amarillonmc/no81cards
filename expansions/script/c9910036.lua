@@ -32,7 +32,7 @@ function c9910036.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if not Duel.IsExistingMatchingCard(c9910036.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) then rt=rt-1 end
 	if not Duel.IsExistingMatchingCard(c9910036.filter3,tp,LOCATION_SZONE,LOCATION_SZONE,1,c) then rt=rt-1 end
 	if not Duel.IsExistingMatchingCard(c9910036.filter4,tp,LOCATION_SZONE,LOCATION_SZONE,1,c) then rt=rt-1 end
-	local cg=Duel.GetMatchingGroup(c9910036.costfilter,tp,LOCATION_HAND,0,nil)
+	local cg=Duel.GetMatchingGroup(c9910036.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
 	local ct=cg:GetClassCount(Card.GetCode)
 	if chk==0 then return rt>0 and ct>0 end
 	local ctt={}

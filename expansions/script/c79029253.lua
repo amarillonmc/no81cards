@@ -53,7 +53,7 @@ function c79029253.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c79029253.ssfil(c,e)
-	return c:IsSSetable() and (c:IsSetCard(0xb90d) or c:IsSetCard(0xc90e))
+	return c:IsSSetable(true) and (c:IsSetCard(0xb90d) or c:IsSetCard(0xc90e))
 end
 function c79029253.sstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return  Duel.GetMatchingGroupCount(c79029253.ssfil,tp,LOCATION_DECK,0,nil,e)>=1 end

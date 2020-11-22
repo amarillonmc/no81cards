@@ -82,7 +82,7 @@ end
 function c79029328.op(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("可能有点热哦？")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029328,1))
-	local tc=Duel.SelectMatchingCard(tp,c79029328.fil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,99,nil,e,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c79029328.fil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
 	Duel.Overlay(e:GetHandler(),tc)
 	local mg1=Duel.GetDecktopGroup(tp,tc:GetLink())
 	local mg2=Duel.GetDecktopGroup(1-tp,tc:GetLink())

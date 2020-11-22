@@ -57,7 +57,7 @@ end
 function c79029327.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc~=c and not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and rc:GetControler()~=tp
+	return rc~=c and not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and rc:GetControler()~=tp
 end
 function c79029327.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
