@@ -17,7 +17,7 @@ end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return rp~=tp and Duel.IsPlayerCanDraw(tp,1)
 end
-function cm.act(e,tp)
+function cm.act(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,cm.repop)

@@ -12,6 +12,7 @@ function cm.lvop(e,tp)
 	rsop.SelectSolve(HINTMSG_SELF,tp,cm.lvfilter,tp,LOCATION_MZONE,0,1,1,nil,cm.lvfun,e)
 end
 function cm.lvfun(g,e)
+	local tp=e:GetHandlerPlayer()
 	local c,tc=e:GetHandler(),g:GetFirst()
 	rshint.Select(tp,HINGMSG_LVRANK)
 	local lv=Duel.AnnounceLevel(tp,1,8)
