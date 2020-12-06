@@ -3,7 +3,7 @@ function c9910014.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,c9910014.ffilter,2,true)
-	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_MZONE,0,Duel.Remove,POS_FACEUP,REASON_COST+REASON_FUSION+REASON_MATERIAL):SetValue(1)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_ONFIELD,0,Duel.Remove,POS_FACEUP,REASON_COST)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -18,7 +18,6 @@ function c9910014.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
 	e2:SetCountLimit(1)
-	e2:SetCondition(c9910014.condtion)
 	e2:SetValue(c9910014.valcon)
 	c:RegisterEffect(e2)
 	--immune
@@ -27,7 +26,6 @@ function c9910014.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(c9910014.condtion)
 	e3:SetValue(c9910014.efilter)
 	c:RegisterEffect(e3)
 	--Negate
@@ -49,16 +47,7 @@ function c9910014.ffilter(c)
 		and c:GetSummonLocation()==LOCATION_EXTRA
 end
 function c9910014.splimit(e,se,sp,st)
-	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION 
-end
-function c9910014.mfilter(c)
-	return not c:IsType(TYPE_PENDULUM)
-end
-function c9910014.condtion(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local mg=c:GetMaterial()
-	return (c:GetSummonType()==SUMMON_TYPE_SPECIAL+1 or c:IsSummonType(SUMMON_TYPE_FUSION))
-		and mg:GetCount()>0 and not mg:IsExists(c9910014.mfilter,1,nil)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function c9910014.valcon(e,re,r,rp)
 	return bit.band(r,REASON_EFFECT)~=0
@@ -76,7 +65,8 @@ function c9910014.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910014.tgdisable(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return true end
+	if chk==0 then return c:GetFlagEffect(9910014)==0 end
+	c:RegisterFlagEffect(9910014,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)

@@ -64,13 +64,11 @@ end
 function c79029174.filter1(c,e,tp)
 	local rk=c:GetRank()
 	return rk>1 and c:IsFaceup() and c:IsSetCard(0xa900)
-		and Duel.IsExistingMatchingCard(c79029174.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk)
-		and Duel.GetLocationCountFromEx(tp,tp,c)>0
-		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
+		and Duel.IsExistingMatchingCard(c79029174.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end
 function c79029174.filter2(c,e,tp,mc,rk)
 	return c:IsRankBelow(rk-1) and c:IsSetCard(0xa900) and mc:IsCanBeXyzMaterial(c)
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function c79029174.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end

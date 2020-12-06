@@ -2,7 +2,7 @@
 function c79029353.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xa900),aux.NonTuner(nil),1)
-	c:EnableReviveLimit()	 
+	c:EnableReviveLimit()   
 	--extra matrial
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -22,7 +22,7 @@ function c79029353.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 	e3:SetTargetRange(LOCATION_EXTRA,0)
-	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE+LOCATION_EXTRA+LOCATION_REMOVED)
+	e3:SetRange(LOCATION_MZONE+LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED)
 	e3:SetTarget(c79029353.mattg)
 	e3:SetLabelObject(e0)
 	c:RegisterEffect(e3)
@@ -75,13 +75,13 @@ function c79029353.initial_effect(c)
 	e6:SetLabel(5)
 	c:RegisterEffect(e6)
 	--match kill
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e4:SetCode(EFFECT_MATCH_KILL)
-	e4:SetCondition(c79029353.effcon)
-	e4:SetLabel(6)
-	c:RegisterEffect(e4)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e7:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e7:SetCode(EVENT_BATTLE_DAMAGE)
+	e7:SetCondition(c79029353.effcon)
+	e7:SetOperation(c79029353.winop)
+	c:RegisterEffect(e7)
 end
 function c79029353.mattg(e,c)
 	return c:IsSetCard(0xa900) and c:IsType(TYPE_LINK)
@@ -91,7 +91,7 @@ function c79029353.mfil(c)
 end
 function c79029353.matval(e,lc,mg,c,tp)
 	if e:GetHandler()~=lc then return false,nil end
-	return true,not mg or not mg:IsExists(c79029353.mfil,mg:GetCount(),nil)
+	return true,c:GetFlagEffect(79029353)~=0
 end
 function c79029353.efffil(c,e)
 	return c:GetLinkedGroup():IsContains(e:GetHandler()) and c:IsSetCard(0xa900)
@@ -105,6 +105,8 @@ end
 function c79029353.emtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local x=e:GetHandler():GetMaterialCount()
 	if chk==0 then return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and x~=0 and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
+	Debug.Message("光。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029353,1))
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,x,nil) 
 	Duel.SetTargetCard(g)
 end
@@ -128,6 +130,8 @@ function c79029353.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,g:GetCount()*500)
 end
 function c79029353.desop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("荣耀必须被捍卫。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029353,2))
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local g=Duel.GetMatchingGroup(c79029353.filter,tp,0,LOCATION_MZONE,aux.ExceptThisCard(e),c:GetAttack())
@@ -135,6 +139,14 @@ function c79029353.desop(e,tp,eg,ep,ev,re,r,rp)
 	if ct>0 then
 		Duel.BreakEffect()
 		Duel.Damage(1-tp,ct*500,REASON_EFFECT)
+	end
+end
+function c79029353.winop(e,tp,eg,ep,ev,re,r,rp)
+	if ep~=tp then
+	local WIN_REASON_NEARL=0x1
+	Debug.Message("真正的骑士决不屈服于暴力，在这把战锤面前忏悔吧。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029353,3))
+	Duel.Win(tp,WIN_REASON_NEARL)
 	end
 end
 

@@ -42,7 +42,8 @@ function c9910075.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910075.spfilter(c,e,tp)
-	return c:IsRace(RACE_FAIRY) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelBelow(4) and c:IsRace(RACE_FAIRY) and c:IsAttribute(ATTRIBUTE_LIGHT)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910075.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910075.spfilter(chkc,e,tp) end

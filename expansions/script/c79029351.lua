@@ -80,10 +80,10 @@ function c79029351.thfil(c)
 	return c:IsAbleToHand() and c:IsSetCard(0xb90d) and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_SPELL)
 end
 function c79029351.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029351.thfil,tp,LOCATION_DECK,0,1,nil) end
-	local g=Duel.SelectMatchingCard(tp,c79029351.thfil,tp,LOCATION_DECK,0,1,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029351.thfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	local g=Duel.SelectMatchingCard(tp,c79029351.thfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,0)
 end
 function c79029351.thop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("不会有其他人看到我在这吧......？")
@@ -146,7 +146,7 @@ function c79029351.spop(e,tp,eg,ep,ev,re,r,rp)
 	local xct=lg:GetClassCount(Card.GetCode)
 	if ct<=0 or xct<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c79029351.seqfilter,tp,0,LOCATION_ONFIELD,xct,xct,nil,seq)
+	local g=Duel.SelectMatchingCard(tp,c79029351.seqfilter,tp,0,LOCATION_ONFIELD,1,xct,nil,seq)
 	Debug.Message("只会剩下灰烬......")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029351,3))
 	Duel.HintSelection(g)

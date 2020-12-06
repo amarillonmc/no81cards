@@ -74,7 +74,7 @@ function c79029327.operation(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	Debug.Message("让头脑清醒点吧。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029327,2))
-	if Duel.NegateActivation(ev) and Duel.IsExistingMatchingCard(c79029327.spfil,tp,LOCATION_MZONE+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(79029327,1)) then
+	if Duel.NegateActivation(ev) and Duel.IsExistingMatchingCard(c79029327.spfil,tp,LOCATION_MZONE+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE) and Duel.SelectYesNo(tp,aux.Stringid(79029327,1)) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=Duel.SelectMatchingCard(tp,c79029327.spfil,tp,LOCATION_MZONE+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)

@@ -72,7 +72,7 @@ function cm.thcost2(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.DiscardHand(tp,cm.costfilter2,1,1,REASON_DISCARD+REASON_COST)
 end
 function cm.thfilter2(c)
-    return c:IsCode(18282103,26704411,29905795,44155002,55277252,56399890,82888408,89194103,90616316,94845226) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,c)
+    return c:IsCode(18282103,26704411,29905795,44155002,55277252,56399890,82888408,89194103,90616316,94845226,83039608) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,c)
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) end

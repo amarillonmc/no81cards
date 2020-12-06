@@ -37,7 +37,7 @@ function c79029321.initial_effect(c)
 	c:RegisterEffect(e1)	
 end
 function c79029321.filter(c,e,tp,re)
-	return c:GetPreviousControler()==tp and c:IsReason(REASON_COST) and c==re:GetHandler() and c:IsSetCard(0xa904)
+	return c:GetPreviousControler()==tp and c:IsReason(REASON_COST) and c:IsSetCard(0xa904)
 end
 function c79029321.thfil(c)
 	return c:IsSetCard(0xa904) and c:IsAbleToHand()
