@@ -23,8 +23,8 @@ function c112538374.initial_effect(c)
     e4:SetCategory(CATEGORY_TODECK)
     e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
     e4:SetRange(LOCATION_REMOVED)
-    e4:SetCountLimit(1,112538574)
     e4:SetCode(EVENT_PHASE+PHASE_END)
+    e4:SetCountLimit(1,112538574)
     e4:SetCondition(c112538374.retcon)
     e4:SetTarget(c112538374.rettg)
     e4:SetOperation(c112538374.retop)
@@ -94,10 +94,9 @@ function c112538374.retfilter(c)
     return c:IsRace(RACE_AQUA) and c:IsAbleToDeck()
 end
 function c112538374.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return Duel.IsExistingMatchingCard(c112538374.retfilter,tp,LOCATION_GRAVE,0,1,nil) and c:IsAbleToDeck() end
+    if chk==0 then return true end
     local g=Duel.GetMatchingGroup(c112538374.retfilter,tp,LOCATION_GRAVE,0,nil)
-    g:AddCard(c)
+    g:AddCard(e:GetHandler())
     Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c112538374.retop(e,tp,eg,ep,ev,re,r,rp)
@@ -111,7 +110,7 @@ function c112538374.retop(e,tp,eg,ep,ev,re,r,rp)
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
         sg:Merge(g:Select(tp,1,1,nil))
     end
-    if sg:GetCount()>0 then
+    if sg:GetCount()==2 then
         Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
     end
 end

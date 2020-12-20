@@ -30,7 +30,7 @@ function c22050210.initial_effect(c)
 	--end battle phase
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(22050210,1))
-	e3:SetType(EFFECT_TYPE_TRIGGER_O)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCountLimit(1,22050211)
 	e3:SetCode(EVENT_DESTROYED)
@@ -83,7 +83,9 @@ function c22050210.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c22050210.cfilter,1,nil,tp)
 end
 function c22050210.operation1(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SkipPhase(1-tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1,1)
-	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
-	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
+	local turnp=Duel.GetTurnPlayer()
+	Duel.SkipPhase(turnp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(turnp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
+	Duel.SkipPhase(turnp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
 end
+
