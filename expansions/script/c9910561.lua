@@ -46,7 +46,8 @@ function c9910561.xmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910561.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp) end
 end
 function c9910561.xmop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
+	local c=aux.ExceptThisCard(e)
+	if not c then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local g=Duel.SelectMatchingCard(tp,c9910561.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp)
 	if g:GetCount()>0 then

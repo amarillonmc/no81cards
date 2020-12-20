@@ -29,11 +29,11 @@ function cm.act(e,tp)
 	local op=e:GetLabel()
 	if op==1 then
 		if rsop.SelectRemove(tp,aux.NecroValleyFilter(cm.rmfilter1),tp,0,rsloc.og,1,1,nil,{})>0 and Duel.GetOperatedGroup():GetFirst():IsLocation(LOCATION_REMOVED) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil) then
-			local e1=rsef.FV_LIMIT({c,tp},"dis",nil,aux.FilterBoolFunction(Card.IsType,TYPE_SPELL),{ 0,LOCATION_ONFIELD },nil,rsreset.pend)
+			local e1=rsef.FV_LIMIT({c,tp},"dis",nil,aux.TargetBoolFunction(Card.IsType,TYPE_SPELL),{ 0,LOCATION_ONFIELD },nil,rsreset.pend)
 		end
 	elseif op==2 then
 		if rsop.SelectRemove(tp,aux.NecroValleyFilter(cm.rmfilter2),tp,0,rsloc.og,1,1,nil,{})>0 and Duel.GetOperatedGroup():GetFirst():IsLocation(LOCATION_REMOVED) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil) then
-			local e1=rsef.FV_LIMIT({c,tp},"dis",nil,aux.FilterBoolFunction(Card.IsType,TYPE_SPELL),{ 0,LOCATION_ONFIELD },nil,rsreset.pend)
+			local e1=rsef.FV_LIMIT({c,tp},"dis",nil,aux.TargetBoolFunction(Card.IsType,TYPE_TRAP),{ 0,LOCATION_ONFIELD },nil,rsreset.pend)
 		end
 	else
 		local ct,og,tc=rsop.SelectRemove(tp,aux.NecroValleyFilter(cm.rmfilter3),tp,0,rsloc.og,1,1,nil,{})

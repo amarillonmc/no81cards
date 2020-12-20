@@ -3,8 +3,16 @@ if not pcall(function() require("expansions/script/c30000100") end) then require
 local m,cm=rscf.DefineCard(30010000)
 function cm.initial_effect(c)
 	aux.EnablePendulumAttribute(c,false)
-	aux.AddXyzProcedure(c,nil,12,5)
-	local e1=rscf.SetSummonCondition(c,false,aux.xyzlimit)
+	--xyz summon
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),12,5)
+	c:EnableReviveLimit()
+	--spsummon limit
+	local e1=Effect.CreateEffect(c)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.xyzlimit)
+	c:RegisterEffect(e1)
 	local e2,e3=rsef.SV_CANNOT_DISABLE_S(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)

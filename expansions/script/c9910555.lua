@@ -10,15 +10,15 @@ function c9910555.initial_effect(c)
 	e1:SetTarget(c9910555.target)
 	e1:SetOperation(c9910555.activate)
 	c:RegisterEffect(e1)
-	--synchro/xyz summon
+	--draw
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_REMOVE)
 	e2:SetCountLimit(1,9910556)
-	e2:SetTarget(c9910555.sptg)
-	e2:SetOperation(c9910555.spop)
+	e2:SetTarget(c9910555.drtg)
+	e2:SetOperation(c9910555.drop)
 	c:RegisterEffect(e2)
 end
 function c9910555.spfilter(c,e,tp)
@@ -46,54 +46,34 @@ function c9910555.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:SelectSubGroup(tp,c9910555.fselect,false,1,ft,id)
-	if sg and sg:GetCount()>0 then
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	for tc in aux.Next(sg) do
+		Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetAbsoluteRange(tp,1,0)
+		e1:SetTarget(c9910555.splimit)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
 	end
+	Duel.SpecialSummonComplete()
 end
-function c9910555.xyzfilter(c)
-	return c:IsRankBelow(2) and c:IsXyzSummonable(nil)
+function c9910555.splimit(e,c)
+	return not c:IsSetCard(0x3951)
 end
-function c9910555.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local mg=Duel.GetMatchingGroup(Card.IsLevelBelow,tp,LOCATION_MZONE,0,nil,2)
-	if chk==0 then
-		local sel=0
-		if Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,nil,mg) then
-			sel=sel+1
-		end
-		if Duel.IsExistingMatchingCard(c9910555.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) then
-			sel=sel+2
-		end
-		e:SetLabel(sel)
-		return sel~=0
-	end
-	local sel=e:GetLabel()
-	if sel==3 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910555,0))
-		sel=Duel.SelectOption(tp,aux.Stringid(9910555,1),aux.Stringid(9910555,2))+1
-	elseif sel==1 then
-		Duel.SelectOption(tp,aux.Stringid(9910555,1))
-	else
-		Duel.SelectOption(tp,aux.Stringid(9910555,2))
-	end
-	e:SetLabel(sel)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+function c9910555.tgfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_CYBERSE) and c:IsDiscardable()
 end
-function c9910555.spop(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(Card.IsLevelBelow,tp,LOCATION_MZONE,0,nil,2)
-	local sel=e:GetLabel()
-	if sel==1 then
-		local g=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,nil,mg)
-		if g:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=g:Select(tp,1,1,nil)
-			Duel.SynchroSummon(tp,sg:GetFirst(),nil,mg)
-		end
-	else
-		local g=Duel.GetMatchingGroup(c9910555.xyzfilter,tp,LOCATION_EXTRA,0,nil)
-		if g:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=g:Select(tp,1,1,nil)
-			Duel.XyzSummon(tp,sg:GetFirst(),nil)
-		end
+function c9910555.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910555.tgfilter,tp,LOCATION_HAND,0,1,nil)
+		and Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c9910555.drop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.DiscardHand(tp,c9910555.tgfilter,1,1,REASON_EFFECT+REASON_DISCARD)~=0 then
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end

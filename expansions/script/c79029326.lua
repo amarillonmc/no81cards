@@ -80,11 +80,8 @@ end
 function c79029326.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
-function c79029326.thfilter(c)
-	return c:IsSetCard(0xfc) and not c:IsCode(79029326) and c:IsAbleToHand()
-end
 function c79029326.filter(c,e,tp)
-	return c:IsType(TYPE_FUSION) and c:CheckFusionMaterial() and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsSetCard(0xa900)
+	return c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsSetCard(0xa900)
 end
 function c79029326.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_FMATERIAL)

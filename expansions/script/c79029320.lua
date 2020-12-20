@@ -67,6 +67,32 @@ function c79029320.initial_effect(c)
 	e6:SetTarget(c79029320.spcost2)
 	e6:SetOperation(c79029320.toop)
 	c:RegisterEffect(e6)
+	--effect gian
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_ADJUST)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetOperation(c79029320.efop)
+	c:RegisterEffect(e5) 
+end
+function c79029320.effilter(c)
+	return c:IsType(TYPE_MONSTER)
+end
+function c79029320.efop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()  
+	local ct=Duel.GetFieldGroup(tp,LOCATION_SZONE,0)
+	local wg=ct:Filter(c79029320.effilter,nil,tp)
+	local wbc=wg:GetFirst()
+	Debug.Message("..")
+	while wbc do
+	Debug.Message("..")
+		local code=wbc:GetOriginalCode()
+		if c:GetFlagEffect(code)==0 then
+		c:CopyEffect(code,RESET_EVENT+0x1fe0000+EVENT_CHAINING,1)
+		c:RegisterFlagEffect(code,RESET_EVENT+0x1fe0000+EVENT_CHAINING,0,1)  
+		end 
+		wbc=wg:GetNext()
+	end  
 end
 function c79029320.splimit1(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
@@ -133,20 +159,7 @@ function c79029320.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(c79029320.eqlimit)
 		tc:RegisterEffect(e1)
-		local cid=c:CopyEffect(tc:GetOriginalCode(),0,1)
-		--
-		local e2=Effect.CreateEffect(c)
-		e2:SetDescription(aux.Stringid(41209827,3))
-		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_DELAY)
-		e2:SetCode(EVENT_LEAVE_FIELD)
-		e2:SetLabelObject(c)
-		e2:SetLabel(cid)
-		e2:SetOperation(c79029320.rstop)
-		tc:RegisterEffect(e2)
-		local e3=e2:Clone()
-		e3:SetCode(EVENT_BE_MATERIAL)
-		c:RegisterEffect(e3)
+		tc:RegisterFlagEffect(79029320,RESET_EVENT+RESETS_STANDARD,0,1,0,aux.Stringid(79029320,0))
 		local atk=tc:GetBaseAttack()
 		if atk>0 then
 			local e2=Effect.CreateEffect(c)

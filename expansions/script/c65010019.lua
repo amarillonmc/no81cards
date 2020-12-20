@@ -77,15 +77,15 @@ function c65010019.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.SelectTarget(tp,c65010019.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
-function c65010126.filter2(c)
+function c65010019.filter2(c)
 	return (c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)) and c:IsSetCard(0x9da0)
 end
 function c65010019.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c65010126.filter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(65010126,0)) then
+		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c65010019.filter2,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(65010019,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-			local g=Duel.SelectMatchingCard(tp,c65010126.filter,tp,LOCATION_HAND,0,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,c65010019.filter2,tp,LOCATION_HAND,0,1,1,nil)
 			local tc=g:GetFirst()
 			if tc then
 				local s1=tc:IsSummonable(true,nil,1)

@@ -29,12 +29,11 @@ function c79029310.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetTurnPlayer()~=tp then return end
 	if not Duel.SelectEffectYesNo(tp,e:GetHandler()) then return end
+	Duel.Hint(HINT_MUSIC,tp,aux.Stringid(79029310,1))
 	local ft=2
+	local ac=0
 	local chk=true
 	while chk do
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-	getmetatable(e:GetHandler()).announce_filter={0xdc0f,OPCODE_ISSETCARD}
-	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
 	if ac==79029311 then
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -42,10 +41,12 @@ function c79029310.reop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetValue(1000)
 	Duel.RegisterEffect(e1,tp)
+	getmetatable(e:GetHandler()).announce_filter={0xdc0f,OPCODE_ISSETCARD}
 	table.insert(getmetatable(e:GetHandler()).announce_filter,79029311)
 	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_ISCODE)
-	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_AND)
 	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_NOT)
+	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_AND)
+	ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
 	ft=ft-1
 	elseif ac==79029312 then
 	local e2=Effect.CreateEffect(c)
@@ -53,15 +54,37 @@ function c79029310.reop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_USE_EXTRA_MZONE)
 	e2:SetValue(2)
 	Duel.RegisterEffect(e2,tp)
+	getmetatable(e:GetHandler()).announce_filter={0xdc0f,OPCODE_ISSETCARD}
 	table.insert(getmetatable(e:GetHandler()).announce_filter,79029312)
 	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_ISCODE)
 	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_NOT)
-	ft=ft-1
-	else
+	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_AND)
+	ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
+	ft=ft-1 
+	else 
+	getmetatable(e:GetHandler()).announce_filter={0xdc0f,OPCODE_ISSETCARD}
+	ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
+	ft=ft-1 
 	end
-	if ft<=0 or not Duel.SelectYesNo(tp,aux.Stringid(79029310,0)) then
+	if ft<=0 or not Duel.SelectYesNo(tp,aux.Stringid(79029310,0)) then 
 	chk=false
 	end
+	end
+	local ac=ac
+	if ac==79029311 then
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetTargetRange(0,LOCATION_MZONE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(1000)
+	Duel.RegisterEffect(e1,tp)
+	elseif ac==79029312 then
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_USE_EXTRA_MZONE)
+	e2:SetValue(2)
+	Duel.RegisterEffect(e2,tp)
+	else 
 	end
 end
 
