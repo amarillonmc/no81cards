@@ -63,15 +63,15 @@ function c9910368.lckop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(1)
 		tc:RegisterEffect(e1)
 		tc:RegisterFlagEffect(9910368,RESET_EVENT+RESETS_STANDARD,0,1,fid)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetLabel(fid)
-		e1:SetLabelObject(tc)
-		e1:SetCountLimit(1)
-		e1:SetCondition(c9910368.tgcon)
-		e1:SetOperation(c9910368.tgop)
-		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_PHASE+PHASE_END)
+		e2:SetLabel(fid)
+		e2:SetLabelObject(tc)
+		e2:SetCountLimit(1)
+		e2:SetCondition(c9910368.tgcon)
+		e2:SetOperation(c9910368.tgop)
+		Duel.RegisterEffect(e2,tp)
 	end
 end
 function c9910368.tgcon(e,tp,eg,ep,ev,re,r,rp)
@@ -86,8 +86,9 @@ end
 function c9910368.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	local p=tc:GetControler()
+	if tc:IsFaceup() or not tc:IsAbleToGrave() or not Duel.IsPlayerCanDraw(p,1) then return end
 	Duel.HintSelection(Group.FromCards(tc))
-	if tc:IsAbleToGrave() and Duel.IsPlayerCanDraw(p,1) and Duel.SelectYesNo(p,aux.Stringid(9910368,1)) then
+	if Duel.SelectYesNo(p,aux.Stringid(9910368,1)) then
 		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 then
 			Duel.Draw(p,1,REASON_EFFECT)
 		end

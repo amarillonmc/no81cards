@@ -45,7 +45,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
         local zone=e:GetHandler():GetLinkedZone(tp)
         return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,zone)
     end
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,3,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
+    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
@@ -55,6 +55,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
         local zone=c:GetLinkedZone(tp)
         local ct=Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)
         if ct>g:GetCount() then ct=g:GetCount() end
+        if ct>c:GetMaterialCount() then ct=c:GetMaterialCount() end
         if Duel.IsPlayerAffectedByEffect(tp,59822133) and ct>1 then ct=1 end
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
         local sg=g:Select(tp,1,ct,nil,e,tp,zone)

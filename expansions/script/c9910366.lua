@@ -19,8 +19,8 @@ function c9910366.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9910367)
-	e2:SetTarget(c9910366.destg)
-	e2:SetOperation(c9910366.desop)
+	e2:SetTarget(c9910366.settg)
+	e2:SetOperation(c9910366.setop)
 	c:RegisterEffect(e2)
 end
 function c9910366.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -42,7 +42,7 @@ function c9910366.fselect(g,tp,c)
 	return res and g:IsContains(c)
 end
 function c9910366.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(c9910366.spfilter,tp,LOCATION_HAND,0,nil,e,tp)
 	if g:GetCount()==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -55,7 +55,7 @@ end
 function c9910366.setfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()
 end
-function c9910366.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9910366.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910366.spellfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910366.spellfilter,tp,LOCATION_ONFIELD,0,1,nil)
 		and Duel.IsExistingMatchingCard(c9910366.setfilter,tp,0,LOCATION_ONFIELD,1,nil) end
@@ -66,7 +66,7 @@ function c9910366.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g2,1,0,0)
 end
-function c9910366.desop(e,tp,eg,ep,ev,re,r,rp)
+function c9910366.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g2=Duel.SelectMatchingCard(tp,c9910366.setfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	if g2:GetCount()==0 then return end
@@ -82,4 +82,3 @@ function c9910366.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
 end
-

@@ -44,7 +44,7 @@ function c9910363.fselect(g,tp,c)
 	return res and g:IsContains(c)
 end
 function c9910363.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(c9910363.spfilter,tp,LOCATION_HAND,0,nil,e,tp)
 	if g:GetCount()==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

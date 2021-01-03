@@ -1,4 +1,4 @@
---满开神树勇者 赴死者东乡
+--满开神树勇者 迷惘者
 function c9910337.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,aux.NonTuner(nil),nil,nil,aux.Tuner(nil),1,99)
@@ -20,7 +20,7 @@ function c9910337.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,9910338)
+	e2:SetCountLimit(1)
 	e2:SetCondition(c9910337.discon)
 	e2:SetCost(c9910337.discost)
 	e2:SetTarget(c9910337.distg)

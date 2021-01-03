@@ -62,9 +62,14 @@ end
 function c9910241.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910241.rmfilter,tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
+	if e:GetHandler():IsRace(RACE_PSYCHO) then
+		e:SetLabel(1)
+	else
+		e:SetLabel(0)
+	end
 end
 function c9910241.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(c9910241.rmfilter2,tp,0,LOCATION_ONFIELD,nil,tp,9910241,1)
+	local g1=Duel.GetMatchingGroup(c9910241.rmfilter2,tp,0,LOCATION_ONFIELD,nil,tp,9910241,e:GetLabel())
 	local g2=Duel.GetMatchingGroup(c9910241.rmfilter2,tp,0,LOCATION_GRAVE,nil,tp,9910242,0)
 	local g3=Duel.GetMatchingGroup(c9910241.rmfilter2,tp,0,LOCATION_HAND,nil,tp,9910243,0)
 	local sg=Group.CreateGroup()

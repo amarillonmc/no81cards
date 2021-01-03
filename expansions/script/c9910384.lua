@@ -1,85 +1,65 @@
---丛雨丸
+--虹彩偶像舞台 糖果派对
 function c9910384.initial_effect(c)
-	aux.AddCodeList(c,9910376)
-	c:SetUniqueOnField(1,0,9910384)
+	aux.AddCodeList(c,9910383)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_EQUIP)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetTarget(c9910384.target)
-	e1:SetOperation(c9910384.operation)
+	e1:SetOperation(c9910384.activate)
 	c:RegisterEffect(e1)
-	--Equip limit
+	--spsummon limit
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_EQUIP_LIMIT)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetValue(c9910384.eqlimit)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetTarget(c9910384.sumlimit)
 	c:RegisterEffect(e2)
-	--
+	--to deck
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_EQUIP)
-	e3:SetCode(EFFECT_UNRELEASABLE_SUM)
-	e3:SetCondition(c9910384.indcon)
-	e3:SetValue(1)
+	e3:SetCategory(CATEGORY_TODECK)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCountLimit(1,9910384)
+	e3:SetTarget(c9910384.tdtg)
+	e3:SetOperation(c9910384.tdop)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_UNRELEASABLE_NONSUM)
-	c:RegisterEffect(e4)
-	local e5=e3:Clone()
-	e5:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	c:RegisterEffect(e5)
-	--atk
-	local e6=Effect.CreateEffect(c)
-	e6:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
-	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e6:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
-	e6:SetRange(LOCATION_SZONE)
-	e6:SetCondition(c9910384.atkcon)
-	e6:SetOperation(c9910384.atkop)
-	c:RegisterEffect(e6)
 end
-function c9910384.eqlimit(e,c)
-	return aux.IsCodeListed(c,9910376)
+function c9910384.thfilter(c)
+	return c:IsCode(9910383) and c:IsAbleToHand()
 end
-function c9910384.filter(c)
-	return c:IsFaceup() and aux.IsCodeListed(c,9910376)
-end
-function c9910384.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:GetLocation()==LOCATION_MZONE and c9910384.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9910384.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	Duel.SelectTarget(tp,c9910384.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
-end
-function c9910384.operation(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if e:GetHandler():IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		Duel.Equip(tp,e:GetHandler(),tc)
-	end
-end
-function c9910384.indcon(e)
-	return Duel.GetTurnPlayer()~=e:GetHandlerPlayer()
-end
-function c9910384.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	local ec=e:GetHandler():GetEquipTarget()
-	local tc=ec:GetBattleTarget()
-	return ec and tc and tc:IsFaceup() and tc:IsControler(1-tp)
-		and Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0
-end
-function c9910384.atkop(e,tp,eg,ep,ev,re,r,rp)
+function c9910384.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local ec=e:GetHandler():GetEquipTarget()
-	local tc=ec:GetBattleTarget()
-	if ec and tc and ec:IsFaceup() and tc:IsFaceup() then
-		local sum=tc:GetAttack()+tc:GetDefense()
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
-		e1:SetValue(math.ceil(sum/2))
-		ec:RegisterEffect(e1)
+	local g=Duel.GetMatchingGroup(c9910384.thfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910384,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
 	end
+end
+function c9910384.sumlimit(e,c,sump,sumtype,sumpos,targetp)
+	return c:IsLocation(LOCATION_EXTRA)
+end
+function c9910384.tdfilter(c)
+	return c:IsSetCard(0x5951) and c:IsAbleToDeck()
+end
+function c9910384.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return false end
+	if chk==0 then return Duel.IsExistingTarget(c9910384.tdfilter,tp,LOCATION_GRAVE,0,2,nil)
+		and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g1=Duel.SelectTarget(tp,c9910384.tdfilter,tp,LOCATION_GRAVE,0,2,2,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g2=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	g1:Merge(g2)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g1,g1:GetCount(),0,0)
+end
+function c9910384.tdop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 end

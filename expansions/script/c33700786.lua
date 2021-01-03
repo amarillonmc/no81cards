@@ -82,7 +82,7 @@ function cm.rectg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.recop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT) then
+	if tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)>0 then
 		Duel.Recover(tp,tc:GetAttack(),REASON_EFFECT)
 	end
 end

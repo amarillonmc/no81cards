@@ -75,11 +75,10 @@ function c79029174.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c79029174.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c79029174.filter1(chkc,e,tp) end
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029174.filter1,tp,LOCATION_MZONE,0,1,nil,e,tp) end
 	Debug.Message("接下来，Castle-3要展现下工业级作战平台的实力了！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029174,2))
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectMatchingCard(tp,c79029174.filter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)

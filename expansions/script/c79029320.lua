@@ -75,17 +75,15 @@ function c79029320.initial_effect(c)
 	e5:SetOperation(c79029320.efop)
 	c:RegisterEffect(e5) 
 end
-function c79029320.effilter(c)
-	return c:IsType(TYPE_MONSTER)
+function c79029320.effilter(c,e)
+	return c:GetEquipTarget()==e:GetHandler() and c:GetFlagEffect(79029320)>0
 end
 function c79029320.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local ct=Duel.GetFieldGroup(tp,LOCATION_SZONE,0)
-	local wg=ct:Filter(c79029320.effilter,nil,tp)
+	local wg=ct:Filter(c79029320.effilter,nil,e)
 	local wbc=wg:GetFirst()
-	Debug.Message("..")
 	while wbc do
-	Debug.Message("..")
 		local code=wbc:GetOriginalCode()
 		if c:GetFlagEffect(code)==0 then
 		c:CopyEffect(code,RESET_EVENT+0x1fe0000+EVENT_CHAINING,1)

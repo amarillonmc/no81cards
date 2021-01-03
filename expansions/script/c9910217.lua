@@ -28,8 +28,9 @@ end
 function c9910217.exmfilter(c)
 	return c:IsLocation(LOCATION_HAND) and c:IsCode(9910217)
 end
-function c9910217.matval(e,c,mg)
-	return c:IsSetCard(0x955) and mg:IsExists(c9910217.mfilter,1,nil) and not mg:IsExists(c9910217.exmfilter,1,nil)
+function c9910217.matval(e,lc,mg,c,tp)
+	if not lc:IsSetCard(0x955) then return false,nil end
+	return true,not mg or mg:IsExists(c9910217.mfilter,1,nil) and not mg:IsExists(c9910217.exmfilter,1,nil)
 end
 function c9910217.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
