@@ -91,7 +91,6 @@ function c84610009.spop2(e,tp,eg,ep,ev,re,r,rp)
     if g:GetClassCount(Card.GetCode)<3 then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
     local tg=g:Select(tp,3,3,nil)
-    g:Remove(Card.IsCode,nil,tg:GetFirst():GetCode())
     if Duel.SendtoGrave(tg,REASON_EFFECT)~=0 and tg:IsExists(Card.IsLocation,3,nil,LOCATION_GRAVE) then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
         local g=Duel.SelectMatchingCard(tp,c84610009.fsfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
