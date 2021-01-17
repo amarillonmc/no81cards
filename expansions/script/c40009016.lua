@@ -3,7 +3,6 @@ function c40009016.initial_effect(c)
 	c:EnableReviveLimit()
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),2,63,true)
 	aux.AddFusionProcFunFunRep(c,c40009016.matfilter,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),1,63,true)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)

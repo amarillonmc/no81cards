@@ -27,11 +27,10 @@ function c79029219.fil(c)
 end
 function c79029219.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029219.fil,tp,LOCATION_MZONE,0,1,nil) and (Duel.CheckLocation(tp,LOCATION_MZONE,5) or Duel.CheckLocation(tp,LOCATION_MZONE,6)) end
-	local g=Duel.SelectMatchingCard(tp,c79029219.fil,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.SetTargetCard(g)
 end
 function c79029219.activate(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
+	local g=Duel.SelectMatchingCard(tp,c79029219.fil,tp,LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
 	local op=0 
 	local b1=Duel.CheckLocation(tp,LOCATION_MZONE,6)
 	local b2=Duel.CheckLocation(tp,LOCATION_MZONE,5)
@@ -56,9 +55,7 @@ function c79029219.sgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029219.sgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_HAND+LOCATION_REMOVED+LOCATION_DECK,0,1,nil,0x1904) end
-	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_HAND+LOCATION_REMOVED+LOCATION_DECK,0,1,1,nil,0x1904)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,tp,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,0,1,tp,0)
 end
 function c79029219.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x1904) and c:GetLevel()>=9
@@ -66,8 +63,11 @@ end
 function c79029219.ghfilter(c)
 	return c:GetSequence()>4
 end
+function c79029219.tggfil(c)
+	return c:IsAbleToGrave() and c:IsSetCard(0x1904)
+end
 function c79029219.sgop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
+	local tc=Duel.SelectMatchingCard(tp,c79029219.tggfil,tp,LOCATION_HAND+LOCATION_REMOVED+LOCATION_DECK,0,1,1,nil):GetFirst()
 	Duel.SendtoGrave(tc,REASON_EFFECT)
 	if Duel.IsExistingMatchingCard(c79029219.cfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(c79029219.ghfilter,tp,0,LOCATION_MZONE,1,nil) then
 	if Duel.SelectYesNo(tp,aux.Stringid(79029219,2)) then

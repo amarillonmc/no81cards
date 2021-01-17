@@ -48,7 +48,9 @@ function c9910630.initial_effect(c)
 	end
 end
 function c9910630.ffilter(c,fc,sub,mg,sg)
-	return not sg or not sg:IsExists(Card.IsRace,1,c,c:GetRace())
+	return not sg or sg:FilterCount(aux.TRUE,c)==0
+		or (sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())
+			and not sg:IsExists(Card.IsRace,1,c,c:GetRace()))
 end
 function c9910630.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsActiveType(TYPE_MONSTER) then return end
@@ -65,19 +67,17 @@ function c9910630.sprfilter1(c,sc)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost() and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)
 end
 function c9910630.sprfilter2(g,tp,sc)
-	return g:IsExists(c9910630.sprfilter3,1,nil,tp,sc) and g:GetClassCount(Card.GetRace)==3
-end
-function c9910630.sprfilter3(c,tp,sc)
-	return c:IsLocation(LOCATION_MZONE) and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0
+	return Duel.GetLocationCountFromEx(tp,tp,g,sc)>0 and g:GetClassCount(Card.GetRace)==3
+		and g:GetClassCount(Card.GetAttribute)==1
 end
 function c9910630.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c9910630.sprfilter1,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,nil,c)
+	local g=Duel.GetMatchingGroup(c9910630.sprfilter1,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,c)
 	return Duel.GetFlagEffect(tp,9910630)>=3 and g:CheckSubGroup(c9910630.sprfilter2,3,3,tp,c)
 end
 function c9910630.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(c9910630.sprfilter1,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,nil,c)
+	local g=Duel.GetMatchingGroup(c9910630.sprfilter1,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=g:SelectSubGroup(tp,c9910630.sprfilter2,true,3,3,tp,c)
 	c:SetMaterial(sg)

@@ -41,12 +41,10 @@ function c79029240.ssfil2(c,e,tp)
 end
 function c79029240.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029240.sfil,tp,LOCATION_MZONE,0,1,nil,e,tp) end
-	local sg=Duel.SelectMatchingCard(tp,c79029240.sfil,tp,LOCATION_MZONE,0,1,1,nil,e,tp):GetFirst()
-	Duel.SetTargetCard(sg)
 end
 function c79029240.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
+	local tc=Duel.SelectMatchingCard(tp,c79029240.sfil,tp,LOCATION_MZONE,0,1,1,nil,e,tp):GetFirst()
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -69,12 +67,10 @@ function c79029240.thfil(c,e,tp)
 end
 function c79029240.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029240.thfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
-	local sg=Duel.SelectMatchingCard(tp,c79029240.thfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
-	Duel.SetTargetCard(sg)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,sg,1,tp,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,0,1,tp,nil)
 end
 function c79029240.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
+	local tc=Duel.SelectMatchingCard(tp,c79029240.thfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
 	Duel.SendtoHand(tc,tp,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,tc)
 end

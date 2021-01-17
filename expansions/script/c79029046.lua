@@ -26,14 +26,14 @@ function c79029046.filter(c)
 end
 function c79029046.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029046.filter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,0,0,tp,LOCATION_DECK)
+end 
+function c79029046.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	Debug.Message("香草会助大家一臂之力的！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029046,0))
 	local g=Duel.SelectMatchingCard(tp,c79029046.filter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,tp,LOCATION_DECK)
-end	
-function c79029046.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 end

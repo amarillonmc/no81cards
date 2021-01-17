@@ -61,17 +61,15 @@ function c9910380.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
 	if not c:IsRelateToEffect(e) or not rc:IsRelateToEffect(re) then return end
-	if Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)~=0 and rc:IsLocation(LOCATION_REMOVED) then
+	if Duel.Remove(rc,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)~=0 and rc:IsLocation(LOCATION_REMOVED) then
 		local lv=rc:GetOriginalLevel()
 		local lp=Duel.GetLP(tp)
-		Duel.SetLP(tp,lp-lv*100)
-		local fid=c:GetFieldID()
-		rc:RegisterFlagEffect(9910380,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
+		Duel.SetLP(tp,lp-lv*300)
+		rc:RegisterFlagEffect(9910380,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabel(fid)
 		e1:SetLabelObject(rc)
 		e1:SetCountLimit(1)
 		e1:SetCondition(c9910380.retcon)
@@ -80,22 +78,8 @@ function c9910380.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910380.retcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc and tc:GetFlagEffectLabel(9910380)==e:GetLabel() then
-		return true
-	else
-		e:Reset()
-		return false
-	end
+	return e:GetLabelObject():GetFlagEffect(9910380)~=0
 end
 function c9910380.retop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	local op=tc:GetOwner()
-	local b1=tc:IsAbleToHand()
-	local b2=Duel.GetLocationCount(op,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,op)
-	if b2 and (not b1 or Duel.SelectOption(tp,1104,1152)==1) then
-		Duel.SpecialSummon(tc,0,tp,op,false,false,POS_FACEUP)
-	elseif b1 then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-	end
+	Duel.ReturnToField(e:GetLabelObject())
 end
