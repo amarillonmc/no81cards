@@ -1,4 +1,4 @@
---银条春心
+--绘裳之月神
 function c9910086.initial_effect(c)
 	--turn set
 	local e1=Effect.CreateEffect(c)
@@ -25,7 +25,7 @@ function c9910086.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,c,1,0,0)
 end
 function c9910086.thfilter(c)
-	return c:IsCode(9910080,9910085) and c:IsAbleToHand()
+	return c:IsSetCard(0x9951) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c9910086.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -42,11 +42,13 @@ function c9910086.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910086.repfilter(c,tp)
 	return c:IsFaceup() and c:IsRace(RACE_FAIRY) and c:IsLocation(LOCATION_MZONE)
-		and c:IsControler(tp) and c:IsReason(REASON_BATTLE)
+		and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function c9910086.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemove() and eg:IsExists(c9910086.repfilter,1,nil,tp) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsReason(REASON_RELEASE) and c:IsAbleToRemove()
+		and eg:IsExists(c9910086.repfilter,1,nil,tp) end
+	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function c9910086.repval(e,c)
 	return c9910086.repfilter(c,e:GetHandlerPlayer())

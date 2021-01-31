@@ -1,4 +1,4 @@
---大藏瑠美音
+--奏乐之月神
 function c9910078.initial_effect(c)
 	--turn set
 	local e1=Effect.CreateEffect(c)
@@ -56,10 +56,10 @@ function c9910078.splimit(e,c)
 	return not c:IsRace(RACE_FAIRY) and c:IsLocation(LOCATION_EXTRA)
 end
 function c9910078.filter2(c,tp)
-	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsRace(RACE_FAIRY)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsSetCard(0x9951)
 end
 function c9910078.condition2(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not re:IsActiveType(TYPE_MONSTER) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	return g and g:IsExists(c9910078.filter2,1,nil,tp)
 		and Duel.IsChainNegatable(ev)

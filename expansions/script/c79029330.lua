@@ -50,8 +50,10 @@ function c79029330.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029330.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,79029330)
+	local seq=e:GetLabel()
 	if Duel.SelectYesNo(tp,aux.Stringid(79029330,0)) then
-	local tc=eg:GetFirst()
+	local xg=eg:Filter(c79029330.fil,nil,seq)
+	local tc=xg:GetFirst()
 	local xc=Duel.SelectMatchingCard(tp,c79029330.xspfil,tp,LOCATION_EXTRA,0,1,1,nil,tc,e,tp):GetFirst()
 	Duel.SpecialSummon(xc,0,tp,tp,false,false,POS_FACEUP)
 	e:Reset()

@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetHintTiming(0,TIMING_ATTACK+TIMING_END_PHASE)
 	e1:SetCountLimit(1,m)
 	e1:SetCost(cm.accost)
 	e1:SetOperation(cm.acop)
@@ -25,6 +26,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetHintTiming(TIMING_ATTACK,0x11e0)
 	e3:SetCountLimit(1,m-40)
 	e3:SetCost(cm.spcost)
 	e3:SetTarget(cm.sptg)
@@ -36,10 +38,27 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.lvplus(c)
-	if c:GetLevel()>=1 and c:IsType(TYPE_MONSTER) then return c:GetLevel() else return -2 end
+	if c:GetLevel()>=1 and c:IsType(TYPE_TUNER) and c:IsType(TYPE_MONSTER) then return c:GetLevel() elseif c:GetLevel()>=1 and c:IsType(TYPE_MONSTER) then return -c:GetLevel() else return -2 end
 end
-function cm.filter(c,tp)
-	return c:IsCode(11451461) and aux.disfilter1(c)
+function cm.ceop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetOperation(cm.ceop2)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.ceop2(e,tp,eg,ep,ev,re,r,rp)
+	if rp==1-tp and re:GetHandler():IsCode(11451461) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		Duel.Hint(HINT_CARD,0,m)
+		Duel.ChangeChainOperation(ev,cm.reop)
+		e:Reset()
+	end
+end
+function cm.reop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then Duel.Remove(c,POS_FACEUP,REASON_EFFECT) end
 end
 function cm.filter2(c)
 	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove()
@@ -75,34 +94,14 @@ end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 end
-function cm.ceop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetOperation(cm.ceop2)
-	Duel.RegisterEffect(e1,tp)
-end
-function cm.ceop2(e,tp,eg,ep,ev,re,r,rp)
-	if rp==1-tp and re:GetHandler():IsCode(11451461) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-		Duel.Hint(HINT_CARD,0,m)
-		Duel.ChangeChainOperation(ev,cm.reop)
-		e:Reset()
-	end
-end
-function cm.reop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then Duel.Remove(c,POS_FACEUP,REASON_EFFECT) end
-end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,2000) or Duel.GetTurnPlayer()==tp end
-	if Duel.GetTurnPlayer()~=tp then Duel.PayLPCost(tp,2000) end
+	if chk==0 then return Duel.CheckLPCost(tp,1600) end
+	Duel.PayLPCost(tp,1600)
 end
 function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsPublic() and Duel.GetFlagEffect(tp,11451466)>0 and (Duel.CheckLPCost(tp,2000) or Duel.GetTurnPlayer()==tp) end
+	if chk==0 then return e:GetHandler():IsPublic() and Duel.GetFlagEffect(tp,11451466)>0 and Duel.CheckLPCost(tp,1600) end
 	Duel.ResetFlagEffect(tp,11451466)
-	if Duel.GetTurnPlayer()~=tp then Duel.PayLPCost(tp,2000) end
+	Duel.PayLPCost(tp,1600)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -115,14 +114,18 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_DECK,0,nil,e,tp)
 	local tg=Group.CreateGroup()
 	for sc in aux.Next(sg) do
-		local tc=mg:CheckSubGroup(cm.fselect,1,#mg,cm.lvplus(sc),tp)
+		aux.GCheckAdditional=aux.TRUE
+		local tc=mg:CheckSubGroup(cm.fselect,1,3,cm.lvplus(sc),tp)
+		aux.GCheckAdditional=nil
 		if tc then tg:AddCard(sc) end
 	end
 	if not tg or #tg==0 or not Duel.SelectYesNo(tp,aux.Stringid(11451461,2)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=tg:Select(tp,1,1,nil):GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rg=mg:SelectSubGroup(tp,cm.fselect,false,1,#mg,cm.lvplus(tc),tp)
+	aux.GCheckAdditional=aux.TRUE
+	local rg=mg:SelectSubGroup(tp,cm.fselect,false,1,3,cm.lvplus(tc),tp)
+	aux.GCheckAdditional=nil
 	Card.SetMaterial(tc,rg)
 	local tg=rg:Filter(cm.filter5,nil)
 	if not tg or #tg==0 then

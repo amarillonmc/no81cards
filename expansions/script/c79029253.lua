@@ -37,15 +37,15 @@ function c79029253.tdfil(c,e)
 	return c:IsAbleToHand() and c:IsSetCard(0xa900)
 end
 function c79029253.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return  Duel.GetMatchingGroupCount(c79029253.tdfil,tp,LOCATION_DECK,0,nil,e)>=1 end
-	local g=Duel.SelectMatchingCard(tp,c79029253.tdfil,tp,LOCATION_DECK,0,1,1,nil,e)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.GetMatchingGroupCount(c79029253.tdfil,tp,LOCATION_DECK,0,nil)>=1 end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,0,1,tp,LOCATION_DECK)
 end
 function c79029253.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
+	if Duel.GetMatchingGroupCount(c79029253.tdfil,tp,LOCATION_DECK,0,nil)>0 then
+	local tc=Duel.SelectMatchingCard(tp,c79029253.tdfil,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,tc)  
+	end
 end
 function c79029253.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
@@ -55,13 +55,10 @@ function c79029253.ssfil(c,e)
 	return c:IsSSetable(true) and (c:IsSetCard(0xb90d) or c:IsSetCard(0xc90e))
 end
 function c79029253.sstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return  Duel.GetMatchingGroupCount(c79029253.ssfil,tp,LOCATION_DECK,0,nil,e)>=1 end
-	local g=Duel.SelectMatchingCard(tp,c79029253.ssfil,tp,LOCATION_DECK,0,1,1,nil,e)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_SEARCH,g,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.GetMatchingGroupCount(c79029253.ssfil,tp,LOCATION_DECK,0,nil,e)>=1 end
 end
 function c79029253.ssop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
+	local tc=Duel.SelectMatchingCard(tp,c79029253.ssfil,tp,LOCATION_DECK,0,1,1,nil,e):GetFirst()
 	if Duel.SSet(tp,tc)~=0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)

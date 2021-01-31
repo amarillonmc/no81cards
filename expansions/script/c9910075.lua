@@ -1,4 +1,4 @@
---艾斯特·加拉哈·阿诺兹
+--寻耀之月神
 function c9910075.initial_effect(c)
 	--turn set
 	local e1=Effect.CreateEffect(c)
@@ -26,7 +26,7 @@ function c9910075.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,c,1,0,0)
 end
 function c9910075.thfilter(c)
-	return c:IsCode(9910072) and c:IsAbleToHand()
+	return c:IsSetCard(0x9951) and c:IsLevelAbove(4) and c:IsAbleToHand()
 end
 function c9910075.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

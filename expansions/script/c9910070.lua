@@ -1,7 +1,6 @@
---璞玉雕琢 梅丽尔
+--璞玉雕琢之月神
 function c9910070.initial_effect(c)
 	--fusion material
-	c:SetSPSummonOnce(9910070)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,c9910070.ffilter1,c9910070.ffilter2,true)
 	--spsummon condition
@@ -17,8 +16,8 @@ function c9910070.initial_effect(c)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e2:SetRange(LOCATION_EXTRA)
-	e2:SetCondition(c9910070.spcon)
-	e2:SetOperation(c9910070.spop)
+	e2:SetCondition(c9910070.sprcon)
+	e2:SetOperation(c9910070.sprop)
 	c:RegisterEffect(e2)
 	--tohand
 	local e3=Effect.CreateEffect(c)
@@ -42,20 +41,26 @@ end
 function c9910070.ffilter2(c)
 	return c:IsRace(RACE_FAIRY) and c:IsFusionAttribute(ATTRIBUTE_DARK)
 end
-function c9910070.spfilter(c,fc,tp)
-	return c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK) and c:IsReleasable()
-		and Duel.GetLocationCountFromEx(tp,tp,c,fc)>0 and c:IsCanBeFusionMaterial(fc,SUMMON_TYPE_SPECIAL)
+function c9910070.sprfilter1(c,sc)
+	return c:IsReleasable() and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)
 end
-function c9910070.spcon(e,c)
+function c9910070.sprfilter2(g,tp,sc)
+	return Duel.GetLocationCountFromEx(tp,tp,g,sc)>0
+		and g:IsExists(c9910070.ffilter1,1,nil) and g:IsExists(c9910070.ffilter2,1,nil)
+end
+function c9910070.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(c9910070.sprfilter1,tp,LOCATION_MZONE,0,nil,c)
 	return Duel.GetCustomActivityCount(9910070,tp,ACTIVITY_CHAIN)~=0
-		and Duel.CheckReleaseGroup(tp,c9910070.spfilter,1,nil,c,tp)
+		and g:CheckSubGroup(c9910070.sprfilter2,2,2,tp,c)
 end
-function c9910070.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectReleaseGroup(tp,c9910070.spfilter,1,1,nil,c,tp)
-	c:SetMaterial(g)
-	Duel.Release(g,REASON_COST)
+function c9910070.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=Duel.GetMatchingGroup(c9910070.sprfilter1,tp,LOCATION_MZONE,0,nil,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local sg=g:SelectSubGroup(tp,c9910070.sprfilter2,true,2,2,tp,c)
+	c:SetMaterial(sg)
+	Duel.Release(sg,REASON_COST)
 end
 function c9910070.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end

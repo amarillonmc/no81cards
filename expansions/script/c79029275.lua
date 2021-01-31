@@ -100,12 +100,12 @@ function c79029275.lkop(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 function c79029275.cfilter2(c,e,tp,tc)
-	return c:IsType(TYPE_TUNER) 
+	return c:IsType(TYPE_TUNER) and c:IsAbleToGrave()
 end
 function c79029275.cfilter1(c,e,tp)
 	local g=Duel.GetMatchingGroup(c79029275.cfilter2,tp,LOCATION_DECK,0,nil)
 	local lv=c:GetLevel()
-	return g:CheckWithSumEqual(Card.GetLevel,12-lv,1,99) and not c:IsType(TYPE_TUNER)
+	return g:CheckWithSumEqual(Card.GetLevel,12-lv,1,99) and not c:IsType(TYPE_TUNER) and c:IsAbleToGrave() and c:IsLevelAbove(1)
 end
 function c79029275.sprcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c79029275.cfilter1,tp,LOCATION_DECK,0,1,nil,e,tp)

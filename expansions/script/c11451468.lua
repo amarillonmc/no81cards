@@ -31,15 +31,6 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.scop)
 	c:RegisterEffect(e4)
 end
-function cm.filter(c)
-	return not c:IsReason(REASON_DRAW)
-end
-function cm.filter2(c)
-	return c:IsCode(11451461) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE))
-end
-function cm.filter3(c)
-	return c:IsSetCard(0x97a) and c:IsAbleToHand()
-end
 function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
@@ -61,9 +52,19 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 end
+function cm.filter(c)
+	return not c:IsReason(REASON_DRAW)
+end
+function cm.filter2(c)
+	return c:IsCode(11451460) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE))
+end
+function cm.filter3(c)
+	return c:IsSetCard(0x97a) and c:IsAbleToHand()
+end
 function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=eg:Filter(cm.filter,nil)
+	Duel.HintSelection(g)
 	for tc in aux.Next(g) do
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -71,12 +72,13 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(c)
+		e2:SetDescription(aux.Stringid(11451461,5))
 		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
 		e2:SetCode(EFFECT_CHANGE_CODE)
 		e2:SetRange(LOCATION_HAND)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		e2:SetValue(11451461)
+		e2:SetValue(11451460)
 		tc:RegisterEffect(e2)
 	end
 end

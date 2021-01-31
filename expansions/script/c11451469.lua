@@ -20,11 +20,12 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_CHANGE_CODE)
 	e3:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e3:SetTarget(cm.chtg)
-	e3:SetValue(11451461)
+	e3:SetValue(11451460)
 	e3:SetRange(LOCATION_SZONE)
 	c:RegisterEffect(e3)
 	--special summon
 	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,4))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
@@ -50,11 +51,8 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=re:GetHandler()
 	if re:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		tc:RegisterFlagEffect(m-10,RESET_EVENT+0x1ee0000+RESET_PHASE+PHASE_END,0,2)
+		tc:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
 	end
-end
-function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x97a)
 end
 function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -65,7 +63,7 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CHANGE_CODE)
 	e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e1:SetTarget(cm.chtg)
-	e1:SetValue(11451461)
+	e1:SetValue(11451460)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
@@ -78,6 +76,9 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 		rc:RegisterEffect(e2,true)
 	end
 	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+end
+function cm.filter(c)
+	return c:IsFaceup() and c:IsSetCard(0x97a)
 end
 function cm.chtg(e,c)
 	if c then return c:GetFlagEffect(m-10)>0 and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and c:IsFaceup() end

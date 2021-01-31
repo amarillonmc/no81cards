@@ -45,7 +45,7 @@ end
 function c79029162.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,c79029162.fil,tp,LOCATION_REMOVED,0,1,1,c)
-	Duel.SendtoDeck(g,nil,REASON_COST)
+	Duel.SendtoDeck(g,nil,2,REASON_COST)
 	Debug.Message("那么，请您恭候佳音。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029162,0))
 end

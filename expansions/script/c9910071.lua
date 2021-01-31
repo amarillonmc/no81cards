@@ -1,4 +1,4 @@
---月下花园恋人
+--花前恋人之月神
 function c9910071.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsRace,RACE_FAIRY),1)
@@ -42,40 +42,36 @@ function c9910071.attop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910071.reccost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,Card.IsRace,1,nil,RACE_FAIRY) end
-	local g=Duel.SelectReleaseGroupEx(tp,Card.IsRace,1,2,nil,RACE_FAIRY)
-	local label=g:GetCount()*10
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,Card.IsRace,2,nil,RACE_FAIRY) end
+	local g=Duel.SelectReleaseGroupEx(tp,Card.IsRace,2,2,nil,RACE_FAIRY)
+	local label=0
 	if g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_LIGHT) then label=label+1 end
 	if g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_DARK) then label=label+2 end
 	e:SetLabel(label)
 	Duel.Release(g,REASON_COST)
 end
 function c9910071.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local label=e:GetLabel()
-	local ct1=label//10
-	local ct2=label-ct1*10
+	local ct=e:GetLabel()
 	if chk==0 then return true end
-	if ct2==1 then
+	if ct==1 then
 		e:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH)
-	elseif ct2==2 then
+	elseif ct==2 then
 		e:SetCategory(CATEGORY_RECOVER+CATEGORY_TODECK)
-	elseif ct2==3 then
+	elseif ct==3 then
 		e:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK)
 	end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(ct1*1000)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,ct1*1000)
+	Duel.SetTargetParam(2000)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,2000)
 end
 function c9910071.thfilter(c)
-	return c:IsType(TYPE_TRAP) and c:IsType(TYPE_COUNTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x9951) and c:IsAbleToHand()
 end
 function c9910071.recop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Recover(p,d,REASON_EFFECT)
-	local label=e:GetLabel()
-	local ct1=label//10
-	local ct2=label-ct1*10
-	if (ct2==1 or ct2==3) and Duel.IsExistingMatchingCard(c9910071.thfilter,tp,LOCATION_DECK,0,1,nil)
+	local ct=e:GetLabel()
+	if (ct==1 or ct==3) and Duel.IsExistingMatchingCard(c9910071.thfilter,tp,LOCATION_DECK,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910071,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c9910071.thfilter,tp,LOCATION_DECK,0,1,1,nil)
@@ -84,7 +80,7 @@ function c9910071.recop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,g)
 		end
 	end
-	if (ct2==2 or ct2==3) and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
+	if (ct==2 or ct==3) and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
 		and Duel.SelectYesNo(tp,aux.Stringid(9910071,1)) then
 		local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,1)
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)

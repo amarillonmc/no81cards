@@ -21,6 +21,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetHintTiming(TIMING_ATTACK,0x11e0)
 	e3:SetCountLimit(1,m-40)
 	e3:SetCost(cm.spcost)
 	e3:SetTarget(cm.sptg)
@@ -35,7 +36,7 @@ function cm.lvplus(c)
 	if c:GetLevel()>=1 and c:IsType(TYPE_MONSTER) then return c:GetLevel() else return 2 end
 end
 function cm.filter(c,tp)
-	return c:IsSetCard(0x97a) and c:IsType(TYPE_SPELL) and c:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():IsActivatable(tp,true,true)
+	return c:IsSetCard(0x97a) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function cm.filter2(c)
 	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove()
@@ -57,75 +58,20 @@ function cm.fselect(g,lv,tp)
 	return g:GetSum(cm.lvplus)==lv and g:IsExists(cm.filter4,1,nil) and Duel.GetMZoneCount(tp,g,tp,0,0x1f)>0
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
-	local tg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
-	if tg then
-		local t=tg:GetType()
-		if t==0x2 or t==0x82 or t==0x10002 or t==0x40002 then
-			Duel.MoveToField(tg,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-			Duel.Hint(HINT_CARD,0,tg:GetOriginalCode())
-			local te,ceg,cep,cev,cre,cr,crp=tg:CheckActivateEffect(false,false,true)
-			te:UseCountLimit(tp,1,true)
-			local tep=tg:GetControler()
-			local cost=te:GetCost()
-			local target=te:GetTarget()
-			local operation=te:GetOperation()
-			if t~=0x40002 then tg:CancelToGrave(false) end
-			tg:CreateEffectRelation(te)
-			if cost then cost(te,tep,ceg,cep,cev,cre,cr,crp,1) end
-			if target then target(te,tep,ceg,cep,cev,cre,cr,crp,1) end
-			local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-			if g and g:GetCount()>0 then
-				local fg=g:GetFirst()
-				while fg do
-					fg:CreateEffectRelation(te)
-					fg=g:GetNext()
-				end
-			end
-			tg:SetStatus(STATUS_ACTIVATED,true)
-			if operation then operation(te,tep,ceg,cep,cev,cre,cr,crp) end
-			tg:ReleaseEffectRelation(te)
-			if g and g:GetCount()>0 then
-				fg=g:GetFirst()
-				while fg do
-					fg:ReleaseEffectRelation(te)
-					fg=g:GetNext()
-				end
-			end
-			Duel.RaiseEvent(tg,EVENT_CHAIN_SOLVED,te,0,tp,tp,Duel.GetCurrentChain())
-		elseif t==0x80002 then
-			local te=tg:GetActivateEffect()
-			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-			if fc then
-				Duel.SendtoGrave(fc,REASON_RULE)
-				Duel.BreakEffect()
-			end
-			Duel.MoveToField(tg,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-			te:UseCountLimit(tp,1,true)
-			local tep=tg:GetControler()
-			local cost=te:GetCost()
-			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-			Duel.RaiseEvent(tg,4179255,te,0,tp,tp,Duel.GetCurrentChain())
-			tg:RegisterFlagEffect(m-3,RESET_EVENT+0x1ee0000+RESET_PHASE+PHASE_END,0,2)
-		elseif t==0x20002 then
-			local te=tg:GetActivateEffect()
-			Duel.MoveToField(tg,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-			te:UseCountLimit(tp,1,true)
-			local tep=tg:GetControler()
-			local cost=te:GetCost()
-			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-			tg:RegisterFlagEffect(m-3,RESET_EVENT+0x1ee0000+RESET_PHASE+PHASE_END,0,2)
-		end
-	end
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then Duel.SSet(tp,tc) end
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,2000) or Duel.GetTurnPlayer()==tp end
-	if Duel.GetTurnPlayer()~=tp then Duel.PayLPCost(tp,2000) end
+	if chk==0 then return Duel.CheckLPCost(tp,800) end
+	Duel.PayLPCost(tp,800)
 end
 function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsPublic() and Duel.GetFlagEffect(tp,11451466)>0 and (Duel.CheckLPCost(tp,2000) or Duel.GetTurnPlayer()==tp) end
+	if chk==0 then return e:GetHandler():IsPublic() and Duel.GetFlagEffect(tp,11451466)>0 and Duel.CheckLPCost(tp,800) end
 	Duel.ResetFlagEffect(tp,11451466)
-	if Duel.GetTurnPlayer()~=tp then Duel.PayLPCost(tp,2000) end
+	Duel.PayLPCost(tp,800)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -138,14 +84,18 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_DECK,0,nil,e,tp)
 	local tg=Group.CreateGroup()
 	for sc in aux.Next(sg) do
-		local tc=mg:CheckSubGroup(cm.fselect,1,#mg,cm.lvplus(sc),tp)
+		aux.GCheckAdditional=aux.TRUE
+		local tc=mg:CheckSubGroup(cm.fselect,1,3,cm.lvplus(sc),tp)
+		aux.GCheckAdditional=nil
 		if tc then tg:AddCard(sc) end
 	end
 	if not tg or #tg==0 or not Duel.SelectYesNo(tp,aux.Stringid(11451461,2)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=tg:Select(tp,1,1,nil):GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rg=mg:SelectSubGroup(tp,cm.fselect,false,1,#mg,cm.lvplus(tc),tp)
+	aux.GCheckAdditional=aux.TRUE
+	local rg=mg:SelectSubGroup(tp,cm.fselect,false,1,3,cm.lvplus(tc),tp)
+	aux.GCheckAdditional=nil
 	Card.SetMaterial(tc,rg)
 	local tg=rg:Filter(cm.filter5,nil)
 	if not tg or #tg==0 then

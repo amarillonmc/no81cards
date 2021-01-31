@@ -27,6 +27,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetHintTiming(TIMING_ATTACK,0x11e0)
 	e3:SetCountLimit(1,m-40)
 	e3:SetCost(cm.spcost)
 	e3:SetTarget(cm.sptg)
@@ -39,6 +40,20 @@ function cm.initial_effect(c)
 end
 function cm.lvplus(c)
 	if c:GetLevel()>=1 and c:IsType(TYPE_MONSTER) then return c:GetLevel() else return 2 end
+end
+function cm.filter(c,tp)
+	return c:IsCode(11451460) and c:IsFaceup()
+end
+function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_ONFIELD,nil)
+	if c:GetFlagEffect(m-10)==0 and g and #g>0 then
+		Duel.Hint(HINT_CARD,0,m)
+		c:RegisterFlagEffect(m-10,RESET_CHAIN,0,1)
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
+		local tc=g:Select(1-tp,1,1,nil):GetFirst()
+		Duel.SendtoGrave(tc,REASON_RULE)
+	end
 end
 function cm.filter2(c)
 	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove()
@@ -75,33 +90,23 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil):GetFirst()
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(11451461,5))
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
 	e2:SetCode(EFFECT_CHANGE_CODE)
 	e2:SetRange(LOCATION_ONFIELD)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
-	e2:SetValue(11451461)
+	e2:SetValue(11451460)
 	tc:RegisterEffect(e2)
 end
-function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsCode,tp,0,LOCATION_ONFIELD,nil,11451461)
-	if c:GetFlagEffect(m-10)==0 and g and #g>0 then
-		Duel.Hint(HINT_CARD,0,m)
-		c:RegisterFlagEffect(m-10,RESET_CHAIN,0,1)
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
-		local tc=g:Select(1-tp,1,1,nil):GetFirst()
-		Duel.SendtoGrave(tc,REASON_RULE)
-	end
-end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,2000) or Duel.GetTurnPlayer()==tp end
-	if Duel.GetTurnPlayer()~=tp then Duel.PayLPCost(tp,2000) end
+	if chk==0 then return Duel.CheckLPCost(tp,1200) end
+	Duel.PayLPCost(tp,1200)
 end
 function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsPublic() and Duel.GetFlagEffect(tp,11451466)>0 and (Duel.CheckLPCost(tp,2000) or Duel.GetTurnPlayer()==tp) end
+	if chk==0 then return e:GetHandler():IsPublic() and Duel.GetFlagEffect(tp,11451466)>0 and Duel.CheckLPCost(tp,1200) end
 	Duel.ResetFlagEffect(tp,11451466)
-	if Duel.GetTurnPlayer()~=tp then Duel.PayLPCost(tp,2000) end
+	Duel.PayLPCost(tp,1200)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -114,14 +119,18 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_DECK,0,nil,e,tp)
 	local tg=Group.CreateGroup()
 	for sc in aux.Next(sg) do
-		local tc=mg:CheckSubGroup(cm.fselect,1,#mg,cm.lvplus(sc),tp)
+		aux.GCheckAdditional=aux.TRUE
+		local tc=mg:CheckSubGroup(cm.fselect,1,3,cm.lvplus(sc),tp)
+		aux.GCheckAdditional=nil
 		if tc then tg:AddCard(sc) end
 	end
 	if not tg or #tg==0 or not Duel.SelectYesNo(tp,aux.Stringid(11451461,2)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=tg:Select(tp,1,1,nil):GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rg=mg:SelectSubGroup(tp,cm.fselect,false,1,#mg,cm.lvplus(tc),tp)
+	aux.GCheckAdditional=aux.TRUE
+	local rg=mg:SelectSubGroup(tp,cm.fselect,false,1,3,cm.lvplus(tc),tp)
+	aux.GCheckAdditional=nil
 	Card.SetMaterial(tc,rg)
 	local tg=rg:Filter(cm.filter5,nil)
 	if not tg or #tg==0 then

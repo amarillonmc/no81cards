@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
 	e1:SetCountLimit(1,m)
 	e1:SetCost(cm.chcost)
 	e1:SetOperation(cm.chop)
@@ -25,6 +26,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetHintTiming(TIMING_ATTACK,0x11e0)
 	e3:SetCountLimit(1,m-40)
 	e3:SetCost(cm.spcost)
 	e3:SetTarget(cm.sptg)
@@ -36,10 +38,34 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.lvplus(c)
-	if c:GetLevel()>=1 and c:IsType(TYPE_MONSTER) then return c:GetLevel() else return -2 end
+	if c:GetLevel()>=1 and c:IsType(TYPE_TUNER) and c:IsType(TYPE_MONSTER) then return c:GetLevel() elseif c:GetLevel()>=1 and c:IsType(TYPE_MONSTER) then return -c:GetLevel() else return -2 end
 end
-function cm.filter(c,tp)
-	return c:IsCode(11451461) and aux.disfilter1(c)
+function cm.chtg(e,c)
+	local tc=e:GetLabelObject()
+	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule())
+end
+function cm.caop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_ADD_TYPE)
+	e1:SetTargetRange(0x7f,0x7f)
+	e1:SetTarget(cm.catg)
+	e1:SetLabelObject(tc)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetValue(TYPE_TUNER)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	e2:SetValue(cm.caval)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.catg(e,c)
+	return c:IsCode(11451461) and c:IsType(TYPE_MONSTER)
+end
+function cm.caval(e,c)
+	if c:IsAttribute(ATTRIBUTE_DEVINE) then return 0x7f end
+	return 0x3f
 end
 function cm.filter2(c)
 	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove()
@@ -83,54 +109,32 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.chop2(e,tp,eg,ep,ev,re,r,rp)
 	if re:IsHasCategory(CATEGORY_SPECIAL_SUMMON) then
-		local c=e:GetHandler()
 		local tc=re:GetHandler()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CHANGE_CODE)
-		e1:SetTargetRange(0x7f,0x7f)
-		e1:SetTarget(cm.chtg)
-		e1:SetLabelObject(tc)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetValue(11451461)
-		Duel.RegisterEffect(e1,tp)
+		local g=Duel.GetMatchingGroup(cm.chfilter,0,0xff,0xff,nil,tc)
+		for sc in aux.Next(g) do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(11451461,5))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
+			e1:SetCode(EFFECT_CHANGE_CODE)
+			e1:SetRange(0xff)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			e1:SetValue(11451460)
+			sc:RegisterEffect(e1)
+		end
 	end
 end
-function cm.chtg(e,c)
-	local tc=e:GetLabelObject()
+function cm.chfilter(c,tc)
 	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule())
 end
-function cm.caop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_ADD_TYPE)
-	e1:SetTargetRange(0x7f,0x7f)
-	e1:SetTarget(cm.catg)
-	e1:SetLabelObject(tc)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetValue(TYPE_TUNER)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_CHANGE_ATTRIBUTE)
-	e2:SetValue(cm.caval)
-	Duel.RegisterEffect(e2,tp)
-end
-function cm.catg(e,c)
-	return c:IsCode(11451461) and c:IsType(TYPE_MONSTER)
-end
-function cm.caval(e,c)
-	if c:IsAttribute(ATTRIBUTE_DEVINE) then return 0x7f end
-	return 0x3f
-end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,2000) or Duel.GetTurnPlayer()==tp end
-	if Duel.GetTurnPlayer()~=tp then Duel.PayLPCost(tp,2000) end
+	if chk==0 then return Duel.CheckLPCost(tp,1600) end
+	Duel.PayLPCost(tp,1600)
 end
 function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsPublic() and Duel.GetFlagEffect(tp,11451466)>0 and (Duel.CheckLPCost(tp,2000) or Duel.GetTurnPlayer()==tp) end
+	if chk==0 then return e:GetHandler():IsPublic() and Duel.GetFlagEffect(tp,11451466)>0 and Duel.CheckLPCost(tp,1600) end
 	Duel.ResetFlagEffect(tp,11451466)
-	if Duel.GetTurnPlayer()~=tp then Duel.PayLPCost(tp,2000) end
+	Duel.PayLPCost(tp,1600)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -143,14 +147,18 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_DECK,0,nil,e,tp)
 	local tg=Group.CreateGroup()
 	for sc in aux.Next(sg) do
-		local tc=mg:CheckSubGroup(cm.fselect,1,#mg,cm.lvplus(sc),tp)
+		aux.GCheckAdditional=aux.TRUE
+		local tc=mg:CheckSubGroup(cm.fselect,1,3,cm.lvplus(sc),tp)
+		aux.GCheckAdditional=nil
 		if tc then tg:AddCard(sc) end
 	end
 	if not tg or #tg==0 or not Duel.SelectYesNo(tp,aux.Stringid(11451461,2)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=tg:Select(tp,1,1,nil):GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rg=mg:SelectSubGroup(tp,cm.fselect,false,1,#mg,cm.lvplus(tc),tp)
+	aux.GCheckAdditional=aux.TRUE
+	local rg=mg:SelectSubGroup(tp,cm.fselect,false,1,3,cm.lvplus(tc),tp)
+	aux.GCheckAdditional=nil
 	Card.SetMaterial(tc,rg)
 	local tg=rg:Filter(cm.filter5,nil)
 	if not tg or #tg==0 then

@@ -20,11 +20,12 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_CHANGE_CODE)
 	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e3:SetTarget(cm.chtg)
-	e3:SetValue(11451461)
+	e3:SetValue(11451460)
 	e3:SetRange(LOCATION_SZONE)
 	c:RegisterEffect(e3)
 	--draw
 	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,5))
 	e4:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
@@ -47,16 +48,13 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do
 		if tc:IsPosition(POS_FACEUP_ATTACK) then
-			tc:RegisterFlagEffect(m-10,RESET_EVENT+0x1ee0000+RESET_PHASE+PHASE_END,0,2)
+			tc:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
 		end
 	end
 end
 function cm.filter(c)
 	if Duel.IsPlayerAffectedByEffect(c:GetControler(),11451461) and ((c:IsOnField() and c:IsStatus(STATUS_EFFECT_ENABLED)) or c:IsLocation(LOCATION_HAND)) then return true end
 	return false
-end
-function cm.filter6(c,e)
-	return c:GetFlagEffectLabel(m)==e:GetLabel()
 end
 function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -65,9 +63,9 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CHANGE_CODE)
-	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e1:SetTarget(cm.chtg)
-	e1:SetValue(11451461)
+	e1:SetValue(11451460)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
@@ -80,6 +78,9 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 		rc:RegisterEffect(e2,true)
 	end
 	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+end
+function cm.filter6(c,e)
+	return c:GetFlagEffectLabel(m)==e:GetLabel()
 end
 function cm.chtg(e,c)
 	if c then return c:GetFlagEffect(m-10)>0 and c:IsType(TYPE_MONSTER) and c:IsFaceup() end
@@ -121,12 +122,12 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetOperation(cm.retop2)
 			Duel.RegisterEffect(e2,tp)
 		end
-		if g then
+		if g and #g>0 then
 			local ct2=Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 			ct=ct+ct2
 		end
 		Duel.Draw(p,ct,REASON_EFFECT)
-	elseif g:GetCount()>0 then
+	elseif #g>0 then
 		local ct=Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		Duel.Draw(p,ct,REASON_EFFECT)
 	end

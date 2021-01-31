@@ -69,8 +69,8 @@ end
 function c79029345.chkfil(c)
 	return c:IsSetCard(0xa900) and c:IsType(TYPE_LINK)
 end
-function c79029345.rlfil(c)
-	return c:IsReleasable() and not c:IsType(TYPE_LINK)
+function c79029345.rlfil(c,tp,zone)
+	return c:IsReleasable() and not c:IsType(TYPE_LINK) and Duel.GetMZoneCount(tp,c,tp,LOCATION_REASON_TOFIELD,zone)>0
 end
 function c79029345.checkzone(tp)
 	local zone=0
@@ -84,7 +84,7 @@ function c79029345.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local zone=c79029345.checkzone(tp)
-	return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)>0 and Duel.IsExistingMatchingCard(c79029345.rlfil,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	return Duel.IsExistingMatchingCard(c79029345.rlfil,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,zone)
 end
 function c79029345.spval(e,c)
 	local tp=c:GetControler()
@@ -92,8 +92,9 @@ function c79029345.spval(e,c)
 	return 1,zone
 end
 function c79029345.sprop(e,tp,eg,ep,ev,re,r,rp)
+	local zone=c79029345.checkzone(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local rg=Duel.SelectMatchingCard(tp,c79029345.rlfil,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	local rg=Duel.SelectMatchingCard(tp,c79029345.rlfil,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp,zone)
 	e:GetHandler():SetMaterial(rg)
 	Duel.Release(rg,REASON_COST+REASON_MATERIAL)
 	Debug.Message("视野不错~")

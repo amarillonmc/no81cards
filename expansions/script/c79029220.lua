@@ -44,13 +44,12 @@ end
 function c79029220.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c79029220.sfil,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED,0,2,2,nil,e,tp)
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>=2 and g:CheckSubGroup(c79029220.fselect,2,2) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,2,tp,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,0,2,tp,0)
 end
 function c79029220.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c79029220.sfil,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED,0,2,2,nil,e,tp)
 	local sg=g:SelectSubGroup(tp,c79029220.fselect,false,2,2,e,tp)
-	local tc=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
+	Duel.SpecialSummon(sg,0,tp,tp,true,false,POS_FACEUP)
 end
 function c79029220.acost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

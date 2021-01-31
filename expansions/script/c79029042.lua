@@ -12,12 +12,11 @@ function c79029042.initial_effect(c)
 	--to deck and draw
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
-	e2:SetDescription(aux.Stringid(73594093,1))
+	e2:SetDescription(aux.Stringid(79029042,1))
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,79029042)
 	e2:SetTarget(c79029042.tdtg)
 	e2:SetOperation(c79029042.tdop)
 	c:RegisterEffect(e2)
@@ -53,15 +52,12 @@ function c79029042.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)
 		and Duel.IsExistingTarget(c79029042.filter,tp,LOCATION_GRAVE,0,3,nil) end
 		Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c79029042.filter,tp,LOCATION_GRAVE,0,3,3,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
 function c79029042.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if not tg or tg:FilterCount(Card.IsRelateToEffect,nil,e)~=3 then return end
-	Duel.SendtoDeck(tg,nil,0,REASON_EFFECT,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local xg=Duel.SelectTarget(tp,c79029042.filter,tp,LOCATION_GRAVE,0,3,3,nil)
+	if not xg or xg:FilterCount(Card.IsRelateToEffect,nil,e)~=3 then return end
+	Duel.SendtoDeck(xg,nil,0,REASON_EFFECT)
 	local g=Duel.GetOperatedGroup()
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)

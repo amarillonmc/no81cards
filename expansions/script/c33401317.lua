@@ -99,7 +99,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e1:SetTargetRange(1,0)
 		e1:SetTarget(cm.sumlimit)
-		e1:SetLabel(tc:GetCode())
+		e1:SetLabel(c:GetCode())
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)  
 end

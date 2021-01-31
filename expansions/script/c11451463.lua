@@ -20,6 +20,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetHintTiming(TIMING_ATTACK,0x11e0)
 	e3:SetCountLimit(1,m-40)
 	e3:SetCost(cm.spcost)
 	e3:SetTarget(cm.sptg)
@@ -62,19 +63,20 @@ end
 function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
 	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+	if not tc then return end
 	Duel.ShuffleDeck(tp)
 	Duel.MoveSequence(tc,0)
 	Duel.ConfirmDecktop(tp,1)
 	Duel.Draw(tp,1,REASON_EFFECT)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,2000) or Duel.GetTurnPlayer()==tp end
-	if Duel.GetTurnPlayer()~=tp then Duel.PayLPCost(tp,2000) end
+	if chk==0 then return Duel.CheckLPCost(tp,800) end
+	Duel.PayLPCost(tp,800)
 end
 function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsPublic() and Duel.GetFlagEffect(tp,11451466)>0 and (Duel.CheckLPCost(tp,2000) or Duel.GetTurnPlayer()==tp) end
+	if chk==0 then return e:GetHandler():IsPublic() and Duel.GetFlagEffect(tp,11451466)>0 and Duel.CheckLPCost(tp,800) end
 	Duel.ResetFlagEffect(tp,11451466)
-	if Duel.GetTurnPlayer()~=tp then Duel.PayLPCost(tp,2000) end
+	Duel.PayLPCost(tp,800)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -87,14 +89,18 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_DECK,0,nil,e,tp)
 	local tg=Group.CreateGroup()
 	for sc in aux.Next(sg) do
-		local tc=mg:CheckSubGroup(cm.fselect,1,#mg,cm.lvplus(sc),tp)
+		aux.GCheckAdditional=aux.TRUE
+		local tc=mg:CheckSubGroup(cm.fselect,1,3,cm.lvplus(sc),tp)
+		aux.GCheckAdditional=nil
 		if tc then tg:AddCard(sc) end
 	end
 	if not tg or #tg==0 or not Duel.SelectYesNo(tp,aux.Stringid(11451461,2)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=tg:Select(tp,1,1,nil):GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rg=mg:SelectSubGroup(tp,cm.fselect,false,1,#mg,cm.lvplus(tc),tp)
+	aux.GCheckAdditional=aux.TRUE
+	local rg=mg:SelectSubGroup(tp,cm.fselect,false,1,3,cm.lvplus(tc),tp)
+	aux.GCheckAdditional=nil
 	Card.SetMaterial(tc,rg)
 	local tg=rg:Filter(cm.filter5,nil)
 	if not tg or #tg==0 then

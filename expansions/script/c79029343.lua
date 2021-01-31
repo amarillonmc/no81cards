@@ -1,7 +1,7 @@
 --卡西米尔·近卫干员-鞭刃
 function c79029343.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,c79029333.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,c79029343.lcheck)
 	c:EnableReviveLimit() 
 	--
 	local e1=Effect.CreateEffect(c)
@@ -31,7 +31,7 @@ function c79029343.initial_effect(c)
 	e2:SetValue(c79029343.val)
 	c:RegisterEffect(e2)
 end
-function c79029333.lcheck(g,lc)
+function c79029343.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x1909)
 end
 function c79029343.chcost(e,tp,eg,ep,ev,re,r,rp,chk)

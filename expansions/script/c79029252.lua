@@ -9,7 +9,7 @@ function c79029252.initial_effect(c)
 	e1:SetTarget(c79029252.target)
 	e1:SetOperation(c79029252.activate)
 	c:RegisterEffect(e1)
-	--Activate
+	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_QUICK_O)

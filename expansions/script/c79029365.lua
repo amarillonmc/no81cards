@@ -17,7 +17,7 @@ function c79029365.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCost(c79029365.seqcost)
+	e2:SetCost(c79029365.seqcost1)
 	e2:SetTarget(c79029365.seqtg)
 	e2:SetOperation(c79029365.seqop)
 	c:RegisterEffect(e2)	
@@ -93,6 +93,10 @@ function c79029365.adop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetLabelObject():Reset()
 	e:Reset() 
 end
+function c79029365.seqcost1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
 function c79029365.seqtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil) end
 end
@@ -110,7 +114,7 @@ function c79029365.seqop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029365.seqfil(c,e,seq)
-	return c:GetSequence()==seq 
+	return c:GetSequence()==4-seq 
 	or (c:GetSequence()==5 and e:GetHandler():GetSequence()==1)
 	or (c:GetSequence()==6 and e:GetHandler():GetSequence()==3)
 end

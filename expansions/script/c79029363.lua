@@ -32,7 +32,7 @@ function c79029363.initial_effect(c)
 	c:RegisterEffect(e5)
 	--atk
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(79029363,0))
+	e1:SetDescription(aux.Stringid(79029363,1))
 	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -73,8 +73,8 @@ end
 function c79029363.daop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("行动开始！")
 	Duel.Hint(HINT_SOUND,tp,aux.Stringid(79029363,3))
-	local tc1=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,1,nil,0xa900):GetFirst()
-	local tc2=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst()
+	local tc1=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_MZONE,0,1,1,nil,0xa900):GetFirst()
+	local tc2=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
 	Duel.CalculateDamage(tc1,tc2) 
 end
 

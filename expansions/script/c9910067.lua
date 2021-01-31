@@ -1,70 +1,69 @@
---锦上添花 尤希尔
+--锦上添花之月神
 function c9910067.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,nil,2,2,c9910067.lcheck)
 	c:EnableReviveLimit()
-	--handes
+	aux.AddLinkProcedure(c,c9910067.matfilter,1,1)
+	--change attribute
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_HANDES)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetDescription(aux.Stringid(9910067,0))
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,9910067)
-	e1:SetCondition(c9910067.hacon)
-	e1:SetTarget(c9910067.hatg)
-	e1:SetOperation(c9910067.haop)
+	e1:SetTarget(c9910067.atttg1)
+	e1:SetOperation(c9910067.attop1)
 	c:RegisterEffect(e1)
-	--draw
+	--change attribute
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCountLimit(1,9910068)
+	e2:SetDescription(aux.Stringid(9910067,1))
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c9910067.drcon)
-	e2:SetTarget(c9910067.drtg)
-	e2:SetOperation(c9910067.drop)
+	e2:SetCountLimit(1,9910068)
+	e2:SetTarget(c9910067.atttg2)
+	e2:SetOperation(c9910067.attop2)
 	c:RegisterEffect(e2)
 end
-function c9910067.lcheck(g)
-	return g:IsExists(c9910067.matfilter1,1,nil)
-		and g:IsExists(c9910067.matfilter2,1,nil)
+function c9910067.matfilter(c)
+	return c:IsLevelBelow(4) and c:IsLinkRace(RACE_FAIRY)
 end
-function c9910067.matfilter1(c)
-	return c:IsAttackPos() and c:IsFaceup()
+function c9910067.attfilter1(c)
+	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
-function c9910067.matfilter2(c)
-	return c:IsDefensePos() and c:IsFaceup()
+function c9910067.atttg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910067.attfilter1(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910067.attfilter1,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,c9910067.attfilter1,tp,LOCATION_MZONE,0,1,1,nil)
 end
-function c9910067.hacon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
-end
-function c9910067.hatg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
-end
-function c9910067.haop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
-	if c:IsRelateToEffect(e) and c:IsFaceup() then
-		c:RegisterFlagEffect(9910067,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+function c9910067.attop1(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+		e1:SetValue(ATTRIBUTE_DARK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
 	end
 end
-function c9910067.cfilter(c,lg)
-	return lg:IsContains(c)
+function c9910067.attfilter2(c)
+	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_DARK)
 end
-function c9910067.drcon(e,tp,eg,ep,ev,re,r,rp)
-	local lg=e:GetHandler():GetLinkedGroup()
-	return e:GetHandler():GetFlagEffect(9910067)~=0 and eg:IsExists(c9910067.cfilter,1,nil,lg)
+function c9910067.atttg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910067.attfilter2(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910067.attfilter2,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,c9910067.attfilter2,tp,LOCATION_MZONE,0,1,1,nil)
 end
-function c9910067.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function c9910067.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+function c9910067.attop2(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+		e1:SetValue(ATTRIBUTE_LIGHT)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+	end
 end

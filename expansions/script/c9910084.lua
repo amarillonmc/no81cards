@@ -1,4 +1,4 @@
---凯旋圣女 布琉艾特
+--沐光凯旋之月神
 function c9910084.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -63,8 +63,9 @@ function c9910084.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910084.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)

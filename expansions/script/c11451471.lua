@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_CHANGE_CODE)
 	e3:SetTargetRange(LOCATION_GRAVE,LOCATION_GRAVE)
 	e3:SetTarget(cm.chtg)
-	e3:SetValue(11451461)
+	e3:SetValue(11451460)
 	e3:SetRange(LOCATION_SZONE)
 	c:RegisterEffect(e3)
 	--special summon
@@ -45,12 +45,9 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do
 		if tc:IsReason(REASON_EFFECT) or (tc:IsReason(REASON_COST) and re and re:IsActivated()) then
-			tc:RegisterFlagEffect(m-10,RESET_PHASE+PHASE_END,0,2)
+			tc:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
 		end
 	end
-end
-function cm.filter(c,e,tp)
-	return c:IsSetCard(0x97a) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -61,7 +58,7 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CHANGE_CODE)
 	e1:SetTargetRange(LOCATION_GRAVE,LOCATION_GRAVE)
 	e1:SetTarget(cm.chtg)
-	e1:SetValue(11451461)
+	e1:SetValue(11451460)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
@@ -75,13 +72,15 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 end
+function cm.filter(c,e,tp)
+	return c:IsSetCard(0x97a) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
 function cm.chtg(e,c)
-	if c then return c:GetFlagEffect(m-10)>0 and (c:GetTurnID()==Duel.GetTurnCount() or c:GetTurnID()==Duel.GetTurnCount()-1) end
+	if c then return c:GetFlagEffect(m-10)>0 end
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and cm.filter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_REMOVED,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(cm.filter,tp,LOCATION_REMOVED,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
