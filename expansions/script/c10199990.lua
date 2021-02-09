@@ -397,7 +397,7 @@ end
 function rsef.SV(reg_list,code,val,range,con,reset_list,flag,desc_list,lim_list)
 	local reg_owner,reg_handler=rsef.GetRegisterCard(reg_list)
 	local flag2=rsef.GetRegisterProperty(flag)
-	local flag_list1={ EFFECT_IMMUNE_EFFECT,EFFECT_CANNOT_BE_BATTLE_TARGET,EFFECT_CANNOT_BE_EFFECT_TARGET,EFFECT_CHANGE_CODE,EFFECT_ADD_CODE,EFFECT_CHANGE_RACE,EFFECT_ADD_RACE,EFFECT_CHANGE_ATTRIBUTE,EFFECT_ADD_ATTRIBUTE,EFFECT_UPDATE_ATTACK,EFFECT_UPDATE_DEFENSE,rscode.Utility_Xyz_Material,rscode.Extra_Synchro_Material,rscode.Extra_Xyz_Material,EFFECT_EXTRA_LINK_MATERIAL }
+	local flag_list1={ EFFECT_IMMUNE_EFFECT,EFFECT_CANNOT_BE_BATTLE_TARGET,EFFECT_CANNOT_BE_EFFECT_TARGET,EFFECT_CHANGE_CODE,EFFECT_ADD_CODE,EFFECT_CHANGE_RACE,EFFECT_ADD_RACE,EFFECT_CHANGE_ATTRIBUTE,EFFECT_ADD_ATTRIBUTE,EFFECT_UPDATE_ATTACK,EFFECT_UPDATE_DEFENSE,rscode.Utility_Xyz_Material,rscode.Extra_Synchro_Material,rscode.Extra_Xyz_Material,EFFECT_EXTRA_LINK_MATERIAL,EFFECT_INDESTRUCTABLE,EFFECT_INDESTRUCTABLE_BATTLE,EFFECT_INDESTRUCTABLE_COUNT,EFFECT_INDESTRUCTABLE_EFFECT }
 	local flag_list2={ EFFECT_CHANGE_LEVEL,EFFECT_CHANGE_RANK,EFFECT_UPDATE_LEVEL,EFFECT_UPDATE_RANK }
 	local tf1=rsof.Table_List(flag_list1,code)
 	local tf2=rsof.Table_List(flag_list2,code)
@@ -3476,21 +3476,26 @@ function rscf.DefineCard(code,setcode)
 	return code,ccodem
 end
 --Card function: rsxx.IsXSetXX
-function rscf.DefineSet(setmeta,seriesstring,suffix)
+function rscf.DefineSet(setmeta,seriesstring,type_int)
 	local prefixlist1={"","Fus","Link","Pre","Ori"} 
 	local prefixlist1_fun={"","Fusion","Link","Previous","Original"}
 	local prefixlist2={"","M","S","T","ST"} 
 	local prefixlist2_fun={ nil,TYPE_MONSTER,TYPE_SPELL,TYPE_TRAP,TYPE_SPELL+TYPE_TRAP }
-	suffix=suffix or "" 
+	local suffixlist1={"","_th","_tg","_td","_rm","_sp1","_sp2"}
+	local suffixlist1_fun={ nil,Card.IsAbleToHand,Card.IsAbleToGrave,Card.IsAbleToDeck,Card.IsAbleToRemove,rscf.spfilter(),rscf.spfilter2}
+	type_int=type_int or "" 
 	for idx1,prefix1 in pairs(prefixlist1) do 
 		for idx2,prefix2 in pairs(prefixlist2) do
-			setmeta["Is"..prefix1.."Set"..prefix2..suffix]=rscf.DefineSet_Fun(prefixlist1_fun[idx1],prefixlist2_fun[idx2],seriesstring)
+			for idx3,suffix1 in pairs(suffixlist1) do 
+				setmeta["Is"..prefix1.."Set"..prefix2..type_int..suffix1]=rscf.DefineSet_Fun(prefixlist1_fun[idx1],prefixlist2_fun[idx2],suffixlist1_fun[idx3],seriesstring)
+			end
 		end
 	end
 end
-function rscf.DefineSet_Fun(prefix1,prefix2,seriesstring)
-	return function(c)
+function rscf.DefineSet_Fun(prefix1,prefix2,suffix1,seriesstring)
+	return function(c,...)
 		return rscf["Check"..prefix1.."SetCard"](c,seriesstring) and (not prefix2 or c:IsType(prefix2))
+			and (not suffix1 or suffix1(c,...))
 	end
 end
 --Register qucik attribute buff in cards
