@@ -113,3 +113,15 @@ function c33711010.drawop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e2,tp)
 	e:Reset()
 end
+
+
+
+
+
+
+
+
+
+
+
+

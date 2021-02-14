@@ -1,9 +1,9 @@
 --陈·赤龙绝影
 function c29065583.initial_effect(c)
 	aux.AddCodeList(c,29065582)
-	c:EnableCounterPermit(0x87ae)
+	c:EnableCounterPermit(0x11ae)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x87af),8,2)
+	aux.AddXyzProcedure(c,nil,8,2)
 	c:EnableReviveLimit()
 	--lv change
 	local e1=Effect.CreateEffect(c)
@@ -42,10 +42,9 @@ function c29065583.initial_effect(c)
 	local e6=Effect.CreateEffect(c)
 	e6:SetCategory(CATEGORY_DISABLE+CATEGORY_REMOVE)	
 	e6:SetType(EFFECT_TYPE_QUICK_O)  
-	e6:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e6:SetRange(LOCATION_MZONE)  
 	e6:SetCode(EVENT_CHAINING) 
-	e6:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
+	e6:SetProperty(EFFECT_FLAG_NO_TURN_RESET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e6:SetTarget(c29065583.target) 
 	e6:SetCondition(c29065583.condition)	
 	e6:SetOperation(c29065583.activate) 
@@ -59,7 +58,7 @@ function c29065583.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c29065583.lvtg(e,c)
-	return c:IsLevelAbove(1) and c:GetCounter(0x87ae)>0 and c:IsSetCard(0x87af)
+	return c:IsLevelAbove(1) and c:GetCounter(0x11ae)>0 and c:IsSetCard(0x87af)
 end
 function c29065583.lvval(e,c,rc)
 	local lv=c:GetLevel()

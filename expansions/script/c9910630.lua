@@ -79,7 +79,7 @@ end
 function c9910630.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(c9910630.sprfilter1,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=g:SelectSubGroup(tp,c9910630.sprfilter2,true,3,3,tp,c)
+	local sg=g:SelectSubGroup(tp,c9910630.sprfilter2,false,3,3,tp,c)
 	c:SetMaterial(sg)
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
 end

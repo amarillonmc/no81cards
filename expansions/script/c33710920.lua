@@ -32,16 +32,17 @@ function c33710920.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Filter(c33710920.filter1,nil,e)
 	local sg1=Duel.GetMatchingGroup(c33710920.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
-	if sg1:GetCount()>0then
+	if sg1:GetCount()>0 then
 		local sg=sg1:Clone()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=sg:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
+		local c=e:GetHandler()
 		if sg1:IsContains(tc) then
 			local mat1=mg1:SelectSubGroup(tp,c33710920.filter3,true,1,mg1:GetCount(),tp,tc,e)
 			Duel.Remove(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
-			Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
+			Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetCategory(CATEGORY_ATKCHANGE)
 			e1:SetType(EFFECT_TYPE_SINGLE)
@@ -56,6 +57,17 @@ function c33710920.activate(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetValue(mat1:GetSum(Card.GetDefense))   
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e2,true)
+			local e1_1=Effect.CreateEffect(c)
+			e1_1:SetType(EFFECT_TYPE_SINGLE)
+			e1_1:SetCode(EFFECT_DISABLE)
+			e1_1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1_1)
+			local e2_1=Effect.CreateEffect(c)
+			e2_1:SetType(EFFECT_TYPE_SINGLE)
+			e2_1:SetCode(EFFECT_DISABLE_EFFECT)
+			e2_1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2_1)
 		end
+		Duel.SpecialSummonComplete()
 	end
 end

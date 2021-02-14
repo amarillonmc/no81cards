@@ -1,8 +1,8 @@
 --煌·沸腾爆裂
 function c29065585.initial_effect(c)
-	c:EnableCounterPermit(0x87ae)
+	c:EnableCounterPermit(0x11ae)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x87af),8,2)
+	aux.AddXyzProcedure(c,nil,8,2)
 	c:EnableReviveLimit()
 	--lv change
 	local e1=Effect.CreateEffect(c)
@@ -55,7 +55,7 @@ function c29065585.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c29065585.lvtg(e,c)
-	return c:IsLevelAbove(1) and c:GetCounter(0x87ae)>0 and c:IsSetCard(0x87af)
+	return c:IsLevelAbove(1) and c:GetCounter(0x11ae)>0 and c:IsSetCard(0x87af)
 end
 function c29065585.lvval(e,c,rc)
 	local lv=c:GetLevel()

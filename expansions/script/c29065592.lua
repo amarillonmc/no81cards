@@ -1,7 +1,7 @@
 --方舟骑士·暴行
 function c29065592.initial_effect(c)
 	c:SetSPSummonOnce(29065592)
-	c:EnableCounterPermit(0x87ae)
+	c:EnableCounterPermit(0x11ae)
 	--link summon
 	aux.AddLinkProcedure(c,c29065592.mfilter,1,1)
 	c:EnableReviveLimit()  

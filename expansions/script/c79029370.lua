@@ -139,7 +139,8 @@ function c79029370.rpfil(c)
 	return c:IsSetCard(0xc90e) and c:IsAbleToHand()
 end
 function c79029370.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029370.rpfil,tp,LOCATION_DECK,0,1,nil) end
+	local c=e:GetHandler()
+	if chk==0 then return c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE) and Duel.IsExistingMatchingCard(c79029370.rpfil,tp,LOCATION_DECK,0,1,nil) end
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
 function c79029370.repop(e,tp,eg,ep,ev,re,r,rp)

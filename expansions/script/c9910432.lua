@@ -1,46 +1,88 @@
---阿消
+--庇护天马
 function c9910432.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,nil,2,2)
+	aux.AddLinkProcedure(c,nil,2)
 	c:EnableReviveLimit()
-	--Draw
+	--immune
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,9910432)
-	e1:SetTarget(c9910432.target)
-	e1:SetOperation(c9910432.operation)
+	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1:SetTarget(c9910432.indtg)
+	e1:SetValue(c9910432.efilter)
 	c:RegisterEffect(e1)
-	--spsummon bgm
-	local e8=Effect.CreateEffect(c)
-	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e8:SetOperation(c9910432.sumsuc)
-	c:RegisterEffect(e8)
+	--change battle target
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_BE_BATTLE_TARGET)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,9910432)
+	e2:SetTarget(c9910432.cbtg)
+	e2:SetOperation(c9910432.cbop)
+	c:RegisterEffect(e2)
+	--change effect target
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1,9910432)
+	e3:SetCondition(c9910432.cecon)
+	e3:SetTarget(c9910432.cetg)
+	e3:SetOperation(c9910432.ceop)
+	c:RegisterEffect(e3)
 end
-function c9910432.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(9910432,0))
+function c9910432.indtg(e,c)
+	return e:GetHandler():GetLinkedGroup():IsContains(c)
 end
-function c9910432.tgfilter(c,lg,tp)
-	return lg:IsContains(c) and c:IsAbleToHand()
-		and not Duel.IsExistingMatchingCard(c9910432.gyfilter,tp,0,LOCATION_ONFIELD,1,nil,c:GetColumnGroup())
+function c9910432.efilter(e,te)
+	local tp=e:GetHandlerPlayer()
+	if not te:IsActivated() then return false end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	return not g or not g:IsExists(Card.IsLocation,1,nil,LOCATION_ONFIELD)
 end
-function c9910432.gyfilter(c,g)
-	return g:IsContains(c)
+function c9910432.cbtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local ag=Duel.GetAttacker():GetAttackableTarget()
+	local at=Duel.GetAttackTarget()
+	ag:RemoveCard(at)
+	if chk==0 then return Duel.GetAttacker():IsControler(1-tp) and at:IsControler(tp) and ag:IsContains(c) end
 end
-function c9910432.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local lg=e:GetHandler():GetLinkedGroup()
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c9910432.tgfilter(chkc,lg,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c9910432.tgfilter,tp,0,LOCATION_MZONE,1,nil,lg,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,c9910432.tgfilter,tp,0,LOCATION_MZONE,1,1,nil,lg,tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)	
+function c9910432.cbop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) or Duel.GetAttacker():IsImmuneToEffect(e)
+		or not Duel.ChangeAttackTarget(c) then return false end
+	local g=Duel.GetMatchingGroup(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,nil,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910432,0)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tc=g:Select(tp,1,1,nil):GetFirst()
+		Duel.LinkSummon(tp,tc,nil)
+	end
 end
-function c9910432.operation(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) or Duel.IsExistingMatchingCard(c9910432.gyfilter,tp,0,LOCATION_ONFIELD,1,nil,tc:GetColumnGroup()) then return end
-	Duel.SendtoHand(tc,nil,REASON_EFFECT)
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(9910432,1))
+function c9910432.cfilter(c,tp)
+	return c:IsOnField() and c:IsControler(tp)
+end
+function c9910432.cecon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if rp~=1-tp or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	return g:IsExists(c9910432.cfilter,1,nil,tp) and not g:IsContains(c)
+end
+function c9910432.cetg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.CheckChainTarget(ev,c) end
+end
+function c9910432.ceop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) or not Duel.GetAttacker():IsImmuneToEffect(e) then
+		Duel.ChangeTargetCard(ev,Group.FromCards(c))
+	end
+	local g=Duel.GetMatchingGroup(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,nil,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910432,0)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tc=g:Select(tp,1,1,nil):GetFirst()
+		Duel.LinkSummon(tp,tc,nil)
+	end
 end

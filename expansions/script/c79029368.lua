@@ -63,6 +63,12 @@ function c79029368.zop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	Duel.RegisterEffect(e2,tp)
+	local flag=Duel.GetFlagEffectLabel(tp,79029368)
+	if flag==nil then 
+	Duel.RegisterFlagEffect(tp,79029368,0,0,1,0,0)
+	else
+	Duel.SetFlagEffectLabel(tp,79029368,0)
+	end
 end
 function c79029368.fil(c,seq)
 	return c:GetSequence()==seq and c:IsAbleToHand()
@@ -71,10 +77,12 @@ function c79029368.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local seq=e:GetLabel()
 	if not eg:Filter(Card.IsControler,nil,1-tp):IsExists(c79029368.fil,1,nil,seq) then return end 
 	local tc=eg:GetFirst()
-	return eg:Filter(Card.IsControler,nil,1-tp):IsExists(c79029368.fil,1,nil,seq) 
+	local flag=Duel.GetFlagEffectLabel(tp,79029368)
+	return eg:Filter(Card.IsControler,nil,1-tp):IsExists(c79029368.fil,1,nil,seq)  and flag~=nil  
 end
 function c79029368.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,79029368)==0 then
+	local flag=Duel.GetFlagEffectLabel(tp,79029368)
+	if flag==0 then
 	Debug.Message("你们在看哪里呢。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029368,1))
 	Duel.Hint(HINT_CARD,0,79029368)
@@ -83,9 +91,7 @@ function c79029368.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=xg:GetFirst()
 	Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	Duel.Damage(1-tp,tc:GetAttack(),REASON_EFFECT)
-	Duel.RegisterFlagEffect(tp,79029368,0,0,0)
-	else
-	Duel.ResetFlagEffect(tp,79029368)
+	Duel.SetFlagEffectLabel(tp,79029368,flag+1)
 	end
 	e:Reset()
 end  

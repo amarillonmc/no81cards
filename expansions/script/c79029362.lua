@@ -54,8 +54,9 @@ function c79029362.xxfil(c)
 	 return c:IsType(TYPE_TRAP) and c:IsSetCard(0x1904)
 end
 function c79029362.bgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	 local x=Duel.GetMatchingGroupCount(c79029362.xxfil,tp,LOCATION_GRAVE,0,nil)
-	 if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=x end
+	 local c=e:GetHandler()
+	 local x=Duel.GetMatchingGroupCount(c79029362.xxfil,tp,LOCATION_GRAVE,0,c)
+	 if chk==0 then return x>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=x end
 end
 function c79029362.ccfil(c,e,tp)
 	 return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x1904)

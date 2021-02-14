@@ -1,6 +1,6 @@
 --塔露拉·不死的黑蛇
 function c29065573.initial_effect(c)
-	c:EnableCounterPermit(0x87ae)
+	c:EnableCounterPermit(0x11ae)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunFunRep(c,c29065573.fusfilter1,aux.FilterBoolFunction(Card.IsRace,RACE_FIEND),2,99,true) 
@@ -19,8 +19,8 @@ function c29065573.initial_effect(c)
 	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_F)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_CUSTOM+29065573)
 	e2:SetCountLimit(1,19065573)

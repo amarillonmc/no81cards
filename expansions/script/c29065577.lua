@@ -1,7 +1,7 @@
 --方舟骑士.阿米娅
 function c29065577.initial_effect(c)
 	aux.AddCodeList(c,29065577)
-	c:EnableCounterPermit(0x87ae)
+	c:EnableCounterPermit(0x11ae)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29065577,0))
@@ -44,11 +44,11 @@ function c29065577.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c29065577.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x87ae,1,REASON_COST) or Duel.IsPlayerAffectedByEffect(tp,29065592) end
-	if Duel.IsPlayerAffectedByEffect(tp,29065592) and (not Duel.IsCanRemoveCounter(tp,1,0,0x87ae,1,REASON_COST) or Duel.SelectYesNo(tp,aux.Stringid(29065592,0))) then
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x11ae,1,REASON_COST) or Duel.IsPlayerAffectedByEffect(tp,29065592) end
+	if Duel.IsPlayerAffectedByEffect(tp,29065592) and (not Duel.IsCanRemoveCounter(tp,1,0,0x11ae,1,REASON_COST) or Duel.SelectYesNo(tp,aux.Stringid(29065592,0))) then
 	Duel.RegisterFlagEffect(tp,29065592,RESET_PHASE+PHASE_END,0,1)
 	else
-	Duel.RemoveCounter(tp,1,0,0x87ae,1,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x11ae,1,REASON_COST)
 	end
 end
 function c29065577.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -98,7 +98,7 @@ function c29065577.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) 
 end 
 function c29065577.thfilter(c)
-	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x87ae,1)
+	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x11ae,1)
  end 
 function c29065577.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
  if chk==0 then return Duel.IsExistingMatchingCard(c29065577.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end 
@@ -110,5 +110,5 @@ end
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	tc:AddCounter(0x87ae,n)
+	tc:AddCounter(0x11ae,n)
 end

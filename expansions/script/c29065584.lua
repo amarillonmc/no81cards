@@ -1,6 +1,6 @@
 --方舟骑士·煌
 function c29065584.initial_effect(c)
-	c:EnableCounterPermit(0x87ae)
+	c:EnableCounterPermit(0x11ae)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
@@ -41,16 +41,24 @@ function c29065584.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,n,0,0x87ae)
+	local op=0
+	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,29065577) then
+	op=1
+	else
+	op=0
+	end
+	e:SetLabel(op)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,n,0,0x11ae)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c29065584.spop1(e,tp,eg,ep,ev,re,r,rp)
+	local op=e:GetLabel()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c29065584.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,29065577) and Duel.IsExistingMatchingCard(c29065584.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(29065584,0)) then
+	if op==1 and Duel.IsExistingMatchingCard(c29065584.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(29065584,0)) then
 	local xc=Duel.SelectMatchingCard(tp,c29065584.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
 	Duel.SpecialSummon(xc,0,tp,tp,false,false,POS_FACEUP) 
 	g:AddCard(xc)   
@@ -62,17 +70,17 @@ function c29065584.spop1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	tc:AddCounter(0x87ae,n)
+	tc:AddCounter(0x11ae,n)
 	tc=g:GetNext()
 	end
 	end
 end
 function c29065584.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x87ae,2,REASON_COST) or Duel.IsPlayerAffectedByEffect(tp,29065592) end
-	if Duel.IsPlayerAffectedByEffect(tp,29065592) and (not Duel.IsCanRemoveCounter(tp,1,0,0x87ae,2,REASON_COST) or Duel.SelectYesNo(tp,aux.Stringid(29065592,0))) then
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x11ae,2,REASON_COST) or Duel.IsPlayerAffectedByEffect(tp,29065592) end
+	if Duel.IsPlayerAffectedByEffect(tp,29065592) and (not Duel.IsCanRemoveCounter(tp,1,0,0x11ae,2,REASON_COST) or Duel.SelectYesNo(tp,aux.Stringid(29065592,0))) then
 	Duel.RegisterFlagEffect(tp,29065592,RESET_PHASE+PHASE_END,0,1)
 	else
-	Duel.RemoveCounter(tp,1,0,0x87ae,2,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x11ae,2,REASON_COST)
 	end
 end
 function c29065584.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

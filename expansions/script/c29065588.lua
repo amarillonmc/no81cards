@@ -1,6 +1,6 @@
 --方舟骑士·克洛丝
 function c29065588.initial_effect(c)
-	c:EnableCounterPermit(0x87ae)
+	c:EnableCounterPermit(0x11ae)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29065588,0))
@@ -84,7 +84,7 @@ function c29065588.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c29065588.thfilter(c)
-	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x87ae,1)
+	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x11ae,1)
 end
 function c29065588.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 if chk==0 then return Duel.IsExistingMatchingCard(c29065588.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end
@@ -96,7 +96,7 @@ function c29065588.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	tc:AddCounter(0x87ae,n)
+	tc:AddCounter(0x11ae,n)
 end
 
 

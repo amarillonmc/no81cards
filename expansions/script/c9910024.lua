@@ -71,7 +71,7 @@ function c9910024.retop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,tp,REASON_EFFECT)
 	end
 	if lab==LOCATION_GRAVE then
-		Duel.SendtoGrave(tc,REASON_EFFECT)
+		Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
 	end
 end
 function c9910024.target(e,tp,eg,ep,ev,re,r,rp,chk)

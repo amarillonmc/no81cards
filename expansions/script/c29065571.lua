@@ -1,7 +1,7 @@
 --
 function c29065571.initial_effect(c) 
 	aux.AddCodeList(c,29065577)
-	c:EnableCounterPermit(0x87ae)   
+	c:EnableCounterPermit(0x11ae)   
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFun(c,29065577,c29065571.fusfilter,1,false,false)
@@ -33,11 +33,10 @@ function c29065571.initial_effect(c)
 	--disable
 	local e6=Effect.CreateEffect(c)
 	e6:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)  
-	e6:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)  
 	e6:SetType(EFFECT_TYPE_QUICK_O)  
 	e6:SetRange(LOCATION_MZONE)  
 	e6:SetCode(EVENT_CHAINING) 
-	e6:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
+	e6:SetProperty(EFFECT_FLAG_NO_TURN_RESET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e6:SetTarget(c29065571.target) 
 	e6:SetCondition(c29065571.condition)	
 	e6:SetOperation(c29065571.activate) 

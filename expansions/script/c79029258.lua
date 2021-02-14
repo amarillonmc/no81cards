@@ -50,15 +50,15 @@ function c79029258.thfil(c)
 end
 function c79029258.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029258.thfil,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c79029258.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c79029258.thfil,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()<=0 then return end
 	Debug.Message("不会退缩。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029258,0))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,c79029258.thfil,tp,LOCATION_DECK,0,1,1,nil)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
-end
-function c79029258.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
+	local tc=g:Select(tp,1,1,nil):GetFirst()
 	Duel.SendtoHand(tc,tp,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,tc)
 end

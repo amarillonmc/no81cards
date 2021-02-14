@@ -12,7 +12,7 @@ function c9910525.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910525.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsChainDisablable(ev) and re:IsActiveType(TYPE_MONSTER)
+	return re:GetHandler():IsOnField() and Duel.IsChainDisablable(ev) and re:IsActiveType(TYPE_MONSTER)
 end
 function c9910525.atkfilter(c)
 	return c:IsFaceup() and c:GetAttack()>c:GetBaseAttack()
@@ -36,7 +36,7 @@ function c9910525.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910525.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=re:GetHandler()
-	if not tc:IsLevelAbove(1) then return false end
+	if not tc:IsLevelAbove(1) or not tc:IsRelateToEffect(re) then return end
 	local lv=tc:GetLevel()
 	local atkg=Duel.GetMatchingGroup(c9910525.atkfilter2,tp,LOCATION_MZONE,0,nil,e)
 	if not atkg:CheckWithSumGreater(c9910525.atkdiff,lv*100,1,99) then return end

@@ -1,6 +1,6 @@
 --方舟骑士·风笛
 function c29065580.initial_effect(c)
-	c:EnableCounterPermit(0x87ae)
+	c:EnableCounterPermit(0x11ae)
 	c:SetSPSummonOnce(29065580)
 	--link summon
 	c:EnableReviveLimit()
@@ -32,12 +32,12 @@ function c29065580.initial_effect(c)
 	e2:SetCode(29065580)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,1)
+	e2:SetTargetRange(1,0)
 	c:RegisterEffect(e2)   
 end
 
 function c29065580.thfilter(c)
-	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x87ae,2)
+	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x11ae,2)
 end
 function c29065580.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToExtraAsCost() end
@@ -53,10 +53,10 @@ function c29065580.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	tc:AddCounter(0x87ae,n)
+	tc:AddCounter(0x11ae,n)
 end
 function c29065580.cocon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsCanAddCounter(0x87ae,1) and e:GetHandler():IsRelateToBattle()
+	return e:GetHandler():IsCanAddCounter(0x11ae,1) and e:GetHandler():IsRelateToBattle()
 end
 function c29065580.coop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -64,7 +64,7 @@ function c29065580.coop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	c:AddCounter(0x87ae,n)
+	c:AddCounter(0x11ae,n)
 end
 
 

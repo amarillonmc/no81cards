@@ -38,7 +38,7 @@ function c9910294.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<4 then return end
 	Duel.ConfirmDecktop(tp,4)
 	local g=Duel.GetDecktopGroup(tp,4):Filter(Card.IsType,nil,TYPE_PENDULUM)
-	if not g:IsExists(c9910294.tgfilter,1,nil) then return end
+	if not g:IsExists(c9910294.tgfilter,1,nil) then Duel.ShuffleDeck(tp) return end
 	if Duel.GetFlagEffect(tp,9910494)==0 and Duel.SelectYesNo(tp,aux.Stringid(9910294,4)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local sg0=g:FilterSelect(tp,c9910294.tgfilter,1,1,nil)
@@ -46,7 +46,7 @@ function c9910294.operation(e,tp,eg,ep,ev,re,r,rp)
 		g:Sub(sg0)
 		Duel.RegisterFlagEffect(tp,9910494,RESET_PHASE+PHASE_END,0,1)
 	end
-	if Duel.GetFlagEffect(tp,9910494)==0 or g:GetCount()==0 then return end
+	if Duel.GetFlagEffect(tp,9910494)==0 or g:GetCount()==0 then Duel.ShuffleDeck(tp) return end
 	if Duel.GetFlagEffect(tp,9910495)==0 and Duel.SelectYesNo(tp,aux.Stringid(9910294,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910294,3))
 		local sg1=g:Select(tp,1,1,nil)
@@ -54,7 +54,7 @@ function c9910294.operation(e,tp,eg,ep,ev,re,r,rp)
 		g:Sub(sg1)
 		Duel.RegisterFlagEffect(tp,9910495,RESET_PHASE+PHASE_END,0,1)
 	end
-	if Duel.GetFlagEffect(tp,9910495)==0 or not g:IsExists(c9910294.thfilter,1,nil) then return end
+	if Duel.GetFlagEffect(tp,9910495)==0 or not g:IsExists(c9910294.thfilter,1,nil) then Duel.ShuffleDeck(tp) return end
 	if Duel.GetFlagEffect(tp,9910496)==0 and Duel.SelectYesNo(tp,aux.Stringid(9910294,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg2=g:FilterSelect(tp,c9910294.thfilter,1,1,nil)
@@ -64,7 +64,7 @@ function c9910294.operation(e,tp,eg,ep,ev,re,r,rp)
 		g:Sub(sg2)
 		Duel.RegisterFlagEffect(tp,9910496,RESET_PHASE+PHASE_END,0,1)
 	end
-	if Duel.GetFlagEffect(tp,9910496)==0 or not g:IsExists(c9910294.spfilter,1,nil,e,tp) then return end
+	if Duel.GetFlagEffect(tp,9910496)==0 or not g:IsExists(c9910294.spfilter,1,nil,e,tp) then Duel.ShuffleDeck(tp) return end
 	if Duel.GetFlagEffect(tp,9910497)==0 and Duel.SelectYesNo(tp,aux.Stringid(9910294,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg3=g:FilterSelect(tp,c9910294.spfilter,1,1,nil,e,tp)

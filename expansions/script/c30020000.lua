@@ -181,6 +181,7 @@ function c30020000.penop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(c30020000.efilterx)
 	tc1:RegisterEffect(e1)
+Duel.SpecialSummonComplete()
 	tc1=msg1:GetNext() 
 	end
 	local tc2=msg2:GetFirst()
@@ -211,7 +212,7 @@ function c30020000.xsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),tp,0)
 end
 function c30020000.efilterx(e,te)
-	return te:GetOwner()~=e:GetOwner()
+	return te:GetOwner()~=e:GetOwner() and  te:GetOwner()~=e:GetHandler()
 end
 function c30020000.qstconx(e)
 	return Duel.IsExistingMatchingCard(Card.IsCode,e:GetHandlerPlayer(),LOCATION_PZONE,0,1,e:GetHandler(),30010000) and Duel.GetTurnPlayer()~=tp
@@ -232,15 +233,3 @@ function c30020000.winop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Win(tp,WIN_REASON_XIEHUN)
 	end
 end
-
-
-
-
-
-
-
-
-
-
-
-

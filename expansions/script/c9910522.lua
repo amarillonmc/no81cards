@@ -59,7 +59,8 @@ function c9910522.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910522.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xa950)
+	return c:IsFaceup() and c:IsSetCard(0xa950) and c:IsStatus(STATUS_EFFECT_ENABLED)
+		and not c:IsStatus(STATUS_LEAVE_CONFIRMED)
 end
 function c9910522.atkval(e,c)
 	local tp=c:GetControler()

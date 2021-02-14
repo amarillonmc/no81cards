@@ -40,7 +40,7 @@ end
 function c29065595.fcheck(c,g) 
 	return g:IsExists(Card.IsOriginalCodeRule,1,c,c:GetOriginalCodeRule()) 
 end 
-function c29065595.fselect(g) 	
+function c29065595.fselect(g)   
 return not g:IsExists(c29065595.fcheck,1,nil,g) and g:IsExists(c29065595.thfil2,1,nil)
 end
 function c29065595.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -49,7 +49,7 @@ function c29065595.activate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>=1 then
 	local hg=Duel.GetMatchingGroup(c29065595.thfil,tp,LOCATION_DECK,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=hg:SelectSubGroup(tp,c29065595.fselect,false,2,2,e,tp)
+	local sg=hg:SelectSubGroup(tp,c29065595.fselect,false,2,2,e,tp)
 	Duel.SendtoHand(sg,tp,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,sg)
 	if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 and Duel.IsExistingMatchingCard(c29065595.spfil,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(29065595,0)) then

@@ -64,10 +64,10 @@ function c79029350.splimit1(e,c,tp,sumtp,sumpos)
 end
 function c79029350.filter(c)
 	local lv=c:GetLevel()
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove() and Duel.IsExistingTarget(c79029350.zfilter,tp,LOCATION_GRAVE,0,1,nil,lv)
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove() and Duel.IsExistingTarget(c79029350.zfilter,tp,LOCATION_GRAVE,0,1,nil,lv) and c:IsLevelAbove(1)
 end
 function c79029350.zfilter(c,lv)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove() and c:GetLevel()==lv 
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove() and c:GetLevel()==lv and c:IsLevelAbove(1)
 end
 function c79029350.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c79029350.filter,tp,0,LOCATION_GRAVE,1,nil) end

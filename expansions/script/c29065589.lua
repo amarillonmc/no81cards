@@ -1,6 +1,6 @@
 --方舟骑士·芬
 function c29065589.initial_effect(c)
-	c:EnableCounterPermit(0x87ae)
+	c:EnableCounterPermit(0x11ae)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -50,7 +50,7 @@ function c29065589.spcon(e,c)
 		Duel.IsExistingMatchingCard(c29065589.filter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
 function c29065589.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanAddCounter(0x87ae,1) end
+	if chk==0 then return e:GetHandler():IsCanAddCounter(0x11ae,1) end
 end
 function c29065589.ctop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then  
@@ -58,14 +58,14 @@ function c29065589.ctop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	e:GetHandler():AddCounter(0x87ae,n)
+	e:GetHandler():AddCounter(0x11ae,n)
 	end
 end
 function c29065589.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c29065589.thfilter(c)
-	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x87ae,1)
+	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x11ae,1)
 end
 function c29065589.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29065589.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end
@@ -77,7 +77,7 @@ function c29065589.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	tc:AddCounter(0x87ae,n)
+	tc:AddCounter(0x11ae,n)
 end
 
 

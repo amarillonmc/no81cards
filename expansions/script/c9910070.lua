@@ -57,8 +57,8 @@ function c9910070.sprcon(e,c)
 end
 function c9910070.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(c9910070.sprfilter1,tp,LOCATION_MZONE,0,nil,c)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=g:SelectSubGroup(tp,c9910070.sprfilter2,true,2,2,tp,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local sg=g:SelectSubGroup(tp,c9910070.sprfilter2,false,2,2,tp,c)
 	c:SetMaterial(sg)
 	Duel.Release(sg,REASON_COST)
 end

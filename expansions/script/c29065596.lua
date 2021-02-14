@@ -1,6 +1,6 @@
 --方舟之骑士·衾翼
 function c29065596.initial_effect(c)
-	c:EnableCounterPermit(0x87ae)
+	c:EnableCounterPermit(0x11ae)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29065596,0))
@@ -33,7 +33,7 @@ function c29065596.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_TO_GRAVE)
-	e4:SetCountLimit(1,09065582)
+	e4:SetCountLimit(1,09065596)
 	e4:SetCondition(c29065596.thcon)
 	e4:SetTarget(c29065596.thtg)
 	e4:SetOperation(c29065596.thop)
@@ -43,30 +43,30 @@ function c29065596.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c29065596.rlfil(c)
-	return c:IsReleasable() and (c:IsSetCard(0xa900) or c:IsSetCard(0x87af))
+	return c:IsReleasable() and (c:IsSetCard(0xa900) or c:IsSetCard(0x87af)) and Duel.GetMZoneCount(tp,c)>0
 end
 function c29065596.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x87ae,1,REASON_COST) or Duel.IsPlayerAffectedByEffect(tp,29065592) or Duel.IsExistingMatchingCard(c29065596.rlfil,tp,LOCATION_MZONE,0,1,nil) end
-	if Duel.IsExistingMatchingCard(c29065596.rlfil,tp,LOCATION_MZONE,0,1,nil) and   (not (Duel.IsCanRemoveCounter(tp,1,0,0x87ae,1,REASON_COST) or Duel.IsPlayerAffectedByEffect(tp,29065592)) or Duel.SelectYesNo(tp,aux.Stringid(29065596,0))) then
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x11ae,1,REASON_COST) or Duel.IsPlayerAffectedByEffect(tp,29065592) or Duel.IsExistingMatchingCard(c29065596.rlfil,tp,LOCATION_MZONE,0,1,nil) end
+	if (Duel.IsExistingMatchingCard(c29065596.rlfil,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)==0) or (Duel.IsExistingMatchingCard(c29065596.rlfil,tp,LOCATION_MZONE,0,1,nil) and   (not (Duel.IsCanRemoveCounter(tp,1,0,0x11ae,1,REASON_COST) or Duel.IsPlayerAffectedByEffect(tp,29065592) ) or (Duel.SelectYesNo(tp,aux.Stringid(29065596,0))))) then
 	local rg=Duel.SelectMatchingCard(tp,c29065596.rlfil,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.Release(rg,REASON_COST)
 	e:SetLabel(1)
 	else
-	if Duel.IsPlayerAffectedByEffect(tp,29065592) and (not Duel.IsCanRemoveCounter(tp,1,0,0x87ae,1,REASON_COST) or Duel.SelectYesNo(tp,aux.Stringid(29065592,0))) then
+	if Duel.IsPlayerAffectedByEffect(tp,29065592) and (not Duel.IsCanRemoveCounter(tp,1,0,0x11ae,1,REASON_COST) or Duel.SelectYesNo(tp,aux.Stringid(29065592,0))) then
 	Duel.RegisterFlagEffect(tp,29065592,RESET_PHASE+PHASE_END,0,1)
 	else
-	Duel.RemoveCounter(tp,1,0,0x87ae,1,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x11ae,1,REASON_COST)
 	end
    end
 end
 function c29065596.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or Duel.IsExistingMatchingCard(c29065596.rlfil,tp,LOCATION_MZONE,0,1,nil) )
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 	end Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c29065596.xthfilter(c)
-	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x87ae,1)
+	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x11ae,1)
 end
 function c29065596.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -79,7 +79,7 @@ function c29065596.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	tc:AddCounter(0x87ae,n)
+	tc:AddCounter(0x11ae,n)
 	end
 	end
 end
@@ -87,7 +87,7 @@ function c29065596.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c29065596.thfilter(c)
-	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x87ae,1)
+	return c:IsSetCard(0x87af) and c:IsCanAddCounter(0x11ae,1)
 end
 function c29065596.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29065596.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end
@@ -99,7 +99,7 @@ function c29065596.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	tc:AddCounter(0x87ae,n)
+	tc:AddCounter(0x11ae,n)
 end
 function c29065596.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local dcount=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)

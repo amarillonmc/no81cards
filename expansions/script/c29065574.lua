@@ -27,7 +27,7 @@ function c29065574.mxfil(c)
 	return (c:IsCode(29065577) or (c:IsSetCard(0x87af) and c:IsRace(RACE_DRAGON))) and c:IsAbleToRemove()
 end
 function c29065574.nxfil(c)
-    return c:IsLocation(LOCATION_ONFIELD) or c:IsLocation(LOCATION_GRAVE)
+	return c:IsLocation(LOCATION_ONFIELD) or c:IsLocation(LOCATION_GRAVE)
 end
 function c29065574.filter(c,e,tp,m,f,chkf)
 if c:IsSetCard(0x87af) then
@@ -49,10 +49,10 @@ end
 function c29065574.xyzfil(c,e,tp)
 	local att=c:GetAttribute()
 	local rc=c:GetRace()
-	return c:IsSetCard(0x87af) and Duel.IsExistingMatchingCard(c29065574.xzfil,tp,LOCATION_EXTRA,0,1,c,e,tp,att,rc) and Duel.GetLocationCountFromEx(tp,tp,c)>0 and c:IsLevelBelow(6)
+	return c:IsSetCard(0x87af) and Duel.IsExistingMatchingCard(c29065574.xzfil,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,att,rc) and c:IsLevelBelow(6)
 end
-function c29065574.xzfil(c,e,tp,att,rc)
-	return c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and c:IsRace(rc) and c:IsAttribute(att) and c:IsRank(8)
+function c29065574.xzfil(c,e,tp,mc,att,rc)
+	return c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and c:IsRace(rc) and c:IsAttribute(att) and c:IsRank(8) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function c29065574.filter0(c)
 	return c:IsOnField() and c:IsAbleToRemove()
@@ -123,11 +123,11 @@ function c29065574.activate(e,tp,eg,ep,ev,re,r,rp)
 		local tg=sg:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
 	   if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
-     if tc:IsSetCard(0x87af) then
+	 if tc:IsSetCard(0x87af) then
 			mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
-     else
-     mat1=Duel.SelectFusionMaterial(tp,tc,mg1:Filter(c29065574.nxfil,nil),nil,chkf)
-     end
+	 else
+	 mat1=Duel.SelectFusionMaterial(tp,tc,mg1:Filter(c29065574.nxfil,nil),nil,chkf)
+	 end
 			tc:SetMaterial(mat1)
 			Duel.Remove(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
@@ -138,16 +138,18 @@ function c29065574.activate(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
-tc:RegisterFlagEffect(29065574,RESET_EVENT+RESETS_STANDARD,0,1) 		
-local e2=Effect.CreateEffect(e:GetHandler()) 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 		e2:SetCode(EVENT_PHASE+PHASE_END) 		
-e2:SetCountLimit(1) 		
-e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE) 		
-e2:SetLabel(Duel.GetTurnCount()+1) 		
-e2:SetLabelObject(tc) 		
-e2:SetReset(RESET_PHASE+PHASE_END,2) 		
-e2:SetCondition(c29065574.rmcon) 		
-e2:SetOperation(c29065574.rmop) 		
-Duel.RegisterEffect(e2,tp)
+	   tc:RegisterFlagEffect(29065574,RESET_EVENT+RESETS_STANDARD,0,1)		 
+	   local e2=Effect.CreateEffect(e:GetHandler())		
+	   e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)		
+	   e2:SetCode(EVENT_PHASE+PHASE_END)	   
+	   e2:SetCountLimit(1)		 
+	   e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)	   
+	   e2:SetLabel(Duel.GetTurnCount()+1)	  
+	   e2:SetLabelObject(tc)	   
+	   e2:SetReset(RESET_PHASE+PHASE_END,2)		
+	   e2:SetCondition(c29065574.rmcon)		
+	   e2:SetOperation(c29065574.rmop)		 
+	   Duel.RegisterEffect(e2,tp)
 	end
 	Auxiliary.FCheckAdditional=nil
 	else
@@ -160,25 +162,27 @@ Duel.RegisterEffect(e2,tp)
 	local tc=xg:Select(tp,1,1,nil):GetFirst()
 	local rc=tc:GetRace()
 	local att=tc:GetAttribute()
-	local xc=Duel.SelectMatchingCard(tp,c29065574.xzfil,tp,LOCATION_EXTRA,0,1,1,c,e,tp,att,rc):GetFirst()
+	local xc=Duel.SelectMatchingCard(tp,c29065574.xzfil,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc,att,rc):GetFirst()
 	Duel.SpecialSummonStep(xc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 	Duel.Overlay(xc,tc)
-e:GetHandler():CancelToGrave()
-Duel.Overlay(xc,e:GetHandler())
+	e:GetHandler():CancelToGrave()
+	Duel.Overlay(xc,e:GetHandler())
 	Duel.SpecialSummonComplete()
-xc:CompleteProcedure()
-xc:RegisterFlagEffect(29065574,RESET_EVENT+RESETS_STANDARD,0,1) 		
-local e2=Effect.CreateEffect(e:GetHandler()) 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 		e2:SetCode(EVENT_PHASE+PHASE_END) 		
-e2:SetCountLimit(1) 		
-e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE) 		
-e2:SetLabel(Duel.GetTurnCount()+1) 		
-e2:SetLabelObject(xc) 		
-e2:SetReset(RESET_PHASE+PHASE_END,2) 		
-e2:SetCondition(c29065574.rmcon) 		
-e2:SetOperation(c29065574.rmop) 		
-Duel.RegisterEffect(e2,tp)
-end
-end
+	xc:CompleteProcedure()
+	xc:RegisterFlagEffect(29065574,RESET_EVENT+RESETS_STANDARD,0,1)		 
+	local e2=Effect.CreateEffect(e:GetHandler())		
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)		
+	e2:SetCode(EVENT_PHASE+PHASE_END)	   
+	e2:SetCountLimit(1)		 
+	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)	   
+	e2:SetLabel(Duel.GetTurnCount()+1)	  
+	e2:SetLabelObject(xc)	   
+	e2:SetReset(RESET_PHASE+PHASE_END,2)		
+	e2:SetCondition(c29065574.rmcon)		
+	e2:SetOperation(c29065574.rmop)		 
+	Duel.RegisterEffect(e2,tp)
+	end
+  end
 end
 function c29065574.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
