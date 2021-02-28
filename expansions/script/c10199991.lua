@@ -82,7 +82,7 @@ rshint.sact =aux.Stringid(m,1) --"select cards to activate"
 rshint.ce   =aux.Stringid(23912837,1)   --"choose 1 effect"
 
 rshint.neg  =aux.Stringid(19502505,1)   --"negate activation"
-rshint.negsum =aux.Stringid(m+1,1)	--"negate summon"
+rshint.negsum =aux.Stringid(m+1,1)  --"negate summon"
 rshint.negsp  =aux.Stringid(74892653,0) --"negate special summon"
 
 rshint.dis  =aux.Stringid(39185163,1) --"negate effect"
@@ -96,7 +96,9 @@ rshint.tk   =aux.Stringid(9929398,0)  --"special summon token"
 
 rshint.pos  =aux.Stringid(3648368,0)  --"change position"
 rshint.ctrl =aux.Stringid(4941482,0)  --"get control"
+
 rshint.set  =aux.Stringid(2521011,0)  --"set"
+rshint.wset =aux.Stringid(24413299,3) --"would you set"
 
 rshint.dr   =aux.Stringid(4732017,0)  --"draw card"
 rshint.wdr=aux.Stringid(3679218,1)  --"would you draw?"
@@ -139,22 +141,22 @@ rshint.te=aux.Stringid(18210764,0)  --"face-up add to EX"
 rshint.ste=aux.Stringid(24094258,3) --"select cards to face-up add to EX"
 
 rshint.eq   =aux.Stringid(68184115,0) --"equip"
-rshint.seq  =rshint.eq			  --"select cards to equip"
+rshint.seq  =rshint.eq  --"select cards to equip"
 rshint.weq  =aux.Stringid(35100834,0) --"would you equip?"
 
 --rshint.ua=aux.Stringid(1412158,0)  --"Update ATK"
 --rshint.ud=aux.Stringid(4997565,2)   --"update DEF"
 --rshint.uad=aux.Stringid(18563744,0) --"update ATK and DEF"
 rshint.ad  =aux.Stringid(7194917,0)  --"change ATK and DEF"
-rshint.cad =aux.Stringid(m,2)	   --"select cards to change Atk/Def"
+rshint.cad =aux.Stringid(m,2)   --"select cards to change Atk/Def"
 rshint.clv  =aux.Stringid(9583383,0) --"change level"
 
-rshint.spproc=aux.Stringid(m,4)	--"SS by self produce"
+rshint.spproc=aux.Stringid(m,4) --"SS by self produce"
 rshint.rstcp=aux.Stringid(43387895,1) --"reset copy effect"
 rshint.epleave=aux.Stringid(m,3)	  --"end phase leave field buff"
 
 rshint.stgct=aux.Stringid(83531441,2) --"select send to the GY number"
-rshint.sdrct=aux.Stringid(m,5)	  --"select draw number"
+rshint.sdrct=aux.Stringid(m,5)  --"select draw number"
 
 rshint.darktuner=aux.Stringid(m,14)   --"treat as dark tuner"
 rshint.darksynchro=aux.Stringid(m,15) --"treat as dark synchro"
@@ -165,11 +167,8 @@ EFFECT_FLAG_IGNORE_IMMUNE,EFFECT_FLAG_SET_AVAILABLE,EFFECT_FLAG_IGNORE_RANGE,EFF
 EFFECT_FLAG_UNCOPYABLE,EFFECT_FLAG_CANNOT_DISABLE,EFFECT_FLAG_CANNOT_NEGATE,EFFECT_FLAG_CLIENT_HINT,EFFECT_FLAG_LIMIT_ZONE,
 EFFECT_FLAG_ABSOLUTE_TARGET,EFFECT_FLAG_SPSUM_PARAM,
 EFFECT_FLAG_EVENT_PLAYER }
-rsflag.tg_d  =   EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY 
-rsflag.dsp_d	=   EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY 
-rsflag.dsp_tg   =   EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET 
-rsflag.dsp_dcal =   EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DAMAGE_STEP 
-rsflag.ign_set  =   EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE 
+
+rsflag.flag_str_list = {"tg","ptg","de","dsp","dcal","ii","sa","ir","sr","bs","uc","cd","cn","ch","lz","at","sp","ep"}
 
 --Category Variable
 rscate.catelist =   { CATEGORY_DESTROY,CATEGORY_RELEASE,CATEGORY_REMOVE,CATEGORY_TOHAND,CATEGORY_TODECK,
@@ -178,9 +177,9 @@ CATEGORY_TOKEN,CATEGORY_POSITION,CATEGORY_CONTROL,CATEGORY_DISABLE,CATEGORY_DISA
 CATEGORY_DRAW,CATEGORY_SEARCH,CATEGORY_EQUIP,CATEGORY_DAMAGE,CATEGORY_RECOVER,
 CATEGORY_ATKCHANGE,CATEGORY_DEFCHANGE,CATEGORY_COUNTER,CATEGORY_COIN,CATEGORY_DICE, 
 CATEGORY_LEAVE_GRAVE,CATEGORY_LVCHANGE,CATEGORY_NEGATE,CATEGORY_ANNOUNCE,CATEGORY_FUSION_SUMMON,
-CATEGORY_TOEXTRA,CATEGORY_GRAVE_ACTION } 
-rscate.se_th	=   CATEGORY_SEARCH+CATEGORY_TOHAND 
-rscate.neg_des  =   CATEGORY_NEGATE+CATEGORY_DESTROY 
+CATEGORY_TOEXTRA,CATEGORY_GRAVE_ACTION,CATEGORY_GRAVE_SPSUMMON } 
+
+rscate.cate_str_list = {"des","res","rm","th","td","tg","disd","dish","sum","sp","tk","pos","ctrl","dis","diss","dr","se","eq","dam","rec","atk","def","ct","coin","dice","lg","lv","neg","an","fus","te","ga","gs"}
 
 --Card Type Variable
 rscf.typelist   =   { TYPE_MONSTER,TYPE_NORMAL,TYPE_EFFECT,TYPE_DUAL,TYPE_UNION,TYPE_TOON,TYPE_TUNER,TYPE_RITUAL,TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK,TYPE_TOKEN,TYPE_PENDULUM,TYPE_SPSUMMON,TYPE_FLIP,TYPE_SPIRIT,
@@ -256,6 +255,12 @@ function rsof.Escape_Old_Functions()
 			table.insert(bufflist,selfleave)
 		end
 		return bufflist
+	end
+	rsop.list = function(...)
+		return {"opc", ...}
+	end
+	rstg.list = function(...)
+		return {"tg", ...}
 	end
 	--//
 	rscf.SetSpecialSummonProduce=function(reg_list,range,con,op,desc_list,lim_list,reset_list)

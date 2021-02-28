@@ -2,7 +2,7 @@
 function c79029373.initial_effect(c)
 	--fusion summon
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,c79029373.ffilter,2,99,false)   
+	aux.AddFusionProcFunRep2(c,c79029373.ffilter,3,3,false)   
 	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_ATKCHANGE)
@@ -55,7 +55,7 @@ function c79029373.initial_effect(c)
 
 end
 function c79029373.ffilter(c,fc,sub,mg,sg)  
-	return c:IsType(TYPE_LINK) and (not sg or sg:IsExists(Card.IsSetCard,1,nil,0xa900)) and (not sg or sg:GetSum(Card.GetLink)>=5)
+	return c:IsType(TYPE_LINK) and (not sg or sg:IsExists(Card.IsSetCard,1,nil,0xa900)) 
 end
 function c79029373.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
@@ -78,7 +78,7 @@ function c79029373.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029373.spfil(c,e,tp,zone)
-	 return c:GetPreviousControler()==1-tp and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP,tp,zone)
+	 return c:GetPreviousControler()==1-tp and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP,tp,zone) and c:IsType(TYPE_MONSTER)
 end
 function c79029373.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	 local zone=e:GetHandler():GetLinkedZone()

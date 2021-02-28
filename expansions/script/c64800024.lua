@@ -2,13 +2,13 @@
 local m=64800024
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-   aux.AddFusionProcFunRep(c,cm.ffilter,3,true)
-	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_MZONE,0,Duel.Remove,POS_FACEUP,REASON_COST)
-	  --spsummon condition
+   aux.AddFusionProcFunRep(c,cm.ffilter,3,false) 
+	 --spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.fuslimit)
 	c:RegisterEffect(e1)
   --negate
 	local e2=Effect.CreateEffect(c)
@@ -50,7 +50,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.ffilter(c,fc,sub,mg,sg)
-	return  not sg or not (sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()) or  sg:IsExists(Card.IsRace,1,c,c:GetRace()))
+	return   not sg or not (sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()) or  sg:IsExists(Card.IsRace,1,c,c:GetRace()))
+	and  c:IsFusionType(TYPE_EFFECT) and c:IsOnField()
 end
 
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)

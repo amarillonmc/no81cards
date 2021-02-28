@@ -41,19 +41,17 @@ function c79029046.filter2(c,e,tp)
 	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029046.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_HAND) and chkc:IsControler(tp) and c79029046.filter2(chkc,e,tp) and Duel.GetFlagEffect(tp,79029046)==0 end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c79029046.filter2,tp,LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.RegisterFlagEffect(tp,79029046,RESET_PHASE+PHASE_END,0,1)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	Debug.Message("不能给黑钢的各位丢脸！")
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029046,1))
-	local g=Duel.SelectMatchingCard(tp,c79029046.filter2,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+	if chkc then return chkc:IsLocation(LOCATION_HAND) and chkc:IsControler(tp) and c79029046.filter2(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c79029046.filter2,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c79029046.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	Debug.Message("不能给黑钢的各位丢脸！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029046,1))
+	local tc=Duel.SelectMatchingCard(tp,c79029046.filter2,tp,LOCATION_HAND,0,1,1,nil,e,tp):GetFirst()
 	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 end
+
+

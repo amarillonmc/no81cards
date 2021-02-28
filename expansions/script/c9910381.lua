@@ -18,9 +18,10 @@ function c9910381.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetHintTiming(0,TIMING_BATTLE_START+TIMING_BATTLE_END)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9910388)
+	e2:SetCondition(c9910381.drcon)
 	e2:SetTarget(c9910381.drtg)
 	e2:SetOperation(c9910381.drop)
 	c:RegisterEffect(e2)
@@ -51,6 +52,10 @@ function c9910381.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=g:SelectSubGroup(tp,c9910381.fselect,false,1,2,tp,e:GetHandler())
 	if sg:GetCount()>0 then Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP) end
 end
+function c9910381.drcon(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE 
+end
 function c9910381.spellfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_SPELL) and c:IsAbleToDeck()
 end
@@ -70,7 +75,7 @@ function c9910381.drop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x5951))
-	e1:SetValue(500)
+	e1:SetValue(600)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	if Duel.Draw(tp,1,REASON_EFFECT)==0 then return end

@@ -73,8 +73,8 @@ function c79029196.spop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function c79029196.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetReasonCard()
-	return ec:IsSetCard(0xa900)
-end
+	return ec:IsSetCard(0xa900) and bit.band(r,REASON_FUSION+REASON_SYNCHRO+REASON_XYZ+REASON_LINK)~=0  
+end 
 function c79029196.efop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("刀子，擦亮了吗？")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029196,2))

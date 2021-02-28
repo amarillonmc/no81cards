@@ -86,6 +86,7 @@ local rsgs  =   Gran_Sphere
 local rsoc  =   Oligocene_Civilization
 local rsgol =   Giant_of_Light
 local rssb  =   Space_Beasts
+local rsufo =   UFO_Saucer_Monster
 
 #HeiBai 1172777968
 local rstm  =   Toaru_Majutsu_no_Index
@@ -97,6 +98,7 @@ local rsgod =   God
 local rsva  =   VR_Aqua
 //local   =   Tian_Zhi
 local rswk =  White_Moon_Knight
+local rsisr = Israel
 
 #ReiKai 2404873791
 local rsch  =   Churck

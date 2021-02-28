@@ -32,6 +32,11 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
+	if not KDlobal then
+		KDlobal={}
+		KDlobal["Effects"]={}
+	end
+	KDlobal["Effects"]["c15000353"]=e2
 end
 function cm.cfilter(c)
 	return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsRace(RACE_INSECT) and c:IsAbleToGraveAsCost()

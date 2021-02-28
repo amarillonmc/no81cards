@@ -74,7 +74,7 @@ function c79029349.spop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function c79029349.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetReasonCard()
-	return ec:IsSetCard(0xa900)
+	return ec:IsSetCard(0xa900) and bit.band(r,REASON_FUSION+REASON_SYNCHRO+REASON_XYZ+REASON_LINK)~=0  
 end
 function c79029349.efop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("热身完毕！")

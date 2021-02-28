@@ -151,7 +151,7 @@ function c79029049.spop(e,tp,eg,ep,ev,re,r,rp)
 				local mat2=mat1:Filter(Card.IsLocation,nil,LOCATION_DECK)
 				mat1:Sub(mat2)
 				Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
-				Duel.SendtoGrave(mat2,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
+				Duel.SendtoGrave(mat2,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			else
 				local mat2=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
 				tc:SetMaterial(mat2)

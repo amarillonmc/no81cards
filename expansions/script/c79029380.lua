@@ -25,6 +25,9 @@ function c79029380.initial_effect(c)
 	e4:SetOperation(c79029380.sumop)
 	c:RegisterEffect(e4)
 end
+function c79029380.thfil(c)
+	return c:IsAbleToHand() and c:IsCode(79029372)
+end
 function c79029380.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029380.thfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

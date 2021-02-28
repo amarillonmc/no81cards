@@ -55,7 +55,7 @@ function c79029024.indtg(e,c)
 end
 function c79029024.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetReasonCard()
-	return (ec:IsSummonType(SUMMON_TYPE_XYZ) or ec:IsSummonType(SUMMON_TYPE_FUSION) or ec:IsSummonType(SUMMON_TYPE_LINK)) and ec:IsSetCard(0xa900)
+	return ec:IsSetCard(0xa900) and bit.band(r,REASON_FUSION+REASON_SYNCHRO+REASON_XYZ+REASON_LINK)~=0  
 end
 function c79029024.efop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,79029024)

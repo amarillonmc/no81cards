@@ -2,7 +2,7 @@
 function c79029045.initial_effect(c)
 	--remove and SpecialSummon 
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
@@ -35,17 +35,25 @@ function c79029045.thfilter2(c)
 end
 function c79029045.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c79029045.thfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(c79029045.thfilter2,tp,LOCATION_DECK,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c79029045.thfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	Debug.Message("我一定......不会辜负您的信任。")
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029045,0))
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c79029045.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g1=Duel.GetMatchingGroup(c79029045.thfilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil)
+	if g1:GetCount()<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local rg=g1:Select(tp,1,1,nil)
+	if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT) then
+	Debug.Message("我一定......不会辜负您的信任。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029045,0))
+	local g2=Duel.GetMatchingGroup(c79029045.thfilter2,tp,LOCATION_DECK,0,nil)
+	if g2:GetCount()<=0 then return end
+	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c79029045.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-	 Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	local sg=g2:Select(tp,1,1,nil)
+	if sg:GetCount()>0 then
+	 Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	end
 	end
 end
 function c79029045.rfilter(c,tp)

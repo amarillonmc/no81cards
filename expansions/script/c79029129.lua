@@ -95,12 +95,11 @@ function c79029129.pcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029129.filter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xa900)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xa900) and Duel.GetMZoneCount(tp,e:GetHandler(),tp)>0
 end
 function c79029129.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and c79029129.filter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c79029129.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c79029129.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 	Debug.Message("疼就喊出来，别忍着啊！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029129,2))

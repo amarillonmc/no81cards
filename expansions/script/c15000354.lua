@@ -32,6 +32,11 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sp2tg)
 	e2:SetOperation(cm.sp2op)
 	c:RegisterEffect(e2)
+	if not KDlobal then
+		KDlobal={}
+		KDlobal["Effects"]={}
+	end
+	KDlobal["Effects"]["c15000354"]=e2
 end
 function cm.cfilter(c)
 	return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsAbleToGraveAsCost() and c:IsType(TYPE_NORMAL)

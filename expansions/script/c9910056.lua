@@ -1,7 +1,7 @@
 --破茧成蝶之月神
 function c9910056.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x9951),aux.NonTuner(Card.IsAttribute,ATTRIBUTE_DARK),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x9951),aux.NonTuner(Card.IsRace,RACE_FAIRY),1)
 	c:EnableReviveLimit()
 	--to deck
 	local e1=Effect.CreateEffect(c)

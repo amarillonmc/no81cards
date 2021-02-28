@@ -38,6 +38,11 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.rbtg)
 	e3:SetOperation(cm.rbop)
 	c:RegisterEffect(e3)
+	if not KDlobal then
+		KDlobal={}
+		KDlobal["Effects"]={}
+	end
+	KDlobal["Effects"]["c15000349"]=e3
 end
 function cm.mfilter(c)
 	return c:IsAttribute(ATTRIBUTE_FIRE) and not c:IsOriginalCodeRule(15000349)

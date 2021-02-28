@@ -7,6 +7,7 @@ function c79029140.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(c79029140.spcon)
+	e1:SetOperation(c79029140.spop)
 	c:RegisterEffect(e1)  
 	--atk up
 	local e2=Effect.CreateEffect(c)
@@ -33,6 +34,10 @@ function c79029140.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and
 		Duel.IsExistingMatchingCard(c79029140.filter,c:GetControler(),LOCATION_MZONE,0,1,nil)
+end
+function c79029140.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	Debug.Message("出——发——！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029140,1))
 end
 function c79029140.val(e,c,Counter)  
 	return e:GetHandler():GetCounter(0x1099)*100
