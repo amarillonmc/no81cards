@@ -37,11 +37,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)  
 end
-function cm.cfilter(c,tp)
-	return  c:IsReason(REASON_DESTROY) 
+function cm.cfilter(c,re)
+	return (c:IsReason(REASON_BATTLE) and c:GetReasonCard():IsSetCard(0x9da0)) or  (c:IsReason(REASON_EFFECT) and re and re:GetOwner():IsSetCard(0x9da0))
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,m)>Duel.GetFlagEffect(tp,m+1) and eg:IsExists(cm.cfilter,1,nil) and  ((re and (re:GetOwner():IsSetCard(0x9da0)) or c:GetReasonCard():IsSetCard(0x9da0) ))
+	return Duel.GetFlagEffect(tp,m)>Duel.GetFlagEffect(tp,m+1) and eg:IsExists(cm.cfilter,1,nil,re)
 end
 function cm.filter(c)
 	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

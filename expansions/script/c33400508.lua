@@ -75,7 +75,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.thfilter(c)
-	return (c:IsSetCard(0x340) or (c:IsSetCard(0x341) and c:IsType(TYPE_QUICKPLAY)))  and c:IsAbleToHand()
+	return (c:IsSetCard(0x3344) or (c:IsSetCard(0x6341) and c:IsType(TYPE_QUICKPLAY)))  and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

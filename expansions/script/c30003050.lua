@@ -65,5 +65,5 @@ function cm.lcheck(g)
 	return g:IsExists(Card.IsCode,1,nil,30003030)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)  and (c:IsCode(30003030) or c:IsCode(30003040))
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)  and (c:IsCode(30003030) or c:IsCode(30003040)) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end

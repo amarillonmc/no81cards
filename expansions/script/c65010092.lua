@@ -16,7 +16,7 @@ function c65010092.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1)
+	e1:SetCountLimit(1,65010092)
 	e1:SetCost(c65010092.cost)
 	e1:SetTarget(c65010092.tg)
 	e1:SetOperation(c65010092.op)
@@ -64,7 +64,7 @@ function c65010092.refil(c)
 	return c:IsAbleToRemoveAsCost() and c:IsSetCard(0x9da0)
 end
 function c65010092.sumcon(e,c)
-	if c==nil then return true end
+	 if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.IsExistingMatchingCard(c65010092.refil,tp,LOCATION_EXTRA,0,1,nil)
 end

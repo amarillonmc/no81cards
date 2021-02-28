@@ -100,6 +100,7 @@ function cm.effectfilter(e,ct)
 end
 
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+   local c=e:GetHandler()
 	  --activate limit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -125,6 +126,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetValue(cm.efilter2)
 	e3:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e3,tp)
+	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)  
 end
 function cm.actlimit1(e,re,tp)
 	return not re:GetHandler():IsLocation(LOCATION_ONFIELD)
@@ -354,7 +356,7 @@ function cm.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 			e5:SetCountLimit(1)
 			token:RegisterEffect(e5)
 			--move
-			local e1=Effect.CreateEffect(c)
+			local e1=Effect.CreateEffect(ec)
 			e1:SetType(EFFECT_TYPE_QUICK_O)
 			e1:SetCode(EVENT_FREE_CHAIN)
 			e1:SetRange(LOCATION_SZONE)

@@ -203,6 +203,7 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.SelectTarget(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil,0x1015,2)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	 local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if g:GetCount()~=0 then 
 	   local tc=g:GetFirst()

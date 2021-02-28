@@ -44,7 +44,7 @@ end
 function c65010086.sumcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(c65010086.refil,tp,LOCATION_EXTRA,0,1,nil)
+	return   Duel.IsExistingMatchingCard(c65010086.refil,tp,LOCATION_EXTRA,0,1,nil)
 end
 function c65010086.sumop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.SelectMatchingCard(tp,c65010086.refil,tp,LOCATION_EXTRA,0,1,1,nil)

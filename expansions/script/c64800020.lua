@@ -72,7 +72,11 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=c:GetBattleTarget()
 	if c:IsRelateToBattle() and tc:IsRelateToBattle() then
-		local g=Group.FromCards(c,tc)
-		Duel.Destroy(g,REASON_EFFECT)
+		Duel.Destroy(tc,REASON_EFFECT)
 	end
 end
+
+
+
+
+

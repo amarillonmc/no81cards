@@ -104,7 +104,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g1,nil,REASON_EFFECT)
 	elseif opval[op]==2 then
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	   local g2=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	   local g2=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
 		  Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
 	elseif opval[op]==3 then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)

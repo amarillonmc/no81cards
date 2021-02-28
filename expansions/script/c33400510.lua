@@ -52,7 +52,14 @@ function cm.desfilter(c,e,tp)
 	return  Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA+LOCATION_HAND,0,1,nil,e,tp,Group.FromCards(c))
 end
 function cm.spfilter(c,e,tp,dg)
-	return ((c:IsLocation(LOCATION_EXTRA) and  c:IsFaceup()) or c:IsLocation(LOCATION_HAND)) and (c:IsSetCard(0x341) or c:IsAttribute(ATTRIBUTE_WATER)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and Duel.GetLocationCountFromEx(tp,tp,dg,c)>0
+	local tc=dg:GetFirst()
+	return   (c:IsSetCard(0x341) or c:IsAttribute(ATTRIBUTE_WATER)) and ((c:IsLocation(LOCATION_EXTRA) and  c:IsFaceup() and Duel.GetLocationCountFromEx(tp,tp,dg,c)>0 ) or (c:IsLocation(LOCATION_HAND) and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or tc:GetSequence()<5)))   and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+end
+function cm.spfilter2(c,e,tp)
+	return   (c:IsSetCard(0x341) or c:IsAttribute(ATTRIBUTE_WATER)) 
+	and ( (c:IsLocation(LOCATION_EXTRA) and  c:IsFaceup() and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 ) 
+	or (c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)  )   
+	and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function cm.ckfilter(c)
 	return c:IsSetCard(0x3344) and c:IsFaceup()
@@ -75,7 +82,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_EXTRA+LOCATION_HAND,0,1,1,nil,e,tp)
+		local g=Duel.SelectMatchingCard(tp,cm.spfilter2,tp,LOCATION_EXTRA+LOCATION_HAND,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 			Duel.BreakEffect()
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)

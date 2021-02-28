@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCountLimit(1,m)
@@ -78,6 +78,6 @@ Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE) 
 		local g2=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_DECK,0,1,1,nil,m1,tp)
 		local tc2=g2:GetFirst()
-		Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)		
+		Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)	   
 	end 
 end
