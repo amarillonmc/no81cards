@@ -42,20 +42,6 @@ function rscon.CreatEvent_Set(e,tp,eg,ep,ev,re,r,rp)
 	local sg=eg:Filter(Card.IsFacedown,nil)
 	return #sg>0,sg
 end
---Effect: Operation info , for rstg.target2 and rsop.target2
-function rstg.opinfo(cate_str,info_count,pl,info_loc_or_paramma )
-	local cate = rsef.GetRegisterCategory(cate_str)
-	local info_player = 0
-	return function(info_group_or_card,e,tp)
-		if not pl then info_player = 0 
-		elseif pl == 0 then info_player = tp
-		elseif pl == 1 then info_player = 1-tp 
-		else 
-			info_player = pl
-		end
-		Duel.SetOperationInfo(0,cate,nil,info_count or 0,info_player,info_loc_or_paramma or 0)
-	end
-end
 --Effect: Chain Limit , for rstg.target2 and rsop.target2
 function rstg.chainlimit(sp,op)
 	return function(g,e,tp)
@@ -220,12 +206,14 @@ function rsef.GetRegisterRange(reg_list)
 end
 --Effect: Get Flag for SetProperty 
 function rsef.GetRegisterProperty(flag_param)
-	return rsof.Mix_Value_To_Table(flag_param,rsflag.flag_str_list,rsflag.flaglist)
+	local flag_str_list={"tg","ptg","de","dsp","dcal","ii","sa","ir","sr","bs","uc","cd","cn","ch","lz","at","sp","ep"}
+	return rsof.Mix_Value_To_Table(flag_param,flag_str_list,rsflag.flaglist)
 end
 rsflag.GetRegisterProperty=rsef.GetRegisterProperty
 --Effect: Get Category for SetCategory or SetOperationInfo
 function rsef.GetRegisterCategory(cate_param)
-	return rsof.Mix_Value_To_Table(cate_param,rscate.cate_str_list,rscate.catelist)
+	local cate_str_list={"des","res","rm","th","td","tg","disd","dish","sum","sp","tk","pos","ctrl","dis","diss","dr","se","eq","dam","rec","atk","def","ct","coin","dice","lg","lv","neg","an","fus","te","ga"}
+	return rsof.Mix_Value_To_Table(cate_param,cate_str_list,rscate.catelist)
 end
 rscate.GetRegisterCategory=rsef.GetRegisterCategory
 --Effect: Clone Effect 
@@ -1634,6 +1622,7 @@ function rstg.disnegtg(dn_type,way_str)
 	local type_list2={aux.TRUE,Card.IsAbleToRemove,Card.IsAbleToHand,Card.IsAbleToDeck,Card.IsAbleToGrave,setfun,aux.TRUE }
 	local type_list3={Card.IsDestructable,Card.IsAbleToRemove,Card.IsAbleToHand,Card.IsAbleToDeck,Card.IsAbleToGrave,setfun,aux.TRUE }
 	local cate_list={CATEGORY_DESTROY,CATEGORY_REMOVE,CATEGORY_TOHAND,CATEGORY_TODECK,CATEGORY_TOGRAVE,0,0}
+	if type(way_str)==nil then way_str="des" end
 	if not way_str then way_str="nil" end
 	local _,_,dn_filter=rsof.Table_Suit(way_str,type_list,type_list2)
 	local _,_,filterfun2,cate=rsof.Table_Suit(way_str,type_list,type_list3,cate_list)
@@ -1693,10 +1682,10 @@ function rsef.list(list_type_str, val1, val2, val3, ...)
 	end
 	return par_list
 end
-function rsef.list_check_divide(val, list_type_str)
-	if type(val) ~= "string" then return false,nil end
-	local res =  val == "cost" or val == "tg" or val == "opc" 
-	return res, val or list_type_str
+function rsef.list_check_divide(val_type, list_type_str)
+	if type(val_type) ~= "string" then return false,nil end
+	local res =  val_type == "cost" or val_type == "tg" or val_type == "opc" 
+	return res, val_type or list_type_str
 end
 --targetvalue1={filter_card,category,loc_self,loc_oppo,minct,maxct,except_fun,sel_hint}
 function rsef.target_base(checkfun,target_fun,target_list)
@@ -1773,7 +1762,6 @@ function rstg.GetTargetAttribute(e,tp,eg,ep,ev,re,r,rp,target_list)
 	local loc_self = type(loc_self) == "function" and loc_self(e,tp,eg,ep,ev,re,r,rp) or loc_self
 	--4.Locaion Opponent
 	local loc_oppo = type(loc_oppo) == "function" and loc_oppo(e,tp,eg,ep,ev,re,r,rp) or loc_oppo
-	if type(loc_self) == "number" and not loc_oppo then loc_oppo = 0 end
 	--5.Minum Count
 	local minct,maxct=target_list[6],target_list[7]
 	minct=type(minct)=="nil" and 1 or minct
@@ -1974,7 +1962,7 @@ function rstg.TargetSelect(e,tp,eg,ep,ev,re,r,rp,target_list_total)
 		local sel_fun=list_type=="tg" and Duel.SelectTarget or Duel.SelectMatchingCard 
 		local sel_hint2=rsef.GetDefaultHintString(category_list,loc_self,loc_oppo,sel_hint)   
 		local selected_group	 
-		Duel.Hint(HINT_SELECTMSG,tp,sel_hint2)
+		Duel.Hint(HINT_SELECTMSG,tp,hint)
 		--2.4.2.1. Select from must select group
 		if #must_sel_group>0 then
 			if filter_group then 
@@ -2044,12 +2032,9 @@ function rstg.TargetSelect(e,tp,eg,ep,ev,re,r,rp,target_list_total)
 				if is_player then 
 					info_loc_or_paramma = minct
 				else
-					--cause wulala change its script (used can check if card/group contains deck, now only check loc contains deck) 
-					--if aux.GetValueType(selected_group)~="Group" then 
-					if type(loc_self) == "number" and type(loc_oppo) == "number" then
+					if aux.GetValueType(selected_group)~="Group" then 
 						info_loc_or_paramma = info_loc_or_paramma|((loc_self or 0)|(loc_oppo or 0))
 					end
-					--end
 				end
 				Duel.SetOperationInfo(0,category,info_card_or_group,info_count,info_player,info_loc_or_paramma)
 				if is_player and e:IsHasProperty(EFFECT_FLAG_PLAYER_TARGET) then 

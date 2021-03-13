@@ -22,6 +22,7 @@ function c79029439.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
 end   
 function c79029439.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -32,6 +33,7 @@ function c79029439.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e2:SetCountLimit(1)
 	e2:SetLabelObject(e1)
 	e2:SetCondition(c79029439.sdbcon)
 	e2:SetOperation(c79029439.sdbop)
@@ -39,6 +41,9 @@ function c79029439.activate(e,tp,eg,ep,ev,re,r,rp)
 end   
 function c79029439.sdbcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp   
+end
+function c79029439.tgfil(c)
+	return c:IsSetCard(0xa900) and c:IsAbleToGrave()
 end
 function c79029439.sdbop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(c79029439.tgfil,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(79029439,0)) then 

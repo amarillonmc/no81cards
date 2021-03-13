@@ -21,20 +21,27 @@ function c79029045.initial_effect(c)
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e4:SetCondition(c79029045.spcon1)
 	e4:SetTarget(c79029045.sptg)
 	e4:SetCost(c79029045.spcost)
-	e4:SetCountLimit(1,790290459999999)
+	e4:SetCountLimit(1,19029045)
 	e4:SetOperation(c79029045.spop)
 	c:RegisterEffect(e4)  
+	local e5=e4:Clone()
+	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetCode(EVENT_FREE_CHAIN)
+	e5:SetHintTiming(0,TIMING_END_PHASE)
+	e5:SetCondition(c79029045.spcon2)
+	c:RegisterEffect(e5)
 end
 function c79029045.thfilter(c)
 	return c:IsSetCard(0x1904) and c:IsType(TYPE_TRAP)
 end
-function c79029045.thfilter2(c)
-	return c:IsSetCard(0xa900) and c:IsLevelBelow(4)
+function c79029045.thfilter2(c,e,tp)
+	return c:IsSetCard(0xa900) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029045.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c79029045.thfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(c79029045.thfilter2,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c79029045.thfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(c79029045.thfilter2,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
@@ -46,7 +53,7 @@ function c79029045.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT) then
 	Debug.Message("我一定......不会辜负您的信任。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029045,0))
-	local g2=Duel.GetMatchingGroup(c79029045.thfilter2,tp,LOCATION_DECK,0,nil)
+	local g2=Duel.GetMatchingGroup(c79029045.thfilter2,tp,LOCATION_DECK,0,nil,e,tp)
 	if g2:GetCount()<=0 then return end
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -55,6 +62,12 @@ function c79029045.thop(e,tp,eg,ep,ev,re,r,rp)
 	 Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 	end
+end
+function c79029045.spcon1(e,tp,eg,ep,ev,re,r,rp)
+	return not Duel.IsPlayerAffectedByEffect(tp,79029436)
+end
+function c79029045.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsPlayerAffectedByEffect(tp,79029436)
 end
 function c79029045.rfilter(c,tp)
 	return c:IsType(TYPE_TRAP) and c:IsSetCard(0x1904) and c:IsAbleToGraveAsCost()

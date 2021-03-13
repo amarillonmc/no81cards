@@ -125,17 +125,22 @@ function c79029313.lzop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetCode(EVENT_ADJUST)
+	e2:SetCondition(c79029313.surcon2)
 	e2:SetOperation(c79029313.surop2)
 	Duel.RegisterEffect(e2,tp)
 	local e3=Effect.CreateEffect(c) 
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCondition(c79029313.surcon2)
 	e3:SetOperation(c79029313.surop2)
 	Duel.RegisterEffect(e3,tp)
 	Debug.Message("振作起来！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029313,2))
 end
 function c79029313.surcon1(e,tp,eg,ep,ev,re,r,rp)
+	return ep==tp and Duel.GetLP(tp)<=0 
+end
+function c79029313.surcon2(e,tp,eg,ep,ev,re,r,rp)
 	return ep==tp and Duel.GetLP(tp)<=0
 end
 function c79029313.surop1(e,tp,eg,ep,ev,re,r,rp)

@@ -141,7 +141,7 @@ rshint.te=aux.Stringid(18210764,0)  --"face-up add to EX"
 rshint.ste=aux.Stringid(24094258,3) --"select cards to face-up add to EX"
 
 rshint.eq   =aux.Stringid(68184115,0) --"equip"
-rshint.seq  =rshint.eq  --"select cards to equip"
+rshint.seq  =rshint.eq	  --"select cards to equip"
 rshint.weq  =aux.Stringid(35100834,0) --"would you equip?"
 
 --rshint.ua=aux.Stringid(1412158,0)  --"Update ATK"
@@ -167,8 +167,11 @@ EFFECT_FLAG_IGNORE_IMMUNE,EFFECT_FLAG_SET_AVAILABLE,EFFECT_FLAG_IGNORE_RANGE,EFF
 EFFECT_FLAG_UNCOPYABLE,EFFECT_FLAG_CANNOT_DISABLE,EFFECT_FLAG_CANNOT_NEGATE,EFFECT_FLAG_CLIENT_HINT,EFFECT_FLAG_LIMIT_ZONE,
 EFFECT_FLAG_ABSOLUTE_TARGET,EFFECT_FLAG_SPSUM_PARAM,
 EFFECT_FLAG_EVENT_PLAYER }
-
-rsflag.flag_str_list = {"tg","ptg","de","dsp","dcal","ii","sa","ir","sr","bs","uc","cd","cn","ch","lz","at","sp","ep"}
+rsflag.tg_d  =   EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY 
+rsflag.dsp_d	=   EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY 
+rsflag.dsp_tg   =   EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET 
+rsflag.dsp_dcal =   EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DAMAGE_STEP 
+rsflag.ign_set  =   EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE 
 
 --Category Variable
 rscate.catelist =   { CATEGORY_DESTROY,CATEGORY_RELEASE,CATEGORY_REMOVE,CATEGORY_TOHAND,CATEGORY_TODECK,
@@ -177,9 +180,9 @@ CATEGORY_TOKEN,CATEGORY_POSITION,CATEGORY_CONTROL,CATEGORY_DISABLE,CATEGORY_DISA
 CATEGORY_DRAW,CATEGORY_SEARCH,CATEGORY_EQUIP,CATEGORY_DAMAGE,CATEGORY_RECOVER,
 CATEGORY_ATKCHANGE,CATEGORY_DEFCHANGE,CATEGORY_COUNTER,CATEGORY_COIN,CATEGORY_DICE, 
 CATEGORY_LEAVE_GRAVE,CATEGORY_LVCHANGE,CATEGORY_NEGATE,CATEGORY_ANNOUNCE,CATEGORY_FUSION_SUMMON,
-CATEGORY_TOEXTRA,CATEGORY_GRAVE_ACTION,CATEGORY_GRAVE_SPSUMMON } 
-
-rscate.cate_str_list = {"des","res","rm","th","td","tg","disd","dish","sum","sp","tk","pos","ctrl","dis","diss","dr","se","eq","dam","rec","atk","def","ct","coin","dice","lg","lv","neg","an","fus","te","ga","gs"}
+CATEGORY_TOEXTRA,CATEGORY_GRAVE_ACTION } 
+rscate.se_th	=   CATEGORY_SEARCH+CATEGORY_TOHAND 
+rscate.neg_des  =   CATEGORY_NEGATE+CATEGORY_DESTROY 
 
 --Card Type Variable
 rscf.typelist   =   { TYPE_MONSTER,TYPE_NORMAL,TYPE_EFFECT,TYPE_DUAL,TYPE_UNION,TYPE_TOON,TYPE_TUNER,TYPE_RITUAL,TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK,TYPE_TOKEN,TYPE_PENDULUM,TYPE_SPSUMMON,TYPE_FLIP,TYPE_SPIRIT,
@@ -257,10 +260,10 @@ function rsof.Escape_Old_Functions()
 		return bufflist
 	end
 	rsop.list = function(...)
-		return {"opc", ...}
+		return {{"opc"}, ...}
 	end
 	rstg.list = function(...)
-		return {"tg", ...}
+		return {{"tg"}, ...}
 	end
 	--//
 	rscf.SetSpecialSummonProduce=function(reg_list,range,con,op,desc_list,lim_list,reset_list)

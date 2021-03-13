@@ -32,7 +32,7 @@ function c79029088.initial_effect(c)
 	c:RegisterEffect(e4)   
 end
 function c79029088.filter(c,e,tp)
-	return c:IsSetCard(0xa900)
+	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c79029088.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -47,6 +47,6 @@ function c79029088.spop(e,tp,eg,ep,ev,re,r,rp)
 	if tc then
 	Debug.Message("请将我的力量，尽数收下。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029088,0))
-		Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
+	Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
 end
 end

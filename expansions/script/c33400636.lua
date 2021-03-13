@@ -157,8 +157,11 @@ end
 function cm.tdcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,33460651)>0 and e:GetHandler():GetFlagEffect(m)==0
 end
+function cm.tdfilter1(c)
+	return  c:IsAbleToRemove() and c:IsSetCard(0x340,0x341)
+end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK,0,1,nil,tp) end   
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter1,tp,LOCATION_DECK,0,1,nil,tp) end   
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)  
 end

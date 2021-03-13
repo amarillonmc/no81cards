@@ -119,6 +119,9 @@ function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	for tc in aux.Next(matg) do
 		og:Merge(tc:GetOverlayGroup())
 	end
-	og:Merge(matg)
-	Duel.Overlay(c,og)
+	if #og > 0 then
+		Duel.Overlay(c,og)
+	end
+	--og:Merge(matg)
+	Duel.Overlay(c,matg)
 end

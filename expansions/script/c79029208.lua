@@ -9,12 +9,11 @@ function c79029208.initial_effect(c)
 	c:RegisterEffect(e1)
 	--SpecialSummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_REMOVED)
 	e2:SetCountLimit(1,79029208+EFFECT_COUNT_CODE_DUEL)
-	e2:SetTarget(c79029208.sptg)
+	e2:SetTarget(c79029208.spcon)
 	e2:SetOperation(c79029208.spop)
 	c:RegisterEffect(e2)
 	--sigle
@@ -44,14 +43,14 @@ function c79029208.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c79029208.reop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_RULE)
-	if e:GetHandler():GetPreviousLocation()==LOCATION_HAND then
+	local c=e:GetHandler()
+	if c:IsLocation(LOCATION_HAND) then
 	Duel.Draw(tp,1,REASON_RULE)
-end   
+	end
+	Duel.Remove(c,POS_FACEUP,REASON_RULE)
 end
-function c79029208.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>=0 end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,0,1,0,0)
+function c79029208.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function c79029208.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
