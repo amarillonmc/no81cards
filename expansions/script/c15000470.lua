@@ -43,7 +43,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function cm.spfilter(c,att,rac,lv,e,tp)
-	return (c:IsSetCard(0xaf34) or c:IsSetCard(0x41)) and c:GetLevel()>lv and c:GetLevel()<=lv+3 and c:IsAttribute(att) and c:IsRace(rac) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	return (c:IsSetCard(0x3f34) or c:IsSetCard(0x41)) and c:GetLevel()>lv and c:GetLevel()<=lv+3 and c:IsAttribute(att) and c:IsRace(rac) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.sp2filter(c)
 	return c:IsSetCard(0x41) and c:IsLevelBelow(4)

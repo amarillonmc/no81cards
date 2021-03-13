@@ -28,7 +28,7 @@ function c33401200.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c33401200.cfilter,1,nil,tp)
 end
 function c33401200.cfilter2(c,tp,rp)
-	return	 c:IsSetCard(0x341) and ((rp==1-tp and c:IsReason(REASON_EFFECT) and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_ONFIELD)) or c:IsReason(REASON_BATTLE))
+	return   c:IsSetCard(0x341) and ((rp==1-tp and c:IsReason(REASON_EFFECT) and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_ONFIELD)) or c:IsReason(REASON_BATTLE))
 end
 function c33401200.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return aux.exccon(e) and eg:IsExists(c33401200.cfilter2,1,nil,tp,rp)
@@ -37,7 +37,7 @@ function c33401200.dfilter(c)
 	return c:IsSetCard(0x341) and c:IsLevelAbove(1) and c:IsAbleToGrave()
 end
 function c33401200.filter(c,e,tp,m,ft)
-	if not (c:IsCode(33400037) or c:IsCode(33400222) or c:IsCode(33400320))  or bit.band(c:GetType(),0x81)~=0x81
+	if not (c:IsCode(33400037) or c:IsCode(33400222) or c:IsCode(33400320) or c:IsCode(33400413))  or bit.band(c:GetType(),0x81)~=0x81
 		or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
 	local mg=m:Filter(Card.IsCanBeRitualMaterial,c,c)
 	local dg=Duel.GetMatchingGroup(c33401200.dfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil)

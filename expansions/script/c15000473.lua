@@ -2,13 +2,13 @@ local m=15000473
 local cm=_G["c"..m]
 cm.name="星拟龙·零时之默迦尔 LV10"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,15000472)
 	c:EnableReviveLimit()
-	--cannot special summon
+	--cannot special Summon
 	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(aux.FALSE)
 	c:RegisterEffect(e0)
 	--search
 	local e1=Effect.CreateEffect(c)
@@ -37,7 +37,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function cm.filter(c,lv)
-	return (c:IsSetCard(0xaf34) or c:IsSetCard(0x41)) and c:GetLevel()<lv and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return (c:IsSetCard(0x3f34) or c:IsSetCard(0x41)) and c:GetLevel()<lv and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -64,16 +64,17 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.tdfilter(c)
-	return c:IsSetCard(0xaf34) and c:IsAbleToDeck()
+	return c:IsSetCard(0x3f34) and c:IsAbleToDeck()
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT)
+		local x=Duel.Destroy(eg,REASON_EFFECT)
+		if x==0 then return end
 		Duel.BreakEffect()
 		local fg=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_GRAVE,0,nil)
-		local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_GRAVE,0,nil,0xaf34)
+		local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_GRAVE,0,nil,0x3f34)
 		local x=g:GetClassCount(Card.GetCode)
 		if x>=3 and fg:GetCount()~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			local qg=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,1,99,nil)

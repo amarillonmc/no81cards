@@ -64,7 +64,7 @@ function cm.cfilter2(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0x341) and c:IsType(TYPE_MONSTER)
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter2,1,nil,tp)
+	return eg:IsExists(cm.cfilter2,1,nil,tp) and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x341) and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,0,LOCATION_MZONE,1,nil,0x341)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

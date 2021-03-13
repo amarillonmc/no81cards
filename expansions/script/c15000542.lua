@@ -25,6 +25,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.tgtg)
 	e2:SetOperation(cm.tgop)
 	c:RegisterEffect(e2)
+	cm.self_flip_effect2=e2
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -32,16 +33,15 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,m)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCondition(cm.spcon1)
 	e3:SetTarget(cm.sptg1)
 	e3:SetOperation(cm.spop1)
 	c:RegisterEffect(e3)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re or not re:GetHandler()==e:GetHandler()
+	return not re or not re==cm.self_flip_effect2
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(aux.TURE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end

@@ -166,15 +166,16 @@ function c33400413.atkop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c33400413.desfilter1(c)
-	return  c:IsReleasable() and  (c:IsSetCard(0x341) or c:IsSetCard(0x340) or c:IsSetCard(0x6343))
+	return  (c:IsSetCard(0x341) or c:IsSetCard(0x340) or c:IsSetCard(0x6343))
+	and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)
 end
 function c33400413.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingTarget(c33400413.desfilter1,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c33400413.desfilter1,tp,LOCATION_ONFIELD,0,1,nil)  end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g1=Duel.SelectTarget(tp,c33400413.desfilter1,tp,LOCATION_ONFIELD,0,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g2=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,2,nil)
+	local g2=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,g1)
 	g1:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,g1:GetCount(),0,0)
 end

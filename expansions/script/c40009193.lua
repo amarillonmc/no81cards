@@ -64,10 +64,10 @@ function c40009193.nnegcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,1,0,0xf1c,3,REASON_COST)
 end
 function c40009193.setcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler()) and not Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler()) and (not Duel.IsPlayerAffectedByEffect(tp,40009208) or (Duel.GetCurrentChain()<1 and Duel.IsPlayerAffectedByEffect(tp,40009208)))
 end
 function c40009193.setcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler()) and Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler()) and Duel.GetCurrentChain()>0 and Duel.IsPlayerAffectedByEffect(tp,40009208)
 end
 function c40009193.setfilter(c,e,tp)
 	return c:IsSetCard(0xf1c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -98,10 +98,10 @@ function c40009193.splimit(e,c)
 	return not (c:IsType(TYPE_XYZ) or c:IsSetCard(0xf1c)) and c:IsLocation(LOCATION_EXTRA)
 end
 function c40009193.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return not Duel.IsPlayerAffectedByEffect(tp,40009208) or (Duel.GetCurrentChain()<1 and Duel.IsPlayerAffectedByEffect(tp,40009208))
 end
 function c40009193.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return Duel.GetCurrentChain()>0 and Duel.IsPlayerAffectedByEffect(tp,40009208)
 end
 function c40009193.filter1(c,e,tp)
 	return c:IsFaceup() and Duel.IsExistingMatchingCard(c40009193.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c) and c:IsSetCard(0xf1c) and c:IsType(TYPE_PENDULUM) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
@@ -160,10 +160,10 @@ function c40009193.retop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 end
 function c40009193.tdcon1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsFaceup() and not Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return e:GetHandler():IsFaceup() and (not Duel.IsPlayerAffectedByEffect(tp,40009208) or (Duel.GetCurrentChain()<1 and Duel.IsPlayerAffectedByEffect(tp,40009208)))
 end
 function c40009193.tdcon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsFaceup() and Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return e:GetHandler():IsFaceup() and Duel.GetCurrentChain()>0 and Duel.IsPlayerAffectedByEffect(tp,40009208)
 end
 function c40009193.tdfilter(c)
 	return c:IsSetCard(0xf1c) and c:IsAbleToDeck() and c:IsFaceup()

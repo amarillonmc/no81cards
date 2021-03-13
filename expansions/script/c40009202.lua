@@ -108,7 +108,7 @@ function cm.xyzop(e,tp)
 		end
 		sc:SetMaterial(tg)
 		Duel.Overlay(sc,tg)
-		Duel.SpecialSummonStep(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)	 
+		Duel.SpecialSummonStep(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)  
 	end
 	Duel.SpecialSummonComplete()
 end
@@ -146,7 +146,7 @@ function cm.setcon1(e,tp,eg,ep,ev,re,r,rp)
 	else
 		g=Duel.GetFieldGroup(tp,loc,0)
 	end
-	return g:IsExists(aux.PConditionFilter,1,nil,e,tp,lscale,rscale,eset) and not Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return g:IsExists(aux.PConditionFilter,1,nil,e,tp,lscale,rscale,eset) and (not Duel.IsPlayerAffectedByEffect(tp,40009208) or (Duel.GetCurrentChain()<1 and Duel.IsPlayerAffectedByEffect(tp,40009208)))
 end
 function cm.setcon2(e,tp,eg,ep,ev,re,r,rp)
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
@@ -165,7 +165,7 @@ function cm.setcon2(e,tp,eg,ep,ev,re,r,rp)
 	else
 		g=Duel.GetFieldGroup(tp,loc,0)
 	end
-	return g:IsExists(aux.PConditionFilter,1,nil,e,tp,lscale,rscale,eset) and Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return g:IsExists(aux.PConditionFilter,1,nil,e,tp,lscale,rscale,eset) and Duel.GetCurrentChain()>0 and Duel.IsPlayerAffectedByEffect(tp,40009208)
 end
 function cm.pspop(e,tp,eg,ep,ev,re,r,rp,sg,og)
 	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)

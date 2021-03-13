@@ -25,6 +25,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sp2tg)
 	e2:SetOperation(cm.sp2op)
 	c:RegisterEffect(e2)
+	cm.self_flip_effect2=e2
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -32,9 +33,8 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,m)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCondition(cm.spcon1)
 	e3:SetTarget(cm.sptg1)
 	e3:SetOperation(cm.spop1)
@@ -44,7 +44,7 @@ function cm.filter(c,e,tp)
 	return c:IsSetCard(0xf3b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re or not re:GetHandler()==e:GetHandler()
+	return not re or not re==cm.self_flip_effect2
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end

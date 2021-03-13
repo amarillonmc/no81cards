@@ -29,10 +29,9 @@ function cm.initial_effect(c)
 		cm.global_check=true
 		cm[0]=0
 		cm[1]=0
-		cm[2]=0
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_DESTROYED)
+		ge1:SetCode(EVENT_DESTROY)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
 		local ge2=Effect.CreateEffect(c)
@@ -87,10 +86,9 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0xaf6) and tc:IsType(TYPE_PENDULUM) and tc:GetPreviousControler()==tp then
-			if tc:GetPreviousLocation()==LOCATION_HAND then  cm[0]=1 end
-			if tc:GetPreviousLocation()==LOCATION_SZONE then  cm[1]=1 end
-			if tc:GetPreviousLocation()==LOCATION_MZONE then  cm[2]=1 end
+		if tc:IsSetCard(0xaf6) and tc:IsType(TYPE_PENDULUM)  then
+			local p=tc:GetControler()
+			if cm[p]<3 then  cm[p]=cm[p]+1 end	  
 		end
 		tc=eg:GetNext()
 	end
@@ -98,20 +96,19 @@ end
 function cm.clearop(e,tp,eg,ep,ev,re,r,rp)
 	cm[0]=0
 	cm[1]=0
-	cm[2]=0
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	local ct=cm[0]+cm[1]+cm[2]
+	local ct=cm[tp]
 	return ct>0 and Duel.GetTurnPlayer()==tp
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local ct=cm[0]+cm[1]+cm[2]
+	local ct=cm[tp]
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,ct) end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local ct=cm[0]+cm[1]+cm[2]
+	local ct=cm[tp]
 	Duel.Draw(tp,ct,REASON_EFFECT)
 end
 

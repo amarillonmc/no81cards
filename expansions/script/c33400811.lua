@@ -2,9 +2,18 @@
 local m=33400811
 local cm=_G["c"..m]
 function cm.initial_effect(c)
- --fusion material
+	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xa341),2,true)
+	--spsummon
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetCondition(cm.hspcon)
+	e0:SetOperation(cm.hspop)
+	c:RegisterEffect(e0)
 	  --move
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,2))
@@ -24,9 +33,37 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,m+10000)
 	e2:SetCondition(cm.stcon)
+	e2:SetTarget(cm.sttg)
 	e2:SetOperation(cm.stop)
 	c:RegisterEffect(e2)
 end
+function cm.hspfilter(c,tp,sc)
+	return c:IsSetCard(0xa341) and  Duel.GetFlagEffect(tp,c:GetCode())==0
+		and c:IsControler(tp)  and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) and Duel.CheckReleaseGroup(c:GetControler(),cm.hspfilter2,1,c,c:GetControler(),sc,tc)
+end
+function cm.hspfilter2(c,tp,sc,tc)
+	local g=Group.CreateGroup()
+	g:AddCard(tc)
+	g:AddCard(c)
+	return c:IsSetCard(0xa341) 
+		and c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,g,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) 
+end
+function cm.hspcon(e,c)
+	if c==nil then return true end
+	return Duel.CheckReleaseGroup(c:GetControler(),cm.hspfilter,1,nil,c:GetControler(),c)
+end
+function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g1=Duel.SelectReleaseGroup(tp,cm.hspfilter,1,1,nil,tp,c)
+	local tc1=g1:GetFirst()
+	local g2=Duel.SelectReleaseGroup(tp,cm.hspfilter2,1,1,tc1,tp,c,tc1)
+	local tc2=g2:GetFirst()
+	g2:Merge(g1)
+	c:SetMaterial(g2)
+	Duel.Release(g2,REASON_COST)
+	Duel.RegisterFlagEffect(tp,tc1:GetCode(),RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
+	Duel.RegisterFlagEffect(tp,tc2:GetCode(),RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
+end
+
 function cm.seqfilter(c)
 	return c:IsFaceup() 
 end
@@ -79,6 +116,10 @@ end
 function cm.setfilter(c)
 	return c:IsSetCard(0xa341) and  c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSSetable()
 end
+function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return true end 
+	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)  
+end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end 
@@ -103,10 +144,10 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_PHASE+ph)
 		Duel.RegisterEffect(e2,tp)
 	else
-		if  Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+		if  Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(m,1))then 
 			 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-			local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil)
 			local tc=g:GetFirst()
 			if  Duel.SSet(tp,tc)~=0 then
 			   local e1=Effect.CreateEffect(e:GetHandler())

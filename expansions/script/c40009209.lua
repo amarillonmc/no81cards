@@ -63,10 +63,10 @@ function c40009209.nnegcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,1,0,0xf2c,3,REASON_COST)
 end
 function c40009209.setcon1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return not Duel.IsPlayerAffectedByEffect(tp,40009208) or (Duel.GetCurrentChain()<1 and Duel.IsPlayerAffectedByEffect(tp,40009208))
 end
 function c40009209.setcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return Duel.GetCurrentChain()>0 and Duel.IsPlayerAffectedByEffect(tp,40009208)
 end
 function c40009209.cfilter(c)
 	return c:IsAbleToGraveAsCost()
@@ -101,10 +101,10 @@ function c40009209.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40009209.tdcon1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsPlayerAffectedByEffect(tp,40009208) and e:GetHandler():GetFlagEffect(40009209)~=0
+	return (not Duel.IsPlayerAffectedByEffect(tp,40009208) or (Duel.GetCurrentChain()<1 and Duel.IsPlayerAffectedByEffect(tp,40009208))) and e:GetHandler():GetFlagEffect(40009209)~=0
 end
 function c40009209.tdcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,40009208) and e:GetHandler():GetFlagEffect(40009209)~=0
+	return Duel.GetCurrentChain()>0 and Duel.IsPlayerAffectedByEffect(tp,40009208) and e:GetHandler():GetFlagEffect(40009209)~=0
 end
 function c40009209.tdfilter(c)
 	return  c:IsAbleToDeck()

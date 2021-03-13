@@ -26,7 +26,7 @@ function c40009196.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e3:SetCondition(c40009196.spcon1)
 	e3:SetTarget(c40009196.destg)
 	e3:SetOperation(c40009196.desop)
@@ -52,10 +52,10 @@ function c40009196.nnegcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,1,0,0xf1c,3,REASON_COST)
 end
 function c40009196.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return not Duel.IsPlayerAffectedByEffect(tp,40009208) or (Duel.GetCurrentChain()<1 and Duel.IsPlayerAffectedByEffect(tp,40009208))
 end
 function c40009196.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,40009208)
+	return Duel.GetCurrentChain()>0 and Duel.IsPlayerAffectedByEffect(tp,40009208)
 end
 function c40009196.ctfilter(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0xf1c) and c:IsControler(tp)
@@ -67,7 +67,8 @@ function c40009196.ctop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():AddCounter(0xf1c,2)
 end
 function c40009196.val(e,c)
-	return e:GetHandler():GetCounter(0xf1c)*100
+	--return e:GetHandler():GetCounter(0xf1c)*100
+	return Duel.GetCounter(0,1,1,0xf1c)*100
 end
 function c40009196.desfilter(c)
 	return c:IsFaceup()

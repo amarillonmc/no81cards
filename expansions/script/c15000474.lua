@@ -2,6 +2,7 @@ local m=15000474
 local cm=_G["c"..m]
 cm.name="星拟小龙"
 function cm.initial_effect(c)
+	c:SetSPSummonOnce(m)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x41),1,1)
 	c:EnableReviveLimit()

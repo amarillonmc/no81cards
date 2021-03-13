@@ -2,6 +2,13 @@ local m=15000472
 local cm=_G["c"..m]
 cm.name="星拟龙·零时之默迦尔 LV8"
 function cm.initial_effect(c)
+	--cannot special summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(cm.splimit)
+	c:RegisterEffect(e0)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -37,12 +44,15 @@ function cm.initial_effect(c)
 end
 cm.lvup={15000473}
 cm.lvdn={15000471}
+function cm.splimit(e,se,sp,st)
+	return se:IsHasType(EFFECT_TYPE_ACTIONS)
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function cm.filter(c,lv)
-	return (c:IsSetCard(0xaf34) or c:IsSetCard(0x41)) and c:GetLevel()<lv and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return (c:IsSetCard(0x3f34) or c:IsSetCard(0x41)) and c:GetLevel()<lv and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e:GetHandler():GetLevel()) end
@@ -69,7 +79,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoGrave(g,REASON_EFFECT)
 end
 function cm.spfilter(c,att,rac,lv,e,tp)
-	return (c:IsSetCard(0xaf34) or c:IsSetCard(0x41)) and c:GetLevel()>lv and c:GetLevel()<=lv+3 and c:IsAttribute(att) and c:IsRace(rac) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	return (c:IsSetCard(0x3f34) or c:IsSetCard(0x41)) and c:GetLevel()>lv and c:GetLevel()<=lv+3 and c:IsAttribute(att) and c:IsRace(rac) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.sp2filter(c)
 	return c:IsLevelBelow(9)
