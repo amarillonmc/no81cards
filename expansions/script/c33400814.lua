@@ -5,6 +5,15 @@ function cm.initial_effect(c)
 	 --fusion materia
 	c:EnableReviveLimit()
 	aux.AddFusionProcMix(c,false,true,cm.fusfilter1,cm.fusfilter1,cm.fusfilter2,cm.fusfilter2,cm.fusfilter2)
+	--spsummon
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetCondition(cm.hspcon)
+	e0:SetOperation(cm.hspop)
+	c:RegisterEffect(e0)
  --spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -13,35 +22,36 @@ function cm.initial_effect(c)
 	e1:SetValue(cm.splimit)
 	c:RegisterEffect(e1)
  --ChainLimit
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetOperation(cm.chainop)
-	c:RegisterEffect(e3)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetOperation(cm.chainop)
+	c:RegisterEffect(e2)
  --inactivatable
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CANNOT_INACTIVATE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(cm.effectfilter)
+	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_CANNOT_INACTIVATE)
+	e4:SetCode(EFFECT_CANNOT_DISEFFECT)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetValue(cm.effectfilter)
 	c:RegisterEffect(e4)
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_CANNOT_DISEFFECT)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetValue(cm.effectfilter)
-	c:RegisterEffect(e5)
  --set
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(2,m)
-	e2:SetCondition(cm.stcon)
-	e2:SetOperation(cm.stop)
-	c:RegisterEffect(e2)
+	local e9=Effect.CreateEffect(c)
+	e9:SetCategory(CATEGORY_DISABLE+CATEGORY_TOHAND)
+	e9:SetType(EFFECT_TYPE_QUICK_O)
+	e9:SetCode(EVENT_CHAINING)
+	e9:SetRange(LOCATION_MZONE)
+	e9:SetCountLimit(2,m)
+	e9:SetCondition(cm.stcon)
+	e9:SetTarget(cm.sttg)
+	e9:SetOperation(cm.stop)
+	c:RegisterEffect(e9)
  --Equip Okatana
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -55,6 +65,47 @@ function cm.fusfilter1(c)
 end
 function cm.fusfilter2(c)
 	return c:IsSetCard(0x341) and  c:IsType(TYPE_RITUAL+TYPE_FUSION+TYPE_XYZ+TYPE_SYNCHRO)
+end
+
+function cm.hspfilter(c,tp,sc)
+	return c:IsSetCard(0xa341)and c:IsType(TYPE_FUSION) and  Duel.GetFlagEffect(tp,c:GetCode())==0
+	 and  Duel.GetFlagEffect(tp,c:GetCode()+10000)==0
+		and c:IsControler(tp)  and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) and Duel.CheckReleaseGroup(c:GetControler(),cm.hspfilter2,1,c,c:GetControler(),sc,tc)
+end
+function cm.hspfilter2(c,tp,sc,tc)
+	local g=Group.CreateGroup()
+	g:AddCard(tc)
+	g:AddCard(c)
+	return c:IsSetCard(0xa341)  and c:IsType(TYPE_FUSION)and  Duel.GetFlagEffect(tp,c:GetCode())==0
+	 and  Duel.GetFlagEffect(tp,c:GetCode()+10000)==0
+		and c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,g,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) 
+end
+function cm.hspcon(e,c)
+	if c==nil then return true end
+	return Duel.CheckReleaseGroup(c:GetControler(),cm.hspfilter,1,nil,c:GetControler(),c)
+end
+function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g1=Duel.SelectReleaseGroup(tp,cm.hspfilter,1,1,nil,tp,c)
+	local tc1=g1:GetFirst()
+	local g2=Duel.SelectReleaseGroup(tp,cm.hspfilter2,1,1,tc1,tp,c,tc1)
+	local tc2=g2:GetFirst()
+	g2:Merge(g1)
+	c:SetMaterial(g2)
+	Duel.Release(g2,REASON_COST)
+	Duel.RegisterFlagEffect(tp,tc1:GetCode(),RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
+	Duel.RegisterFlagEffect(tp,tc2:GetCode(),RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
+	local tg1=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,tc1:GetCode())
+	local tc1=tg1:GetFirst()
+	while tc1 do
+	  tc1:RegisterFlagEffect(tc1:GetCode()+10000,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,6)) 
+	tc1=tg1:GetNext()  
+	end  
+	local tg2=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,tc2:GetCode())
+	local tc2=tg2:GetFirst()
+	while tc2 do
+	  tc2:RegisterFlagEffect(tc2:GetCode()+10000,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,6)) 
+	tc2=tg2:GetNext()  
+	end 
 end
 
 function cm.splimit(e,se,sp,st)
@@ -94,6 +145,15 @@ function cm.ckfilter(c,tp)
 end
 function cm.setfilter(c)
 	return c:IsSetCard(0xa341) and  c:IsAbleToHand()
+end
+function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return true end 
+	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
+local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,m)local tc=tg:GetFirst()
+	while tc do
+	  tc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,7)) 
+	tc=tg:GetNext()  
+	end 
 end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	c=e:GetHandler()
@@ -159,7 +219,7 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 		if  Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_DECK,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(m,3))then 
 			 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_DECK,0,1,1,nil)
 			Duel.SendtoHand(g,tp,REASON_EFFECT)   
 			Duel.ConfirmCards(1-tp,g)   
 		end
@@ -229,7 +289,7 @@ function cm.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 			e5:SetCountLimit(1)
 			token:RegisterEffect(e5)
 			--move
-			local e1=Effect.CreateEffect(c)
+			local e1=Effect.CreateEffect(ec)
 			e1:SetType(EFFECT_TYPE_QUICK_O)
 			e1:SetCode(EVENT_FREE_CHAIN)
 			e1:SetRange(LOCATION_SZONE)
@@ -268,12 +328,12 @@ local b1=Duel.IsExistingMatchingCard(cm.mvfilter1,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0
 	local b2=Duel.IsExistingMatchingCard(cm.mvfilter2,tp,LOCATION_MZONE,0,1,nil,tp)
   if not (b1 or b2)  then return end 
-  if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))
-	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(m,1))
-	else op=Duel.SelectOption(tp,aux.Stringid(m,2))+1 end
+  if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(m,4),aux.Stringid(m,5))
+	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(m,4))
+	else op=Duel.SelectOption(tp,aux.Stringid(m,5))+1 end
    if op==0 then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)<=0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 		local g=Duel.SelectMatchingCard(tp,cm.mvfilter1,tp,LOCATION_MZONE,0,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)

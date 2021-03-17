@@ -41,7 +41,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re or not re==cm.self_flip_effect2
+	return not re or re~=cm.self_flip_effect2
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(aux.TURE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end

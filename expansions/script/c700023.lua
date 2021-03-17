@@ -1,5 +1,5 @@
 --UjiMatcha Flavor
-if not pcall(function() require("expansions/script/c700020") end) then require("script/c700021") end
+if not pcall(function() require("expansions/script/c700021") end) then require("script/c700021") end
 local m,cm = rscf.DefineCard(700023,"Breath")
 function cm.initial_effect(c)
 	local e1 = rsef.QO(c,nil,{m,0},{1,m},nil,nil,LOCATION_HAND,nil,rscost.cost(Card.IsReleasable,"res"),rsop.target(cm.setfilter,nil,LOCATION_HAND),cm.setop)

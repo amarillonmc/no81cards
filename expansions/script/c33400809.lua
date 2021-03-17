@@ -17,14 +17,14 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
 --move
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
-	e1:SetTarget(cm.mvtg)
-	e1:SetOperation(cm.mvop)
-	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
+	e2:SetTarget(cm.mvtg)
+	e2:SetOperation(cm.mvop)
+	c:RegisterEffect(e2)
 end
 function cm.lcheck(g)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0xa341)
@@ -64,6 +64,12 @@ function cm.mvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0
 	local b2=Duel.IsExistingMatchingCard(cm.mvfilter2,tp,LOCATION_MZONE,0,1,nil,tp)
 	if chk==0 then return b1 or b2 end
+	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)  
+local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,m)local tc=tg:GetFirst()
+	while tc do
+	  tc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,6)) 
+	tc=tg:GetNext()  
+	end 
 end
 function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
 local b1=Duel.IsExistingMatchingCard(cm.mvfilter1,tp,LOCATION_MZONE,0,1,nil)

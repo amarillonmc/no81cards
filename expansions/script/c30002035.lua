@@ -58,7 +58,7 @@ function c30002035.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		local fid=c:GetFieldID()
-		tc:RegisterFlagEffect(30002036,0,0,1,fid)
+		tc:RegisterFlagEffect(30002036,RESET_EVENT+RESET_TODECK,0,1,fid)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_LEAVE_FIELD)

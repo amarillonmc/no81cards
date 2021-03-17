@@ -44,7 +44,7 @@ function cm.filter(c,e,tp)
 	return c:IsSetCard(0xf3b) and c:IsType(TYPE_MONSTER) and not c:IsCode(15000541) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) or c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE))
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re or not re==cm.self_flip_effect2
+	return not re or re~=cm.self_flip_effect2
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

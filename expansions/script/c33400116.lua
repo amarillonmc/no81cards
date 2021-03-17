@@ -12,7 +12,7 @@ function c33400116.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c33400116.filter(c)
-	return (c:IsSetCard(0x341) or c:IsSetCard(0x340)) and c:IsAbleToDeck()
+	return (c:IsSetCard(0x341) or c:IsSetCard(0x340)) and c:IsFaceup() and c:IsAbleToDeck()
 end
 function c33400116.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED+LOCATION_GRAVE) and chkc:IsControler(tp) and c33400116.filter(chkc) end

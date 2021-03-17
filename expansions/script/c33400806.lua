@@ -25,6 +25,7 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,m+10000)
 	e3:SetCondition(cm.stcon)
+	e3:SetTarget(cm.sttg)
 	e3:SetOperation(cm.stop)
 	c:RegisterEffect(e3)
 end
@@ -64,6 +65,15 @@ function cm.ckfilter1(c,tp,seq)
 	local seq2=aux.MZoneSequence(seq1)
 	return  c:IsFaceup() and  math.abs(seq-seq2)<=1 and seq1<5
 end
+function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return true end 
+	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
+local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,m)local tc=tg:GetFirst()
+	while tc do
+	  tc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3)) 
+	tc=tg:GetNext()  
+	end  
+end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end 
@@ -73,7 +83,7 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	if re:IsActiveType(TYPE_MONSTER) then seq=aux.MZoneSequence(seq) end
 	if ((seq1==4-seq and rp==1-tp) or (seq1==seq and rp==tp)) or (rp==tp and math.abs(c:GetSequence()-seq)<=1 and loc==LOCATION_MZONE and seq2<5) then 
 	   local seq3=aux.MZoneSequence(c:GetSequence())
-	   local cg=Duel.GetMatchingGroup(cm.ckfilter1,tp,LOCATION_MZONE,0,c,tp,seq3)	
+	   local cg=Duel.GetMatchingGroup(cm.ckfilter1,tp,LOCATION_MZONE,0,c,tp,seq3)   
 	   if cg:GetCount()>0  then 
 			local tc=cg:GetFirst()
 			while tc do  

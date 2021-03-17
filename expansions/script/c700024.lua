@@ -1,10 +1,11 @@
 --Breath Of THE DES ALIZES
-if not pcall(function() require("expansions/script/c700020") end) then require("script/c700021") end
+if not pcall(function() require("expansions/script/c700021") end) then require("script/c700021") end
 local m,cm = rscf.DefineCard(700024,"Breath")
 function cm.initial_effect(c)
 	local e1,e2,e3,e4 = rsbh.ExMonFun(c,m,LOCATION_ONFIELD,3)
 	local e5 = rsef.FV_LIMIT(c,"dis",nil,cm.distg,{LOCATION_ONFIELD,LOCATION_ONFIELD })
-	local e6 = rsef.FC(c,EVENT_ADJUST,nil,nil,nil,LOCATION_MZONE,cm.rescon,cm.resop)
+	e5:SetRange(LOCATION_ONFIELD)
+	local e6 = rsef.FC(c,EVENT_ADJUST,nil,nil,nil,LOCATION_ONFIELD,cm.rescon,cm.resop)
 	local e7 = rsef.QO(c,nil,{m,0},{1,m},nil,nil,LOCATION_MZONE,cm.mvcon,nil,nil,cm.mvop)
 end
 function cm.distg(e,c)

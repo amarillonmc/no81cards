@@ -1,5 +1,5 @@
 --Cappuccino Flavor
-if not pcall(function() require("expansions/script/c700020") end) then require("script/c700021") end
+if not pcall(function() require("expansions/script/c700021") end) then require("script/c700021") end
 local m,cm = rscf.DefineCard(700025,"Breath")
 function cm.initial_effect(c)
 	local e1,e2,e3,e4 = rsbh.ExMonFun(c,m,LOCATION_SZONE,1)

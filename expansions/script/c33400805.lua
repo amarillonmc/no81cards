@@ -20,6 +20,7 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,m+10000)
 	e2:SetCondition(cm.stcon)
+	e2:SetTarget(cm.sttg)
 	e2:SetOperation(cm.stop)
 	c:RegisterEffect(e2)
 end
@@ -49,6 +50,15 @@ end
 function cm.ckfilter(c,tp)
 	local seq=c:GetSequence()
 	return  c:IsType(TYPE_MONSTER) and c:IsControler(tp) and c:IsAbleToHand() and seq<5
+end
+function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return true end 
+	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
+local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,m)local tc=tg:GetFirst()
+	while tc do
+	  tc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3)) 
+	tc=tg:GetNext()  
+	end   
 end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	c=e:GetHandler()

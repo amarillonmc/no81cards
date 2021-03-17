@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,m+10000)
 	e3:SetCondition(cm.stcon)
+	e3:SetTarget(cm.sttg)
 	e3:SetOperation(cm.stop)
 	c:RegisterEffect(e3)
 end
@@ -51,6 +52,15 @@ end
 function cm.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x341) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+end
+function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return true end 
+	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
+local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,m)local tc=tg:GetFirst()
+	while tc do
+	  tc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,5)) 
+	tc=tg:GetNext()  
+	end  
 end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	c=e:GetHandler()

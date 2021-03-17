@@ -44,7 +44,7 @@ function cm.filter(c,e,tp)
 	return c:IsSetCard(0xf3b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re or not re==cm.self_flip_effect2
+	return not re or re~=cm.self_flip_effect2
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end

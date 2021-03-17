@@ -39,7 +39,7 @@ function cm.initial_effect(c)
 end
 function cm.hspfilter(c,tp,sc)
 	return c:IsSetCard(0xa341) and  Duel.GetFlagEffect(tp,c:GetCode())==0
-		and c:IsControler(tp)  and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) and Duel.CheckReleaseGroup(c:GetControler(),cm.hspfilter2,1,c,c:GetControler(),sc,tc)
+	 and  Duel.GetFlagEffect(tp,c:GetCode()+10000)==0   and c:IsControler(tp)  and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) and Duel.CheckReleaseGroup(c:GetControler(),cm.hspfilter2,1,c,c:GetControler(),sc,tc)
 end
 function cm.hspfilter2(c,tp,sc,tc)
 	local g=Group.CreateGroup()
@@ -60,8 +60,20 @@ function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	g2:Merge(g1)
 	c:SetMaterial(g2)
 	Duel.Release(g2,REASON_COST)
-	Duel.RegisterFlagEffect(tp,tc1:GetCode(),RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
-	Duel.RegisterFlagEffect(tp,tc2:GetCode(),RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
+	Duel.RegisterFlagEffect(tp,tc1:GetCode()+10000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
+	Duel.RegisterFlagEffect(tp,tc2:GetCode()+10000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
+	local tg1=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,tc1:GetCode())
+	local tc1=tg1:GetFirst()
+	while tc1 do
+	  tc1:RegisterFlagEffect(tc1:GetCode()+10000,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4)) 
+	tc1=tg1:GetNext()  
+	end  
+	local tg2=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,tc2:GetCode())
+	local tc2=tg2:GetFirst()
+	while tc2 do
+	  tc2:RegisterFlagEffect(tc2:GetCode()+10000,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4)) 
+	tc2=tg2:GetNext()  
+	end 
 end
 
 function cm.seqfilter(c)
@@ -118,7 +130,12 @@ function cm.setfilter(c)
 end
 function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
  if chk==0 then return true end 
-	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)  
+	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
+local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,m)local tc=tg:GetFirst()
+	while tc do
+	  tc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,5)) 
+	tc=tg:GetNext()  
+	end  
 end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	c=e:GetHandler()

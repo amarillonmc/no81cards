@@ -1,7 +1,7 @@
 --八舞夕弦 月下双子
 local m=33400802
 local cm=_G["c"..m]
-function cm.initial_effect(c)
+function cm.initial_effect(c) 
 	 --search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -25,6 +25,7 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,m+10000)
 	e3:SetCondition(cm.stcon)
+	e3:SetTarget(cm.sttg)
 	e3:SetOperation(cm.stop)
 	c:RegisterEffect(e3)
 end
@@ -62,6 +63,15 @@ function cm.ckfilter1(c,seq)
 	local seq1=c:GetSequence()
 	local seq2=4-aux.MZoneSequence(seq1)
 	return  c:IsFaceup() and  math.abs(seq-seq2)<=1 
+end
+function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return true end 
+	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
+local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x7f,0,nil,m)local tc=tg:GetFirst()
+	while tc do
+	  tc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3)) 
+	tc=tg:GetNext()  
+	end  
 end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	c=e:GetHandler()

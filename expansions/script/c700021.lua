@@ -127,7 +127,7 @@ function cm.mvcfilter(c,e,tp)
 	return c:IsComplexType(TYPE_TRAP+TYPE_CONTINUOUS) and (c:IsLocation(LOCATION_SZONE) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
 end 
 function cm.mvcfilter2(c,tp)
-	return c:IsControler(tp) and c:IsFaceup() and rsbh.IsSet(c)
+	return c:IsControler(tp) and c:IsFaceup() and rsbh.IsSet(c) and c:IsOnField()
 end
 function cm.mvscon(e,tp,eg)
 	return eg:IsExists(cm.mvcfilter2,1,nil,tp) and e:GetHandler():CheckUniqueOnField(tp,LOCATION_SZONE)
