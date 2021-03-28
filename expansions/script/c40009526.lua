@@ -1,8 +1,7 @@
 --晓天之剑圣 格吉特·赫利俄斯
 function c40009526.initial_effect(c)
-	aux.AddCodeList(c,40009510)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsCode,40009510),aux.NonTuner(Card.IsRace,RACE_WARRIOR),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_WARRIOR),aux.NonTuner(Card.IsRace,RACE_WARRIOR),1)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e0=Effect.CreateEffect(c)

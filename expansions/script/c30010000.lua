@@ -4,7 +4,7 @@ local m,cm=rscf.DefineCard(30010000)
 function cm.initial_effect(c)
 	aux.EnablePendulumAttribute(c,false)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),12,5,12)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),12,5,nil,nil,12)
 	c:EnableReviveLimit()
 	--spsummon limit
 	local e1=Effect.CreateEffect(c)

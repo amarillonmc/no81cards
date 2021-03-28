@@ -1,8 +1,7 @@
 --晓光之剑烂 格吉特·莱特宁
 function c40009514.initial_effect(c)
-	aux.AddCodeList(c,40009510)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsCode,40009510),aux.NonTuner(Card.IsRace,RACE_WARRIOR),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_WARRIOR),aux.NonTuner(Card.IsRace,RACE_WARRIOR),1)
 	c:EnableReviveLimit()
 	--summon success
 	local e1=Effect.CreateEffect(c)

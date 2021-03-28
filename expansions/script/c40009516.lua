@@ -23,6 +23,7 @@ function c40009516.initial_effect(c)
 	e3:SetOperation(c40009516.leave)
 	c:RegisterEffect(e3)
 	e1:SetLabelObject(e3)
+	e2:SetLabelObject(e3)
 	--xyz effect
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(40009516,1))
@@ -53,25 +54,12 @@ end
 function c40009516.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1,true)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2,true)
-		if c:IsRelateToEffect(e) then
-			c:SetCardTarget(tc)
-			e:GetLabelObject():SetLabelObject(tc)
-			c:CreateRelation(tc,RESET_EVENT+0x5020000)
-			tc:CreateRelation(c,RESET_EVENT+0x5fe0000)
-		end
+	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 and c:IsRelateToEffect(e) then
+		c:SetCardTarget(tc)
+		e:GetLabelObject():SetLabelObject(tc)
+		c:CreateRelation(tc,RESET_EVENT+0x5020000)
+		tc:CreateRelation(c,RESET_EVENT+RESETS_STANDARD)
 	end
-	Duel.SpecialSummonComplete()
 end
 function c40009516.leave(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
