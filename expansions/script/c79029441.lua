@@ -49,7 +49,6 @@ function c79029441.initial_effect(c)
 	e6:SetCategory(CATEGORY_TOGRAVE)
 	e6:SetType(EFFECT_TYPE_IGNITION)
 	e6:SetRange(LOCATION_MZONE)
-	e6:SetCountLimit(1)
 	e6:SetCondition(c79029441.spcon1)
 	e6:SetCost(c79029441.sgcost)
 	e6:SetTarget(c79029441.sgtg)
@@ -88,10 +87,11 @@ function c79029441.rfilter(c,tp)
 end
 function c79029441.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029441.rfilter,c:GetControler(),LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_HAND,0,3,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029441.rfilter,c:GetControler(),LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_HAND,0,3,nil) and c:GetFlagEffect(79029441)==0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c79029441.rfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_HAND,0,3,3,nil)
 	Duel.SendtoGrave(g,REASON_COST)
+	c:RegisterFlagEffect(79029441,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,0,0)
 	Debug.Message("等待下一步指示。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029441,4))
 end

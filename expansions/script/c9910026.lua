@@ -9,43 +9,36 @@ function c9910026.initial_effect(c)
 	e1:SetTarget(c9910026.target)
 	e1:SetOperation(c9910026.operation)
 	c:RegisterEffect(e1)
-	--change effect type
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCode(9910026)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	c:RegisterEffect(e2)
 	--Equip limit
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_EQUIP_LIMIT)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetValue(c9910026.eqlimit)
+	c:RegisterEffect(e2)
+	--special summon
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_EQUIP_LIMIT)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetValue(c9910026.eqlimit)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetCountLimit(1,9910026)
+	e3:SetCondition(c9910026.spcon)
+	e3:SetTarget(c9910026.sptg)
+	e3:SetOperation(c9910026.spop)
 	c:RegisterEffect(e3)
-	--to grave
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_TOGRAVE)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e4:SetCountLimit(1,9910026)
-	e4:SetTarget(c9910026.tgtg)
-	e4:SetOperation(c9910026.tgop)
-	c:RegisterEffect(e4)
 	--to hand
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(9910026,0))
-	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e5:SetType(EFFECT_TYPE_IGNITION)
-	e5:SetRange(LOCATION_GRAVE)
-	e5:SetCountLimit(1,9910027)
-	e5:SetCondition(aux.exccon)
-	e5:SetCost(aux.bfgcost)
-	e5:SetTarget(c9910026.thtg)
-	e5:SetOperation(c9910026.thop)
-	c:RegisterEffect(e5)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(9910026,1))
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_GRAVE)
+	e4:SetCountLimit(1,9910027)
+	e4:SetCondition(aux.exccon)
+	e4:SetCost(aux.bfgcost)
+	e4:SetTarget(c9910026.thtg)
+	e4:SetOperation(c9910026.thop)
+	c:RegisterEffect(e4)
 end
 function c9910026.eqlimit(e,c)
 	return c:IsSetCard(0x3950)
@@ -66,30 +59,68 @@ function c9910026.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Equip(tp,e:GetHandler(),tc)
 	end
 end
-function c9910026.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3950) and c:IsAbleToGrave()
+function c9910026.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ec=c:GetPreviousEquipTarget()
+	local res=ec and ec:GetReasonCard() and ec:IsReason(REASON_MATERIAL+REASON_XYZ)
+	if not res then return false end
+	local rc=ec:GetReasonCard()
+	local mg=rc:GetMaterial()
+	return c:IsReason(REASON_LOST_TARGET) and mg:IsContains(ec) and not rc:GetFlagEffectLabel(9910026)
 end
-function c9910026.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910026.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
+function c9910026.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local ec=c:GetPreviousEquipTarget()
+	local rc=ec:GetReasonCard()
+	local lg=rc:GetOverlayGroup()
+	if chk==0 then return c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and lg:IsContains(ec) and ec:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	ec:CreateEffectRelation(e)
+	Duel.SetOperationInfo(0,CATEGORY_CONTROL,rc,1,0,0)
 end
-function c9910026.tgop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9910026.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoGrave(g,REASON_EFFECT)
-		local tc=g:GetFirst()
-		if tc then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetCode(EFFECT_UPDATE_LEVEL)
-			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-			e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
-			e1:SetValue(tc:GetLevel())
-			e1:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e1,tp)
-		end
+function c9910026.xfilter(c,e)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
+end
+function c9910026.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ec=c:GetPreviousEquipTarget()
+	if ec and ec:IsRelateToEffect(e) and c:IsRelateToEffect(e)
+		and Duel.SpecialSummonStep(ec,0,tp,tp,false,false,POS_FACEUP) then
+		Duel.Equip(tp,c,ec)
+		--Add Equip limit
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_EQUIP_LIMIT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(c9910026.eqlimit2)
+		e1:SetLabelObject(ec)
+		c:RegisterEffect(e1)
 	end
+	if Duel.SpecialSummonComplete()==0 then return end
+	local rc=ec:GetReasonCard()
+	if rc:IsOnField() then rc:RegisterFlagEffect(9910026,RESET_EVENT+RESETS_STANDARD,0,1) end
+	local lg=rc:GetOverlayGroup()
+	local g1=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,nil)
+	local g2=Duel.GetMatchingGroup(c9910026.xfilter,tp,LOCATION_MZONE,0,nil,e)
+	if g1:GetCount()>0 and g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910026,0)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+		local tc1=g1:Select(tp,1,1,nil):GetFirst()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		local tc2=g2:Select(tp,1,1,nil):GetFirst()
+		if not tc1 or not tc2 or tc1:IsImmuneToEffect(e) then return end
+		local og=tc1:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+		tc1:CancelToGrave()
+		Duel.Overlay(tc2,Group.FromCards(tc1))
+	end
+end
+function c9910026.eqlimit2(e,c)
+	return e:GetLabelObject()==c
 end
 function c9910026.thfilter(c)
 	return c:IsSetCard(0x5950) and not c:IsCode(9910026) and c:IsAbleToHand()

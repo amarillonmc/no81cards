@@ -1,72 +1,72 @@
---樱小路露娜
+--三和弦乐团
+c9910051.named_with_Traid=1
 function c9910051.initial_effect(c)
-	--double
+	--apply effect
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910051,0))
-	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
-	e1:SetCountLimit(1,9910051)
-	e1:SetCondition(c9910051.condition)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetHintTiming(TIMINGS_CHECK_MONSTER,TIMINGS_CHECK_MONSTER)
 	e1:SetCost(c9910051.cost)
 	e1:SetTarget(c9910051.target)
 	e1:SetOperation(c9910051.operation)
 	c:RegisterEffect(e1)
-	--return to hand
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910051,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_DAMAGE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_BATTLE_START)
-	e2:SetTarget(c9910051.rthtarget)
-	e2:SetOperation(c9910051.rthoperation)
-	c:RegisterEffect(e2)
-end
-function c9910051.condition(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp
 end
 function c9910051.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+	e:SetLabel(1)
+	return true
 end
-function c9910051.rmfilter(c)
-	return c:IsCode(9910052) and c:IsAbleToRemove()
+function c9910051.filter(c,tp)
+	local code=c:GetCode()-9910000
+	local flag=Duel.GetFlagEffectLabel(tp,9910051)
+	if flag and math.fmod(flag,code)==0 then return false end
+	local m=_G["c"..c:GetCode()]
+	if not (m and m.named_with_Traid and c:IsAbleToGraveAsCost()) then return false end
+	local te=m.onfield_effect
+	if not te then return false end
+	local event=te:GetCode()
+	local con=te:GetCondition()
+	local tg=te:GetTarget()
+	local res,teg,tep,tev,tre,tr,trp=Duel.CheckEvent(event,true)
+	if not res then return false end
+	local res1=not con or con(e,tp,teg,tep,tev,tre,tr,trp)
+	local res2=not tg or tg(e,tp,teg,tep,tev,tre,tr,trp,0)
+	return res1 and res2
 end
 function c9910051.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910051.rmfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE+LOCATION_DECK)
-end
-function c9910051.operation(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910051.rmfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=1 then return end
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CANNOT_TO_HAND)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetTargetRange(1,1)
-		e1:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
-		e1:SetReset(RESET_CHAIN)
-		Duel.RegisterEffect(e1,tp)
+	if chk==0 then
+		if e:GetLabel()==0 then return false end
+		e:SetLabel(0)
+		return e:GetHandler():IsAbleToDeckAsCost()
+			and Duel.IsExistingMatchingCard(c9910051.filter,tp,LOCATION_EXTRA,0,1,nil,tp)
 	end
+	e:SetLabel(0)
+	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9910051.filter,tp,LOCATION_EXTRA,0,1,1,nil,tp)
+	Duel.SendtoGrave(g,REASON_COST)
+	local tc=g:GetFirst()
+	Duel.ClearTargetCard()
+	tc:CreateEffectRelation(e)
+	e:SetLabelObject(tc)
+	local m=_G["c"..tc:GetCode()]
+	local te=m.onfield_effect
+	local event=te:GetCode()
+	local tg=te:GetTarget()
+	local res,teg,tep,tev,tre,tr,trp=Duel.CheckEvent(event,true)
+	if tg then tg(e,tp,teg,tep,tev,tre,tr,trp,1) end
 end
-function c9910051.rthtarget(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetAttackTarget()==c or (Duel.GetAttacker()==c and Duel.GetAttackTarget()~=nil) end
-	local g=Group.FromCards(Duel.GetAttacker(),Duel.GetAttackTarget())
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
-end
-function c9910051.rthoperation(e,tp,eg,ep,ev,re,r,rp)
-	local g=Group.CreateGroup()
-	local c=Duel.GetAttacker()
-	if c:IsRelateToBattle() then g:AddCard(c) end
-	c=Duel.GetAttackTarget()
-	if c~=nil and c:IsRelateToBattle() then g:AddCard(c) end
-	if g:GetCount()>0 then
-		if Duel.SendtoHand(g,nil,REASON_EFFECT)~=2 then return end
-		Duel.Damage(1-tp,1000,REASON_EFFECT)
+function c9910051.operation(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tc=e:GetLabelObject()
+	if tc then
+		local m=_G["c"..tc:GetCode()]
+		local te=m.onfield_effect
+		local op=te:GetOperation()
+		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end
+	local code=tc:GetCode()-9910000
+	local flag=Duel.GetFlagEffectLabel(tp,9910051)
+	if flag then code=code*flag end
+	Duel.ResetFlagEffect(tp,9910051)
+	Duel.RegisterFlagEffect(tp,9910051,RESET_PHASE+PHASE_END,0,1,code)
 end

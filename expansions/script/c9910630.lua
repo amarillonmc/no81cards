@@ -25,7 +25,6 @@ function c9910630.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,9910630)
 	e3:SetTarget(c9910630.settg)
 	e3:SetOperation(c9910630.setop)
 	c:RegisterEffect(e3)
@@ -85,25 +84,18 @@ function c9910630.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function c9910630.setfilter(c)
 	return c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+		and (c:IsLocation(LOCATION_DECK) or c:IsFaceup())
 end
 function c9910630.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) and Duel.CheckLocation(tp,LOCATION_PZONE,1)
-		and Duel.IsExistingMatchingCard(c9910630.setfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,1000)
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
+		and Duel.IsExistingMatchingCard(c9910630.setfilter,tp,LOCATION_DECK+LOCATION_MZONE,0,1,nil) end
 end
 function c9910630.setop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
-	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) or not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
+	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,c9910630.setfilter,tp,LOCATION_DECK,0,1,1,nil)
-	local tc=g:GetFirst()
-	if not tc then return end
-	if Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,false) then
-		if Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,false) then
-			tc:SetStatus(STATUS_EFFECT_ENABLED,true)
-		end
-		c:SetStatus(STATUS_EFFECT_ENABLED,true)
+	local g=Duel.SelectMatchingCard(tp,c9910630.setfilter,tp,LOCATION_DECK+LOCATION_MZONE,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end
 function c9910630.rcost(e,tp,eg,ep,ev,re,r,rp,chk)

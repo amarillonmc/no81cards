@@ -59,6 +59,8 @@ function c79029442.acop(e,tp,eg,ep,ev,re,r,rp)
 	local x=Duel.GetMatchingGroupCount(c79029442.ckfil,tp,LOCATION_ONFIELD,0,nil)
 	if x<=0 then return end
 	if op~=1 then
+	Debug.Message("您要选择谁呢？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029442,4))
 	g=Duel.GetMatchingGroup(c79029442.emfil,tp,LOCATION_GRAVE,0,nil,e,tp) 
 	sg=g:Select(tp,1,x,nil)
 	local tc=sg:GetFirst()
@@ -69,6 +71,8 @@ function c79029442.acop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if op~=0 then 
 	if op==2 then Duel.BreakEffect() end
+	Debug.Message("痛苦，我从未忘记。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029442,5))
 	g=Duel.GetMatchingGroup(c79029442.tdfil,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,nil)
 	tg=g:Select(tp,1,x,nil)
 	Duel.SendtoDeck(tg,nil,0,REASON_EFFECT)

@@ -49,10 +49,12 @@ function c79029283.activate(e,tp,eg,ep,ev,re,r,rp)
 			table.insert(afilter,OPCODE_OR)
 		end
 	end
+	local count=0
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 	local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
 	local g=Duel.GetDecktopGroup(tp,1)
 	Duel.ConfirmCards(0,g)
+	count=count+1
 	local tc=g:GetFirst()
 	if tc:GetCode()==ac then
 	Duel.SetLP(1-tp,Duel.GetLP(1-tp)-500)
@@ -62,10 +64,12 @@ function c79029283.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
 	local g=Duel.GetDecktopGroup(tp,1)
 	Duel.ConfirmCards(0,g)
+	count=count+1 
 	local tc=g:GetFirst()
 	if tc:GetCode()==ac then
 	Duel.SetLP(1-tp,Duel.GetLP(1-tp)-500) 
 	Duel.SendtoGrave(tc,REASON_EFFECT)
+	if count==7 then return false end
 	else
 	chk=false
 	end

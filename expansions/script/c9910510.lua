@@ -34,7 +34,7 @@ function c9910510.initial_effect(c)
 	c:RegisterEffect(e4)
 	--negate
 	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_NEGATE+CATEGORY_GRAVE_ACTION)
+	e5:SetCategory(CATEGORY_NEGATE)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_CHAINING)
 	e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -79,7 +79,7 @@ function c9910510.costfilter(c)
 end
 function c9910510.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9910510.costfilter,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectReleaseGroupEx(tp,c9910510.costfilter,1,1,nil)
 	Duel.Release(g,REASON_COST)
 end

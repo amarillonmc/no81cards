@@ -3,7 +3,7 @@ function c9910504.initial_effect(c)
 	aux.AddCodeList(c,9910501,9910503)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_ATKCHANGE+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(c9910504.target)

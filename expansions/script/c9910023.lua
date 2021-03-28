@@ -5,7 +5,6 @@ function c9910023.initial_effect(c)
 	c:EnableReviveLimit()
 	--sort
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910023,0))
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -20,72 +19,26 @@ function c9910023.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c9910023.tdcon1)
 	e2:SetTarget(c9910023.tdtg)
 	e2:SetOperation(c9910023.tdop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetCondition(c9910023.tdcon2)
-	c:RegisterEffect(e3)
-end
-function c9910023.tdcon1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsPlayerAffectedByEffect(tp,9910026)
-		or not e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
-end
-function c9910023.tdcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,9910026)
-		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
 end
 function c9910023.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3950) and not g:IsExists(Card.IsCode,1,nil,9910023)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3950)
 end
 function c9910023.stcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c9910023.mfilter(c)
-	return c:IsSetCard(0x3950) and c:IsSummonType(SUMMON_TYPE_SPECIAL)
+	return c:IsFaceup() and c:IsType(TYPE_PENDULUM)
 end
 function c9910023.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=0
-	local g=Duel.GetMatchingGroup(c9910023.mfilter,tp,LOCATION_MZONE,0,nil)
-	if g:GetCount()<=0 then return false end
-	local tc=g:GetFirst()
-	while tc do
-		if tc then
-			local mg=tc:GetMaterial():Filter(Card.IsType,nil,TYPE_PENDULUM)
-			ct=ct+mg:GetCount()
-		end
-		tc=g:GetNext()
-	end
-	if chk==0 then return ct>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 end
+	local ct=Duel.GetMatchingGroupCount(c9910023.mfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if chk==0 then return ct>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>=ct end
 end
 function c9910023.stop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsFacedown() then return end
-	local ct=0
-	local g=Duel.GetMatchingGroup(c9910023.mfilter,tp,LOCATION_MZONE,0,nil)
-	if g:GetCount()<=0 then return false end
-	local tc=g:GetFirst()
-	while tc do
-		if tc then
-			local mg=tc:GetMaterial():Filter(Card.IsType,nil,TYPE_PENDULUM)
-			ct=ct+mg:GetCount()
-		end
-		tc=g:GetNext()
-	end
-	if ct>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 then
-		local ctt={}
-		local ctp=1
-		while Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>=ctp and ct>=ctp do
-			ctt[ctp]=ctp
-			ctp=ctp+1
-		end
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910023,1))
-		local stcount=Duel.AnnounceNumber(tp,table.unpack(ctt))
-		Duel.SortDecktop(tp,1-tp,stcount)
-	end
+	local ct=Duel.GetMatchingGroupCount(c9910023.mfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if ct>0 then Duel.SortDecktop(tp,1-tp,ct) end
 end
 function c9910023.xfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ)

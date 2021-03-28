@@ -29,21 +29,23 @@ function c9910501.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetAttack()>e:GetHandler():GetBaseAttack()
 end
 function c9910501.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
 	if chkc then return chkc:IsOnField() end
 	if chk==0 then return Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	e:SetLabel(c:GetAttack()-c:GetBaseAttack())
 end
 function c9910501.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local label=e:GetLabel()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then
-		local diff=math.abs(c:GetBaseAttack()-c:GetAttack())
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and label>0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(-diff)
+		e1:SetValue(-label)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
 	end

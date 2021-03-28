@@ -1,90 +1,106 @@
---尤希尔·弗洛·让梅尔
+--三和弦歌手 奈绪
+c9910055.named_with_Traid=1
 function c9910055.initial_effect(c)
-	--double
+	c:EnableReviveLimit()
+	--spsummon condition
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910055,0))
-	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_DISABLE)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
-	e1:SetCountLimit(1,9910055)
-	e1:SetCost(c9910055.cost)
-	e1:SetTarget(c9910055.target)
-	e1:SetOperation(c9910055.operation)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	c:RegisterEffect(e1)
-	--return to hand
+	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910055,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_DAMAGE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_BATTLE_START)
-	e2:SetTarget(c9910055.rthtarget)
-	e2:SetOperation(c9910055.rthoperation)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,9910055)
+	e2:SetCondition(c9910055.thcon)
+	e2:SetTarget(c9910055.thtg)
+	e2:SetOperation(c9910055.thop)
 	c:RegisterEffect(e2)
+	c9910055.onfield_effect=e2
+	--draw
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DRAW+CATEGORY_TOEXTRA)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCode(EVENT_PHASE+PHASE_END)
+	e3:SetCountLimit(1,9910095)
+	e3:SetCondition(c9910055.drcon)
+	e3:SetCost(c9910055.drcost)
+	e3:SetTarget(c9910055.drtg)
+	e3:SetOperation(c9910055.drop)
+	c:RegisterEffect(e3)
 end
-function c9910055.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+function c9910055.cfilter(c,tp)
+	return c:GetSummonPlayer()==tp
+		and (c:IsPreviousLocation(LOCATION_DECK) or c:IsPreviousLocation(LOCATION_EXTRA))
 end
-function c9910055.disfilter(c)
-	return c:IsFaceup() and not c:IsDisabled()
+function c9910055.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c9910055.cfilter,1,nil,1-tp)
 end
-function c9910055.rmfilter(c)
-	return c:IsCode(9910052) and c:IsAbleToRemove()
+function c9910055.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,9,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_DECK)
 end
-function c9910055.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and c9910055.disfilter(chkc) end
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910055.rmfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil)
-		and Duel.IsExistingTarget(c9910055.disfilter,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectTarget(tp,c9910055.disfilter,tp,0,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE+LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
-	Duel.SetChainLimit(c9910055.limit(g:GetFirst()))
+function c9910055.thfilter(c)
+	return not c:IsCode(9910051) and c:IsAbleToHand()
 end
-function c9910055.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910055.rmfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=1 then return end
-		if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsType(TYPE_MONSTER) and not tc:IsDisabled() and tc:IsControler(1-tp) then
-			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetValue(RESET_TURN_SET)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
+function c9910055.thfilter2(c)
+	return c:IsCode(9910051) and c:IsAbleToHand()
+end
+function c9910055.thop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<9
+		or not Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil) then return end
+	Duel.ShuffleDeck(tp)
+	Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(9910055,0))
+	local g=Duel.SelectMatchingCard(1-tp,nil,1-tp,0,LOCATION_DECK,9,9,nil)
+	Duel.ConfirmCards(tp,g)
+	Duel.ConfirmCards(1-tp,g)
+	local ct=g:FilterCount(Card.IsCode,nil,9910051)
+	local thct=0
+	if ct>0 and Duel.SelectYesNo(tp,aux.Stringid(9910055,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:FilterSelect(tp,c9910055.thfilter,1,ct,nil)
+		thct=Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+		Duel.ShuffleHand(tp)
+	end
+	local sg3=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
+	if thct==0 and Duel.IsExistingMatchingCard(c9910055.thfilter2,tp,LOCATION_DECK,0,1,nil)
+		and Duel.SelectYesNo(tp,aux.Stringid(9910055,2)) then
+		Duel.BreakEffect()
+		local sg2=Duel.GetFirstMatchingCard(c9910055.thfilter2,tp,LOCATION_DECK,0,nil)
+		if sg2 then
+			Duel.SendtoHand(sg2,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg2)
 		end
 	end
+	if thct==3 and sg3:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910055,3)) then
+		Duel.BreakEffect()
+		Duel.SendtoDeck(sg3,nil,2,REASON_EFFECT)
+	end
+	Duel.ShuffleDeck(tp)
 end
-function c9910055.limit(c)
-	return  function (e,lp,tp)
-				return e:GetHandler()~=c
-			end
+function c9910055.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
 end
-function c9910055.rthtarget(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetAttackTarget()==c or (Duel.GetAttacker()==c and Duel.GetAttackTarget()~=nil) end
-	local g=Group.FromCards(Duel.GetAttacker(),Duel.GetAttackTarget())
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
+function c9910055.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToExtraAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),nil,0,REASON_COST)
 end
-function c9910055.rthoperation(e,tp,eg,ep,ev,re,r,rp)
-	local g=Group.CreateGroup()
-	local c=Duel.GetAttacker()
-	if c:IsRelateToBattle() then g:AddCard(c) end
-	c=Duel.GetAttackTarget()
-	if c~=nil and c:IsRelateToBattle() then g:AddCard(c) end
-	if g:GetCount()>0 then
-		if Duel.SendtoHand(g,nil,REASON_EFFECT)~=2 then return end
-		Duel.Damage(1-tp,1000,REASON_EFFECT)
+function c9910055.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
+end
+function c9910055.drop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.Draw(tp,1,REASON_EFFECT)~=0
+		and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
 end

@@ -1,85 +1,75 @@
---巫恋
+--踏沙铁车 艾布拉姆斯
 function c9910443.initial_effect(c)
-	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)
+	--xyz summon
+	aux.AddXyzProcedure(c,nil,9,2,c9910443.ovfilter,aux.Stringid(9910443,0),2,c9910443.xyzop)
 	c:EnableReviveLimit()
 	--attack limit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_ATTACK)
+	e1:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
 	c:RegisterEffect(e1)
-	--cannot be target
+	--atk
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetValue(aux.imval1)
+	e2:SetCode(EFFECT_UPDATE_ATTACK)
+	e2:SetCondition(c9910443.atkcon)
+	e2:SetValue(2500)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e3:SetValue(aux.tgoval)
+	--destroy
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_NEGATE)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(c9910443.descon)
+	e3:SetCost(c9910443.descost)
+	e3:SetTarget(c9910443.destg)
+	e3:SetOperation(c9910443.desop)
 	c:RegisterEffect(e3)
-	--remove
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_TO_GRAVE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetOperation(c9910443.rmop)
-	c:RegisterEffect(e4)
-	--Atk
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e5:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCondition(c9910443.atkcon)
-	e5:SetOperation(c9910443.atkop)
-	c:RegisterEffect(e5)
 end
-function c9910443.cfilter(c,tp)
-	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
+function c9910443.ovfilter(c)
+	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsType(TYPE_XYZ)
 end
-function c9910443.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if eg:IsExists(c9910443.cfilter,1,nil,1-tp)
-		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,nil,tp,POS_FACEDOWN)
-		and Duel.SelectYesNo(tp,aux.Stringid(9910443,0)) then
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,1,nil,tp,POS_FACEDOWN)
-		Duel.HintSelection(g)
-		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
-	end
+function c9910443.xyzop(e,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,9910443)==0
+		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	Duel.RegisterFlagEffect(tp,9910443,RESET_PHASE+PHASE_END,0,1)
 end
-function c9910443.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetAttackTarget()~=nil
+function c9910443.atkcon(e)
+	local ph=Duel.GetCurrentPhase()
+	local tp=Duel.GetTurnPlayer()
+	return tp==e:GetHandler():GetControler() and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
-function c9910443.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local a=Duel.GetAttacker()
-	local d=Duel.GetAttackTarget()
-	if a:IsControler(1-tp) then a,d=d,a end
-	if d and d:IsRelateToBattle() then
-		local da=d:GetTextAttack()
-		local dd=d:GetTextDefense()
-		if d:IsImmuneToEffect(e) then 
-			da=d:GetBaseAttack()
-			dd=d:GetBaseDefense() end
-		if da<0 then da=0 end
-		if dd<0 then dd=0 end
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetValue(math.ceil(da/2))
-		e1:SetReset(RESET_PHASE+PHASE_DAMAGE)
-		d:RegisterEffect(e1,true)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
-		e2:SetRange(LOCATION_MZONE)
-		e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
-		e2:SetValue(math.ceil(dd/2))
-		e2:SetReset(RESET_PHASE+PHASE_DAMAGE)
-		d:RegisterEffect(e2,true)
+function c9910443.descon(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and re:IsActiveType(TYPE_MONSTER)
+end
+function c9910443.cfilter(c)
+	return c:IsRace(RACE_MACHINE) and c:IsAbleToRemoveAsCost()
+end
+function c9910443.descost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Group.CreateGroup()
+	local g1=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
+	local g2=e:GetHandler():GetOverlayGroup()
+	if g2:GetCount()>0 then g:Merge(g1) end
+	if g2:GetCount()>0 then g:Merge(g2) end
+	if chk==0 then return g:IsExists(c9910443.cfilter,2,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local sg=g:FilterSelect(tp,c9910443.cfilter,2,2,nil)
+	Duel.Remove(sg,POS_FACEUP,REASON_COST)
+end
+function c9910443.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local rc=re:GetHandler()
+	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsDestructable() end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,rc,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+end
+function c9910443.desop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if rc:IsRelateToEffect(re) and Duel.Destroy(rc,REASON_EFFECT)~=0 then
+		Duel.NegateActivation(ev)
 	end
 end

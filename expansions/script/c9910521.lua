@@ -11,7 +11,7 @@ function c9910521.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_LVCHANGE+CATEGORY_ATKCHANGE+CATEGORY_TODECK+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_TODECK+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
@@ -55,7 +55,6 @@ function c9910521.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cate=0
 	if bit.band(tc:GetType(),0x81)==0x81 then
 		lab=lab+1
-		cate=cate+CATEGORY_LVCHANGE 
 	end
 	if tc:IsSetCard(0xa950) then
 		lab=lab+2

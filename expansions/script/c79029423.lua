@@ -97,6 +97,13 @@ function c79029423.initial_effect(c)
 	e13:SetTarget(c79029423.attg)
 	e13:SetOperation(c79029423.atop)
 	c:RegisterEffect(e13)
+	--atk
+	local e14=Effect.CreateEffect(c)
+	e14:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e14:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e14:SetCondition(c79029423.escon)
+	e14:SetOperation(c79029423.esop)
+	c:RegisterEffect(e14)
 end
 function c79029423.counterfilter(c)
 	return c:IsSetCard(0xa900)
@@ -113,6 +120,9 @@ function c79029423.spcon(e,c)
 	local tp=c:GetControler()
 	local rg=Duel.GetMatchingGroup(Card.IsReleasable,tp,0,LOCATION_MZONE,nil)
 	return rg:IsExists(c79029423.filter1,1,nil,tp,rg) and Duel.GetActivityCount(tp,ACTIVITY_NORMALSUMMON)==0
+end
+function c79029423.esfil(c)
+	return c:IsCode(79029443,79029247)
 end
 function c79029423.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local rg=Duel.GetMatchingGroup(Card.IsReleasable,tp,0,LOCATION_MZONE,nil)
@@ -142,8 +152,13 @@ function c79029423.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	e1:SetTarget(c79029423.splimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+	if Duel.IsExistingMatchingCard(c79029423.esfil,tp,LOCATION_MZONE,0,1,nil) then
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029423,10)) 
+	Duel.Hint(HINT_MESSAGE,0,aux.Stringid(79029423,13))   
+	else
 	Debug.Message("背后就交给你了，我去会会那些对手。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029423,5))
+	end
 end
 function c79029423.splimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xa900)
@@ -165,8 +180,13 @@ function c79029423.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,tp,1000+x*500)
 end
 function c79029423.damop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsExistingMatchingCard(c79029423.esfil,tp,0,LOCATION_MZONE,1,nil) then
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029423,11)) 
+	Duel.Hint(HINT_MESSAGE,0,aux.Stringid(79029423,14))   
+	else
 	Debug.Message("被邪恶浸染的有罪灵魂，不配得到宽恕。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029423,6))
+	end
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
 end
@@ -256,9 +276,13 @@ function c79029423.atop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummonComplete()
 	end
 end
-
-
-
+function c79029423.escon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c79029423.esfil,tp,LOCATION_MZONE,0,1,nil)
+end
+function c79029423.esop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029423,12)) 
+	Duel.Hint(HINT_MESSAGE,0,aux.Stringid(79029423,15))   
+end
 
 
 

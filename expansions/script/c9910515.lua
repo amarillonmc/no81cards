@@ -32,6 +32,7 @@ function c9910515.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	if c:IsFaceup() then g:AddCard(c) end
 	if chk==0 then return g:GetCount()>0 end
+	e:SetLabel(c:GetAttack()-c:GetBaseAttack())
 end
 function c9910515.spfilter(c,e,tp,sum)
 	return c:GetType()&0x81==0x81 and c:IsSetCard(0xa950) and c:IsAttackBelow(sum)
@@ -39,8 +40,8 @@ function c9910515.spfilter(c,e,tp,sum)
 end
 function c9910515.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local diff=math.abs(c:GetBaseAttack()-c:GetAttack())
-	if diff==0 then return end
+	local label=e:GetLabel()
+	if label<=0 then return end
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	if c:IsFaceup() and c:IsRelateToEffect(e) then g:AddCard(c) end
 	local sum=0
@@ -52,7 +53,7 @@ function c9910515.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(-diff)
+			e1:SetValue(-label)
 			sc:RegisterEffect(e1)
 			if sc:GetAttack()<preatk then sum=sum+preatk-sc:GetAttack() end
 			sc=g:GetNext()
