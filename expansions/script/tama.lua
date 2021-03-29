@@ -84,6 +84,13 @@ end
 	eflist={"tama_elements",elements}
 	c+code[c]=eflist
 ]]
+TAMA_ELEMENT_WIND=13254031
+TAMA_ELEMENT_EARTH=13254032
+TAMA_ELEMENT_WATER=13254033
+TAMA_ELEMENT_FIRE=13254034
+TAMA_ELEMENT_ORDER=13254035
+TAMA_ELEMENT_CHAOS=13254036
+TAMA_ELEMENT_MANA=13254047
 function tama.tamas_isExistElement(c,code)
 	local elements=tama.tamas_getElements(c)
 	local subElements=tama.tamas_getSubElements(c)
@@ -226,9 +233,10 @@ function tama.tamas_increaseElements(codes,add)
 		if not tama.tamas_checkContainElements(toAdd,add) then
 			local i=1
 			while add[i] do
-				if not tama.tamas_checkElementsHasElement(toAdd,add[i]) then
+				if not tama.tamas_checkElementsHasElement(toAdd,add[i][1]) then
 					table.insert(toAdd,{add[i][1],0})
 				end
+				i=i+1
 			end
 		end
 		local i=1
@@ -301,6 +309,7 @@ function tama.tamas_checkContainElements(codes,check)
 		local accept=false
 		while codes[j] do
 			if check[i][1]==codes[j][1] then
+				--codes has check element, current checking true
 				accept=true
 			end
 			j=j+1

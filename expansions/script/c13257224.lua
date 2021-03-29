@@ -91,7 +91,8 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 		local ct=ec:GetFlagEffectLabel(13257200)
 		if ct==nil then ct=0 end
 		if ct>0 then
-			ct=math.floor(math.sqrt(ct))
+			--ct=math.floor(math.sqrt(ct))
+			ct=math.ceil(ct/2)
 			e:GetHandler():AddCounter(0x354,ct)
 		end
 	end

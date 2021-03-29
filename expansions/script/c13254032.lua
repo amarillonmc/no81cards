@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.target1)
 	e2:SetOperation(cm.operation1)
 	c:RegisterEffect(e2)
-	elements={"tama_elements",{{13254032,1}}}
+	elements={"tama_elements",{{TAMA_ELEMENT_EARTH,1}}}
 	cm[c]=elements
 end
 function cm.spfilter(c,e,tp)
@@ -32,50 +32,24 @@ function cm.spfilter(c,e,tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		if ft<-1 then return false end
-		local loc=LOCATION_ONFIELD
-		if ft==0 then loc=LOCATION_MZONE end
-		return Duel.IsExistingMatchingCard(nil,tp,loc,0,1,nil) 
-		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+		return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_ONFIELD)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
-function cm.filter(c,ft)
-	return ft>0 or c:IsLocation(LOCATION_MZONE) 
-end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if ft1<-1 then return end
-	local ft=ft1
-	if ft1<=1 then 
-		ft1=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
-		ft1=ft1+ft
-	end
-	if ft1<0 then return end
-	if ft1>2 then ft1=2 end
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft1=1 end
-	local i=1
-	local sg=Group.CreateGroup()
-	while i<=ft1 and Duel.GetMatchingGroupCount(cm.filter,tp,LOCATION_ONFIELD,0,sg,ft) do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g1=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,sg,ft)
-		if g1:GetFirst():IsLocation(LOCATION_ONFIELD) then
-			ft=ft-1
-		end
-		sg:Merge(g1)
-		i=i+1
-	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local sg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,2,nil)
 	local ct=Duel.SendtoGrave(sg,REASON_EFFECT)
 	if ct>0 and ct<=Duel.GetLocationCount(tp,LOCATION_MZONE) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,ct,ct,nil,e,tp)
+		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
+		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,ct,nil,e,tp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 	end
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254032,2}}
+	local el={{TAMA_ELEMENT_EARTH,2}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 

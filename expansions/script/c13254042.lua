@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254034,2},{13254031,1}}
+	local el={{TAMA_ELEMENT_FIRE,2},{TAMA_ELEMENT_WIND,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 
@@ -55,7 +55,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(sg,REASON_EFFECT)
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254034,3},{13254033,2}}
+	local el={{TAMA_ELEMENT_FIRE,3},{TAMA_ELEMENT_WATER,2}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 
@@ -78,7 +78,7 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(sg,tp,2,REASON_EFFECT)
 end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254034,2},{13254032,1}}
+	local el={{TAMA_ELEMENT_FIRE,2},{TAMA_ELEMENT_EARTH,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 
@@ -89,7 +89,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	--attack up
-	local e1=Effect.CreateEffect(c)
+	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetTargetRange(LOCATION_MZONE,0)

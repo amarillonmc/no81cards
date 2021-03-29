@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254032,2},{13254031,1}}
+	local el={{TAMA_ELEMENT_EARTH,2},{TAMA_ELEMENT_WIND,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 
@@ -59,7 +59,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(sg,tp,2,REASON_EFFECT)
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254032,1},{13254034,1}}
+	local el={{TAMA_ELEMENT_EARTH,1},{TAMA_ELEMENT_FIRE,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 
@@ -104,7 +104,7 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254032,2},{13254033,1}}
+	local el={{TAMA_ELEMENT_EARTH,2},{TAMA_ELEMENT_WATER,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 

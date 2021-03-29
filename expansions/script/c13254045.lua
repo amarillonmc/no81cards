@@ -63,7 +63,7 @@ function cm.tdfilter1(c)
 	return c:IsSetCard(0x3356) and c:IsAbleToDeckAsCost()
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter1,tp,LOCATION_HAND,0,2,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter1,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,cm.tdfilter1,tp,LOCATION_HAND,0,1,2,nil)
 	Duel.ConfirmCards(1-tp,g)

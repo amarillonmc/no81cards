@@ -43,20 +43,20 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local sg1=Duel.GetOperatedGroup()
 	local sg2=sg1:Clone()
 	if sg1:GetCount()>0 then
-		if sg1:GetSum(tama.tamas_getElementCount,13254033)>0 and Duel.IsPlayerCanDiscardDeck(tp,3) then
+		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WATER)>0 and Duel.IsPlayerCanDiscardDeck(tp,3) then
 			Duel.BreakEffect()
 			Duel.ShuffleDeck(tp)
 			Duel.DiscardDeck(tp,3,REASON_EFFECT)
 			sg2:Merge(Duel.GetOperatedGroup())
 		end
-		if sg1:GetSum(tama.tamas_getElementCount,13254031)>0 and Duel.IsPlayerCanDraw(tp,2) then
+		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WIND)>0 and Duel.IsPlayerCanDraw(tp,2) then
 			Duel.BreakEffect()
 			Duel.Draw(tp,2,REASON_EFFECT)
 			Duel.ShuffleHand(tp)
 			Duel.DiscardHand(tp,aux.TRUE,2,2,REASON_EFFECT+REASON_DISCARD)
 			sg2:Merge(Duel.GetOperatedGroup())
 		end
-		if sg1:GetSum(tama.tamas_getElementCount,13254036)>0 and sg2:IsExists(cm.filter2,1,nil) then
+		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_CHAOS)>0 and sg2:IsExists(cm.filter2,1,nil) then
 			local sg3=sg2:Filter(cm.filter2,nil)
 			local ct=sg3:GetCount()
 			Duel.BreakEffect()

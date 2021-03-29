@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254035,1}}
+	local el={{TAMA_ELEMENT_ORDER,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 
@@ -46,7 +46,7 @@ function cm.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254035,2}}
+	local el={{TAMA_ELEMENT_ORDER,2}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 

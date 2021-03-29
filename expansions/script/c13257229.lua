@@ -65,7 +65,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local at=Duel.GetAttacker()
-	return at:GetControler()~=tp and Duel.GetAttackTarget()==nil
+	return at:GetControler()~=tp and (Duel.GetAttackTarget()==nil or Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_FZONE,0,1,nil))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local at=Duel.GetAttacker()

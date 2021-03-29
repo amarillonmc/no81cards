@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.target1)
 	e2:SetOperation(cm.operation1)
 	c:RegisterEffect(e2)
-	elements={"tama_elements",{{13254034,1}}}
+	elements={"tama_elements",{{TAMA_ELEMENT_FIRE,1}}}
 	cm[c]=elements
 	
 end
@@ -66,7 +66,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{13254034,2}}
+	local el={{TAMA_ELEMENT_FIRE,2}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 

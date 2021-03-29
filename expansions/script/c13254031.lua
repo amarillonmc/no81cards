@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.target1)
 	e2:SetOperation(cm.operation1)
 	c:RegisterEffect(e2)
-	elements={"tama_elements",{{13254031,1}}}
+	elements={"tama_elements",{{TAMA_ELEMENT_WIND,1}}}
 	cm[c]=elements
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -38,7 +38,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,ct,REASON_EFFECT)
 end
 function cm.elementsFilter(c)
-	return c:IsAbleToDeckAsCost() and tama.tamas_isExistElement(c,13254031)
+	return c:IsAbleToDeckAsCost() and tama.tamas_isExistElement(c,TAMA_ELEMENT_WIND)
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	--[[
@@ -57,7 +57,7 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)]]
 
-	local el={{13254031,2}}
+	local el={{TAMA_ELEMENT_WIND,2}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 
