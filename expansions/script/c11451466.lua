@@ -50,7 +50,7 @@ function cm.ceop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.ceop2(e,tp,eg,ep,ev,re,r,rp)
-	if rp==1-tp and re:GetHandler():IsCode(11451461) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	if rp==1-tp and re:GetHandler():IsCode(11451460) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.ChangeChainOperation(ev,cm.reop)
 		e:Reset()

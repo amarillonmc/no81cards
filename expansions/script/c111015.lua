@@ -24,8 +24,9 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetCost(cm.mccost)
 	e2:SetCondition(cm.mccon)
 	e2:SetTarget(cm.mctg)
@@ -100,7 +101,7 @@ function cm.mccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.mccon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
+	return (rp==1-tp or re:GetHandler():IsCode(m)) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.mctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -115,7 +116,7 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 			c:ResetFlagEffect(m+1)
 			--Debug.Message("This max chain count "..Chain_Count[1])
 			local num=Chain_Count[1]
-			local g=Duel.GetDecktopGroup(tp,math.min(num,Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)))
+			local g=Duel.GetDecktopGroup(1-tp,math.min(num,Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)))
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
 	end

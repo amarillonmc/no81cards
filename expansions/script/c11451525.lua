@@ -159,7 +159,6 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.SpecialSummonComplete()
 	for tc in aux.Next(g) do tc:CompleteProcedure() end
-	e:Reset()
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

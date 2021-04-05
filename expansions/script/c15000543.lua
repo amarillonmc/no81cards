@@ -44,7 +44,7 @@ function cm.filter(c,e,tp)
 	return c:IsSetCard(0xf3b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re or re~=cm.self_flip_effect2
+	return e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
@@ -65,6 +65,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.ChangePosition(e:GetHandler(),POS_FACEUP)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 function cm.sp2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end

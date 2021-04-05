@@ -103,7 +103,7 @@ function cm.filter(c)
 	return c:IsCanOverlay()
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re or re~=cm.self_flip_effect2
+	return e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc:IsControler(1-tp) and chkc:IsCanOverlay() end
@@ -135,6 +135,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local pos=Duel.SelectPosition(tp,e:GetHandler(),POS_FACEUP_ATTACK+POS_FACEUP_DEFENSE)
 	Duel.ChangePosition(e:GetHandler(),pos)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc:IsControler(1-tp) and chkc:IsCanOverlay() end

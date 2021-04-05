@@ -61,7 +61,7 @@ function cm.caop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.catg(e,c)
-	return c:IsCode(11451461) and c:IsType(TYPE_MONSTER)
+	return c:IsCode(11451460) and c:IsType(TYPE_MONSTER)
 end
 function cm.caval(e,c)
 	if c:IsAttribute(ATTRIBUTE_DEVINE) then return 0x7f end

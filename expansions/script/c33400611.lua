@@ -104,7 +104,7 @@ function cm.dmcon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.dmtg(e,tp,eg,ep,ev,re,r,rp,chk)
    if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x341) end
-e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)  
+e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,6))
 end
 function cm.dmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

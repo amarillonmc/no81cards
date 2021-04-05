@@ -68,7 +68,7 @@ function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0xf3b) and c:IsAbleToGrave()
+	return c:IsSetCard(0xf3b) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) end

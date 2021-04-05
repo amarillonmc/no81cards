@@ -68,7 +68,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
   if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp)  and cm.refilter2(chkc) end 
 	if chk==0 then return  Duel.IsExistingMatchingCard(cm.refilter2,tp,LOCATION_ONFIELD,0,1,nil) end
- e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)  
+e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp) 
 local c=e:GetHandler()

@@ -23,11 +23,12 @@ function Zcd.XyzCondition(f,lv,minc,maxc,alterf,desc,op)
 				if og then
 					mg=og
 				else
-					mg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
+					mg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,0,nil)
 				end
 				if (not min or min<=1) and mg:IsExists(Zcd.XyzAlterFilter,minc,nil,alterf,c,e,tp,op,lv) then
 					local ssg=mg:Filter(Zcd.XyzAlterFilter,nil,alterf,c,e,tp,op,lv)
-					if ssg:IsExists(Zcd.MFilter1,1,nil) and ssg:IsExists(Zcd.MFilter2,1,nil,c,tp) then return true end
+					if ssg:IsExists(Zcd.MFilter1,1,nil) and ssg:IsExists(Zcd.MFilter2,1,nil,c,tp)
+						and ssg:IsExists(Card.IsLocation,1,nil,LOCATION_SZONE) then return true end
 				end
 				local minc=minc
 				local maxc=maxc
@@ -54,7 +55,7 @@ function Zcd.XyzTarget(f,lv,minc,maxc,alterf,desc,op)
 				if og then
 					mg=og
 				else
-					mg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
+					mg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,0,nil)
 				end
 				local b1=Duel.CheckXyzMaterial(c,f,lv,minc,maxc,og)
 				local b2=nil
@@ -62,6 +63,7 @@ function Zcd.XyzTarget(f,lv,minc,maxc,alterf,desc,op)
 				if (not min or min<=1) and mg:IsExists(Zcd.XyzAlterFilter,minc,nil,alterf,c,e,tp,op,lv) then
 					ssg=mg:Filter(Zcd.XyzAlterFilter,nil,alterf,c,e,tp,op,lv)
 					b2=ssg:IsExists(Zcd.MFilter1,1,nil) and ssg:IsExists(Zcd.MFilter2,1,nil,c,tp)
+						and ssg:IsExists(Card.IsLocation,1,nil,LOCATION_SZONE)
 				end
 				local g=Group.CreateGroup()
 				if b2 and (not b1 or Duel.SelectYesNo(tp,desc)) then

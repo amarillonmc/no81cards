@@ -41,7 +41,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re or re~=cm.self_flip_effect2
+	return e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(aux.TURE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
@@ -64,6 +64,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.ChangePosition(e:GetHandler(),POS_FACEUP)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(aux.TURE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end

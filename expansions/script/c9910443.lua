@@ -54,7 +54,7 @@ function c9910443.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Group.CreateGroup()
 	local g1=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
 	local g2=e:GetHandler():GetOverlayGroup()
-	if g2:GetCount()>0 then g:Merge(g1) end
+	if g1:GetCount()>0 then g:Merge(g1) end
 	if g2:GetCount()>0 then g:Merge(g2) end
 	if chk==0 then return g:IsExists(c9910443.cfilter,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

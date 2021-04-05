@@ -27,11 +27,14 @@ function c9910105.spfilter(c,e,tp)
 	return c:IsSetCard(0x952) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910105.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ct=0
+	if e:GetHandler():GetSequence()>4 then ct=1 end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0
 		and (Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
-		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>ct
 		and Duel.IsExistingMatchingCard(c9910105.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp))) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c9910105.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -44,13 +47,14 @@ function c9910105.operation(e,tp,eg,ep,ev,re,r,rp)
 	local off=1
 	local ops={}
 	local opval={}
-	if Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) then
+	local g1=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910105.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
+	if g1:GetCount()>0 then
 		ops[off]=aux.Stringid(9910105,2)
 		opval[off-1]=1
 		off=off+1
 	end
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9910105.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g2:GetCount()>0 then
 		ops[off]=aux.Stringid(9910105,3)
 		opval[off-1]=2
 		off=off+1
@@ -59,16 +63,16 @@ function c9910105.operation(e,tp,eg,ep,ev,re,r,rp)
 	local op=Duel.SelectOption(tp,table.unpack(ops))
 	if opval[op]==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.HintSelection(g)
-			Duel.Destroy(g,REASON_EFFECT)
+		local sg1=g1:Select(tp,1,1,nil)
+		if sg1:GetCount()>0 then
+			Duel.HintSelection(sg1)
+			Duel.Destroy(sg1,REASON_EFFECT)
 		end
 	elseif opval[op]==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c9910105.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
-		if g:GetCount()>0 then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		local sg2=g2:Select(tp,1,1,nil)
+		if sg2:GetCount()>0 then
+			Duel.SpecialSummon(sg2,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
 end

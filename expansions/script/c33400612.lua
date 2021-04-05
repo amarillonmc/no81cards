@@ -127,7 +127,7 @@ end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED) and cm.setfilter(chkc,tp) end
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,0,1,nil,tp) end 
- e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)   
+e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3)) 
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  

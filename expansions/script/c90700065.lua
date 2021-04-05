@@ -52,7 +52,7 @@ function cm.enable(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_ADJUST)
 	e2:SetOperation(cm.todeckop)
-	Duel.RegisterEffect(e2,1-e:GetHandlerPlayer())
+	Duel.RegisterEffect(e2,e:GetHandlerPlayer())
 end
 function cm.filter(c,tp)
 	return c:IsLocation(LOCATION_ONFIELD) and not c:IsControler(tp)

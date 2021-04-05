@@ -104,7 +104,7 @@ function cm.xdop(e,tp,eg,ep,ev,re,r,rp)
 		  Duel.RegisterFlagEffect(tp,tc:GetCode()+40000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)   
 		  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		   local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
-		   Duel.Destroy(dg,REASON_EFFECT)	
+		   Duel.Destroy(dg,REASON_EFFECT)   
 		end   
    end 
 end
@@ -130,7 +130,7 @@ function cm.xdop2(e,tp,eg,ep,ev,re,r,rp)
 		  Duel.RegisterFlagEffect(tp,tc:GetCode()+40000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)   
 		  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		   local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
-		   Duel.Destroy(dg,REASON_EFFECT)	
+		   Duel.Destroy(dg,REASON_EFFECT)   
 		end   
    end 
 end
@@ -202,7 +202,7 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return  Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,3,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,3,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)  
+e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp) 
 if not (Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,3,nil) and Duel.IsPlayerCanDraw(tp,1))  then return end 

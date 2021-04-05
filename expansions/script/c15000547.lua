@@ -44,7 +44,7 @@ function cm.filter(c)
 	return c:IsType(TYPE_FLIP) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(15000547)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re or re~=cm.self_flip_effect2
+	return e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -64,6 +64,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.ChangePosition(e:GetHandler(),POS_FACEUP_DEFENSE)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

@@ -6,7 +6,6 @@ function c9910023.initial_effect(c)
 	--sort
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCondition(c9910023.stcon)
 	e1:SetTarget(c9910023.sttg)

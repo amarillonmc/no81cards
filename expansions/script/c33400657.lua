@@ -59,7 +59,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
   if chkc then return chkc:IsLocation(LOCATION_REMOVED)  and cm.refilter(chkc) end 
 	if chk==0 then return  Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_REMOVED,0,1,nil)end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_REMOVED)
- e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)   
+e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))  
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp) 
 if not Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_REMOVED,0,1,nil)  then return end 
