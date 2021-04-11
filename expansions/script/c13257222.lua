@@ -1,6 +1,7 @@
 --宇宙军阀首领 邪神红水晶
 local m=13257222
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	--summon with s/t
 	local e0=Effect.CreateEffect(c)
@@ -76,33 +77,35 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterFlagEffect(13257200,RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,1,label+2,aux.Stringid(m,5))
 			tc:RegisterFlagEffect(13257200,0,0,0,label)
 			local e1=Effect.CreateEffect(e:GetHandler())
+			local e2=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetCode(EVENT_LEAVE_FIELD_P)
-			e1:SetLabelObject(e:GetHandler())
+			e1:SetLabelObject(e2)
 			e1:SetOperation(cm.checkop)
 			e1:SetReset(RESET_EVENT+0x1fe0000)
 			tc:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(e:GetHandler())
+
 			e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
 			e2:SetCode(EVENT_LEAVE_FIELD)
 			e2:SetOperation(cm.spop)
-			e2:SetLabelObject(e1)
+			e2:SetLabelObject(e:GetHandler())
 			tc:RegisterEffect(e2)
 		end
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsDisabled() then
-		e:SetLabel(1)
-	else e:SetLabel(0) end
+		e:GetLabelObject():SetLabel(1)
+	else e:GetLabelObject():SetLabel(0) end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetLabelObject():GetLabel()~=0 then return end
-	local tc=e:GetLabelObject():GetLabelObject()
+	if e:GetLabel()~=0 then return end
+	local tc=e:GetLabelObject()
 	if tc and tc:IsLocation(LOCATION_GRAVE) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		Duel.Hint(11,0,aux.Stringid(m,4))
+		e:Reset()
 	end
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)

@@ -49,7 +49,9 @@ function cm.setfilter(c,tp)
 	return c:IsType(TYPE_QUICKPLAY) and c:IsFaceup() and c:IsSSetable() and not c:IsCode(m)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil,tp) end
+	local ct=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then ct=ct-1 end
+	if chk==0 then return ct>0 and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil,tp) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

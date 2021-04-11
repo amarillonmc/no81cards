@@ -21,7 +21,6 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
 end
-cm.lvupcount=1
 cm.lvup={14000201}
 function cm.matfilter(c)
 	return c:IsLinkRace(RACE_REPTILE)

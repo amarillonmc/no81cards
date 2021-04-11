@@ -44,8 +44,7 @@ function c9910251.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910251.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousControler()==tp
-		and c:IsReason(REASON_EFFECT) and rp==1-tp
+	return c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousControler()==tp and rp==1-tp
 end
 function c9910251.thfilter(c)
 	return c:IsSetCard(0x953) and c:IsAbleToHand()
@@ -71,8 +70,8 @@ function c9910251.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910251.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local d=Duel.TossDice(tp,1)
 	if not c:IsRelateToEffect(e) then return end
+	local d=Duel.TossDice(tp,1)
 	c:AddCounter(0x953,d)
 	if Duel.GetCounter(e:GetHandlerPlayer(),1,0,0x953)<13 then return end
 	Duel.BreakEffect()
@@ -111,7 +110,7 @@ function c9910251.ctop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e4:SetCode(EVENT_LEAVE_FIELD)
 		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e4:SetLabel(1-tp)
+		e4:SetLabel(tp)
 		e4:SetOperation(c9910251.leaveop)
 		e4:SetReset(RESET_EVENT+0xc020000)
 		token:RegisterEffect(e4,true)
@@ -125,6 +124,5 @@ function c9910251.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function c9910251.leaveop(e,tp,eg,ep,ev,re,r,rp)
-	local WIN_REASON_RELAY_SOUL=0x1a
-	Duel.Win(e:GetLabel(),WIN_REASON_RELAY_SOUL)
+	Duel.SetLP(e:GetLabel(),0)
 end

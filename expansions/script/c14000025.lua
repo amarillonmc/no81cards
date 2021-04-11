@@ -53,15 +53,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
 	end
 end
-function cm.desfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ec=re:GetHandler()
 	if Duel.NegateActivation(ev) and ec:IsRelateToEffect(re) then
 		ec:CancelToGrave()
 		if Duel.SendtoDeck(ec,nil,2,REASON_EFFECT)~=0 and ec:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
-			local g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
+			local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 			if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

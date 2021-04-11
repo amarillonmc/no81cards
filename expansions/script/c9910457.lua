@@ -1,93 +1,99 @@
 --韶光歌后 玛丽亚·毕肖普
 function c9910457.initial_effect(c)
-	c:EnableCounterPermit(0x950)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9950),c9910457.matfilter,2,63,true)
-	--add counter
+	--counter
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCategory(CATEGORY_COUNTER)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCondition(c9910457.adcon)
-	e1:SetOperation(c9910457.adop)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCondition(c9910457.ctcon)
+	e1:SetTarget(c9910457.cttg)
+	e1:SetOperation(c9910457.ctop)
 	c:RegisterEffect(e1)
-	--negate
+	--recover
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_NEGATE)
+	e2:SetCategory(CATEGORY_RECOVER)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c9910457.discon)
-	e2:SetCost(c9910457.discost)
-	e2:SetTarget(c9910457.distg)
-	e2:SetOperation(c9910457.disop)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e2:SetCountLimit(1,9910457)
+	e2:SetCondition(c9910457.regcon)
+	e2:SetOperation(c9910457.regop)
 	c:RegisterEffect(e2)
-	--remove counter
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e3:SetCode(EVENT_PHASE+PHASE_END)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
-	e3:SetCondition(c9910457.rctcon)
-	e3:SetTarget(c9910457.rcttg)
-	e3:SetOperation(c9910457.rctop)
-	c:RegisterEffect(e3)
 end
 function c9910457.matfilter(c)
 	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsFusionType(TYPE_EFFECT)
 end
-function c9910457.adcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_FUSION 
+function c9910457.ctcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
-function c9910457.cfilter(c,loc)
-	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:GetSummonLocation()==loc
-end
-function c9910457.adop(e,tp,eg,ep,ev,re,r,rp)
+function c9910457.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local ct=0
-	if c:GetMaterial():IsExists(c9910457.cfilter,1,nil,LOCATION_HAND) then ct=ct+1 end
-	if c:GetMaterial():IsExists(c9910457.cfilter,1,nil,LOCATION_DECK) then ct=ct+1 end
-	if c:GetMaterial():IsExists(c9910457.cfilter,1,nil,LOCATION_GRAVE) then ct=ct+1 end
-	if c:GetMaterial():IsExists(c9910457.cfilter,1,nil,LOCATION_EXTRA) then ct=ct+1 end
-	if c:GetMaterial():IsExists(c9910457.cfilter,1,nil,LOCATION_REMOVED) then ct=ct+1 end
-	if c:GetMaterial():IsExists(c9910457.cfilter,1,nil,LOCATION_SZONE) then ct=ct+1 end
-	if ct>0 and c:IsCanAddCounter(0x950,ct) then
-		Duel.Hint(HINT_CARD,0,9910457)
-		c:AddCounter(0x950,ct)
-	end
+	local ct=c:GetMaterialCount()
+	if chk==0 then return ct>0 and c:IsCanAddCounter(0x1950,1) end
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,ct,0,0x1950)
 end
-function c9910457.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
-end
-function c9910457.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x950,1,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,0x950,1,REASON_COST)
-end
-function c9910457.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-end
-function c9910457.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateActivation(ev)
-end
-function c9910457.rctcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
-end
-function c9910457.rcttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	if not e:GetHandler():IsCanRemoveCounter(tp,0x950,1,REASON_EFFECT) then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
-	end
-end
-function c9910457.rctop(e,tp,eg,ep,ev,re,r,rp)
+function c9910457.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		if c:IsCanRemoveCounter(tp,0x950,1,REASON_EFFECT) then
-			c:RemoveCounter(tp,0x950,1,REASON_EFFECT)
-		else
-			Duel.Destroy(c,REASON_EFFECT)
-		end
+	local ct=c:GetMaterialCount()
+	if ct>0 and c:IsRelateToEffect(e) then
+		e:GetHandler():AddCounter(0x1950,ct)
 	end
+end
+function c9910457.regcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+end
+function c9910457.regop(e,tp,eg,ep,ev,re,r,rp)
+	local lp=Duel.GetLP(tp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e1:SetLabel(lp)
+	e1:SetCountLimit(1)
+	e1:SetCondition(c9910457.rccon)
+	e1:SetOperation(c9910457.rcop)
+	e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+	Duel.RegisterEffect(e1,tp)
+end
+function c9910457.rccon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetLP(tp)~=e:GetLabel()
+end
+function c9910457.rcop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,9910457)
+	if Duel.GetLP(tp)<e:GetLabel() then
+		local s=Duel.Recover(tp,e:GetLabel()-Duel.GetLP(tp),REASON_EFFECT)
+		local d=math.floor(s/2000)
+		if d<=0 then return end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_SOLVING)
+		e1:SetCondition(c9910457.negcon)
+		e1:SetOperation(c9910457.negop)
+		e1:SetLabel(d)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+		if d>5 then d=6 end
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetDescription(aux.Stringid(9910457,d))
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e2:SetTargetRange(1,1)
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e2,tp)
+	else
+		Duel.SetLP(tp,e:GetLabel())
+	end
+end
+function c9910457.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and Duel.IsChainDisablable(ev) and Duel.GetFlagEffect(tp,9910457)<e:GetLabel()
+end
+function c9910457.negop(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.SelectYesNo(tp,aux.Stringid(9910457,0)) then return end
+	Duel.Hint(HINT_CARD,0,9910457)
+	Duel.RegisterFlagEffect(tp,9910457,RESET_PHASE+PHASE_END,0,1)
+	Duel.NegateEffect(ev)
 end

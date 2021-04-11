@@ -11,11 +11,11 @@ function c79029339.initial_effect(c)
 	c:RegisterEffect(e1)
 	--re
 	local e3=Effect.CreateEffect(c)
-	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,09029339)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,09029339)
 	e3:SetCost(aux.bfgcost)
 	e3:SetTarget(c79029339.retg)
 	e3:SetOperation(c79029339.reop)
@@ -58,7 +58,7 @@ function c79029339.ovop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029339.retg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,79029325) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,79029325) end
 end
 function c79029339.reop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("我会在这里不是因为我需要在这里，只是因为我想而已。")

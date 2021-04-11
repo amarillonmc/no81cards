@@ -45,26 +45,21 @@ function c130001236.initial_effect(c)
 	e5:SetOperation(c130001236.spop2)
 	c:RegisterEffect(e5)
 end
-function c130001236.filter1(c,tp,g)
-	return c:IsLevelAbove(1) and Duel.GetMZoneCount(tp,c,tp)>0 and g:IsExists(c130001236.filter2,1,c,c:GetLevel())
+function c130001236.filter1(c,tp)
+	local lv1=c:GetLevel()
+	return lv1>0 and c:IsSetCard(0xa001) and Duel.IsExistingMatchingCard(c130001236.filter2,tp,LOCATION_MZONE,0,1,c,lv1)
 end
-function c130001236.filter2(c,lv)
-	return c:IsLevelAbove(1) and not c:IsLevel(lv)
+function c130001236.filter2(c,lv1)
+	return c:IsSetCard(0xa001) and c:GetLevel()~=lv1
 end
 function c130001236.spcon(e,c)
 	if c==nil then return true end
-	local tp=c:GetControler()
-	local g=Duel.GetReleaseGroup(tp)
-	return g:IsExists(c130001236.filter1,1,nil,tp,g)
+	return Duel.GetLocationCount(e:GetHandler():GetControler(),LOCATION_MZONE)>-2
+		and Duel.CheckReleaseGroup(e:GetHandler():GetControler(),c130001236.filter1,2,nil)
 end
 function c130001236.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetReleaseGroup(tp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local tc=g:FilterSelect(tp,c130001236.filter1,1,1,nil,tp,g):GetFirst()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local tg=g:FilterSelect(tp,c130001236.filter2,1,1,tc,tc:GetLevel())
-	tg:AddCard(tc)
-	Duel.Release(tg,REASON_RELEASE)
+	local g=Duel.SelectReleaseGroup(e:GetHandler():GetControler(),c130001236.filter1,2,2,nil)
+	Duel.Release(g,REASON_RELEASE)
 end
 function c130001236.aclimit(e,re,tp)
 	return re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsImmuneToEffect(e)

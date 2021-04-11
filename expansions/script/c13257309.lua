@@ -67,8 +67,8 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local ec=Duel.GetFirstTarget()
 	if not e:GetHandler():IsRelateToEffect(e) or not ec:IsRelateToEffect(e) then return end
 	local g=ec:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
-	tc=g:GetFirst()
 	if g:GetCount()>0 then
+		local tc=g:GetFirst()
 		while tc do
 			if tc:IsFaceup() and not tc:IsDisabled() then
 				Duel.NegateRelatedChain(tc,RESET_TURN_SET)

@@ -1,6 +1,7 @@
 --宇宙战争兵器 巨炮 解离镭射
 local m=13257204
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--equip limit
@@ -23,7 +24,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_EQUIP)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(300)
+	e1:SetValue(500)
 	c:RegisterEffect(e1)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
@@ -86,6 +87,18 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		tc:RegisterEffect(e2)
 		if tc:IsFaceup() and (tc:GetAttack()==0 or (tc:GetDefense()==0 and not tc:IsType(TYPE_LINK))) then
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+			Duel.AdjustInstantly()
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 			if Duel.Destroy(tc,REASON_EFFECT)~=0 then
 				Duel.Damage(1-tp,1000,REASON_EFFECT)
 			end

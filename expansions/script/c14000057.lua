@@ -34,59 +34,71 @@ end
 function cm.cfilter(c,e,tp)
 	return c:IsDiscardable() and Duel.IsExistingMatchingCard(cm.spellfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,c,e,tp)
 end
-function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler(),e,tp) end
-	Duel.DiscardHand(tp,cm.cfilter,1,1,REASON_COST+REASON_DISCARD)
-end
 function cm.spellfilter(c,e,tp)
-	return c:IsCode(14000055) and Duel.IsPlayerCanSpecialSummonMonster(tp,14000055,nil,0x11,0,0,0,0,ATTRIBUTE_LIGHT+ATTRIBUTE_DARK+ATTRIBUTE_EARTH+ATTRIBUTE_FIRE+ATTRIBUTE_WATER+ATTRIBUTE_WIND,POS_FACEUP)
+	return c:IsCode(14000055) and Duel.IsPlayerCanSpecialSummonMonster(tp,14000055,nil,0x11,0,0,0,0,0x3f,POS_FACEUP)
+end
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(1)
+	return true
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.spellfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp)
+	if chk==0 then
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
+		if e:GetLabel()~=0 then
+			e:SetLabel(0)
+			return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+		else
+			return Duel.IsExistingMatchingCard(cm.spellfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp)
+		end
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
+	if e:GetLabel()~=0 then
+		e:SetLabel(0)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+		local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
 	local g=Duel.GetMatchingGroup(cm.spellfilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil,e,tp)
-	if #g<1 then return end
+	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:Select(tp,1,1,nil)
-	local tg=sg:GetFirst()
-	if tg then
-		local e1=Effect.CreateEffect(tg)
+	local tc=sg:GetFirst()
+	if tc then
+		local e1=Effect.CreateEffect(tc)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetValue(TYPE_NORMAL+TYPE_MONSTER)
 		e1:SetReset(RESET_EVENT+0x47c0000)
-		tg:RegisterEffect(e1,true)
+		tc:RegisterEffect(e1,true)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_REMOVE_RACE)
 		e2:SetValue(RACE_ALL)
-		tg:RegisterEffect(e2,true)
+		tc:RegisterEffect(e2,true)
 		local e3=e1:Clone()
 		e3:SetCode(EFFECT_ADD_ATTRIBUTE)
-		e3:SetValue(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK+ATTRIBUTE_EARTH+ATTRIBUTE_FIRE+ATTRIBUTE_WATER+ATTRIBUTE_WIND)
-		tg:RegisterEffect(e3,true)
+		e3:SetValue(0x3f)
+		tc:RegisterEffect(e3,true)
 		local e4=e1:Clone()
 		e4:SetCode(EFFECT_SET_BASE_ATTACK)
 		e4:SetValue(0)
-		tg:RegisterEffect(e4,true)
+		tc:RegisterEffect(e4,true)
 		local e5=e1:Clone()
 		e5:SetCode(EFFECT_SET_BASE_DEFENSE)
 		e5:SetValue(0)
-		tg:RegisterEffect(e5,true)
-		tg:SetStatus(STATUS_NO_LEVEL,true)
+		tc:RegisterEffect(e5,true)
+		tc:SetStatus(STATUS_NO_LEVEL,true)
 		local e6=Effect.CreateEffect(e:GetHandler())
 		e6:SetType(EFFECT_TYPE_SINGLE)
 		e6:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 		e6:SetValue(1)
 		e6:SetReset(RESET_EVENT+0x47c0000)
-		tg:RegisterEffect(e6,true)
-		Duel.SpecialSummon(tg,0,tp,tp,true,false,POS_FACEUP)
+		tc:RegisterEffect(e6,true)
+		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
 	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)

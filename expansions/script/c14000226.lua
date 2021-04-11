@@ -60,7 +60,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
-	if e1=Duel.IsPlayerAffectedByEffect(tp,m+1) then
+	local e1==Duel.IsPlayerAffectedByEffect(tp,m+1)
+	if e1 then
 		e1:Reset()
 		if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<=0 or not Duel.SelectYesNo(tp,aux.Stringid(m,1)) then return end
 		local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,1)

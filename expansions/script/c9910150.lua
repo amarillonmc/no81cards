@@ -71,14 +71,14 @@ function c9910150.descon(e,tp,eg,ep,ev,re,r,rp)
 	return not c:IsAttack(c:GetBaseAttack())
 end
 function c9910150.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,LOCATION_ONFIELD)
 end
 function c9910150.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		if Duel.Destroy(g,REASON_EFFECT)==0 then return end

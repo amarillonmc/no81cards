@@ -23,6 +23,16 @@ function cm.initial_effect(c)
 	--e2:SetTarget(cm.bmtg)
 	--e2:SetOperation(cm.bmop)
 	--c:RegisterEffect(e2)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_COUNTER)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCost(cm.bmcost)
+	e2:SetTarget(cm.bmtg)
+	e2:SetOperation(cm.bmop)
+	c:RegisterEffect(e2)
 	--counter
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_COUNTER)
@@ -77,8 +87,9 @@ function cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
 	return (not cost or cost(PCe,tep,eg,ep,ev,re,r,rp,0))
 		and (not target or target(PCe,tep,eg,ep,ev,re,r,rp,0))
 end
+--[[
 function cm.filter(c,eg,ep,ev,re,r,rp)
-	local PCe=tama.tamas_getTargetTable(c,"bomb")
+	local PCe=tama.getTargetTable(c,"bomb")
 	return c:IsFaceup() and PCe and cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
 end
 function cm.bmcon(e,tp,eg,ep,ev,re,r,rp)
@@ -105,7 +116,7 @@ function cm.bmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		local tep=tc:GetControler()
-		local PCe=tama.tamas_getTargetTable(tc,"bomb")
+		local PCe=tama.getTargetTable(tc,"bomb")
 		if PCe and cm.canActivate(tc,PCe,eg,ep,ev,re,r,rp) then
 			local cost=PCe:GetCost()
 			local target=PCe:GetTarget()
@@ -118,6 +129,27 @@ function cm.bmop(e,tp,eg,ep,ev,re,r,rp)
 			if operation then operation(PCe,tep,eg,ep,ev,re,r,rp) end
 			tc:ReleaseEffectRelation(PCe)
 		end
+	end
+end
+--]]
+function cm.bmcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
+function cm.bmfilter(c)
+	return c:IsFaceup() and c:IsCanAddCounter(0x351,1)
+end
+function cm.bmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and cm.bmfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(cm.bmfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,cm.bmfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x351)
+end
+function cm.bmop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc and e:GetHandler():IsRelateToEffect(e) and tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanAddCounter(0x351,1) then
+		tc:AddCounter(0x351,1)
 	end
 end
 function cm.ctfilter(c,tp)

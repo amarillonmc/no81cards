@@ -3,6 +3,7 @@ local m=14000323
 local cm=_G["c"..m]
 cm.named_with_Aotual=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000324,14000325,14000326)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -12,7 +13,6 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
 end
-cm.fit_monster={14000324,14000325,14000326}
 function cm.AOTU(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Aotual

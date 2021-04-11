@@ -4,39 +4,20 @@ function c9910117.initial_effect(c)
 	--xyz summon
 	Zcd.AddXyzProcedure(c,nil,5,2,c9910117.xyzfilter,aux.Stringid(9910117,0),99)
 	c:EnableReviveLimit()
-	--cannot change pos
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
-	c:RegisterEffect(e1)
-	--disable itself
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVING)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c9910117.discon)
-	e2:SetOperation(c9910117.disop)
-	c:RegisterEffect(e2)
 	--destroy
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9910117,1))
-	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
-	e3:SetCost(c9910117.cost)
-	e3:SetTarget(c9910117.target)
-	e3:SetOperation(c9910117.operation)
-	c:RegisterEffect(e3)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9910117,1))
+	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(2)
+	e1:SetCost(c9910117.cost)
+	e1:SetTarget(c9910117.target)
+	e1:SetOperation(c9910117.operation)
+	c:RegisterEffect(e1)
 end
 function c9910117.xyzfilter(c)
 	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
-end
-function c9910117.discon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsDefensePos() and re:GetHandler()==e:GetHandler()
-end
-function c9910117.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
 end
 function c9910117.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -88,10 +69,5 @@ function c9910117.operation(e,tp,eg,ep,ev,re,r,rp)
 	if tg:GetCount()>0 then
 		Duel.BreakEffect()
 		Duel.Destroy(tg,REASON_EFFECT)
-	end
-	tg=Duel.GetMatchingGroup(c9910117.gyfilter,tp,0,LOCATION_ONFIELD,nil,c:GetColumnGroup())
-	if tg:GetCount()>0 then
-		Duel.BreakEffect()
-		Duel.Damage(1-tp,tg:GetCount()*2000,REASON_EFFECT)
 	end
 end

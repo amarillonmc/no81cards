@@ -1,6 +1,7 @@
 --源始魔术呼唤
 local m=14000066
 local cm=_G["c"..m]
+cm.named_with_Origic=1
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

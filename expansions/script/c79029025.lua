@@ -41,9 +41,6 @@ end
 function c79029025.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
-function c79029025.imfilter(c)
-	return c:IsSetCard(0xa900)
-end
 function c79029025.filter(c)
 	return c:IsType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
 end
@@ -71,7 +68,24 @@ function c79029025.desop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function c79029025.imfilter(c)
+	return c:IsSetCard(0xa900)
+end
 function c79029025.imcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return Duel.IsExistingMatchingCard(c79029025.imfilter,c:GetControler(),LOCATION_MZONE,0,1,c)
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+

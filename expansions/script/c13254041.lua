@@ -33,6 +33,8 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.target2)
 	e3:SetOperation(cm.operation2)
 	c:RegisterEffect(e3)
+	elements={{"tama_elements",{{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_MANA,1}}}}
+	cm[c]=elements
 	
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)

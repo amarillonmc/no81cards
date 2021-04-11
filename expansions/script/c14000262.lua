@@ -1,8 +1,8 @@
 --星态神碎·希望-01
 local m=14000262
 local cm=_G["c"..m]
-cm.card_code_list={14000260}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000260)
 	--extra summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,2))
@@ -11,6 +11,9 @@ function cm.initial_effect(c)
 	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
 	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_TUNER))
+	c:RegisterEffect(e1)
+	local e3=e1:Clone()
+	e1:SetCode(EFFECT_EXTRA_SET_COUNT)
 	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
@@ -56,10 +59,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
+			tc:RegisterEffect(e1,true)
 			local e2=e1:Clone()
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			tc:RegisterEffect(e2)
+			tc:RegisterEffect(e2,true)
 			if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and (not Duel.IsExistingMatchingCard(cm.tfilter,tp,LOCATION_MZONE,0,1,nil)) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e3:SetCondition(function(e)
-		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==1
+		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)<=1
 	end)
 	c:RegisterEffect(e3)
 end
@@ -67,7 +67,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.sumlimit(e,c)
-	return not cm.Besessenheit(c)
+	return c:IsLocation(LOCATION_DECK+LOCATION_EXTRA)
 end
 function cm.getg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

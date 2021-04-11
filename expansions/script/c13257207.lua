@@ -1,6 +1,7 @@
 --巨舰护罩充能
 local m=13257207
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	c:SetUniqueOnField(1,0,m)
 	--Activate
@@ -11,7 +12,6 @@ function cm.initial_effect(c)
 	--counter
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_COUNTER)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetRange(LOCATION_SZONE)
@@ -21,6 +21,13 @@ function cm.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,0))
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetCost(cm.atcost)
+	e4:SetOperation(cm.atop)
+	c:RegisterEffect(e4)
 	
 end
 function cm.ctfilter(c,tp)
@@ -33,30 +40,32 @@ function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.ctfilter,nil,tp)
 	local tc=g:GetFirst()
 	while tc do
-		if not tc:IsCanAddCounter(0x353,1) then
-			tc:EnableCounterPermit(0x353)
-		end
-		tc:AddCounter(0x353,2)
-		--Destroy replace
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DESTROY_REPLACE)
-		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetTarget(cm.desreptg)
-		e1:SetOperation(cm.desrepop)
-		e1:SetReset(RESET_EVENT+0x1fe0000)
-		tc:RegisterEffect(e1)
+		tama.cosmicBattleship_equipShield(tc,2)
 		tc=g:GetNext()
 	end
 end
-function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReason(REASON_EFFECT+REASON_BATTLE)
-		and e:GetHandler():GetCounter(0x353)>0 end
-	return true
-end
-function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
+function cm.atcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	c:RemoveCounter(ep,0x353,1,REASON_EFFECT)
-	Duel.RaiseEvent(c,EVENT_REMOVE_COUNTER+0x353,e,REASON_EFFECT+REASON_REPLACE,tp,tp,1)
+	if chk==0 then return c:IsAbleToRemoveAsCost() and c:IsStatus(STATUS_EFFECT_ENABLED) end
+	Duel.Remove(c,POS_FACEDOWN,REASON_COST)
+end
+function cm.atop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCondition(cm.ctcon)
+	e1:SetOperation(cm.ctop1)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.ctop1(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(cm.ctfilter,nil,tp)
+	local tc=g:GetFirst()
+	while tc do
+		tama.cosmicBattleship_equipShield(tc,1)
+		tc=g:GetNext()
+	end
 end

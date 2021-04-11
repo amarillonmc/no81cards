@@ -1,6 +1,7 @@
 --战争机器集结
 local m=13257213
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	c:SetUniqueOnField(1,0,m)
 	--activate
@@ -95,30 +96,21 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-		local sc=g:GetFirst()
-		Duel.Hint(11,0,aux.Stringid(sc:GetCode(),4))
-		local tep=sc:GetControler()
-		local mt=getmetatable(sc)
-		if mt and type(mt[sc]) == "table" then
-			local eflist=mt[sc]
-			local i=1
-			while eflist[i] do
-				if eflist[i]=="deck_equip" then i=i+1 break end
-				i=i+1
-			end
-			if eflist[i] then
-				local PCe=eflist[i]
-				local cost=PCe:GetCost()
-				local target=PCe:GetTarget()
-				local operation=PCe:GetOperation()
-				Duel.ClearTargetCard()
-				e:SetProperty(PCe:GetProperty())
-				sc:CreateEffectRelation(PCe)
-				if cost then cost(PCe,tep,eg,ep,ev,re,r,rp,1) end
-				if target then target(PCe,tep,eg,ep,ev,re,r,rp,1) end
-				if operation then operation(PCe,tep,eg,ep,ev,re,r,rp) end
-				sc:ReleaseEffectRelation(PCe)
-			end
+		local tc=g:GetFirst()
+		Duel.Hint(11,0,aux.Stringid(tc:GetCode(),4))
+		local tep=tc:GetControler()
+		local PCe=tama.getTargetTable(tc,"deck_equip")
+		if PCe and cm.canActivate(tc,PCe,eg,ep,ev,re,r,rp) then
+			local cost=PCe:GetCost()
+			local target=PCe:GetTarget()
+			local operation=PCe:GetOperation()
+			Duel.ClearTargetCard()
+			e:SetProperty(PCe:GetProperty())
+			tc:CreateEffectRelation(PCe)
+			if cost then cost(PCe,tep,eg,ep,ev,re,r,rp,1) end
+			if target then target(PCe,tep,eg,ep,ev,re,r,rp,1) end
+			if operation then operation(PCe,tep,eg,ep,ev,re,r,rp) end
+			tc:ReleaseEffectRelation(PCe)
 		end
 	end
 end

@@ -44,7 +44,7 @@ function c79029356.thfil(c)
 	return c:IsAbleToHand() and (c:IsSetCard(0xb90d) or c:IsSetCard(0xc90e))
 end
 function c79029356.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029356.thfil,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029356.thfil,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) end
 	Debug.Message("红该做什么？")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029356,0))
 	local g=Duel.SelectMatchingCard(tp,c79029356.thfil,tp,LOCATION_DECK,0,1,1,nil)

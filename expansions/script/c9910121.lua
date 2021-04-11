@@ -11,7 +11,6 @@ function c9910121.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
-	e1:SetCondition(c9910121.ttcon)
 	e1:SetCost(c9910121.ttcost)
 	e1:SetTarget(c9910121.tttg)
 	e1:SetOperation(c9910121.ttop)
@@ -29,9 +28,6 @@ end
 function c9910121.xyzfilter(c)
 	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
 		and c:IsRace(RACE_MACHINE)
-end
-function c9910121.ttcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER)
 end
 function c9910121.ttcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -54,8 +50,7 @@ function c9910121.ttop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910121.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
-		and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev)
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function c9910121.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
@@ -68,12 +63,12 @@ function c9910121.drop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if Duel.Draw(p,d,REASON_EFFECT)==0 then return end
 	local tc=Duel.GetOperatedGroup():GetFirst()
-	Duel.ConfirmCards(1-tp,tc)
-	if tc:IsType(TYPE_MONSTER) and tc:IsSetCard(0x952) then
+	Duel.ConfirmCards(1-p,tc)
+	if tc:IsSetCard(0x952) then
 		Duel.BreakEffect()
 		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 			Duel.Destroy(eg,REASON_EFFECT)
 		end
 	end
-	Duel.ShuffleHand(tp)
+	Duel.ShuffleHand(p)
 end

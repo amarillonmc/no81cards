@@ -35,6 +35,14 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.eqtg)
 	e3:SetOperation(cm.eqop)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetCode(EFFECT_REMOVE_TYPE)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetValue(TYPE_CONTINUOUS)
+	e4:SetCondition(cm.rmcon)
+	c:RegisterEffect(e4)
 end
 function cm.actlimit(e,te,tp)
 	return te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:GetHandler():GetOriginalCode()==m
@@ -102,4 +110,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		c:CancelToGrave(false)
 	end
+end
+function cm.rmcon(e)
+	return e:GetHandler():GetEquipTarget()
 end

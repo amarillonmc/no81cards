@@ -14,18 +14,15 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_SPSUMMON_COST)
 	c:RegisterEffect(e2)
-	--cannot tigger
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetTarget(cm.stg)
-	e3:SetOperation(cm.sop)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EVENT_SUMMON_SUCCESS)
-	c:RegisterEffect(e4)
+	--act limit
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(1,1)
+	e2:SetValue(cm.limval)
+	c:RegisterEffect(e2)
 end
 function cm.thcost(e,c,tp)
 	return c:IsAbleToHand() and not c:IsLocation(LOCATION_HAND)
@@ -37,26 +34,8 @@ function cm.thcop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,c)
 	end
 end
-function cm.cfilter(c,e)
-	return c:IsFaceup() and c:IsType(TYPE_EFFECT) and c:IsLocation(LOCATION_MZONE) and(not e or c:IsRelateToEffect(e)) and c:IsPreviousLocation(LOCATION_HAND)
-end
-function cm.stg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c,sg=e:GetHandler(),eg:Filter(cm.cfilter,nil)
-	if chk==0 then return #sg>0 end
-end
-function cm.sop(e,tp,eg,ep,ev,re,r,rp)
-	local c,sg=e:GetHandler(),eg:Filter(cm.rmfilter,nil,e)
-	if #sg>0 then
-		local tc=sg:GetFirst()
-		while tc do
-			if tc:IsFaceup() then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_CANNOT_TRIGGER)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				tc:RegisterEffect(e1)
-			end
-			tc=sg:GetNext()
-		end
-	end
+function cm.limval(e,re,rp)
+	local rc=re:GetHandler()
+	return rc:IsLocation(LOCATION_MZONE) and re:IsActiveType(TYPE_MONSTER)
+		and rc:IsPreviousLocation(LOCATION_HAND) and rc:IsSummonType(SUMMON_TYPE_NORMAL+SUMMON_TYPE_SPECIAL)
 end

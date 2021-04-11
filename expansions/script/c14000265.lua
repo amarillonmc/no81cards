@@ -1,8 +1,8 @@
 --星态铁骑·断罪
 local m=14000265
 local cm=_G["c"..m]
-cm.card_code_list={14000260}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000260)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_SYNCHRO),1)
 	c:EnableReviveLimit()

@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
 end
 function cm.cfilter(c)
-	return c:IsFacedown() or not c:IsCode(14000021)
+	return c:IsFaceup() and not c:IsCode(14000021) and c:IsType(TYPE_EFFECT)
 end
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -55,9 +55,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.disfilter1,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,0,0)
-	if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) then
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
-	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -81,12 +79,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
 			tc:RegisterEffect(e3)
 		end
-		if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		if Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
-			if #g>0 then
-				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+			local tc=g:GetFirst()
+			if tc then
+				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 			end
 		end
 	end

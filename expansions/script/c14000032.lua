@@ -22,20 +22,47 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.tgop)
 	c:RegisterEffect(e2)
 end
+function cm.TM(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Marsch
+end
+function cm.ctfilter(c)
+	return c:IsDiscardable() and cm.TM(c)
+end
+function cm.ctfilter1(c)
+	return c:IsDiscardable() and not cm.TM(c)
+end
 function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler(),e,tp) end
-	Duel.DiscardHand(tp,cm.cfilter,1,1,REASON_COST+REASON_DISCARD)
+	if chk==0 then return (Duel.IsExistingMatchingCard(cm.ctfilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1)) or Duel.IsExistingMatchingCard(cm.ctfilter1,tp,LOCATION_HAND,0,1,nil) end
+	local g=Group.CreateGroup()
+	if not Duel.IsPlayerCanDraw(tp,1) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+		g=Duel.SelectMatchingCard(tp,cm.ctfilter,tp,LOCATION_HAND,0,1,1,nil)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+		g=Duel.SelectMatchingCard(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,1,1,nil)
+		if cm.TM(g:GetFirst()) then
+			e:SetLabel(1)
+		else
+			e:SetLabel(0)
+		end
+	end
+	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function cm.tgfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil)
+	local draw=e:GetLabel()==1
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) and (not draw or Duel.IsPlayerCanDraw(tp,1))
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	if draw then
+		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	end
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
+	local c,draw=e:GetHandler(),e:GetLabel()==1
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
@@ -50,6 +77,10 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabel(tc:GetCode())
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
+	end
+	if draw then
+		Duel.BreakEffect()
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
 function cm.aclimit(e,re,tp)

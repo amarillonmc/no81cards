@@ -2,8 +2,8 @@
 local m=14000255
 local cm=_G["c"..m]
 cm.named_with_war=1
-cm.fit_monster={14000241}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000241)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))

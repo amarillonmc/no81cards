@@ -44,7 +44,7 @@ function cm.sgfilter(c)
 	return c:IsLocation(LOCATION_GRAVE)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,LOCATION_HAND+LOCATION_ONFIELD,1,e:GetHandler())
+	local b1=Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,LOCATION_HAND+LOCATION_ONFIELD,1,nil)
 	local b2=true
 	local b3=true
 	local b4=Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
@@ -78,7 +78,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if sel==1 then
 		e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DAMAGE)
 		local g=Duel.GetFieldGroup(tp,0xe,0xe)
-		local dc=g:FilterCount(Card.IsAbleToGrave,nil,e:GetHandler())
+		local dc=g:FilterCount(Card.IsAbleToGrave,nil)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,g:GetCount(),0,0)
 		Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,dc*300)
 	elseif sel==4 then
@@ -91,7 +91,6 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local sel=e:GetLabel()
 	if sel==1 then
 		local g=Duel.GetFieldGroup(tp,0xe,0xe)
-		g:RemoveCard(c)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 		local og=Duel.GetOperatedGroup()
 		local ct=og:FilterCount(cm.sgfilter,nil)

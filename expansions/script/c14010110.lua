@@ -117,11 +117,21 @@ end
 function cm.callchk1(e,tp,eg,ep,ev,re,r,rp)
 	local code=Duel.GetChainInfo(ev,CHAININFO_TARGET_PARAM)
 	if bit.band(code,14010110)==14010110 then
-		Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,e,0,0,0,0)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_END)
+		e1:SetReset(RESET_EVENT+EVENT_CHAIN_END)
+		e1:SetCountLimit(1)
+		e1:SetOperation(cm.retop)
+		Duel.RegisterEffect(e1,tp)
+		--Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,e,0,0,0,0)
 		local te1=Duel.IsPlayerAffectedByEffect(tp,m)
 		if te1 then
 			te1:Reset()
 			return
 		end
 	end
+end
+function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,e,0,0,0,0)
 end

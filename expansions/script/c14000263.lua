@@ -1,8 +1,8 @@
 --星态神碎·大义-05
 local m=14000263
 local cm=_G["c"..m]
-cm.card_code_list={14000260}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000260)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,nil,1)
 	c:EnableReviveLimit()

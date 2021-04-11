@@ -139,7 +139,7 @@ function cm.tkop1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc then
 		local c=e:GetHandler()
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or tc:IsFacedown() or not c:IsRelateToEffect(e) then return end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or tc:IsFacedown() then return end
 		local atk=tc:GetAttack()
 		local def=tc:GetDefense()
 		local lv=tc:GetLevel()

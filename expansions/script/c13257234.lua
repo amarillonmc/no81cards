@@ -1,6 +1,7 @@
 --宇宙惑星要塞-巴克特利安
 local m=13257234
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

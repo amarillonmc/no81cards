@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.target1)
 	e2:SetOperation(cm.operation1)
 	c:RegisterEffect(e2)
-	elements={"tama_elements",{{TAMA_ELEMENT_WIND,1}}}
+	elements={{"tama_elements",{{TAMA_ELEMENT_WIND,2}}}}
 	cm[c]=elements
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -35,7 +35,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.DiscardHand(tp,aux.TRUE,1,2,REASON_EFFECT+REASON_DISCARD)
 	Duel.BreakEffect()
-	Duel.Draw(tp,ct,REASON_EFFECT)
+	Duel.Draw(tp,2,REASON_EFFECT)
 end
 function cm.elementsFilter(c)
 	return c:IsAbleToDeckAsCost() and tama.tamas_isExistElement(c,TAMA_ELEMENT_WIND)

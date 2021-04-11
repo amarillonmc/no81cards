@@ -1,8 +1,8 @@
 --星坠尘 音者
 local m=14000283
 local cm=_G["c"..m]
-cm.card_code_list={14000260}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000260)
 	--link summon
 	aux.AddLinkProcedure(c,cm.matfilter,1,1)
 	c:EnableReviveLimit()

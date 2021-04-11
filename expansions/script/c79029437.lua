@@ -51,7 +51,10 @@ function c79029437.thgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c79029437.tgfil(c)
-	return c:IsAbleToGrave() and c:IsType(TYPE_TRAP) and c:IsSetCard(0x1904)  
+	return c:IsAbleToGrave() and c:IsType(TYPE_TRAP) and c:IsSetCard(0x1904) and Duel.IsExistingMatchingCard(c79029437.tgfil2,tp,LOCATION_DECK,0,1,nil,c:GetCode()) 
+end
+function c79029437.tgfil2(c,code)
+	return (c:IsAbleToGrave() or c:IsAbleToHand()) and c:IsCode(code) 
 end
 function c79029437.thgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029437.tgfil,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_REMOVED,0,1,nil) end
@@ -62,10 +65,16 @@ function c79029437.thgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
 	Duel.SendtoGrave(tc,REASON_EFFECT)
-	local code=tc:GetOriginalCodeRule()
-	local tc1=Duel.CreateToken(tp,code)
+	local g1=Duel.GetMatchingGroup(c79029437.tgfil2,tp,LOCATION_DECK,0,nil,tc:GetCode())
+	local tc1=g1:Select(tp,1,1,nil):GetFirst()
 	local op=0 
+	if tc1:IsAbleToHand() and tc1:IsAbleToGrave() then
 	op=Duel.SelectOption(tp,aux.Stringid(79029437,0),aux.Stringid(79029437,1))
+	elseif tc:IsAbleToHand() then
+	op=Duel.SelectOption(tp,aux.Stringid(79029437,0))
+	else
+	op=Duel.SelectOption(tp,aux.Stringid(79029437,1))+1
+	end
 	if op==0 then 
 	Debug.Message("好，准备完毕。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029437,2))

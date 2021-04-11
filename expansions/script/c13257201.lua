@@ -1,8 +1,8 @@
 --宇宙战争机器 巨核
 local m=13257201
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x353)
 	--summon with no tribute
 	local e11=Effect.CreateEffect(c)
 	e11:SetDescription(aux.Stringid(m,0))
@@ -10,15 +10,6 @@ function cm.initial_effect(c)
 	e11:SetType(EFFECT_TYPE_SINGLE)
 	e11:SetCode(EFFECT_SUMMON_PROC)
 	c:RegisterEffect(e11)
-	--Destroy replace
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_DESTROY_REPLACE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTarget(cm.desreptg)
-	e1:SetOperation(cm.desrepop)
-	c:RegisterEffect(e1)
 	--counter
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_COUNTER)
@@ -56,21 +47,11 @@ function cm.initial_effect(c)
 	e12:SetOperation(cm.bgmop)
 	c:RegisterEffect(e12)
 	c:RegisterFlagEffect(13257200,0,0,0,1)
-	eflist={"deck_equip",e4}
+	eflist={{"deck_equip",e4}}
 	cm[c]=eflist
 end
-function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReason(REASON_EFFECT+REASON_BATTLE)
-		and e:GetHandler():GetCounter(0x353)>0 end
-	return true
-end
-function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	c:RemoveCounter(ep,0x353,1,REASON_EFFECT)
-	Duel.RaiseEvent(c,EVENT_REMOVE_COUNTER+0x353,e,REASON_EFFECT+REASON_REPLACE,tp,tp,1)
-end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():AddCounter(0x353,2)
+	tama.cosmicBattleship_equipShield(e:GetHandler(),2)
 end
 function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x354) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
@@ -91,7 +72,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetCounter(0x353)==0
+	return e:GetHandler():GetCounter(COSMIC_BATTLESHIP_SHIELD)==0
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end

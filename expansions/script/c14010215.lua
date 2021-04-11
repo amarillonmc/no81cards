@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 	--remove
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetCategory(CATEGORY_REMOVE)	
+	e1:SetCategory(CATEGORY_REMOVE) 
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetCountLimit(1,m)
 	e1:SetRange(LOCATION_MZONE)
@@ -33,7 +33,7 @@ function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetOverlayCount()~=0 and rp==1-tp and Duel.IsChainNegatable(ev)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsAbleToRemove() end
+	if chk==0 then return aux.nbcon(tp,re) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,ANNOUNCE_CARD)
 	if re:GetHandler():IsRelateToEffect(re) then

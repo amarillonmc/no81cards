@@ -18,19 +18,25 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.distg)
 	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2)
+	elements={{"tama_elements",{{TAMA_ELEMENT_WIND,1}}}}
+	cm[c]=elements
 	
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
 end
 function cm.filter(c)
-	return c:IsSetCard(0x356) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x356)
 end
 function cm.filter1(c)
-	return c:IsSetCard(0x356) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0x356) and c:IsAbleToGrave() and c:IsType(TYPE_MONSTER)
 end
 function cm.filter2(c)
-	return c:IsSetCard(0x356) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return c:IsSetCard(0x356) and c:IsAbleToDeck()
+end
+function cm.filter3(c,eg,ep,ev,re,r,rp)
+	local PCe=tama.getTargetTable(c,"power_capsule")
+	return c:IsFaceup() and PCe and cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanDiscardDeck(tp,5) then return end
@@ -65,6 +71,37 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local sg4=Duel.SelectMatchingCard(tp,cm.filter1,tp,LOCATION_DECK,0,ct,ct,nil)
 			Duel.SendtoGrave(sg4,REASON_EFFECT)
+		end
+		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_MANA)>=3 then
+			Duel.BreakEffect()
+			--change damage
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_CHANGE_DAMAGE)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetTargetRange(1,0)
+			e1:SetValue(0)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
+			e2:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e2,tp)
+		end
+		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_ENERGY)>=2 and Duel.IsExistingTarget(cm.filter3,tp,LOCATION_MZONE,0,1,nil,eg,ep,ev,re,r,rp) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+			local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil,eg,ep,ev,re,r,rp):GetFirst()
+			local tep=tc:GetControler()
+			local PCe=tama.getTargetTable(tc,"power_capsule")
+			local target=PCe:GetTarget()
+			local operation=PCe:GetOperation()
+			Duel.ClearTargetCard()
+			e:SetProperty(PCe:GetProperty())
+			tc:CreateEffectRelation(PCe)
+			if target then target(PCe,tep,eg,ep,ev,re,r,rp,1) end
+			if operation then operation(PCe,tep,eg,ep,ev,re,r,rp) end
+			tc:ReleaseEffectRelation(PCe)
 		end
 	end
 

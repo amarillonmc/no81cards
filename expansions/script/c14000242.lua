@@ -112,15 +112,17 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 				local tc=g:GetFirst()
 				if tc then
 					Duel.HintSelection(g)
-					Duel.SpecialSummon(tc,0,1-tp,1-tp,false,false,POS_FACEUP)
-					local e1=Effect.CreateEffect(e:GetHandler())
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetCode(EFFECT_DISABLE)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-					tc:RegisterEffect(e1)
-					local e2=e1:Clone()
-					e2:SetCode(EFFECT_DISABLE_EFFECT)
-					tc:RegisterEffect(e2)
+					if Duel.SpecialSummonStep(tc,0,1-tp,1-tp,false,false,POS_FACEUP) then
+						local e1=Effect.CreateEffect(e:GetHandler())
+						e1:SetType(EFFECT_TYPE_SINGLE)
+						e1:SetCode(EFFECT_DISABLE)
+						e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+						tc:RegisterEffect(e1)
+						local e2=e1:Clone()
+						e2:SetCode(EFFECT_DISABLE_EFFECT)
+						tc:RegisterEffect(e2)
+						Duel.SpecialSummonComplete()
+					end
 				end
 			end
 		end
@@ -144,15 +146,17 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.HintSelection(g)
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		tc:RegisterEffect(e2)
+		if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			tc:RegisterEffect(e2)
+			Duel.SpecialSummonComplete()
+		end
 		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 	end
 end

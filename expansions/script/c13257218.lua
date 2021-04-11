@@ -1,6 +1,7 @@
 --宇宙战争机器 强袭核心
 local m=13257218
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -38,7 +39,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.eqop)
 	c:RegisterEffect(e4)
 	c:RegisterFlagEffect(13257200,0,0,0,1)
-	eflist={"deck_equip",e4}
+	eflist={{"deck_equip",e4}}
 	cm[c]=eflist
 	
 end

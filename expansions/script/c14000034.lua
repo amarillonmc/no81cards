@@ -12,7 +12,6 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_CHANGE_CODE)
 	e1:SetRange(LOCATION_ONFIELD+LOCATION_GRAVE)
 	e1:SetValue(14000021)
-	e1:SetCondition(cm.condition)
 	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
@@ -62,9 +61,6 @@ function cm.TM(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Marsch
 end
-function cm.condition(e)
-	return Duel.GetTurnPlayer()~=e:GetHandlerPlayer()
-end
 function cm.cfilter(c,tp)
 	return c:IsCode(14000021) and c:IsDiscardable() and Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_HAND,0,1,c)
 end
@@ -85,35 +81,34 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SYNCHRO+1
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:IsActiveType(TYPE_SPELL) or re:GetHandler():IsType(TYPE_SPELL))
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:IsActiveType(TYPE_QUICKPLAY) or re:GetHandler():IsType(TYPE_QUICKPLAY))
+end
+function cm.dmfilter(c)
+	return cm.TM(c) and c:IsFaceup()
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_DECK)
+	local ct=Duel.GetMatchingGroupCount(cm.dmfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
+	if chk==0 then return ct>0 end
+	Duel.SetTargetPlayer(1-tp)
+	local dam=ct*300
+	Duel.SetTargetParam(dam)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,dam)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ConfirmDecktop(1-tp,1)
-	local g=Duel.GetDecktopGroup(1-tp,1)
-	local tc=g:GetFirst()
-	if tc:IsType(TYPE_MONSTER) and tc:IsAbleToRemove() and not tc:IsType(TYPE_TOKEN) then
-		if tc:GetBaseAttack()~=0 and Duel.Damage(1-tp,tc:GetBaseAttack(),REASON_EFFECT) then
-			Duel.DisableShuffleCheck()
-			Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT+REASON_REVEAL)
-		end
-	else
-		Duel.MoveSequence(tc,1)
-	end
+	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	local dam=Duel.GetMatchingGroupCount(cm.dmfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)*300
+	Duel.Damage(p,dam,REASON_EFFECT)
 end
 function cm.stcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:IsActiveType(TYPE_TRAP) or re:GetHandler():IsType(TYPE_TRAP))
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:IsActiveType(TYPE_TRAP) or re:GetHandler():IsType(TYPE_TRAP))
 end
 function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_DECK)
+	if chk==0 then return Duel.GetFieldGroupCount(re:GetHandlerPlayer(),0,LOCATION_DECK)>0 end
 end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ConfirmDecktop(tp,1)
-	local g=Duel.GetDecktopGroup(tp,1)
+	local p=re:GetHandlerPlayer()
+	Duel.ConfirmDecktop(p,1)
+	local g=Duel.GetDecktopGroup(p,1)
 	local tc=g:GetFirst()
 	if tc:IsType(TYPE_QUICKPLAY) and tc:IsSSetable() then
 		Duel.DisableShuffleCheck()

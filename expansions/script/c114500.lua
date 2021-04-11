@@ -37,23 +37,30 @@ function cm.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
 	return true
 end
-function cm.resfilter(c,rc)
-	return c:IsType(TYPE_FLIP) and Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,Group.FromCards(c,rc))
+function cm.resfilter(g,rc,tp)
+	if g:IsContains(rc) and not rc:IsReleasable() then return false end
+	if not Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,g) then return false end
+	if rc:IsLocation(LOCATION_HAND) then return g:IsContains(rc) and #g == 2 
+	else
+		return (#g == 1 and not g:IsContains(rc)) or (#g == 2 and g:IsContains(rc))
+	end
 end
 function cm.postg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c = e:GetHandler()
+	local rg = Duel.GetReleaseGroup(tp,true):Filter(Card.IsType,nil,TYPE_FLIP)
+	rg:AddCard(c)
 	if chk == 0 then 
 		if e:GetLabel() ~= 100 then
 			return Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 		else
 			e:SetLabel(0)
-			return c:IsReleasable() and Duel.CheckReleaseGroupEx(tp,cm.resfilter,1,c,c)
+			return rg:CheckSubGroup(cm.resfilter,1,2,c,tp)
 		end
 	end
 	if e:GetLabel() == 100 then
-		local rg = Duel.SelectReleaseGroupEx(tp,cm.resfilter,1,1,c,c)
-		rg:AddCard(c)   
-		Duel.Release(rg,REASON_COST)  
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		local rg2 = rg:SelectSubGroup(tp,cm.resfilter,false,1,2,c,tp)
+		Duel.Release(rg2,REASON_COST)  
 	end
 	e:SetLabel(0)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,1,PLAYER_ALL,LOCATION_MZONE)

@@ -1,6 +1,7 @@
 --宇宙战争机器 影舞者机甲
 local m=13257225
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -75,7 +76,8 @@ function cm.initial_effect(c)
 	local e13=e12:Clone()
 	e13:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e13)
-	eflist={"deck_equip",e8}
+	c:RegisterFlagEffect(13257200,0,0,0,1)
+	eflist={{"deck_equip",e8}}
 	cm[c]=eflist
 	
 end

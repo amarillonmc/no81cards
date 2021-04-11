@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	e11:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e11:SetOperation(cm.bgmop)
 	c:RegisterEffect(e11)
-	eflist={"power_capsule",e2}
+	eflist={{"power_capsule",e2}}
 	cm[c]=eflist
 	
 end

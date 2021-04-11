@@ -1,6 +1,7 @@
 --宇宙军阀首领 产土神-黄辉块
 local m=13257229
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -89,7 +90,9 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_HAND,LOCATION_ONFIELD+LOCATION_HAND,nil)
-	if Duel.Destroy(g,REASON_EFFECT)>0 then
+	if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 then
+		Duel.ShuffleDeck(tp)
+		Duel.ShuffleDeck(1-tp)
 		Duel.BreakEffect()
 		Duel.Draw(tp,5,REASON_EFFECT)
 		Duel.Draw(1-tp,5,REASON_EFFECT)

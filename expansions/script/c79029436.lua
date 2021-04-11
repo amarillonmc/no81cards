@@ -28,23 +28,17 @@ function c79029436.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x1904) end
 end
 function c79029436.stop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_MZONE,0,nil,0x1904) 
-	local tc=g:GetFirst()
-	while tc do
 	--
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetDescription(aux.Stringid(79029436,0))
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_ADD_TYPE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x1904))
 	e1:SetValue(TYPE_SYNCHRO)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	tc:RegisterEffect(e1)
-	tc=g:GetNext()
-	end
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
-
 
 
 

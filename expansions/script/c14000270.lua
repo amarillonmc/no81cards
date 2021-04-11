@@ -1,8 +1,8 @@
 --星态城·魔方领-0000
 local m=14000270
 local cm=_G["c"..m]
-cm.card_code_list={14000260}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000260)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -75,10 +75,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
+			tc:RegisterEffect(e1,true)
 			local e2=e1:Clone()
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			tc:RegisterEffect(e2)
+			tc:RegisterEffect(e2,true)
 			tc=g:GetNext()
 		end
 	end

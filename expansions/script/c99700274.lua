@@ -258,7 +258,7 @@ function c99700274.negop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c99700274.valcheck(e,c)
-	return (e:GetHandler():GetMaterial():FilterCount(Card.IsSetCard,nil,0xfd00) or e:GetHandler():GetMaterial():FilterCount(Card.IsSetCard,nil,0xfd07)) and e:GetHandler():GetMaterial():FilterCount(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)
+	return (e:GetHandler():GetMaterial():FilterCount(Card.IsSetCard,nil,0xfd00) or e:GetHandler():GetMaterial():FilterCount(Card.IsSetCard,nil,0xfd07)) and e:GetHandler():GetMaterial():FilterCount(Card.GetOriginalType,nil,TYPE_SPELL+TYPE_TRAP)
 end
 function c99700274.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()

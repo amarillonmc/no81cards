@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,13254048)
+	e2:SetCountLimit(1,m)
 	e2:SetCost(cm.thcost1)
 	e2:SetTarget(cm.thtg1)
 	e2:SetOperation(cm.thop1)
@@ -36,12 +36,13 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e3:SetCode(EVENT_TO_GRAVE)
-	e3:SetCountLimit(1,13254048)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,m)
 	e3:SetCost(cm.thcost1)
 	e3:SetTarget(cm.thtg1)
 	e3:SetOperation(cm.thop1)
 	c:RegisterEffect(e3)
-	elements={"tama_elements",{{TAMA_ELEMENT_MANA,1}}}
+	elements={{"tama_elements",{{TAMA_ELEMENT_MANA,2}}}}
 	cm[c]=elements
 	
 end
@@ -80,7 +81,7 @@ function cm.thcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
 function cm.thfilter1(c)
-	return c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x356) and c:IsAbleToHand()
 end
 function cm.thtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil) end

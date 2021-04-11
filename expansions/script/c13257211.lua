@@ -1,6 +1,7 @@
 --零之力 泽洛斯
 local m=13257211
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	--summon with no tribute
 	local e11=Effect.CreateEffect(c)

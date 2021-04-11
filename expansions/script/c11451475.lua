@@ -7,7 +7,6 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,0x11e0)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
@@ -16,17 +15,45 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.condition)
 	e2:SetCost(cm.cost)
 	c:RegisterEffect(e2)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_ACTIVATE_COST)
+	e4:SetRange(LOCATION_GRAVE)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetTargetRange(1,0)
+	e4:SetTarget(cm.actarget)
+	e4:SetOperation(cm.costop)
+	c:RegisterEffect(e4)
+	--hint
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetCode(EVENT_TO_GRAVE)
+	e5:SetOperation(cm.chkop)
+	c:RegisterEffect(e5)
+end
+function cm.actarget(e,te,tp)
+	return te:GetHandler()==e:GetHandler()
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+end
+function cm.chkop(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local ref=c:GetReasonEffect()
+	if c:IsReason(REASON_COST) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC and ref:GetHandler():IsRace(RACE_INSECT) then
+		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,7))
+	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ref=c:GetReasonEffect()
-	return c:IsReason(REASON_COST) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC and ref:GetHandler():IsRace(RACE_INSECT)
+	return c:IsReason(REASON_COST) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC and ref:GetHandler():IsRace(RACE_INSECT) and not c:IsPreviousLocation(LOCATION_REMOVED)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if chk==0 then return ft>1 end
-	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-	e:GetHandler():CreateEffectRelation(e)
 end
 function cm.filter(c)
 	return c:IsType(TYPE_MONSTER) and not c:IsForbidden()
@@ -235,7 +262,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetRange(LOCATION_MZONE)
 		e1:SetLabelObject(re)
 		e1:SetValue(cm.efilter)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_CHAIN)
 		c:RegisterEffect(e1)
 		if rc:IsRelateToEffect(re) then Duel.Destroy(rc,REASON_EFFECT) end
 	end
@@ -289,7 +316,7 @@ function cm.resop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsLocation(LOCATION_SZONE) then return end
 	local te=e:GetLabelObject()
 	if te~=nil and aux.GetValueType(te)=="Effect" then
-		local te2=e:GetLabelObject()
+		local te2=te:GetLabelObject()
 		if te2~=nil and aux.GetValueType(te2)=="Effect" then te2:Reset() end
 		te:Reset()
 	end

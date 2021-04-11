@@ -46,6 +46,9 @@ function cm.initial_effect(c)
 	cm[c]=eflist
 	
 end
+function cm.disfilter(c)
+	return c==Duel.GetAttacker() or c==Duel.GetAttackTarget()
+end
 function cm.eqlimit(e,c)
 	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x3352)
 end

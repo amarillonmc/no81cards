@@ -1,6 +1,7 @@
 --宇宙军阀首领-巴克特利安
 local m=13257235
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	--cannot special summon
 	local e11=Effect.CreateEffect(c)
@@ -55,7 +56,7 @@ function cm.efilter(e,ct)
 	return te:IsActiveType(TYPE_SPELL) and te:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.econ(e)
-	return e:GetHandler():GetOwner():GetFieldCard(LOCATION_SZONE,5)~=nil
+	return e:GetHandler():GetControler():GetFieldCard(LOCATION_SZONE,5)~=nil
 end
 function cm.efilter(e,re)
 	return e:GetHandlerPlayer()~=re:GetOwnerPlayer()

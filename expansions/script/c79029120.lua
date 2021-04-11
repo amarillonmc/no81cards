@@ -1,5 +1,7 @@
 --乌萨斯·重装干员-古米
 function c79029120.initial_effect(c)
+	--
+	c:EnableReviveLimit()
 	aux.AddXyzProcedure(c,nil,4,3,c79029120.ovfilter,aux.Stringid(79029120,1),99) 
 	--serch
 	local e1=Effect.CreateEffect(c)

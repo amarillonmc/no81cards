@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunFun(c,cm.matfilter,aux.FilterBoolFunction(Card.IsRace,RACE_PLANT),2,true)
-	--search
+	--togy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_TOGRAVE)

@@ -5,19 +5,10 @@ function c9910455.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,9910455+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c9910455.target)
 	e1:SetOperation(c9910455.activate)
 	c:RegisterEffect(e1)
-	--to deck
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_RECOVER)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,9910455)
-	e2:SetCondition(c9910455.tdcon)
-	e2:SetTarget(c9910455.tdtg)
-	e2:SetOperation(c9910455.tdop)
-	c:RegisterEffect(e2)
 end
 function c9910455.filter1(c,e)
 	return c:IsOnField() and not c:IsImmuneToEffect(e)
@@ -45,6 +36,7 @@ function c9910455.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c9910455.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c9910455.filter1,nil,e)
 	local sg1=Duel.GetMatchingGroup(c9910455.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
@@ -75,38 +67,55 @@ function c9910455.activate(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(c9910455.atkval)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1,true)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_UPDATE_DEFENSE)
-		tc:RegisterEffect(e2,true)
+		if tc:IsSetCard(0x9950) and c:IsFaceup() and c:IsRelateToEffect(e)
+			and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+			c:CancelToGrave()
+			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(9910455,0))
+			e1:SetCategory(CATEGORY_COUNTER)
+			e1:SetType(EFFECT_TYPE_QUICK_O)
+			e1:SetCode(EVENT_CHAINING)
+			e1:SetRange(LOCATION_SZONE)
+			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+			e1:SetCountLimit(1)
+			e1:SetTarget(c9910455.cttg)
+			e1:SetOperation(c9910455.ctop)
+			c:RegisterEffect(e1)
+		end
 	end
 end
-function c9910455.atkval(e,c)
-	local tp=c:GetControler()
-	return Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_GRAVE,0,nil,0x9950):GetClassCount(Card.GetCode)*500
+function c9910455.cfilter1(c,tp,col)
+	return c:IsSetCard(0x9950) and c:IsFaceup() and aux.GetColumn(c,tp)==col
 end
-function c9910455.tdcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
-	return g:GetClassCount(Card.GetCode)==g:GetCount()
+function c9910455.cfilter2(c,tp,col)
+	return c:IsCanAddCounter(0x1950,1) and aux.GetColumn(c,tp)==col
 end
-function c9910455.tdfilter(c)
-	return c:IsSetCard(0x9950) and c:IsAbleToDeck()
+function c9910455.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local flag=true
+	local loc,seq,p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE,CHAININFO_TRIGGERING_CONTROLER)
+	local col=0
+	if loc&LOCATION_MZONE~=0 then
+		col=aux.MZoneSequence(seq)
+	elseif loc&LOCATION_SZONE~=0 then
+		if seq>4 then flag=false end
+		col=aux.SZoneSequence(seq)
+	else
+		flag=false
+	end
+	if flag and p==1-tp then col=4-col end
+	if chk==0 then return flag
+		and Duel.IsExistingMatchingCard(c9910455.cfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,col)
+		and Duel.IsExistingMatchingCard(c9910455.cfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,col) end
+	e:SetLabel(col+1)
 end
-function c9910455.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910455.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	local g=Duel.GetMatchingGroup(c9910455.tdfilter,tp,LOCATION_GRAVE,0,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,g:GetCount()*500)
-end
-function c9910455.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c9910455.tdfilter,tp,LOCATION_GRAVE,0,nil)
-	local ct=Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-	if ct>0 then
-		Duel.Recover(tp,ct*500,REASON_EFFECT)
+function c9910455.ctop(e,tp,eg,ep,ev,re,r,rp)
+	local label=e:GetLabel()
+	if not label or label==0 then return end
+	local g=Duel.GetMatchingGroup(c9910455.cfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,label-1)
+	local tc=g:GetFirst()
+	while tc do
+		tc:AddCounter(0x1950,1)
+		tc=g:GetNext()
 	end
 end

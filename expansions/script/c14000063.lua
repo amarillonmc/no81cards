@@ -74,7 +74,7 @@ function cm.exop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) and oc and oc:IsLocation(LOCATION_REMOVED) and atk1>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 		if #g>0 then
 			if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0 then
 				Duel.Damage(1-tp,atk1,REASON_EFFECT)

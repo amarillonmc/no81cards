@@ -1,6 +1,7 @@
 --宇宙战争兵器 主炮 电浆炮
 local m=13257221
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--equip limit
@@ -90,7 +91,7 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetEquipTarget()
 	local ct=eg:FilterCount(Card.IsControler,nil,1-tp)
 	if ec then
-		local ct1=ec:GetFlagEffectLabel(13257200)*100
+		local ct1=ec:GetFlagEffectLabel(13257200)*150
 		if ct>0 and ct1>0 then
 			Duel.Hint(HINT_CARD,1,m)
 			Duel.Damage(1-tp,ct*ct1,REASON_EFFECT)
@@ -108,7 +109,7 @@ function cm.damop1(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetEquipTarget()
 	local ct=eg:FilterCount(cm.damfilter,nil,1-tp)
 	if ec then
-		local ct1=ec:GetFlagEffectLabel(13257200)*100
+		local ct1=ec:GetFlagEffectLabel(13257200)*150
 		if ct>0 and ct1>0 then
 			Duel.Hint(HINT_CARD,1,m)
 			Duel.Damage(1-tp,ct*ct1,REASON_EFFECT)

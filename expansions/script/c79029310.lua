@@ -22,13 +22,13 @@ function c79029310.initial_effect(c)
 	c:RegisterEffect(e3)	  
 end
 function c79029310.reop(e,tp,eg,ep,ev,re,r,rp)
+	if not (Duel.SelectEffectYesNo(tp,e:GetHandler()) and not Duel.SelectEffectYesNo(1-tp,e:GetHandler())) then return end   
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_RULE)
 	if e:GetHandler():GetPreviousLocation()==LOCATION_HAND then
 	Duel.Draw(tp,1,REASON_RULE)
 	end   
 	local c=e:GetHandler()
 	if Duel.GetTurnPlayer()~=tp then return end
-	if not Duel.SelectEffectYesNo(tp,e:GetHandler()) then return end
 	Duel.Hint(HINT_MUSIC,tp,aux.Stringid(79029310,1))
 	local ft=2
 	local ac=0

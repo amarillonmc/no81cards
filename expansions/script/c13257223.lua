@@ -1,6 +1,7 @@
 --宇宙战争兵器 主炮 超折反镭射
 local m=13257223
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--equip limit
@@ -88,9 +89,9 @@ function cm.opdisable(e,tp,eg,ep,ev,re,r,rp)
 	if cl==nil then
 		cl=0
 	end
-	local d=Duel.TossDice(tp,1)+1
-	if cl<d and Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+	local d=Duel.TossDice(tp,1)
+	if (d==1 or d==2) and Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
-		Duel.Damage(1-tp,cl*cl*40,REASON_EFFECT)
+		Duel.Damage(1-tp,cl*200,REASON_EFFECT)
 	end
 end

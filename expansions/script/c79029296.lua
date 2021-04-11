@@ -39,7 +39,10 @@ function c79029296.target(e,tp,eg,ep,ev,re,r,rp,chk)
 			table.insert(afilter,OPCODE_ISTYPE)
 			table.insert(afilter,OPCODE_AND)
 	local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
-	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT}   
+	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT}
+	table.insert(getmetatable(e:GetHandler()).announce_filter,0xa900)
+	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_ISSETCARD)
+	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_AND)   
 	e:SetLabel(ac)
 end
 function c79029296.operation(e,tp,eg,ep,ev,re,r,rp)

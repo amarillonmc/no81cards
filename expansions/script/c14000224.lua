@@ -53,7 +53,6 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 		local b2=te:IsActivatable(tp)
 		if b1 and (not b2 or Duel.SelectYesNo(tp,aux.Stringid(m,2))) then
 			Duel.SSet(tp,g:GetFirst())
-			Duel.ConfirmCards(1-tp,g)
 		else
 			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 			if fc and tc:IsType(TYPE_FIELD) then

@@ -43,7 +43,7 @@ function cm.initial_effect(c)
 	e11:SetCode(EVENT_SUMMON_SUCCESS)
 	e11:SetOperation(cm.bgmop)
 	c:RegisterEffect(e11)
-	eflist={"power_capsule",e3,"bomb",e4}
+	eflist={{"power_capsule",e3},{"bomb",e4}}
 	cm[c]=eflist
 	
 end

@@ -17,12 +17,13 @@ function c79029042.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c79029042.tdtg)
 	e2:SetOperation(c79029042.tdop)
 	c:RegisterEffect(e2)
 end
 function c79029042.sfilter(c)
-	return c:IsSetCard(0xa900)
+	return c:IsSetCard(0xa900) and c:IsAbleToHand()
 end
 function c79029042.sfilter2(c,e,tp)
 	return c:IsSetCard(0x1904) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -45,17 +46,18 @@ function c79029042.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(tc2,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029042.filter(c)
-	return c:IsSetCard(0xa900) and c:IsAbleToDeck()
+	return c:IsSetCard(0xa900) and c:IsAbleToDeck() and c:GetFlagEffect(79029042)==0  
 end
 function c79029042.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c79029042.filter(chkc) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)
-		and Duel.IsExistingTarget(c79029042.filter,tp,LOCATION_GRAVE,0,3,nil) end
-		Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
-end
-function c79029042.tdop(e,tp,eg,ep,ev,re,r,rp)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) and Duel.IsExistingTarget(c79029042.filter,tp,LOCATION_GRAVE,0,3,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local xg=Duel.SelectTarget(tp,c79029042.filter,tp,LOCATION_GRAVE,0,3,3,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,xg,xg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+end
+function c79029042.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local xg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	if not xg or xg:FilterCount(Card.IsRelateToEffect,nil,e)~=3 then return end
 	Duel.SendtoDeck(xg,nil,0,REASON_EFFECT)
 	local g=Duel.GetOperatedGroup()
@@ -63,7 +65,51 @@ function c79029042.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 	if ct==3 then
 		Duel.BreakEffect()
-		Duel.Draw(tp,2,REASON_EFFECT)
-		
+		Duel.Draw(tp,2,REASON_EFFECT)	
+	end 
+	local tc=xg:GetFirst()
+	while tc do
+	tc:RegisterFlagEffect(79029042,RESET_PHASE+PHASE_END,0,1)
+	tc=xg:GetNext()
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CHANGE_DAMAGE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+	e1:SetValue(c79029042.val)
+	e1:SetReset(RESET_PHASE+PHASE_END,1)
+	Duel.RegisterEffect(e1,tp)  
 end
+function c79029042.val(e,re,dam,r,rp,rc)
+	if bit.band(r,REASON_EFFECT)~=0 then
+		return 0
+	else return dam end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

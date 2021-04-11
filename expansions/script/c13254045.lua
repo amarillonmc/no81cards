@@ -28,19 +28,23 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.target1)
 	e3:SetOperation(cm.operation1)
 	c:RegisterEffect(e3)
+	elements={{"tama_elements",{{TAMA_ELEMENT_MANA,1}}}}
+	cm[c]=elements
 	
 end
+
 function cm.tdfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,c)
+	return c:IsAbleToDeckAsCost() and #(tama.tamas_getElements(c))~=0
 end
-function cm.thfilter(c,tc)
-	return c:IsSetCard(0x3356) and c:IsType(TYPE_MONSTER) and not tama.tamas_checkElementsEmpty(tama.tamas_getElements(c)) and tama.tamas_checkCardElementsGreater(tc,c) and c:IsAbleToHand()
+function cm.thfilter(c,sg)
+	return c:IsSetCard(0x3356) and c:IsType(TYPE_MONSTER) and #(tama.tamas_getElements(c))~=0 and tama.tamas_checkElementsForLess(tama.tamas_sumElements(sg),tama.tamas_getElements(c)) and c:IsAbleToHand()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	local sg=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local sg=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,1,60,nil)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
-	e:SetLabelObject(sg:GetFirst())
+	e:SetLabelObject(sg)
+	sg:KeepAlive()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -48,16 +52,19 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetLabelObject() or not e:GetHandler():IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,e:GetLabelObject())
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-		if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-			Duel.BreakEffect()
-			Duel.Summon(tp,g:GetFirst(),true,nil)
+	local sg=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil,e:GetLabelObject())
+	if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=sg:Select(tp,1,1,nil)
+		if g:GetCount()>0 then
+			local tc=g:GetFirst()
+			if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) and tc:IsSummonable(true,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+				Duel.BreakEffect()
+				Duel.Summon(tp,tc,true,nil)
+			end
 		end
 	end
+	e:GetLabelObject():DeleteGroup()
 end
 function cm.tdfilter1(c)
 	return c:IsSetCard(0x3356) and c:IsAbleToDeckAsCost()

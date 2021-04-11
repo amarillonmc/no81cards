@@ -1,8 +1,8 @@
 --星坠尘 暗魂
 local m=14000282
 local cm=_G["c"..m]
-cm.card_code_list={14000260}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000260)
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,aux.FilterBoolFunction(Card.IsSummonType,SUMMON_TYPE_NORMAL),nil,nil,aux.Tuner(nil),1,99)
 	c:EnableReviveLimit()

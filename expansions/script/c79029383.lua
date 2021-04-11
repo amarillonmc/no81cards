@@ -69,12 +69,16 @@ function c79029383.disop(e)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local zone=0
-	if c:GetSequence()==6 then
-	zone=aux.SequenceToGlobal(1-tp,LOCATION_MZONE,1)+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,3)+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,4)
+	if c:GetSequence()==5 then 
+	if c:IsLinkMarker(LINK_MARKER_TOP) then zone=zone+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,3) end
+	if c:IsLinkMarker(LINK_MARKER_TOP_LEFT) then zone=zone+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,4) end
+	if c:IsLinkMarker(LINK_MARKER_TOP_RIGHT) then zone=zone+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,2) end
 	else
-	zone=aux.SequenceToGlobal(1-tp,LOCATION_MZONE,0)+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,1)+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,3)
+	if c:IsLinkMarker(LINK_MARKER_TOP) then zone=zone+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,1) end
+	if c:IsLinkMarker(LINK_MARKER_TOP_LEFT) then zone=zone+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,2) end
+	if c:IsLinkMarker(LINK_MARKER_TOP_RIGHT) then zone=zone+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,0) end
 	end
-	return zone
+	return aux.SequenceToGlobal(1-tp,LOCATION_MZONE,0)+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,1)+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,2)+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,3)+aux.SequenceToGlobal(1-tp,LOCATION_MZONE,4)-zone
 end
 
 

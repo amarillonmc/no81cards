@@ -1,8 +1,8 @@
 --星态前锋·黑翼-0111
 local m=14000272
 local cm=_G["c"..m]
-cm.card_code_list={14000260}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000260)
 	--cannot link material
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)

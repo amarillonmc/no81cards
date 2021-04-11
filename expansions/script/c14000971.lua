@@ -10,6 +10,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCost(cm.cost)
+	e1:SetCondition(cm.con)
 	e1:SetTarget(cm.tg)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
@@ -60,6 +61,9 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
 	e:SetLabel(g:GetFirst():GetAttack())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return cm[0]==true
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

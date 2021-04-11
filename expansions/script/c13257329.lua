@@ -32,6 +32,8 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)]]
+	elements={{"tama_elements",{{TAMA_ELEMENT_ENERGY,1}}}}
+	cm[c]=elements
 	
 end
 function cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
@@ -40,7 +42,7 @@ function cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
 	return not target or target(PCe,tep,eg,ep,ev,re,r,rp,0)
 end
 function cm.filter(c,eg,ep,ev,re,r,rp)
-	local PCe=tama.tamas_getTargetTable(c,"power_capsule")
+	local PCe=tama.getTargetTable(c,"power_capsule")
 	return c:IsFaceup() and PCe and cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -54,7 +56,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.Hint(12,0,aux.Stringid(m,7))
 		local tep=tc:GetControler()
-		local PCe=tama.tamas_getTargetTable(tc,"power_capsule")
+		local PCe=tama.getTargetTable(tc,"power_capsule")
 		if PCe and cm.canActivate(tc,PCe,eg,ep,ev,re,r,rp) then
 			--local cost=PCe:GetCost()
 			local target=PCe:GetTarget()

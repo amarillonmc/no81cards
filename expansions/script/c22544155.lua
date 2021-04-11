@@ -45,14 +45,14 @@ function c22544155.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 	if not e:IsHasType(EFFECT_TYPE_ACTIVATE)
 		and e:GetHandler():IsLocation(LOCATION_ONFIELD) then return end
-	e:GetHandler():RegisterFlagEffect(22544155,RESET_EVENT+RESETS_STANDARD,0,0)
+	Duel.RegisterFlagEffect(PLAYER_ALL,22544155,RESET_EVENT+RESETS_STANDARD,0,0)
 end 
 function c22544155.drawtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToDeck() and Duel.IsPlayerCanDraw(tp,2) and c:GetFlagEffect(22544155)>0 end
+	if chk==0 then return c:IsAbleToDeck() and Duel.IsPlayerCanDraw(tp,3) and Duel.GetFlagEffect(PLAYER_ALL,22544155)>0 end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(2)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	Duel.SetTargetParam(3)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,3)
 	Duel.SetChainLimit(aux.FALSE)
 end
 function c22544155.drawop(e,tp,eg,ep,ev,re,r,rp)

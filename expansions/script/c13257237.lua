@@ -1,6 +1,7 @@
 --宇宙军阀首领-野望之高弗
 local m=13257237
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)

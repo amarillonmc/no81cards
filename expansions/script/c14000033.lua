@@ -54,11 +54,11 @@ function cm.tgfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup()
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,14000021) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,0,1,nil,14000021) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_REMOVED)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,14000021) then return end
+	if not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,0,1,nil,14000021) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil)
 	if #g>0 then

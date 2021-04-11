@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e3:SetCondition(function(e)
-		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==1
+		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)<=1
 	end)
 	c:RegisterEffect(e3)
 end

@@ -106,10 +106,11 @@ function c79029325.lzop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(p,d,REASON_EFFECT)
 	end
 	if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,1,nil,tp,POS_FACEDOWN) and xg:IsExists(Card.IsType,1,nil,TYPE_TRAP) then
+	local x=eg:FilterCount(Card.IsType,nil,TYPE_TRAP)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
 	Duel.ConfirmCards(tp,g)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=g:FilterSelect(tp,Card.IsAbleToRemove,1,1,nil,tp,POS_FACEDOWN)
+	local sg=g:FilterSelect(tp,Card.IsAbleToRemove,1,x,nil,tp,POS_FACEDOWN)
 	Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
 	Duel.ShuffleExtra(1-tp)  
 	end 
@@ -125,7 +126,7 @@ function c79029325.lzop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 	c:RegisterEffect(e1)
-	end		
+	end	 
 end
 function c79029325.incon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetOverlayCount()==0

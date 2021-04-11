@@ -1,0 +1,100 @@
+--圣界元能汇聚池
+function c99700163.initial_effect(c)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,99700163+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(c99700163.con)
+	e1:SetCost(c99700163.amcost)
+	e1:SetOperation(c99700163.activate)
+	c:RegisterEffect(e1)
+	--double damage
+	local e2=Effect.CreateEffect(c)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xfd00 or Card.IsSetCard,0xfd01 or Card.IsSetCard,0xfd02 or Card.IsSetCard,0xfd03 or Card.IsSetCard,0xfd04))
+	e2:SetValue(aux.ChangeBattleDamage(1,DOUBLE_DAMAGE))
+	c:RegisterEffect(e2)
+	--inactivatable
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_CANNOT_INACTIVATE)
+	e4:SetRange(LOCATION_ONFIELD)
+	e4:SetValue(c99700163.effectfilter)
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_CANNOT_DISEFFECT)
+	e5:SetRange(LOCATION_ONFIELD)
+	e5:SetValue(c99700163.effectfilter)
+	c:RegisterEffect(e5)
+	--self destroy
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetCode(EFFECT_SELF_DESTROY)
+	e6:SetCondition(c99700163.descon)
+	c:RegisterEffect(e6)
+end
+function c99700163.cfilter1(c)
+	return c:IsFaceup() and c:IsSetCard(0xfd00)
+end
+function c99700163.con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c99700163.cfilter1,tp,LOCATION_MZONE,0,1,nil)
+end
+function c99700163.descon(e,tp,eg,ep,ev,re,r,rp)
+	return not Duel.IsExistingMatchingCard(c99700163.cfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+end
+function c99700163.thfilter(c)
+	return c:IsSetCard(0xfd00) and c:IsType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) and not c:IsCode(99700163) and c:IsAbleToHand()
+end
+function c99700163.activate(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c99700163.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(99700163,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+	end
+end
+function c99700163.amcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.GetCustomActivityCount(99700163,tp,ACTIVITY_CHAIN+ACTIVITY_SUMMON+ACTIVITY_SPSUMMON+ACTIVITY_FLIPSUMMON+ACTIVITY_NORMALSUMMON)==0 end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c99700163.splimit)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_CANNOT_SUMMON)
+	Duel.RegisterEffect(e2,tp)
+	local e4=e1:Clone()
+	e4:SetCode(EFFECT_CANNOT_FLIP_SUMMON)
+	Duel.RegisterEffect(e4,tp)
+	local e3=Effect.CreateEffect(e:GetHandler())
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e3:SetTargetRange(1,0)
+	e3:SetValue(c99700163.aclimit)
+	Duel.RegisterEffect(e3,tp)
+end
+function c99700163.splimit(e,c)
+	return not (c:IsSetCard(0xfd00) or c:IsSetCard(0xfd01) or c:IsSetCard(0xfd02) or c:IsSetCard(0xfd03) or c:IsSetCard(0xfd04))
+end
+function c99700163.aclimit(e,re,tp)
+	return not (re:GetHandler():IsSetCard(0xfd00) or re:GetHandler():IsSetCard(0xfd01) or re:GetHandler():IsSetCard(0xfd02) or re:GetHandler():IsSetCard(0xfd03) or re:GetHandler():IsSetCard(0xfd04))
+end
+function c99700163.effectfilter(e,ct)
+	local p=e:GetHandler():GetControler()
+	local te,tp,loc=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
+	return p==tp and not te:GetHandler():IsType(TYPE_SPELL+TYPE_TRAP) and (te:GetHandler():IsSetCard(0xfd00) or te:GetHandler():IsSetCard(0xfd01) or te:GetHandler():IsSetCard(0xfd02) or te:GetHandler():IsSetCard(0xfd03) or te:GetHandler():IsSetCard(0xfd04)) and bit.band(loc,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_HAND+LOCATION_REMOVED+LOCATION_EXTRA+LOCATION_DECK)~=0
+end

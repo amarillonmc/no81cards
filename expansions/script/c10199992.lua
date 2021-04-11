@@ -1,7 +1,7 @@
 --Record Author
 local am=10199992
 local Version_Number=20200323
-#Scl
+#Scl 852415212
 local rsdka =   Dakyria
 local rsdio =   Diablo
 local rsnr  =   Night_Raven 
@@ -16,17 +16,6 @@ local rsdh  =   Devil_Hunter
 local rsds  =   Dark_Souls
 local rsca  =   Corona
 
-#Scl - Special Mode
-local rssm  =   Special_Mode
-local rssmb =   Special_Mode_Change_Base_Function
-local rssmt =   Special_Mode_Turbo_Duel
-local rssma =   Special_Mode_Action_Duel
-local rssms =   Special_Mode_Skill_Duel
-local rssmi =   Special_Mode_Infinite_Duel
-local rssmf =   Special_Mode_Fast_Duel
-local rssmm =   Special_Mode_Multiple_Duel
-local rssmu =   Special_Mode_Universal_Duel
-
 #Gale 1472676207
 local rsve  =   Voison
 local rsneov=   Neons
@@ -38,6 +27,7 @@ local rsnm  =   Nightmare
 local rslf  =   Little_Fox 
 local rccv  =   Thermonuclear
 local rsfn  =   Fake_News
+local rsfw  =   Furry_Warrior
 
 #XiaoMi 643865567
 local rssg  =   Sex_Gun
@@ -54,6 +44,7 @@ local rsia  =   Indolent_Angel
 local rsso  =   Simulated_Organism
 local rstr  =   True_Ritual
 local rssww =   Sheng_Wo_Wang
+local rslx  =   Lian_Xin
 
 #NianBao 583322404
 local rslap =   Lapin
@@ -108,6 +99,29 @@ local rsmd  =   Mrs_Dice
 
 #HuangWu 1103516856
 local rsdc  =   Dragon_Caller
+
+#BoJue 1025644096
+local rsad  =   Ancient_Dragon
+
+#ZhenLiXiYaZhiChongHuoMo 3129411731
+local rsmmd = Mo_Jie_Di_Di
+
+#Nayouduo 2847299505
+local rsjy = Jie_Yu
+
+#UR_WeiDu 897879904
+local rsyj = Yu_Jian
+
+#Scl - Special Mode 852415212
+local rssm  =   Special_Mode
+local rssmb =   Special_Mode_Change_Base_Function
+local rssmt =   Special_Mode_Turbo_Duel
+local rssma =   Special_Mode_Action_Duel
+local rssms =   Special_Mode_Skill_Duel
+local rssmi =   Special_Mode_Infinite_Duel
+local rssmf =   Special_Mode_Fast_Duel
+local rssmm =   Special_Mode_Multiple_Duel
+local rssmu =   Special_Mode_Universal_Duel
 
 --Set Code
 #Scl

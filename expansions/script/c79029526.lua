@@ -19,7 +19,7 @@ function c79029526.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,79029526)
 	e3:SetCost(c79029526.remct)
 	e3:SetTarget(c79029526.remtg)
 	e3:SetOperation(c79029526.remop)
@@ -28,9 +28,10 @@ function c79029526.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(12744567,1))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RECOVER)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_QUICK_O)
-	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_LEAVE_FIELD)
+	e4:SetCountLimit(1,09029526)
 	e4:SetCondition(c79029526.spcon)
 	e4:SetTarget(c79029526.sptg)
 	e4:SetOperation(c79029526.spop)
@@ -96,15 +97,18 @@ function c79029526.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetParam(rec)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,rec)
 end
+function c79029526.ovfil(c)
+	return c:IsCanOverlay() and c:IsSetCard(0xa900)
+end
 function c79029526.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,true,POS_FACEUP)>0 then
 		local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 		Duel.Recover(p,d,REASON_EFFECT)
-	if not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_EXTRA,0,1,nil) then return end
-	if Duel.SelectYesNo(tp,aux.Stringid(79029526,4)) then
+	if Duel.IsExistingMatchingCard(c79029526.ovfil,tp,LOCATION_EXTRA,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(79029526,4)) then
+	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-	local g1=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	local g1=Duel.SelectMatchingCard(tp,c79029526.ovfil,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	Duel.Overlay(e:GetHandler(),g1)
 	end
 end

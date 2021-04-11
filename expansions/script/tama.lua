@@ -55,6 +55,29 @@ function tama.DeepCopy( obj )
 	end
 	return Func(obj) --若表中有表，则把内嵌的表也复制了
 end
+function tama.getTargetTable(c,str)
+	local mt=tama.load_metatable(c:GetOriginalCode())
+	if mt==nil or type(mt[c])~="table" then return nil end
+	local eflist=mt[c]
+	--[[
+	local i=1
+	while eflist[i] do
+		if eflist[i]==str then
+			i=i+1
+			return eflist[i]
+		end
+		i=i+1
+	end
+	]]
+	local i=1
+	while eflist[i] do
+		if type(eflist[i])=="table" and eflist[i][1]==str then
+			return eflist[i][2]
+		end
+		i=i+1
+	end
+	return nil
+end
 function tama.cosmicFighters_optionFilter(c)
 	return c:IsFaceup() and c:IsCode(93130022)
 end
@@ -90,10 +113,13 @@ TAMA_ELEMENT_WATER=13254033
 TAMA_ELEMENT_FIRE=13254034
 TAMA_ELEMENT_ORDER=13254035
 TAMA_ELEMENT_CHAOS=13254036
-TAMA_ELEMENT_MANA=13254047
+TAMA_ELEMENT_MANA=13254048
+TAMA_ELEMENT_ENERGY=13254052
+TAMA_ELEMENT_LIFE=13254054
+--[[check card or elements table has element
+]]
 function tama.tamas_isExistElement(c,code)
 	local elements=tama.tamas_getElements(c)
-	local subElements=tama.tamas_getSubElements(c)
 	local i=1
 	if #elements~=0 then
 		while elements[i] do
@@ -101,43 +127,23 @@ function tama.tamas_isExistElement(c,code)
 			i=i+1
 		end
 	end
-	local i=1
-	if #subElements~=0 then
-		while subElements[i] do
-			if subElements[i][1]==code then return true end
-			i=i+1
-		end
-	end
 	return false
 end
+--[[check card or elements table has a group of elements
+]]
 function tama.tamas_isExistElements(c,codes)
 	local elements=tama.tamas_getElements(c)
-	local subElements=tama.tamas_getSubElements(c)
-	local i,j=1,1
-	if #elements~=0 and codes~=nil then
-		while elements[i] do
-			while codes[j] do
-				if elements[i][1]==codes[j] then return true end
-				j=j+1
-			end
-			i=i+1
-		end
-	end
-	local i,j=1,1
-	if #subElements~=0 and codes~=nil then
-		while subElements[i] do
-			while codes[j] do
-				if subElements[i][1]==codes[j] then return true end
-				j=j+1
-			end
-			i=i+1
-		end
+	local i=1
+	while codes[i] do
+		if tama.tamas_isExistElement(elements,codes[i]) then return true end
+		i=i+1
 	end
 	return false
 end
+--[[check card or elements table's count of element
+]]
 function tama.tamas_getElementCount(c,code)
 	local elements=tama.tamas_getElements(c)
-	local subElements=tama.tamas_getSubElements(c)
 	local i=1
 	local count=0
 	if #elements~=0 then
@@ -146,71 +152,19 @@ function tama.tamas_getElementCount(c,code)
 			i=i+1
 		end
 	end
-	i=1
-	if #subElements~=0 then
-		while subElements[i] do
-			if subElements[i][1]==code then count=count+subElements[i][2] end
-			i=i+1
-		end
-	end
 	return count
 end
-function tama.tamas_getElements(c)
-	local mt=tama.load_metatable(c:GetOriginalCode())
-	--local mt=getmetatable(c)
-	if mt==nil or type(mt[c])~="table" then return {} end
-	local eflist=mt[c]
-	local i=1
-	while eflist[i] do
-		if eflist[i]=="tama_elements" then
-			i=i+1
-			return eflist[i]
+function tama.tamas_getElements(v)
+	local codes={}
+	if aux.GetValueType(v)=="Card" then
+		local elements=tama.getTargetTable(v,"tama_elements")
+		if elements~=nil then
+			codes=elements
 		end
-		i=i+1
+	elseif type(v)=="table" then
+		codes=v
 	end
-	return {}
-end
-function tama.tamas_getTargetTable(c,str)
-	local mt=tama.load_metatable(c:GetOriginalCode())
-	if mt==nil or type(mt[c])~="table" then return nil end
-	local eflist=mt[c]
-	local i=1
-	while eflist[i] do
-		if eflist[i]==str then
-			i=i+1
-			return eflist[i]
-		end
-		i=i+1
-	end
-	return nil
-end
-function tama.tamas_getSubElements(c)
-	--[[
-	local mt=tama.load_metatable(c:GetOriginalCode())
-	if mt==nil or type(mt[c])~="table" then return {} end
-	local eflist=mt[c]
-	local i=1
-	while eflist[i] do
-		if eflist[i]=="tama_sub_elements" then
-			i=i+1
-			return eflist[i]
-		end
-		i=i+1
-	end
-	return {}]]
-	local codes=tama.tamas_getTargetTable(c,"tama_sub_elements")
-	if codes==nil then return {} end
 	return codes
-end
-function tama.tamas_checkElementsHasElement(codes,element)
-	local i=1
-	if codes~=nil and #codes~=0 then
-		while codes[i] do
-			if codes[i][1]==element then return true end
-			i=i+1
-		end
-	end
-	return false
 end
 function tama.tamas_decreaseElements(codes,reduce)
 	local i=1
@@ -233,7 +187,7 @@ function tama.tamas_increaseElements(codes,add)
 		if not tama.tamas_checkContainElements(toAdd,add) then
 			local i=1
 			while add[i] do
-				if not tama.tamas_checkElementsHasElement(toAdd,add[i][1]) then
+				if not tama.tamas_isExistElement(toAdd,add[i][1]) then
 					table.insert(toAdd,{add[i][1],0})
 				end
 				i=i+1
@@ -259,6 +213,15 @@ function tama.tamas_increaseElements(codes,add)
 		end
 	end
 	return toAdd
+end
+function tama.tamas_sumElements(group)
+	local tc=group:GetFirst()
+	local sum={}
+	while tc do
+		sum=tama.tamas_increaseElements(sum,tama.tamas_getElements(tc))
+		tc=group:GetNext()
+	end
+	return sum
 end
 function tama.tamas_checkElementsForLess(codes,check)
 	local i=1
@@ -349,8 +312,7 @@ function tama.tamas_checkGroupElementsForLess(g,codes)
 	local tc=g:GetFirst()
 	while tc do
 		local elements=tama.tamas_getElements(tc)
-		local subElements=tama.tamas_getSubElements(tc)
-		if tama.tamas_checkElementsForLess(elements,codes) or tama.tamas_checkElementsForLess(subElements,codes) then
+		if tama.tamas_checkElementsForLess(elements,codes) then
 			sg:AddCard(tc)
 		end
 		tc=g:GetNext()
@@ -362,8 +324,7 @@ function tama.tamas_checkGroupElements(g,codes)
 	local tc=g:GetFirst()
 	while tc do
 		local elements=tama.tamas_getElements(tc)
-		local subElements=tama.tamas_getSubElements(tc)
-		if tama.tamas_checkElements(elements,codes) or tama.tamas_checkElements(subElements,codes) then
+		if tama.tamas_checkElements(elements,codes) then
 			sg:AddCard(tc)
 		end
 		tc=g:GetNext()
@@ -375,30 +336,13 @@ function tama.tamas_selectElementsForEqual(c,mg,sg,codes)
 	local targetCodes=tama.DeepCopy(codes)
 	sg:AddCard(c)
 	local res=false
-	local subElements=tama.tamas_getSubElements(c)
 	local elements=tama.tamas_getElements(c)
-	local i=1
-	if #subElements~=0 then
-		while subElements[i] and not res do
-			local reduceElements=tama.tamas_increaseElements(elements,{subElements[i]})
-			if tama.tamas_checkElementsForLess(reduceElements,targetCodes) then
-				local targetCodes1=tama.tamas_decreaseElements(targetCodes,reduceElements)
-				if tama.tamas_checkElementsEmpty(targetCodes1) then
-					res=true
-				else
-					res=mg:IsExists(tama.tamas_selectElementsForEqual,1,sg,mg,sg,targetCodes1)
-				end
-			end
-			i=i+1
-		end
-	else
-		if tama.tamas_checkElementsForLess(elements,targetCodes) then
-			local targetCodes1=tama.tamas_decreaseElements(targetCodes,elements)
-			if tama.tamas_checkElementsEmpty(targetCodes1) then
-				res=true
-			else
-				res=mg:IsExists(tama.tamas_selectElementsForEqual,1,sg,mg,sg,targetCodes1)
-			end
+	if tama.tamas_checkElementsForLess(elements,targetCodes) then
+		local targetCodes1=tama.tamas_decreaseElements(targetCodes,elements)
+		if tama.tamas_checkElementsEmpty(targetCodes1) then
+			res=true
+		else
+			res=mg:IsExists(tama.tamas_selectElementsForEqual,1,sg,mg,sg,targetCodes1)
 		end
 	end
 	sg:RemoveCard(c)
@@ -409,30 +353,13 @@ function tama.tamas_selectElementsForAbove(c,mg,sg,codes)
 	local targetCodes=tama.DeepCopy(codes)
 	sg:AddCard(c)
 	local res=false
-	local subElements=tama.tamas_getSubElements(c)
 	local elements=tama.tamas_getElements(c)
-	local i=1
-	if #subElements~=0 then
-		while subElements[i] and not res do
-			local reduceElements=tama.tamas_increaseElements(elements,{subElements[i]})
-			if tama.tamas_checkElements(reduceElements,targetCodes) then
-				local targetCodes1=tama.tamas_decreaseElements(targetCodes,reduceElements)
-				if tama.tamas_checkElementsEmpty(targetCodes1) then
-					res=true
-				else
-					res=mg:IsExists(tama.tamas_selectElementsForAbove,1,sg,mg,sg,targetCodes1)
-				end
-			end
-			i=i+1
-		end
-	else
-		if tama.tamas_checkElements(elements,targetCodes) then
-			local targetCodes1=tama.tamas_decreaseElements(targetCodes,elements)
-			if tama.tamas_checkElementsEmpty(targetCodes1) then
-				res=true
-			else
-				res=mg:IsExists(tama.tamas_selectElementsForAbove,1,sg,mg,sg,targetCodes1)
-			end
+	if tama.tamas_checkElements(elements,targetCodes) then
+		local targetCodes1=tama.tamas_decreaseElements(targetCodes,elements)
+		if tama.tamas_checkElementsEmpty(targetCodes1) then
+			res=true
+		else
+			res=mg:IsExists(tama.tamas_selectElementsForAbove,1,sg,mg,sg,targetCodes1)
 		end
 	end
 	sg:RemoveCard(c)
@@ -494,39 +421,17 @@ function tama.tamas_elementsSelectFilterForEqual(c,mg,sg,codes,allSelect,selecte
 	if c~=nil then 
 		sg:AddCard(c) 
 		mg:RemoveCard(c) 
-		local subElements=tama.tamas_getSubElements(c)
 		local elements=tama.tamas_getElements(c)
-		if #subElements~=0 then
-			local i=1
-			while subElements[i] do
-				local reduceElements=tama.tamas_increaseElements(elements,{subElements[i]})
-				if tama.tamas_checkElementsForLess(reduceElements,targetCodes) then
-					local selectedElements2=tama.tamas_increaseElements(selectedElements1,reduceElements)
-					local targetCodes1=tama.tamas_decreaseElements(targetCodes,reduceElements)
-					if tama.tamas_checkElementsEmpty(targetCodes1) then
-						tama.tamas_addElementsGroupToTable(allSelect,sg,selectedElements2)
-					else
-						local tc=mg:GetFirst()
-						while tc do
-							tama.tamas_elementsSelectFilterForEqual(tc,mg:Clone(),sg,targetCodes1,allSelect,selectedElements2)
-							tc=mg:GetNext()
-						end
-					end
-				end
-				i=i+1
-			end
-		else
-			if tama.tamas_checkElementsForLess(elements,targetCodes) then
-				local selectedElements2=tama.tamas_increaseElements(selectedElements1,elements)
-				local targetCodes1=tama.tamas_decreaseElements(targetCodes,elements)
-				if tama.tamas_checkElementsEmpty(targetCodes1) then
-					tama.tamas_addElementsGroupToTable(allSelect,sg,selectedElements2)
-				else
-					local tc=mg:GetFirst()
-					while tc do
-						tama.tamas_elementsSelectFilterForEqual(tc,mg:Clone(),sg,targetCodes1,allSelect,selectedElements2)
-						tc=mg:GetNext()
-					end
+		if tama.tamas_checkElementsForLess(elements,targetCodes) then
+			local selectedElements2=tama.tamas_increaseElements(selectedElements1,elements)
+			local targetCodes1=tama.tamas_decreaseElements(targetCodes,elements)
+			if tama.tamas_checkElementsEmpty(targetCodes1) then
+				tama.tamas_addElementsGroupToTable(allSelect,sg,selectedElements2)
+			else
+				local tc=mg:GetFirst()
+				while tc do
+					tama.tamas_elementsSelectFilterForEqual(tc,mg:Clone(),sg,targetCodes1,allSelect,selectedElements2)
+					tc=mg:GetNext()
 				end
 			end
 		end
@@ -584,40 +489,17 @@ function tama.tamas_elementsSelectFilterForAbove(c,mg,sg,codes,allSelect,selecte
 		--sg添加穷举到的卡
 		sg:AddCard(c) 
 		mg:RemoveCard(c) 
-		--获取元素，来减少目标元素，如果目标元素清空则选项组添加sg
-		local subElements=tama.tamas_getSubElements(c)
 		local elements=tama.tamas_getElements(c)
-		if #subElements~=0 then
-			local i=1
-			while subElements[i] do
-				local reduceElements=tama.tamas_increaseElements(elements,{subElements[i]})
-				if tama.tamas_checkElements(reduceElements,targetCodes) then
-					local selectedElements2=tama.tamas_increaseElements(selectedElements1,reduceElements)
-					local targetCodes1=tama.tamas_decreaseElements(targetCodes,reduceElements)
-					if tama.tamas_checkElementsEmpty(targetCodes1) then
-						tama.tamas_addElementsGroupToTable(allSelect,sg,selectedElements2)
-					else
-						local tc=mg:GetFirst()
-						while tc do
-							tama.tamas_elementsSelectFilterForAbove(tc,mg:Clone(),sg,targetCodes1,allSelect,selectedElements2)
-							tc=mg:GetNext()
-						end
-					end
-				end
-				i=i+1
-			end
-		else
-			if tama.tamas_checkElements(elements,targetCodes) then
-				local selectedElements2=tama.tamas_increaseElements(selectedElements1,elements)
-				local targetCodes1=tama.tamas_decreaseElements(targetCodes,elements)
-				if tama.tamas_checkElementsEmpty(targetCodes1) then
-					tama.tamas_addElementsGroupToTable(allSelect,sg,selectedElements2)
-				else
-					local tc=mg:GetFirst()
-					while tc do
-						tama.tamas_elementsSelectFilterForAbove(tc,mg:Clone(),sg,targetCodes1,allSelect,selectedElements2)
-						tc=mg:GetNext()
-					end
+		if tama.tamas_checkElements(elements,targetCodes) then
+			local selectedElements2=tama.tamas_increaseElements(selectedElements1,elements)
+			local targetCodes1=tama.tamas_decreaseElements(targetCodes,elements)
+			if tama.tamas_checkElementsEmpty(targetCodes1) then
+				tama.tamas_addElementsGroupToTable(allSelect,sg,selectedElements2)
+			else
+				local tc=mg:GetFirst()
+				while tc do
+					tama.tamas_elementsSelectFilterForAbove(tc,mg:Clone(),sg,targetCodes1,allSelect,selectedElements2)
+					tc=mg:GetNext()
 				end
 			end
 		end
@@ -673,34 +555,47 @@ if elements A={{a,2}{b,2}}, B={{a,2}}, A>B
 if elements A={{a,2}{b,2}}, B={{a,2}{b,1}}, A<=B
 if elements A={{a,2}{b,2}}, B={{a,2}{c,2}}, A<=B
 ]]
-function tama.tamas_checkElementsGreater(codes,subCodes,targetCodes)
-	local i=0
+function tama.tamas_checkElementsGreater(codes,targetCodes)
 	local greater=false
-	repeat
-		i=i+1
-		local elements=tama.DeepCopy(codes)
-		if subCodes[i] then
-			elements=tama.tamas_increaseElements(elements,{subCodes[i]})
-		end
-		elements=tama.tamas_decreaseElements(elements,targetCodes)
-		if tama.tamas_checkContainElements(elements,targetCodes) and not tama.tamas_checkElementsLowerEmpty(elements) then
-			greater=true
-		end
-	until (not subCodes[i] or greater)
+	local elements=tama.DeepCopy(codes)
+	elements=tama.tamas_decreaseElements(elements,targetCodes)
+	if tama.tamas_checkContainElements(elements,targetCodes) and not tama.tamas_checkElementsLowerEmpty(elements) then
+		greater=true
+	end
 	return greater
 end
 function tama.tamas_checkCardElementsGreater(card,targetCard)
 	local codes=tama.tamas_getElements(card)
-	local subCodes=tama.tamas_getSubElements(card)
 	local targetCodes=tama.tamas_getElements(targetCard)
-	return tama.tamas_checkElementsGreater(codes,subCodes,targetCodes)
+	return tama.tamas_checkElementsGreater(codes,targetCodes)
 end
-function tama.tamas_getFormation(c)
-	local og=tama.cosmicFighters_getOptions(c)
-	og:AddCard(c)
-	return og
-end
-function tama.tamas_isInFormation(c)
-	local og=tama.cosmicFighters_getFormation(c)
-	return og:IsContains(c)
+
+COSMIC_BATTLESHIP_SHIELD=0x353
+COSMIC_BATTLESHIP_CHARGE=0x354
+function tama.cosmicBattleship_equipShield(targetCard,count)
+	if not targetCard:IsFaceup() or not targetCard:IsOnField() then return end
+	if not targetCard:IsDisabled() and not targetCard:IsCanAddCounter(COSMIC_BATTLESHIP_SHIELD,count) then
+		targetCard:EnableCounterPermit(COSMIC_BATTLESHIP_SHIELD)
+		--Destroy replace
+		local e1=Effect.CreateEffect(targetCard)
+		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DESTROY_REPLACE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
+				if chk==0 then return e:GetHandler():IsReason(REASON_EFFECT+REASON_BATTLE)
+					and e:GetHandler():GetCounter(COSMIC_BATTLESHIP_SHIELD)>0 end
+				return true
+			end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+				local c=e:GetHandler()
+				c:RemoveCounter(ep,COSMIC_BATTLESHIP_SHIELD,1,REASON_EFFECT)
+				Duel.RaiseEvent(c,EVENT_REMOVE_COUNTER+COSMIC_BATTLESHIP_SHIELD,e,REASON_EFFECT+REASON_REPLACE,tp,tp,1)
+			end)
+		e1:SetReset(RESET_EVENT+0x1fe0000)
+		targetCard:RegisterEffect(e1,true)
+	end
+	if targetCard:IsCanAddCounter(COSMIC_BATTLESHIP_SHIELD,count) then
+		targetCard:AddCounter(COSMIC_BATTLESHIP_SHIELD,count)
+	end
 end

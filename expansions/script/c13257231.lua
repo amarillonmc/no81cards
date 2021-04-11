@@ -1,6 +1,7 @@
 --宇宙战争机器 爆核
 local m=13257231
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x353)
 	local e10=Effect.CreateEffect(c)
@@ -26,15 +27,6 @@ function cm.initial_effect(c)
 	e12:SetCost(cm.spcost)
 	e12:SetOperation(cm.spcop)
 	c:RegisterEffect(e12)
-	--Destroy replace
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_DESTROY_REPLACE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTarget(cm.desreptg)
-	e1:SetOperation(cm.desrepop)
-	c:RegisterEffect(e1)
 	--counter
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_COUNTER)
@@ -75,23 +67,15 @@ function cm.initial_effect(c)
 	Duel.AddCustomActivityCounter(13257231,ACTIVITY_SPSUMMON,cm.counterfilter)
 	Duel.AddCustomActivityCounter(13257231,ACTIVITY_NORMALSUMMON,cm.counterfilter)
 	c:RegisterFlagEffect(13257200,0,0,0,1)
-	eflist={"deck_equip",e5}
+	eflist={{"deck_equip",e5}}
 	cm[c]=eflist
 	
 end
 function cm.counterfilter(c)
 	return not c:IsRace(RACE_MACHINE)
 end
-function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReason(REASON_EFFECT+REASON_BATTLE)
-		and e:GetHandler():GetCounter(0x353)>0 end
-	return true
-end
-function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RemoveCounter(ep,0x353,1,REASON_EFFECT)
-end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():AddCounter(0x353,2)
+	tama.cosmicBattleship_equipShield(e:GetHandler(),2)
 end
 function cm.filter1(c,tp,rg)
 	return rg:IsExists(cm.filter2,1,c,tp,c)

@@ -1,6 +1,7 @@
 --宇宙战争机器 巨核Mk-3
 local m=13257208
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x354)
 	local e11=Effect.CreateEffect(c)
@@ -43,7 +44,7 @@ function cm.initial_effect(c)
 	e12:SetOperation(cm.bgmop)
 	c:RegisterEffect(e12)
 	c:RegisterFlagEffect(13257200,0,0,0,3)
-	eflist={"deck_equip",e4}
+	eflist={{"deck_equip",e4}}
 	cm[c]=eflist
 	
 end

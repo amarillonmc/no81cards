@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	--todeck
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_TODECK+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	e4:SetCategory(CATEGORY_TODECK)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_TO_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -99,13 +99,6 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,1,ct,nil)
 	if #g>0 then
-		if Duel.SendtoDeck(g,nil,2,REASON_EFFECT) and g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) and Duel.IsExistingMatchingCard(cm.tgfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local g=Duel.SelectMatchingCard(tp,cm.tgfilter1,tp,LOCATION_DECK,0,1,1,nil)
-			if #g>0 then
-				Duel.SendtoGrave(g,nil,REASON_EFFECT)
-			end
-		end
+		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
 end

@@ -102,10 +102,10 @@ function cm.atop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoGrave(sg,REASON_COST)
 end
 function cm.efilter(e,re)
-	return re:IsActiveType(TYPE_MONSTER) and re:GetOwner()~=e:GetOwner()
+	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and re:GetOwner()~=e:GetOwner()
 end
 function cm.efilter1(e,re,rp)
-	return re:IsActiveType(TYPE_MONSTER)
+	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

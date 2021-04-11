@@ -33,6 +33,9 @@ end
 function c79029431.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler()):GetFirst()
+	if tc:GetOverlayCount()~=0 then
+	Duel.SendtoGrave(tc:GetOverlayGroup(),REASON_RULE)
+	end   
 	if Duel.Exile(tc,REASON_EFFECT) then
 	--
 	local e1=Effect.CreateEffect(c)

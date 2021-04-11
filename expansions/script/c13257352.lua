@@ -49,7 +49,7 @@ function cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
 		and (not target or target(PCe,tep,eg,ep,ev,re,r,rp,0))
 end
 function cm.filter(c,eg,ep,ev,re,r,rp)
-	local PCe=tama.tamas_getTargetTable(c,"bomb")
+	local PCe=tama.getTargetTable(c,"bomb")
 	return c:IsFaceup() and PCe and cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
 end
 function cm.bmcon(e,tp,eg,ep,ev,re,r,rp)
@@ -76,7 +76,7 @@ function cm.bmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		local tep=tc:GetControler()
-		local PCe=tama.tamas_getTargetTable(tc,"bomb")
+		local PCe=tama.getTargetTable(tc,"bomb")
 		if PCe and cm.canActivate(tc,PCe,eg,ep,ev,re,r,rp) then
 			local cost=PCe:GetCost()
 			local target=PCe:GetTarget()

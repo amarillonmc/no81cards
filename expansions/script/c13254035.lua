@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	e2:SetCost(cm.cost1)
 	e2:SetOperation(cm.operation1)
 	c:RegisterEffect(e2)
-	elements={"tama_elements",{{TAMA_ELEMENT_ORDER,1}}}
+	elements={{"tama_elements",{{TAMA_ELEMENT_ORDER,2}}}}
 	cm[c]=elements
 	
 end

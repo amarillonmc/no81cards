@@ -35,7 +35,7 @@ function c79029441.initial_effect(c)
 	e4:SetCondition(c79029441.spcon1)
 	e4:SetTarget(c79029441.sptg)
 	e4:SetCost(c79029441.spcost)
-	e4:SetCountLimit(1,19029437)
+	e4:SetCountLimit(1,79029441)
 	e4:SetOperation(c79029441.spop)
 	c:RegisterEffect(e4)  
 	local e5=e4:Clone()
@@ -87,11 +87,10 @@ function c79029441.rfilter(c,tp)
 end
 function c79029441.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029441.rfilter,c:GetControler(),LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_HAND,0,3,nil) and c:GetFlagEffect(79029441)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029441.rfilter,c:GetControler(),LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_HAND,0,3,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c79029441.rfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_HAND,0,3,3,nil)
 	Duel.SendtoGrave(g,REASON_COST)
-	c:RegisterFlagEffect(79029441,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,0,0)
 	Debug.Message("等待下一步指示。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029441,4))
 end
@@ -105,8 +104,10 @@ function c79029441.spop(e,tp,eg,ep,ev,re,r,rp,c)
    Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029441.sgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+local c=e:GetHandler()
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)  and c:GetFlagEffect(79029441)==0 end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	c:RegisterFlagEffect(79029441,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,0,0)
 end
 function c79029441.tgfil(c)
 	return c:IsType(TYPE_TRAP) and c:IsSetCard(0x1904) and c:IsAbleToGrave()
@@ -156,10 +157,3 @@ function c79029441.sgop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 end
-
-
-
-
-
-
-

@@ -47,7 +47,7 @@ function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) then
 		if Duel.SSet(tp,tc)~=0 and tc:IsCode(14090020,14090021,14090026,14090027) then

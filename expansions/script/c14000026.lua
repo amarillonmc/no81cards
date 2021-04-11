@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	e1:SetValue(SUMMON_TYPE_XYZ)
 	e1:SetCondition(cm.spcon)
 	e1:SetOperation(cm.spop)
+	e1:SetValue(1)
 	c:RegisterEffect(e1)
 	--immune
 	local e2=Effect.CreateEffect(c)
@@ -60,6 +61,24 @@ function cm.initial_effect(c)
 	local e7=e4:Clone()
 	e7:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	c:RegisterEffect(e7)
+	--cannot disable spsummon
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
+	e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e8:SetCondition(cm.con)
+	c:RegisterEffect(e8)
+	--end phase
+	local e9=Effect.CreateEffect(c)
+	e9:SetDescription(aux.Stringid(m,1))
+	e9:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_ATKCHANGE)
+	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e9:SetCode(EVENT_PHASE+PHASE_END)
+	e9:SetRange(LOCATION_MZONE)
+	e9:SetCountLimit(1)
+	e9:SetTarget(cm.thtg)
+	e9:SetOperation(cm.thop)
+	c:RegisterEffect(e9)
 end
 function cm.TM(c)
 	local m=_G["c"..c:GetCode()]
@@ -88,4 +107,32 @@ function cm.efilter(e,te)
 end
 function cm.rellimit(e,c,tp,sumtp)
 	return c==e:GetHandler()
+end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetSummonType()==SUMMON_TYPE_XYZ+1
+end
+function cm.thfilter(c)
+	return cm.TM(c) and c:IsAbleToHand()
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsPreviousLocation(LOCATION_GRAVE) and e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(1000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e1)
+	end
+	if not Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end

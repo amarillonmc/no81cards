@@ -1,6 +1,7 @@
 --宇宙战争兵器 护罩 覆盖罩
 local m=13257220
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--equip limit

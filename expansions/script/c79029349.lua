@@ -52,13 +52,16 @@ function c79029349.limit(e,c)
 	if not c then return false end
 	return not c:IsSetCard(0xa900)
 end
+function c79029349.spctfil(c)
+	return c:IsDiscardable() and (c:IsSetCard(0xa900) or c:IsSetCard(0xc90e) or c:IsSetCard(0xb90d))
+end
 function c79029349.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.GetMZoneCount(tp,g)>0 and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND,0,1,nil)
+	return Duel.GetMZoneCount(tp,g)>0 and Duel.IsExistingMatchingCard(c79029349.spctfil,tp,LOCATION_HAND,0,1,nil)
 end
 function c79029349.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	local g=Duel.GetMatchingGroup(c79029349.spctfil,tp,LOCATION_HAND,0,nil)
 	if g then
 	   g:KeepAlive()
 		e:SetLabelObject(g)
@@ -71,6 +74,18 @@ function c79029349.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029349,1))
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 	g:DeleteGroup()
+	--
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c79029349.splimit)
+	Duel.RegisterEffect(e1,tp)
+end
+function c79029349.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return not c:IsSetCard(0xa900)
 end
 function c79029349.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetReasonCard()

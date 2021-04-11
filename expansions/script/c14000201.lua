@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetRange(LOCATION_ONFIELD)
+	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
 	e3:SetCondition(cm.spcon)
 	e3:SetCost(cm.spcost)
@@ -35,8 +35,8 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 end
-cm.lvupcount=1
 cm.lvup={14000202}
+cm.lvdn={14000200}
 function cm.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
@@ -72,8 +72,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then
-		Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
-		tc:CompleteProcedure()
-		tc:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
 	end
 end

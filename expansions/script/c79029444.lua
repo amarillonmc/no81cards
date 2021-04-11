@@ -34,7 +34,7 @@ function c79029444.oxfil(c)
 	return c:IsSetCard(0xa900) and c:IsCanOverlay()
 end
 function c79029444.ovtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(c79029444.ovfil,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c79029444.ovfil,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) end
 	Duel.SelectTarget(tp,c79029444.ovfil,tp,LOCATION_MZONE,0,1,1,nil)
 	Debug.Message("组队完成。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029444,1))  

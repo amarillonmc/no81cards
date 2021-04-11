@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.target1)
 	e2:SetOperation(cm.operation1)
 	c:RegisterEffect(e2)
-	elements={"tama_elements",{{TAMA_ELEMENT_FIRE,1}}}
+	elements={{"tama_elements",{{TAMA_ELEMENT_FIRE,2}}}}
 	cm[c]=elements
 	
 end

@@ -1,6 +1,7 @@
 --宇宙战争机器 里香&邪眼西格玛
 local m=13257230
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--special summon
@@ -19,7 +20,6 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(2)
-	e2:SetTarget(cm.eqtg)
 	e2:SetOperation(cm.eqop)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 	e12:SetOperation(cm.bgmop)
 	c:RegisterEffect(e12)
 	c:RegisterFlagEffect(13257200,0,0,0,4)
-	eflist={"deck_equip",e2}
+	eflist={{"deck_equip",e2}}
 	cm[c]=eflist
 	
 end
@@ -57,31 +57,25 @@ end
 function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x354) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
 end
-function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:GetEquipCount()>0 or Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,c) end
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_EXTRA)
-end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local eq=c:GetEquipGroup()
 	local g=eq:Filter(Card.IsAbleToDeck,nil)
-	local op=0
 	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and g:GetCount()>0 and (not Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,c) or Duel.SelectYesNo(tp,aux.Stringid(m,1))) then op=1
-	elseif Duel.GetLocationCount(tp,LOCATION_SZONE)==0 and g:GetCount()>0 then op=1
-	end
-	if op==1 then
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 	end
-	Duel.BreakEffect()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.Equip(tp,tc,c)
+	local g1=Duel.GetMatchingGroup(cm.eqfilter,tp,LOCATION_EXTRA,0,nil,c)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and g1:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+		g1=g1:Select(tp,1,1,nil)
+		local tc=g1:GetFirst()
+		if tc then
+			Duel.Equip(tp,tc,c)
+		end
 	end
 end
 function cm.valcon(e,re,r,rp)

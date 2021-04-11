@@ -13,20 +13,27 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 end
-function cm.filter(c)
-	return (c:IsAbleToHand() or c:IsAbleToGrave()) and c:IsCode(14000056)
+function cm.filter(c,tp)
+	return c:IsAbleToHand() and c:IsCode(14000056) and Duel.IsExistingMatchingCard(cm.filter_1,tp,LOCATION_DECK,0,1,nil)
 end
-function cm.filter1(c)
-	return (c:IsAbleToHand() or c:IsAbleToGrave()) and c:IsCode(14000055)
+function cm.filter_1(c)
+	return c:IsAbleToGrave() and c:IsCode(14000055)
+end
+function cm.filter1(c,tp)
+	return c:IsAbleToHand() and c:IsCode(14000055) and Duel.IsExistingMatchingCard(cm.filter1_1,tp,LOCATION_DECK,0,1,nil)
+end
+function cm.filter1_1(c)
+	return c:IsAbleToGrave() and c:IsCode(14000056)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,tp) or Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil)
-	local g1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil,tp)
+	local g1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil,tp)
+	if #g<=0 or #g1<=0 then return end
 	g2=Group.__add(g,g1)
 	if #g2>1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

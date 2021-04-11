@@ -85,9 +85,9 @@ function cm.negfilter(c)
 	return c:IsLevel(1) and c:IsAbleToRemoveAsCost()
 end
 function cm.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(cm.negfilter,tp,LOCATION_GRAVE,0,2,nil) end
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(cm.negfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,cm.negfilter,tp,LOCATION_GRAVE,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.negfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST+REASON_TEMPORARY)
 end

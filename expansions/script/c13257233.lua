@@ -1,13 +1,14 @@
 --宇宙战争机器 信标
 local m=13257233
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	--cannot special summon
 	local e11=Effect.CreateEffect(c)
-	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e11:SetType(EFFECT_TYPE_SINGLE)
+	e11:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e11:SetRange(LOCATION_DECK)
 	e11:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e11:SetValue(aux.FALSE)
 	c:RegisterEffect(e11)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -39,7 +40,7 @@ function cm.initial_effect(c)
 	e12:SetOperation(cm.bgmop)
 	c:RegisterEffect(e12)
 	c:RegisterFlagEffect(13257200,0,0,0,5)
-	eflist={"deck_equip",e4}
+	eflist={{"deck_equip",e4}}
 	cm[c]=eflist
 	Duel.AddCustomActivityCounter(13257233,ACTIVITY_NORMALSUMMON,cm.counterfilter)
 	Duel.AddCustomActivityCounter(13257233,ACTIVITY_SPSUMMON,cm.counterfilter)

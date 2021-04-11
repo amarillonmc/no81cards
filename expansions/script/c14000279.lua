@@ -1,8 +1,8 @@
 --星坠尘 罔怜
 local m=14000279
 local cm=_G["c"..m]
-cm.card_code_list={14000260}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000260)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,nil,1)
 	c:EnableReviveLimit()

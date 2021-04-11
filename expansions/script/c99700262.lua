@@ -65,7 +65,7 @@ function c99700262.amcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e3:SetTargetRange(1,0)
-	e3:SetValue(c99700262.aclimit)
+	e3:SetValue(c99700262.aclimit1)
 	Duel.RegisterEffect(e3,tp)
 end
 function c99700262.splimit(e,c)

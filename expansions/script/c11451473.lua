@@ -133,7 +133,7 @@ function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	local tc=e:GetLabelObject()
 	Duel.HintSelection(Group.FromCards(tc))
-	Duel.Destroy(tc,REASON_RULE+REASON_EFFECT)
+	Duel.Destroy(tc,REASON_EFFECT)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
