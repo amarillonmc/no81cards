@@ -47,7 +47,7 @@ function c71400043.con1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c71400043.filter1(c)
-	return c:IsSetCard(0x7714) and c:IsAbleToHand()
+	return c:IsSetCard(0x5714) and c:IsAbleToHand()
 end
 function c71400043.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71400043.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

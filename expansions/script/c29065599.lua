@@ -1,4 +1,4 @@
-﻿--夕·虚实之笔
+---夕·虚实之笔
 function c29065599.initial_effect(c)
 	c:SetUniqueOnField(1,0,29065599)
 	c:EnableCounterPermit(0x11ae)
@@ -93,7 +93,7 @@ function c29065599.efilter(e,te,c)
 end
 function c29065599.lrop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) then return false end
-	Debug.Message("藏点雪星，月隐晦明，拙山枯水大江行！")
+	Debug.Message("星藏点雪，月隐晦明，拙山枯水大江行！")
 	Debug.Message("XYZ召唤！RANK12！夕•虚实之笔！")
 end
 

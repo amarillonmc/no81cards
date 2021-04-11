@@ -39,17 +39,16 @@ function c71400027.filter1(c)
 	return c:IsPosition(POS_FACEUP_ATTACK) and not c:IsType(TYPE_TOKEN) and c:GetSummonLocation()==LOCATION_EXTRA and c:IsAbleToChangeControler()
 end
 function c71400027.xyzfilter(c,e,tp)
-	return c:IsSetCard(0x3715) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsSetCard(0x3715) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c71400027.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c71400027.filter1(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c71400027.filter1,tp,0,LOCATION_MZONE,2,nil) and Duel.GetLocationCountFromEx(tp)>0 and Duel.IsExistingMatchingCard(c71400027.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c71400027.filter1,tp,0,LOCATION_MZONE,2,nil) and Duel.IsExistingMatchingCard(c71400027.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,c71400027.filter1,tp,0,LOCATION_MZONE,2,2,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c71400027.op1(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCountFromEx(tp)<1 then return end
 	local c=e:GetHandler()
 	local xyzg=Duel.GetMatchingGroup(c71400027.xyzfilter,tp,LOCATION_EXTRA,0,nil,e,tp)
 	local sg=xyzg:Select(tp,1,1,nil)

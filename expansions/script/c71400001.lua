@@ -137,7 +137,6 @@ function yume.AddYumeFieldGlobal(c,id,ft)
 	eac:SetType(EFFECT_TYPE_ACTIVATE)
 	eac:SetCode(EVENT_FREE_CHAIN)
 	eac:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
-	--eac:SetCost(yume.FieldActCostForNow)
 	c:RegisterEffect(eac)
 	--self limitation
 	local esl=Effect.CreateEffect(c)
@@ -159,11 +158,6 @@ function yume.AddYumeFieldGlobal(c,id,ft)
 	efa:SetCondition(yume.FieldActivationCon)
 	efa:SetOperation(yume.FieldActivationOp)
 	c:RegisterEffect(efa)
-end
-function yume.FieldActCostForNow(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local num=yume.temp_card_field[c].id
-	if chk==0 then return Duel.GetFlagEffect(tp,num)==0 end
 end
 --Against Yume
 function yume.YumeFieldLimitCon(e,tp,eg,ep,ev,re,r,rp)
@@ -230,19 +224,18 @@ function yume.FieldActivation(tp,num,ft,loc)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(71400001,3))
 	local tc=Duel.SelectMatchingCard(tp,yume.FieldActivationFilter,tp,loc,0,1,1,nil,tp,num,ft):GetFirst()
 	if tc then
-		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then
 			Duel.SendtoGrave(fc,REASON_RULE)
 			Duel.BreakEffect()
 		end
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		local te=tc:GetActivateEffect()
 		te:UseCountLimit(tp,1,true)
 		local tep=tc:GetControler()
 		local cost=te:GetCost()
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 		local id=yume.temp_card_field[tc].id or 0
-		--Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 		Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 		return tc
 	end

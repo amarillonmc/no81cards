@@ -34,7 +34,7 @@ function c30000480.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c30000480.spop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_DECK,0,e:GetLabel(),nil)
+	if not Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_DECK,0,e:GetLabel(),nil) then return end
 	local g=Duel.GetDecktopGroup(tp,e:GetLabel())
 	if Duel.SendtoGrave(g,REASON_EFFECT)~0 then
 		local og=Duel.GetOperatedGroup()

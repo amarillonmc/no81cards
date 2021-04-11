@@ -92,7 +92,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(g,nil,1,REASON_EFFECT)
 		Duel.ShuffleDeck(tp)  
 	end  
-	if ct~=3 and c:IsAbleToHand() then
+	if ct~=3 and c:IsRelateToEffect(e) and c:IsAbleToHand() then
 		Duel.BreakEffect()
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 	end
