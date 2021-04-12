@@ -69,14 +69,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if op==1 then
 			op=2
 		end
-	else a1 and a4 then
+	elseif a1 and a4 then
 		op=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,4))
 		if op==1 then
 			op=3
 		end
-	else a2 and a3 then
+	elseif a2 and a3 then
 		op=Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))+1
-	else a2 and a4 then
+	elseif a2 and a4 then
 		op=Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,4))+1
 		if op==2 then
 			op=3
@@ -95,9 +95,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if op==0 then
 		local g=Duel.GetFieldGroup(tp,LOCATION_EXTRA,0)
 		local sg=g:RandomSelect(tp,5)
-		local sg1=sg:Filter(Card.IsType,nil,TYPE_PENDULUM)
+		local sg1=sg:Filter(Card.IsFaceup,nil)
 		local sg2=Group.__sub(sg,sg1)
+		Duel.Remove(sg2,POS_FACEDOWN,0)
 		Duel.SendtoDeck(sg2,1-tp,2,REASON_EFFECT)
+		Duel.Remove(sg1,POS_FACEDOWN,0)
 		Duel.SendtoExtraP(sg1,1-tp,REASON_EFFECT)
 		local sg3=sg:Filter(cm.filter,nil,tp)
 		if sg3:GetCount()>4 then
