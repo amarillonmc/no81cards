@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_ADD_EXTRA_TRIBUTE)
 	e0:SetTargetRange(LOCATION_HAND,0)
-	e0:SetTarget(aux.TargetBoolFunction(cm.limit))
+	e0:SetTarget(function(e,c) return c~=e:GetHandler() end)
 	e0:SetValue(POS_FACEUP_ATTACK)
 	c:RegisterEffect(e0)
 	--double tribute
@@ -47,11 +47,6 @@ function cm.initial_effect(c)
 	e12:SetCode(EVENT_SUMMON_SUCCESS)
 	e12:SetOperation(cm.bgmop)
 	c:RegisterEffect(e12)
-end
-function cm.limit(c)
-	return  function (e,c)
-				return e:GetHandler()~=c
-			end
 end
 function cm.condition(e,c)
 	return c:IsRace(RACE_MACHINE)

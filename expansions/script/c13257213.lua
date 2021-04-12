@@ -85,6 +85,11 @@ end
 function cm.filter(c,e,tp)
 	return c:IsSetCard(0x353) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
+	local tep=c:GetControler()
+	local target=PCe:GetTarget()
+	return not target or target(PCe,tep,eg,ep,ev,re,r,rp,0)
+end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end

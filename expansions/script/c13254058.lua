@@ -1,6 +1,7 @@
 --飞球造物·吸血球
 local m=c13254058
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
