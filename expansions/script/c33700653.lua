@@ -63,11 +63,11 @@ end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	local tt=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_ONFIELD,0,nil)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) end
-	if chk==0 then return #tt>0 and Duel.IsExistingTarget(cm.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) end
+	if chk==0 then return #tt>0 and Duel.IsExistingTarget(cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,cm.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,#tt,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,#tt,0,0)	
+	local g=Duel.SelectTarget(tp,cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,#tt,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,#tt,0,0) 
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

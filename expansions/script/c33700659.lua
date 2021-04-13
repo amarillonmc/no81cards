@@ -42,6 +42,7 @@ function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return bit.band(sumpos,POS_FACEDOWN)>0 or not se:GetHandler():IsCode(m)
 end
 function cm.val(e,c,sump,sumtype,sumpos,targetp,se)
+	if not se then return true end
 	return not se:GetHandler():IsCode(m)
 end
 function cm.filter(c)
