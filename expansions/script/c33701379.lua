@@ -62,7 +62,7 @@ function cm.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(cm.sprfilter,tp,LOCATION_HAND,LOCATION_ONFIELD,LOCATION_GRAVE,0,nil)
-	return g:CheckSubGroup(cm.fselect,9,9,tp,sc)
+	return g:CheckSubGroup(cm.fselect,9,9,tp,c)
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(cm.sprfilter,tp,LOCATION_HAND,LOCATION_ONFIELD,LOCATION_GRAVE,0,nil)

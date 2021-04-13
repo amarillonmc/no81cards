@@ -71,7 +71,7 @@ function c15000057.chainfilter(re,tp,cid)
 	return not re:GetHandler():IsCode(15000060)
 end  
 function c15000057.ffilter(c,fc,sub,mg,sg)  
-	return not sg or sg:FilterCount(aux.TRUE,c)==0 or sg:IsExists(c15000057.f2filter,1,c,c:GetLeftScale())
+	return c:IsType(TYPE_PENDULUM) and (not sg or sg:FilterCount(aux.TRUE,c)==0 or sg:IsExists(c15000057.f2filter,1,c,c:GetLeftScale()))
 end
 function c15000057.f2filter(c,les)
 	return c:IsFusionType(TYPE_PENDULUM) and (c:GetLeftScale()==les or c:GetLeftScale()==les+1 or c:GetLeftScale()==les-1)
@@ -141,7 +141,7 @@ function c15000057.thop(e)
 	end
 end
 function c15000057.limcon(e,tp,eg,ep,ev,re,r,rp)  
-	return (re:IsHasType(EFFECT_TYPE_TRIGGER_F) or re:IsHasType(EFFECT_TYPE_TRIGGER_O)or re:IsHasType(EFFECT_TYPE_QUICK_F) or re:IsHasType(EFFECT_TYPE_QUICK_O)) and re:IsHasProperty(EFFECT_FLAG_DELAY) and (re:GetCode(EVENT_SUMMON_SUCCESS) or re:GetCode(EVENT_SPSUMMON_SUCCESS)) and re:GetHandler():IsLocation(LOCATION_MZONE)
+	return re:IsHasType(EFFECT_TYPE_SINGLE) and (re:IsHasType(EFFECT_TYPE_TRIGGER_F) or re:IsHasType(EFFECT_TYPE_TRIGGER_O) or re:IsHasType(EFFECT_TYPE_QUICK_F) or re:IsHasType(EFFECT_TYPE_QUICK_O)) and re:IsHasProperty(EFFECT_FLAG_DELAY) and (bit.band(re:GetCode(),EVENT_SUMMON_SUCCESS)~=0 or bit.band(re:GetCode(),EVENT_SPSUMMON_SUCCESS)~=0) and re:GetHandler():IsLocation(LOCATION_MZONE)
 end  
 function c15000057.limop(e,tp,eg,ep,ev,re,r,rp)  
 	Duel.NegateActivation(ev)

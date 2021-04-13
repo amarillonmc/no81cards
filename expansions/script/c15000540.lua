@@ -21,7 +21,6 @@ function cm.initial_effect(c)
 	e1:SetDescription(aux.Stringid(m,1))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
-	e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
@@ -102,9 +101,6 @@ end
 function cm.filter(c)
 	return c:IsCanOverlay()
 end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(m)==0
-end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc:IsControler(1-tp) and chkc:IsCanOverlay() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
@@ -134,8 +130,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local pos=Duel.SelectPosition(tp,e:GetHandler(),POS_FACEUP_ATTACK+POS_FACEUP_DEFENSE)
-	Duel.ChangePosition(e:GetHandler(),pos)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+	Duel.ChangePosition(e:GetHandler(),pos,pos,pos,pos,true)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc:IsControler(1-tp) and chkc:IsCanOverlay() end

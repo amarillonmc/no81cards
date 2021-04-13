@@ -54,8 +54,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local eq=c:GetEquipGroup()
 	local g=eq:Filter(Card.IsAbleToDeck,nil)
-	local op=0
-	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
+	if c:IsFacedown() then return end
 	if g:GetCount()>0 then 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local sg=g:Select(tp,1,1,nil)

@@ -67,6 +67,11 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.filter2(c,e,tp,rc)
 	if not (c:IsType(TYPE_SYNCHRO) and (rc%c:GetLevel()==0) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)) then return false end
+	--continuously updating
+	local tab={14000248,14010109,79029117,98731001}
+	for _,code in pairs(tab) do
+		if c:GetOriginalCode()==code then return true end
+	end
 	local eset={c:IsHasEffect(EFFECT_SPSUMMON_CONDITION)}
 	for _,te in pairs(eset) do
 		if te:GetValue()==0 then return true end

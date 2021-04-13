@@ -1,5 +1,5 @@
 --魔能（飞球）反应炉
-local m=c13254053
+local m=13254053
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
