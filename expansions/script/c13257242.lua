@@ -67,7 +67,7 @@ function cm.efilter(e,re)
 	return e:GetHandlerPlayer()~=re:GetOwnerPlayer()
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then true end
+	if chk==0 then return true end
 	local ec=e:GetHandler():GetEquipTarget()
 	Duel.SetTargetCard(ec)
 	local g=ec:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)

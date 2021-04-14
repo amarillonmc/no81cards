@@ -76,7 +76,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter(c)
-	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and c:IsSetCard(0x353)
+	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and c:IsLevelAbove(5)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==tp and eg:IsExists(cm.cfilter,1,nil)

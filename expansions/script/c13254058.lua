@@ -1,5 +1,5 @@
 --飞球造物·吸血球
-local m=c13254058
+local m=13254058
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
@@ -107,6 +107,7 @@ end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_MANA,1},{TAMA_ELEMENT_LIFE,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	mg:RemoveCard(e:GetHandler())
 	local sg=Group.CreateGroup()
 	if chk==0 then 
 		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)

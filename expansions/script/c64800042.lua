@@ -44,7 +44,7 @@ function cm.filter(c,tp,rp)
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD) then
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) then
 	Duel.SetChainLimit(function(e,ep,tp)
 	return tp==ep
 end)end

@@ -30,7 +30,7 @@ function c40009635.filter2(c,e,tp)
 end
 function c40009635.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local b1=Duel.IsExistingMatchingCard(c40009635.filter1,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.IsExistingTarget(c40009635.filter2,tp,LOCATION_GRAVE,0,1,nil,e,tp)
+	local b2=Duel.IsExistingTarget(c40009635.filter2,tp,LOCATION_DECK,0,1,nil,e,tp)
 	if chk==0 then return b1 or b2 end
 	local op=0
 	if b1 and b2 then
