@@ -77,8 +77,8 @@ function cm.mscon(e,tp,eg,ep,ev,re,r,rp)
 	local seq=e:GetHandler():GetSequence()
 	local ec=e:GetHandler():GetEquipGroup()
 	if seq>4 then return false end
-	return ec and ec:IsContains(re:GetHandler()) and (seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1))
-		or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1))
+	return ec and ec:IsContains(re:GetHandler()) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1))
+		or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)))
 end
 function cm.msop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -89,7 +89,7 @@ function cm.msop(e,tp,eg,ep,ev,re,r,rp)
 	if seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1) then flag=flag|(1<<(seq-1)) end
 	if seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1) then flag=flag|(1<<(seq+1)) end
 	if flag==0 then return end
-	if Duel.SelectYesNo(aux.Stringid(m,2)) then
+	if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,~flag)
 		local nseq=math.log(s,2)

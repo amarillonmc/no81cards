@@ -63,11 +63,11 @@ end
 function cm.ttcon(e,c,minc)
     if c==nil then return true end
     local tp=c:GetControler()
-    local mg=Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,0,nil)
+    local mg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
     return minc<=1 and Duel.CheckTribute(c,1,1,mg)
 end
 function cm.ttop(e,tp,eg,ep,ev,re,r,rp,c)
-    local mg=Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,0,nil)
+    local mg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
     local sg=Duel.SelectTribute(tp,c,1,1,mg)
     c:SetMaterial(sg)
     Duel.Release(sg,REASON_SUMMON+REASON_MATERIAL)
@@ -75,11 +75,11 @@ end
 function cm.ttcon2(e,c,minc)
     if c==nil then return true end
     local tp=c:GetControler()
-    local mg=Duel.GetMatchingGroup(Card.IsFaceup,0,0,LOCATION_MZONE,nil)
+    local mg=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
     return minc<=1 and Duel.CheckTribute(c,1,1,mg,1-tp)
 end
 function cm.ttop2(e,tp,eg,ep,ev,re,r,rp,c)
-    local mg=Duel.GetMatchingGroup(Card.IsFaceup,0,0,LOCATION_MZONE,nil)
+    local mg=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
     local sg=Duel.SelectTribute(tp,c,1,1,mg,1-tp)
     c:SetMaterial(sg)
     Duel.Release(sg,REASON_SUMMON+REASON_MATERIAL)

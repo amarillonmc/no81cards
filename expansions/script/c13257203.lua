@@ -106,7 +106,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetChainLimit(cm.chainlimit)
 end
 function cm.chainlimit(e,rp,tp)
-	return e:GetHandler():IsType(TYPE_MONSTER)
+	return not e:GetHandler():IsType(TYPE_MONSTER)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
