@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_EQUIP)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e3:SetCode(EVENT_CHAIN_SOLVING)
+	e3:SetCode(EVENT_CHAINING)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_UNCOPYABLE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTarget(cm.eqtg)
@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_DISABLE)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e4:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e4:SetTarget(cm.distg)
 	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(c)
@@ -111,25 +111,30 @@ function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetFieldGroupCount(ep,LOCATION_DECK,0)>0 and Duel.SelectEffectYesNo(tp,c) then
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>0 and Duel.SelectEffectYesNo(tp,c) then
 		Duel.Hint(HINT_CARD,0,m)
 		c:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1,0,0)
-		local ct={}
+		local ct1,ct2={},{}
 		local ctg=Group.CreateGroup()
 		for i=9,1,-1 do
-			if Duel.GetFieldGroupCount(ep,LOCATION_DECK,0)>=i then
-				table.insert(ct,i)
+			if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=i then
+				table.insert(ct1,i)
+			end
+			if Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>=i then
+				table.insert(ct2,i)
 			end
 		end
-		if #ct==1 then 
-			Duel.ConfirmDecktop(ep,ct[1])
-		else
+		if #ct1~=0 or #ct2~=0 then 
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-			local ac=Duel.AnnounceNumber(tp,table.unpack(ct))
-			Duel.ConfirmDecktop(ep,ac)
-			ctg=Duel.GetDecktopGroup(ep,ac)
+			local ac1=Duel.AnnounceNumber(tp,table.unpack(ct1))
+			Duel.ConfirmDecktop(tp,ac1)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+			local ac2=Duel.AnnounceNumber(tp,table.unpack(ct2))
+			Duel.ConfirmDecktop(1-tp,ac2)
+			ctg:Merge(Duel.GetDecktopGroup(tp,ac1))
+			ctg:Merge(Duel.GetDecktopGroup(1-tp,ac2))
 		end
-		local tc=ctg:FilterSelect(tp,Card.IsAbleToChangeControler,1,1,nil):GetFirst()
+		local tc=ctg:Select(tp,1,1,nil):GetFirst()
 		if Duel.Equip(tp,tc,c,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
@@ -166,21 +171,21 @@ end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
-function cm.gyeqf(c)
-	return c:IsControlerCanBeChanged()
+function cm.gyeqfilter(c,tp)
+	return c:IsControlerCanBeChanged() or c:IsControler(tp)
 end
 function cm.gyeqcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg and eg:IsExists(aux.NecroValleyFilter(aux.TRUE),1,nil)
+	return eg and eg:IsExists(aux.NecroValleyFilter(cm.gyeqfilter),1,nil,tp)
 end
 function cm.gyeqtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not c:IsStatus(STATUS_BATTLE_DESTROYED) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,eg,1,0,0)
 end
 function cm.gyeqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.SelectEffectYesNo(tp,c) then
 		Duel.Hint(HINT_CARD,0,m)
-		local tc=eg:FilterSelect(tp,Card.IsAbleToChangeControler,1,1,nil):GetFirst()
+		local tc=eg:FilterSelect(tp,cm.gyeqfilter,1,1,nil,tp):GetFirst()
 		if Duel.Equip(tp,tc,c,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

@@ -27,8 +27,8 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_EQUIP)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e3:SetCode(EVENT_CHAIN_SOLVING)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_UNCOPYABLE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTarget(cm.eqtg)
 	e3:SetOperation(cm.eqop)
@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_DISABLE)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e4:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e4:SetTarget(cm.distg)
 	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(c)
@@ -64,6 +64,16 @@ function cm.initial_effect(c)
 	e6:SetCondition(cm.epcon)
 	e6:SetOperation(cm.epop)
 	c:RegisterEffect(e6)
+	--draw count
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD)
+	e7:SetCode(EFFECT_DRAW_COUNT)
+	e7:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetTargetRange(1,1)
+	e7:SetCondition(cm.drcon)
+	e7:SetValue(0)
+	c:RegisterEffect(e7)
 end
 cm.lvup={14000204,14000206}
 cm.lvdn={14000200,14000201,14000202,14000203,14000204}
@@ -104,14 +114,17 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
 	end
 end
-function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.ctfilter(c,tp)
+	return c:IsControler(tp) or c:IsAbleToChangeControler()
+end
+function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and re:GetHandler()~=c and c:GetFlagEffect(m)<5 and not c:IsStatus(STATUS_BATTLE_DESTROYED) end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,eg,1,0,0)
 end
-function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tg=Duel.GetMatchingGroup(Card.IsControlerCanBeChanged,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_EXTRA,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_EXTRA,c)
+	local tg=Duel.GetMatchingGroup(cm.ctfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_EXTRA,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_EXTRA,c,tp)
 	if #tg>0 and Duel.SelectEffectYesNo(tp,c) then
 		Duel.Hint(HINT_CARD,0,m)
 		c:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1,0,0)
@@ -177,4 +190,8 @@ function cm.epop(e,tp,eg,ep,ev,re,r,rp)
 	if dg3 and #dg3>0 then
 		Duel.SendtoGrave(dg3,REASON_RULE)
 	end
+end
+function cm.drcon(e)
+	local tp=e:GetHandlerPlayer()
+	return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 or Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)==0
 end

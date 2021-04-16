@@ -14,7 +14,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetCode(EVENT_ADJUST)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetCondition(cm.mtcon)
@@ -43,7 +43,7 @@ function cm.splimit(e,se,sp,st)
 	return Duel.GetFlagEffect(tp,14000205)>0
 end
 function cm.mtcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_END
 end
 function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local WIN_REASON_WORLDEATER=0x24
