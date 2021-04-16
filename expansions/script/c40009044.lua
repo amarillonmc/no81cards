@@ -15,7 +15,7 @@ function c40009044.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	c:RegisterEffect(e2
+	c:RegisterEffect(e2)
 end
 function c40009044.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

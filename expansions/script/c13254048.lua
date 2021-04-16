@@ -64,8 +64,10 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tg=Duel.GetFirstMatchingCard(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	if tg then
+	local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	if tg:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		tg=tg:Select(tp,1,1,nil)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tg)
 	end
@@ -85,11 +87,13 @@ function cm.thfilter1(c)
 end
 function cm.thtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.thop1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tg=Duel.GetFirstMatchingCard(cm.thfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	if tg then
+	local tg=Duel.GetMatchingGroup(cm.thfilter1,tp,LOCATION_DECK,0,nil)
+	if tg:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		tg=tg:Select(tp,1,1,nil)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tg)
 	end

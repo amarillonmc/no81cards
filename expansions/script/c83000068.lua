@@ -31,6 +31,11 @@ function c83000068.initial_effect(c)
 	e4:SetTarget(c83000068.thtg)
 	e4:SetOperation(c83000068.thop)
 	c:RegisterEffect(e4)
+	local e12=Effect.CreateEffect(c)
+	e12:SetType(EFFECT_TYPE_EQUIP)
+	e12:SetCode(EFFECT_UPDATE_ATTACK)
+	e12:SetValue(1000)
+	c:RegisterEffect(e12)
 end
 function c83000068.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local res=e:GetLabel()==100 or Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -72,7 +77,7 @@ function c83000068.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 end
 -----------
 function c83000068.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x107a)
+	return c:IsFaceup() and c:IsAttackAbove(2400) and c:IsDefense(1000)
 end
 function c83000068.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c83000068.filter(chkc) end
@@ -101,8 +106,11 @@ function c83000068.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(c83000068.eqlimit)
 	c:RegisterEffect(e1)
 end
+function c83000068.eqlimit(e,c)
+	return c:IsFaceup() and c:IsAttackAbove(2400)
+end
 -----------
-function c83000068.thfilter(c)
+function c83000068.thfilter2(c)
 	return c:IsAttackAbove(2400) and c:IsDefense(1000) and c:IsAbleToHand()
 end
 function c83000068.thcon(e,tp,eg,ep,ev,re,r,rp)
@@ -110,12 +118,12 @@ function c83000068.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_FZONE) and c:IsPreviousPosition(POS_FACEUP)
 end
 function c83000068.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c83000068.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c83000068.thfilter2,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c83000068.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c83000068.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c83000068.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
