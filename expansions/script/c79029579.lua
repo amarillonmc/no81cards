@@ -66,7 +66,6 @@ function c79029579.datg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,0,1,1,nil):GetFirst()
 	Duel.SetTargetCard(g)  
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,tp,0)
 end
 function c79029579.daop(e,tp,eg,ep,ev,re,r,rp)
 	local tc1=Duel.GetFirstTarget()

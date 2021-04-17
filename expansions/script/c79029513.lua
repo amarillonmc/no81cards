@@ -121,18 +121,14 @@ function c79029513.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	ag=e:GetHandler():GetOverlayCount()
 	e:GetHandler():RemoveOverlayCard(tp,ag,ag,REASON_COST)
-	e:SetLabel(ag)
 end
 function c79029513.efop(e,tp,eg,ep,ev,re,r,rp)
-	local ag=e:GetLabel()
-	if not ag or ag<=0 then return end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(0,1)
-	e1:SetValue(aux.TRUE)
-	e1:SetReset(RESET_PHASE+PHASE_END,ag)
+	e1:SetCode(EFFECT_CANNOT_TRIGGER)
+	e1:SetTargetRange(0,LOCATION_ONFIELD+LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA+LOCATION_HAND+LOCATION_REMOVED)
+	e1:SetTarget(c79029513.actfilter)
+	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,ag)
 	Duel.RegisterEffect(e1,tp)
 end
 function c79029513.actfilter(e,c)

@@ -14,14 +14,14 @@ function c9910460.initial_effect(c)
 	e1:SetOperation(c9910460.spop)
 	c:RegisterEffect(e1)
 	--negate
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DISABLE+CATEGORY_COUNTER)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_CHAIN_SOLVING)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(c9910460.negcon)
-	e3:SetOperation(c9910460.negop)
-	c:RegisterEffect(e3)
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_COUNTER)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(c9910460.negcon)
+	e2:SetOperation(c9910460.negop)
+	c:RegisterEffect(e2)
 end
 function c9910460.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
@@ -58,15 +58,15 @@ function c9910460.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910460.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc and Duel.IsChainDisablable(ev)
-		and e:GetHandler():GetFlagEffect(9910460)<=0
+	return re:IsActiveType(TYPE_MONSTER) and rc and rc:IsControler(1-tp)
+		and Duel.IsChainDisablable(ev) and e:GetHandler():GetFlagEffect(9910460)<=0
 end
 function c9910460.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
+	if not rc:IsCanRemoveCounter(tp,0x1950,1,REASON_EFFECT) then return end
 	Duel.HintSelection(Group.FromCards(c))
-	if rc:IsCanRemoveCounter(tp,0x1950,1,REASON_EFFECT)
-		and Duel.SelectYesNo(tp,aux.Stringid(9910460,1)) then
+	if Duel.SelectYesNo(tp,aux.Stringid(9910460,1)) then
 		Duel.Hint(HINT_CARD,0,9910460)
 		rc:RemoveCounter(tp,0x1950,1,REASON_EFFECT)
 		if Duel.NegateEffect(ev) and c:IsCanAddCounter(0x1950,1)

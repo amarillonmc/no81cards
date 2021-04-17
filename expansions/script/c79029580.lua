@@ -30,7 +30,7 @@ function c79029580.initial_effect(c)
 	c:RegisterEffect(e4) 
 end
 function c79029580.spfilter(c,ft)
-	return c:IsFaceup() and c:IsSetCard(0xff1) and c:IsAbleToHandAsCost()
+	return c:IsFaceup() and c:IsSetCard(0xa9f1) and c:IsAbleToHandAsCost()
 		and (ft>0 or c:GetSequence()<5)
 end
 function c79029580.spcon(e,c)
