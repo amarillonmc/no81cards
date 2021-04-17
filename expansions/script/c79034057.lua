@@ -18,6 +18,8 @@ function c79034057.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_GRAVE)
+	e1:SetCountLimit(1,19034057)
+	e1:SetCondition(aux.exccon)
 	e1:SetCost(c79034057.drcost)
 	e1:SetTarget(c79034057.target1)
 	e1:SetOperation(c79034057.activate1)
@@ -53,11 +55,12 @@ function c79034057.drcost(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(c79034057.cofil,tp,LOCATION_EXTRA,0,1,nil) end
 	local g=Duel.SelectMatchingCard(tp,c79034057.cofil,tp,LOCATION_EXTRA,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c79034057.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c79034057.filter(chkc) end
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)
-		and Duel.IsExistingTarget(c79034057.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,nil) and aux.exccon() end
+		and Duel.IsExistingTarget(c79034057.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c79034057.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,5,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)

@@ -9,31 +9,30 @@ function c79034048.initial_effect(c)
 	e1:SetCondition(c79034048.accon)
 	e1:SetOperation(c79034048.activate)
 	c:RegisterEffect(e1)   
-	--Special Summon
-	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_FREE_CHAIN)
-	e5:SetRange(LOCATION_FZONE)
-	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e5:SetCountLimit(1,79034048999)
-	e5:SetCost(c79034048.spcost)
-	e5:SetTarget(c79034048.sptg)
-	e5:SetOperation(c79034048.spop)
-	c:RegisterEffect(e5) 
-	--set
+	--Summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(4230620,0))
-	e2:SetCategory(CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_FZONE)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetCountLimit(1,7903404899999)
-	e2:SetCondition(c79034048.atkcon)
-	e2:SetTarget(c79034048.atktg)
-	e2:SetOperation(c79034048.atkop)
-	c:RegisterEffect(e2)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e2:SetCountLimit(1,09034048)
+	e2:SetCost(c79034048.spcost)
+	e2:SetTarget(c79034048.sptg)
+	e2:SetOperation(c79034048.spop)
+	c:RegisterEffect(e2) 
+	--set
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	e3:SetCountLimit(1,19034048)
+	e3:SetCondition(c79034048.atkcon)
+	e3:SetTarget(c79034048.atktg)
+	e3:SetOperation(c79034048.atkop)
+	c:RegisterEffect(e3)
 end
 function c79034048.thfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa007) and c:IsAbleToHand()
@@ -55,18 +54,25 @@ function c79034048.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,1000)
 end
 function c79034048.spfilter4(c,e,tp)
-	return c:IsSetCard(0xa007) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa007) and c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
 end
 function c79034048.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.IsExistingMatchingCard(c79034048.spfilter4,tp,LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function c79034048.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c79034048.spfilter4,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	local g=Duel.SelectMatchingCard(tp,c79034048.spfilter4,tp,LOCATION_HAND,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		local s1=tc:IsSummonable(true,nil)
+		local s2=tc:IsMSetable(true,nil)
+		if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
+			Duel.Summon(tp,tc,true,nil)
+		else
+			Duel.MSet(tp,tc,true,nil)
+		end
 	end
 end
 function c79034048.atkcon(e,tp,eg,ep,ev,re,r,rp)
