@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	local ct=eg:FilterCount(c59604521.damfilter,nil,tp)
+	local ct=eg:FilterCount(cm.damfilter,nil,tp)
 	Duel.Recover(tp,300,REASON_EFFECT)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -45,7 +45,7 @@ function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsAbleToRemove),tp,LOCATION_DECK,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=g:SelectSubGroup(tp,cm.fselect,false,3,3)
 	Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
