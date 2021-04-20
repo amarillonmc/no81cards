@@ -30,7 +30,7 @@ end
 function c9910211.mfilter(c)
 	return c:IsLevelBelow(4) and c:IsLinkSetCard(0x955)
 end
-function c9910211.thfilter(c,tp)
+function c9910211.thfilter(c)
 	return c:IsSetCard(0x955) and c:IsAbleToHand()
 end
 function c9910211.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
