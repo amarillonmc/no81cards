@@ -100,6 +100,7 @@ function cm.effectfilter(e,ct)
 end
 
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+   local c=e:GetHandler()
 	  --activate limit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -360,7 +361,7 @@ function cm.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 			e5:SetCountLimit(1)
 			token:RegisterEffect(e5)
 			--move
-			local e1=Effect.CreateEffect(c)
+			local e1=Effect.CreateEffect(ec)
 			e1:SetType(EFFECT_TYPE_QUICK_O)
 			e1:SetCode(EVENT_FREE_CHAIN)
 			e1:SetRange(LOCATION_SZONE)

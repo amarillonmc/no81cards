@@ -87,7 +87,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if ep==tp and 1-ep==rp and bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then
+	if 1-ep==rp and bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then
 		cm[ep]=cm[ep]+ev
 	end
 end

@@ -63,10 +63,10 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	cm[tc:GetOwnerPlayer()]=cm[tc:GetOwnerPlayer()]+1
+	cm[ep]=cm[ep]+ev
 end
 function cm.checkop1(e,tp,eg,ep,ev,re,r,rp)
-	cm[tc:GetOwnerPlayer()]=cm[tc:GetOwnerPlayer()+2]+1
+	cm[ep+2]=cm[ep+2]+2
 end
 function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 	cm[0]=0
