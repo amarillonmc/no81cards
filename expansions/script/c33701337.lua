@@ -103,8 +103,8 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsLocation(LOCATION_MZONE) then
-			cm[tc:GetControler()]=cm[tc:GetControler()]+1
+		if tc:IsPreviousLocation(LOCATION_MZONE) then
+			cm[tc:GetPreviousControler()]=cm[tc:GetPreviousControler()]+1
 		end
 		tc=eg:GetNext()
 	end
@@ -112,8 +112,8 @@ end
 function cm.checkop1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsLocation(LOCATION_ONFIELD) then
-			cm[tc:GetControler()+2]=cm[tc:GetControler()+2]+1
+		if tc:IsPreviousLocation(LOCATION_ONFIELD) then
+			cm[tc:GetPreviousControler()+2]=cm[tc:GetPreviousControler()+2]+1
 		end
 		tc=eg:GetNext()
 	end
