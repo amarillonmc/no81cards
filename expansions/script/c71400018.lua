@@ -1,4 +1,4 @@
---妄想梦物-电锯
+--幻异梦物-电锯
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400018.initial_effect(c)
 	--Activate

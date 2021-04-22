@@ -1,4 +1,4 @@
---锈蚀的梦之怪物
+--锈蚀的异梦怪物
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400028.initial_effect(c)
 	--link summon

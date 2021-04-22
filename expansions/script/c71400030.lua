@@ -1,4 +1,4 @@
---腐坏的梦之怪物
+--腐坏的异梦怪物
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400030.initial_effect(c)
 	--link summon

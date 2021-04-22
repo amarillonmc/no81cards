@@ -1,4 +1,4 @@
---梦之迷宫的剧面人
+--异梦迷宫的狐面武士-师傅
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400012.initial_effect(c)
 	--synchro summon
@@ -6,35 +6,74 @@ function c71400012.initial_effect(c)
 	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
-	--cannot be target
+	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetValue(aux.tgoval)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetValue(c71400012.filter1)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
 	--banish
+	local e2a=Effect.CreateEffect(c)
+	e2a:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e2a:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2a:SetCode(EVENT_CHAINING)
+	e2a:SetRange(LOCATION_MZONE)
+	e2a:SetOperation(aux.chainreg)
+	c:RegisterEffect(e2a)
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(71400012,0))
-	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_DAMAGE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e2:SetCode(EVENT_BATTLE_START)
-	e2:SetTarget(c71400012.target)
-	e2:SetOperation(c71400012.operation)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetOperation(c71400012.op2)
 	c:RegisterEffect(e2)
+	--banish
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(71400012,0))
+	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_DAMAGE+CATEGORY_DESTROY)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_BATTLE_START)
+	e3:SetTarget(c71400012.tg3)
+	e3:SetOperation(c71400012.op3)
+	c:RegisterEffect(e3)
 end
-function c71400012.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function c71400012.filter1(e,te)
+	local c=e:GetHandler()
+	local ec=te:GetHandler()
+	if ec:IsHasCardTarget(c) then return true end
+	return te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te)
+end
+function c71400012.op2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:GetFlagEffect(1)==0 then return end
+	if not re:IsActiveType(TYPE_EFFECT) or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return end
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	if g and g:IsContains(c) then
+		local rp=re:GetHandler()
+		local mg=Duel.GetMatchingGroup(Card.IsAbleToRemove,rp,LOCATION_MZONE,0,c,tp)
+		if mg:GetCount()==0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local sg=mg:Select(tp,1,1,nil)
+		if Duel.Destroy(tc,REASON_EFFECT,LOCATION_REMOVED)>0 then
+			Duel.Damage(rp,2000,REASON_EFFECT)
+		end
+	end
+end
+function c71400012.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=e:GetHandler():GetBattleTarget()
-	if chk==0 then return tc and tc:IsControler(1-tp) and tc:IsAbleToRemove() and not tc:IsType(TYPE_TOKEN) end
+	if chk==0 then return tc and tc:IsAbleToRemove() end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,tc,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,2000)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tc,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tc:GetControler(),2000)
 end
-function c71400012.operation(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Damage(1-tp,2000,REASON_EFFECT)~=0 then
-		local tc=e:GetHandler():GetBattleTarget()
-		if tc:IsRelateToBattle() then
-			Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
+function c71400012.op3(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetHandler():GetBattleTarget()
+	if tc then
+		local bp=tc:GetControler()
+		if tc:IsRelateToBattle() and Duel.Destroy(tc,REASON_EFFECT,LOCATION_REMOVED)>0 then
+			Duel.Damage(bp,2000,REASON_EFFECT)
 		end
 	end
 end

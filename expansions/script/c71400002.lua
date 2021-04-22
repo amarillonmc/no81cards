@@ -1,4 +1,5 @@
---冰雪中的梦之旅者
+--异梦旅者-冰冻子
+xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400002.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -16,6 +17,7 @@ function c71400002.initial_effect(c)
 	e2:SetTargetRange(LOCATION_GRAVE+LOCATION_MZONE,0)
 	e2:SetCode(EFFECT_CHANGE_ATTRIBUTE)
 	e2:SetValue(ATTRIBUTE_WATER)
+	e2:SetCondition(yume.YumeCon)
 	c:RegisterEffect(e2)
 	--to deck
 	local e3=Effect.CreateEffect(c)

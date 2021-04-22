@@ -1,4 +1,4 @@
---梦医院的梦之患者
+--异梦医院的病人-青汁君
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400006.initial_effect(c)
 	--summon limit

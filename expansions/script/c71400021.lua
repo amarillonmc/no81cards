@@ -1,4 +1,4 @@
---妄想梦物-菜刀
+--幻异梦物-菜刀
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400021.initial_effect(c)
 	--Activate

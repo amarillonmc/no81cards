@@ -1,4 +1,4 @@
---妄想梦境-空中庭园
+--幻异梦境-空中庭园
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400016.initial_effect(c)
 	--Activate
