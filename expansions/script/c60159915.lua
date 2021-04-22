@@ -1,6 +1,6 @@
 --地狱使者亲临
 function c60159915.initial_effect(c)
-	aux.AddRitualProcGreaterCode(c,60159914)
+	aux.AddCodeList(c,60159914)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -22,6 +22,7 @@ function c60159915.initial_effect(c)
 	e2:SetOperation(c60159915.activate)
 	c:RegisterEffect(e2)
 end
+c60159915.fit_monster={60159914}
 function c60159915.filter(c,e,tp,m)
 	if not c:IsCode(60159914) or bit.band(c:GetType(),0x81)~=0x81
 		or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true) 

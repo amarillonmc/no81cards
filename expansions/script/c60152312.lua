@@ -116,6 +116,7 @@ end
 function c60152312.e99op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
+	if not (tc:IsRelateToEffect(e) and tc:IsFaceup()) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		local g0=Group.CreateGroup()
 		local gb=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
