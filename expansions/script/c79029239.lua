@@ -30,7 +30,7 @@ function c79029239.tiop(e,tp,eg,ep,ev,re,r,rp)
 	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e0:SetRange(LOCATION_EXTRA+LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_DECK+LOCATION_REMOVED)
+	e0:SetRange(0x7f)
 	e0:SetReset(RESET_PHASE+PHASE_END)
 	e0:SetCode(EVENT_CHAINING)
 	e0:SetOperation(c79029239.tiop2)
@@ -41,7 +41,7 @@ end
 function c79029239.tiop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if re:GetHandler():GetControler()==tp then return end
-	if e:GetHandler():GetFlagEffect(79029239)==9 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	if e:GetHandler():GetFlagEffect(79029239)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,true,false,POS_FACEUP)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	local tc=g:GetFirst()
@@ -58,21 +58,18 @@ function c79029239.tiop2(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e3)
 	tc=g:GetNext()
 	end
-	if Duel.GetCurrentPhase()==PHASE_STANDBY then
+	Duel.SkipPhase(1-tp,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
 	Duel.SkipPhase(1-tp,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
 	Duel.SkipPhase(1-tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
 	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	elseif Duel.GetCurrentPhase()==PHASE_MAIN1 then
-	Duel.SkipPhase(1-tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	elseif Duel.GetCurrentPhase()==PHASE_BATTLE then
-	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	elseif Duel.GetCurrentPhase()==PHASE_MAIN2 then
-	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	end  
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_BP)
+	e1:SetTargetRange(0,1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 	Debug.Message("差不多该结束了吧？")   
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029239,1))
 	e:Reset()
@@ -85,56 +82,43 @@ function c79029239.tiop2(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1+EFFECT_COUNT_CODE_DUEL)
-	e2:SetTarget(c79029239.sptg)
 	e2:SetOperation(c79029239.spop)
 	c:RegisterEffect(e2) 
-end
-function c79029239.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand() end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,tp,0)
 end
 function c79029239.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(79029239,3)) then
 	Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,e:GetHandler())
 	if Duel.GetTurnPlayer()==1-tp then
-	if Duel.GetCurrentPhase()==PHASE_STANDBY then
+	Duel.SkipPhase(1-tp,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
 	Duel.SkipPhase(1-tp,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
 	Duel.SkipPhase(1-tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
 	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	elseif Duel.GetCurrentPhase()==PHASE_MAIN1 then
-	Duel.SkipPhase(1-tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	elseif Duel.GetCurrentPhase()==PHASE_BATTLE then
-	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	elseif Duel.GetCurrentPhase()==PHASE_MAIN2 then
-	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	end  
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_BP)
+	e1:SetTargetRange(0,1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 	else
-	if Duel.GetCurrentPhase()==PHASE_STANDBY then
+	Duel.SkipPhase(tp,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
 	Duel.SkipPhase(tp,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
 	Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
 	Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	elseif Duel.GetCurrentPhase()==PHASE_MAIN1 then
-	Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	elseif Duel.GetCurrentPhase()==PHASE_BATTLE then
-	Duel.SkipPhase(tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	elseif Duel.GetCurrentPhase()==PHASE_MAIN2 then
-	Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	end  
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_BP)
+	e1:SetTargetRange(1,0)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 	end 
-	else  
-	end
 	Debug.Message("天气不错。")   
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029239,2))
+	end
 end
 
 

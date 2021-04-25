@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x93a) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x92b) and c:IsType(TYPE_MONSTER)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil)
@@ -36,7 +36,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.chainfilter(re,tp,cid)
-	return not (re:GetHandler():IsSetCard(0x93a) and re:IsActiveType(TYPE_MONSTER) and Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)==LOCATION_HAND)
+	return not (re:GetHandler():IsSetCard(0x92b) and re:IsActiveType(TYPE_MONSTER) and Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)==LOCATION_HAND)
 end
 function cm.handcon(e)
 	local tp=e:GetHandlerPlayer()

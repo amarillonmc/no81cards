@@ -23,6 +23,7 @@ rshint = { }   --"Hint Function"
 rsloc = { } --"Location Function"
 
 rsdv = "Divide_Variable"
+rsnv = "Nil_Variable"
 
 --Info Variable
 rsval.valinfo   = { } --"Value for inside series, inside type etc."
@@ -163,6 +164,7 @@ function rsof.Get_Cate_Hint_Op_List()
 	  , ["tk"] = { CATEGORY_TOKEN, 0, aux.Stringid(9929398,0), aux.Stringid(2625939,0) }
 
 	  , ["pos"] = { CATEGORY_POSITION, HINTMSG_POSCHANGE, aux.Stringid(3648368,0), aux.Stringid(m,2) }
+	  , ["cp"] = { CATEGORY_POSITION, HINTMSG_POSCHANGE, aux.Stringid(3648368,0), aux.Stringid(m,2) }
 	  , ["upa"] = { CATEGORY_POSITION, HINTMSG_POSCHANGE, aux.Stringid(359563,0), aux.Stringid(m,2), rsop.OperationPos(POS_FACEUP_ATTACK), Card.IsCanChangePosition }
 	  , ["upd"] = { CATEGORY_POSITION, HINTMSG_POSCHANGE, aux.Stringid(52158283,1), aux.Stringid(m,2), rsop.OperationPos(POS_FACEUP_DEFENSE), Card.IsCanChangePosition }
 	  , ["dpd"] = { CATEGORY_POSITION, HINTMSG_SET, aux.Stringid(359563,0), aux.Stringid(m,2), rsop.OperationPos(POS_FACEDOWN_DEFENSE), Card.IsCanTurnSet }
@@ -193,26 +195,30 @@ function rsof.Get_Cate_Hint_Op_List()
 
 	  , ["lv"] = { 0, HINTMSG_FACEUP, aux.Stringid(9583383,0) }
 
-	  , ["fus"] = { CATEGORY_FUSION_SUMMON, 0 }
+	  , ["fus"] = { CATEGORY_FUSION_SUMMON, 0, aux.Stringid(7241272,1) }
 	  , ["ga"] = { CATEGORY_GRAVE_ACTION, 0 }
-	  , ["gs"] = { CATEGORY_GRAVE_SPSUMMON, 0 }
+	  , ["gsp"] = { CATEGORY_GRAVE_SPSUMMON, 0 }
 	 
 	  , ["cf"] = { 0, HINTMSG_CONFIRM, nil, nil, rsop.OperationConfirm }
 
 	  , ["tf"] = { 0, HINTMSG_TOFIELD, aux.Stringid(m,7) }
-	  , ["rf"] = { 0, aux.Stringid(80335817,0) }
+	  , ["rf"] = { 0, aux.Stringid(80335817,0), nil, nil, rsop.OperationReturnToField() }
 
 	  , ["act"] = { 0, HINTMSG_RESOLVEEFFECT, aux.Stringid(m,0) } 
+	  , ["ae"] = { 0, HINTMSG_EFFECT, aux.Stringid(9560338,0) }
 
 	  , ["set"] = { 0, HINTMSG_SET, aux.Stringid(2521011,0), aux.Stringid(30741503,1) }
 	  , ["sset"] = { 0, HINTMSG_SET, aux.Stringid(2521011,0), aux.Stringid(30741503,1), rsop.OperationSSet}
 
-	  , ["xyz"] = { 0, HINTMSG_XMATERIAL, aux.Stringid(55285840,0) }
-	  , ["rmxyz"] = { 0, HINTMSG_REMOVEXYZ, aux.Stringid(55285840,1) }
+	  , ["xmat"] = { 0, HINTMSG_XMATERIAL, aux.Stringid(55285840,0) }
+	  , ["rmxm"] = { 0, HINTMSG_REMOVEXYZ, aux.Stringid(55285840,1) }
+
+	  , ["ms"] = { 0, aux.Stringid(m,3), aux.Stringid(25163979,1) }
 
 	  , ["dum"] = { 0, HINTMSG_OPERATECARD }
+
 	}
- 
+
 end
 
 
@@ -304,11 +310,13 @@ function rsef.Get_Value_Effect_Attribute_List()
 		, ["atk~"] = { EFFECT_CANNOT_ATTACK }, ["atkan~"] = { EFFECT_CANNOT_ATTACK_ANNOUNCE }, ["atkd~"] = { EFFECT_CANNOT_DIRECT_ATTACK }
 		, ["ress~"] = { EFFECT_UNRELEASABLE_SUM }, ["resns~"] = { EFFECT_UNRELEASABLE_NONSUM }, ["td~"] = { EFFECT_CANNOT_TO_DECK }
 		, ["th~"] = { EFFECT_CANNOT_TO_HAND }, ["cost~"] = { EFFECT_CANNOT_USE_AS_COST }
-		, ["pos~"] = { EFFECT_CANNOT_CHANGE_POSITION, nil, nil, EFFECT_FLAG_SET_AVAILABLE }
-		, ["pose~"] = { EFFECT_CANNOT_CHANGE_POS_E, nil, nil, EFFECT_FLAG_SET_AVAILABLE }
 		, ["rm~"] = { EFFECT_CANNOT_REMOVE }, ["ctrl~"] = { EFFECT_CANNOT_CHANGE_CONTROL }
 		, ["distm"] = { EFFECT_DISABLE_TRAPMONSTER }
 
+		, ["pos~"] = { EFFECT_CANNOT_CHANGE_POSITION, nil, nil, EFFECT_FLAG_SET_AVAILABLE }
+		, ["pose~"] = { EFFECT_CANNOT_CHANGE_POS_E, nil, nil, EFFECT_FLAG_SET_AVAILABLE }
+		, ["cp~"] = { EFFECT_CANNOT_CHANGE_POSITION, nil, nil, EFFECT_FLAG_SET_AVAILABLE }
+		, ["cpe~"] = { EFFECT_CANNOT_CHANGE_POSITION, nil, nil, EFFECT_FLAG_SET_AVAILABLE }
 
 		, ["act~"] = { EFFECT_CANNOT_ACTIVATE }, ["sum~"] = { EFFECT_CANNOT_SUMMON }, ["sp~"] = { EFFECT_CANNOT_SPECIAL_SUMMON }
 		, ["dr~"] = { EFFECT_CANNOT_DRAW }, ["tg~"] = { EFFECT_CANNOT_TO_GRAVE }, ["res~"] = { EFFECT_CANNOT_RELEASE }
@@ -339,6 +347,8 @@ function rsef.Get_Value_Effect_Attribute_List()
 		, ["dsp~"] = { EFFECT_CANNOT_DISABLE_SPSUMMON, 1, nil, EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE, EFFECT_FLAG_SET_AVAILABLE }
 		, ["dfp~"] = { EFFECT_CANNOT_DISABLE_FLIP_SUMMON, 1, nil, EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE, EFFECT_FLAG_SET_AVAILABLE }
 
+		, ["rdam"] = { EFFECT_REFLECT_DAMAGE, 1 }
+		, ["rdamb"] = { EFFECT_REFLECT_BATTLE_DAMAGE, 1 }
 
 		, ["dise~"] = { EFFECT_CANNOT_DISEFFECT }
 		, ["neg~"] = { EFFECT_CANNOT_INACTIVATE }
@@ -377,6 +387,10 @@ function rsof.Escape_Old_Functions()
 	rsrst.pend  =   rsrst.ep
 	rsrst.est_pend =   rsrst.std_ep
 	rsrst.ered  =   rsrst.ret 
+
+	--//
+
+	rscost.rmxyz = rscost.rmxmat
 
 	--//
 	rsof.DefineCard  =   rscf.DefineCard

@@ -1,8 +1,8 @@
 --替身使者-丹尼尔·J·达比
 function c9300329.initial_effect(c)
-	   --xyz summon
-	aux.AddXyzProcedure(c,nil,6,3,c9300329.ovfilter,aux.Stringid(9300329,0),99,c9300329.xyzop)
+	--xyz summon
 	c:EnableReviveLimit()
+	aux.AddXyzProcedure(c,nil,4,2,nil,nil,99)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)
    --Coin
@@ -38,6 +38,10 @@ function c9300329.initial_effect(c)
 	e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
 	e4:SetValue(aux.imval1)
 	c:RegisterEffect(e4)
+	--attack limit
+	local e6=e3:Clone()
+	e6:SetCode(EFFECT_CANNOT_ATTACK)
+	c:RegisterEffect(e6)
    --to hand/spsummon
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(9300329,2))
@@ -51,13 +55,7 @@ function c9300329.initial_effect(c)
 	e5:SetOperation(c9300329.regop)
 	c:RegisterEffect(e5)
 end
-c9300329.pendulum_level=6
-function c9300329.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x1f99) and not c:IsCode(9300329)
-end
-function c9300329.tgfilter(c)
-	return not c:IsPublic() or c:IsType(TYPE_MONSTER)
-end
+c9300329.pendulum_level=4
 function c9300329.mattg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
@@ -110,7 +108,7 @@ function c9300329.imcon(e)
 	return e:GetHandler():GetOverlayGroup():IsExists(c9300329.matfil,1,nil,e)
 end
 function c9300329.efilter(e,re)
-	return re:GetOwnerPlayer()~=e:GetHandlerPlayer()
+	return re:GetOwnerPlayer()~=e:GetHandlerPlayer() and re:IsActiveType(TYPE_MONSTER)
 end
 function c9300329.valcon(e,re,r,rp)
 	return bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0

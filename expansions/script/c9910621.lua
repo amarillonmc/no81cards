@@ -1,7 +1,7 @@
---能天使
+--枪火快递员
 function c9910621.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2)
 	c:EnableReviveLimit()
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -53,67 +53,17 @@ function c9910621.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
-	if c:IsRelateToEffect(e) and c:GetFlagEffect(9910621)==0 then
-		c:RegisterFlagEffect(9910622,RESET_PHASE+PHASE_END,0,1)
-		local e10=Effect.CreateEffect(c)
-		e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e10:SetCode(EVENT_BE_MATERIAL)
-		e10:SetCondition(c9910621.regcon)
-		e10:SetOperation(c9910621.regop)
-		e10:SetReset(RESET_PHASE+PHASE_END)
-		c:RegisterEffect(e10)
-		local e11=Effect.CreateEffect(c)
-		e11:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e11:SetCode(EVENT_SPSUMMON_SUCCESS)
-		e11:SetOperation(c9910621.regop2)
-		c:RegisterEffect(e11)
-		local e12=e11:Clone()
-		e12:SetCode(EVENT_MOVE)
-		e12:SetCondition(c9910621.regcon2)
-		c:RegisterEffect(e12)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetTargetRange(1,0)
-		e1:SetValue(c9910621.actlimit)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-	else
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e2:SetTargetRange(1,0)
-		e2:SetValue(c9910621.actlimit2)
-		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
-	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c9910621.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
-function c9910621.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_LINK and e:GetHandler():GetFlagEffect(9910622)~=0
-end
-function c9910621.regop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=e:GetHandler():GetReasonCard()
-	rc:RegisterFlagEffect(9910621,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-end
-function c9910621.regcon2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local b1=c:IsLocation(LOCATION_MZONE) and c:IsPreviousLocation(LOCATION_REMOVED)
-		and not c:IsReason(REASON_SPSUMMON)
-	local b2=c:GetPreviousLocation()~=LOCATION_MZONE and c:IsReason(REASON_MATERIAL)
-	return b1 or b2
-end
-function c9910621.regop2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	c:ResetFlagEffect(9910622)
-end
-function c9910621.actlimit(e,re,rp)
-	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc:GetFlagEffect(9910621)==0
-end
-function c9910621.actlimit2(e,re,tp)
-	return re:IsActiveType(TYPE_MONSTER)
+function c9910621.splimit(e,c)
+	return c:IsLocation(LOCATION_EXTRA)
 end
 function c9910621.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local at=Duel.GetAttacker()

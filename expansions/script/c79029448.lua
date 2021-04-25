@@ -63,7 +63,7 @@ function c79029448.rumfil(c,e,tp,ev)
 	return c:IsSetCard(0xa900) and c:IsType(TYPE_XYZ) and c:GetRank()>rk and c:IsRankBelow(rk+x) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,e:GetHandler(),c)>0
 end
 function c79029448.skiptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029448.rumfil,tp,LOCATION_EXTRA,0,1,nil,e,tp,ev) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029448.rumfil,tp,LOCATION_EXTRA,0,1,nil,e,tp,ev) and ev>=1000 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c79029448.skipop(e,tp,eg,ep,ev,re,r,rp)

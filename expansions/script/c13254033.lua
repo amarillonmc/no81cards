@@ -5,7 +5,7 @@ xpcall(function() require("expansions/script/tama") end,function() require("scri
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -28,25 +28,19 @@ function cm.initial_effect(c)
 	cm[c]=elements
 	
 end
-function cm.rmfilter(c)
-	return c:IsSetCard(0x356) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
-end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,LOCATION_REMOVED)>0 and Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_REMOVED)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.dFilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.dFilter(c)
+	return tama.tamas_isExistElement(c,TAMA_ELEMENT_WATER)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_REMOVED,LOCATION_REMOVED)
-	if g:GetCount()<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g1=g:Select(tp,1,2,nil)
-	local ct=Duel.SendtoGrave(g1,REASON_EFFECT)
-	if ct>0 and Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_DECK,0,ct,nil) then
+	local ct=Duel.DiscardHand(tp,cm.dFilter,1,2,REASON_EFFECT+REASON_DISCARD)
+	if ct>0 then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_DECK,0,ct,ct,nil)
-		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+		Duel.Draw(tp,ct,REASON_EFFECT)
 	end
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)

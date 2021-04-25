@@ -16,8 +16,9 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(cm.spcon)
-	e1:SetOperation(cm.spop)
+	e1:SetCondition(cm.sprcon)
+	e1:SetTarget(cm.sprtg)
+	e1:SetOperation(cm.sprop)
 	c:RegisterEffect(e1)
 	--deck equip
 	local e2=Effect.CreateEffect(c)
@@ -47,6 +48,31 @@ function cm.initial_effect(c)
 	cm[c]=eflist
 	
 end
+function cm.sprfilter(c)
+	return c:IsLocation(LOCATION_HAND) and c:IsSetCard(0x353) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
+end
+function cm.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(cm.sprfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	return g:CheckSubGroup(aux.mzctcheck,2,2,tp)
+end
+function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(cm.sprfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local sg=g:SelectSubGroup(tp,aux.mzctcheck,true,2,2,tp)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.Release(g,REASON_COST)
+	g:DeleteGroup()
+end
+--[[
 function cm.filter(c)
 	return c:IsSetCard(0x353) and c:IsAbleToGraveAsCost()
 end
@@ -61,6 +87,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND,0,2,2,c)
 	Duel.SendtoGrave(g,REASON_COST)
 end
+--]]
 function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x354) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
 end

@@ -1,8 +1,7 @@
 --韶光的祈福 希尔维娅
 function c9910463.initial_effect(c)
-	c:EnableCounterPermit(0x950)
 	--link summon
-	aux.AddLinkProcedure(c,c9910463.matfilter,3,99,c9910463.lcheck)
+	aux.AddLinkProcedure(c,nil,2,99,c9910463.lcheck)
 	c:EnableReviveLimit()
 	--extra material
 	local e1=Effect.CreateEffect(c)
@@ -13,69 +12,69 @@ function c9910463.initial_effect(c)
 	e1:SetTargetRange(0,LOCATION_MZONE)
 	e1:SetValue(c9910463.matval)
 	c:RegisterEffect(e1)
-	--special summon
+	--recover & todeck
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_COUNTER)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCondition(c9910463.condition)
-	e2:SetTarget(c9910463.target)
-	e2:SetOperation(c9910463.operation)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TODECK)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e2:SetCountLimit(1,9910463)
+	e2:SetCondition(c9910463.regcon)
+	e2:SetOperation(c9910463.regop)
 	c:RegisterEffect(e2)
 end
-function c9910463.matfilter(c)
-	return c:IsSummonType(SUMMON_TYPE_SPECIAL)
+function c9910463.lcheck(g,lc)
+	return g:GetClassCount(Card.GetLinkCode)==g:GetCount()
 end
-function c9910463.lcheck(g)
-	local res=true
-	local loct={}
-	for i=1,6 do loct[i]=0 end
-	local tc=g:GetFirst()
-	while tc do
-		if tc:GetSummonLocation()==LOCATION_HAND then loct[1]=loct[1]+1
-		elseif tc:GetSummonLocation()==LOCATION_DECK then loct[2]=loct[2]+1
-		elseif tc:GetSummonLocation()==LOCATION_GRAVE then loct[3]=loct[3]+1
-		elseif tc:GetSummonLocation()==LOCATION_EXTRA then loct[4]=loct[4]+1
-		elseif tc:GetSummonLocation()==LOCATION_REMOVED then loct[5]=loct[5]+1
-		elseif tc:GetSummonLocation()==LOCATION_SZONE then loct[6]=loct[6]+1
-		else res=false end
-		tc=g:GetNext()
-	end
-	for i=1,6 do
-		if loct[i]>1 then res=false end
-	end
-	return res
+function c9910463.exmfilter(c,tp)
+	return c:IsControler(tp) and c:GetCounter(0x1950)>0
 end
 function c9910463.matval(e,lc,mg,c,tp)
-	local ct=Duel.GetMatchingGroupCount(c9910463.sgfilter,tp,LOCATION_MZONE,0,nil)
-	if e:GetHandler()~=lc or ct==0 then return false,nil end
-	return true,not mg or not mg:IsExists(Card.IsControler,ct,nil,1-tp)
+	if e:GetHandler()~=lc then return false,nil end
+	return true,not mg or not mg:IsExists(c9910463.exmfilter,1,nil,1-tp)
 end
-function c9910463.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+function c9910463.regcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
-function c9910463.spfilter(c,e,tp)
-	return c:IsSetCard(0x9950) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
-		and (c:IsLocation(LOCATION_GRAVE) and Duel.GetMZoneCount(tp)>0
-			or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
+function c9910463.tgfilter(c)
+	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0x9950) and c:IsAbleToGrave()
 end
-function c9910463.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910463.spfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_EXTRA)
+function c9910463.regop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9910463.tgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
+		local lp=Duel.GetLP(tp)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+		e1:SetLabel(lp)
+		e1:SetCountLimit(1)
+		e1:SetCondition(c9910463.rccon)
+		e1:SetOperation(c9910463.rcop)
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+		Duel.RegisterEffect(e1,tp)
+	end
 end
-function c9910463.operation(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local loc=LOCATION_ONFIELD 
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910463.spfilter),tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp)
-	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)~=0
-		and Duel.GetMatchingGroupCount(Card.IsCanAddCounter,tp,loc,loc,nil,0x950,1)>0 then
-		local ct=3
-		while ct>0 do
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-			local tc=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,loc,loc,1,1,nil,0x950,1):GetFirst()
-			if not tc then break end
-			tc:AddCounter(0x950,1)
-			ct=ct-1
-		end
+function c9910463.rccon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetLP(tp)~=e:GetLabel()
+end
+function c9910463.rcop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,9910463)
+	if Duel.GetLP(tp)<e:GetLabel() then
+		local s1=e:GetLabel()-Duel.GetLP(tp)
+		if Duel.IsPlayerAffectedByEffect(tp,9910467) then s1=2*s1 end
+		local s2=Duel.Recover(tp,s1,REASON_EFFECT)
+		local d=math.floor(s2/2000)
+		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
+		if d<=0 then return end
+		if d>g:GetCount() then d=g:GetCount() end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local sg=g:Select(tp,d,d,nil)
+		Duel.HintSelection(sg)
+		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
+	else
+		Duel.SetLP(tp,e:GetLabel())
 	end
 end

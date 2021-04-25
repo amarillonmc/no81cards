@@ -5,7 +5,7 @@ xpcall(function() require("expansions/script/tama") end,function() require("scri
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -27,25 +27,19 @@ function cm.initial_effect(c)
 	elements={{"tama_elements",{{TAMA_ELEMENT_EARTH,2}}}}
 	cm[c]=elements
 end
-function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x356) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
-end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_ONFIELD)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.dFilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.dFilter(c)
+	return tama.tamas_isExistElement(c,TAMA_ELEMENT_EARTH)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local sg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,2,nil)
-	local ct=Duel.SendtoGrave(sg,REASON_EFFECT)
-	if ct>0 and ct<=Duel.GetLocationCount(tp,LOCATION_MZONE) then
+	local ct=Duel.DiscardHand(tp,cm.dFilter,1,2,REASON_EFFECT+REASON_DISCARD)
+	if ct>0 then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
-		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,ct,nil,e,tp)
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+		Duel.Draw(tp,ct,REASON_EFFECT)
 	end
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)

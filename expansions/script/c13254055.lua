@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_REMOVE)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e3:SetCost(cm.tdcost)
 	e3:SetTarget(cm.tdtg)
 	e3:SetOperation(cm.tdop)
 	c:RegisterEffect(e3)
@@ -55,6 +56,15 @@ function cm.econ(e)
 end
 function cm.efilter(e,te)
 	return te:IsActiveType(TYPE_MONSTER) and te:GetOwner()~=e:GetOwner()
+end
+function cm.tdfilter(c)
+	return tama.tamas_getElementCount(c,TAMA_ELEMENT_MANA)>0 and c:IsAbleToDeckAsCost()
+end
+function cm.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.SendtoDeck(g,tp,2,REASON_COST)
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_REMOVED,0,1,nil) end

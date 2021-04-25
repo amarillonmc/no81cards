@@ -39,14 +39,22 @@ function c9300405.initial_effect(c)
 	--spsummon
 	local e5=Effect.CreateEffect(c)
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetCode(EVENT_TO_GRAVE)
 	e5:SetRange(LOCATION_GRAVE)
-	e5:SetCode(EVENT_FREE_CHAIN)
-	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e5:SetCountLimit(1,9300405+EFFECT_COUNT_CODE_DUEL)
-	e5:SetTarget(c9300405.sptg)
-	e5:SetOperation(c9300405.spop)
+	e5:SetTarget(c9300405.target)
+	e5:SetOperation(c9300405.regop)
 	c:RegisterEffect(e5)
+	if not c9300405.global_check then
+		c9300405.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_TO_GRAVE)
+		ge1:SetOperation(c9300405.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 	--token
 	local e6=Effect.CreateEffect(c)
 	e6:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
@@ -125,21 +133,46 @@ end
 function c9300405.immtg(e,c)
 	return c:IsCode(9300404)
 end
-function c9300405.spfilter(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsCode(9300404)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+function c9300405.callback(c)
+	local tp=c:GetPreviousControler()
+	if c:IsCode(9300404) and c:IsControler(tp)  then
+		c:RegisterFlagEffect(9300405,RESET_EVENT+RESETS_STANDARD,0,1)
+	end
 end
-function c9300405.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9300405.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+function c9300405.checkop(e,tp,eg,ep,ev,re,r,rp)
+	eg:ForEach(c9300405.callback)
 end
-function c9300405.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c9300405.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp)
-	if g:GetCount()>0 then
+function c9300405.filter(c,e,tp)
+	return c:GetFlagEffect(9300405)~=0 and c:IsLocation(LOCATION_GRAVE) and c:IsControler(tp)
+		and (c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==1-tp)
+		and c:IsCanBeEffectTarget(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c9300405.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return eg:IsContains(chkc) and c9300405.filter(chkc,e,tp) end
+	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and eg:IsExists(c9300405.filter,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=eg:FilterSelect(tp,c9300405.filter,1,1,nil,e,tp)
+	Duel.SetTargetCard(g)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+end
+function c9300405.regop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetOperation(c9300405.activate)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c9300405.activate(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function c9300405.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -162,7 +195,7 @@ function c9300405.spop2(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UNRELEASABLE_SUM)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 		e1:SetValue(1)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		token:RegisterEffect(e1,true)

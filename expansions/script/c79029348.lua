@@ -13,7 +13,6 @@ function c79029348.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9212051,1))
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -71,7 +70,7 @@ function c79029348.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029348.cpfilter(c)
 	return (c:IsSetCard(0xb90d) or c:IsSetCard(0xc90e)) and c:IsAbleToGraveAsCost()
-	and c:CheckActivateEffect(true,true,false)~=nil
+	and c:CheckActivateEffect(true,true,false)~=nil and (c:GetType()==TYPE_SPELL or c:GetType()==TYPE_SPELL+TYPE_QUICKPLAY or c:GetType()==TYPE_TRAP or c:GetType()==TYPE_TRAP+TYPE_COUNTER)
 end
 function c79029348.slzcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)

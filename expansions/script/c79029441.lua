@@ -104,7 +104,7 @@ function c79029441.spop(e,tp,eg,ep,ev,re,r,rp,c)
    Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029441.sgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-local c=e:GetHandler()
+	local c=e:GetHandler()
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)  and c:GetFlagEffect(79029441)==0 end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 	c:RegisterFlagEffect(79029441,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,0,0)
@@ -157,3 +157,10 @@ function c79029441.sgop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 end
+
+
+
+
+
+
+

@@ -102,6 +102,7 @@ local rsdc  =   Dragon_Caller
 
 #BoJue 1025644096
 local rsad  =   Ancient_Dragon
+local rsfwh = Flame_Witch
 
 #ZhenLiXiYaZhiChongHuoMo 3129411731
 local rsmmd = Mo_Jie_Di_Di

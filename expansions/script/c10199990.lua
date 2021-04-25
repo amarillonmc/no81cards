@@ -8,11 +8,11 @@ rsv.Library_Switch = true
 -----------------------"Part_Effect_Base"-----------------------
 --Creat Event 
 function rsef.CreatEvent(event_code, event1, con1, ...)
-	rsef.CreatEvent_Switch = rsef.CreatEvent_Switch or {}
+	rsef.CreatEvent_Switch = rsef.CreatEvent_Switch or { }
 	if rsef.CreatEvent_Switch[event_code] then return end
 	rsef.CreatEvent_Switch[event_code] = true
 	local creat_list = { event1, con1, ... }
-	local eff_list = {}
+	local eff_list = { }
 	for idx, val in pairs(creat_list) do 
 		if type(val) == "number" then 
 			local e1 = rsef.FC({ true, 0 }, val)
@@ -480,7 +480,10 @@ function rsef.RegisterReset(reg_eff, reset_list, is_return)
 end
 --Effect: Register Effect Final
 function rsef.RegisterEffect(reg_list, reg_eff)
-	if rsef.effet_no_register then return reg_eff, -1 end
+	if rsef.effet_no_register then
+		rsef.effet_no_register = false
+		return reg_eff, -1 
+	end
 	local reg_owner, reg_handler, reg_ignore = rsef.GetRegisterCard(reg_list)
 	if type(reg_handler) == "number" and (reg_handler == 0 or reg_handler == 1) then
 		Duel.RegisterEffect(reg_eff, reg_handler)
@@ -629,7 +632,7 @@ function rsef.SV_ExtraMaterial(reg_list, mat_list, val_list, con, reset_list, fl
 	range = range or LOCATION_HAND 
 	val_list = val_list or { aux.TRUE } 
 	local code_list, val_list2 = rsof.Table_Suit(mat_list, code_list_1, code_list_2, val_list)
-	local eff_list = {}
+	local eff_list = { }
 	for idx, eff_code in ipairs(code_list) do 
 		local e1 = rsef.SV(reg_list, eff_code, val_list2[idx], range, con, reset_list, flag, desc_list, lim_list)
 		table.insert(eff_list, e1)
@@ -748,7 +751,7 @@ function rsef.FV_ExtraMaterial(reg_list, mat_list, val_list, tg, tg_range_list, 
 	tg_range_list = tg_range_list or { LOCATION_HAND, 0 }
 	local flag2 = rsef.GetRegisterProperty(reg_list, flag) | EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE 
 	local code_list, val_list2 = rsof.Table_Suit(mat_list, code_list_1, code_list_2, val_list)
-	local eff_list = {}
+	local eff_list = { }
 	for idx, eff_code in ipairs(code_list) do
 		local e1 = rsef.FV(reg_list, eff_code, val_list2[idx], tg, tg_range_list, range, con, reset_list, flag2, desc_list, lim_list)
 		table.insert(eff_list, e1)
@@ -763,7 +766,7 @@ function rsef.FV_ExtraMaterial_Self(reg_list, mat_list, val_list, tg, tg_range_l
 	tg_range_list = tg_range_list or { LOCATION_HAND, 0 }
 	local flag2 = rsef.GetRegisterProperty(reg_list, flag) | EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE + EFFECT_FLAG_UNCOPYABLE 
 	local code_list, val_list2 = rsof.Table_Suit(mat_list, code_list_1, code_list_2, val_list)
-	local eff_list = {}
+	local eff_list = { }
 	for idx, eff_code in ipairs(code_list) do
 		local e1 = rsef.FV(reg_list, eff_code, val_list2[idx], tg, tg_range_list, LOCATION_EXTRA, con, reset_list, flag2, desc_list, lim_list) 
 		table.insert(eff_list, e1)
@@ -998,8 +1001,8 @@ function rsef.FC_AttachEffect_Con(e0, attach_con)
 end
 function rsef.FC_AttachEffect_Op(e0, force)
 	return function(e, tp, eg, ep, ev, re, r, rp)
-		rsef.attacheffect[ev] = rsef.attacheffect[ev] or {}
-		rsef.attacheffectf[ev] = rsef.attacheffectf[ev] or {}
+		rsef.attacheffect[ev] = rsef.attacheffect[ev] or { }
+		rsef.attacheffectf[ev] = rsef.attacheffectf[ev] or { }
 		if force then table.insert(rsef.attacheffectf[ev], e)
 		else
 			table.insert(rsef.attacheffect[ev], e)
@@ -1008,11 +1011,11 @@ function rsef.FC_AttachEffect_Op(e0, force)
 end
 function rsef.FC_AttachEffect_GetGroup(sel_list)
 	local attach_group = Group.CreateGroup()
-	local attach_eff_list = {}
+	local attach_eff_list = { }
 	for _, ae in pairs(sel_list) do
 		local tc = ae:GetOwner()
 		attach_group:AddCard(tc)
-		attach_eff_list[tc] = attach_eff_list[tc] or {}
+		attach_eff_list[tc] = attach_eff_list[tc] or { }
 		table.insert(attach_eff_list[tc], ae)
 	end
 	return attach_group, attach_eff_list
@@ -1046,14 +1049,14 @@ function rsef.FC_AttachEffect_Reset(re1, baseop)
 	end
 end
 function rsef.FC_AttachEffect_Solve(solve_eff_list, attach_time, e, tp, eg, ep, ev, re, r, rp)
-	local act_use_list = {}
+	local act_use_list = { }
 	local ev2 = Duel.GetCurrentChain()
 	local attach_code = rscode.Extra_Effect_Activate 
 	if attach_time == 0x2 then attach_code = rscode.Extra_Effect_BSolve end
 	if attach_time == 0x4 then attach_code = rscode.Extra_Effect_ASolve end
 	Duel.RaiseEvent(e:GetHandler(), attach_code, e, 0, tp, tp, ev2)
-	local force_list = rsef.attacheffectf[ev2] or {}
-	local sel_tab_list = rsef.attacheffect[ev2] or {}
+	local force_list = rsef.attacheffectf[ev2] or { }
+	local sel_tab_list = rsef.attacheffect[ev2] or { }
 	for _, ae in pairs(force_list) do
 		local tc = ae:GetOwner()
 		if tc:IsOnField() then
@@ -1082,7 +1085,7 @@ function rsef.FC_AttachEffect_Solve(solve_eff_list, attach_time, e, tp, eg, ep, 
 		else
 			Duel.Hint(HINT_CARD, 0, tc:GetOriginalCodeRule())
 		end
-		local hint_list = {}
+		local hint_list = { }
 		for _, ae in pairs(attach_eff_list[tc]) do
 			local hint = ae:GetDescription()
 			table.insert(hint_list, hint)
@@ -1112,7 +1115,7 @@ function rsef.FC_AttachEffect_ChangeOp2(baseop)
 		if (c:IsType(TYPE_FIELD) or c:IsType(TYPE_CONTINUOUS) or c:IsLocation(LOCATION_PZONE)) and not c:IsRelateToEffect(e) then
 			return
 		end
-		rsef.solveeffect[ev2] = {}
+		rsef.solveeffect[ev2] = { }
 		--baseop record
 		table.insert(rsef.solveeffect[ev2], baseop)
 		--activate select
@@ -1133,7 +1136,7 @@ function rsef.FC_AttachEffect_ChangeOp2(baseop)
 end
 
 --Effect Function:XXX card / group will leave field in XXX Phase , often use in special summon
-function rsef.FC_PhaseLeave(reg_list, leave_val, times, whos, phase, leaveway, reset_list)
+function rsef.FC_PhaseLeave(reg_list, leave_val, times, whos, phase, leaveway, val_reset_list)
 	--times: nil  every phase 
 	--   0  next  phase
 	--   1 or +  times  phase 
@@ -1142,70 +1145,81 @@ function rsef.FC_PhaseLeave(reg_list, leave_val, times, whos, phase, leaveway, r
 	--   1  your opponent's phase (1 - tp)
 	local reg_owner, reg_handler = rsef.GetRegisterCard(reg_list)
 	local cphase = Duel.GetCurrentPhase()
-	local turnctlist = { Duel.GetTurnCount(), Duel.GetTurnCount(reg_handler), Duel.GetTurnCount(1 - reg_handler) }
+	local atct = Duel.GetTurnCount()
 	local turnp = Duel.GetTurnPlayer()
 	phase = phase or PHASE_END 
 	leaveway = leaveway or "des"   
-	if times and times == 0 and whos == 0 and turnp == tp then 
-		times = cphase <= phase and 2 or 1
-	end
-	if times and times == 0 and whos == 1 and turnp ~= tp then 
-		times = cphase <= phase and 2 or 1
-	end
 	local sg = rsgf.Mix2(leave_val)
 	local fid = reg_owner:GetFieldID()
+	val_reset_list = val_reset_list or rsrst.std
+	local reset = rsef.RegisterReset(nil, val_reset_list, true)
 	for tc in aux.Next(sg) do 
-		local rst = times and rsrst.std + RESET_PHASE + phase or rsrst.std
-		tc:RegisterFlagEffect(rscode.Phase_Leave_Flag, rst, 0, 0, fid)
+		tc:RegisterFlagEffect(rscode.Phase_Leave_Flag, reset, 0, 0, fid)
 	end
-	local e1 = rsef.FC(reg_list, EVENT_PHASE + phase, rshint.epleave, 1, "ii", nil, rsef.FC_PhaseLeave_Con(cphase, turnctlist, turnp, fid, times, whos), rsef.FC_PhaseLeave_Op(leaveway, fid), reset_list)
 	sg:KeepAlive()
-	e1:SetLabelObject(sg)
+	local e1 = rsef.FC(reg_list, EVENT_PHASE + phase, rshint.epleave, 1, "ii", nil, rsef.FC_PhaseLeave_Con(phase, atct, whos, fid, times), rsef.FC_PhaseLeave_Op(leaveway, fid))
+	rsop.opinfo[e1] = {sg, 0, 0}
 	return e1
 end
 function rsef.FC_PhaseLeave_Filter(c, fid)
 	return c:GetFlagEffectLabel(rscode.Phase_Leave_Flag) == fid
 end 
-function rsef.FC_PhaseLeave_Con(cphase, turnctlist, turnp, fid, times, whos)
-	return function(e, tp, eg, ep, ev, re, r, rp)
-		local ecphase = Duel.GetCurrentPhase()
-		local eturnp = Duel.GetTurnPlayer()
-		local eturnct, eturncttp, eturnctop = Duel.GetTurnCount(), Duel.GetTurnCount(tp), Duel.GetTurnCount()
-		local turnct, turncttp, turnctop = turnctlist[1], turnctlist[2], turnctlist[3]
-		local g = e:GetLabelObject()
-		local rg = g:Filter(rsef.FC_PhaseLeave_Filter, nil, fid)
-		local reset = false
-		local solve = false
-		if #rg <= 0 then reset = true end
-		if times and times > 0 and not whos then 
-			if eturnct > turnct + (times - 1) then reset = true end
-			if eturnct == turnct + (times - 1) then solve = true end
+function rsef.FC_PhaseLeave_Con(phase, atct, whos, fid, times)
+	return function(e, tp, ...)
+		local sg, tct, ph_chk = table.unpack(rsop.opinfo[e])
+		local cur_t = Duel.GetTurnCount()
+		if ph_chk ~= cur_t then
+			if not whos or (whos == 0 and Duel.GetTurnPlayer() == tp) or (whos == 1 and Duel.GetTurnPlayer() ~= tp) then
+					-- case1 , next phase 
+				if times and times == 0 and Duel.GetTurnCount() > atct then
+					ph_chk = cur_t
+					tct = tct + 1
+				elseif not times or times > 0 then
+					-- case2 , normal
+					ph_chk = cur_t
+					tct = tct + 1
+				end
+			end
 		end
-		if times and times > 0 and whos == 0 and eturnp == tp then
-			if eturncttp > turncttp + (times - 1) then reset = true end
-			if eturncttp == turncttp + (times - 1) then solve = true end
+		rsop.opinfo[e] = {sg, tct, ph_chk}
+		sg, tct, ph_chk = table.unpack(rsop.opinfo[e])
+		local reset, solve = false, false
+		local rg = sg:Filter(rsef.FC_PhaseLeave_Filter, nil, fid)
+		if #rg <= 0 then 
+			reset = true
 		end
-		if times and times > 0 and whos == 0 and eturnp ~= tp then
-			if eturnctop > turnctop + (times - 1) then reset = true end
-			if eturnctop == turnctop + (times - 1) then solve = true end
+		--case1, every phase
+		if not times then
+			solve = true 
 		end
-		if not times then 
-			solve = true
+		-- case2, next phase
+		if times and times == 0 then
+			if tct == 1 then
+				solve = true
+			elseif tct > 1 then
+				reset = true
+			end
+		end
+		-- case3, 1+ phase
+		if times and times>0 and times == tct then
+			solve = true 
+		elseif times and times>0 and tct > times then
+			reset = true
 		end
 		if reset then
-			g:DeleteGroup() 
+			sg:DeleteGroup() 
 			e:Reset() 
-			return false 
+			return  
 		end
 		return solve
 	end
 end
 function rsef.FC_PhaseLeave_Op(solve_str, fid)
 	return function(e, tp, eg, ep, ev, re, r, rp)
+		local sg, tct, ph_chk = table.unpack(rsop.opinfo[e])
 		local c = e:GetOwner()
 		Duel.Hint(HINT_CARD, 0, c:GetOriginalCode())
-		local g = e:GetLabelObject()
-		local rg = g:Filter(rsef.FC_PhaseLeave_Filter, nil, fid)
+		local rg = sg:Filter(rsef.FC_PhaseLeave_Filter, nil, fid)
 		if type(solve_str) == "function" then solve_str(rg, e, tp, eg, ep, ev, re, r, rp)
 		else
 			rshint.nohint = true
@@ -1247,7 +1261,7 @@ function rsop.FC_Global(reg_player,event)
 end
 --Field Continues: Easy Player
 function rsef.FC_Easy(reg_list, code, flag, range, con, op, reset_list)
-	return rsef.FC(reg_list, code, nil, nil, nil, nil, con, op, reset_list)
+	return rsef.FC(reg_list, code, nil, nil, flag, range, con, op, reset_list)
 end
 ----------------"Part_Effect_SingleContinuous"----------------
 
@@ -1336,8 +1350,8 @@ function rssf.SpecialSummonEitherStep(sum_card, sum_eff, sum_type, sum_pl, loc_p
 	sum_type, sum_pl, loc_pl, ignore_con, ignore_revie, pos = rssf.GetSSDefaultParameter(sum_type, sum_pl, loc_pl, ignore_con, ignore_revie, pos)
 	if not sum_eff then sum_eff = Duel.GetChainInfo(0, CHAININFO_TRIGGERING_EFFECT) end
 	local tp = sum_pl
-	local zone = {}
-	local flag = {}
+	local zone = { }
+	local flag = { }
 	if not zone2 then
 		zone2 = { [0] = 0x1f, [1] = 0x1f }
 	end
@@ -1487,44 +1501,92 @@ function rsop.token_reg(tk_code)
 		end
 	end
 end
-function rstg.token(tk_code, tk_att_fun, ct, sum_pos, ignore_ft)
-	if not rstg.tk_list[tk_code] then 
-		local ge1 = rsef.FC_Global(0, EVENT_ADJUST, tk_code, nil, rsop.token_reg(tk_code))
+function rstg.token(tk_code_or_fun, ct, sum_pos, tg_p, ignore_ft)
+	if type(tk_code_or_fun) == "number" and not rstg.tk_list[tk_code_or_fun] then 
+		local ge1 = rsef.FC_Global(0, EVENT_ADJUST, tk_code_or_fun, nil, rsop.token_reg(tk_code_or_fun))
 	end
 	return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-		local res, spct = rssf.CheckTokenSummonable(e, tp, tk_code, tk_att_fun, ct, sum_pos, ignore_ft, eg, ep, ev, re, r, rp, 0)
+		tg_p = tg_p or 0
+		local sp = tg_p == 0 and tp or 1 - tp
+		local res = rssf.CheckTokenSummonable(e, tp, tk_code_or_fun, sum_pos, sp, nil, eg, ep, ev, re, r, rp, 0)
+		local ft = Duel.GetLocationCount(sp, LOCATION_MZONE, tp)	 
+		if rscon.bsdcheck(tp) and type(ct) == "number" and ct > 1 then res = false end
+		if type(ct) == "number" and ft < ct then res = false end
 		if chkc then return true end
 		if chk == 0 then return res end
 		Duel.SetOperationInfo(0, CATEGORY_TOKEN, nil, spct, 0, 0)
 		Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, spct, 0, 0)
 	end
 end
-function rssf.CheckTokenSummonable(e, tp, tk_code, tk_att_fun, ct, sum_pos, ignore_ft, ...)
-	tk_att_fun = tk_att_fun or aux.TRUE 
-	local tk_set, tk_type, tk_atk, tk_def, tk_lv, tk_race, tk_att, sum_pos2, sp, sum_type = tk_att_fun(e, tp, ...)
-	local tk = rstg.tk_list[tk_code][tp]
-	local ft = Duel.GetLocationCount(tp, LOCATION_MZONE)
+function rssf.CheckTokenSummonable(e, tp, tk_code_or_fun, sum_pos, tg_p, sum_zone, ...)
+	local tk
+	local tk_code, tk_set, tk_type, tk_atk, tk_def, tk_lv, tk_race, tk_att, sum_pos2, sp, sum_type
+	if type(tk_code_or_fun) == "number" then
+		tk = rstg.tk_list[tk_code_or_fun][tp]
+	elseif type(tk_code_or_fun) == "function" then
+		tk_code, tk_set, tk_type, tk_atk, tk_def, tk_lv, tk_race, tk_att, sum_pos2, sp, sum_type = tk_att_fun(e, tp, ...)
+	else
+		tk_code, tk_set, tk_type, tk_atk, tk_def, tk_lv, tk_race, tk_att, sum_pos2, sp, sum_type = table.unpack(tk_code_or_fun)
+	end
 	ct = ct or 1 
-	sp = sp or tp 
+	sp = sp or tg_p or tp 
 	sum_pos = sum_pos2 or sum_pos or POS_FACEUP
 	sum_type = sum_type or 0 
-	if tk_set and 
+	if not tk and 
 		not Duel.IsPlayerCanSpecialSummonMonster(tp, tk_code, tk_set, tk_type, tk_atk, tk_def, tk_lv, tk_race, tk_att, sum_pos, sp, sum_type) then
 		return false
 	end
-	if not tk_set and not tk:IsCanBeSpecialSummoned(e, sum_type or 0, tp, false, false, sum_pos, sp) then 
+	if tk and not tk:IsCanBeSpecialSummoned(e, sum_type or 0, tp, false, false, sum_pos, sp, sum_zone) then 
 		return false 
 	end
-	if rscon.bsdcheck(tp) and type(ct) == "number" and ct > 1 then return false end
-	if type(ct) == "number" and ft < ct then return false end
-	if not ignore_ft and ft <= 0 then return false end
-	if rsof.Check_Boolean(ct, true) then
-		ct = math.min(ct, ft)
+	return true
+end
+function rssf.SpecialSummonToken(e, tp, tk_code_or_fun, minct, maxct, sum_pos, tg_p, sum_zone, ...)
+	local res_ct = 0
+	local res = rssf.CheckTokenSummonable(e, tp, tk_code_or_fun, minct, sum_pos, tg_p, sum_zone, ...)
+	if not res then return res_ct end
+	local ft = Duel.GetLocationCount(sp, LOCATION_MZONE, tp)   
+	if ft <= 0 then return false end
+	local sum_min, sum_max = minct, math.min(maxct, ft)
+	if rscon.bsdcheck(tp) and type(minct) == "number" and minct > 1 then return res_ct end
+	if type(minct) == "number" and ft < minct then return res_ct end
+	if rsof.Check_Boolean(minct) then
+		sum_min= ft
 	end
 	if rscon.bsdcheck(tp) then 
-		ct = 1
+		sum_min, sum_max = 1, 1
 	end
-	return true, ct
+	if sum_min > sum_max then return res_ct end
+	local sp_ct = sum_min
+	if sum_max > sum_min then 
+		local list = { }
+		for idx = sum_min, sum_max do 
+			table.insert(list, idx)
+		end
+		sp_ct = Duel.AnnounceNumber(tp, table.unpack(list))
+	end
+	local tk_code, tk_set, tk_type, tk_atk, tk_def, tk_lv, tk_race, tk_att, sum_pos2, sp, sum_type
+	if type(tk_code_or_fun) == "number" then
+		tk_code = tk_code_or_fun
+	elseif type(tk_code_or_fun) == "function" then
+		tk_code, tk_set, tk_type, tk_atk, tk_def, tk_lv, tk_race, tk_att, sum_pos2, sp, sum_type = tk_code_or_fun(e, tp, ...)
+	else 
+		tk_code, tk_set, tk_type, tk_atk, tk_def, tk_lv, tk_race, tk_att, sum_pos2, sp, sum_type = table.unpack(tk_code_or_fun)
+	end
+	sp = sp or tg_p or tp 
+	sum_pos = sum_pos2 or sum_pos or POS_FACEUP
+	sum_type = sum_type or 0 
+	for idx = 1, sp_ct do 
+		tk = Duel.CreateToken(tp, tk_code)
+		if type(tk_code_or_fun) ~= "number" then 
+			local e1, e2, e3, e4, e5, e6 = rscf.QuickBuff({e:GetHandler(), tk, true}, "type", tk_type, "batk", tk_atk, "bdef", tk_def, "lv", tk_lv, "race", tk_race, "att", tk_att,"rst",rsrst.std_ntf)
+		end
+		if rssf.SpecialSummonStep(tk, sum_type, tp, sp, false, false, sum_pos, sum_zone) then
+			res_ct = res_ct + 1
+		end
+	end
+	Duel.SpecialSummonComplete()
+	return res_ct
 end
 --Effect Target: Negative Effect / Activate
 function rstg.disneg(dn_type, dn_str, ex_tg)
@@ -1557,15 +1619,15 @@ end
 
 --Effect target: Target Cards Main Set 
 function rsef.list(list_type_str,  val1,  val2,  val3,  ...)
-	local value_list = {}
+	local value_list = { }
 	if type(val1) == "table" and (not val2 or (type(val2) == "table" )) and (not val3 or type(val3) == "table") then
 		value_list = { val1,  val2,  val3,  ... }
 	else
 		value_list = { { val1,  val2,  val3,  ... } }
 	end
-	local par_list = {}
+	local par_list = { }
 	for idx,  val in pairs(value_list) do
-		par_list[idx] = {}
+		par_list[idx] = { }
 		local res = rsef.list_check_divide(val[1],  list_type_str) 
 		if not res then
 			par_list[idx][1] = list_type_str
@@ -1821,15 +1883,16 @@ function rstg.TargetSelect(e, tp, eg, ep, ev, re, r, rp, target_list_total)
 	--1. Creat used check
 	local used_group = Group.CreateGroup()
 	local used_count_list = { [0] = 0, [1] = 0, [1] = 0, [2] = 0}
-	local info_list = {}
-	local selected_group_total_list = {}
+	local info_list = { }
+	local selected_group_total_list = { }
+	local costed_grouo_total = Group.CreateGroup()
 	--2. Selecting 
 	--for idx, target_list in pairs(target_list_total) do 
 	--cannot use above method because may have target_list_total[0]
 	for idx = 1, #target_list_total do 
 		local target_list = target_list_total[idx]
 		--2.0. Get Next target_list
-		local target_list_next = {}
+		local target_list_next = { }
 		for idx2, target_list_next_par in pairs(target_list_total) do 
 			if idx2 > idx then
 				table.insert(target_list_next, target_list_next_par)
@@ -1913,6 +1976,9 @@ function rstg.TargetSelect(e, tp, eg, ep, ev, re, r, rp, target_list_total)
 			local cost_result = rscost.CostSolve(selected_group, category_str_list, category_fun, list_type, e, tp, eg, ep, ev, re, r, rp, used_group, used_count_list)
 			if not cost_result or (type(cost_result) == "number" and cost_result <= 0) or (aux.GetValueType(cost_result) == "Group" and #cost_result <= 0) then
 				return 
+			else
+				--costed_grouo_total:Merge(Duel.GetOperatedGroup())
+				costed_grouo_total:Merge(selected_group)
 			end
 		end
 		--2.6. Register Operationinfo for target
@@ -1955,7 +2021,7 @@ function rstg.TargetSelect(e, tp, eg, ep, ev, re, r, rp, target_list_total)
 		end
 	end
 	local tg = Duel.GetChainInfo(0, CHAININFO_TARGET_CARDS) 
-	return tg, selected_group_total_list
+	return tg, selected_group_total_list, costed_grouo_total
 end
 --Effect target: Target filter 
 function rstg.TargetFilter(c, e, tp, eg, ep, ev, re, r, rp, used_group, used_count_list, target_list1, target_list2, ...)
@@ -2156,7 +2222,7 @@ function rscost.rmct(cttype, ct1, ct2, issetlabel)
 		local maxct= rsof.Check_Boolean(ct2) and c:GetCounter(cttype) or ct2
 		if chk == 0 then return c:IsCanRemoveCounter(tp, cttype, minct, REASON_COST) end
 		if maxct > minct then
-		   local rmlist = {}
+		   local rmlist = { }
 		   for i = minct, maxct do
 			   table.insert(rmlist, i)
 		   end
@@ -2181,7 +2247,7 @@ function rscost.rmct2(cttype, loc_self, loc_oppo, ct1, ct2, issetlabel)
 		local maxct= rsof.Check_Boolean(ct2) and c:GetCounter(cttype) or ct2
 		if chk == 0 then return Duel.IsCanRemoveCounter(tp, loc_self, loc_oppo, cttype, minct, REASON_COST) end
 		if maxct > minct then
-		   local rmlist = {}
+		   local rmlist = { }
 		   for i = minct, maxct do
 			   table.insert(rmlist, i)
 		   end
@@ -2195,7 +2261,7 @@ function rscost.rmct2(cttype, loc_self, loc_oppo, ct1, ct2, issetlabel)
 	end
 end
 --cost: remove overlay card form self
-function rscost.rmxyz(ct1, ct2, issetlabel)
+function rscost.rmxmat(ct1, ct2, issetlabel)
 	ct1 = ct1 or 1
 	ct2 = ct2 or ct1
 	return function(e, tp, eg, ep, ev, re, r, rp, chk)
@@ -2243,7 +2309,7 @@ function rscost.lpcost2(base_pay, max_pay, is_lab)
 		end
 		if chk == 0 then return Duel.CheckLPCost(tp, base_pay) end
 		local max_multiple = math.floor(max_lp / base_pay)
-		local pay_list = {}
+		local pay_list = { }
 		for i = 1, max_multiple do
 			pay_list[i] = i * base_pay
 		end
@@ -2324,8 +2390,8 @@ function rscon.phase(p1, ...)
 		end
 		local str_list = { "dp", "sp", "mp1", "bp", "bsp", "dam", "damndcal", "dambdcal", "dcal", "ndcal", "mp2", "ep", "mp" } 
 		local phaselist = { PHASE_DRAW, PHASE_STANDBY, PHASE_MAIN1, phase_bp, PHASE_BATTLE_STEP, phase_dam, PHASE_DAMAGE, phase_dambdcal, PHASE_DAMAGE_CAL, phase_ndcal, PHASE_MAIN2, PHASE_END, phase_mp } 
-		local mainstr_list = {}
-		local turnplayerlist = {}
+		local mainstr_list = { }
+		local turnplayerlist = { }
 		local parlist2 = rsof.String_Number_To_Table(parlist) 
 		for _, pstring in pairs(parlist2) do
 			local mainstring, splitstring = rsof.String_NoSymbol(pstring)
@@ -2538,23 +2604,6 @@ function rsop.neg(dn_str, ex_op)
 		return rsop.disneg("neg", dn_str, ex_op)(...)
 	end
 end
-
---Operation: Select Card
-function rsop.SelectCheck_Solve(solve_fun)
-	local solve_parama_list = {}
-	local len = 0
-	if type(solve_fun) == "table" then
-		for idx, par in pairs(solve_fun) do
-			if idx >= 2 then
-				len = len + 1
-				--table.insert(solve_parama_list, par)
-				solve_parama_list[len] = par
-			end
-		end
-		solve_fun = solve_fun[1]
-	end
-	return solve_fun, solve_parama_list, len
-end
 --Function:outer case function for SelectSolve 
 function rsop.SelectOC(chk_hint, is_break, sel_hint, success_loc)
 	if type(chk_hint) == "string" then
@@ -2574,47 +2623,56 @@ function rsop.SelectSolve(sel_hint, sp, filter, tp, loc_self, loc_oppo, minct, m
 	local g = Duel.GetMatchingGroup(card_filter, tp, loc_self, loc_oppo, except_group, ...)
 	return rsgf.SelectSolve(g, sel_hint, sp, { aux.TRUE, group_filter }, minct, maxct, except_group, solve_fun, ...)
 end
-function rsop.GetFollowingSolvepar(solve_parama, parlen)
+function rsop.ReplaceSolveParama(solve_parama, parlen)
 	solve_parama = type(solve_parama) == "table" and solve_parama or { solve_parama }
-	rsop.solveprlen = parlen
-	return solve_parama
+	local new_parama = { }
+	local val
+	for idx = 1, parlen do 
+		val = solve_parama[idx]
+		if type(val) == "nil" then
+			new_parama[idx] = rsnv
+		else
+			new_parama[idx] = val
+		end
+	end
+	return new_parama
 end
 --Function:Select card and send to hand
 function rsop.SelectToHand(sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 4)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 4)
 	rsop.SelectOC_successlocation = rsop.SelectOC_successlocation or LOCATION_HAND 
 	rshint.nohint_sel = true 
 	return rsop.SelectSolve("th", sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, { rsop.SendtoHand, table.unpack(solve_parama) }, ...)
 end
 --Function:Select card and send to grave
 function rsop.SelectToGrave(sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 2)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 2)
 	rsop.SelectOC_successlocation = rsop.SelectOC_successlocation or LOCATION_GRAVE 
 	rshint.nohint_sel = true 
 	return rsop.SelectSolve("tg", sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, { rsop.SendtoGrave, table.unpack(solve_parama) }, ...)
 end
 --Function:Select card and release
 function rsop.SelectRelease(sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 2)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 2)
 	rshint.nohint_sel = true 
 	return rsop.SelectSolve("tg", sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, { rsop.Release, table.unpack(solve_parama) }, ...)
 end
 --Function:Select card and send to deck
 function rsop.SelectToDeck(sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 4)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 4)
 	rsop.SelectOC_successlocation = rsop.SelectOC_successlocation or rsloc.de  
 	rshint.nohint_sel = true 
 	return rsop.SelectSolve("td", sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, { rsop.SendtoDeck, table.unpack(solve_parama) }, ...)
 end
 --Function:Select card and destroy
 function rsop.SelectDestroy(sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 2)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 2)
 	rshint.nohint_sel = true 
 	return rsop.SelectSolve("des", sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, { rsop.Destroy, table.unpack(solve_parama) }, ...)
 end
 --Function:Select card and remove
 function rsop.SelectRemove(sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 3)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 3)
 	rsop.SelectOC_successlocation = rsop.SelectOC_successlocation or LOCATION_REMOVED 
 	rshint.nohint_sel = true 
 	return rsop.SelectSolve("rm", sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, { rsop.Remove, table.unpack(solve_parama) }, ...)
@@ -2639,14 +2697,14 @@ function rsop.SelectSpecialSummon_Operation(sumfunvarlist)
 end
 --Function:Select card and move to field
 function rsop.SelectMoveToField(sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 8)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 8)
 	solve_parama[1] = solve_parama[1] or sp
 	rshint.nohint_sel = true 
 	return rsop.SelectSolve(HINTMSG_TOFIELD, sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, { rsop.MoveToField, table.unpack(solve_parama) }, ...)
 end 
 --Function:Select card and move to field and activate
 function rsop.SelectMoveToField_Activate(sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 7)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 7)
 	solve_parama[1] = solve_parama[1] or sp
 	maxct = 1
 	rshint.nohint_sel = true 
@@ -2655,7 +2713,7 @@ end
 --Function:Select card and SSet
 function rsop.SelectSSet(sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
 	rshint.nohint_sel = true 
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 4)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 4)
 	return rsop.SelectSolve(HINTMSG_SET, sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, rsop.SelectSSet_Operation(sp, solve_parama), ...)
 end
 function rsop.SelectSSet_Operation(sp, solve_parama)
@@ -2716,7 +2774,7 @@ function rsop.CheckOperateSuccess(solve_loc, check_count)
 end
 --Operation: Send to Deck and Draw 
 function rsop.ToDeckDraw(dp, dct, is_break, check_count)
-	local res, g = rsop.CheckSuccess(rsloc.de, check_count) 
+	local res, g = rsop.CheckOperateSuccess(rsloc.de, check_count) 
 	if not res then return 0 end
 	if g:IsExists(Card.IsLocation, 1, nil, LOCATION_DECK) then
 		Duel.ShuffleDeck(dp)
@@ -2856,7 +2914,7 @@ function rsop.MoveToField(corg, movep, targetp, loc, pos, enable, zone, hint, co
 	targetp = targetp or movep 
 	pos= pos or POS_FACEUP 
 	enable = enable or true 
-	if #g <= 0 then return false end
+	if #g <= 0 then return 0, nil end
 	local correctg = Group.CreateGroup()
 	rsop.CheckOperationHint(g,  hint)
 	for tc in aux.Next(g) do 
@@ -2928,7 +2986,7 @@ function rsop.MoveToField_Activate(corg, movep, targetp, loc, pos, enable, zone,
 		end
 		return true, tc
 	end
-	return false
+	return false, nil
 end
 --Operation function:Deck Move to top 
 function rsop.SortDeck(corg, seq, confirm)
@@ -2951,9 +3009,31 @@ function rsop.SortDeck(corg, seq, confirm)
 			Duel.MoveSequence(mg:GetFirst(), 1)
 		end
 	end
-	return #g
+	return #g, g
 end
-
+--Operation function:destroy and hint
+--if you don't neet hint,  best use normal Duel.Destroy
+function rsop.Overlay(e, xyzc, mat_corg, ex_over, hint)
+	e = e or Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
+	local g = rsgf.Mix2(mat_corg)
+	local img = g:Filter(Card.IsImmuneToEffect,nil,e)
+	g:Sub(img)
+	rsop.CheckOperationHint(g,  hint)
+	if not xyzc or not xyzc:IsType(TYPE_XYZ) or #g <= 0 then return 0, nil end
+	local tg = Group.CreateGroup()
+	for tc in aux.Next(g) do
+		tg:Merge(tc:GetOverlayGroup())
+	end
+	if #tg > 0 then
+		if ex_over then
+			Duel.Overlay(xyzc, tg)
+		else
+			Duel.SendtoGrave(tg, REASON_RULE)
+		end
+	end
+	Duel.Overlay(xyzc, g)
+	return #g, g, g:GetFirst()
+end
 --For rsop.Operation_Solve
 function rsop.OperationDestroy(reason0)
 	return function(g, chk, reason)
@@ -3013,7 +3093,7 @@ function rsop.OperationDiscardDeck(selected_group, chk, reason, e, tp, eg, ep, e
 		local dct = minct
 		if maxct < minct then return nil, 0 end 
 		if maxct > minct then 
-			local ct_list = {}
+			local ct_list = { }
 			for i = minct, maxct do 
 				if ( reason == REASON_COST and Duel.IsPlayerCanDiscardDeckAsCost(p, i) ) 
 					or ( reason ~= REASON_COST and Duel.IsPlayerCanDiscardDeck(p, i) ) then
@@ -3058,7 +3138,29 @@ function rsop.OperationConfirm(g, chk, reason)
 	end
 	return #g
 end
-
+function rsop.OperationReturnToField(pos)
+	return function(g, chk, reason)
+		if chk == 0 then return true end
+		local rg,rg2,ft = Group.CreateGroup(), Group.CreateGroup(), 0
+		for p = 0, 1 do
+			rg = g:Filter(aux.FilterEqualFunction(Card.GetPreviousControler, p), nil)
+			if #rg > 0 then
+				ft = Duel.GetLocationCount(p, LOCATION_MZONE)
+				rg2 = rg:Clone()
+				if #rg2 > ft then
+					rg2 = rg:Select(p, ft, ft, nil)
+				end
+				rg:Sub(rg2)
+				for tc in aux.Next(rg2) do 
+					Duel.ReturnToField(tc, pos or tc:GetPreviousPosition())
+				end
+				for tc in aux.Next(rg) do
+					Duel.ReturnToField(tc, pos or tc:GetPreviousPosition())
+				end
+			end
+		end
+	end
+end
 ----------------"Part_ZoneSequence_Function"------------------
 --Get pend zone
 function rszsf.GetUseAblePZoneCount(tp, g_or_c)
@@ -3079,15 +3181,15 @@ end
 --zone[2] is the same,  zone[3] is zone[1] + zone[2] (all players)
 --seq must use rsv.GetExcatlySequence to Get true sequence
 function rszsf.GetExcatlyColumnZone(seq)
-	local zone = {}
+	local zone = { }
 	for i = 0, 1 do
-		zone[i] = {}
+		zone[i] = { }
 		if i == 1 then seq = seq + 16 end
 		zone[i][1] = 2^seq 
 		zone[i][2] = (2^seq) * 0x100
 		zone[i][3] = zone[i][1] + zone[i][2]
 	end 
-	zone[3] = {}
+	zone[3] = { }
 	zone[3][1] = zone[1][1] + zone[2][1]
 	zone[3][2] = zone[1][2] + zone[2][2]
 	zone[3][3] = zone[1][3] + zone[2][3]
@@ -3154,7 +3256,7 @@ function rszsf.GetSurroundingZone2(seq, loc, cp, p, truezone, contains)
 		mzone[1 - p] = mzone[1 - p] * 0x10000
 		szone[1 - p] = szone[1 - p] * 0x10000
 	end
-	local ozone = {}
+	local ozone = { }
 	for i = 0, 1 do
 		ozone[i] = mzone[i] + szone[i]
 	end
@@ -3245,7 +3347,7 @@ function rsgf.Mix2(...)
 end
 --Group effect:Change Group to Table
 function rsgf.Group_To_Table(g)
-	local cardlist = {}
+	local cardlist = { }
 	for tc in aux.Next(g) do
 		table.insert(cardlist, tc)
 	end
@@ -3262,24 +3364,21 @@ function rsgf.Table_To_Group(list)
 	return group 
 end
 --Group:Select card from group and do operation on it
-function rsgf.SelectSolve(g, sel_hint, sp, filter, minct, maxct, except_obj, solve_fun, ...)
+function rsgf.SelectSolve(g, sel_hint, sp, filter, minct, maxct, except_obj, solve_parama, ...)
 	minct = minct or 1 
 	maxct = maxct or minct
 	local chk_hint, is_break, sel_hint2, success_loc = rsop.SelectOC_checkhint, rsop.SelectOC_isbreak, rsop.SelectOC_selecthint, rsop.SelectOC_successlocation
 	rsop.SelectOC(nil, nil, nil)
-	local solvefun2, solvefunpar, len = rsop.SelectCheck_Solve(solve_fun)
 	filter = type(filter) == "table" and filter or { filter }
 	local card_filter, group_filter = table.unpack(filter)
 	card_filter = card_filter or aux.TRUE 
 	local tg = g:Filter(card_filter, except_obj, ...)
 	-- case1 , no suit group for card_filter
 	if #tg <= 0 or (type(minct) == "number" and #tg < minct) then
-		rsop.solveprlen = nil
 		rshint.nohint_sel = false
 		return 0, Group.CreateGroup(), nil, 0
 	end
 	if chk_hint and not rshint.SelectYesNo(sp, chk_hint) then 
-		rsop.solveprlen = nil
 		rshint.nohint_sel = false
 		return 0, Group.CreateGroup(), nil, 0
 	end 
@@ -3300,28 +3399,28 @@ function rsgf.SelectSolve(g, sel_hint, sp, filter, minct, maxct, except_obj, sol
 		Duel.BreakEffect()
 	end
 	--under bitch function because of lua table's last element cannot be "nil" ,but last solve parameter will often be "nil" 
-	local solve_parama_list = {}
-	local len2 = 0
-	for idx, solve_parama in pairs(solvefunpar) do 
-		len2 = len2 + 1
-		solve_parama_list[len2] = solve_parama
-	end
-	if rsop.solveprlen and rsop.solveprlen > len then
-		for i = 1, rsop.solveprlen - len do 
-			len2 = len2 + 1
-			solve_parama_list[len2] = nil
+	solve_parama = type(solve_parama) == "table" and solve_parama or { solve_parama }
+	local solve_fun2, solve_parama_list = solve_parama[1], { }
+	local len, parama = 0, 0
+	if #solve_parama > 1 then
+		for idx = 2, #solve_parama do 
+			parama = solve_parama[idx]
+			if type(parama) == "string" and parama == rsnv then
+				parama = nil
+			end
+			len = len + 1
+			solve_parama_list[len] = parama
 		end
 	end
-	local solve_parama_len = select("#", ...)
-	for idx = 1, solve_parama_len do
-		len2 = len2 + 1
-		solve_parama_list[len2] = ({ ... })[idx]
+	local ex_parama_len =  select("#", ...)
+	if ex_parama_len > 0 then
+		for idx = 1, ex_parama_len do
+			len = len + 1
+			solve_parama_list[len] = ({ ... })[idx]
+		end
 	end
-	if type(solve_fun) == "table" and #solve_fun == 0 then 
-		solve_fun = nil
-	end
-	local res = not solve_fun and { tg, tg:GetFirst() } or { solvefun2(tg, table.unpack(solve_parama_list)) }   
-	if solve_fun and success_loc then 
+	local res = not solve_fun2 and { tg, tg:GetFirst() } or { solve_fun2(tg, table.unpack(solve_parama_list)) }   
+	if solve_fun2 and success_loc then 
 		local success, success_g = rsop.CheckOperateSuccess(success_loc)
 		table.insert(res, #success_g)
 	end
@@ -3332,7 +3431,7 @@ end
 Group.SelectSolve = rsgf.SelectSolve
 --Group:Select card from group and send to hand
 function rsgf.SelectToHand(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 4)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 4)
 	rsop.SelectOC_successlocation = rsop.SelectOC_successlocation or LOCATION_HAND 
 	rshint.nohint_sel = true 
 	return rsgf.SelectSolve(g, "th", sp, filter, minct, maxct, except_obj, { rsop.SendtoHand, table.unpack(solve_parama) }, ...)
@@ -3340,7 +3439,7 @@ end
 Group.SelectToHand = rsgf.SelectToHand
 --Group:Select card from group and send to grave
 function rsgf.SelectToGrave(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 2)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 2)
 	rsop.SelectOC_successlocation = rsop.SelectOC_successlocation or LOCATION_GRAVE 
 	rshint.nohint_sel = true 
 	return rsgf.SelectSolve(g, "tg", sp, filter, minct, maxct, except_obj, { rsop.SendtoGrave, table.unpack(solve_parama) }, ...)
@@ -3348,14 +3447,14 @@ end
 Group.SelectToGrave = rsgf.SelectToGrave
 --Group:Select card from group and release
 function rsgf.SelectRelease(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 2)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 2)
 	rshint.nohint_sel = true 
 	return rsgf.SelectSolve(g, "tg", sp, filter, minct, maxct, except_obj, { rsop.Release, table.unpack(solve_parama) }, ...)
 end
 Group.SelectRelease = rsgf.SelectRelease
 --Group:Select card from group and send to deck
 function rsgf.SelectToDeck(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 4)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 4)
 	rsop.SelectOC_successlocation = rsop.SelectOC_successlocation or rsloc.de 
 	rshint.nohint_sel = true 
 	return rsgf.SelectSolve(g, "td", sp, filter, minct, maxct, except_obj, { rsop.SendtoDeck, table.unpack(solve_parama) }, ...)
@@ -3363,14 +3462,14 @@ end
 Group.SelectToDeck = rsgf.SelectToDeck
 --Group:Select card from group and destroy
 function rsgf.SelectDestroy(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 2)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 2)
 	rshint.nohint_sel = true 
 	return rsgf.SelectSolve(g, "des", sp, filter, minct, maxct, except_obj, { rsop.Destroy, table.unpack(solve_parama) }, ...)
 end
 Group.SelectDestroy = rsgf.SelectDestroy
 --Group:Select card from group and remove
 function rsgf.SelectRemove(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 3)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 3)
 	rsop.SelectOC_successlocation = rsop.SelectOC_successlocation or LOCATION_REMOVED  
 	rshint.nohint_sel = true 
 	return rsgf.SelectSolve(g, "rm", sp, filter, minct, maxct, except_obj, { rsop.Remove, table.unpack(solve_parama) }, ...)
@@ -3378,7 +3477,7 @@ end
 Group.SelectRemove = rsgf.SelectRemove
 --Group:Select card from group and special summon
 function rsgf.SelectSpecialSummon(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
-	--solve_parama = rsop.GetFollowingSolvepar(solve_parama, 8)
+	--solve_parama = rsop.ReplaceSolveParama(solve_parama, 8)
 	solve_parama = type(solve_parama) == "table" and solve_parama or { solve_parama }
 	local e = Duel.GetChainInfo(0, CHAININFO_TRIGGERING_EFFECT)
 	local parlen = select("#", ...)
@@ -3392,7 +3491,7 @@ end
 Group.SelectSpecialSummon = rsgf.SelectSpecialSummon
 --Group:Select card and move to field
 function rsgf.SelectMoveToField(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 8)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 8)
 	solve_parama[1] = solve_parama[1] or sp
 	rshint.nohint_sel = true 
 	return rsgf.SelectSolve(g, HINTMSG_TOFIELD, sp, filter, minct, maxct, except_obj, { rsop.MoveToField, table.unpack(solve_parama) }, ...)
@@ -3400,7 +3499,7 @@ end
 Group.SelectMoveToField = rsgf.SelectMoveToField
 --Function:Select card and move to field and activate
 function rsgf.SelectMoveToField_Activate(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 7)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 7)
 	solve_parama[1] = solve_parama[1] or sp
 	maxct = 1
 	rshint.nohint_sel = true 
@@ -3409,7 +3508,7 @@ end
 Group.SelectMoveToField_Activate = rsgf.SelectMoveToField_Activate
 --Function:Select card and SSet
 function rsgf.SelectSSet(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
-	solve_parama = rsop.GetFollowingSolvepar(solve_parama, 4)
+	solve_parama = rsop.ReplaceSolveParama(solve_parama, 4)
 	rshint.nohint_sel = true 
 	return rsgf.SelectSolve(g, HINTMSG_SET, sp, filter, minct, maxct, except_obj, rsop.SelectSSet_Operation(sp, solve_parama), ...)
 end
@@ -3419,7 +3518,7 @@ Group.SelectSSet = rsgf.SelectSSet
 
 --Card function: local m and cm and cm.rssetcode 
 function rscf.DefineCard(code, setcode)
-	if not _G["c"..code] then _G["c"..code] = {}
+	if not _G["c"..code] then _G["c"..code] = { }
 		setmetatable(_G["c"..code], Card)
 		_G["c"..code].__index = _G["c"..code]
 	end
@@ -3549,8 +3648,8 @@ rssf.SetSummonCondition = rscf.SetSummonCondition
 --Check Built - in SetCode / Series Main Set
 function rscf.CheckSetCardMainSet(c, settype, series1, ...) 
 	local serieslist = { series1, ... }
-	local seriesnormallist = {}
-	local seriescustomlist = {}
+	local seriesnormallist = { }
+	local seriescustomlist = { }
 	for _, series in pairs(serieslist) do 
 		if type(series) == "number" then
 			table.insert(seriesnormallist, series) 
@@ -3559,9 +3658,9 @@ function rscf.CheckSetCardMainSet(c, settype, series1, ...)
 		end
 	end
 	local str_list = rsof.String_Number_To_Table(seriescustomlist)
-	local codelist = {}
-	local effectlist = {}
-	local addcodelist = {}
+	local codelist = { }
+	local effectlist = { }
+	local addcodelist = { }
 	if settype == "base" then
 		if #seriesnormallist > 0 and c:IsSetCard(table.unpack(seriesnormallist)) then return true end
 		codelist = { c:GetCode() } 
@@ -3577,7 +3676,7 @@ function rscf.CheckSetCardMainSet(c, settype, series1, ...)
 	elseif settype == "org" then
 		if #seriesnormallist > 0 and c:IsOriginalSetCard(table.unpack(seriesnormallist)) then return true end
 		codelist = { c:GetOriginalCode() }
-		effectlist = {}
+		effectlist = { }
 	elseif settype == "pre" then
 		if #seriesnormallist > 0 and c:IsPreviousSetCard(table.unpack(seriesnormallist)) then return true end
 		codelist = { c:GetPreviousCodeOnField() }
@@ -3592,7 +3691,7 @@ function rscf.CheckSetCardMainSet(c, settype, series1, ...)
 	for _, code in ipairs(codelist) do 
 		local setcodestring
 		local res = not _G["c"..code] and true or false
-		if res then _G["c"..code] = {} end
+		if res then _G["c"..code] = { } end
 		if pcall(function() dofile("expansions/script/c"..code..".lua") end) or pcall(function() dofile("script/c"..code..".lua") end) then
 			setcodestring = _G["c"..code].rssetcode
 		end
@@ -4075,7 +4174,7 @@ function rscf.XyzLevelFreeGoal2(minct, maxct, og)
 		local ug = g:Filter(Card.IsHasEffect, nil, rscode.Utility_Xyz_Material, tp)
 		local mg = g:Clone()
 		mg:Sub(ug)
-		local totalreducelist = {}
+		local totalreducelist = { }
 		local sumlist = { #mg }
 		for tc in aux.Next(ug) do 
 			local ct = 0
@@ -4519,7 +4618,7 @@ function rscf.GetSameType_Base(c, way_str, type1, ...)
 	end
 	local type_list= type1 and { type1, ... } or { TYPE_MONSTER, TYPE_SPELL, TYPE_TRAP } 
 	local total_type = 0
-	local total_type_list = {}
+	local total_type_list = { }
 	for _, ctype in pairs(type_list) do
 		if type_fun(c) & ctype == ctype then
 			total_type = total_type | ctype
@@ -4632,8 +4731,8 @@ end
 function rshint.SelectOption(p, ...)
 	local fun_list = { ... }
 	local off = 1
-	local ops = {}
-	local opval = {}
+	local ops = { }
+	local opval = { }
 	for idx, val in pairs(fun_list) do
 		if rsof.Check_Boolean(val,true) then
 			local sel_hint = fun_list[idx + 1]
@@ -4665,9 +4764,9 @@ function rshint.SelectOption_Page(p, hint_list1, ...)
 	local op, currentpage = 0, 1
 	local len = #hint_list
 	local maxpage = len <= 4 and 1 or math.ceil((len - 1) / 3)
-	local pagehint = {}
+	local pagehint = { }
 	for page = 1, maxpage do 
-		pagehint[page] = {}
+		pagehint[page] = { }
 		if page == 1 then
 			pagehint[page] = { hint_list[1], hint_list[2] or null, hint_list[3] or null, hint_list[4] or null }
 		elseif page > 1 then
@@ -4805,7 +4904,7 @@ end
 --split the string,  ues ", " as delim_er
 function rsof.String_Split(str_input, delim_er)  
 	delim_er = delim_er or ',' 
-	local pos, arr = 0,  {}  
+	local pos, arr = 0,  { }  
 	--case string list 
 	if delim_er == ',' then
 		for st, sp in function() return string.find(str_input,  delim_er,  pos,  true) end do  
@@ -4821,7 +4920,7 @@ function rsof.String_Split(str_input, delim_er)
 			pos = sp + 1  
 		end  
 		table.insert(arr,  string.sub(str_input,  pos)) 
-		local arr2 = {}
+		local arr2 = { }
 		local str2 = arr[1]
 		for idx, val in ipairs(arr) do 
 			if idx == 1 then table.insert(arr2,  str2) 
@@ -4856,7 +4955,7 @@ end
 --you can use "a, b, c" or { "a, b, c" } or { "a", "b", "c" } as same
 --return { "a", "b", "c" }
 function rsof.String_Number_To_Table(value)
-	local table1 = {}
+	local table1 = { }
 	if type(value) == "string" then
 		table1 = rsof.String_Split(value)
 	elseif type(value) == "number" then
@@ -4913,7 +5012,7 @@ function rsof.Table_List_Single(base_tab, check_val)
 end
 function rsof.Table_List_Base(check_type, base_tab, check_val1, ...)
 	local check_list = { check_val1, ... }
-	local res_list = {}
+	local res_list = { }
 	for idx, check_val in pairs(check_list) do 
 		local exist_res, exist_idx = rsof.Table_List_Single(base_tab, check_val)
 		if check_type == "normal" then
@@ -4941,7 +5040,7 @@ function rsof.Table_List_AND(base_tab, check_val1, ...)
 end
 --other function: Find Intersection element in 2 table2
 function rsof.Table_Intersection(tab1,  ...)
-	local intersection_list = {}
+	local intersection_list = { }
 	local tab_list = { ... }
 	for _,  ele1 in pairs(tab1) do 
 		table.insert(intersection_list,  ele1)
@@ -4956,7 +5055,7 @@ function rsof.Table_Intersection(tab1,  ...)
 end
 --other function: Clone Table
 function rsof.Table_Clone(tab)
-	local tab2 = {}
+	local tab2 = { }
 	for idx, val in pairs(tab) do
 		tab2[idx] = val
 	end
@@ -4966,7 +5065,7 @@ end
 --error at "nil" value !!!!!!!!!
 --error at no number key !!!!!!!!!
 function rsof.Table_Mix(tab1, ...)
-	local res_list = {}
+	local res_list = { }
 	local list = { tab1, ... }
 	local len = 0
 	for _, tab in pairs(list) do
@@ -4981,7 +5080,7 @@ function rsof.Table_Mix(tab1, ...)
 end
 --other function: table to desc ({ m, 1 } to aux.Stringid(m, 1))
 function rsof.Table_To_Desc(hint_list)
-	local res_list = {}
+	local res_list = { }
 	for _, hint in pairs(hint_list) do
 		if type(hint) == "table" then
 			table.insert(res_list, aux.Stringid(hint[1], hint[2]))
@@ -4993,7 +5092,7 @@ function rsof.Table_To_Desc(hint_list)
 end
 --other function: Count for table value 
 function rsof.Table_Count(tab, ct_val)
-	local ct_list = {}
+	local ct_list = { }
 	for idx, val in pairs(tab) do
 		if val == ct_val then
 			table.insert(ct_list, idx)

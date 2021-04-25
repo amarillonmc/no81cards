@@ -28,14 +28,19 @@ function cm.initial_effect(c)
 	cm[c]=elements
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.dFilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
+function cm.dFilter(c)
+	return tama.tamas_isExistElement(c,TAMA_ELEMENT_WIND)
+end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.DiscardHand(tp,aux.TRUE,1,2,REASON_EFFECT+REASON_DISCARD)
-	Duel.BreakEffect()
-	Duel.Draw(tp,2,REASON_EFFECT)
+	local ct=Duel.DiscardHand(tp,cm.dFilter,1,2,REASON_EFFECT+REASON_DISCARD)
+	if ct>0 then
+		Duel.BreakEffect()
+		Duel.Draw(tp,ct,REASON_EFFECT)
+	end
 end
 function cm.elementsFilter(c)
 	return c:IsAbleToDeckAsCost() and tama.tamas_isExistElement(c,TAMA_ELEMENT_WIND)

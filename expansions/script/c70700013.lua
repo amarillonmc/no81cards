@@ -59,7 +59,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.recfilter(c)
-	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsSetCard(0x93a) and c:IsAbleToHand() --and not c:IsCode(m) 
+	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsSetCard(0x92b) and c:IsAbleToHand() --and not c:IsCode(m) 
 end
 function cm.rectg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.recfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end

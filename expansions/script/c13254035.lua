@@ -5,9 +5,11 @@ xpcall(function() require("expansions/script/tama") end,function() require("scri
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -23,16 +25,20 @@ function cm.initial_effect(c)
 	cm[c]=elements
 	
 end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.dFilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.dFilter(c)
+	return tama.tamas_isExistElement(c,TAMA_ELEMENT_ORDER)
+end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_IMMUNE_EFFECT)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x356))
-	e3:SetValue(cm.efilter)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
+	local ct=Duel.DiscardHand(tp,cm.dFilter,1,2,REASON_EFFECT+REASON_DISCARD)
+	if ct>0 then
+		Duel.BreakEffect()
+		Duel.Draw(tp,ct,REASON_EFFECT)
+	end
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_ORDER,2}}

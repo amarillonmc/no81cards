@@ -92,8 +92,6 @@ function c79029349.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return ec:IsSetCard(0xa900) and bit.band(r,REASON_FUSION+REASON_SYNCHRO+REASON_XYZ+REASON_LINK)~=0  
 end
 function c79029349.efop(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message("热身完毕！")
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029349,2))
 	Duel.Hint(HINT_CARD,0,79029349)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
@@ -110,7 +108,15 @@ function c79029349.efop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCountLimit(1)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e2)
+	if rc:IsCode(79029454) then
+	rc:RegisterFlagEffect(79029454,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(79029454,5)) 
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029454,7)) 
+	Duel.Hint(HINT_MESSAGE,0,aux.Stringid(79029454,4))  
+	else 
 	rc:RegisterFlagEffect(79029349,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(79029349,0))
+	Debug.Message("热身完毕！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029349,2))
+	end
 end
 function c79029349.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

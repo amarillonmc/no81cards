@@ -21,7 +21,7 @@ function c79029430.initial_effect(c)
 	--change lp 
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetTarget(c79029430.cltg)
 	e3:SetOperation(c79029430.clop)
 	c:RegisterEffect(e3)  
@@ -44,7 +44,7 @@ function c79029430.ovfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_CYBERSE) and c:IsType(TYPE_DUAL)
 end
 function c79029430.cltg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end  
+	if chk==0 then return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) end  
 end
 function c79029430.clop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnPlayer()~=tp and Duel.SelectYesNo(tp,aux.Stringid(79029430,1)) then

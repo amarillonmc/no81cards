@@ -90,18 +90,15 @@ end
 function cm.cfilter(c,e)
 	return bit.band(c:GetPreviousLocation(),LOCATION_GRAVE+LOCATION_REMOVED)>0 and c:IsRace(RACE_FAIRY) and c:IsLevelBelow(1) and (not c:IsReason(REASON_EFFECT) or c:GetReasonEffect():GetHandler()~=e:GetHandler())
 end
-function cm.tdfilter11(c)
-	return true
-end
 function cm.tdcon1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,e)
 end
 function cm.tdtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ct=eg:FilterCount(cm.cfilter,nil,e)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(cm.tdfilter11,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,ct,nil) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,ct,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,cm.tdfilter11,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,ct,ct,nil)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,ct,ct,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,ct)
 end

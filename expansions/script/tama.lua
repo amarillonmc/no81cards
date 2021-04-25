@@ -2,6 +2,7 @@ tama=tama or {}
 
 --[[To use this, have to add
 xpcall(function() require("expansions/script/c" + "code") end,function() require("script/c" + "code") end) ]]
+TAMA_THEME_CODE=13254060
 tama.loaded_metatable_list=tama.loaded_metatable_list or {}
 function tama.load_metatable(code)
 	local m1=_G["c"..code]

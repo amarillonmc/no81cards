@@ -13,10 +13,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetHandler():IsSetCard(0x93a) and bit.band(r,REASON_EFFECT)~=0
+	return re and re:GetHandler():IsSetCard(0x92b) and bit.band(r,REASON_EFFECT)~=0
 end
 function cm.filter(c)
-	return c:IsSetCard(0x93a) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and not c:IsCode(m)
+	return c:IsSetCard(0x92b) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and not c:IsCode(m)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil) and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)==0 end

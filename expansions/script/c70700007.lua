@@ -13,11 +13,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetHandler():IsSetCard(0x93a)
+	return re and re:GetHandler():IsSetCard(0x92b)
 end
 function cm.filter(c,e,tp)
 	if c:IsCode(m) and Duel.GetFlagEffect(tp,m)~=0 then return false end
-	return c:IsSetCard(0x93a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
+	return c:IsSetCard(0x92b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,2,nil,e,tp) and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)==0 and not Duel.IsPlayerAffectedByEffect(tp,59822133) end

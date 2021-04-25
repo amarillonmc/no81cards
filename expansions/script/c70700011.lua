@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0 and Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_GRAVE,0,nil,0x93a):GetClassCount(Card.GetCode())>=6
+	return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0 and Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_GRAVE,0,nil,0x92b):GetClassCount(Card.GetCode())>=6
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end

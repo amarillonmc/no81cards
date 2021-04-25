@@ -5,7 +5,7 @@ xpcall(function() require("expansions/script/tama") end,function() require("scri
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -28,41 +28,19 @@ function cm.initial_effect(c)
 	cm[c]=elements
 	
 end
-function cm.desfilter(c)
-	return c:IsFaceup() and c:IsDestructable()
-end
-function cm.tgfilter(c)
-	return c:IsSetCard(0x356) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
-end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,2,nil) end
-	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local tg=g:GetMinGroup(Card.GetAttack)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tg,1,0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.dFilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.dFilter(c)
+	return tama.tamas_isExistElement(c,TAMA_ELEMENT_FIRE)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local ct=0
-	if g:GetCount()>0 then
-		local tg=g:GetMinGroup(Card.GetAttack)
-		if tg:GetCount()>1 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local sg=tg:Select(tp,1,1,nil)
-			Duel.HintSelection(sg)
-			local tc=sg:GetFirst()
-			local atk=tc:IsFaceup() and tc:GetAttack() or 0
-			ct=Duel.Destroy(sg,REASON_EFFECT)
-		else
-			local tc=tg:GetFirst()
-			local atk=tc:IsFaceup() and tc:GetAttack() or 0
-			ct=Duel.Destroy(tg,REASON_EFFECT)
-		end
-	end
-	if ct>0 and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,2,nil) then
+	local ct=Duel.DiscardHand(tp,cm.dFilter,1,2,REASON_EFFECT+REASON_DISCARD)
+	if ct>0 then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,2,2,nil)
-		Duel.SendtoGrave(sg,REASON_EFFECT)
+		Duel.Draw(tp,ct,REASON_EFFECT)
 	end
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)

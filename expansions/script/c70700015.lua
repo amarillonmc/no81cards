@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x93a) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsCode(m) and c:IsAbleToHand()
+	return c:IsSetCard(0x92b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -78,7 +78,7 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x93a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)
+	return c:IsSetCard(0x92b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
@@ -110,5 +110,5 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.splimit(e,c)
-	return not c:IsSetCard(0x93a)
+	return not c:IsSetCard(0x92b)
 end

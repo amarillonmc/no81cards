@@ -49,7 +49,7 @@ function c79029043.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(c79029043.sprfilter,tp,LOCATION_HAND+LOCATION_REMOVED+LOCATION_ONFIELD,0,nil)
-	return g:CheckSubGroup(c79029043.fselect,2,2,tp)
+	return g:CheckSubGroup(c79029043.fselect,2,2,tp) and (c:IsLocation(LOCATION_HAND) or (c:IsLocation(LOCATION_GRAVE) and Duel.IsPlayerAffectedByEffect(tp,79029451)))
 end
 function c79029043.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(c79029043.sprfilter,tp,LOCATION_HAND+LOCATION_REMOVED+LOCATION_ONFIELD,0,nil)

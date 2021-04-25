@@ -22,7 +22,7 @@ function cm.limit(e,c,tp,r)
 	return c==e:GetHandler()
 end
 function cm.filter(c)
-	return c:IsSetCard(0x93a) and c:IsDiscardable()
+	return c:IsSetCard(0x92b) and c:IsDiscardable()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)~=0 and e:GetHandler():IsDiscardable() and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,e:GetHandler()) end

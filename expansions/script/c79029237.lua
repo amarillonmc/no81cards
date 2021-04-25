@@ -3,7 +3,7 @@ function c79029237.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	 --synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
-	c:EnableReviveLimit()	  
+	c:EnableReviveLimit()	 
 	--splimit
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
@@ -70,20 +70,17 @@ end
 function c79029237.spfilter(c,e,tp)
 	return c:IsSetCard(0xa900) and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c79029237.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_HAND+LOCATION_GRAVE) and chkc:IsControler(tp) and c79029237.spfilter(chkc,e,tp) end
+function c79029237.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	and Duel.IsExistingMatchingCard(c79029237.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	Debug.Message("医疗支援已介入。")
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029237,1))
-	local g=Duel.SelectMatchingCard(tp,c79029237.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c79029237.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
+	Debug.Message("医疗支援已介入。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029237,1))
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local tc=Duel.SelectMatchingCard(tp,c79029237.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
 	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029237.pencon(e,tp,eg,ep,ev,re,r,rp)

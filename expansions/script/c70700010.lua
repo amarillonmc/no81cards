@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x93a)
+	return c:IsSetCard(0x92b)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end

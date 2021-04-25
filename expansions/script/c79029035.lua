@@ -46,7 +46,6 @@ function c79029035.initial_effect(c)
 	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_UNCOPYABLE)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCode(EFFECT_IMMUNE_EFFECT)
-	e5:SetCondition(c79029035.immcon)
 	e5:SetValue(c79029035.efilter)
 	c:RegisterEffect(e5)
 end
@@ -90,10 +89,8 @@ function c79029035.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029035,1)) 
 	end
 end
-function c79029035.immcon(e)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_NORMAL)
-end
 function c79029035.efilter(e,te)
 	if te:IsActiveType(TYPE_SPELL+TYPE_TRAP) then return true
 	else return aux.qlifilter(e,te) end
 end
+

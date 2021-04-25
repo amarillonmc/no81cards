@@ -27,7 +27,7 @@ function c29065608.mttg(e,c)
 end
 function c29065608.mtval(e,c)
 	if not c then return false end
-	return c:IsLevel(8) and c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_DARK)
+	return c:IsCode(29065607)
 end
 function c29065608.filter(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c))

@@ -18,29 +18,31 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DISABLE)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_CHAIN_SOLVING)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EFFECT_DESTROY_REPLACE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(cm.negcon)
-	e3:SetOperation(cm.negop)
+	e3:SetTarget(cm.reptg)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EFFECT_DESTROY_REPLACE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetDescription(aux.Stringid(m,0))
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetTarget(cm.reptg)
 	e4:SetCountLimit(1,m)
+	e4:SetCost(cm.thcost)
+	e4:SetTarget(cm.thtg)
+	e4:SetOperation(cm.thop)
 	c:RegisterEffect(e4)
+	--spsummon
 	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e5:SetDescription(aux.Stringid(m,1))
+	e5:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCountLimit(1,m+100000000)
-	e5:SetCost(cm.thcost)
-	e5:SetTarget(cm.thtg)
-	e5:SetOperation(cm.thop)
+	e5:SetTarget(cm.sptg2)
+	e5:SetOperation(cm.spop2)
 	c:RegisterEffect(e5)
 end
 function cm.splimit(e,se,sp,st)
@@ -57,22 +59,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_MZONE,0,1,1,nil,tp,e:GetHandler())
 	Duel.Release(g,REASON_COST)
-end
-function cm.negfilter(c)
-	if c:IsType(TYPE_XYZ+TYPE_LINK) then return true end
-	return not c:IsLevel(1)
-end
-function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)	
-	return re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and g and g:IsContains(e:GetHandler()) and Duel.IsChainDisablable(ev) and Duel.GetMatchingGroupCount(cm.negfilter,tp,LOCATION_MZONE,0,nil)==0
-end
-function cm.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
-		if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
-			Duel.BreakEffect()
-			Duel.Destroy(re:GetHandler(),REASON_EFFECT)
-		end
-	end
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -108,10 +94,36 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit)
+	e1:SetTarget(cm.splimit2)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function cm.splimit(e,c)
+function cm.splimit2(e,c)
 	return not c:IsLevel(1)
+end
+function cm.tgfilter1(c)
+	return c:IsFaceup() and c:IsLevel(1) and c:IsAbleToGrave()
+end
+function cm.tgfilter2(g,e,tp,mc)
+	return g:IsContains(mc) and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,g)
+end
+function cm.spfilter2(c,e,tp,mg)
+	return c:IsCode(25000155) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+		and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
+end
+function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(cm.tgfilter1,tp,LOCATION_MZONE,0,nil)
+	if chk==0 then return g:CheckSubGroup(cm.tgfilter2,2,#g,e,tp,e:GetHandler()) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	local g=Duel.GetMatchingGroup(cm.tgfilter1,tp,LOCATION_MZONE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local tg=g:SelectSubGroup(tp,cm.tgfilter2,false,2,#g,e,tp,e:GetHandler())
+	if #tg>0 and Duel.SendtoGrave(tg,REASON_EFFECT)~=0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,cm.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,nil)
+		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
+	end
 end

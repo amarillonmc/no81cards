@@ -37,6 +37,7 @@ end
 function c79029354.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.SelectMatchingCard(tp,c79029354.spfil,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	if e:GetLabelObject()==nil then return end
 	if e:GetLabelObject():GetSummonLocation()==LOCATION_EXTRA and Duel.IsExistingMatchingCard(c79029354.thfil,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(79029354,0)) then
 	local xg=Duel.SelectMatchingCard(tp,c79029354.thfil,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.SendtoHand(xg,tp,REASON_EFFECT)

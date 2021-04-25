@@ -3,7 +3,7 @@ function c79029433.initial_effect(c)
 	--fusion summon
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,c79029433.ffilter,3,false)
-	aux.AddContactFusionProcedure(c,Card.IsAbleToDeckOrExtraAsCost,LOCATION_MZONE+LOCATION_GRAVE,0,aux.tdcfop(c)):SetValue(1) 
+	aux.AddContactFusionProcedure(c,Card.IsAbleToDeckOrExtraAsCost,LOCATION_MZONE+LOCATION_REMOVED,0,aux.tdcfop(c)):SetValue(1) 
 	--copy
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -59,13 +59,17 @@ end
 function c79029433.ffilter(c,fc,sub,mg,sg)
 	return (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode())) and (not sg or sg:IsExists(Card.IsCode,1,nil,79029359)) and c:IsType(TYPE_MONSTER)
 end
+function c79029433.cpfil(c)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa900)
+end
 function c79029433.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) or e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL+1)) and e:GetHandler():GetMaterial():IsExists(Card.IsType,1,nil,TYPE_MONSTER) end
+	if chk==0 then return (e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) or e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL+1)) and e:GetHandler():GetMaterial():IsExists(c79029433.cpfil,1,nil) end
 end
 function c79029433.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local mg=e:GetHandler():GetMaterial():Filter(Card.IsType,nil,TYPE_MONSTER)
-	local code=mg:Select(tp,1,1,nil):GetFirst():GetCode()
+	local tc=mg:FilterSelect(tp,c79029433.cpfil,1,1,nil):GetFirst()
+	local code=tc:GetCode()
 	if code==79029025 or code==79029215 then 
 	Debug.Message("赤霄的影子萦绕着我的剑。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029433,3))
@@ -73,7 +77,7 @@ function c79029433.cpop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("行动开始。我们走！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029433,2))
 	end
-	c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
+	Duel.MajesticCopy(c,tc)
 	e:GetHandler():SetHint(CHINT_CARD,code)
 end
 function c79029433.nsfil(c)

@@ -3,6 +3,13 @@ function c79029444.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,nil,2,99,c79029444.lcheck)
 	c:EnableReviveLimit()
+	--add code
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_ADD_CODE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetValue(79029041)
+	c:RegisterEffect(e0) 
 	--Overlay
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)

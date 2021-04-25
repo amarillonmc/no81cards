@@ -63,7 +63,7 @@ function c9910023.tdop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(tg,nil,0,REASON_EFFECT)
 	else
 		if tg:FilterCount(Card.IsAbleToDeck,nil)==2
-			and Duel.SelectOption(tp,aux.Stringid(9910023,2),aux.Stringid(9910023,3))==0 then
+			and Duel.SelectOption(tp,aux.Stringid(9910023,0),aux.Stringid(9910023,1))==0 then
 			Duel.SendtoDeck(tg,nil,0,REASON_EFFECT)
 		else
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)

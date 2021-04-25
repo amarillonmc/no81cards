@@ -65,8 +65,10 @@ end
 function c9910457.rcop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910457)
 	if Duel.GetLP(tp)<e:GetLabel() then
-		local s=Duel.Recover(tp,e:GetLabel()-Duel.GetLP(tp),REASON_EFFECT)
-		local d=math.floor(s/2000)
+		local s1=e:GetLabel()-Duel.GetLP(tp)
+		if Duel.IsPlayerAffectedByEffect(tp,9910467) then s1=2*s1 end
+		local s2=Duel.Recover(tp,s1,REASON_EFFECT)
+		local d=math.floor(s2/2000)
 		if d<=0 then return end
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

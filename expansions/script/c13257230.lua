@@ -16,12 +16,14 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(cm.spcon)
-	e1:SetOperation(cm.spop)
+	e1:SetCondition(cm.sprcon)
+	e1:SetTarget(cm.sprtg)
+	e1:SetOperation(cm.sprop)
 	c:RegisterEffect(e1)
 	--deck equip
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_EQUIP)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -46,19 +48,29 @@ function cm.initial_effect(c)
 	cm[c]=eflist
 	
 end
-function cm.filter(c)
-	return c:IsSetCard(0x353) and c:IsAbleToGraveAsCost()
+function cm.sprfilter(c)
+	return c:IsLocation(LOCATION_HAND) and c:IsSetCard(0x353) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
 end
-function cm.spcon(e,c)
+function cm.sprcon(e,c)
 	if c==nil then return true end
-	local hg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_HAND,0,c)
-	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0
-		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and hg:GetCount()>=3
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(cm.sprfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	return g:CheckSubGroup(aux.mzctcheck,3,3,tp)
 end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND,0,3,3,c)
-	Duel.SendtoGrave(g,REASON_COST)
+function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(cm.sprfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local sg=g:SelectSubGroup(tp,aux.mzctcheck,true,3,3,tp)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.Release(g,REASON_COST)
+	g:DeleteGroup()
 end
 function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x354) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)

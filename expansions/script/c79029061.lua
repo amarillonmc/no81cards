@@ -66,13 +66,6 @@ function c79029061.operation1(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetValue(1)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e2) 
-	local a=e:GetHandler():GetAttack()
-	local b=e:GetHandler():GetDefense()
-	if a>=b then
-	Duel.Damage(1-tp,a-b,REASON_EFFECT)
-	elseif a<=b then
-	Duel.Damage(1-tp,b-a,REASON_EFFECT)
-end
 end
 function c79029061.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP() or (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)

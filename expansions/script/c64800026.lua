@@ -2,6 +2,9 @@
 local m=64800026
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+ --synchro summon
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	c:EnableReviveLimit()
 	 --equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -83,7 +86,7 @@ function cm.eqlimit(e,c)
 end
 
 function cm.tgfilter(c,tp)
-	return c:IsControler(tp) and c:IsType(TYPE_SYNCHRO) and c:IsAbleToExtra() 
+	return c:IsControler(tp) and c:IsType(TYPE_SYNCHRO) and c:IsAbleToExtra()  and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.tdcon1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.tgfilter,1,nil,tp) and eg:Filter(cm.tgfilter,nil,tp):GetCount()==1

@@ -28,10 +28,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.drfilter_1(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x93a) and c:IsAbleToHandAsCost()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x92b) and c:IsAbleToHandAsCost()
 end
 function cm.drfilter_2(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x93a) and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x92b) and c:IsAbleToGraveAsCost()
 end
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cost_g_1=Duel.GetMatchingGroup(cm.drfilter_1,tp,LOCATION_GRAVE,0,nil)
@@ -60,7 +60,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x93a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)
+	return c:IsSetCard(0x92b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
@@ -85,5 +85,5 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.splimit(e,c)
-	return not c:IsSetCard(0x93a)
+	return not c:IsSetCard(0x92b)
 end

@@ -1,108 +1,95 @@
---塞雷娅
+--女武神永不止步
 function c9910445.initial_effect(c)
-	--link summon
-	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,c9910445.matfilter,2)
+	--activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_DECKDES+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,9910445+EFFECT_COUNT_CODE_OATH)
+	e1:SetTarget(c9910445.target)
+	e1:SetOperation(c9910445.activate)
+	c:RegisterEffect(e1)
+	c9910445.act_effect=e1
 	--destroy replace
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_DESTROY_REPLACE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,6284177)
-	e1:SetTarget(c9910445.reptg)
-	e1:SetValue(c9910445.repval)
-	e1:SetOperation(c9910445.repop)
-	c:RegisterEffect(e1)
-	--recover
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(c9910445.atkcon)
-	e2:SetOperation(c9910445.atkop)
+	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_DESTROY_REPLACE)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetCountLimit(1,9910446)
+	e2:SetTarget(c9910445.reptg)
+	e2:SetValue(c9910445.repval)
+	e2:SetOperation(c9910445.repop)
 	c:RegisterEffect(e2)
-	--disable
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DISABLE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
-	e1:SetCondition(c9910445.discon)
-	e1:SetTarget(c9910445.distg)
-	e1:SetOperation(c9910445.disop)
-	c:RegisterEffect(e1)
 end
-function c9910445.matfilter(c)
-	return c:GetSummonLocation()==LOCATION_EXTRA
+function c9910445.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_HAND,0,e:GetHandler())
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=g:GetCount()
+		and g:IsExists(Card.IsAbleToDeck,1,nil) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c9910445.thfilter(g)
+	local g1=g:Filter(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)
+	local g2=g:Filter(Card.IsType,nil,TYPE_MONSTER)
+	return g1:GetCount()<=1 and (g2:GetCount()==0 or g2:GetClassCount(Card.GetLevel)==g2:GetCount())
+end
+function c9910445.activate(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk~=9910445 and not e:GetHandler():IsRelateToEffect(e) then return end
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	if g:GetCount()==0 then return end
+	if Duel.SendtoDeck(g,nil,0,REASON_EFFECT)==0 then return end
+	local og=g:Filter(Card.IsLocation,nil,LOCATION_DECK)
+	if og:IsExists(Card.IsControler,1,nil,tp) then Duel.ShuffleDeck(tp) end
+	if og:IsExists(Card.IsControler,1,nil,1-tp) then Duel.ShuffleDeck(1-tp) end
+	local ct=og:GetCount()
+	if ct<=0 or not Duel.IsPlayerCanDiscardDeck(tp,2*ct) then return end
+	Duel.ConfirmDecktop(tp,2*ct)
+	local dg=Duel.GetDecktopGroup(tp,2*ct)
+	if dg:GetCount()==0 then return end
+	Duel.DisableShuffleCheck()
+	local tg=dg:Filter(Card.IsAbleToHand,nil)
+	local thct=0
+	if tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910445,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=tg:SelectSubGroup(tp,c9910445.thfilter,false,1,tg:GetCount())
+		thct=Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+		dg:Sub(sg)
+	end
+	Duel.Remove(dg,POS_FACEDOWN,REASON_EFFECT)
+	if thct>=ct and Duel.GetTurnPlayer()==tp then
+		Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
+		Duel.SkipPhase(tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
+		Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_BP)
+		e1:SetTargetRange(1,0)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+	end
 end
 function c9910445.repfilter(c)
-	return c:IsLocation(LOCATION_ONFIELD) and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+	return c:IsLocation(LOCATION_ONFIELD) and c:IsFaceup()
+		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function c9910445.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(c9910445.repfilter,1,nil)
-		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+	local c=e:GetHandler()
+	if chk==0 then return eg:IsExists(c9910445.repfilter,1,c)
+		and c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED) end
+	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function c9910445.repval(e,c)
 	return c9910445.repfilter(c)
 end
 function c9910445.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910445)
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
-end
-function c9910445.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	local a=Duel.GetAttacker()
-	if a:IsControler(1-tp) then a=Duel.GetAttackTarget() end
-	return a
-end
-function c9910445.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-	if tg:GetCount()>0 then
-		local sc=tg:GetFirst()
-		while sc do
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(500)
-			sc:RegisterEffect(e1)
-			sc=tg:GetNext()
-		end
-	end
-end
-function c9910445.discon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc~=c and not c:IsStatus(STATUS_BATTLE_DESTROYED)
-end
-function c9910445.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.disfilter1,tp,0,LOCATION_MZONE,1,e:GetHandler()) end
-	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,0,LOCATION_MZONE,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
-	Duel.SetChainLimit(c9910445.chlimit)
-end
-function c9910445.chlimit(e,ep,tp)
-	return tp==ep
-end
-function c9910445.disop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,0,LOCATION_MZONE,nil)
-	local tc=g:GetFirst()
-	while tc do
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		e2:SetValue(RESET_TURN_SET)
-		tc:RegisterEffect(e2)
-		tc=g:GetNext()
+	Duel.Destroy(e:GetHandler(),REASON_EFFECT+REASON_REPLACE)
+	local te=c9910445.act_effect
+	local op=te:GetOperation()
+	if op and Duel.SelectYesNo(tp,aux.Stringid(9910445,1)) then
+		op(e,tp,eg,ep,ev,re,r,rp,9910445)
 	end
 end

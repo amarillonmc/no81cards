@@ -38,8 +38,8 @@ end
 function c40009545.imcon(e)
 	return e:GetHandler():GetOverlayCount()>0
 end
-function c40009545.efilter(e,te)
-	return te:GetOwner()~=e:GetOwner()
+function c40009545.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function c40009545.atcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

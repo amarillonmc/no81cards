@@ -1,0 +1,98 @@
+--荒古鸟 冥噬妖鹏
+local m=11451497
+local cm=_G["c"..m]
+function cm.initial_effect(c)
+	--atk up
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_MOVE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(cm.atkcon)
+	e1:SetOperation(cm.atkop)
+	c:RegisterEffect(e1)
+	--effect1 gain
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_ONFIELD)
+	e2:SetCode(EFFECT_SELF_DESTROY)
+	e2:SetCondition(cm.sdescon)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(0,LOCATION_ONFIELD)
+	e3:SetCondition(function(e) return e:GetHandler():IsAttackAbove(1800) end)
+	e3:SetTarget(cm.tg)
+	e3:SetLabelObject(e2)
+	c:RegisterEffect(e3)
+	--effect2 gain
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+	e4:SetValue(LOCATION_REMOVED)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetTargetRange(0,LOCATION_ONFIELD)
+	e5:SetCondition(function(e) return e:GetHandler():IsAttackAbove(3600) end)
+	e5:SetTarget(cm.tg)
+	e5:SetLabelObject(e4)
+	c:RegisterEffect(e5)
+	--effect3 gain
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCode(EVENT_CHAIN_SOLVING)
+	e6:SetRange(LOCATION_ONFIELD)
+	e6:SetCondition(cm.discon)
+	e6:SetOperation(cm.disop)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetTargetRange(0,LOCATION_ONFIELD)
+	e7:SetCondition(function(e) return e:GetHandler():IsAttackAbove(5400) end)
+	e7:SetTarget(cm.tg)
+	e7:SetLabelObject(e6)
+	c:RegisterEffect(e7)
+	--become effect
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_FIELD)
+	e8:SetCode(EFFECT_ADD_TYPE)
+	e8:SetValue(TYPE_EFFECT)
+	e8:SetRange(LOCATION_MZONE)
+	e8:SetTargetRange(0,LOCATION_MZONE)
+	e8:SetCondition(function(e) return e:GetHandler():IsAttackAbove(1800) end)
+	e8:SetTarget(cm.chtg)
+	c:RegisterEffect(e8)
+end
+function cm.filter(c,tp)
+	return c:IsPreviousLocation(LOCATION_GRAVE) and c:GetPreviousControler()==tp
+end
+function cm.tg(e,c)
+	return c:IsFaceup()
+end
+function cm.chtg(e,c)
+	return c:IsFaceup() and not c:IsType(TYPE_EFFECT)
+end
+function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.filter,1,nil,1-tp)
+end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_COPY_INHERIT)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(900)
+	c:RegisterEffect(e1)
+end
+function cm.sdescon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_END and Duel.GetTurnPlayer()~=e:GetHandlerPlayer()
+end
+function cm.discon(e,tp,eg,ep,ev,re,r,rp)
+	return re:GetHandler()==e:GetHandler()
+end
+function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
+end

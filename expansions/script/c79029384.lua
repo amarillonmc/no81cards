@@ -36,8 +36,15 @@ function c79029384.initial_effect(c)
 		c79029384.global_check=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAIN_DISABLED)
+		ge1:SetCountLimit(1,29029384)
+		ge1:SetCondition(c79029384.checkcon)
+		ge1:SetOperation(c79029384.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_CHAIN_NEGATED)
-		ge1:SetCountLimit(1,79029384)
+		ge1:SetCountLimit(1,39029384)
 		ge1:SetCondition(c79029384.checkcon)
 		ge1:SetOperation(c79029384.checkop)
 		Duel.RegisterEffect(ge1,0)
@@ -58,7 +65,7 @@ function c79029384.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029384.spfilter(c,ft)
-	return c:IsFaceup() and c:IsAbleToRemoveAsCost() and (ft>0 or c:GetSequence()<5) 
+	return c:IsFaceup() and c:IsAbleToGraveAsCost() and (ft>0 or c:GetSequence()<5) 
 end
 function c79029384.hspcon(e,c)
 	if c==nil then return true end
@@ -68,9 +75,9 @@ function c79029384.hspcon(e,c)
 end
 function c79029384.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c79029384.spfilter,tp,LOCATION_MZONE,0,1,1,nil,ft)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	Duel.SendtoGrave(g,REASON_COST)
 	Debug.Message("小僧来也！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029384,1))
 end

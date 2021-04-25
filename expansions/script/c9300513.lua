@@ -56,7 +56,7 @@ function c9300513.thop(e,tp,eg,ep,ev,re,r,rp)
 	if og:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local bg=og:Select(tp,1,1,nil)
-		Duel.SendtoHand(bg,tp,REASON_EFFECT)
+		Duel.SendtoHand(bg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,bg)
 	end
 end

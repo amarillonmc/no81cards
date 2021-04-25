@@ -7,16 +7,9 @@ function c9910240.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMING_END_PHASE)
-	e1:SetCondition(c9910240.condition)
 	e1:SetTarget(c9910240.target)
 	e1:SetOperation(c9910240.activate)
 	c:RegisterEffect(e1)
-end
-function c9910240.cfilter(c)
-	return c:GetSequence()<5 and (c:IsFacedown() or not c:IsRace(RACE_PSYCHO))
-end
-function c9910240.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c9910240.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9910240.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_REMOVED) end
