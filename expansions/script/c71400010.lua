@@ -1,4 +1,4 @@
---梦之书中的脑女
+--异梦书中的脑女
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400010.initial_effect(c)
 	--xyz summon
@@ -85,7 +85,6 @@ function c71400010.operation1(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2,true)
 		tc=og:GetNext()
 	end
-	Duel.BreakEffect()
 	Duel.SetLP(tp,Duel.GetLP(tp)-atk/2)
 end
 function c71400010.condition2(e,tp,eg,ep,ev,re,r,rp)

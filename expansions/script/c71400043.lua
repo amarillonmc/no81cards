@@ -1,4 +1,4 @@
---异梦之海的潜水员
+--异梦海底的潜水员-橘黄子
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400043.initial_effect(c)
 	c:SetSPSummonOnce(71400043)
@@ -28,7 +28,21 @@ function c71400043.initial_effect(c)
 	e2:SetCountLimit(1)
 	e2:SetCondition(c71400043.con2)
 	e2:SetOperation(c71400043.op2)
+	e2:SetTarget(c71400043.tg2)
 	c:RegisterEffect(e2)
+	--banish
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(71400043,2))
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1)
+	e3:SetCondition(c71400043.con3)
+	e3:SetOperation(c71400043.op3)
+	e3:SetCost(c71400043.cost3)
+	e3:SetTarget(c71400043.tg3)
+	c:RegisterEffect(e3)
+	--[[
 	--tohand
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(71400043,2))
@@ -39,6 +53,7 @@ function c71400043.initial_effect(c)
 	e3:SetTarget(c71400043.tg3)
 	e3:SetOperation(c71400043.op3)
 	c:RegisterEffect(e3)
+	--]]
 end
 function c71400043.matfilter(c)
 	return c:IsLinkType(TYPE_EFFECT) and not c:IsLinkType(TYPE_LINK)
@@ -47,7 +62,7 @@ function c71400043.con1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c71400043.filter1(c)
-	return c:IsSetCard(0x5714) and c:IsAbleToHand()
+	return c:IsSetCard(0xd714) and c:IsAbleToHand()
 end
 function c71400043.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71400043.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
@@ -61,19 +76,43 @@ function c71400043.op1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c71400043.filter2(c)
-	return c:GetSummonLocation()==LOCATION_EXTRA
-end
-function c71400043.filter2a(c)
-	return c:IsFaceup() and c:IsType(TYPE_LINK)
-end
 function c71400043.con2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c71400043.filter2,tp,LOCATION_MZONE,0,nil)
-	return Duel.GetTurnPlayer()~=tp and g:GetCount()>0 and g:FilterCount(c71400043.filter2a,nil)==g:GetCount()
+	return not (yume.RustFlag or e:GetHandler():IsStatus(STATUS_SPSUMMON_TURN))
+end
+function c71400043.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		local num=0
+		if fc and fc:IsFaceup() then num=fc:GetCode() end
+		return yume.YumeFieldCheck(tp,num,2,LOCATION_GRAVE+LOCATION_DECK)
+	end
 end
 function c71400043.op2(e,tp,eg,ep,ev,re,r,rp)
-	yume.FieldActivation(tp,nil,2)
+	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+	local num=0
+	if fc and fc:IsFaceup() then num=fc:GetCode() end
+	yume.FieldActivation(tp,num,2,LOCATION_GRAVE+LOCATION_DECK)
 end
+function c71400043.con3(e,tp,eg,ep,ev,re,r,rp)
+	return yume.RustFlag
+end
+function c71400043.filter3(c,tp)
+	return c:IsAbleToRemove(tp,POS_FACEDOWN) and not(c:IsLocation(LOCATION_FZONE) and c:IsType(TYPE_FIELD) and c:IsSetCard(0x3714) and c:IsFaceup() and c:IsControler(tp))
+end
+function c71400043.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost(POS_FACEDOWN) end
+	Duel.Remove(e:GetHandler(),POS_FACEDOWN,REASON_COST)
+end
+function c71400043.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400043.filter3,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp) end
+	local g=Duel.GetMatchingGroup(c71400043.filter3,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
+end
+function c71400043.op3(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c71400043.filter3,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
+	Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
+end
+--[[
 function c71400043.filter3a(c)
 	return c:IsSetCard(0x5714) and c:IsAbleToDeck() and not c:IsPublic()
 end
@@ -102,3 +141,4 @@ function c71400043.op3(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+--]]

@@ -1,4 +1,4 @@
---妄想梦物-黑电话
+--幻异梦物-黑电话
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400026.initial_effect(c)
 	--Activate

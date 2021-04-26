@@ -28,7 +28,8 @@ function c71400041.filter1c(c)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_LINK) and c:IsLinkState() and c:IsAbleToRemoveAsCost()
 end
 function c71400041.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400041.filter1c,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400041.filter1c,tp,LOCATION_MZONE,0,1,nil) and Duel.CheckLPCost(tp,500) end
+	Duel.PayLPCost(tp,500)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local tc=Duel.SelectMatchingCard(tp,c71400041.filter1c,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
 	if Duel.Remove(tc,POS_FACEUP,REASON_COST+REASON_TEMPORARY)~=0 then

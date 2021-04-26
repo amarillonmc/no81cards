@@ -1,4 +1,4 @@
---梦之方块间的围巾少女
+--异梦方块的女-围巾子
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400029.initial_effect(c)
 	--summon limit

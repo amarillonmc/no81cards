@@ -1,17 +1,16 @@
---妄想梦境-梦湖回廊
+--幻异梦境-梦湖回廊
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400015.initial_effect(c)
 	--Activate
 	--See AddYumeFieldGlobal
-	--spsummon
+	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71400015,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_FZONE)
 	e1:SetCountLimit(1)
-	e1:SetCost(c71400015.cost)
 	e1:SetTarget(c71400015.target1)
 	e1:SetOperation(c71400015.operation1)
 	c:RegisterEffect(e1)
@@ -28,33 +27,21 @@ function c71400015.initial_effect(c)
 	--self limitation & field activation
 	yume.AddYumeFieldGlobal(c,71400015,1)
 end
-function c71400015.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_DISCARD+REASON_COST,nil)
-end
-function c71400015.filter1(c,e,tp)
-	return c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c71400015.filter1(c)
+	return c:IsSetCard(0xe714) and c:IsAbleToHand()
 end
 function c71400015.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c71400015.filter1(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c71400015.filter1,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c71400015.filter1(chkc) end
+	if chk==0 then Duel.IsExistingTarget(c71400015.filter1,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectTarget(tp,c71400015.filter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_GRAVE)
 end
 function c71400015.operation1(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CANNOT_ATTACK)
-			e1:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
-			Duel.SpecialSummonComplete()
-		end
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end
 function c71400015.target2(e,tp,eg,ep,ev,re,r,rp,chk)

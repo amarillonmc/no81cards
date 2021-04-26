@@ -68,16 +68,15 @@ function c71400049.synfilter2(c)
 end
 function c71400049.con2(e,tp,eg,ep,ev,re,r,rp)
 	local ct=eg:FilterCount(c71400049.synfilter2,nil)
-	if ct>0 then e:SetLabel(ct) end
 	return ct>0
 end
 function c71400049.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_GRAVE)
 end
 function c71400049.op2(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local ct=e:GetLabel() or 0
+	local ct=eg:FilterCount(c71400049.synfilter2,nil)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g=Duel.GetMatchingGroup(c71400049.filter1,tp,LOCATION_GRAVE,0,nil,e,tp)
 	ct=math.min(ct,ft,g:GetCount())

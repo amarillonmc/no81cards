@@ -73,6 +73,7 @@ function c71400027.op1(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(0)
 		e2:SetReset(RESET_EVENT+0x1fe0000)
 		sc:RegisterEffect(e2,true)
+		Duel.SpecialSummonComplete()
 		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 		if g:GetCount()==2 then
 			local tc=g:GetFirst()
@@ -85,8 +86,8 @@ function c71400027.op1(e,tp,eg,ep,ev,re,r,rp)
 			end
 			Duel.Overlay(sc,g)
 		end
-		Duel.SpecialSummonComplete()
 	end
+	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
