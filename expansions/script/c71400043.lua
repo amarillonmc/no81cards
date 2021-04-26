@@ -77,7 +77,7 @@ function c71400043.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71400043.con2(e,tp,eg,ep,ev,re,r,rp)
-	return not (yume.RustFlag or e:GetHandler():IsStatus(STATUS_SPSUMMON_TURN))
+	return not (Duel.GetFlagEffect(tp,71400038)>0 or e:GetHandler():IsStatus(STATUS_SPSUMMON_TURN))
 end
 function c71400043.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -94,7 +94,7 @@ function c71400043.op2(e,tp,eg,ep,ev,re,r,rp)
 	yume.FieldActivation(tp,num,2,LOCATION_GRAVE+LOCATION_DECK)
 end
 function c71400043.con3(e,tp,eg,ep,ev,re,r,rp)
-	return yume.RustFlag
+	return Duel.GetFlagEffect(tp,71400038)>0
 end
 function c71400043.filter3(c,tp)
 	return c:IsAbleToRemove(tp,POS_FACEDOWN) and not(c:IsLocation(LOCATION_FZONE) and c:IsType(TYPE_FIELD) and c:IsSetCard(0x3714) and c:IsFaceup() and c:IsControler(tp))

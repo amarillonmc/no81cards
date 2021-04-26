@@ -49,6 +49,7 @@ function c71400020.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 		local flag=Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		local te=tc:GetActivateEffect()
+		te:UseCountLimit(tp,1,true)
 		local tep=tc:GetControler()
 		local cost=te:GetCost()
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end

@@ -61,7 +61,7 @@ function c71400038.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e4a=e1:Clone()
 	e4a:SetCode(EFFECT_CANNOT_DISEFFECT)
 	Duel.RegisterEffect(e4a,tp)
-	yume.RustFlag=true;
+	Duel.RegisterFlagEffect(tp,71400038,0,0,0)
 end
 function c71400038.con1(e,tp,eg,ep,ev,re,r,rp)
 	return ep==tp
