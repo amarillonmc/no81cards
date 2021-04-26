@@ -9,11 +9,10 @@ function c71400012.initial_effect(c)
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetValue(c71400012.filter1)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
 	--banish
 	local e2a=Effect.CreateEffect(c)
@@ -51,12 +50,11 @@ function c71400012.op2(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsActiveType(TYPE_EFFECT) or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	if g and g:IsContains(c) then
-		local rp=re:GetHandler()
 		local mg=Duel.GetMatchingGroup(Card.IsAbleToRemove,rp,LOCATION_MZONE,0,c,tp)
 		if mg:GetCount()==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local sg=mg:Select(tp,1,1,nil)
-		if Duel.Destroy(tc,REASON_EFFECT,LOCATION_REMOVED)>0 then
+		if Duel.Destroy(sg,REASON_EFFECT,LOCATION_REMOVED)>0 then
 			Duel.Damage(rp,2000,REASON_EFFECT)
 		end
 	end
