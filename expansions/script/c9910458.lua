@@ -55,6 +55,7 @@ function c9910458.spfilter(c,e,tp,zone)
 end
 function c9910458.seqfilter(c,tp,seq)
 	if not c:IsCanAddCounter(0x1950,1) then return false end
+	if c:IsControler(1-tp) and c:GetSequence()<5 then return false end
 	local cseq=c:GetSequence()
 	local cloc=c:GetLocation()
 	if cloc==LOCATION_SZONE and cseq>=5 then return false end
@@ -67,7 +68,7 @@ end
 function c9910458.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local zone=0
 	for i=0,4 do
-		if Duel.IsExistingMatchingCard(c9910458.seqfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,i) then
+		if Duel.IsExistingMatchingCard(c9910458.seqfilter,tp,LOCATION_ONFIELD,LOCATION_MZONE,1,nil,tp,i) then
 			zone=bit.replace(zone,0x1,i)
 		end
 	end
@@ -79,7 +80,7 @@ function c9910458.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local zone=0
 	for i=0,4 do
-		if Duel.IsExistingMatchingCard(c9910458.seqfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,i) then
+		if Duel.IsExistingMatchingCard(c9910458.seqfilter,tp,LOCATION_ONFIELD,LOCATION_MZONE,1,nil,tp,i) then
 			zone=bit.replace(zone,0x1,i)
 		end
 	end
@@ -87,7 +88,7 @@ function c9910458.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)~=0 and tc:IsOnField() then
 		local seq=tc:GetSequence()
-		local sg=Duel.GetMatchingGroup(c9910458.seqfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,tc,tp,seq)
+		local sg=Duel.GetMatchingGroup(c9910458.seqfilter,tp,LOCATION_ONFIELD,LOCATION_MZONE,tc,tp,seq)
 		for sc in aux.Next(sg) do sc:AddCounter(0x1950,1) end
 		local fid=e:GetHandler():GetFieldID()
 		tc:RegisterFlagEffect(9910466,RESET_EVENT+RESETS_STANDARD,0,1,fid)

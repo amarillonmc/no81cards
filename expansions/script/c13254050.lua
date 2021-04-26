@@ -56,7 +56,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 
 		if op==1 or t then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 			if g:GetCount()>0 then
 				Duel.Destroy(g,REASON_EFFECT)
 			end
@@ -66,7 +66,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if op==3 or t then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local g=Duel.SelectMatchingCard(tp,cm.rfilter,tp,0,LOCATION_GRAVE+LOCATION_EXTRA,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,cm.rfilter,tp,0,0+LOCATION_EXTRA,1,1,nil)
 			if g:GetCount()>0 then
 				Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 			end

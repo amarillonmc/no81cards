@@ -46,7 +46,7 @@ end
 function c9910460.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local g=Duel.GetMatchingGroup(c9910460.ctfilter,tp,0,LOCATION_ONFIELD,nil)
+		local g=Duel.GetMatchingGroup(c9910460.ctfilter,tp,0,LOCATION_MZONE,nil)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910460,0)) then
 			local tc=g:GetFirst()
 			while tc do

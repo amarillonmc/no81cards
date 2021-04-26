@@ -75,7 +75,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_MANA)>=3 then
 			Duel.BreakEffect()
 			--change damage
-			local e1=Effect.CreateEffect(c)
+			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetCode(EFFECT_CHANGE_DAMAGE)
 			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
