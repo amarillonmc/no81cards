@@ -29,14 +29,11 @@ function c22060140.initial_effect(c)
 	e2:SetOperation(c22060140.negop)
 	c:RegisterEffect(e2)
 end
-function c22060140.matfilter(c)
+function c22060140.thfilter(c)
 	return c:IsSetCard(0xff3) and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c22060140.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
-end
-function c22060140.thfilter(c)
-	return c:IsLevel(5) and c:IsRace(RACE_WARRIOR) and c:IsAbleToHand()
 end
 function c22060140.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22060140.thfilter,tp,LOCATION_DECK,0,1,nil) end
