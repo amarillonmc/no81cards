@@ -1,4 +1,4 @@
---黑白的异梦协奏
+--黑白异梦的协奏
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400051.initial_effect(c)
 	--Activate
@@ -12,10 +12,10 @@ function c71400051.initial_effect(c)
 	e1:SetDescription(aux.Stringid(71400051,0))
 	e1:SetCountLimit(1,71400051)
 	c:RegisterEffect(e1)
-	--destroy
+	--to grave
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400051,1))
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_CHAIN_NEGATED)
@@ -83,16 +83,18 @@ function c71400051.con2(e,tp,eg,ep,ev,re,r,rp)
 	return yume.YumeCon(e,tp) and de and dp~=tp and re:GetHandler():IsSetCard(0x714) and rp==tp
 end
 function c71400051.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_GRAVE,0,1,e:GetHandler(),0x717) and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,1,e:GetHandler(),0x717) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,nil) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,1-tp,LOCATION_ONFIELD+LOCATION_HAND)
 end
 function c71400051.op2(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetMatchingGroupCount(Card.IsSetCard,tp,LOCATION_GRAVE,0,1,nil,0x717)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+	if not yume.IsYumeFieldOnField(tp) then return end
+	local ct=Duel.GetMatchingGroupCount(Card.IsSetCard,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil,0x717)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
 	if ct>0 and g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=g:Select(tp,1,ct,nil)
 		Duel.HintSelection(dg)
-		Duel.Destroy(dg,REASON_EFFECT)
+		Duel.SendtoGrave(dg,REASON_EFFECT)
 	end
 end

@@ -1,4 +1,4 @@
---异梦之书的小管理员
+--小异梦书使-馆长女儿
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400042.initial_effect(c)
 	--summon limit
@@ -29,9 +29,9 @@ function c71400042.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetCost(c71400042.cost3)
 	e3:SetTarget(c71400042.tg3)
 	e3:SetOperation(c71400042.op3)
+	e3:SetCondition(c71400042.con3)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	c:RegisterEffect(e3)
 	--transform
@@ -80,13 +80,11 @@ end
 function c71400042.xyzfilter(c,e,tp)
 	return c:IsSetCard(0x3715) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
-function c71400042.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400042.filter3,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c71400042.filter3,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,2,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	e:SetTargetCard(g)
+function c71400042.linkfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_LINK)
+end
+function c71400042.con3(e,tp,eg,ep,ev,re,r,rp)
+	return not Duel.IsExistingMatchingCard(c71400042.linkfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c71400042.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71400042.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
@@ -97,12 +95,15 @@ function c71400042.op3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:Select(tp,1,1,nil)
 	local sc=sg:GetFirst()
-	if sc then
-		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
-		local mg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-		if mg:GetCount()>0 then 
-			Duel.Overlay(sc,mg)
-		end
+	if sc and Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+		e1:SetValue(LOCATION_DECK)
+		sc:RegisterEffect(e1)
+		Duel.SpecialSummonComplete()
 	end
 end
 function c71400042.filter4(c,e,tp)
@@ -111,7 +112,7 @@ end
 function c71400042.con4(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
-	return rc:IsCode(71400026) and c:GetFlagEffect(1)>0 and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	return rc:IsCode(71400026) and c:GetFlagEffect(1)>0
 end
 function c71400042.tg4(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

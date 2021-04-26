@@ -1,4 +1,4 @@
---梦之书中的三足怪物
+--异梦书中的三足怪物
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400008.initial_effect(c)
 	--xyz summon
@@ -20,7 +20,7 @@ function c71400008.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c71400008.condition(e,tp,eg,ep,ev,re,r,rp)
-	return rp~=tp
+	return rp~=tp and Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_ONFIELD,nil)>2
 end
 function c71400008.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

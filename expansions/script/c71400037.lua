@@ -5,24 +5,24 @@ function c71400037.initial_effect(c)
 	--See AddYumeFieldGlobal
 	--self limitation & field activation
 	yume.AddYumeFieldGlobal(c,71400037,1)
-	--immune
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_IMMUNE_EFFECT)
-	e1:SetRange(LOCATION_FZONE)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(c71400037.tg1)
-	e1:SetValue(c71400037.filter1)
-	c:RegisterEffect(e1)
+	--cannot be target
+	local e1a=Effect.CreateEffect(c)
+	e1a:SetType(EFFECT_TYPE_FIELD)
+	e1a:SetCode(EFFECT_IGNORE_BATTLE_TARGET)
+	e1a:SetRange(LOCATION_FZONE)
+	e1a:SetTargetRange(LOCATION_MZONE,0)
+	e1a:SetValue(aux.imval1)
+	c:RegisterEffect(e1a)
+	local e1b=Effect.CreateEffect(c)
+	e1b:SetType(EFFECT_TYPE_FIELD)
+	e1b:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e1b:SetRange(LOCATION_FZONE)
+	e1b:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1b:SetTargetRange(LOCATION_MZONE,0)
+	e1b:SetTarget(c71400037.tg1)
+	e1b:SetValue(1)
+	c:RegisterEffect(e1b)
 end
 function c71400037.tg1(e,c)
 	return c:IsSetCard(0x714)
-end
-function c71400037.filter1(e,te,c)
-	local tc=te:GetHandler()
-	local tseq=tc:GetSequence()
-	if tc:GetControler()~=c:GetControler() then tseq=tseq+16 end
-	if tc:IsLocation(LOCATION_SZONE) then tseq=tseq+8 end
-	local zone=c:GetColumnZone(LOCATION_ONFIELD)
-	return zone and bit.extract(zone,tseq)~=0
 end

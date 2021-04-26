@@ -1,4 +1,4 @@
---黑白的异梦引导
+--黑白异梦的邂逅
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400050.initial_effect(c)
 	--Activate

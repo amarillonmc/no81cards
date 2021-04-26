@@ -55,6 +55,7 @@ end
 end
 --global part
 table=require("table")
+yume.RustFlag=false
 function yume.AddYumeSummonLimit(c,ssm)
 --1=special summon monster, 0=non special summon monster
 	ssm=ssm or 0
@@ -80,16 +81,17 @@ function yume.GetValueType(v)
 	local t=type(v)
 	if t=="userdata" then
 		local mt=getmetatable(v)
-		if mt==Group then return "Group"
-		elseif mt==Effect then return "Effect"
-		else return "Card" end
+		if mt==Group then return "G"
+		elseif mt==Effect then return "E"
+		else return "C" end
 	else return t end
 end
 function yume.YumeCheckFilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3714)
 end
 function yume.IsYumeFieldOnField(tp)
-	return Duel.IsExistingMatchingCard(yume.YumeCheckFilter,tp,LOCATION_FZONE,0,1,nil)
+	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+	return fc and yume.YumeCheckFilter(fc)
 end
 --[[
 Yume SpSummon Check
@@ -98,9 +100,9 @@ v in card = material filter gen(return true = can summon)
 --]]
 function yume.YumeCheck(v,se,sp)
 	local t=yume.GetValueType(v)
-	if t=="Effect" then
+	if t=="E" then
 		return yume.IsYumeFieldOnField(sp)
-	elseif t=="Card" then
+	elseif t=="C" then
 		return function(c) return yume.IsYumeFieldOnField(v:GetControler()) end
 	end
 end
@@ -138,7 +140,7 @@ function yume.AddYumeFieldGlobal(c,id,ft)
 	eac:SetCode(EVENT_FREE_CHAIN)
 	eac:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(eac)
-	--self limitation
+	--[[--old self limitation
 	local esl=Effect.CreateEffect(c)
 	esl:SetDescription(aux.Stringid(71400001,1))
 	esl:SetType(EFFECT_TYPE_QUICK_F)
@@ -147,6 +149,21 @@ function yume.AddYumeFieldGlobal(c,id,ft)
 	esl:SetCondition(yume.YumeFieldLimitCon)
 	esl:SetOperation(yume.YumeFieldLimitOp)
 	c:RegisterEffect(esl)
+	--]]
+	--self to deck
+	local esd1=Effect.CreateEffect(c)
+	esd1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	esd1:SetCode(EVENT_CHAINING)
+	esd1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	esd1:SetRange(LOCATION_FZONE)
+	esd1:SetOperation(aux.chainreg)
+	c:RegisterEffect(esd1)
+	local esd2=Effect.CreateEffect(c)
+	esd2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	esd2:SetCode(EVENT_CHAIN_SOLVED)
+	esd2:SetRange(LOCATION_FZONE)
+	esd2:SetOperation(yume.SelfToDeckOp)
+	c:RegisterEffect(esd2)
 	--field activation
 	local efa=Effect.CreateEffect(c)
 	efa:SetDescription(aux.Stringid(71400001,2))
@@ -159,7 +176,7 @@ function yume.AddYumeFieldGlobal(c,id,ft)
 	efa:SetOperation(yume.FieldActivationOp)
 	c:RegisterEffect(efa)
 end
---Against Yume
+--[[--old Against Yume
 function yume.YumeFieldLimitCon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=re:GetHandler()
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
@@ -203,7 +220,15 @@ function yume.YumeFieldLimitOp(e,tp,eg,ep,ev,re,r,rp)
 end
 function yume.YumeFieldActivationLimit(e,re,tp)
 	local c=re:GetHandler()
-	return c:IsSetCard(0x714) and not c:IsImmuneToEffect(e)
+	return c:IsSetCard(0x714)
+end
+--]]
+--Self To Deck
+function yume.SelfToDeckOp(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not re:GetHandler():IsSetCard(0x714) and c:GetFlagEffect(1)>0 then
+		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+	end
 end
 --Field Activation
 function yume.YumeFieldCheck(tp,num,ft,loc)

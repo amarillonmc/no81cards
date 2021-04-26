@@ -37,17 +37,18 @@ function c71400039.filter1(c,tp)
 end
 function c71400039.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) and eg:IsExists(c71400039.filter1,1,nil) end
+	local g=eg:Filter(c71400039.filter1,nil,tp)
 	Duel.SetTargetCard(eg)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
-function c71400039.filter1a(c,e)
+function c71400039.filter2a(c,e,tp)
 	return c:IsRelateToEffect(e) and c:IsLocation(LOCATION_MZONE)
 end
 function c71400039.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)~=0 then
+	if c:IsRelateToEffect(e) and yume.IsYumeFieldOnField(tp) and Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)~=0 then
 		c:CompleteProcedure()
-		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		local g=eg:Filter(c71400039.filter2a,nil,e,tp)
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	end
 end

@@ -1,4 +1,4 @@
---妄想梦境-门的世界
+--幻异梦境-门扉房间
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400017.initial_effect(c)
 	--Activate
