@@ -27,6 +27,7 @@ function c29065598.initial_effect(c)
 end
 function c29065598.spcon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	return Duel.GetLP(tp)<=2000
 end
 function c29065598.cttg(e,tp,eg,ep,ev,re,r,rp,chk)

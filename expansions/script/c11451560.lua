@@ -5,7 +5,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddSynchroProcedure(c,nil,nil,1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	--equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

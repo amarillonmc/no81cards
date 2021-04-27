@@ -54,12 +54,8 @@ function c9910454.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910454.repfilter(c,tp)
-	return c:IsControler(tp) and c:IsFaceup() and c:IsSetCard(0x9950)
+	return c:IsControler(tp) and c:IsOnField() and c:IsFaceup() and c:IsSetCard(0x9950)
 		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
-end
-function c9910454.desfilter(c,e,tp)
-	return c:IsFacedown() and c:IsControler(tp) and c:IsDestructable(e)
-		and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED)
 end
 function c9910454.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(c9910454.repfilter,1,nil,tp) end

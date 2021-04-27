@@ -31,6 +31,7 @@ function c29065596.rlfil(c)
 end
 function c29065596.spcon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	return Duel.IsCanRemoveCounter(tp,1,0,0x11ae,1,REASON_COST) or Duel.IsExistingMatchingCard(c29065596.rlfil,tp,LOCATION_MZONE,0,1,nil)
 end
 function c29065596.spop(e,tp,eg,ep,ev,re,r,rp,c)
