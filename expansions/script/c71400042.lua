@@ -107,7 +107,7 @@ function c71400042.op3(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71400042.filter4(c,e,tp)
-	return c:IsCode(71400011) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
+	return c:IsCode(71400011) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,c)>0
 end
 function c71400042.con4(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -122,7 +122,7 @@ function c71400042.tg4(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71400042.op4(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCountFromEx(tp,tp,c)<=0 or not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_XMATERIAL) then return end
+	if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_XMATERIAL) then return end
 	if c:IsFacedown() or not c:IsRelateToEffect(e) or c:IsControler(1-tp) or c:IsImmuneToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c71400042.filter4,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
