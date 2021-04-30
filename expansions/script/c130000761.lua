@@ -53,18 +53,26 @@ end
 function c130000761.filter(c)
 	return c:IsAbleToDeck()
 end
-function c130000761.disable(e,c)
-	return c~=e:GetHandler() and (not c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_EFFECT) or bit.band(c:GetOriginalType(),TYPE_EFFECT)==TYPE_EFFECT))
+function c130000761.disfilter(c)
+	return c:IsFaceup() and (c:IsLocation(LOCATION_SZONE) or c:IsType(TYPE_EFFECT))
 end
 function c130000761.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_DISABLE)
-	e2:SetTargetRange(0,LOCATION_ONFIELD)
-	e2:SetTarget(c130000761.disable)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
+	local g=Duel.GetMatchingGroup(c130000761.disfilter,tp,0,LOCATION_ONFIELD,nil)
+	local tc=g:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e2)
+		tc=g:GetNext()
+	end
 end
 
 
@@ -86,12 +94,12 @@ function c130000761.activate2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(130000764,1))
 	local tc2=e:GetHandler()
 	if tc2 then
-		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then
 			Duel.SendtoGrave(fc,REASON_RULE)
 			Duel.BreakEffect()
 		end
-		Duel.MoveToField(tc2,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc2,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		local te=tc2:GetActivateEffect()
 		local tep=tc2:GetControler()
 		local cost=te:GetCost()

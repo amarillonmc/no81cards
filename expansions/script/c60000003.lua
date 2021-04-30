@@ -5,12 +5,12 @@ function cm.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2)
 	c:EnableReviveLimit() 
-		--Activate
+	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60000003,0))
-	e1:SetCategory(CATEGORY_TOEXTRA+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1,m)
 	e1:SetCost(c60000003.cost)
 	c:RegisterEffect(e1)
 end

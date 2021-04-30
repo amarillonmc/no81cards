@@ -41,7 +41,7 @@ end
 function c79029239.tiop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if re:GetHandler():GetControler()==tp then return end
-	if e:GetHandler():GetFlagEffect(79029239)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	if e:GetHandler():GetFlagEffect(79029239)==9 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,true,false,POS_FACEUP)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	local tc=g:GetFirst()
@@ -120,11 +120,3 @@ function c79029239.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029239,2))
 	end
 end
-
-
-
-
-
-
-
-

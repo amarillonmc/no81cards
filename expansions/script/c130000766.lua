@@ -76,12 +76,12 @@ function c130000766.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(130000766,1))
 	local tc2=Duel.SelectMatchingCard(tp,c130000766.filter3,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
 	if tc2 then
-		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then
 			Duel.SendtoGrave(fc,REASON_RULE)
 			Duel.BreakEffect()
 		end
-		Duel.MoveToField(tc2,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc2,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		local te=tc2:GetActivateEffect()
 		local tep=tc2:GetControler()
 		local cost=te:GetCost()
