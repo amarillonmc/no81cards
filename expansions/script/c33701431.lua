@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.recop)
 	c:RegisterEffect(e2)
 end
-function cm.reccop(e,tp,eg,ep,ev,re,r,rp)
+function cm.reccon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	return bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 and rc~=e:GetHandler() and (rc:IsCode(33701424) or rc:IsSetCard(9449))
 end
@@ -28,7 +28,7 @@ function cm.tgfilter(c)
 end
 function cm.recop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_HAND,0,e:GetHandler())
-	if g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0) then
+	if g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g1=g:Select(tp,1,1,nil)
 		Duel.SendtoGrave(g1,REASON_EFFECT)

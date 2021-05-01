@@ -1,5 +1,5 @@
 --赤月礼赞·鹿沼叶子
-local m=33701425
+local m=33701426
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--special summon

@@ -43,13 +43,14 @@ function c65010200.repfilter(c,tp)
 	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD)
 		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
-function c65010200.desrepfil(c)
-	return c:GetEquipTarget()~=nil and c:IsAbleToGrave()
+function c65010200.desrepfil(c,e)
+	return not c:IsStatus(STATUS_DESTROY_CONFIRMED) and c:GetEquipTarget()~=nil
+		and not c:IsImmuneToEffect(e)
 end
 function c65010200.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return eg:IsExists(c65010200.repfilter,1,nil,tp)
-		and Duel.IsExistingMatchingCard(c65010200.desrepfil,tp,LOCATION_SZONE,0,1,nil) end
+		and Duel.IsExistingMatchingCard(c65010200.desrepfil,tp,LOCATION_SZONE,0,1,nil,e) end
 	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function c65010200.desrepval(e,c)
@@ -57,7 +58,8 @@ function c65010200.desrepval(e,c)
 end
 function c65010200.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,65010200)
-	local g=Duel.SelectMatchingCard(tp,c65010200.desrepfil,tp,LOCATION_SZONE,0,1,1,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c65010200.desrepfil,tp,LOCATION_SZONE,0,1,1,nil,e)
 	Duel.SendtoGrave(g,REASON_EFFECT+REASON_REPLACE)
 end
 function c65010200.eqcon(e,tp,eg,ep,ev,re,r,rp)

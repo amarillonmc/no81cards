@@ -9,7 +9,6 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e1:SetRange(LOCATION_SZONE)
-	e1:SetCondition(cm.discon)
 	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.distg)
 	e1:SetOperation(cm.disop)
@@ -44,7 +43,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
 end
-function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local ct=e:GetLabel()
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,ct)
@@ -53,7 +52,7 @@ function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
 	end
 end
-function cm.activate1(e,tp,eg,ep,ev,re,r,rp)
+function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	if not (tc and tc:IsRelateToEffect(e)) then return end
 	local ct=tc:GetDefense()
@@ -66,7 +65,7 @@ function cm.activate1(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local ct=e:GetLabel()
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,ct)
@@ -80,7 +79,7 @@ end
 function cm.filter(c)
 	return c:IsSetCard(0x9449) and c:IsFaceup()
 end
-function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
+function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	if not (tc and tc:IsRelateToEffect(e)) then return end
 	local ct=tc:GetDefense()

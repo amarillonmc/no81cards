@@ -96,7 +96,7 @@ function cm.tgcon1(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and Duel.GetAttackTarget()==nil
 end
 function cm.cfilter(c)
-	return c:IsSetCard(33701424) c:IsAbleToDeckAsCost()
+	return c:IsSetCard(33701424) and c:IsAbleToDeckAsCost()
 end
 function cm.tgcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE,0,1,nil) end

@@ -70,7 +70,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			local ct=1
 			if t1 then m[ct]=aux.Stringid(m,0) n[ct]=1 ct=ct+1 end
 			if t2 then m[ct]=aux.Stringid(m,1) n[ct]=2 ct=ct+1 end
-			m[ct]=aux.Stringid(m,2) n[ct]=3 ct=ct+1 end
+			m[ct]=aux.Stringid(m,2) n[ct]=3 ct=ct+1
 			local sp=Duel.SelectOption(tp,table.unpack(m))
 			op=n[sp+1]
 		end
