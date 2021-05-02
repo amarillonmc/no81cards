@@ -82,7 +82,7 @@ function c22070190.atcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttacker()==c and c:IsChainAttackable(0)
 end
 function c22070190.costfilter(c)
-	return c:IsCode(22070131) and :IsFaceup()
+	return c:IsCode(22070131) and c:IsFaceup()
 end
 function c22070190.atcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,c22070190.costfilter,1,nil) end
