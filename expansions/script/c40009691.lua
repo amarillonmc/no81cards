@@ -4,9 +4,8 @@ function c40009691.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SPSUM_PARAM)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetTargetRange(POS_FACEUP,0)
 	e1:SetCondition(c40009691.condition)
 	c:RegisterEffect(e1) 
 	--get effect
@@ -44,8 +43,8 @@ function c40009691.cfilter(c)
 end
 function c40009691.condition(e,c)
 	if c==nil then return true end
-	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and not Duel.IsExistingMatchingCard(c40009691.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.GetMZoneCount(c:GetControler())>0
+		and not Duel.IsExistingMatchingCard(c40009691.cfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
 function c40009691.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSetCard(0x1f17)

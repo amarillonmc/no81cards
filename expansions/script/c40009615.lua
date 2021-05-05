@@ -9,10 +9,15 @@ function c40009615.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
-	e1:SetCondition(c40009615.xccon)
+	e1:SetCondition(c40009615.xccon1)
 	e1:SetTarget(c40009615.xctg)
 	e1:SetOperation(c40009615.xcop)
 	c:RegisterEffect(e1) 
+	local e3=e1:Clone()
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCondition(c40009615.xccon2)
+	c:RegisterEffect(e3)
 	if not c40009615.global_check then
 		c40009615.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -37,8 +42,11 @@ function c40009615.initial_effect(c)
 	e2:SetOperation(c40009615.atkop)
 	c:RegisterEffect(e2)   
 end
-function c40009615.xccon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetFlagEffect(40009615)>0
+function c40009615.xccon1(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetFlagEffect(40009615)>0 and not Duel.IsPlayerAffectedByEffect(tp,40009707)
+end
+function c40009615.xccon2(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetFlagEffect(40009615)>0 and Duel.IsPlayerAffectedByEffect(tp,40009707)
 end
 function c40009615.xctgfilter(c)
 	return c:IsFaceup() and c:IsCode(40009623) 

@@ -26,7 +26,7 @@ function c40009623.initial_effect(c)
 	--draw
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(40009623,1))
-	e4:SetCategory(CATEGORY_DRAW)
+	e4:SetCategory(CATEGORY_DRAW+CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_FZONE)
 	e4:SetProperty(EFFECT_FLAG_BOTH_SIDE+EFFECT_FLAG_PLAYER_TARGET)
@@ -39,7 +39,7 @@ function c40009623.initial_effect(c)
 	--draw
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(40009623,2))
-	e5:SetCategory(CATEGORY_TOHAND)
+	e5:SetCategory(CATEGORY_DRAW+CATEGORY_TOHAND)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_FZONE)
 	e5:SetProperty(EFFECT_FLAG_BOTH_SIDE+EFFECT_FLAG_PLAYER_TARGET)
@@ -84,8 +84,9 @@ function c40009623.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c40009623.dhcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and e:GetHandler():GetOverlayCount()>0
+	return e:GetHandler():GetOverlayCount()>0 and tp~=e:GetHandler():GetControler()
 end
+--tp~=e:GetHandler():GetControler()
 function c40009623.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(1-tp,1) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetTargetPlayer(1-tp)
@@ -96,6 +97,7 @@ function c40009623.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c40009623.drop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if not c:IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if Duel.Draw(p,d,REASON_EFFECT)~=0 then
@@ -122,6 +124,7 @@ function c40009623.thfilter(c)
 	return c:IsAbleToHand()
 end
 function c40009623.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if not c:IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if Duel.Draw(p,d,REASON_EFFECT)~=0 then

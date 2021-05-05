@@ -122,7 +122,7 @@ function cm.initial_effect(c)
 	local e2,e3 = rsfwh.SummonFun(c,m,CATEGORY_SEARCH+CATEGORY_TOHAND,cm.thtg,cm.thop,CATEGORY_SPECIAL_SUMMON,cm.sptg,cm.spop)
 end
 function cm.filter(c)
-	return not c:IsCode(m) and c:IsSetCard(0x6f1b) and c:IsType(TYPE_MONSTER)
+	return not c:IsCode(m) and c:IsSetCard(0x6f1b)
 end
 function cm.thfilter(c)
 	return cm.filter(c) and c:IsAbleToHand()

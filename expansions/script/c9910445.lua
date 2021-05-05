@@ -55,6 +55,7 @@ function c9910445.activate(e,tp,eg,ep,ev,re,r,rp,chk)
 		local sg=tg:SelectSubGroup(tp,c9910445.thfilter,false,1,tg:GetCount())
 		thct=Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg)
+		Duel.ShuffleHand(tp)
 		dg:Sub(sg)
 	end
 	Duel.Remove(dg,POS_FACEDOWN,REASON_EFFECT)

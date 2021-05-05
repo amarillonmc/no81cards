@@ -9,10 +9,15 @@ function c40009613.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,40009613)
-	e1:SetCondition(c40009613.xccon)
+	e1:SetCondition(c40009613.xccon1)
 	e1:SetTarget(c40009613.xctg)
 	e1:SetOperation(c40009613.xcop)
 	c:RegisterEffect(e1) 
+	local e3=e1:Clone()
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCondition(c40009613.xccon2)
+	c:RegisterEffect(e3)
 	if not c40009613.global_check then
 		c40009613.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -31,18 +36,33 @@ function c40009613.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e4:SetCountLimit(1,40009614)
+	e4:SetCondition(c40009613.spcon1)
 	e4:SetCost(c40009613.spcost)
 	e4:SetTarget(c40009613.sptg)
 	e4:SetOperation(c40009613.spop)
 	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetCode(EVENT_FREE_CHAIN)
+	e5:SetCondition(c40009613.spcon2)
+	c:RegisterEffect(e5) 
 end
-function c40009613.xccon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetFlagEffect(40009613)>0
+function c40009613.xccon1(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetFlagEffect(40009613)>0 and not Duel.IsPlayerAffectedByEffect(tp,40009707)
+end
+function c40009613.xccon2(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetFlagEffect(40009613)>0 and Duel.IsPlayerAffectedByEffect(tp,40009707)
+end
+function c40009613.spcon1(e,tp,eg,ep,ev,re,r,rp)
+	return not Duel.IsPlayerAffectedByEffect(tp,40009707)
+end
+function c40009613.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsPlayerAffectedByEffect(tp,40009707)
 end
 function c40009613.xctgfilter(c)
 	return c:IsFaceup() and c:IsCode(40009623) 
 end
-function c40009613.xctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c40009613.xctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and Duel.IsExistingMatchingCard(c40009613.xctgfilter,tp,LOCATION_FZONE,0,1,nil) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end

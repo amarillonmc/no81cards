@@ -84,7 +84,7 @@ function c40009705.xcop(e,tp,eg,ep,ev,re,r,rp)
 		if og:GetCount()>0 then
 			Duel.SendtoGrave(og,REASON_RULE)
 		end
-		Duel.Overlay(tc,Group.FromCards(tg))
+		Duel.Overlay(tc,tg)
 	end
 end
 function c40009705.spcost(e,tp,eg,ep,ev,re,r,rp,chk)

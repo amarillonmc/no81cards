@@ -22,7 +22,7 @@ function c40009611.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,16691075)
+	e2:SetCountLimit(1,40009612)
 	e2:SetCondition(c40009611.spcon)
 	e2:SetTarget(c40009611.sptg)
 	e2:SetOperation(c40009611.spop)
@@ -35,15 +35,17 @@ function c40009611.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-
+function c40009611.desfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsCanOverlay() 
+end
 function c40009611.xctgfilter(c)
 	return c:IsFaceup() and c:IsCode(40009623) 
 end
 function c40009611.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) end
-	if chk==0 then return Duel.IsExistingTarget(Card.GetType,tp,0,LOCATION_MZONE,1,nil,TYPE_MONSTER) and Duel.IsExistingMatchingCard(c40009611.xctgfilter,tp,LOCATION_FZONE,0,1,nil) end
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and c40009611.desfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c40009611.desfilter,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(c40009611.xctgfilter,tp,LOCATION_FZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_MZONE,1,2,nil)
+	Duel.SelectTarget(tp,c40009611.desfilter,tp,0,LOCATION_ONFIELD,1,2,nil)
 end
 function c40009611.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g0=Duel.GetMatchingGroup(c40009611.xctgfilter,tp,LOCATION_FZONE,0,nil)
@@ -53,6 +55,10 @@ function c40009611.operation(e,tp,eg,ep,ev,re,r,rp)
 		local g2=Duel.SelectMatchingCard(tp,c40009611.xctgfilter,tp,LOCATION_FZONE,0,1,1,nil)
 		Duel.HintSelection(g2)
 		local tc=g2:GetFirst()
+		local og=tc:GetOverlayGroup()
+		if og:GetCount()>0 and not tc:IsImmuneToEffect(e) then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
 		Duel.Overlay(tc,tg)
 	end
 end
@@ -79,9 +85,6 @@ function c40009611.spop(e,tp,eg,ep,ev,re,r,rp)
 		   local oc=mg:GetFirst():GetOverlayTarget()
 		   Duel.Overlay(c,mg)
 		   Duel.RaiseSingleEvent(oc,EVENT_DETACH_MATERIAL,e,0,0,0,0)
-
-
-
 		end
 	end
 end
