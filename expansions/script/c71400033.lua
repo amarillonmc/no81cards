@@ -3,29 +3,33 @@ xpcall(function() require("expansions/script/c71400001") end,function() require(
 function c71400033.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetHintTiming(TIMING_DRAW_PHASE+TIMING_END_PHASE+TIMING_TOGRAVE,0)
+	e1:SetHintTiming(TIMING_DRAW_PHASE+TIMING_END_PHASE+TIMING_SPSUMMON+TIMING_SUMMON,0)
 	e1:SetCountLimit(1,71400033+EFFECT_COUNT_CODE_OATH)
 	e1:SetDescription(aux.Stringid(71400033,0))
 	e1:SetTarget(c71400033.target)
-	e1:SetCost(c71400033.cost)
-	e1:SetCondition(yume.YumeLethalCon)
+	e1:SetCondition(yume.YumeCon)
 	e1:SetOperation(c71400033.operation)
 	c:RegisterEffect(e1)
 end
-function c71400033.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,500) end
-	Duel.PayLPCost(tp,500)
+function c71400033.filter(c)
+	return c:IsType(TYPE_MONSTER)
 end
 function c71400033.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsAbleToRemove() and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	if chkc then return chkc:IsOnField() and c71400033.filter(chkc) and chkc~=e:GetHandler() end
+	if chk==0 then return Duel.IsExistingTarget(c71400033.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,c71400033.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	if fc and yume.YumeCheckFilter(fc) then
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,fc,1,0,0)
+	else
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,0,0)
+	end
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		Duel.SetChainLimit(c71400033.limit(g:GetFirst()))
 	end
@@ -33,8 +37,13 @@ end
 function c71400033.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)>0 and Duel.GetTurnPlayer()~=tp then
+		Duel.BreakEffect()
+		Duel.SetLP(tp,Duel.GetLP(tp)-1500)
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		if fc and yume.YumeCheckFilter(fc) then
+			Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+		end
 	end
 	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
 		Duel.BreakEffect()

@@ -28,7 +28,7 @@ end
 function c71400035.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if yume.YumeFieldCheck(tp) and Duel.SelectYesNo(tp,aux.Stringid(71400035,1)) then
-		yume.FieldActivation(tp)
+		yume.ActivateYumeField(tp)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c71400035.filter1,tp,LOCATION_DECK,0,1,1,nil)

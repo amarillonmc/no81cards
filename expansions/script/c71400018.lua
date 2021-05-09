@@ -11,34 +11,32 @@ function c71400018.initial_effect(c)
 	e1:SetCountLimit(1,71400018+EFFECT_COUNT_CODE_OATH)
 	e1:SetDescription(aux.Stringid(71400018,0))
 	e1:SetTarget(c71400018.target)
-	e1:SetCost(c71400018.cost)
-	e1:SetCondition(yume.YumeLethalCon)
+	e1:SetCost(c71400018.cost1)
+	e1:SetCondition(yume.YumeCon)
 	e1:SetOperation(c71400018.operation)
 	c:RegisterEffect(e1)
 end
-function c71400018.filter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
-function c71400018.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,500) end
-	Duel.PayLPCost(tp,500)
+function c71400018.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c71400018.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and c71400018.filter(chkc) and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(c71400018.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	if chkc then return false end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler(),TYPE_SPELL+TYPE_TRAP) and Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c71400018.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	local g1=Duel.SelectTarget(tp,Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler(),TYPE_SPELL+TYPE_TRAP)
+	local g2=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	g1:Merge(g2)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,2,0,0)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		Duel.SetChainLimit(c71400018.limit(g:GetFirst()))
+		Duel.SetChainLimit(c71400018.limit(g1))
 	end
 end
 function c71400018.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
-	end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
+	Duel.Destroy(sg,REASON_EFFECT)
 	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
 		Duel.BreakEffect()
 		c:CancelToGrave()
@@ -46,8 +44,8 @@ function c71400018.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 	end
 end
-function c71400018.limit(c)
+function c71400018.limit(g)
 	return  function (e,lp,tp)
-				return e:GetHandler()~=c
+				return not g:IsContains(e:GetHandler())
 			end
 end

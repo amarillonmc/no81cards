@@ -24,7 +24,7 @@ function c71400015.initial_effect(c)
 	e2:SetTarget(c71400015.target2)
 	e2:SetOperation(c71400015.operation2)
 	c:RegisterEffect(e2)
-	--self limitation & field activation
+	--self to deck & field activation
 	yume.AddYumeFieldGlobal(c,71400015,1)
 end
 function c71400015.filter1(c)
@@ -45,14 +45,14 @@ function c71400015.operation1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71400015.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local mcount=Duel.GetMatchingGroupCount(Card.IsType,tp,0,LOCATION_GRAVE,nil,TYPE_MONSTER)
+	local mcount=Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,TYPE_MONSTER)
 	if chk==0 then return mcount>0 end
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,mcount*500)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,mcount*300)
 end
 function c71400015.operation2(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local mcount=Duel.GetMatchingGroupCount(Card.IsType,tp,0,LOCATION_GRAVE,nil,TYPE_MONSTER)
+	local mcount=Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,TYPE_MONSTER)
 	if mcount>0 then
-		local val=Duel.Recover(tp,mcount*500,REASON_EFFECT)
+		local val=Duel.Recover(tp,mcount*300,REASON_EFFECT)
 	end
 end

@@ -40,7 +40,7 @@ function c71400020.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Remove(fg,POS_FACEUP,REASON_EFFECT)<=0 then return end
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(71400020,1))
-	local tc=Duel.SelectMatchingCard(tp,c71400020.filter2,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71400020.filter2),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,tp):GetFirst()
 	if tc then
 		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then
@@ -57,9 +57,9 @@ function c71400020.operation(e,tp,eg,ep,ev,re,r,rp)
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if ft<=0 then return end
 		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
-		if tc:IsSetCard(0x3714) and flag and Duel.IsExistingMatchingCard(c71400020.filter3,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(71400020,0)) then
+		if tc:IsSetCard(0x3714) and flag and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c71400020.filter3),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(71400020,0)) then
 			Duel.BreakEffect()
-			local g=Duel.SelectMatchingCard(tp,c71400020.filter3,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,ft,ft,nil,e,tp)
+			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71400020.filter3),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,ft,ft,nil,e,tp)
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end

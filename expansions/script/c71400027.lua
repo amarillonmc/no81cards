@@ -114,7 +114,7 @@ function c71400027.tdop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71400027.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_FZONE) and chkc:IsControler(tp) and c71400027.filter2(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c71400027.filter2,tp,LOCATION_FZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c71400027.filter2,tp,LOCATION_FZONE,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectTarget(tp,c71400027.filter2,tp,LOCATION_FZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)

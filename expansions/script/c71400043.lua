@@ -82,16 +82,16 @@ end
 function c71400043.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-		local num=0
-		if fc and fc:IsFaceup() then num=fc:GetCode() end
-		return yume.YumeFieldCheck(tp,num,2,LOCATION_GRAVE+LOCATION_DECK)
+		local id=0
+		if fc and fc:IsFaceup() then id=fc:GetCode() end
+		return yume.YumeFieldCheck(tp,id,2,LOCATION_GRAVE+LOCATION_DECK)
 	end
 end
 function c71400043.op2(e,tp,eg,ep,ev,re,r,rp)
 	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-	local num=0
-	if fc and fc:IsFaceup() then num=fc:GetCode() end
-	yume.FieldActivation(tp,num,2,LOCATION_GRAVE+LOCATION_DECK)
+	local id=0
+	if fc and fc:IsFaceup() then id=fc:GetCode() end
+	yume.ActivateYumeField(tp,id,2,LOCATION_GRAVE+LOCATION_DECK)
 end
 function c71400043.con3(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,71400038)>0
