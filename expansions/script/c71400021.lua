@@ -3,7 +3,7 @@ xpcall(function() require("expansions/script/c71400001") end,function() require(
 function c71400021.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_POSITION)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -11,33 +11,30 @@ function c71400021.initial_effect(c)
 	e1:SetCountLimit(1,71400021+EFFECT_COUNT_CODE_OATH)
 	e1:SetDescription(aux.Stringid(71400021,0))
 	e1:SetTarget(c71400021.target)
-	e1:SetCost(c71400021.cost)
-	e1:SetCondition(yume.YumeLethalCon)
+	e1:SetCondition(yume.YumeCon)
 	e1:SetOperation(c71400021.operation)
 	c:RegisterEffect(e1)
 end
-function c71400021.filter(c)
-	return c:IsType(TYPE_MONSTER)
-end
-function c71400021.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,500) end
-	Duel.PayLPCost(tp,500)
-end
 function c71400021.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and c71400021.filter(chkc) and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(c71400021.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chkc then return chkc:IsOnField() and chkc:IsType(TYPE_MONSTER) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c71400021.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	local sg=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,0,nil)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,sg,sg:GetCount(),tp,0)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		Duel.SetChainLimit(c71400021.limit(g:GetFirst()))
 	end
 end
 function c71400021.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
+	local mg=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,0,nil)
+	if mg:GetCount()>0 and Duel.ChangePosition(mg,POS_FACEDOWN_DEFENSE)>0 then
+		local tc=Duel.GetFirstTarget()
+		if tc:IsRelateToEffect(e) then
+			Duel.Destroy(tc,REASON_EFFECT)
+		end
 	end
 	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
 		Duel.BreakEffect()

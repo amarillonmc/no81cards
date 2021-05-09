@@ -28,7 +28,7 @@ function c71400014.initial_effect(c)
 	e3:SetTarget(c71400014.target3)
 	e3:SetOperation(c71400014.operation3)
 	c:RegisterEffect(e3)
-	--self limitation & field activation
+	--self to deck & field activation
 	yume.AddYumeFieldGlobal(c,71400014,1)
 end
 function c71400014.operation2(e,tp,eg,ep,ev,re,r,rp)

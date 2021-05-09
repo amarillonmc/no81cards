@@ -3,52 +3,102 @@ xpcall(function() require("expansions/script/c71400001") end,function() require(
 function c71400016.initial_effect(c)
 	--Activate
 	--See AddYumeFieldGlobal
-	--to hand
+	--summon
+	--self to deck & field activation
+	yume.AddYumeFieldGlobal(c,71400016,1)
+	--summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71400016,0))
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_FZONE)
 	e1:SetCountLimit(1)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetTarget(c71400016.target)
-	e1:SetOperation(c71400016.operation)
+	e1:SetTarget(c71400016.tg1)
+	e1:SetOperation(c71400016.op1)
 	c:RegisterEffect(e1)
-	--self limitation & field activation
-	yume.AddYumeFieldGlobal(c,71400016,1)
+	--draw
+	--discard deck
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetDescription(aux.Stringid(71400016,1))
+	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCountLimit(1)
+	e2:SetCondition(c71400016.con2)
+	e2:SetTarget(c71400016.tg2)
+	e2:SetOperation(c71400016.op2)
+	c:RegisterEffect(e2)
 end
-function c71400016.filter(c)
-	return c:IsSetCard(0x714) and c:IsAbleToHand()
+function c71400016.filter1(c)
+	return c:IsSetCard(0x714) and c:IsSummonable(true,nil)
 end
-function c71400016.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c71400016.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c71400016.filter,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,c71400016.filter,tp,LOCATION_GRAVE,0,1,1,nil)
-	local mg=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_GRAVE)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,mg,1,tp,LOCATION_ONFIELD)
+function c71400016.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400016.filter1,tp,LOCATION_HAND,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
-function c71400016.operation(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,c)
-	if g:GetCount()>0 and tc:IsRelateToEffect(e) and Duel.Destroy(g,REASON_EFFECT)~=0 and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then
-		Duel.ConfirmCards(1-tp,tc)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e1:SetTargetRange(1,0)
-		e1:SetValue(c71400016.aclimit)
-		e1:SetLabelObject(tc)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
+function c71400016.op1(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	local g=Duel.SelectMatchingCard(tp,c71400016.filter1,tp,LOCATION_HAND,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		c=e:GetHandler()
+		Duel.Summon(tp,tc,true,nil)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SUMMON_COST)
+		e1:SetOperation(c71400016.regop)
+		c:RegisterEffect(e1)
 	end
 end
-function c71400016.aclimit(e,re,tp)
-	local tc=e:GetLabelObject()
-	return re:GetHandler():IsCode(tc:GetCode()) and not re:GetHandler():IsImmuneToEffect(e)
+function c71400016.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
+	e1:SetDescription(aux.Stringid(71400016,2))
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e1:SetValue(aux.imval1)
+	e1:SetReset(RESET_EVENT+0xff0000)
+	tc:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_DESTROYED)
+	e2:SetLabelObject(tc)
+	e2:SetCondition(c71400016.reccon)
+	e2:SetOperation(c71400016.recop)
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_DESTROY)
+	e3:SetLabelObject(e2)
+	e3:SetOperation(c71400016.checkop)
+	e3:SetReset(RESET_EVENT+0xff0000)
+	tc:RegisterEffect(e3)
+	e:Reset()
+end
+function c71400016.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local e2=e:GetLabelObject()
+	e2:SetLabel(1)
+end
+function c71400016.reccon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetLabel()==1
+end
+function c71400016.recop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Recover(tp,e:GetLabelObject():GetBaseAttack(),REASON_EFFECT)
+	e:Reset()
+end
+function c71400016.con2(e,tp,eg,ep,ev,re,r,rp)
+	return tp==Duel.GetTurnPlayer()
+end
+function c71400016.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c71400016.op2(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
 end

@@ -41,7 +41,7 @@ function c71400025.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,800)
 end
 function c71400025.op1(e,tp,eg,ep,ev,re,r,rp)
-	yume.FieldActivation(tp,nil,2)
+	yume.ActivateYumeField(tp,nil,2)
 end
 function c71400025.filter2(c)
 	return c:IsType(TYPE_LINK)

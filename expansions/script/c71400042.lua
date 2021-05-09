@@ -31,7 +31,7 @@ function c71400042.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetTarget(c71400042.tg3)
 	e3:SetOperation(c71400042.op3)
-	e3:SetCondition(c71400042.con3)
+	e3:SetCost(c71400042.cost3)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	c:RegisterEffect(e3)
 	--transform
@@ -52,6 +52,10 @@ function c71400042.initial_effect(c)
 	e4:SetTarget(c71400042.tg4)
 	e4:SetOperation(c71400042.op4)
 	c:RegisterEffect(e4)
+	Duel.AddCustomActivityCounter(71400042,ACTIVITY_SPSUMMON,c71400042.counterfilter)
+end
+function c71400042.counterfilter(c)
+	return c:GetSummonLocation()~=LOCATION_EXTRA or c:IsType(TYPE_XYZ)
 end
 function c71400042.atklimit(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -71,6 +75,20 @@ function c71400042.dircon(e)
 	return Duel.IsExistingMatchingCard(c71400042.cfilter1,tp,LOCATION_ONFIELD,0,1,nil)
 		and not Duel.IsExistingMatchingCard(c71400042.cfilter2,tp,0,LOCATION_MZONE,1,nil)
 end
+function c71400042.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetCustomActivityCount(71400025,tp,ACTIVITY_SPSUMMON)==0 end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c71400042.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c71400042.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return not (c:IsType(TYPE_XYZ)) and c:IsLocation(LOCATION_EXTRA)
+end
 function c71400042.filter3(c)
 	local flag=false
 	if c:IsLocation(LOCATION_HAND) then flag=c:IsSetCard(0x714)
@@ -79,12 +97,6 @@ function c71400042.filter3(c)
 end
 function c71400042.xyzfilter(c,e,tp)
 	return c:IsSetCard(0x3715) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
-end
-function c71400042.linkfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_LINK)
-end
-function c71400042.con3(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c71400042.linkfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c71400042.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71400042.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end

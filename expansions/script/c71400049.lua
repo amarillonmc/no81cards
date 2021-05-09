@@ -3,7 +3,7 @@ xpcall(function() require("expansions/script/c71400001") end,function() require(
 function c71400049.initial_effect(c)
 	--Activate
 	--See AddYumeFieldGlobal
-	--self limitation & field activation
+	--self to deck & field activation
 	yume.AddYumeFieldGlobal(c,71400049,1)
 	--special summon
 	local e1=Effect.CreateEffect(c)

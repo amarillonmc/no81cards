@@ -28,7 +28,7 @@ function c71400032.initial_effect(c)
 	e2:SetTarget(c71400032.tg2)
 	e2:SetOperation(c71400032.op2)
 	c:RegisterEffect(e2)
-	--self limitation & field activation
+	--self to deck & field activation
 	yume.AddYumeFieldGlobal(c,71400032,2)
 end
 function c71400032.op1(e,tp,eg,ep,ev,re,r,rp)
@@ -80,8 +80,6 @@ function c71400032.op2(e,tp,eg,ep,ev,re,r,rp)
 		if g2:GetCount()>0 then
 			Duel.SendtoHand(g2,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g2)
-			Duel.BreakEffect()
-			Duel.SetLP(tp,Duel.GetLP(tp)-500)
 		end
 	end
 end

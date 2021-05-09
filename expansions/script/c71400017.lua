@@ -24,7 +24,7 @@ function c71400017.initial_effect(c)
 	e2:SetCost(c71400017.cost)
 	e2:SetOperation(c71400017.op2)
 	c:RegisterEffect(e2)
-	--self limitation & field activation
+	--self to deck & field activation
 	yume.AddYumeFieldGlobal(c,71400017,1)
 end
 function c71400017.filter1(c)

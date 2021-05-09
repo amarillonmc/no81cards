@@ -15,7 +15,7 @@ function c71400034.initial_effect(c)
 	e1:SetTarget(c71400034.tg1)
 	e1:SetOperation(c71400034.op1)
 	c:RegisterEffect(e1)
-	--self limitation & field activation
+	--self to deck & field activation
 	yume.AddYumeFieldGlobal(c,71400034,2)
 end
 function c71400034.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -43,13 +43,14 @@ end
 function c71400034.op1(e,tp,eg,ep,ev,re,r,rp)
 	if not (e:GetHandler():IsRelateToEffect(e) and re:GetHandler():IsRelateToEffect(re)) then return end
 	if Duel.SendtoDeck(eg,nil,2,REASON_EFFECT)==1 then
-		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+		local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil,tp)
 		if Duel.IsExistingMatchingCard(c71400034.filter1,tp,LOCATION_ONFIELD,0,1,nil) and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400034,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.HintSelection(sg)
 			Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+			Duel.SetLP(tp,Duel.GetLP(tp)-1000)
 		end
 	end
 end

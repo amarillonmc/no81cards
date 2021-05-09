@@ -32,7 +32,7 @@ function c71400001.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,500)
 end
 function c71400001.activate1(e,tp,eg,ep,ev,re,r,rp)
-	yume.FieldActivation(tp,nil,1)
+	yume.ActivateYumeField(tp,nil,1)
 end
 function c71400001.activate2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -87,7 +87,7 @@ function yume.GetValueType(v)
 	else return t end
 end
 function yume.YumeCheckFilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3714)
+	return c:IsFaceup() and c:IsSetCard(0x3714) and c:IsType(TYPE_FIELD)
 end
 function yume.IsYumeFieldOnField(tp)
 	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
@@ -140,7 +140,7 @@ function yume.AddYumeFieldGlobal(c,id,ft)
 	eac:SetCode(EVENT_FREE_CHAIN)
 	eac:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(eac)
-	--[[--old self limitation
+	--[[--old self to deck
 	local esl=Effect.CreateEffect(c)
 	esl:SetDescription(aux.Stringid(71400001,1))
 	esl:SetType(EFFECT_TYPE_QUICK_F)
@@ -161,6 +161,7 @@ function yume.AddYumeFieldGlobal(c,id,ft)
 	local esd2=Effect.CreateEffect(c)
 	esd2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	esd2:SetCode(EVENT_CHAIN_SOLVED)
+	esd2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	esd2:SetRange(LOCATION_FZONE)
 	esd2:SetOperation(yume.SelfToDeckOp)
 	c:RegisterEffect(esd2)
@@ -214,11 +215,11 @@ function yume.YumeFieldLimitOp(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e4:SetReset(RESET_PHASE+PHASE_END)
-	e4:SetValue(yume.YumeFieldActivationLimit)
+	e4:SetValue(yume.YumeActivateYumeFieldLimit)
 	e4:SetTargetRange(1,0)
 	Duel.RegisterEffect(e4,tp)
 end
-function yume.YumeFieldActivationLimit(e,re,tp)
+function yume.YumeActivateYumeFieldLimit(e,re,tp)
 	local c=re:GetHandler()
 	return c:IsSetCard(0x714)
 end
@@ -242,12 +243,17 @@ function yume.YumeFieldCheckTarget(id,ft,loc)
 		if chk==0 then return yume.YumeFieldCheck(tp,id,ft,loc) end
 	end
 end
-function yume.FieldActivation(tp,id,ft,loc)
+function yume.ActivateYumeField(tp,id,ft,loc)
 	ft=ft or 0
 	id=id or 0
 	loc=loc or LOCATION_DECK
+	local tc
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(71400001,3))
-	local tc=Duel.SelectMatchingCard(tp,yume.ActivateFieldFilter,tp,loc,0,1,1,nil,tp,id,ft):GetFirst()
+	if loc&LOCATION_GRAVE~=0 and loc~=LOCATION_GRAVE then
+		tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(yume.ActivateFieldFilter),tp,loc,0,1,1,nil,tp,id,ft):GetFirst()
+	else
+		tc=Duel.SelectMatchingCard(tp,yume.ActivateFieldFilter,tp,loc,0,1,1,nil,tp,id,ft):GetFirst()
+	end
 	if tc then
 		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then
@@ -263,6 +269,7 @@ function yume.FieldActivation(tp,id,ft,loc)
 		Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 		return tc
 	end
+	return nil
 end
 function yume.ActivateFieldFilter(c,tp,id,ft)
 	local flag=c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true) and not c:IsCode(id)
@@ -280,7 +287,7 @@ function yume.ActivateFieldOp(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local id=yume.temp_card_field[c].id
 	local ft=yume.temp_card_field[c].ft
-	yume.FieldActivation(tp,id,ft,LOCATION_DECK+LOCATION_HAND)
+	yume.ActivateYumeField(tp,id,ft,LOCATION_DECK+LOCATION_HAND)
 end
 --uniquify the same name
 function yume.UniquifyCardName(g)

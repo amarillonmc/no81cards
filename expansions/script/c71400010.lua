@@ -6,7 +6,7 @@ function c71400010.initial_effect(c)
 	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
-	--get all
+	--control
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_CONTROL)
 	e1:SetDescription(aux.Stringid(71400010,0))
@@ -17,7 +17,7 @@ function c71400010.initial_effect(c)
 	e1:SetTarget(c71400010.target1)
 	e1:SetOperation(c71400010.operation1)
 	c:RegisterEffect(e1)
-	--lose one
+	--control
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_CONTROL)
 	e2:SetDescription(aux.Stringid(71400010,1))
