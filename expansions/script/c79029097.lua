@@ -21,7 +21,7 @@ function c79029097.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c79029097.filter(c,e,tp)
-	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa900) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsType(TYPE_LINK)
 end
 function c79029097.lzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)

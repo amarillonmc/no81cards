@@ -114,6 +114,7 @@ function c79029429.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029429.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local seq=c:GetSequence()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
@@ -122,8 +123,8 @@ function c79029429.disop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("这个位置......不错。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029429,6)) 
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-	Duel.Destroy(eg,REASON_EFFECT)   
-	local seq=e:GetHandler():GetPreviousSequence()
+	Duel.Destroy(eg,REASON_EFFECT)
+	end   
 	local val=aux.SequenceToGlobal(tp,LOCATION_MZONE,seq)
 	--
 	local e1=Effect.CreateEffect(c)
@@ -140,7 +141,6 @@ function c79029429.disop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetValue(800)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e2)
-	end
 end
 function c79029429.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffectLabel(tp,79029429)~=nil 

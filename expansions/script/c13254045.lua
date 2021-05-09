@@ -17,6 +17,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
+	--[[
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetCategory(CATEGORY_DRAW)
@@ -25,6 +26,16 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_FZONE)
 	e3:SetCountLimit(1)
 	e3:SetCost(cm.cost1)
+	e3:SetTarget(cm.target1)
+	e3:SetOperation(cm.operation1)
+	c:RegisterEffect(e3)
+	]]
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,1))
+	e3:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetCountLimit(1)
 	e3:SetTarget(cm.target1)
 	e3:SetOperation(cm.operation1)
 	c:RegisterEffect(e3)
@@ -66,6 +77,22 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 	e:GetLabelObject():DeleteGroup()
 end
+function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.dFilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.dFilter(c)
+	return c:IsSetCard(0x3356)
+end
+function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
+	local ct=Duel.DiscardHand(tp,cm.dFilter,1,2,REASON_EFFECT+REASON_DISCARD)
+	if ct>0 then
+		Duel.BreakEffect()
+		Duel.Draw(tp,ct,REASON_EFFECT)
+	end
+end
+--[[
 function cm.tdfilter1(c)
 	return c:IsSetCard(0x3356) and c:IsAbleToDeckAsCost()
 end
@@ -88,3 +115,4 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
+]]

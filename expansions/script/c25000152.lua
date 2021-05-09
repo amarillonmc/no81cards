@@ -4,7 +4,7 @@ cm.name="究极合体怪兽 基伽奇美拉"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,cm.ffilter,5,false)
-	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,cm.sprop(c))
+	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_GRAVE,0,cm.sprop(c))
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)

@@ -104,6 +104,17 @@ function c79029223.toop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoGrave(tc,REASON_EFFECT)
 	Duel.SendtoHand(tc1,nil,REASON_EFFECT)
 	Duel.ConfirmCards(tp,tc1)   
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c79029223.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c79029223.splimit(e,c)
+	return not c:IsSetCard(0xa900)
 end
 
 

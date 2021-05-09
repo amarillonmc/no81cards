@@ -1,18 +1,18 @@
 --罗德岛·特种干员-食铁兽
 function c79029020.initial_effect(c)
+	c:SetSPSummonOnce(79029020)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,5,3)
+	aux.AddXyzProcedure(c,nil,5,2,c79029020.ovfilter,aux.Stringid(79029020,2),99,c79029020.xyzop)
 	c:EnableReviveLimit()
-	 --special summon
+	--tgrc
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetCondition(c79029020.spcon)
-	e1:SetTarget(c79029020.sptg)
-	e1:SetOperation(c79029020.spop)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_RECOVER)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,79029020)
+	e1:SetTarget(c79029020.tctg)
+	e1:SetOperation(c79029020.tcop)
 	c:RegisterEffect(e1)
 	--material
 	local e2=Effect.CreateEffect(c)
@@ -24,57 +24,46 @@ function c79029020.initial_effect(c)
 	e2:SetOperation(c79029020.operation)
 	c:RegisterEffect(e2)
 end
-function c79029020.spfilter(c)
-	return c:IsSetCard(0xa904)
+function c79029020.ovfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsType(TYPE_LINK)
 end
-function c79029020.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetAttacker():IsControler(1-tp) and Duel.GetAttackTarget()==nil and Duel.IsExistingMatchingCard(c79029020.spfilter,tp,LOCATION_GRAVE,0,1,nil)
-end
-function c79029020.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function c79029020.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsControler(1-tp) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetValue(0)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e2)
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_DISABLE_EFFECT)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e3)
+function c79029020.xyzop(e,tp,chk)
+	if chk==0 then return true end
 	Debug.Message("大展拳脚咯！")   
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029020,0))
+end
+function c79029020.tgfil(c)
+	return c:IsSetCard(0xa904) and c:IsAbleToGrave()
+end
+function c79029020.tctg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and Duel.IsExistingMatchingCard(c79029020.tgfil,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():GetMaterialCount() end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,0,tp,LOCATION_DECK)
+end
+function c79029020.tcop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local x=c:GetMaterialCount()
+	local g=Duel.GetMatchingGroup(c79029020.tgfil,tp,LOCATION_DECK,0,nil) 
+	if g:GetCount()<=0 or x<=0 then return end 
+	Debug.Message("好！是时候大显身手了！")   
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029020,4))
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	sg=g:Select(tp,1,x,nil)
+	Duel.SendtoGrave(sg,REASON_EFFECT)
+	local count=Duel.GetMatchingGroupCount(Card.IsSetCard,tp,LOCATION_GRAVE,0,nil,0xa904)
+	if count>0 and Duel.SelectYesNo(tp,aux.Stringid(79029020,3)) then 
+	Debug.Message("这一战一定会很精彩！")   
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029020,5))
+	Duel.Recover(tp,count*800,REASON_EFFECT)
 	end
-end
-end
 end
 function c79029020.filter(c)
 	return not c:IsType(TYPE_TOKEN) and c:IsAbleToChangeControler()
 end
 function c79029020.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c79029020.filter(chkc) end
-	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) and Duel.IsExistingTarget(c79029020.filter,tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) and Duel.IsExistingTarget(c79029020.filter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,c79029020.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.SelectTarget(tp,c79029020.filter,tp,0,LOCATION_ONFIELD,1,1,nil)
 end
 function c79029020.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

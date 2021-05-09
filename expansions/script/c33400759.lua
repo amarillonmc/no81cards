@@ -26,7 +26,8 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetHintTiming(0,TIMING_END_PHASE)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e3:SetCountLimit(1,m+10000)
 	e3:SetCost(cm.cost)
 	e3:SetTarget(cm.rectg)
 	e3:SetOperation(cm.recop)
@@ -98,20 +99,25 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			local mat2=Duel.SelectFusionMaterial(tp,tc,mg3,nil,chkf)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat2)
-		end
-		tc:CompleteProcedure()			   
+		end 
 		if tc:IsFaceup() and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler(),tc)
 			and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-			Duel.BreakEffect()
 			local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler(),tc)
 			Duel.HintSelection(g)
 			Duel.SendtoGrave(g,REASON_EFFECT)
-			 tc:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,1))
+			if tc:IsOriginalCodeRule(33400747) then 
+			tc:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,2))
+			elseif tc:GetFlagEffect(33400707)==0 then   
+			tc:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,1))
+			else
+			tc:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,0,0,0)
+			end
 		end
+		tc:CompleteProcedure()	
 	end
 end
 function cm.tgfilter(c,tc)
-	return not tc  and c:IsAbleToGrave()
+	return c~=tc  and c:IsAbleToGrave()
 end
 
 function cm.cfilter(c)
@@ -144,7 +150,7 @@ local c=e:GetHandler()
 		e1:SetCode(EFFECT_CHANGE_CODE)
 		e1:SetValue(cd)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)	 
+		tc:RegisterEffect(e1)   
 	end
 end
 

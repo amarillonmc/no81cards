@@ -3,7 +3,7 @@ function c111107.initial_effect(c)
 	--link summon  
 c:EnableReviveLimit() 		
 --link summon
-aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,c111107.lcheck)
+aux.AddLinkProcedure(c,nil,2,2,c111107.lcheck)
 --atk up
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(111107,0))

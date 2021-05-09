@@ -1,119 +1,70 @@
---远古造物 邓氏鱼
-require("expansions/script/c9910106")
+--远古造物 戴华三琼
+require("expansions/script/c9910700")
 function c9910706.initial_effect(c)
-	c:EnableReviveLimit()
 	--special summon
+	Ygzw.AddSpProcedure(c,1)
+	c:EnableReviveLimit()
+	--to grave or remove
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_REMOVE)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(c9910706.spcon)
-	e1:SetOperation(c9910706.spop)
+	e1:SetCountLimit(1,9910706)
+	e1:SetCost(c9910706.tgcost)
+	e1:SetTarget(c9910706.tgtg)
+	e1:SetOperation(c9910706.tgop)
 	c:RegisterEffect(e1)
-	--destroy
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCost(c9910706.descost)
-	e2:SetTarget(c9910706.destg1)
-	e2:SetOperation(c9910706.desop1)
-	c:RegisterEffect(e2)
-	--negate
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
-	e3:SetCondition(c9910706.negcon)
-	e3:SetTarget(c9910706.negtg)
-	e3:SetOperation(c9910706.negop)
-	c:RegisterEffect(e3)
 	--set
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_TO_GRAVE)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetTarget(c9910706.settg)
-	e4:SetOperation(c9910706.setop)
-	c:RegisterEffect(e4)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,9910707)
+	e2:SetCondition(c9910706.setcon)
+	e2:SetTarget(c9910706.settg)
+	e2:SetOperation(c9910706.setop)
+	c:RegisterEffect(e2)
 end
-function c9910706.spfilter(c)
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and c:IsPreviousLocation(LOCATION_ONFIELD)
-		and c:IsAbleToRemoveAsCost()
+function c9910706.costfilter(c)
+	return c:IsSetCard(0xc950) and c:IsAbleToGraveAsCost()
 end
-function c9910706.spcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c9910706.spfilter,tp,LOCATION_GRAVE,0,nil)
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and g:CheckWithSumGreater(Card.GetLevel,3)
-end
-function c9910706.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(c9910706.spfilter,tp,LOCATION_GRAVE,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local mg=g:SelectWithSumGreater(tp,Card.GetLevel,3)
-	Duel.Remove(mg,POS_FACEUP,REASON_COST)
-end
-function c9910706.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDiscardable() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
-end
-function c9910706.destg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function c9910706.desop1(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
-	end
-end
-function c9910706.negcon(e,tp,eg,ep,ev,re,r,rp)
+function c9910706.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910706.costfilter,tp,LOCATION_HAND,0,1,c) and c:IsAbleToGraveAsCost() end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9910706.costfilter,tp,LOCATION_HAND,0,1,1,c)
+	g:AddCard(c)
+	Duel.SendtoGrave(g,REASON_COST)
 end
-function c9910706.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return aux.nbcon(tp,re) end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
+function c9910706.tgfilter(c)
+	return c:IsAbleToGrave() or c:IsAbleToRemove()
+end
+function c9910706.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and c9910706.tgfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910706.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,c9910706.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
+end
+function c9910706.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
+	if tc:IsAbleToGrave() and (not tc:IsAbleToRemove() or Duel.SelectOption(tp,1191,1192)==0) then
+		Duel.SendtoGrave(tc,REASON_EFFECT)
+		else
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
 end
-function c9910706.negop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local rc=re:GetHandler()
-	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) and Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)~=0
-		and c:IsRelateToEffect(e) and c:IsFaceup() then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(300)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		c:RegisterEffect(e1)
-	end
+function c9910706.setcon(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9910706.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Zcd.SetFilter(e:GetHandler(),e) end
+	if chk==0 then return Ygzw.SetFilter(e:GetHandler(),e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 end
 function c9910706.setop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
-	Duel.ConfirmCards(1-tp,c)
-	Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetCode(EFFECT_CHANGE_TYPE)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
-	c:RegisterEffect(e1)
+	if c:IsRelateToEffect(e) then Ygzw.Set(c,e,tp) end
 end

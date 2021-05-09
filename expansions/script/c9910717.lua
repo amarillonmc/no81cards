@@ -1,5 +1,5 @@
 --远古造物大灭绝
-require("expansions/script/c9910106")
+require("expansions/script/c9910700")
 function c9910717.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -27,7 +27,7 @@ function c9910717.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return
 		Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(Zcd.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e)
+		and Duel.IsExistingMatchingCard(Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
 	end
 	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
@@ -39,24 +39,8 @@ function c9910717.activate(e,tp,eg,ep,ev,re,r,rp)
 	if ft==0 then return end
 	if ft>3 then ft=3 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local sg=Duel.SelectMatchingCard(tp,Zcd.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,ft,ft,nil,e)
-	if sg:GetCount()==0 then return end
-	local sc=sg:GetFirst()
-	local sg2=Group.CreateGroup()
-	while sc do
-		if not sc:IsImmuneToEffect(e) and Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true) then
-			sg2:AddCard(sc)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetCode(EFFECT_CHANGE_TYPE)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-			e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
-			sc:RegisterEffect(e1)
-		end
-		sc=sg:GetNext()
-	end
-	Duel.RaiseEvent(sg2,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+	local sg=Duel.SelectMatchingCard(tp,Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,ft,ft,nil,e,tp)
+	if sg:GetCount()>0 then Ygzw.Set2(sg,e,tp) end
 end
 function c9910717.cfilter(c,tp)
 	return c:IsFacedown() and c:IsAbleToGraveAsCost()
@@ -72,7 +56,7 @@ function c9910717.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return
 		Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(Zcd.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e)
+		and Duel.IsExistingMatchingCard(Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
 	end
 	if e:GetLabel()==1 then
 		e:SetCategory(CATEGORY_POSITION+CATEGORY_TOHAND)
@@ -91,7 +75,7 @@ function c9910717.activate2(e,tp,eg,ep,ev,re,r,rp)
 	if ft==0 then return end
 	if ft>3 then ft=3 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local sg=Duel.SelectMatchingCard(tp,Zcd.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,ft,ft,nil,e)
+	local sg=Duel.SelectMatchingCard(tp,Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,ft,ft,nil,e,tp)
 	if sg:GetCount()==0 then return end
 	local sc=sg:GetFirst()
 	local sg2=Group.CreateGroup()

@@ -47,7 +47,7 @@ function c79029449.aclimit(e,re,tp)
 	return not re:GetHandler():IsSetCard(0xc90e) and not re:GetHandler():IsSetCard(0xb90d) and not re:GetHandler():IsSetCard(0xa900) 
 end
 function c79029449.thfil(c)
-	return c:IsAbleToHand() and (c:IsSetCard(0xc90e) or c:IsSetCard(0xb90d))
+	return c:IsAbleToHand() and (c:IsSetCard(0xa900) or c:IsSetCard(0xc90e) or c:IsSetCard(0xb90d))
 end
 function c79029449.ckfil(c)
 	return c:IsSetCard(0xa900) or c:IsSetCard(0xc90e) or c:IsSetCard(0xb90d)
@@ -72,7 +72,6 @@ function c79029449.reop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
-	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 	if b1 then
 	g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)

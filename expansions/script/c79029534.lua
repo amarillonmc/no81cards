@@ -6,11 +6,9 @@ function c79029534.initial_effect(c)
 	--remove+disable
 	e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCategory(CATEGORY_REMOVE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
+	e1:SetCountLimit(1,79029534)
 	e1:SetCost(c79029534.cost)
 	e1:SetTarget(c79029534.target)
 	e1:SetOperation(c79029534.operation)
@@ -33,11 +31,17 @@ function c79029534.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029534.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_EXTRA,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_EXTRA)
+end
+function c79029534.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
 	Duel.ConfirmCards(tp,g)
+	if g:FilterCount(Card.IsAbleToRemove,nil)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,1,1,nil):GetFirst()
-	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT) then 
+	Duel.BreakEffect()
 	local flag=0
 	if tc:IsType(TYPE_FUSION) then flag=bit.bor(flag,TYPE_FUSION) end
 	if tc:IsType(TYPE_SYNCHRO) then flag=bit.bor(flag,TYPE_SYNCHRO) end
@@ -45,37 +49,25 @@ function c79029534.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if tc:IsType(TYPE_PENDULUM) then flag=bit.bor(flag,TYPE_PENDULUM) end
 	if tc:IsType(TYPE_LINK) then flag=bit.bor(flag,TYPE_LINK) end
 	e:SetLabel(flag)
-end
-function c79029534.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	c:RegisterFlagEffect(79029534,RESET_EVENT+RESETS_STANDARD,0,1)
 	local flag=e:GetLabel()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_DISABLE)
 	e1:SetTargetRange(0,LOCATION_MZONE)
 	e1:SetTarget(c79029534.distg)
-	e1:SetCondition(c79029534.discon)
 	e1:SetLabel(flag)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_CANNOT_ATTACK)
-	Duel.RegisterEffect(e2,tp)
 end
 function c79029534.distg(e,c)
 	return c:IsType(e:GetLabel())
 end
-function c79029534.discon(e)
-	return e:GetHandler():GetFlagEffect(79029534)~=0
-end
 function c79029534.dccost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,aux.TURE,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.Destroy(g,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_ONFIELD,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_ONFIELD,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c79029534.dctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end 

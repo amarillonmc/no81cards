@@ -2,7 +2,7 @@
 function c9910457.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9950),c9910457.matfilter,2,63,true)
+	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9950),3,true)
 	--counter
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_COUNTER)
@@ -25,23 +25,17 @@ function c9910457.initial_effect(c)
 	e2:SetOperation(c9910457.regop)
 	c:RegisterEffect(e2)
 end
-function c9910457.matfilter(c)
-	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsFusionType(TYPE_EFFECT)
-end
 function c9910457.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c9910457.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local ct=c:GetMaterialCount()
-	if chk==0 then return ct>0 and c:IsCanAddCounter(0x1950,1) end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,ct,0,0x1950)
+	if chk==0 then return c:IsCanAddCounter(0x1950,3) end
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,3,0,0x1950)
 end
 function c9910457.ctop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=c:GetMaterialCount()
-	if ct>0 and c:IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x1950,ct)
+	if e:GetHandler():IsRelateToEffect(e) then
+		e:GetHandler():AddCounter(0x1950,3)
 	end
 end
 function c9910457.regcon(e,tp,eg,ep,ev,re,r,rp)

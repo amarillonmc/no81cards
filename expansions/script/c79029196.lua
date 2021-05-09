@@ -5,9 +5,8 @@ function c79029196.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_DECK)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCondition(c79029196.spcon)
-	e1:SetTarget(c79029196.sptg)
 	e1:SetCountLimit(1,79029196)
 	e1:SetOperation(c79029196.spop)
 	c:RegisterEffect(e1)
@@ -51,28 +50,22 @@ function c79029196.limit(e,c)
 	if not c then return false end
 	return not c:IsSetCard(0xa900)
 end
-function c79029196.spctfil(c)
-	return c:IsDiscardable() and (c:IsSetCard(0xa900) or c:IsSetCard(0xc90e) or c:IsSetCard(0xb90d))
+function c79029196.spfilter(c)
+	return c:IsAbleToGraveAsCost()
 end
 function c79029196.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.GetMZoneCount(tp,g)>0 and Duel.IsExistingMatchingCard(c79029196.spctfil,tp,LOCATION_HAND,0,1,nil)
-end
-function c79029196.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(c79029196.spctfil,tp,LOCATION_HAND,0,nil)
-	if g then
-	   g:KeepAlive()
-		e:SetLabelObject(g)
-		return true
-	else return false end
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c79029196.spfilter,tp,LOCATION_HAND,0,1,c)
 end
 function c79029196.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=e:GetLabelObject()
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c79029196.spfilter,tp,LOCATION_HAND,0,1,1,c)
+	Duel.SendtoGrave(g,REASON_COST)
 	Debug.Message("了解。刻刀入队了。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029196,1))
-	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
-	g:DeleteGroup()
 	--
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)

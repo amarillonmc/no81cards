@@ -66,6 +66,7 @@ function c79029437.thgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
 	Duel.SendtoGrave(tc,REASON_EFFECT)
 	local g1=Duel.GetMatchingGroup(c79029437.tgfil2,tp,LOCATION_DECK,0,nil,tc:GetCode())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 	local tc1=g1:Select(tp,1,1,nil):GetFirst()
 	local op=0 
 	if tc1:IsAbleToHand() and tc1:IsAbleToGrave() then
@@ -79,6 +80,7 @@ function c79029437.thgop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("好，准备完毕。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029437,2))
 	Duel.SendtoHand(tc1,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,tc1)
 	else 
 	Debug.Message("那么，我们出发。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029437,3))

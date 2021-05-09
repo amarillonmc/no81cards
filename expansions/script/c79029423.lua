@@ -119,7 +119,7 @@ function c79029423.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local rg=Duel.GetMatchingGroup(Card.IsReleasable,tp,0,LOCATION_MZONE,nil)
-	return rg:IsExists(c79029423.filter1,1,nil,tp,rg) and Duel.GetActivityCount(tp,ACTIVITY_NORMALSUMMON)==0
+	return rg:IsExists(c79029423.filter1,1,nil,tp,rg) and Duel.GetActivityCount(tp,ACTIVITY_NORMALSUMMON)==0 and Duel.GetCustomActivityCount(79029423,tp,ACTIVITY_SPSUMMON)==0  
 end
 function c79029423.esfil(c)
 	return c:IsCode(79029443,79029247)

@@ -120,3 +120,11 @@ function c79029239.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029239,2))
 	end
 end
+
+
+
+
+
+
+
+

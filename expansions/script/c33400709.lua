@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
  --fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x3342),2,true)
+	aux.AddFusionProcFunRep(c,cm.matfilter1,2,true)
 	  --indes
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetCondition(cm.rpcon)
@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_BECOME_TARGET)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,m)
 	e3:SetCondition(cm.countcon1)
 	e3:SetTarget(cm.counttg)
 	e3:SetOperation(cm.countop)
@@ -54,10 +54,15 @@ function cm.initial_effect(c)
 	e5:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_TO_GRAVE)
+	e5:SetCountLimit(1,m+10000)
 	e5:SetTarget(cm.rectg)
 	e5:SetOperation(cm.recop)
 	c:RegisterEffect(e5)
 end
+function cm.matfilter1(c)
+	return  c:IsSetCard(0x3342) or c:GetCode()~=c:GetOriginalCode()
+end
+
 function cm.matval(c)
 	if c:GetCode()~=c:GetOriginalCode() then return 1 end
 	return 0
@@ -71,8 +76,14 @@ function cm.indcon(e,tp,eg,ep,ev,re,r,rp)
    return  e:GetLabel()>0
 end
 function cm.indop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	c:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,5))
+	 local c=e:GetHandler()
+	local ss=e:GetLabel()+e:GetHandler():GetFlagEffect(33400707)	
+	c:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,4))
+	if ss>1 then 
+	for i=2,ss do 
+	 c:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,0,0,0)
+	end
+	end
 end
 
 function cm.cfilter1(c)
@@ -94,15 +105,15 @@ function cm.repfilter(c,tp)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
    if chkc then return chkc:IsOnField() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	local cd=e:GetLabel()
-	if tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 	 local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -116,7 +127,7 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetValue(cm.efilter)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+Duel.GetCurrentPhase())
 		e4:SetOwnerPlayer(tp)
-		tc:RegisterEffect(e4)		
+		tc:RegisterEffect(e4)   
 	end
 end
 function cm.efilter(e,re)
@@ -184,11 +195,18 @@ function cm.rectg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(cm.rcfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,cm.rcfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,g:GetFirst():GetAttack())
+	local tc=g:GetFirst()
+	local atk=tc:GetBaseAttack() 
+	local def=tc:GetBaseDefense() 
+	if def>atk then atk=def end 
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,atk)
 end
 function cm.recop(e,tp,eg,ep,ev,re,r,rp)
-local c=e:GetHandler()
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
+	local atk=tc:GetBaseAttack() 
+	local def=tc:GetBaseDefense() 
+	if def>atk then atk=def end 
 	if tc:IsRelateToEffect(e) and tc:IsFaceup()  then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -197,8 +215,8 @@ local c=e:GetHandler()
 		e1:SetValue(m)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1) 
-		if tc:GetAttack()>0 then
-		Duel.Recover(tp,tc:GetAttack(),REASON_EFFECT)
+		if atk>0 then
+		Duel.Recover(tp,atk,REASON_EFFECT)
 		end
 	end
 end

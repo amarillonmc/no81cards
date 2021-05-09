@@ -65,11 +65,11 @@ function c79029042.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 	if ct==3 then
 		Duel.BreakEffect()
-		Duel.Draw(tp,2,REASON_EFFECT)	
+		Duel.Draw(tp,2,REASON_EFFECT)   
 	end 
 	local tc=xg:GetFirst()
 	while tc do
-	tc:RegisterFlagEffect(79029042,RESET_PHASE+PHASE_END,0,1)
+	tc:RegisterFlagEffect(79029042,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(79029042,0))
 	tc=xg:GetNext()
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())

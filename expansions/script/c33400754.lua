@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMING_END_PHASE)
@@ -24,17 +24,20 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.setop)
 	c:RegisterEffect(e2)
 end
+function cm.filter0(c)
+	return (c:IsLocation(LOCATION_MZONE) or  c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck()
+end
 function cm.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function cm.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x341) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x3342) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp)
+		local mg1=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 		local res=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -53,7 +56,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
 	local ss=0
 	local chkf=tp
-	local mg1=Duel.GetFusionMaterial(tp):Filter(cm.filter1,nil,e)
+	local mg1=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	local sg1=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 	local mg2=nil
 	local sg2=nil
@@ -76,7 +79,7 @@ local c=e:GetHandler()
 			ss=1
 			end
 			tc:SetMaterial(mat1)
-			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
+			Duel.SendtoDeck(mat1,nil,2,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 		else
@@ -93,7 +96,7 @@ local c=e:GetHandler()
 		e4:SetRange(LOCATION_MZONE)
 		e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 		e4:SetValue(aux.tgoval)
-		tc:RegisterEffect(e4)	   
+		tc:RegisterEffect(e4)	  
 		  if Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_GRAVE,0,1,nil,tc) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then 
 		  local cpg=Duel.SelectMatchingCard(tp,cm.cpfilter,tp,LOCATION_GRAVE,0,1,1,nil,tc)
 		  local cpc=cpg:GetFirst()

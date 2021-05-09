@@ -20,14 +20,15 @@ function c79029274.initial_effect(c)
 	e2:SetTargetRange(1,0)
 	e2:SetTarget(c79029274.splimit1)
 	c:RegisterEffect(e2)	 
-	--xyz lv
+	--lv change
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_XYZ_LEVEL)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAIABLE)
 	e1:SetRange(LOCATION_EXTRA)
-	e1:SetCountLimit(1,79029274)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCost(c79029274.xlcost)
-	e1:SetOperation(c79029274.xlop)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(c79029274.lvtg)
+	e1:SetValue(c79029274.lvval)
 	c:RegisterEffect(e1)
 	--0v
 	local e2=Effect.CreateEffect(c)
@@ -79,6 +80,14 @@ function c79029274.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 end
 end
+function c79029274.lvtg(e,c)
+	return c:IsType(TYPE_XYZ)
+end
+function c79029274.lvval(e,c,rc)
+	local lv=c:GetLevel()
+	if rc==e:GetHandler() then return c:GetRank()
+	else return lv end
+end
 function c79029274.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local xp=re:GetHandlerPlayer()
 	local flag=Duel.GetFlagEffectLabel(xp,79029274)
@@ -102,26 +111,6 @@ function c79029274.llop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029274.splimit1(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
-end
-function c79029274.xlcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.ConfirmCards(tp,e:GetHandler())
-end
-function c79029274.xlop(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_XYZ_LEVEL)
-	e1:SetValue(c79029274.xyzlv)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_XYZ))
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	Duel.RegisterEffect(e1,tp)
-	Debug.Message("群星为我们照亮前路。")
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029274,0))  
-end
-function c79029274.xyzlv(e,c,rc)
-	return c:GetRank()
 end
 function c79029274.pecon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetMaterial():IsExists(Card.IsType,1,nil,TYPE_XYZ)

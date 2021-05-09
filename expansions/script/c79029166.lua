@@ -51,12 +51,12 @@ function c79029166.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029166,1))
 	local a=e:GetHandler():GetBattleTarget()
 	local seq=a:GetSequence()
-		 local dg=Group.CreateGroup()
-		if seq<5 then dg=Duel.GetMatchingGroup(c79029166.desfilter2,tp,0,LOCATION_MZONE,nil,seq,a:GetControler()) end
-		if dg:GetCount()>0 then
-		   if Duel.Destroy(dg,REASON_EFFECT)~=0 then
-		local x=dg:GetCount()*800
-		Duel.Damage(1-tp,x,REASON_EFFECT)
-end
+	local dg=Group.CreateGroup()
+	if seq<5 then dg=Duel.GetMatchingGroup(c79029166.desfilter2,tp,0,LOCATION_MZONE,nil,seq,a:GetControler()) end
+	if dg:GetCount()>0 then
+	if x=Duel.Destroy(dg,REASON_EFFECT)~=0 then  
+	local dam=x*800
+	Duel.Damage(1-tp,dam,REASON_EFFECT)
+	end
 	end
 end

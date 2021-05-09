@@ -3,109 +3,82 @@ function c79029021.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,6,2)
 	c:EnableReviveLimit()
-	--atk up
+	--th
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(79029021,0))
-	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
-	e1:SetCost(c79029021.atkcost)
-	e1:SetTarget(c79029021.atktg)
-	e1:SetOperation(c79029021.atkop)
-	c:RegisterEffect(e1)
-	--level down
+	e1:SetCountLimit(1,79029021)
+	e1:SetCost(c79029021.thcost)
+	e1:SetTarget(c79029021.thtg)
+	e1:SetOperation(c79029021.thop)
+	c:RegisterEffect(e1)   
+	--SpecialSummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(79029021,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,79029021)
-	e2:SetCondition(c79029021.spcon)
-	e2:SetOperation(c79029021.operation)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,09029021)
+	e2:SetTarget(c79029021.sptg)
+	e2:SetOperation(c79029021.spop)
 	c:RegisterEffect(e2)
 end
-function c79029021.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xa903)
-end
-function c79029021.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c79029021.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c79029021.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029021.filter,tp,LOCATION_MZONE,0,1,nil) end
+function c79029021.thfil(c) 
+	return c:IsAbleToHand() and c:IsSetCard(0xa900)
 end
-function c79029021.atkop(e,tp,eg,ep,ev,re,r,rp)
-		local e3=Effect.CreateEffect(e:GetHandler())
-		e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		e3:SetCode(EVENT_BATTLE_DESTROYING)
-		e3:SetProperty(EFFECT_FLAG_DELAY)
-		e3:SetRange(LOCATION_MZONE)
-		e3:SetReset(RESET_PHASE+PHASE_END)
-		e3:SetCondition(c79029021.condition)
-		e3:SetOperation(c79029021.op)
-		e:GetHandler():RegisterEffect(e3)
-	local g=Duel.GetMatchingGroup(c79029021.filter,tp,LOCATION_MZONE,0,nil)
-	local tc=g:GetFirst()
-	while tc do
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetCode(EFFECT_UPDATE_ATTACK)
-		e4:SetValue(500)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e4)
-		tc=g:GetNext()
+function c79029021.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029021.thfil,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) end
+	Debug.Message("走了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029021,1))
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c79029021.thfil,tp,LOCATION_DECK,0,1,1,nil)
+	Duel.SetTargetCard(g)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
+end
+function c79029021.thop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	Duel.SendtoHand(tc,tp,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,tc)
+	if tc:IsSetCard(0xa903) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(79029021,0)) then 
+	Debug.Message("怕什么！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029021,2))
+	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c79029021.condition(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	local bc=tc:GetBattleTarget()
-	return tc:IsRelateToBattle() and tc:IsStatus(STATUS_OPPO_BATTLE) and tc:IsControler(tp) and tc:IsSetCard(0xa903)
-		and bc:IsLocation(LOCATION_GRAVE) and bc:IsReason(REASON_BATTLE)
+function c79029021.ckfil(c)
+	return c:IsSetCard(0xa900) and c:IsCanOverlay() 
 end
-function c79029021.op(e,tp,eg,ep,ev,re,r,rp)
-		  e:GetHandler():AddCounter(0x1099,1)
-	end
-function c79029021.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetHandler():GetCounter(0x1099)
-	return Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_MAIN2 and g>0
+function c79029021.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingTarget(c79029021.ckfil,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.SelectTarget(tp,c79029021.ckfil,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function c79029021.operation(e,tp,eg,ep,ev,re,r,rp)
-	local x=e:GetHandler():GetCounter(0x1099)
-	if chk==0 then return Card.IsCanRemoveCounter(e:GetHandler(),tp,0x1099,x,REASON_COST) end
-	e:GetHandler():RemoveCounter(e:GetHandler(),tp,0x1099,x,REASON_COST)
+function c79029021.spop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("我要去战斗。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029021,3))
 	local c=e:GetHandler()
-	local hg=Duel.GetFieldGroup(tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0):Filter(Card.IsLevelAbove,nil,1)
-	local tc=hg:GetFirst()
-	while tc do
-		local e5=Effect.CreateEffect(c)
-		e5:SetType(EFFECT_TYPE_SINGLE)
-		e5:SetCode(EFFECT_UPDATE_LEVEL)
-		e5:SetValue(-x)
-		e5:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e5)
-		tc=hg:GetNext()
-	end
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e6:SetCode(EVENT_TO_HAND)
-	e6:SetReset(RESET_PHASE+PHASE_END)
-	e6:SetOperation(c79029021.hlvop)
-	Duel.RegisterEffect(e6,tp)
+	local tc=Duel.GetFirstTarget()
+	if tc then
+		local mg=tc:GetOverlayGroup()
+		if mg:GetCount()~=0 then
+			Duel.Overlay(c,mg)
+		end
+		c:SetMaterial(Group.FromCards(tc))
+		Duel.Overlay(c,Group.FromCards(tc))
+		Duel.SpecialSummon(c,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+		c:CompleteProcedure()
+	end 
 end
-function c79029021.hlvfilter(c,tp)
-	return c:IsLevelAbove(1) and c:IsControler(tp)
-end
-function c79029021.hlvop(e,tp,eg,ep,ev,re,r,rp)
-	local hg=eg:Filter(c79029021.hlvfilter,nil,tp)
-	local tc=hg:GetFirst()
-	while tc do
-		local e7=Effect.CreateEffect(e:GetHandler())
-		e7:SetType(EFFECT_TYPE_SINGLE)
-		e7:SetCode(EFFECT_UPDATE_LEVEL)
-		e7:SetValue(-x)
-		e7:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e7)
-		tc=hg:GetNext()
-	end
-end
+
+
+
+
+
+
+
+

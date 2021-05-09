@@ -28,15 +28,6 @@ function c79029089.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
-	--atk
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(34408491,0))
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EVENT_DAMAGE+EVENT_RECOVER)
-	e4:SetCondition(c79029089.atkcon)
-	e4:SetOperation(c79029089.atkop)
-	c:RegisterEffect(e4)
 	--send to grave 
 	local e5=Effect.CreateEffect(c)
 	e5:SetCategory(CATEGORY_TODECK)
@@ -125,22 +116,6 @@ function c79029089.thop(e,tp,eg,ep,ev,re,r,rp)
 	g1:Merge(g2)
 	Duel.SendtoGrave(g1,REASON_EFFECT)
 	end
-function c79029089.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	if ep~=tp then return false end
-	if bit.band(r,REASON_EFFECT)~=0 then return rp==1-tp end
-	return e:GetHandler():IsRelateToBattle()
-end
-function c79029089.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(ev)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		c:RegisterEffect(e1)
-	end
-end
 function c79029089.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) end

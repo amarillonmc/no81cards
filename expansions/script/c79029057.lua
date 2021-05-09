@@ -37,7 +37,7 @@ function c79029057.operation(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
 end
 function c79029057.setfilter(c)
-	return c:IsSetCard(0xc90e) and c:IsSSetable()
+	return c:IsSetCard(0xc90e) and c:IsSSetable() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 end
 function c79029057.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029057.setfilter,tp,LOCATION_DECK,0,1,nil) end

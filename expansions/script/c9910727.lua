@@ -1,5 +1,5 @@
 --远古造物栖所 冈瓦纳
-require("expansions/script/c9910106")
+require("expansions/script/c9910700")
 function c9910727.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -85,8 +85,7 @@ function c9910727.setcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910727.setfilter(c,id,e)
 	local op=c:GetOwner()
-	return c:GetTurnID()==id and c:IsType(TYPE_MONSTER) and c:IsFaceup()
-		and Duel.GetLocationCount(op,LOCATION_SZONE)>0 and Zcd.SetFilter(c,e)
+	return c:GetTurnID()==id and c:IsType(TYPE_MONSTER) and c:IsFaceup() and Ygzw.SetFilter(c,e,op)
 end
 function c9910727.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local id=Duel.GetTurnCount()
@@ -99,16 +98,7 @@ function c9910727.setop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
 	local op=tc:GetOwner()
-	if tc:IsRelateToEffect(e) and Duel.GetLocationCount(op,LOCATION_SZONE)>0 and Zcd.SetFilter(tc,e) then
-		Duel.MoveToField(tc,tp,op,LOCATION_SZONE,POS_FACEDOWN,true)
-		Duel.ConfirmCards(1-tp,tc)
-		Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
-		tc:RegisterEffect(e1)
+	if tc:IsRelateToEffect(e) then
+		Ygzw.Set(tc,e,op)
 	end
 end

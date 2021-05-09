@@ -36,20 +36,47 @@ function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
+function cm.thfilter(c,tp)
+	return c:IsSetCard(0x3342) and c:IsType(TYPE_SPELL+TYPE_TRAP)
+		and (c:IsSSetable() or  (not c:IsForbidden() and c:CheckUniqueOnField(tp)))
+end
 function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 and  Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	   local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	   if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	   end
+	if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and  Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)  and Duel.SelectYesNo(tp,aux.Stringid(m,0))  then		
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
+		local tc=g:GetFirst()
+		if tc then
+			local b1=tc:IsSSetable()
+			local b2=not tc:IsForbidden() and tc:CheckUniqueOnField(tp)
+			if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))==0) then
+				Duel.SSet(tp,tc)
+				 if tc:IsType(TYPE_QUICKPLAY) then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+				end
+				if tc:IsType(TYPE_TRAP) then
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+					e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e1)
+				end
+			else
+				if tc:IsType(TYPE_FIELD) then 
+				Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+				else
+				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+				end
+			end
+		end
 	end
-end
-function cm.thfilter(c)
-	return c:IsSetCard(0x3342) and c:IsAbleToHand()
 end
 
 function cm.filter2(c)

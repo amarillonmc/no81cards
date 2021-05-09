@@ -51,7 +51,7 @@ function cm.filter(c,e,tp)
 	return c:IsFaceup() and c:IsSetCard(0x3342) and c:IsAbleToGrave() and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,c)
 end
 function cm.spfilter(c,e,tp,mc)
-	return  c:IsCode(mc:GetCode()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return  (c:IsCode(mc:GetCode()) or c:IsSetCard(0x3342)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.filter(chkc,e,tp) end

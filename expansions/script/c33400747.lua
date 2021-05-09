@@ -69,9 +69,45 @@ function cm.initial_effect(c)
 	e8:SetProperty(EFFECT_FLAG_DELAY)
 	e8:SetOperation(cm.Eqop1)
 	c:RegisterEffect(e8)
+--to hand
+	local e10=Effect.CreateEffect(c)
+	e10:SetDescription(aux.Stringid(m,2))
+	e10:SetType(EFFECT_TYPE_QUICK_O)
+	e10:SetCode(EVENT_FREE_CHAIN)
+	e10:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e10:SetRange(LOCATION_MZONE)
+	e10:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e10:SetCondition(cm.con1)
+	e10:SetTarget(cm.netg)
+	e10:SetOperation(cm.neop)
+	c:RegisterEffect(e10)
+--copy
+	local e9=Effect.CreateEffect(c)
+	e9:SetDescription(aux.Stringid(m,0))
+	e9:SetType(EFFECT_TYPE_QUICK_O)
+	e9:SetCode(EVENT_FREE_CHAIN)
+	e9:SetRange(LOCATION_MZONE)
+	e9:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e9:SetCountLimit(1)
+	e9:SetCondition(cm.con2)
+	e9:SetOperation(cm.cpop)
+	c:RegisterEffect(e9)
+ --tograve
+	local e11=Effect.CreateEffect(c)
+	e11:SetDescription(aux.Stringid(m,3))
+	e11:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e11:SetCategory(CATEGORY_TOGRAVE)
+	e11:SetType(EFFECT_TYPE_QUICK_O)
+	e11:SetCode(EVENT_CHAINING)
+	e11:SetRange(LOCATION_MZONE)
+	e11:SetCountLimit(2)
+	e11:SetCondition(cm.con3)
+	e11:SetTarget(cm.target)
+	e11:SetOperation(cm.operation)
+	c:RegisterEffect(e11)
 end
 function cm.fusfilter1(c)
-	return c:IsSetCard(0x3342)
+	return  c:IsSetCard(0x3342) or c:GetCode()~=c:GetOriginalCode()
 end
 function cm.fusfilter2(c)
 	return c:IsSetCard(0x341) and  c:IsType(TYPE_RITUAL+TYPE_FUSION+TYPE_XYZ+TYPE_SYNCHRO)
@@ -94,51 +130,47 @@ function cm.indcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.indop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local s=e:GetLabel()
-if s>0 then 
-  --copy
-	local e9=Effect.CreateEffect(c)
-	e9:SetDescription(aux.Stringid(m,0))
-	e9:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e9:SetType(EFFECT_TYPE_QUICK_O)
-	e9:SetCode(EVENT_FREE_CHAIN)
-	e9:SetRange(LOCATION_MZONE)
-	e9:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e9:SetCountLimit(1)
-	e9:SetOperation(cm.cpop)
-	e9:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e9)
+	local ss=e:GetLabel()+e:GetHandler():GetFlagEffect(33400707)	
+	c:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,ss+6))
+	if ss>1 then 
+	for i=2,ss do 
+	 c:RegisterFlagEffect(33400707,RESET_EVENT+RESETS_STANDARD,0,0,0)
+	end
+	end
 end
-if s>1 then 
- --set
-	local e10=Effect.CreateEffect(c)
-	e10:SetDescription(aux.Stringid(m,2))
-	e10:SetType(EFFECT_TYPE_QUICK_O)
-	e10:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e10:SetCode(EVENT_CHAINING)
-	e10:SetRange(LOCATION_MZONE)
-	e10:SetCountLimit(1)
-	e10:SetTarget(cm.thtg)
-	e10:SetOperation(cm.thop)
-	e10:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e10)
+function cm.con1(e,tp,eg,ep,ev,re,r,rp)  
+	local s1=e:GetHandler():GetFlagEffect(33400707)
+	return   s1>0 and e:GetHandler():GetFlagEffect(m)<s1
 end
-if s>2 then
- --tograve
-	local e11=Effect.CreateEffect(c)
-	e11:SetDescription(aux.Stringid(m,3))
-	e11:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e11:SetCategory(CATEGORY_TOGRAVE)
-	e11:SetType(EFFECT_TYPE_QUICK_O)
-	e11:SetCode(EVENT_CHAINING)
-	e11:SetRange(LOCATION_MZONE)
-	e11:SetCountLimit(2)
-	e11:SetCondition(cm.condition)
-	e11:SetTarget(cm.target)
-	e11:SetOperation(cm.operation)
-	e11:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e11)
+function cm.netg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_MZONE) and chkc:IsControler(tp) and cm.ckfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+	e:GetHandler():RegisterFlagEffect(m,RESET_PHASE+PHASE_END,0,1) 
 end
+function cm.neop(e,tp,eg,ep,ev,re,r,rp)
+local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and (tc:IsFaceup() or tc:IsLocation(LOCATION_GRAVE)) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil)  then 
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil)
+		local tc2=g:GetFirst()
+		while tc2 do		  
+		   local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetCode(EFFECT_CHANGE_CODE)
+			e1:SetValue(tc:GetOriginalCode())
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+Duel.GetCurrentPhase())
+			tc2:RegisterEffect(e1) 
+			tc2=g:GetNext()
+		end 
+	end
+end
+
+function cm.con2(e,tp,eg,ep,ev,re,r,rp)  
+	return   e:GetHandler():GetFlagEffect(33400707)>1
 end
 function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,4))
@@ -159,31 +191,13 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function cm.thfilter(c,mc)
-	return c:IsAbleToHand() and c:IsCode(mc:GetCode())
-end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	 if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil,re:GetHandler()) end
-	 Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED)
-end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil,re:GetHandler()) then
-	 local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil,re:GetHandler())
-	 if g:GetCount()>0 then
-		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	 end
-	end
-end
-
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+function cm.con3(e,tp,eg,ep,ev,re,r,rp)
 	local tc=re:GetHandler()
-	return tc:GetCode()~=tc:GetOriginalCode() and tc:IsRelateToEffect(re) and (re:IsActiveType(TYPE_MONSTER)
+	return  e:GetHandler():GetFlagEffect(33400707)>2 and  tc:GetCode()~=tc:GetOriginalCode() and tc:IsRelateToEffect(re) and (re:IsActiveType(TYPE_MONSTER)
 		or (re:IsActiveType(TYPE_SPELL+TYPE_TRAP) ))
 end
 function cm.tgfilter(c)
-	return c:GetCode()~=c:GetOriginalCode() and c:IsAbleToGrave()
+	return (c:GetCode()~=c:GetOriginalCode() or c:IsFacedown()) and c:IsAbleToGrave()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)  end

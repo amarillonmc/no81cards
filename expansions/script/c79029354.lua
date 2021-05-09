@@ -35,6 +35,7 @@ function c79029354.thfil(c)
 	return c:IsSetCard(0xa900) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c79029354.activate(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local sg=Duel.SelectMatchingCard(tp,c79029354.spfil,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	if e:GetLabelObject()==nil then return end

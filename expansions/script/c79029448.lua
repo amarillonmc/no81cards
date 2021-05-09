@@ -71,12 +71,15 @@ function c79029448.skipop(e,tp,eg,ep,ev,re,r,rp)
 	local x=math.floor(ev/1000)
 	local g=Duel.GetMatchingGroup(c79029448.rumfil,tp,LOCATION_EXTRA,0,nil,e,tp,ev)
 	if g:GetCount()<0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_NUMBER)
-	e:SetLabel(Duel.AnnounceNumber(tp,table.unpack(t)))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
+	local mg=c:GetOverlayGroup()
+	if mg:GetCount()~=0 then
+	Duel.Overlay(tc,mg)
+	end
 	Duel.Overlay(tc,c)
 	Duel.SpecialSummon(tc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+	tc:CompleteProcedure()
 end
 function c79029448.xfilter(c,e,tp)
 	return c:IsLocation(LOCATION_GRAVE) and c:IsCanBeEffectTarget(e)

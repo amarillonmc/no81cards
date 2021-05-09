@@ -151,7 +151,7 @@ function c79029011.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 		ft=ft-1
 		ct=ct-1
-		while ft>0 and ct>0 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(11,2)) do
+		while ft>0 and ct>0 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(79029011,2)) do
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local sg2=g:Select(tp,1,1,nil)
 			sg:AddCard(sg2:GetFirst())

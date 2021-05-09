@@ -9,7 +9,6 @@ function c79029050.initial_effect(c)
 	e1:SetDescription(aux.Stringid(83414006,0))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(c79029050.condition)
 	e1:SetTarget(c79029050.target)
@@ -20,7 +19,8 @@ function c79029050.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetOperation(c79029050.counter)
+	e2:SetCondition(c79029050.ctcon)
+	e2:SetOperation(c79029050.ctop)
 	c:RegisterEffect(e2)
 	local e0=e2:Clone()
 	e0:SetCode(EVENT_SUMMON_SUCCESS)
@@ -47,27 +47,35 @@ end
 function c79029050.actfilter(e,re,tp)
 	local tc=re:GetHandler()
 	local c=e:GetHandler()
-	return tc:IsLocation(LOCATION_MZONE) and re:IsActiveType(TYPE_MONSTER) and tc:IsLevelBelow(c:GetCounter(0x1099)) or tc:IsLocation(LOCATION_MZONE) and re:IsActiveType(TYPE_MONSTER) and   tc:IsRankBelow(c:GetCounter(0x1099))
+	return re:IsActiveType(TYPE_MONSTER) and (tc:IsLevelBelow(c:GetCounter(0x1099)) or tc:IsRankBelow(c:GetCounter(0x1099)))
 end
 function c79029050.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c79029050.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,e:GetHandler(),1,0,0)
 end
 function c79029050.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.MoveToField(c,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetCode(EFFECT_CHANGE_TYPE)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+		c:RegisterEffect(e1)
 	Debug.Message("命运变幻无常，唯有胜者永存于世。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029050,0))
 end
-function c79029050.counter(e,tp,eg,ep,ev,re,r,rp)
-local tc=eg:GetFirst()
-if tc:IsFaceup() and tc:IsControler(tp) then
-	e:GetHandler():AddCounter(0x1099,1) 
+function c79029050.ctcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsControler,1,nil,tp)	
 end
+function c79029050.ctop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	c:AddCounter(0x1099,1) 
 end
 function c79029050.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetCounter(0x1099)>0

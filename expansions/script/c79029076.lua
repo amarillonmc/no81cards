@@ -53,8 +53,8 @@ end
 function c79029076.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	 if chk==0 then return true end
 	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(1000)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
+	Duel.SetTargetParam(1500)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1500)
 end
 function c79029076.operation(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
@@ -105,10 +105,10 @@ end
 function c79029076.iop2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if Duel.GetAttackTarget()==nil then return end
 	local c=e:GetHandler()
-	if Duel.IsExistingMatchingCard(c79029076.filter,tp,LOCATION_HAND,0,2,nil,e,tp) then
+	if Duel.IsExistingMatchingCard(c79029076.filter,tp,LOCATION_HAND,0,1,nil,e,tp) then
 	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local f=Duel.SelectMatchingCard(tp,c79029076.filter,tp,LOCATION_HAND,0,2,2,nil)
+	local f=Duel.SelectMatchingCard(tp,c79029076.filter,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.SendtoGrave(f,nil,REASON_COST)
 	local a=Duel.GetAttacker()
 	local d=Duel.GetAttackTarget()

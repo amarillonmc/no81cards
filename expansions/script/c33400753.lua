@@ -34,9 +34,6 @@ function cm.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsSetCard(0x341)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
-function cm.filter3(c,e)
-	return c:IsOnField() and not c:IsImmuneToEffect(e)
-end
 function cm.ffilter(c,tp)
 	return c:IsOnField() and c:IsControler(1-tp)
 end
@@ -52,7 +49,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp):Filter(Card.IsOnField,nil)
+		local mg1=Duel.GetFusionMaterial(tp)
 		local mg2=Duel.GetMatchingGroup(cm.filter0,tp,0,LOCATION_MZONE,nil)
 		mg1:Merge(mg2)
 		Auxiliary.FCheckAdditional=cm.fcheck
@@ -75,7 +72,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
 	local ss=0
 	local chkf=tp
-	local mg1=Duel.GetFusionMaterial(tp):Filter(cm.filter3,nil,e)
+	local mg1=Duel.GetFusionMaterial(tp)
 	local mg2=Duel.GetMatchingGroup(cm.filter1,tp,0,LOCATION_MZONE,nil,e)
 	mg1:Merge(mg2)
 	Auxiliary.FCheckAdditional=cm.fcheck
