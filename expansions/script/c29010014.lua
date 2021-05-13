@@ -48,12 +48,12 @@ function c29010014.ctfil(c)
 	return c:IsSetCard(0x87af) and c:IsAbleToDeckAsCost()
 end
 function c29010014.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29010014.ctfil,tp,LOCATION_GRAVE,0,2,nil) end
-	local g=Duel.SelectMatchingCard(tp,c29010014.ctfil,tp,LOCATION_GRAVE,0,2,2,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29010014.ctfil,tp,LOCATION_GRAVE,0,2,e:GetHandler()) end
+	local g=Duel.SelectMatchingCard(tp,c29010014.ctfil,tp,LOCATION_GRAVE,0,2,2,e:GetHandler())
 	Duel.SendtoDeck(g,tp,2,REASON_COST)
 end
 function c29010014.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,22702055) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_GRAVE)
 end
 function c29010014.spop(e,tp,eg,ep,ev,re,r,rp)

@@ -21,7 +21,7 @@ function cm.cfilter(c,tp)
 	return c:GetPreviousControler()==tp
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp) and Duel.GetTurnPlayer()~=tp
+	return not eg:IsExists(cm.cfilter,1,nil,tp) and Duel.GetTurnPlayer()~=tp
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

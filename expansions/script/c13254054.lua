@@ -65,7 +65,7 @@ function cm.tdfilter(c)
 	return c:IsAbleToDeckAsCost() and tama.tamas_isExistElement(c,TAMA_ELEMENT_LIFE)
 end
 function cm.spfilter(c,sg,e,tp)
-	return c:IsType(TYPE_MONSTER) and tama.tamas_isExistElement(c,TAMA_ELEMENT_LIFE) and sg:GetSum(tamas_getElementCount,TAMA_ELEMENT_LIFE)>=tamas_getElementCount(c,TAMA_ELEMENT_LIFE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and tama.tamas_isExistElement(c,TAMA_ELEMENT_LIFE) and sg:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_LIFE)>=tama.tamas_getElementCount(c,TAMA_ELEMENT_LIFE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
