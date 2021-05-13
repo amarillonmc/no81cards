@@ -29,7 +29,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_CARD,1-tp,m)
-		Duel.Remove(c,POS_FACEUP,REASON_RULE)
+		Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
 		if c:GetPreviousLocation()==LOCATION_HAND then
 			Duel.Draw(tp,1,REASON_RULE)
 		end
