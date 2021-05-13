@@ -34,17 +34,14 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local e3=Effect.CreateEffect(c)
+	local e3=Effect.CreateEffect(e:GetHandler())
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_IMMUNE_EFFECT)
-	e3:SetTargetRange(LOCATION_ONFIELD,0)
-	e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x356))
-	e3:SetValue(cm.efilter)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e3:SetTargetRange(0,1)
+	e3:SetValue(1)
 	e3:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e3,tp)
-end
-function cm.efilter(e,re)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_CHAOS,2}}

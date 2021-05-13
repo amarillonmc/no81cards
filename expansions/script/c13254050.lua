@@ -39,11 +39,12 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		local t1=Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
 		local t2=Duel.IsExistingMatchingCard(cm.rfilter,tp,0,LOCATION_GRAVE+LOCATION_EXTRA,1,nil)
 
+		local op1=false
 		local op=0
 		if t then
-			t=Duel.SelectYesNo(tp,aux.Stringid(m,0))
+			op1=Duel.SelectYesNo(tp,aux.Stringid(m,0))
 		end
-		if not t then
+		if not op1 then
 			local x={}
 			local y={}
 			local ct=1
@@ -54,17 +55,17 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			op=y[sp+1]
 		end
 
-		if op==1 or t then
+		if op==1 or op1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 			if g:GetCount()>0 then
 				Duel.Destroy(g,REASON_EFFECT)
 			end
 		end
-		if op==2 or t then
+		if op==2 or op1 then
 			Duel.Damage(1-tp,800,REASON_EFFECT)
 		end
-		if op==3 or t then
+		if op==3 or op1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local g=Duel.SelectMatchingCard(tp,cm.rfilter,tp,0,0+LOCATION_EXTRA,1,1,nil)
 			if g:GetCount()>0 then
