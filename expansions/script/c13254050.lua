@@ -67,7 +67,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if op==3 or op1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local g=Duel.SelectMatchingCard(tp,cm.rfilter,tp,0,0+LOCATION_EXTRA,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,cm.rfilter,tp,0,LOCATION_GRAVE+LOCATION_EXTRA,1,1,nil)
 			if g:GetCount()>0 then
 				Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 			end
