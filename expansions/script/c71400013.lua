@@ -106,7 +106,7 @@ function c71400013.operation2(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(el3)
 end
 function c71400013.discon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and rp==1-tp
+	return re:IsActiveType(TYPE_MONSTER) and rp==1-tp and re:GetActivateLocation()&(LOCATION_MZONE+LOCATION_GRAVE)~=0
 end
 function c71400013.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
