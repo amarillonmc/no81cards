@@ -1,5 +1,5 @@
 --Real Scl Version - Variable
-local Version_Number = 20201030
+local Version_Number = 20210505
 local m = 10199990
 local vm = 10199991
 if rsv then return end
@@ -40,6 +40,9 @@ rstg.tk_list = { }
 
 rsef.effet_no_register = false 
 
+rsop.chk = 1 --"rsop Check"
+rsop.chk_e = nil
+rsop.chk_p = 0
 
 rscf.synchro_material_action = { } --"Custom syn material's action"
 rscf.xyz_material_action = { } --"Custom xyz material's action" 
@@ -104,121 +107,159 @@ rshint.darktuner = aux.Stringid(m,14)   --"treat as dark tuner"
 rshint.darksynchro = aux.Stringid(m,15) --"treat as dark synchro"
 
 
+--Effect type Variable
+rsef.type_list = {
+
+	   ["s"] = { TYPE_SPELL }, ["t"] = { TYPE_TRAP }, ["m"] = { TYPE_MONSTER }
+	  ,["a"] = { nil, EFFECT_TYPE_ACTIVATE }
+	  ,["ta"] = { TYPE_TRAP, EFFECT_TYPE_ACTIVATE }, ["sa"] = { TYPE_SPELL, EFFECT_TYPE_ACTIVATE }
+
+}
+
 --Property Variable
-rsflag.flag_list =   { 
+rsflag.list =   { 
 	
 		["tg"] = EFFECT_FLAG_CARD_TARGET, ["ptg"] = EFFECT_FLAG_PLAYER_TARGET, ["de"] = EFFECT_FLAG_DELAY, ["dsp"] = EFFECT_FLAG_DAMAGE_STEP 
 	  , ["dcal"] = EFFECT_FLAG_DAMAGE_CAL, ["ii"] = EFFECT_FLAG_IGNORE_IMMUNE, ["sa"] = EFFECT_FLAG_SET_AVAILABLE, ["ir"] = EFFECT_FLAG_IGNORE_RANGE 
 	  , ["sr"] = EFFECT_FLAG_SINGLE_RANGE, ["bs"] = EFFECT_FLAG_BOTH_SIDE, ["uc"] = EFFECT_FLAG_UNCOPYABLE, ["cd"] = EFFECT_FLAG_CANNOT_DISABLE 
-	  , ["cn"] = EFFECT_FLAG_CANNOT_NEGATE, ["ch"] = EFFECT_FLAG_CLIENT_HINT, ["lz"] = EFFECT_FLAG_LIMIT_ZONE, ["at"] = EFFECT_FLAG_ABSOLUTE_TARGET
-	  , ["sp"] = EFFECT_FLAG_SPSUM_PARAM, ["ep"] = EFFECT_FLAG_EVENT_PLAYER, ["oa"] = EFFECT_FLAG_OATH 
+	  , ["cn"] = EFFECT_FLAG_CANNOT_NEGATE, ["ch"] = EFFECT_FLAG_CLIENT_HINT, ["lz"] = EFFECT_FLAG_LIMIT_ZONE, ["atg"] = EFFECT_FLAG_ABSOLUTE_TARGET 
+	  , ["sp"] = EFFECT_FLAG_SPSUM_PARAM, ["ep"] = EFFECT_FLAG_EVENT_PLAYER, ["oa"] = EFFECT_FLAG_OATH , ["ntr"] = EFFECT_FLAG_NO_TURN_RESET 
 
-} 
+}   
 
 --Category Variable
--- [str] = { category, select_hint, effect_hint, would_hint, operation }
+-- [str] = { description, category, select_hint, effect_hint, would_hint, operation(fun, total_parama_len, parama1, ...) }
 --operation for rsop.operationcard(selected_group, reason, e, tp, eg, ep, ev, re, r, rp)
-function rsof.Get_Cate_Hint_Op_List()   
+rsof.reason_fun = { }
+function rsof.ExR(exr)
+	local f = function(r)
+		return r | exr
+	end
+	rsof.reason_fun[f] = true 
+	return f
+end
+function rsof.Get_Cate_Hint_Op_List()  
+	local sg = "solve_parama"
+	local tp = "activate_player"
+	local r = "reason"
+	local e = "activate_effect"
 	rscate.cate_selhint_list =   {
 
-		["des"] = { CATEGORY_DESTROY, HINTMSG_DESTROY, aux.Stringid(1571945,0), aux.Stringid(20590515,2), rsop.OperationDestroy() }
-	  , ["rdes"] = { CATEGORY_DESTROY, HINTMSG_DESTROY, aux.Stringid(1571945,0), aux.Stringid(20590515,2), rsop.OperationDestroy(REASON_REPLACE) }
+		["des"] = { "Destroy", CATEGORY_DESTROY, HINTMSG_DESTROY, { 1571945,0 }, { 20590515,2 }, { rsop.Destroy, 3, sg, r } }
+	  , ["rdes"] = { "Destroy Replace", CATEGORY_DESTROY, HINTMSG_DESTROY, { 1571945,0 }, { 20590515,2 }, { rsop.Destroy, 3, sg, rsof.ExR(REASON_REPLACE) } }
 
-	  , ["res"] = { CATEGORY_RELEASE, HINTMSG_RELEASE, aux.Stringid(33779875,0), nil, rsop.OperationRelease }
+	  , ["res"] = { "Release", CATEGORY_RELEASE, HINTMSG_RELEASE, { 33779875,0 }, nil, { rsop.Release, 2, sg, r } }
 
-	  , ["rm"] = { CATEGORY_REMOVE, HINTMSG_REMOVE, aux.Stringid(612115,0), aux.Stringid(93191801,2), rsop.OperationRemove(POS_FACEUP) }
-	  , ["rmd"] = { CATEGORY_REMOVE, HINTMSG_REMOVE, aux.Stringid(612115,0), aux.Stringid(93191801,2), rsop.OperationRemove(POS_FACEDOWN) }
+	  , ["rm"] = { "Remove Face-Up", CATEGORY_REMOVE, HINTMSG_REMOVE, { 612115,0 }, { 93191801,2 }, { rsop.Remove, 3, sg, POS_FACEUP, r } }
+	  , ["rmd"] = { "Remove Face-Down", CATEGORY_REMOVE, HINTMSG_REMOVE, { 612115,0 }, { 93191801,2 }, { rsop.Remove, 3, sg, POS_FACEDOWN, r } }
 
-	  , ["se"] = { CATEGORY_SEARCH, 0 }
-	  , ["th"] = { CATEGORY_TOHAND, HINTMSG_ATOHAND, aux.Stringid(1249315,0), aux.Stringid(26118970,1), rsop.OperationToHand }
-	  , ["rth"] = { CATEGORY_TOHAND, HINTMSG_RTOHAND, aux.Stringid(13890468,0), aux.Stringid(9464441,2), rsop.OperationToHand }
+	  , ["se"] = { "Search", CATEGORY_SEARCH, 0, { 135598,0 } }
+	  , ["th"] = { "Add to Hand", CATEGORY_TOHAND, HINTMSG_ATOHAND, { 1249315,0 }, { 26118970,1 }, { rsop.SendtoHand, 4, sg, nil, r } }
+	  , ["rth"] = { "Return to Hand", CATEGORY_TOHAND, HINTMSG_RTOHAND, { 13890468,0 }, { 9464441,2 }, { rsop.SendtoHand, 4, sg, nil, r } }
 
-	  , ["td"] = { CATEGORY_TODECK, HINTMSG_TODECK, aux.Stringid(4779823,1), aux.Stringid(m,6), rsop.OperationToDeck(2) }
-	  , ["tdt"] = { CATEGORY_TODECK, HINTMSG_TODECK, aux.Stringid(55705473,1), aux.Stringid(m,6), rsop.OperationToDeck(0) }
-	  , ["tdb"] = { CATEGORY_TODECK, HINTMSG_TODECK, aux.Stringid(55705473,2), aux.Stringid(m,6), rsop.OperationToDeck(1) }
+	  , ["td"] = { "Send to Deck", CATEGORY_TODECK, HINTMSG_TODECK, { 4779823,1 }, { m,6 }, { rsop.SendtoDeck, 4, sg, nil, 2, r} }
+	  , ["tdt"] = { "Send to Deck-Top", CATEGORY_TODECK, HINTMSG_TODECK, { 55705473,1 }, { m,6 }, { rsop.SendtoDeck, 4, sg, nil, 2, r} }
+	  , ["tdb"] = { "Send to Deck-Bottom", CATEGORY_TODECK, HINTMSG_TODECK, { 55705473,2 }, { m,6 }, { rsop.SendtoDeck, 4, sg, nil, 0, r} }
 
-	  , ["ptdt"] = { 0, aux.Stringid(45593826,3), aux.Stringid(15521027,3) }
-	  , ["ptdb"] = { 0, 0, aux.Stringid(15521027,4) }
+	  , ["ptdt"] = { "Place to Deck-Top", 0, { 45593826,3 }, { 15521027,3 } }
+	  , ["ptdb"] = { "Place to Deck-Bottom",0, 0, { 15521027,4 } }
 
-	  , ["te"] = { CATEGORY_TOEXTRA, HINTMSG_TODECK, aux.Stringid(4779823,1), aux.Stringid(m,6), rsop.OperationToDeck(2) }
-	  , ["pte"] = { CATEGORY_TOEXTRA, aux.Stringid(24094258,3), aux.Stringid(18210764,0), nil, rsop.OperationPToDeck }
+	  , ["te"] = { "Send to Extra", CATEGORY_TOEXTRA, HINTMSG_TODECK, { 4779823,1 }, { m,6 }, { rsop.SendtoExtra, 4, sg, nil, 2, r} }
+	  , ["tde"] = { "Send to Main or Extra", CATEGORY_TODECK, HINTMSG_TODECK, { 4779823,1 }, { m,6 }, { rsop.SendtoMAndE, 4, sg, nil, 2, r} }
+	  , ["pte"] = { "Pendulum to Extra", CATEGORY_TOEXTRA, { 24094258,3 }, { 18210764,0 }, nil, { rsop.SendtoExtraP, 3, sg, nil, r} }
 
-	  , ["tg"] = { CATEGORY_TOGRAVE, HINTMSG_TOGRAVE, aux.Stringid(1050186,0), aux.Stringid(62834295,2), rsop.OperationToGrave }
-	  , ["rtg"] = { CATEGORY_TOGRAVE, aux.Stringid(48976825,0), aux.Stringid(28039390,1), rsop.OperationToGrave }
+	  , ["tg"] = { "Send to Grave", CATEGORY_TOGRAVE, HINTMSG_TOGRAVE, { 1050186,0 }, { 62834295,2 }, { rsop.SendtoGrave, 2, sg, r} }
+	  , ["rtg"] = { "Return to Grave", CATEGORY_TOGRAVE, { 48976825,0 }, { 28039390,1 }, 0, { rsop.SendtoGrave, 2, sg, rsof.ExR(REASON_RETURN)} }
+	  , ["dtg"] = { "Discard to Grave", CATEGORY_HANDES + CATEGORY_TOGRAVE, HINTMSG_DISCARD, { 18407024,0 }, { 43332022,1 }, { rsop.SendtoGrave, 2, sg, rsof.ExR(REASON_DISCARD)} }
 
-	  , ["disd"] = { CATEGORY_DECKDES, 0, aux.Stringid(13995824,0), nil, rsop.OperationDiscardDeck } 
-	  , ["dd"] = { CATEGORY_DECKDES, 0, aux.Stringid(13995824,0), nil, rsop.OperationDiscardDeck } 
+	  , ["dish"] = { "Discard Hand", CATEGORY_HANDES, HINTMSG_DISCARD, { 18407024,0 }, { 43332022,1 }, { rsop.SendtoGrave, 2, sg, rsof.ExR(REASON_DISCARD)} }
+	  , ["dh"] = { "Discard Hand", CATEGORY_HANDES, HINTMSG_DISCARD, { 18407024,0 }, { 43332022,1 }, { rsop.SendtoGrave, 2, sg, rsof.ExR(REASON_DISCARD)} }
+	  , ["dishf"] = { "Discard Hand Function", CATEGORY_HANDES, HINTMSG_DISCARD, { 18407024,0 }, { 43332022,1 }, { rsop.SendtoGrave, 2, sg, rsof.ExR(REASON_DISCARD)} }
+	  , ["dhf"] = { "Discard Hand Function", CATEGORY_HANDES, HINTMSG_DISCARD, { 18407024,0 }, { 43332022,1 }, { rsop.SendtoGrave, 2, sg, rsof.ExR(REASON_DISCARD)} }
 
-	  , ["dish"] = { CATEGORY_HANDES, HINTMSG_DISCARD, aux.Stringid(18407024,0), aux.Stringid(43332022,1), rsop.OperationDiscardHand }
-	  , ["dh"] = { CATEGORY_HANDES, HINTMSG_DISCARD, aux.Stringid(18407024,0), aux.Stringid(43332022,1), rsop.OperationDiscardHand }
-	  , ["dishf"] = { CATEGORY_HANDES, HINTMSG_DISCARD, aux.Stringid(18407024,0), aux.Stringid(43332022,1), rsop.OperationDiscardHand }
-	  , ["dhf"] = { CATEGORY_HANDES, HINTMSG_DISCARD, aux.Stringid(18407024,0), aux.Stringid(43332022,1), rsop.OperationDiscardHand }
+	  , ["disd"] = { "Discard Deck", CATEGORY_DECKDES, 0, { 13995824,0 }, nil, { rsop.DiscardDeck_Special, 2, sg, r } } 
+	  , ["dd"] = { "Discard Deck", CATEGORY_DECKDES, 0, { 13995824,0 }, nil, { rsop.DiscardDeck_Special, 2, sg, r } } 
 
-	  , ["dr"] = { CATEGORY_DRAW, 0, aux.Stringid(4732017,0), aux.Stringid(3679218,1) }
+	  , ["dr"] = { "Draw", CATEGORY_DRAW, 0, { 4732017,0 }, { 3679218,1 } }
 
-	  , ["dam"] = { CATEGORY_DAMAGE, 0, aux.Stringid(3775068,0), aux.Stringid(12541409,1) }
-	  , ["rec"] = { CATEGORY_RECOVER, 0, aux.Stringid(16259549,0), aux.Stringid(54527349,0) }
+	  , ["dam"] = { "Damage", CATEGORY_DAMAGE, 0, { 3775068,0 }, { 12541409,1 } }
+	  , ["rec"] = { "Recovery", CATEGORY_RECOVER, 0, { 16259549,0 }, { 54527349,0 } }
 
-	  , ["sum"] = { CATEGORY_SUMMON, HINTMSG_SUMMON, aux.Stringid(65247798,0), aux.Stringid(41139112,0) }
-	  , ["sp"] = { CATEGORY_SPECIAL_SUMMON, HINTMSG_SPSUMMON, aux.Stringid(74892653,2), aux.Stringid(17535764,1) }
-	  , ["tk"] = { CATEGORY_TOKEN, 0, aux.Stringid(9929398,0), aux.Stringid(2625939,0) }
+	  , ["sum"] = { "Normal Summon", CATEGORY_SUMMON, HINTMSG_SUMMON, { 65247798,0 }, { 41139112,0 } }
+	  , ["tk"] = { "Token", CATEGORY_TOKEN, 0, { 9929398,0 }, { 2625939,0 } }
+	  , ["sp"] = { "Special Summon", CATEGORY_SPECIAL_SUMMON, HINTMSG_SPSUMMON, { 74892653,2 }, { 17535764,1 }, { rssf.SpecialSummon, 10, sg, 0, tp, tp, false, false, POS_FACEUP  } }
 
-	  , ["pos"] = { CATEGORY_POSITION, HINTMSG_POSCHANGE, aux.Stringid(3648368,0), aux.Stringid(m,2) }
-	  , ["cp"] = { CATEGORY_POSITION, HINTMSG_POSCHANGE, aux.Stringid(3648368,0), aux.Stringid(m,2) }
-	  , ["upa"] = { CATEGORY_POSITION, HINTMSG_POSCHANGE, aux.Stringid(359563,0), aux.Stringid(m,2), rsop.OperationPos(POS_FACEUP_ATTACK), Card.IsCanChangePosition }
-	  , ["upd"] = { CATEGORY_POSITION, HINTMSG_POSCHANGE, aux.Stringid(52158283,1), aux.Stringid(m,2), rsop.OperationPos(POS_FACEUP_DEFENSE), Card.IsCanChangePosition }
-	  , ["dpd"] = { CATEGORY_POSITION, HINTMSG_SET, aux.Stringid(359563,0), aux.Stringid(m,2), rsop.OperationPos(POS_FACEDOWN_DEFENSE), Card.IsCanTurnSet }
-	  , ["dpd"] = { CATEGORY_POSITION, HINTMSG_SET, aux.Stringid(359563,0), aux.Stringid(m,2), rsop.OperationPos(POS_FACEDOWN_DEFENSE), Card.IsCanTurnSet }
+	  , ["cp"] = { "Change Position", CATEGORY_POSITION, HINTMSG_POSCHANGE, { 3648368,0 }, { m,2 }, { rsop.ChangePosition, 7, sg } }
+	  , ["pos"] = { "Change Position", CATEGORY_POSITION, HINTMSG_POSCHANGE, { 3648368,0 }, { m,2 }, { rsop.ChangePosition, 7, sg } }
+	  , ["upa"] = { "Change to POS_FACEUP_ATTACK", CATEGORY_POSITION, HINTMSG_POSCHANGE, { 359563,0 }, { m,2 }, { rsop.ChangePosition, 7, sg, POS_FACEUP_ATTACK } }
+	  , ["upd"] = { "Change to POS_FACEUP_DEFENSE", CATEGORY_POSITION, HINTMSG_POSCHANGE, { 52158283,1 }, { m,2 }, { rsop.ChangePosition, 7, sg, POS_FACEUP_DEFENSE } }
+	  , ["dpd"] = { "Change to POS_FACEDOWN_DEFENSE", CATEGORY_POSITION, HINTMSG_SET, { 359563,0 }, { m,2 }, { rsop.ChangePosition, 7, sg, POS_FACEDOWN_DEFENSE } }
+	  , ["posd"] = { "Change to POS_DEFENSE", CATEGORY_POSITION, HINTMSG_SET, { 359563,0 }, { m,2 }, { rsop.ChangePosition, 7, sg, POS_DEFENSE } }
 
+	  , ["ctrl"] = { "Get Control", CATEGORY_CONTROL, HINTMSG_CONTROL, { 4941482,0 }, nil, { rsop.GetControl, 5, sg, tp, 0, 0, 0xff  } }
+	  , ["sctrl"] = { "Switch Control", CATEGORY_CONTROL, HINTMSG_CONTROL, { 36331074,0 } }
 
-	  , ["ctrl"] = { CATEGORY_CONTROL, HINTMSG_CONTROL, aux.Stringid(4941482,0) }
-	  , ["sctrl"] = { CATEGORY_CONTROL, HINTMSG_CONTROL, aux.Stringid(36331074,0) }
+	  , ["dis"] = { "Disable Effect", CATEGORY_DISABLE, HINTMSG_DISABLE, { 39185163,1 }, { 25166510,2 } }
+	  , ["diss"] = { "Disable Summon", CATEGORY_DISABLE_SUMMON, 0, { m,1 } }
+	  , ["neg"] = { "Negate Activation", CATEGORY_NEGATE, 0, { 19502505,1 } }
 
-	  , ["dis"] = { CATEGORY_DISABLE, HINTMSG_DISABLE, aux.Stringid(39185163,1), aux.Stringid(25166510,2) }
-	  , ["diss"] = { CATEGORY_DISABLE_SUMMON, 0, aux.Stringid(m,1) }
-	  , ["neg"] = { CATEGORY_NEGATE, 0, aux.Stringid(19502505,1) }
+	  , ["eq"] = { "Equip", CATEGORY_EQUIP, HINTMSG_EQUIP, { 68184115,0 }, { 35100834,0 } }
 
-	  , ["eq"] = { CATEGORY_EQUIP, HINTMSG_EQUIP, aux.Stringid(68184115,0), aux.Stringid(35100834,0) }
+	  , ["atk"] = { "Change Attack", CATEGORY_ATKCHANGE, HINTMSG_FACEUP, { 7194917,0 } }
+	  , ["def"] = { "Change Defense", CATEGORY_DEFCHANGE, HINTMSG_FACEUP, { 7194917,0 } }
 
-	  , ["atk"] = { CATEGORY_ATKCHANGE, HINTMSG_FACEUP, aux.Stringid(7194917,0) }
-	  , ["def"] = { CATEGORY_DEFCHANGE, HINTMSG_FACEUP, aux.Stringid(7194917,0) }
+	  , ["ct"] = { "Counter", CATEGORY_COUNTER, HINTMSG_COUNTER, { 3070049,0 }  }
+	  , ["pct"] = { "Place Counter", CATEGORY_COUNTER, HINTMSG_COUNTER, { 3070049,0 }  }
+	  , ["rct"] = { "Remove Counter", CATEGORY_COUNTER, HINTMSG_COUNTER, { 67234805,0 }  }
+	  , ["rmct"] = { "Remove Counter", CATEGORY_COUNTER, HINTMSG_COUNTER, { 67234805,0 }  }
 
-	  , ["ct"] = { CATEGORY_COUNTER, HINTMSG_COUNTER, aux.Stringid(3070049,0)  }
-	  , ["pct"] = { CATEGORY_COUNTER, HINTMSG_COUNTER, aux.Stringid(3070049,0)  }
-	  , ["rct"] = { CATEGORY_COUNTER, HINTMSG_COUNTER, aux.Stringid(67234805,0)  }
+	  , ["coin"] = { "Toss Coin", CATEGORY_COIN, 0, { 17032740,1 } } 
+	  , ["dice"] = { "Toss Dice",CATEGORY_DICE, 0, { 42421606,0 } }
+	  , ["an"] = { "Announce Card", CATEGORY_ANNOUNCE, 0 }
 
-	  , ["coin"] = { CATEGORY_COIN, 0, aux.Stringid(17032740,1) } 
-	  , ["dice"] = { CATEGORY_DICE, 0, aux.Stringid(42421606,0) }
-	  , ["an"] = { CATEGORY_ANNOUNCE, 0 }
+	  , ["lv"] = { "Change Level", 0, HINTMSG_FACEUP, { 9583383,0 } }
 
-	  , ["lg"] = { CATEGORY_LEAVE_GRAVE, 0 }
+	  , ["fus"] = { "Fusion Summon", CATEGORY_FUSION_SUMMON, 0, { 7241272,1 } }
 
-	  , ["lv"] = { 0, HINTMSG_FACEUP, aux.Stringid(9583383,0) }
+	  , ["ga"] = { "Grave Action", CATEGORY_GRAVE_ACTION, 0 }
+	  , ["gsp"] = { "Grave Special Summon", CATEGORY_GRAVE_SPSUMMON, 0 }
+	  , ["lg"] = { "Leave Grave", CATEGORY_LEAVE_GRAVE, 0 }
 
-	  , ["fus"] = { CATEGORY_FUSION_SUMMON, 0, aux.Stringid(7241272,1) }
-	  , ["ga"] = { CATEGORY_GRAVE_ACTION, 0 }
-	  , ["gsp"] = { CATEGORY_GRAVE_SPSUMMON, 0 }
-	 
-	  , ["cf"] = { 0, HINTMSG_CONFIRM, nil, nil, rsop.OperationConfirm }
+	  , ["cf"] = { "Confirm (can show public)", 0, HINTMSG_CONFIRM, {51351302, 0}, nil, { rsop.ConfirmCards, 1, sg } }
+	  , ["rv"] = { "Reveal, (cannot show public)", 0, HINTMSG_CONFIRM, {51351302, 0}, nil, { rsop.RevealCards, 2, sg } }
+	  , ["rvep"] = { "Reveal until End-Phase", 0, HINTMSG_CONFIRM, {51351302, 0}, nil, { rsop.RevealCards, 2, sg, rsrst.std_ep } }
 
-	  , ["tf"] = { 0, HINTMSG_TOFIELD, aux.Stringid(m,7) }
-	  , ["rf"] = { 0, aux.Stringid(80335817,0), nil, nil, rsop.OperationReturnToField() }
+	  , ["tf"] = { "Move to Field", 0, HINTMSG_TOFIELD, { m,7 }, nil, { rsop.MoveToField, 7, sg, tp } }
+	  , ["act"] = { "Activate", 0, HINTMSG_RESOLVEEFFECT, { m,0 }, nil, { rsop.MoveToField_Activate, 7, sg, tp } } 
+	  , ["rf"] = { "Return to Field", 0, { 80335817,0 }, nil, nil, { rsop.ReturnToField, 3, sg } }
+	  , ["rtf"] = { "Return to Field", 0, { 80335817,0 }, nil, nil, { rsop.ReturnToField, 3, sg } }
 
-	  , ["act"] = { 0, HINTMSG_RESOLVEEFFECT, aux.Stringid(m,0) } 
-	  , ["ae"] = { 0, HINTMSG_EFFECT, aux.Stringid(9560338,0) }
+	  , ["ae"] = { "Apply 1 Effect from Many", 0, HINTMSG_RESOLVEEFFECT, { 9560338,0 } }
 
-	  , ["set"] = { 0, HINTMSG_SET, aux.Stringid(2521011,0), aux.Stringid(30741503,1) }
-	  , ["sset"] = { 0, HINTMSG_SET, aux.Stringid(2521011,0), aux.Stringid(30741503,1), rsop.OperationSSet}
+	  , ["set"] = { "SSet", 0, HINTMSG_SET, { 2521011,0 }, { 30741503,1 } }
+	  , ["sset"] = { "SSet", 0, HINTMSG_SET, { 2521011,0 }, { 30741503,1 }, { rsop.SSet, 4, sg, tp, tp }}
 
-	  , ["xmat"] = { 0, HINTMSG_XMATERIAL, aux.Stringid(55285840,0) }
-	  , ["rmxm"] = { 0, HINTMSG_REMOVEXYZ, aux.Stringid(55285840,1) }
+	  , ["xmat"] = { "Attach Xyz Material", 0, HINTMSG_XMATERIAL, { 55285840,0 } }
+	  , ["axmat"] = { "Attach Xyz Material", 0, HINTMSG_XMATERIAL, { 55285840,0 } }
+	  , ["rxmat"] = { "Remove Xyz Material", 0, HINTMSG_REMOVEXYZ, { 55285840,1 } }
+	  , ["rmxmat"] = { "Remove Xyz Material", 0, HINTMSG_REMOVEXYZ, { 55285840,1 } }
 
-	  , ["ms"] = { 0, aux.Stringid(m,3), aux.Stringid(25163979,1) }
+	  , ["ms"] = { "Move Sequence", 0, { m,3 }, { 25163979,1 } }
 
-	  , ["dum"] = { 0, HINTMSG_OPERATECARD }
+	  , ["dum"] = { "Dummy Operate", 0, HINTMSG_OPERATECARD, 0, 0, { rsop.DummyOperate, 1, sg } }
 
 	}
 
+	--Switch Hint Format 
+	local hint = 0
+	for str, val in pairs(rscate.cate_selhint_list) do 
+		for idx = 3, 5 do
+			if val[idx] then
+				hint = rshint.SwitchHintFormat(nil, val[idx]) 
+				val[idx] = hint
+			end
+		end
+	end
 end
 
 
@@ -330,6 +371,8 @@ function rsef.Get_Value_Effect_Attribute_List()
 		, ["rtg"] = { EFFECT_TO_GRAVE_REDIRECT, LOCATION_REMOVED, nil, EFFECT_FLAG_CANNOT_DISABLE, EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE, RESETS_REDIRECT }
 		, ["rtd"] = { EFFECT_TO_DECK_REDIRECT,  LOCATION_REMOVED, nil, EFFECT_FLAG_CANNOT_DISABLE, EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE, RESETS_REDIRECT }
 		, ["rth"] = { EFFECT_TO_HAND_REDIRECT,  LOCATION_REMOVED, nil, EFFECT_FLAG_CANNOT_DISABLE, EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE, RESETS_REDIRECT }
+		, ["rlf"] = { EFFECT_LEAVE_FIELD_REDIRECT,  LOCATION_REMOVED, nil, EFFECT_FLAG_CANNOT_DISABLE, EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE, RESETS_REDIRECT }
+
 		, ["rlve"] = { EFFECT_LEAVE_FIELD_REDIRECT,  LOCATION_REMOVED, nil, EFFECT_FLAG_CANNOT_DISABLE, EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE, RESETS_REDIRECT }
 		, ["leave"] = { EFFECT_LEAVE_FIELD_REDIRECT,  LOCATION_REMOVED, nil, EFFECT_FLAG_CANNOT_DISABLE, EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE, RESETS_REDIRECT }
 
@@ -355,6 +398,9 @@ function rsef.Get_Value_Effect_Attribute_List()
 
 		, ["mat"] = { EFFECT_MATERIAL_CHECK, 1, nil, nil, EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE }
 
+		, ["ormat"] = { EFFECT_OVERLAY_RITUAL_MATERIAL, 1  } , ["grmat"] = { EFFECT_EXTRA_RITUAL_MATERIAL, 1  }
+		, ["fmat"] = { EFFECT_EXTRA_FUSION_MATERIAL, 1  } 
+
 		}
 
 
@@ -363,7 +409,11 @@ function rsef.Get_Value_Effect_Attribute_List()
 
 		, "im", "indb", "inde", "indct", "ind", "tgb~", "tge~"
 
-		, "fcode", "fset", "latt", "lrace", "lcode", "lset" }
+		, "fcode", "fset", "latt", "lrace", "lcode", "lset" 
+
+		, "ormat", "grmat", "fmat"
+
+		}
 
 	local affect_self_list2 = { }
 	for _, str in pairs(affect_self_list) do
@@ -379,7 +429,9 @@ rsef.value_code_list, rsef.value_affect_self_srt_list = rsef.Get_Value_Effect_At
 
 --Escape Old Functions
 function rsof.Escape_Old_Functions()
+
 	--//
+
 	rsreset = rsrst 
 
 	rsrst.est  =   rsrst.std
@@ -388,28 +440,45 @@ function rsof.Escape_Old_Functions()
 	rsrst.est_pend =   rsrst.std_ep
 	rsrst.ered  =   rsrst.ret 
 
-	--//
 
-	rscost.rmxyz = rscost.rmxmat
 
 	--//
-	rsof.DefineCard  =   rscf.DefineCard
+
 	rscf.FilterFaceUp =  rscf.fufilter
-	rsof.SendtoHand  =   rsop.SendtoHand
-	rsof.SendtoDeck  =   rsop.SendtoDeck
-	rsof.SendtoGrave =   rsop.SendtoGrave
-	rsof.Destroy	 =   rsop.Destroy
-	rsof.Remove   =   rsop.Remove
-	rsof.SelectHint  =   rshint.Select
-	rsof.SelectOption =   rsop.SelectOption
-	rsof.SelectOption_Page = rsop.SelectOption_Page
-	rsof.SelectNumber =   rsop.AnnounceNumber
-	rsof.SelectNumber_List = rsop.AnnounceNumber_List
-	rsof.IsSet   =   rscf.DefineSet
-	rscf.GetRelationThisCard = rscf.GetFaceUpSelf
-	rsop.eqop = rsop.Equip
 
-	rscon.sumtype = rscon.sumtypes
+	--//
+
+	rscf.GetRelationThisCard = rscf.GetFaceUpSelf
+
+	--//
+
+	rsval.imntg1 = rsval.imntges
+	rsval.imntg2 = rsval.imntgoe
+
+	--//
+
+	rscost.reglabel = rscost.setlab
+	rscost.rmxyz = rscost.rmxmat
+	rscost.lpcost = rscost.paylp 
+	rscost.lpcost2 = rscost.paylp2 
+	rscost.regflag = rscost.chnlim
+	rscost.regflag2 = function(flag_code)
+		return function(...)
+			return rscost.chnlim(flag_code, true)(...)
+		end
+	end
+
+	--//
+	rscon.sumtype = rscon.sumtyps
+	rscon.sumtypes = rscon.sumtyps
+
+	rscon.bsdcheck = rssf.CheckBlueEyesSpiritDragon
+
+	--//
+
+	rstg.chainlimit = rstg.chnlim
+
+	--//
 
 	rsop.SelectYesNo = rshint.SelectYesNo 
 	rsop.SelectOption = rshint.SelectOption
@@ -417,6 +486,10 @@ function rsof.Escape_Old_Functions()
 	rsop.AnnounceNumber = rshint.AnnounceNumber
 	rsop.AnnounceNumber_List = rshint.AnnounceNumber_List
 	rsop.AnnounceNumber_Default = rshint.AnnounceNumber_Default
+	rsop.eqop = rsop.Equip
+	rsop.SelectOC = rsop.SelectExPara
+
+	rsop.CheckOperateSuccess = rsop.CheckOperateCorrectly
 
 	rsef.SV_UTILITY_XYZ_MATERIAL = rsef.SV_UtilityXyzMaterial
 	rsef.SV_ACTIVATE_SPECIAL = rsef.SV_ActivateDirectly_Special
@@ -427,11 +500,15 @@ function rsof.Escape_Old_Functions()
 	rsef.ACT_EQUIP  =   rsef.A_Equip
 	rsef.STO_FLIP   =   rsef.STO_Flip
 	rsef.STF_FLIP   =   rsef.STF_Flip
-	rsef.QO_NEGATE  =   rsef.QO_Negate
+
 	rsef.FC_PHASELEAVE = rsef.FC_PhaseLeave
 
+	rsef.FC_PhaseLeave = function(reg_list, leave_val, times, whos, phase, leaveway, val_reset_list, ex_con)
+		return rsef.FC_PhaseOpearte(reg_list, leave_val, times, whos, phase, nil, leaveway, val_reset_list)
+	end
+
 	rsef.ACT = rsef.A 
-	
+
 	--//
 	--some card use old SummonBuff's phase leave field parterment, must fix them in their luas
 	rssf.SummonBuff = function(attlist,isdis,isdistig,selfleave,phaseleave)
@@ -456,11 +533,12 @@ function rsof.Escape_Old_Functions()
 			table.insert(bufflist,true)
 		end
 		if selfleave then 
-			table.insert(bufflist,"rlve")
+			table.insert(bufflist,"rlf")
 			table.insert(bufflist,selfleave)
 		end
 		return bufflist
 	end
+
 	rsop.list = function(...)
 		return {"opc", ...}
 	end
@@ -474,7 +552,8 @@ function rsof.Escape_Old_Functions()
 			if type(dn_filter) == "number" then
 				dn_filter = dn_list[dn_filter]
 			end
-			return rscon.disneg("neg", dn_filter, pl_fun and 1 or 0)(...)
+			if pl_fun then pl_fun = pl_fun and 1 or 0 end
+			return rscon.disneg("neg", dn_filter, pl_fun)(...)
 		end
 	end
 	rscon.discon = function(dn_filter, pl_fun)
@@ -483,7 +562,8 @@ function rsof.Escape_Old_Functions()
 			if type(dn_filter) == "number" then
 				dn_filter = dn_list[dn_filter]
 			end
-			return rscon.disneg("dis", dn_filter, pl_fun and 1 or 0)(...)
+			if pl_fun then pl_fun = pl_fun and 1 or 0 end
+			return rscon.disneg("dis", dn_filter, pl_fun)(...)
 		end
 	end
 	rsef.QO_NEGATE = function(reg_list, dn_type, lim_list, dn_str, range, con, cost, desc_list, cate, flag, reset_list)
@@ -494,16 +574,69 @@ function rsof.Escape_Old_Functions()
 	rstg.distg = rstg.dis
 	rsop.negop = rsop.neg
 	rsop.negop = rsop.dis
-
+	
 	--//
 	rscf.SetSpecialSummonProduce = function(reg_list,range,con,op,desc_list,lim_list,reset_list)
 		return rscf.AddSpecialSummonProcdure(reg_list,range,con,nil,op,desc_list,lim_list,nil,reset_list)
 	end
+
+	--//
+	rsop.SelectSolve = function(sel_hint, sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_list, ...)
+		solve_list = type(solve_list) == "table" and solve_list or { solve_list }
+		local para1 = solve_list[1]
+		if #solve_list == 0 then return 
+			rsop.SelectCards(sel_hint, sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, ...)
+		elseif para1 and type(para1) == "function" then 
+			local g = rsop.SelectCards(sel_hint, sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, ...)
+			local para_list = { }
+			local total_list = rsof.Table_Mix(solve_list, { ... })
+			for idx, val in pairs(total_list) do 
+				if idx > 1 then 
+					table.insert(para_list, val)
+				end
+			end
+			return para1(g, table.unpack(para_list))
+		else
+			return rsop.SelectOperate(sel_hint, sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_list, ...)
+		end
+	end
+	rsgf.SelectSolve = function(g, sel_hint, sp, filter, minct, maxct, except_obj, solve_list, ...)
+		solve_list = type(solve_list) == "table" and solve_list or { solve_list }
+		local para1 = solve_list[1]
+		if #solve_list == 0 then return 
+			rsgf.SelectCards(sel_hint, g, sp, filter, minct, maxct, except_obj, ...)
+		elseif para1 and type(para1) == "function" then 
+			local g = rsgf.SelectCards(sel_hint, g, sp, filter, minct, maxct, except_obj, ...)
+			local para_list = { }
+			local total_list = rsof.Table_Mix(solve_list, { ... })
+			for idx, val in pairs(total_list) do 
+				if idx > 1 then 
+					table.insert(para_list, val)
+				end
+			end
+			return para1(g, table.unpack(para_list))
+		else
+			return rsgf.SelectOperate(sel_hint, g, sp, filter, minct, maxct, except_obj, solve_list, ...)
+		end
+	end
+	local selectfun_list = {
+		["ToHand"] = "th", ["ToGrave"] = "tg", ["Release"] = "res", ["ToDeck"] = "td", ["Destroy"] = "des", ["Remove"] = "rm", 
+		["SpecialSummon"] = "sp", ["MoveToField"] = "tf", ["MoveToField_Activate"] = "act", ["SSet"] = "sset"
+	}
+	for str_idx, str_val in pairs(selectfun_list) do 
+		rsop["Select"..str_idx] = function(sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
+			return rsop.SelectOperate(str_val, sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_parama, ...)
+		end
+		rsgf["Select"..str_idx] = function(g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
+			return rsgf.SelectOperate(str_val, g, sp, filter, minct, maxct, except_obj, solve_parama, ...)
+		end
+	end
+	--//
+
 end
 
 
-
--- Old functions
+-- Old functions # effects
 
 -- Cannot destroed 
 function rsef.INDESTRUCTABLE_List(inds_list)
@@ -596,13 +729,14 @@ function rsef.FV_CANNOT_BE_TARGET(reg_list, tg_list, val_list, tg, tg_range_list
 end
 --Cannot disable 
 function rsef.CANNOT_DISABLE_List(dis_list)
-	local dis_list2 = string.gsub(dis_list, "dis", "dis~")
-	dis_list2 = string.gsub(dis_list2, "dise", "dise~")
-	dis_list2 = string.gsub(dis_list2, "act", "neg~")
-	dis_list2 = string.gsub(dis_list2, "sum", "dsum~")
-	dis_list2 = string.gsub(dis_list2, "sp", "dsp~")
-	dis_list2 = string.gsub(dis_list2, "fp", "dfp~")
-	return dis_list2
+	local compare_list = { ["dise"] = "dise~", ["dis"] = "dis~", ["act"] = "neg~", ["sum"] = "dsum~", ["sp"] = "dsp~", ["fp"] = "dfp", ["neg"] = "neg~" }
+	local dis_list2 = rsof.String_Split(dis_list,",")
+	local dis_list3 = ""
+	for _, str in pairs(dis_list2) do 
+		dis_list3 = dis_list3 .. compare_list[str] .. ","
+	end
+	dis_list3 = string.sub(dis_list3, 1, -2)
+	return dis_list3
 end
 --Single Val Effect: Cannot disable 
 function rsef.SV_CANNOT_DISABLE(reg_list, dis_list, val_list, con, reset_list, flag, desc_list, range)
@@ -645,6 +779,7 @@ function rsef.FV_LIMIT(reg_list, lim_list, val_list, tg, tg_range_list, con, res
 end
 --Field Val Effect: Other Limit (affect Player)
 function rsef.FV_LIMIT_PLAYER(reg_list, lim_list, val_list, tg, tg_range_list, con, reset_list, flag, desc_list) 
+	local str_list2 = rsef.LIMIT_List(lim_list)
 	return rsef.FV_Player(reg_list, str_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
 end
 --Leave field list
@@ -653,7 +788,7 @@ function rsef.REDIRECT_LIST(leave_list)
 	local str_list2 = { }
 	for _, string in pairs(str_list) do
 		if string == "leave" then 
-			table.insert(str_list2, "rlve")  
+			table.insert(str_list2, "rlf")  
 		else
 			table.insert(str_list2, "r"..string)
 		end
@@ -686,4 +821,12 @@ function rsef.SV_ACTIVATE_IMMEDIATELY(reg_list, act_list, con, reset_list, flag,
 		act_list2 = string.gsub(act_list2, "set", "tas")
 	end
 	return rsef.SV_Card(reg_list, act_list2, flag, nil, con, reset_list, desc_list)
+end
+--cost: tribute self 
+function rscost.releaseself(check_mzone, check_exzone)
+	return function(e, tp, eg, ep, ev, re, r, rp, chk)
+		local c = e:GetHandler()
+		if chk == 0 then return c:IsReleasable() and (not check_mzone or Duel.GetMZoneCount(tp, c, tp) > 0) and (not check_exzone or Duel.GetLocationCountFromEx(tp, tp, c, exmzone) > 0) end
+		Duel.Release(c, REASON_COST)
+	end
 end

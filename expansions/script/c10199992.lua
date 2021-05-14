@@ -96,6 +96,7 @@ local rsch  =   Churck
 
 #XueXiao 3234454893
 local rsmd  =   Mrs_Dice
+local rsxjm = XueJiMo
 
 #HuangWu 1103516856
 local rsdc  =   Dragon_Caller
