@@ -1,15 +1,17 @@
 --永夜抄 藤原妹红
-local m=72100314
+local m=72100313
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetCategory(CATEGORY_RELEASE+CATEGORY_SPECIAL_SUMMON)
+	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE+LOCATION_HAND)
-	e2:SetTarget(cm.rstg)
-	e2:SetOperation(cm.rsop)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e2:SetHintTiming(0x3c0,0x3c0)
+	e2:SetCost(cm.cost)
+	e2:SetTarget(cm.cptg)
+	e2:SetOperation(cm.cpop)
 	c:RegisterEffect(e2)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -27,7 +29,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_LEAVE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,m+1000)
+	e3:SetCountLimit(1,m)
 	e3:SetCondition(cm.spcon)
 	e3:SetCost(cm.spcost)
 	e3:SetTarget(cm.sptg)
@@ -58,56 +60,41 @@ function cm.hspop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 ----
-function cm.rcheck(gc)
-	return  function(tp,g,c)
-				return g:IsContains(gc)
-			end
+function cm.cpfilter(c)
+	return c:IsType(TYPE_RITUAL+TYPE_SPELL) and c:IsAbleToGraveAsCost()
+		and c:CheckActivateEffect(false,true,false)~=nil
 end
-function cm.rstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
+function cm.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+end
+function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local mg=Duel.GetRitualMaterial(tp)
-		aux.RCheckAdditional=cm.rcheck(c)
-		local res=mg:IsContains(c) and Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,aux.TRUE,e,tp,mg,nil,Card.GetLevel,"Greater")
-		aux.RCheckAdditional=nil
-		return res
+		if e:GetLabel()==0 then return false end
+		e:SetLabel(0)
+		return Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_DECK,0,1,nil)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
+	e:SetLabel(0)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,cm.cpfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
+	Duel.SendtoGrave(g,REASON_COST)
+	e:SetProperty(te:GetProperty())
+	local tg=te:GetTarget()
+	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
+	te:SetLabelObject(e:GetLabelObject())
+	e:SetLabelObject(te)
+	Duel.ClearOperationInfo(0)
 end
-function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
+function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local mg=Duel.GetRitualMaterial(tp)
-	if c:GetControler()~=tp or not c:IsRelateToEffect(e) or not mg:IsContains(c) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	aux.RCheckAdditional=cm.rcheck(c)
-	local tg=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,aux.TRUE,e,tp,mg,nil,Card.GetLevel,"Greater")
-	local tc=tg:GetFirst()
-	if tc then
-		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
-		if tc.mat_filter then
-			mg=mg:Filter(tc.mat_filter,tc,tp)
-		else
-		mg:RemoveCard(tc)
-		end
-		if not mg:IsContains(c) then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		Duel.SetSelectedCard(c)
-		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
-		local mat=mg:SelectSubGroup(tp,aux.RitualCheck,false,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater")
-		aux.GCheckAdditional=nil
-		if not mat or mat:GetCount()==0 then
-			aux.RCheckAdditional=nil
-			return
-		end
-		tc:SetMaterial(mat)
-		Duel.ReleaseRitualMaterial(mat)
-		Duel.BreakEffect()
-		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-		tc:CompleteProcedure()
+	local te=e:GetLabelObject()
+	if te then
+		e:SetLabelObject(te:GetLabelObject())
+		local op=te:GetOperation()
+		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end
-	aux.RCheckAdditional=nil
 end
-
 -----
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

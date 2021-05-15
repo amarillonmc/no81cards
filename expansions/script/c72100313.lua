@@ -19,9 +19,9 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,m)
-	e2:SetTarget(cm.target)
-	e2:SetOperation(cm.operation)
-	c:RegisterEffect(e1)
+	e2:SetTarget(cm.target2)
+	e2:SetOperation(cm.operation2)
+	c:RegisterEffect(e2)
 	local e4=e2:Clone()
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
@@ -108,11 +108,11 @@ end
 function cm.filter(c)
 	return c:IsSetCard(0xba1) and c:IsType(TYPE_MONSTER) and not c:IsCode(m) and c:IsAbleToHand()
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then

@@ -45,13 +45,13 @@ function c40009593.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not (tc:IsRelateToEffect(e) and tc:IsFaceup()) then return end
 	if tc:IsControler(tp) then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end	 
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end   
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g1=Duel.SelectMatchingCard(tp,c40009593.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,tc:GetCode())
 		if g1:GetCount()>0 then
 			Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
 			Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
-		end	  
+		end   
 	else
 		local e0=Effect.CreateEffect(c)
 		e0:SetType(EFFECT_TYPE_SINGLE)
@@ -77,7 +77,7 @@ function c40009593.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40009593.thfilter(c,e,tp)
-	return c:IsFaceup() and c:IsRace(RACE_WARRIOR) and c:IsAbleToDeck()
+	return c:IsFaceup() and c:IsLevelAbove(1) and c:IsRace(RACE_WARRIOR) and c:IsAbleToDeck()
 		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 		and Duel.IsExistingMatchingCard(c40009593.spfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
 end

@@ -4,7 +4,8 @@ function c29010010.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29010010,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTarget(c29010010.sptg)
@@ -26,7 +27,7 @@ function c29010010.filter(c,e,tp)
 end
 function c29010010.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c29010010.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+		and Duel.IsExistingMatchingCard(c29010010.filter,tp,LOCATION_HAND,0,1,nil,e,tp) and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function c29010010.thfil(c)

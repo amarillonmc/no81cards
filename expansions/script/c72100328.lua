@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_TO_DECK)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
@@ -35,7 +36,7 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.matfilter(c)
-	return c:IsLinkSetCard(0xbe2)
+	return c:IsLinkSetCard(0xbe2) and c:IsType(TYPE_MONSTER)
 end
 ------
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)

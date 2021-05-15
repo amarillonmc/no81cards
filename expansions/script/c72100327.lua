@@ -17,8 +17,9 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_DECK)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,m)
+	e3:SetCost(cm.spcost2)
 	e3:SetTarget(cm.thtg1)
 	e3:SetOperation(cm.thop1)
 	c:RegisterEffect(e3)
@@ -37,7 +38,7 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.matfilter(c)
-	return c:IsLinkSetCard(0xbe2)
+	return c:IsLinkSetCard(0xbe2) and c:IsType(TYPE_MONSTER)
 end
 -----
 function cm.spfilter(c,e,tp)
@@ -55,4 +56,10 @@ function cm.thop1(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
+end
+function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetDecktopGroup(tp,7)
+	if chk==0 then return g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)==7 end
+	Duel.DisableShuffleCheck()
+	Duel.Remove(g,POS_FACEDOWN,REASON_COST)
 end

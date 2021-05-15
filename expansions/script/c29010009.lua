@@ -17,7 +17,7 @@ function c29010009.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCost(c29010009.cost)
+	e2:SetCost(c29010009.spcost)
 	e2:SetTarget(c29010009.sptg)
 	e2:SetOperation(c29010009.spop)
 	c:RegisterEffect(e2)
@@ -43,13 +43,17 @@ function c29010009.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	e:GetHandler():CancelToGrave()
 end
+function c29010009.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(1)
+	return true
+end
 function c29010009.ckfil(c,e,tp)
 	return c:IsControler(1-tp) and c:IsAttribute(ATTRIBUTE_WATER) 
 end
 function c29010009.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
+	if chk==0 then 
 		if e:GetLabel()==0 then return false end
-		e:SetLabel(0)
+		e:SetLabel(0) 
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			and Duel.IsPlayerCanSpecialSummonMonster(tp,29010009,0,0x4011,0,0,8,RACE_AQUA,ATTRIBUTE_WATER) and eg:IsExists(c29010009.ckfil,1,nil,e,tp) end
 	e:SetLabel(0)
@@ -60,7 +64,7 @@ function c29010009.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,29010009,0,0x4011,0,0,8,RACE_AQUA,ATTRIBUTE_WATER) then
 		c:AddMonsterAttribute(TYPE_NORMAL)
-		Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP_DEFENSE)
+		Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
 	end
 end
 

@@ -7,6 +7,7 @@ function cm.initial_effect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_TO_GRAVE)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.thcon)
@@ -17,6 +18,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_TO_DECK)
 	e2:SetCountLimit(1,m)
 	e2:SetTarget(cm.target)
@@ -53,16 +55,17 @@ function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0xbe3) and bit.band(c:GetType(),0x81)==0x81 and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)
 end
 function cm.spfilter1(c,e,tp)
-	return Card.IsAbleToGrave and c:IsRace(RACE_MACHINE)
+	return Card.IsAbleToGrave and c:IsRace(RACE_MACHINE) and c:IsType(TYPE_MONSTER)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or 
+	not  Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_DECK,0,1,nil,e,tp) then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		local tc=g:GetFirst()
