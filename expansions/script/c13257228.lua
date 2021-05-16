@@ -131,7 +131,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:GetOwner()~=c:GetControler() then
-		Duel.GetControl(c,c:GetControler())
+		Duel.GetControl(c,c:GetOwner())
 	end
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)

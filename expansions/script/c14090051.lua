@@ -1,5 +1,7 @@
 --超魔导龙骑士-青眼龙骑士
-function c14090051.initial_effect(c)
+local m=14090051
+local cm=_G["c"..m]
+function cm.initial_effect(c)
 	--fusion material
 	aux.AddFusionProcCodeFun(c,46986414,{89631139,cm.mfilter},1,true,true)
 	c:EnableReviveLimit()
@@ -23,7 +25,7 @@ function c14090051.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_PRE_BATTLE_DAMAGE)
-	e3:SetCondition(com.damcon)
+	e3:SetCondition(cm.damcon)
 	e3:SetOperation(cm.damop)
 	c:RegisterEffect(e3)
 	--negate

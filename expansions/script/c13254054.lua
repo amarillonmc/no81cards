@@ -94,7 +94,7 @@ function cm.reccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	local sg=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,1,60,nil)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
-	e:SetLabel(sg:GetSum(tamas_getElementCount,TAMA_ELEMENT_LIFE))
+	e:SetLabel(sg:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_LIFE))
 end
 function cm.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
