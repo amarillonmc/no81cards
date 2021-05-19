@@ -49,11 +49,7 @@ function c30002025.rmop(e,tp,eg,ep,ev,re,r,rp)
 		local og=Duel.GetOperatedGroup()
 		local oc=og:GetFirst()
 		while oc do
-			if oc:IsControler(tp) then
-				oc:RegisterFlagEffect(30002025,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1,fid)
-			else
-				oc:RegisterFlagEffect(30002025,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY+RESET_OPPO_TURN,0,1,fid)
-			end
+			oc:RegisterFlagEffect(30002025,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1,fid)
 			oc=og:GetNext()
 		end
 		og:KeepAlive()
