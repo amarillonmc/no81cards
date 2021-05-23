@@ -1,5 +1,7 @@
 --于无人知晓的黑暗之中
-function c40009697.initial_effect(c)
+local m=40009697
+local cm=_G["c"..m]
+function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -30,48 +32,52 @@ function c40009697.initial_effect(c)
 	c:RegisterEffect(e5) 
 	--spsummon
 	local e6=Effect.CreateEffect(c)
-	e6:SetDescription(aux.Stringid(40009697,0))
+	e6:SetDescription(aux.Stringid(m,0))
 	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e6:SetType(EFFECT_TYPE_IGNITION)
 	e6:SetRange(LOCATION_FZONE)
 	e6:SetCountLimit(1)
-	e6:SetCondition(c40009697.spcon)
-	e6:SetTarget(c40009697.sptg)
-	e6:SetOperation(c40009697.spop)
+	e6:SetCondition(cm.spcon)
+	e6:SetTarget(cm.sptg)
+	e6:SetOperation(cm.spop)
 	c:RegisterEffect(e6) 
 	--handes
 	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(40009697,1))
+	e7:SetDescription(aux.Stringid(m,1))
 	e7:SetCategory(CATEGORY_TOGRAVE)
 	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e7:SetProperty(EFFECT_FLAG_DELAY)
 	e7:SetRange(LOCATION_FZONE)
 	e7:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e7:SetCountLimit(1)
-	e7:SetCondition(c40009697.con)
-	e7:SetTarget(c40009697.tgtg)
-	e7:SetOperation(c40009697.tgop)
+	e7:SetCondition(cm.con)
+	e7:SetTarget(cm.tgtg)
+	e7:SetOperation(cm.tgop)
 	c:RegisterEffect(e7)
 	local e8=e7:Clone()
 	e8:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e8)   
 end
-function c40009697.cfilter1(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x1f17)
+function cm.Cardinal(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Cardinal
 end
-function c40009697.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c40009697.cfilter1,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():GetControler()==e:GetHandler():GetOwner()
+function cm.cfilter1(c)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and cm.Cardinal(c)
 end
-function c40009697.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c40009697.spfilter(chkc,e,tp) end
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():GetControler()==e:GetHandler():GetOwner()
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.spfilter(chkc,e,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,40009699,0x1f17,0x4011,3000,0,1,RACE_FIEND,ATTRIBUTE_DARK) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,40009699,0,0x4011,3000,0,1,RACE_FIEND,ATTRIBUTE_DARK) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 end
-function c40009697.spop(e,tp,eg,ep,ev,re,r,rp)
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,40009699,0x1f17,0x4011,3000,0,1,RACE_FIEND,ATTRIBUTE_DARK) then
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,40009699,0,0x4011,3000,0,1,RACE_FIEND,ATTRIBUTE_DARK) then
 		local token=Duel.CreateToken(tp,40009699)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -88,18 +94,18 @@ function c40009697.spop(e,tp,eg,ep,ev,re,r,rp)
 		token:RegisterEffect(e2,true)
 	end
 end
-function c40009697.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x1f17)
+function cm.cfilter(c)
+	return c:IsFaceup() and (cm.Cardinal(c) or c:IsCode(40009699))
 end
-function c40009697.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c40009697.cfilter,1,nil) and e:GetHandler():GetControler()~=e:GetHandler():GetOwner()
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.cfilter,1,nil) and e:GetHandler():GetControler()~=e:GetHandler():GetOwner()
 end
-function c40009697.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end
-function c40009697.tgop(e,tp,eg,ep,ev,re,r,rp)
+function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	if g:GetCount()>0 then

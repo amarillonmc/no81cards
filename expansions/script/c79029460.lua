@@ -17,7 +17,7 @@ function c79029460.initial_effect(c)
 	e3:SetCategory(CATEGORY_DISABLE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,79029460)
 	e3:SetTarget(c79029460.distg)
 	e3:SetOperation(c79029460.disop)
@@ -60,17 +60,17 @@ function c79029460.pendop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	sg:AddCard(e:GetHandler())
 end
 function c79029460.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsSetCard(0xa900)
+	return not c:IsSetCard(0xa900) and c:IsLocation(LOCATION_EXTRA)
 end
-function c79029460.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and aux.disfilter1(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+function c79029460.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 end
 function c79029460.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
+	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if g:GetCount()<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local tc=g:Select(tp,1,1,nil):GetFirst()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and not tc:IsDisabled() then
 	Debug.Message("已发现目标！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029460,3))

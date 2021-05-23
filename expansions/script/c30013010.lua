@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c30000100") end) then require
 local m,cm = rscf.DefineCard(30013010)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	local e1 = rsef.QO(c,EVENT_CHAINING,"des",{75,m},"des",nil,LOCATION_HAND,cm.descon,rscost.cost(0,"dh"),rsop.target(aux.TRUE,"des",LOCATION_ONFIELD,LOCATION_ONFIELD),cm.desop)
+	local e1 = rsef.QO(c,EVENT_CHAINING,"des",{1,m},"des",nil,LOCATION_HAND,cm.descon,rscost.cost(0,"dh"),rsop.target(aux.TRUE,"des",LOCATION_ONFIELD,LOCATION_ONFIELD),cm.desop)
 	local e2 = rsef.SC_Easy(c,EVENT_FLIP,"cd",nil,cm.regop)
 	local e3 = rsef.FC_Easy(c,EVENT_FLIP,nil,LOCATION_MZONE,nil,cm.regop2)
 	e2:SetLabelObject(e3)

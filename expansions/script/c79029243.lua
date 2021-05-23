@@ -1,7 +1,7 @@
 --阿米娅·忒斯特收藏-报童
 function c79029243.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xa900),4,3)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xa900),4,2)
 	c:EnableReviveLimit()
 	--add code
 	local e2=Effect.CreateEffect(c)

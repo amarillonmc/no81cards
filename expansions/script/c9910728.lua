@@ -1,136 +1,90 @@
---远古造物 梅尔维尔利维坦
+--远古造物 梅氏利维坦鲸
+require("expansions/script/c9910700")
 function c9910728.initial_effect(c)
-	c:EnableReviveLimit()
 	--special summon
+	Ygzw.AddSpProcedure(c,3)
+	c:EnableReviveLimit()
+	--to grave
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(c9910728.spcon1)
-	e1:SetOperation(c9910728.spop1)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_LEAVE_GRAVE)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e1:SetTarget(c9910728.tgtg)
+	e1:SetOperation(c9910728.tgop)
 	c:RegisterEffect(e1)
-	--search
+	--disable
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCost(c9910728.thcost)
-	e2:SetTarget(c9910728.thtg)
-	e2:SetOperation(c9910728.thop)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,9910728)
+	e2:SetTarget(c9910728.distg)
+	e2:SetOperation(c9910728.disop)
 	c:RegisterEffect(e2)
-	--set
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e3:SetCode(EFFECT_MONSTER_SSET)
-	e3:SetValue(TYPE_SPELL)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetTargetRange(LOCATION_HAND,0)
-	e4:SetTarget(c9910728.settg)
-	e4:SetLabelObject(e3)
-	c:RegisterEffect(e4)
-	--cannot set
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_CANNOT_MSET)
-	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetTargetRange(0,1)
-	e5:SetTarget(aux.TRUE)
-	c:RegisterEffect(e5)
-	local e6=e5:Clone()
-	e6:SetCode(EFFECT_CANNOT_SSET)
-	c:RegisterEffect(e6)
-	local e7=e5:Clone()
-	e7:SetCode(EFFECT_CANNOT_TURN_SET)
-	c:RegisterEffect(e7)
-	local e8=e5:Clone()
-	e8:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e8:SetTarget(c9910728.sumlimit)
-	c:RegisterEffect(e8)
 end
-function c9910728.spfilter1(c)
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and c:IsPreviousLocation(LOCATION_ONFIELD)
-		and c:IsAbleToRemoveAsCost()
+function c9910728.tgfilter(c)
+	return not c:IsPublic() or c:IsType(TYPE_MONSTER)
 end
-function c9910728.spcon1(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c9910728.spfilter1,tp,LOCATION_GRAVE,0,nil)
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and g:CheckWithSumGreater(Card.GetLevel,9)
+function c9910728.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local mc=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+	if chk==0 then return mc>0 or g and g:IsExists(c9910728.tgfilter,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,1-tp,LOCATION_MZONE+LOCATION_HAND)
 end
-function c9910728.spop1(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(c9910728.spfilter1,tp,LOCATION_GRAVE,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local mg=g:SelectWithSumGreater(tp,Card.GetLevel,9)
-	Duel.Remove(mg,POS_FACEUP,REASON_COST)
+function c9910728.setfilter(c,e,tp)
+	return c:IsType(TYPE_MONSTER) and Ygzw.SetFilter(c,e,tp)
 end
-function c9910728.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsDiscardable() end
-	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
-end
-function c9910728.thfilter(c,tp)
-	return c:IsSetCard(0xc950) and c:GetType()==0x20004
-		and (c:IsAbleToHand() or c:GetActivateEffect():IsActivatable(tp))
-end
-function c9910728.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910728.thfilter,tp,LOCATION_DECK,0,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c9910728.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c9910728.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
-	local tc=g:GetFirst()
-	if tc then
-		local b1=tc:IsAbleToHand()
-		local b2=tc:GetActivateEffect():IsActivatable(tp)
-		if b1 and (not b2 or Duel.SelectOption(tp,1190,1150)==0) then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
-		else
-			if not Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then return end
-			local te=tc:GetActivateEffect()
-			local tep=tc:GetControler()
-			local cost=te:GetCost()
-			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-			local fid=e:GetHandler():GetFieldID()
-			tc:RegisterFlagEffect(9910728,RESET_EVENT+RESETS_STANDARD,0,1,fid)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-			e1:SetCode(EVENT_PHASE+PHASE_END)
-			e1:SetCountLimit(1)
-			e1:SetLabel(fid)
-			e1:SetLabelObject(tc)
-			e1:SetCondition(c9910728.descon)
-			e1:SetOperation(c9910728.desop)
-			Duel.RegisterEffect(e1,tp)
+function c9910728.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsType,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil,TYPE_MONSTER)
+	if g:GetCount()==0 then return end
+	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
+	local sg=g:Select(1-tp,1,1,nil)
+	Duel.HintSelection(sg)
+	local tc=sg:GetFirst()
+	if tc and Duel.SendtoGrave(tc,REASON_RULE)~=0 and tc:IsLocation(LOCATION_GRAVE) then
+		local g2=Duel.GetMatchingGroup(c9910728.setfilter,tp,0,LOCATION_GRAVE,nil,e,tp)
+		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910728,0)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+			local sg2=g2:Select(tp,1,1,nil)
+			local tc2=sg2:GetFirst()
+			if tc2 then Ygzw.Set(tc2,e,tp) end
 		end
 	end
 end
-function c9910728.descon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc:GetFlagEffectLabel(9910728)==e:GetLabel() then
-		return true
-	else
-		e:Reset()
-		return false
+function c9910728.negfilter(c)
+	return c:IsFaceup() and not c:IsDisabled()
+end
+function c9910728.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,0,LOCATION_ONFIELD,nil)
+	if chk==0 then return g:GetCount()>0 end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
+end
+function c9910728.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,0,LOCATION_ONFIELD,nil)
+	local tc=g:GetFirst()
+	while tc do
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
+		if tc:IsType(TYPE_TRAPMONSTER) then
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e3)
+		end
+		tc=g:GetNext()
 	end
-end
-function c9910728.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	Duel.Destroy(tc,REASON_EFFECT)
-end
-function c9910728.settg(e,c)
-	return c:IsType(TYPE_MONSTER)
-end
-function c9910728.sumlimit(e,c,sump,sumtype,sumpos,targetp)
-	return bit.band(sumpos,POS_FACEDOWN)>0
 end

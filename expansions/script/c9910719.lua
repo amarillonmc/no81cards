@@ -1,105 +1,70 @@
---远古造物 昆明鱼
-require("expansions/script/c9910106")
+--远古造物 邓氏鱼
+require("expansions/script/c9910700")
 function c9910719.initial_effect(c)
-	c:EnableReviveLimit()
 	--special summon
+	Ygzw.AddSpProcedure(c,2)
+	c:EnableReviveLimit()
+	--negate
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(c9910719.spcon)
-	e1:SetOperation(c9910719.spop)
+	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1)
+	e1:SetCondition(c9910719.negcon)
+	e1:SetTarget(c9910719.negtg)
+	e1:SetOperation(c9910719.negop)
 	c:RegisterEffect(e1)
-	--draw
+	--set
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DRAW+CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCountLimit(1,9910719)
-	e2:SetCondition(c9910719.drcon)
-	e2:SetTarget(c9910719.drtg)
-	e2:SetOperation(c9910719.drop)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCost(c9910719.setcost)
+	e2:SetTarget(c9910719.settg)
+	e2:SetOperation(c9910719.setop)
 	c:RegisterEffect(e2)
-	--search
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,9910720)
-	e3:SetCondition(c9910719.thcon)
-	e3:SetTarget(c9910719.thtg)
-	e3:SetOperation(c9910719.thop)
-	c:RegisterEffect(e3)
 end
-function c9910719.spfilter(c)
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and c:IsPreviousLocation(LOCATION_ONFIELD)
-		and c:IsAbleToRemoveAsCost()
+function c9910719.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+		and Duel.IsChainNegatable(ev)
 end
-function c9910719.spcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9910719.spfilter,tp,LOCATION_GRAVE,0,1,nil)
-end
-function c9910719.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910719.spfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-end
-function c9910719.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and re:IsActiveType(TYPE_MONSTER)
-end
-function c9910719.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and (Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,0,1,nil)
-		or (Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and Zcd.SetFilter(e:GetHandler(),e)) end
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function c9910719.drop(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if Duel.Draw(tp,1,REASON_EFFECT)==0 then return end
-	Duel.BreakEffect()
-	local b1=Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,0,1,nil)
-	local b2=c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Zcd.SetFilter(e:GetHandler(),e)
-	if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910719,0),aux.Stringid(9910719,1))==0) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,Card.IsFacedown,tp,LOCATION_ONFIELD,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.HintSelection(g)
-			Duel.Destroy(g,REASON_EFFECT)
-		end
-	elseif b2 then
-		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
-		Duel.ConfirmCards(1-tp,c)
-		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
-		c:RegisterEffect(e1)
+function c9910719.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	end
-end
-function c9910719.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function c9910719.thfilter(c)
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xc950) and c:IsAbleToHand()
 end
-function c9910719.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910719.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c9910719.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910719.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+function c9910719.negop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) and Duel.Destroy(rc,REASON_EFFECT)~=0 then
+		local g=Duel.GetMatchingGroup(c9910719.thfilter,tp,LOCATION_DECK,0,nil)
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910719,0)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
+		end
 	end
+end
+function c9910719.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local id=Duel.GetTurnCount()
+	if chk==0 then return c:GetTurnID()<id and not c:IsReason(REASON_RETURN)
+		and c:IsAbleToRemoveAsCost() end
+	Duel.Remove(c,POS_FACEUP,REASON_COST)
+end
+function c9910719.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Ygzw.SetFilter2,tp,LOCATION_DECK,0,1,nil,e,tp) end
+end
+function c9910719.setop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,Ygzw.SetFilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	local tc=g:GetFirst()
+	if tc then Ygzw.Set(tc,e,tp) end
 end

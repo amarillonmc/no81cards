@@ -91,6 +91,4 @@ end
 end
 function c29065571.lrop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) then return false end
-	Debug.Message("青色怒火，拂熄业炎；何堪魔冠，剑凌术燃！")
-	Debug.Message("融合召唤！LEVEL 8！阿米娅•影龙乘云！")
 end

@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c30000100") end) then require
 local m,cm = rscf.DefineCard(30013005)
 function cm.initial_effect(c)
 	local e1 = rsef.A(c,nil,nil,{1},nil,nil,rscon.excard2(Card.IsSetCard,LOCATION_ONFIELD,0,1,nil,0x92c),nil,cm.tg,cm.act)
-	local e2 = rsef.QO(c,nil,"pos",{1,m+100},"pos","tg",LOCATION_GRAVE,nil,rscost.cost({Card.IsAbleToDeckAsCost,"dum"},{cm.tdfilter,{"td",cm.fun},LOCATION_GRAVE }),rstg.target(Card.IsCanChangePosition,"pos",LOCATION_MZONE),cm.posop)
+	local e2 = rsef.QO(c,nil,"pos",{1,m},"pos","tg",LOCATION_GRAVE,nil,rscost.cost({Card.IsAbleToDeckAsCost,"dum"},{cm.tdfilter,{"td",cm.fun},LOCATION_GRAVE }),rstg.target(Card.IsCanChangePosition,"pos",LOCATION_MZONE),cm.posop)
 end
 function cm.posop(e,tp)
 	local tc = rscf.GetTargetCard()

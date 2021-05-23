@@ -4,6 +4,7 @@ function c79029453.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,10,3,c79029453.ovfilter,aux.Stringid(79029453,0))
 	c:EnableReviveLimit() 
+	aux.EnablePendulumAttribute(c,false)
 	--th 
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)

@@ -44,7 +44,7 @@ function c79029456.operation(e,tp,eg,ep,ev,re,r,rp)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_LOSE_KOISHI)
+	e1:SetCode(EFFECT_CANNOT_LOSE_EFFECT)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
 	Duel.RegisterEffect(e1,tp)

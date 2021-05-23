@@ -60,7 +60,7 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return  Duel.IsPlayerAffectedByEffect(tp,33401655)
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x6340,0x9344)  and c:IsAbleToHand()
+	return c:IsSetCard(0x6340)  and c:IsAbleToHand()
 end
 function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

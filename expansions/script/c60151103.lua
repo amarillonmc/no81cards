@@ -1,6 +1,5 @@
 --├风语者 妲修斯┤
 function c60151103.initial_effect(c)
-	c:EnableUnsummonable()
 	--special summon
 	local e11=Effect.CreateEffect(c)
 	e11:SetType(EFFECT_TYPE_FIELD)

@@ -114,7 +114,7 @@ function c79029223.toop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c79029223.splimit(e,c)
-	return not c:IsSetCard(0xa900)
+	return not c:IsSetCard(0xa900) and c:IsLocation(LOCATION_EXTRA)
 end
 
 

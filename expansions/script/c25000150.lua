@@ -11,23 +11,18 @@ function cm.initial_effect(c)
 	e1:SetCondition(cm.spcon)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
+	--damage
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DAMAGE)
-	e2:SetType(EFFECT_TYPE_QUICK_F)
-	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(cm.con)
-	e2:SetTarget(cm.tg)
-	e2:SetOperation(cm.op)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_BOTH_BATTLE_DAMAGE)
 	c:RegisterEffect(e2)
+	--return to hand
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e3:SetCategory(CATEGORY_HANDES)
-	e3:SetCode(EVENT_PHASE+PHASE_END)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
-	e3:SetTarget(cm.distg)
-	e3:SetOperation(cm.disop)
+	e3:SetCategory(CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_DAMAGE_STEP_END)
+	e3:SetTarget(cm.thtg)
+	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
 end
 function cm.spfilter(c,ft,tp)
@@ -42,25 +37,13 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,Duel.GetLocationCount(tp,LOCATION_MZONE),c:GetControler())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetBattleTarget()~=nil
-end
-function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local damn=e:GetHandler():GetAttack()
-	Duel.SetTargetParam(e:GetHandler():GetAttack())
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,damn)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,damn)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local d=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
-	Duel.Damage(tp,d,REASON_EFFECT)
-	Duel.Damage(1-tp,d,REASON_EFFECT)
-end
-function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,3)
-end
-function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SendtoGrave(Duel.GetFieldGroup(tp,LOCATION_HAND,0),REASON_EFFECT+REASON_DISCARD)
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+	end
 end

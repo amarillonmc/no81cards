@@ -3,7 +3,7 @@ if not pcall(function() require("expansions/script/c30000100") end) then require
 local m,cm = rscf.DefineCard(30013015)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	local e1 = rsef.QO(c,EVENT_CHAINING,{m,1},{75,m},nil,nil,LOCATION_HAND,cm.imcon,rscost.cost(0,"dh"),rsop.target(cm.cfilter,"dum",LOCATION_MZONE),cm.imop)
+	local e1 = rsef.QO(c,EVENT_CHAINING,{m,1},{75,m},nil,"dsp,dcal",LOCATION_HAND,cm.imcon,rscost.cost(0,"dh"),rsop.target(cm.cfilter,"dum",LOCATION_MZONE),cm.imop)
 	local e2 = rsef.STO_Flip(c,"sp",{75,m+100},"sp,pos,dd","de",aux.NOT(cm.qcon),nil,nil,cm.spop)
 	local e3 = rsef.STO_Flip(c,"sp",{75,m+100},"sp,pos,dd","de",cm.qcon,nil,rsop.target(cm.spfilter,"sp",rsloc.dg),cm.spop3)
 	local e4 = rsef.FTO(c,EVENT_PHASE+PHASE_END,"pos",{1,m+200},"pos,se,th",nil,LOCATION_GRAVE,nil,rscost.cost(1,"dh"),rsop.target({cm.pfilter,"pos",LOCATION_MZONE},{cm.thfilter,"th",rsloc.dg}),cm.posop)
@@ -14,7 +14,7 @@ function cm.pfilter(c)
 	return c:IsFacedown() and c:IsCanChangePosition()
 end
 function cm.thfilter(c)
-	return c:IsCode(30013000) and c:IsAbleToHand()
+	return c:IsSetCard(0x92c) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function cm.posop(e,tp)
 	local g,tc = rsop.SelectSolve("pos",tp,cm.pfilter,tp,LOCATION_MZONE,0,1,1,nil,{})
@@ -60,7 +60,7 @@ function cm.imcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp ~= tp
 end
 function cm.cfilter(c)
-	return c:IsType(TYPE_FLIP) or c:IsFacedown()
+	return c:IsType(TYPE_FLIP) or c:IsFacedown() or c:IsSetCard(0x92c)
 end 
 function cm.imop(e,tp)
 	local g = Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)

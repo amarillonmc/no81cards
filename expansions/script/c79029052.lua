@@ -4,6 +4,7 @@ function c79029052.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,
 	0x1902),aux.FilterBoolFunction(Card.IsFusionSetCard,0xa900),true)  
+	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE,0,Duel.Release,REASON_COST+REASON_FUSION+REASON_MATERIAL)   
 	--disable
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -23,9 +24,11 @@ function c79029052.initial_effect(c)
 	--atk up
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(79029021,0))
-	e4:SetCategory(CATEGORY_ATKCHANGE)
-	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetHintTiming(0,TIMING_END_PHASE)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCost(c79029052.atkcost)
 	e4:SetTarget(c79029052.atktg)
@@ -38,9 +41,13 @@ end
 function c79029052.filter(c)
 	return c:IsFaceup()
 end
+function c79029052.ckfil(c)
+	return c:IsAbleToRemoveAsCost() and c:IsSetCard(0xc90e)
+end
 function c79029052.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,5,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x1099,5,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029052.ckfil,tp,LOCATION_GRAVE,0,1,nil) end
+	local g=Duel.SelectMatchingCard(tp,c79029052.ckfil,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c79029052.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029052.filter,tp,LOCATION_MZONE,0,1,nil) end

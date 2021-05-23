@@ -92,6 +92,7 @@ function c79029028.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg=g:Select(tp,1,1,nil)
 	Duel.SendtoHand(sg,tp,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,sg)
 	if c:IsCanAddCounter(0x1099,2) and Duel.SelectYesNo(tp,aux.Stringid(79029028,0)) then 
 	Debug.Message("集中精力。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029028,4)) 

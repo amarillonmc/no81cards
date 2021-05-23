@@ -47,7 +47,6 @@ function c29065597.itarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
 end
 function c29065597.ioperation(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message("明王圣帝，何者可去兵哉！")
 	local c=e:GetHandler()
 	--
 	local e1=Effect.CreateEffect(c)
@@ -88,8 +87,6 @@ function c29065597.efilter(e,te)
 end
 function c29065597.lrop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) then return false end
-	Debug.Message("天有洪炉，地生五金，晖冶寒淬照云清！")
-	Debug.Message("XYZ召唤！RANK12！年•众相之柱！")
 end
 
 

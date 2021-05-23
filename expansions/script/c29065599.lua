@@ -47,7 +47,6 @@ function c29065599.itarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
 end
 function c29065599.ioperation(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message("以有形摹无垠，以无形应天下！")
 	local c=e:GetHandler()
 	--
 	local e1=Effect.CreateEffect(c)
@@ -93,8 +92,6 @@ function c29065599.efilter(e,te,c)
 end
 function c29065599.lrop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) then return false end
-	Debug.Message("星藏点雪，月隐晦明，拙山枯水大江行！")
-	Debug.Message("XYZ召唤！RANK12！夕•虚实之笔！")
 end
 
 

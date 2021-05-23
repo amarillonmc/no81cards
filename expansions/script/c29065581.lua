@@ -110,8 +110,6 @@ function c29065581.tgop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c29065581.lrop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) then return false end
-	Debug.Message("漆黑意志的领导者，解放指尖的禁束，为我展现印证真实的力量！")
-	Debug.Message("XYZ召唤！RANK 8！阿米娅•奇美拉！")
 end
 
 

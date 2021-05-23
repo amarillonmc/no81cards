@@ -2,7 +2,7 @@
 function c60151127.initial_effect(c)
 	c:SetUniqueOnField(1,0,60151127)
 	--synchro summon
-	aux.AddSynchroProcedure(c,c60151127.tfilter,aux.NonTuner(Card.IsSetCard,0x9b23),2)
+	aux.AddSynchroProcedure(c,c60151127.tfilter,aux.NonTuner(nil),2)
 	c:EnableReviveLimit()
 	--coin
 	local e1=Effect.CreateEffect(c)

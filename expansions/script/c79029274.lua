@@ -1,7 +1,7 @@
 --星极·时代收藏-寻耀
 function c79029274.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,nil,7,2)
+	aux.AddXyzProcedure(c,c79029274.matfilter,7,2)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--add code
@@ -80,6 +80,9 @@ function c79029274.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 end
 end
+function c79029274.matfilter(c)
+	return c:IsSetCard(0xa900) and c:IsXyzType(TYPE_PENDULUM)
+end
 function c79029274.lvtg(e,c)
 	return c:IsType(TYPE_XYZ)
 end
@@ -145,6 +148,7 @@ end
 function c79029274.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=eg:GetFirst()
+	while tc do 
 	if tc:IsLocation(LOCATION_HAND) then
 	Duel.ConfirmCards(tp,tc)
 	local flag=0
@@ -161,6 +165,8 @@ function c79029274.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_DISABLE_EFFECT)
 	Duel.RegisterEffect(e2,tp)
+	tc=eg:GetNext()
+	end
 	Debug.Message("这就是，星辰都无法昭示的，“我们”的力量......")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029274,3))   
 end

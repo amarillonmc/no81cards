@@ -73,7 +73,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.thcost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{TAMA_ELEMENT_MANA,4}}
+	local el={{TAMA_ELEMENT_MANA,5}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 
@@ -83,7 +83,7 @@ function cm.thcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
 function cm.thfilter1(c)
-	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x356) and c:IsAbleToHand()
+	return c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function cm.thtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil) end

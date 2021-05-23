@@ -42,7 +42,7 @@ function c9910717.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.SelectMatchingCard(tp,Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,ft,ft,nil,e,tp)
 	if sg:GetCount()>0 then Ygzw.Set2(sg,e,tp) end
 end
-function c9910717.cfilter(c,tp)
+function c9910717.cfilter(c)
 	return c:IsFacedown() and c:IsAbleToGraveAsCost()
 end
 function c9910717.cost(e,tp,eg,ep,ev,re,r,rp,chk)

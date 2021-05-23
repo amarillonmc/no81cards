@@ -44,6 +44,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	e:SetLabel(sg:GetCount())
@@ -67,6 +68,7 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	e:SetLabel(sg:GetCount())
@@ -85,7 +87,7 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 			dg:AddCard(tc)
 			Duel.HintSelection(dg)
 			local d1=Duel.TossDice(tp,1)
-			if d1<=3 then
+			if d1~=6 then
 				g:AddCard(tc)
 			end
 			tc=sg:GetNext()
@@ -96,7 +98,7 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(dg)
 			sg:Sub(dg)
 			local d1=Duel.TossDice(tp,1)
-			if d1<=3 then
+			if d1~=6 then
 				g:Merge(dg)
 			end
 		end
@@ -112,6 +114,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	e:SetLabel(sg:GetCount())
@@ -120,15 +123,15 @@ function cm.filter2(c,e,tp)
 	return c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_REMOVED,0,1,nil,e,tp)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.filter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,1,REASON_EFFECT)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end

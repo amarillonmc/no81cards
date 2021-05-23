@@ -170,7 +170,7 @@ function c60151108.coinop(e,tp,eg,ep,ev,re,r,rp)
 				local og=Duel.GetOperatedGroup()
 				local ct=og:FilterCount(c60151108.filter4,nil,tp)
 				if ct>0 then
-					Duel.Draw(tp,ct-1,REASON_EFFECT)
+					Duel.Draw(tp,ct,REASON_EFFECT)
 				end
 			end
 		elseif ct1<ct2 then

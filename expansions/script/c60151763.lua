@@ -23,14 +23,23 @@ function c60151763.initial_effect(c)
 	e2:SetTarget(c60151763.thtg)
 	e2:SetOperation(c60151763.thop)
 	c:RegisterEffect(e2)
+	--act in hand
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e3:SetCondition(c60151763.hcon)
+	c:RegisterEffect(e3)
 	if not c60151763.global_check then
 		c60151763.global_check=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_DESTROYED)
+		ge1:SetCode(EVENT_REMOVE)
 		ge1:SetOperation(c60151763.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
+end
+function c60151763.hcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
 end
 function c60151763.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
@@ -73,12 +82,7 @@ function c60151763.operation(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SendtoGrave(a,REASON_EFFECT)~=0 then
 			local ct=a:FilterCount(c60151763.gfilter,nil)
 			if ct>0 then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-				local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,ct,nil)
-				if g:GetCount()>0 then
-					Duel.HintSelection(g)
-					Duel.Destroy(g,REASON_EFFECT)
-				end
+				Duel.Damage(1-tp,ct*1000,REASON_EFFECT)
 			end
 		end
 	end

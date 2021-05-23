@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.thfilter1(c)
-	return  c:IsSetCard(0x5344) and c:IsAbleToHand()
+	return  c:IsSetCard(0x5344) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end

@@ -100,6 +100,4 @@ function c29065583.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function c29065583.lrop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) then return false end
-	Debug.Message("斩龙之剑，鞘中赤红；剑锋破矢，赤龙绝影！")
-	Debug.Message("XYZ召唤！RANK 8！陈•赤龙绝影！")
 end

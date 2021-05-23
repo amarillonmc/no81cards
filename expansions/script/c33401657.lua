@@ -3,7 +3,7 @@ local m=33401657
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x34f)
-	aux.AddLinkProcedure(c,cm.mfilter,2)
+	aux.AddLinkProcedure(c,nil,2,2,cm.lcheck)
 	c:EnableReviveLimit()
 --activate from hand
 	local e1=Effect.CreateEffect(c)
@@ -36,8 +36,8 @@ function cm.initial_effect(c)
 	e4:SetCondition(cm.con2)
 	c:RegisterEffect(e4)
 end
-function cm.mfilter(c)
-	return c:IsLinkSetCard(0x341)
+function cm.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x9344)
 end
 
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
@@ -103,7 +103,7 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 				e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 				tc:RegisterEffect(e3)
 			end
-		end		  
+		end	   
 		tc=g:GetNext()
 	  end 
 	end

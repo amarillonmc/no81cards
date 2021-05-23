@@ -37,7 +37,7 @@ function c9910709.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c9910709.cfilter(c,tp)
+function c9910709.cfilter(c)
 	return c:IsFacedown() and c:IsAbleToGraveAsCost()
 end
 function c9910709.cost(e,tp,eg,ep,ev,re,r,rp,chk)

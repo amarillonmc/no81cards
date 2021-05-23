@@ -40,7 +40,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.DiscardHand(tp,cm.dFilter,1,2,REASON_EFFECT+REASON_DISCARD)
 	if ct>0 then
 		Duel.BreakEffect()
-		Duel.Draw(tp,ct,REASON_EFFECT)
+		--Duel.Draw(tp,ct,REASON_EFFECT)
+		Duel.Draw(tp,2,REASON_EFFECT)
 	end
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)

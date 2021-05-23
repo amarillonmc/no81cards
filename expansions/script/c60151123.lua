@@ -1,7 +1,7 @@
 --├军团亚席 极舞之赛尔菲┤
 function c60151123.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,c60151123.tfilter,aux.NonTuner(Card.IsSetCard,0x9b23),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x9b23),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--coin
 	local e1=Effect.CreateEffect(c)
@@ -64,8 +64,7 @@ function c60151123.filter2(c)
 	return c:IsAbleToGrave()
 end
 function c60151123.coinop(e,tp,eg,ep,ev,re,r,rp)
-	
-local c=e:GetHandler()
+	local c=e:GetHandler()
 	if c:IsFacedown() then return end
 	local res=0
 	if Duel.GetFlagEffect(tp,60151123)>0 then
@@ -93,19 +92,20 @@ local c=e:GetHandler()
 	end
 end
 function c60151123.filter3(c)
-	return c:IsType(TYPE_MONSTER) and not c:IsCode(60151123) and c:IsAbleToGrave()
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c60151123.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil)
-		and Duel.IsExistingMatchingCard(c60151123.filter3,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
+		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,g,1,0,0)
 end
 function c60151123.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g1=Duel.SelectMatchingCard(tp,c60151123.filter3,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	local g1=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c)
 	if g1:GetCount()>0 then
 		if Duel.SendtoGrave(g1,REASON_EFFECT) then Duel.BreakEffect()
 			local tc=Duel.GetFirstTarget()

@@ -22,6 +22,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg1)
 	e2:SetOperation(cm.spop1)
 	c:RegisterEffect(e2)
+	--[[
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetType(EFFECT_TYPE_IGNITION)
@@ -32,7 +33,7 @@ function cm.initial_effect(c)
 	e3:SetCost(cm.reccost)
 	e3:SetTarget(cm.rectg)
 	e3:SetOperation(cm.recop)
-	c:RegisterEffect(e3)
+	c:RegisterEffect(e3)]]
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -65,7 +66,7 @@ function cm.tdfilter(c)
 	return c:IsAbleToDeckAsCost() and tama.tamas_isExistElement(c,TAMA_ELEMENT_LIFE)
 end
 function cm.spfilter(c,sg,e,tp)
-	return c:IsType(TYPE_MONSTER) and tama.tamas_isExistElement(c,TAMA_ELEMENT_LIFE) and sg:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_LIFE)>=tama.tamas_getElementCount(c,TAMA_ELEMENT_LIFE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and not c:IsCode(m) and tama.tamas_isExistElement(c,TAMA_ELEMENT_LIFE) and sg:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_LIFE)>=tama.tamas_getElementCount(c,TAMA_ELEMENT_LIFE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end

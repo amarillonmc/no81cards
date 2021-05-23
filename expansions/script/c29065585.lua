@@ -101,8 +101,6 @@ function c29065585.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c29065585.lrop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) then return false end
-	Debug.Message("血源沸腾的热流，滚动的炽热火花！热情！膨胀！大爆发！")
-	Debug.Message("XYZ召唤！RANK 8！煌•沸腾爆裂！")
 end
 
 

@@ -36,11 +36,12 @@ function Ygzw.SetFilter(c,e,tp)
 	e1:SetCode(EFFECT_MONSTER_SSET)
 	e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 	c:RegisterEffect(e1,true)
-	local res=c:IsSSetable()
+	local res=c:IsSSetable(true)
 	e1:Reset()
 	return res
 end
 function Ygzw.SetFilter2(c,e,tp)
+	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() then return false end
 	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and Ygzw.SetFilter(c,e,tp)
 end
 function Ygzw.Set(c,e,tp)
@@ -75,5 +76,5 @@ function Ygzw.Set2(g,e,tp)
 		tc=g:GetNext()
 	end
 	Duel.RaiseEvent(og,EVENT_SSET,e,REASON_EFFECT,op,op,0)
-	return og:GetCount()>0
+	return og
 end

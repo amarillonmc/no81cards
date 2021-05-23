@@ -2,6 +2,15 @@
 function c22020510.initial_effect(c)
 	c:EnableCounterPermit(0xfed)
 	c:SetCounterLimit(0xfed,12)
+	--summon with no tribute
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(22020510,0))
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_SUMMON_PROC)
+	e0:SetCondition(c22020510.ntcon)
+	e0:SetValue(SUMMON_VALUE_SELF)
+	c:RegisterEffect(e0)
 	--Destroy replace
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
@@ -19,6 +28,14 @@ function c22020510.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetValue(c22020510.attackup)
 	c:RegisterEffect(e2)
+end
+function c22020510.cfilter(c)
+	return c:IsFaceup() and c:IsCode(22020940)
+end
+function c22020510.ntcon(e,c,minc)
+	if c==nil then return true end
+	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c22020510.cfilter,c:GetControler(),LOCATION_ONFIELD,0,1,nil)
 end
 function c22020510.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsReason(REASON_RULE)

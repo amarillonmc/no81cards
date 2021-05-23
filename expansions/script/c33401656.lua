@@ -3,7 +3,7 @@ local m=33401656
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	 c:EnableCounterPermit(0x34f)
-	aux.AddLinkProcedure(c,cm.mfilter,2)
+	aux.AddLinkProcedure(c,nil,2,2,cm.lcheck)
 	c:EnableReviveLimit()
 --activate from hand
 	local e1=Effect.CreateEffect(c)
@@ -34,8 +34,8 @@ function cm.initial_effect(c)
 	e4:SetCondition(cm.con2)
 	c:RegisterEffect(e4)
 end
-function cm.mfilter(c)
-	return c:IsLinkSetCard(0x341)
+function cm.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x9344)
 end
 
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
@@ -69,12 +69,15 @@ function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,0,0)
 end
+function cm.thfilter2(c)
+	return c:IsSetCard(0x9344) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,33401660,0x341,0x4011,1500,1500,4,RACE_FAIRY,ATTRIBUTE_DARK) then
 	 local lvt={} 
-	 for i=1,4 do
-		 if (i<=2 or e:GetLabel()==1) and Duel.GetLocationCount(tp,LOCATION_MZONE)>=i then
+	 for i=1,2 do
+		 if Duel.GetLocationCount(tp,LOCATION_MZONE)>=i then
 		 lvt[i]=i
 		 end
 	 end
@@ -94,6 +97,15 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 		 e1:SetReset(RESET_PHASE+PHASE_END)
 		 Duel.RegisterEffect(e1,tp)
 	end
+	 if e:GetLabel()==1 and Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_GRAVE,0,1,nil)and Duel.SelectYesNo(tp,aux.Stringid(m,3))
+	then 
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g2=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_GRAVE,0,1,1,nil)
+		if #g2>0 then
+		Duel.SendtoHand(g2,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g2)  
+		end
+	end 
 end
 function cm.splimit(e,c)
 	return not c:IsSetCard(0x9344) and c:IsLocation(LOCATION_EXTRA)

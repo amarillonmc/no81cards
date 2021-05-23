@@ -179,7 +179,8 @@ function c79029435.zdistg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c79029435.zdisop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK) then
+	Duel.ConfirmCards(0,tc)
+	if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK) then  
 	Debug.Message("睡吧。愿所有人都能在雨声里做个好梦。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029435,2))
 		local c=e:GetHandler()

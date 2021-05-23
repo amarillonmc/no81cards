@@ -75,7 +75,7 @@ function c60151128.coinop(e,tp,eg,ep,ev,re,r,rp)
 		res=1
 	else res=Duel.TossCoin(tp,1) end
 	if res==0 then
-		local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
+		local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,e:GetHandler())
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 	if res==1 then
@@ -134,13 +134,13 @@ function c60151128.activate(e,tp,eg,ep,ev,re,r,rp)
 						local e1=Effect.CreateEffect(c)
 						e1:SetType(EFFECT_TYPE_SINGLE)
 						e1:SetCode(EFFECT_DISABLE)
-						e1:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+						e1:SetReset(RESET_EVENT+0x1fe0000)
 						tc:RegisterEffect(e1)
 						local e2=Effect.CreateEffect(c)
 						e2:SetType(EFFECT_TYPE_SINGLE)
 						e2:SetCode(EFFECT_DISABLE_EFFECT)
 						e2:SetValue(RESET_TURN_SET)
-						e2:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+						e2:SetReset(RESET_EVENT+0x1fe0000)
 						tc:RegisterEffect(e2)
 						local e3=Effect.CreateEffect(c)
 						e3:SetDescription(aux.Stringid(60151128,1))

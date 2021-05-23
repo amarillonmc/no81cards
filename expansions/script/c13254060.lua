@@ -23,7 +23,7 @@ function cm.cfilter(c)
 	return #(tama.tamas_getElements(c))~=0
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()==1 and Duel.GetMatchingGroupCount(cm.cfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,nil)>=Duel.GetFieldGroupCount(tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0)*7/10
+	return Duel.GetTurnCount()==1 and Duel.GetMatchingGroupCount(cm.cfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,nil)>=Duel.GetFieldGroupCount(tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0)*7/5
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -33,7 +33,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		if c:GetPreviousLocation()==LOCATION_HAND then
 			Duel.Draw(tp,1,REASON_RULE)
 		end
-		Duel.DiscardDeck(tp,10,REASON_EFFECT)
+		Duel.DiscardDeck(tp,5,REASON_EFFECT)
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(m,1))
 		e1:SetType(EFFECT_TYPE_FIELD)

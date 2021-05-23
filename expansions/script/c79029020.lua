@@ -1,9 +1,18 @@
 --罗德岛·特种干员-食铁兽
 function c79029020.initial_effect(c)
-	c:SetSPSummonOnce(79029020)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,5,2,c79029020.ovfilter,aux.Stringid(79029020,2),99,c79029020.xyzop)
 	c:EnableReviveLimit()
+	aux.AddXyzProcedure(c,nil,5,2,nil,nil,99)
+	--lv change
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_XYZ_LEVEL)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAIABLE)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(c79029020.lvtg)
+	e1:SetValue(c79029020.lvval)
+	c:RegisterEffect(e1)
 	--tgrc
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_RECOVER)
@@ -23,6 +32,14 @@ function c79029020.initial_effect(c)
 	e2:SetTarget(c79029020.target)
 	e2:SetOperation(c79029020.operation)
 	c:RegisterEffect(e2)
+end
+function c79029020.lvtg(e,c)
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_LINK)
+end
+function c79029020.lvval(e,c,rc)
+	local lv=c:GetLevel()
+	if rc==e:GetHandler() then return 5
+	else return lv end
 end
 function c79029020.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsType(TYPE_LINK)

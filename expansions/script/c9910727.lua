@@ -9,76 +9,51 @@ function c9910727.initial_effect(c)
 	e1:SetTarget(c9910727.target)
 	e1:SetOperation(c9910727.activate)
 	c:RegisterEffect(e1)
-	--destroy replace
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_DESTROY_REPLACE)
-	e2:SetRange(LOCATION_FZONE)
-	e2:SetTarget(c9910727.desreptg)
-	e2:SetValue(c9910727.desrepval)
-	e2:SetOperation(c9910727.desrepop)
-	c:RegisterEffect(e2)
 	--set
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_REMOVE)
-	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
-	e3:SetRange(LOCATION_FZONE)
-	e3:SetCountLimit(1)
-	e3:SetCondition(c9910727.setcon)
-	e3:SetTarget(c9910727.settg)
-	e3:SetOperation(c9910727.setop)
-	c:RegisterEffect(e3)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_REMOVE)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetCountLimit(1)
+	e2:SetCondition(c9910727.setcon)
+	e2:SetTarget(c9910727.settg)
+	e2:SetOperation(c9910727.setop)
+	c:RegisterEffect(e2)
 end
-function c9910727.cfilter(c,lv)
-	return c:IsFaceup() and c:IsLevel(lv)
-end
-function c9910727.thfilter(c,tp)
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
-		and not Duel.IsExistingMatchingCard(c9910727.cfilter,tp,LOCATION_MZONE,0,1,nil,c:GetLevel())
-		and not Duel.IsExistingMatchingCard(Card.IsLevel,tp,LOCATION_GRAVE,0,1,nil,c:GetLevel())
+function c9910727.cfilter(c,tp)
+	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end
 function c9910727.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910727.thfilter,tp,LOCATION_DECK,0,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910727.cfilter,tp,LOCATION_HAND,0,1,nil) end
+end
+function c9910727.thfilter(c,mg)
+	return c:IsSetCard(0xc950) and c:IsAbleToHand() and not mg:IsExists(Card.IsCode,1,nil,c:GetCode())
 end
 function c9910727.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910727.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g1=Duel.SelectMatchingCard(tp,c9910727.cfilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.ConfirmCards(1-tp,g1)
+	if g1:GetCount()==0 then return end
+	local tc=g1:GetFirst()
+	local g2=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,0,nil)
+	if g2:GetCount()>0 then g1:Merge(g2) end
+	local g3=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
+	if g3:GetCount()>0 then g1:Merge(g3) end
+	if Duel.IsExistingMatchingCard(c9910727.thfilter,tp,LOCATION_DECK,0,1,nil,g1)
+		and Ygzw.SetFilter(tc,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(9910727,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,c9910727.thfilter,tp,LOCATION_DECK,0,1,1,nil,g1)
+		if #g>0 then
+			Duel.BreakEffect()
+			if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
+				Duel.ConfirmCards(1-tp,g)
+				Ygzw.Set(tc,e,tp)
+			end
+		end
 	end
-end
-function c9910727.repfilter(c,tp)
-	return c:IsControler(tp) and c:IsFaceup()
-		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
-end
-function c9910727.desfilter(c,e,tp)
-	return c:IsFacedown() and c:IsControler(tp) and c:IsDestructable(e)
-		and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED)
-end
-function c9910727.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(c9910727.repfilter,1,nil,tp)
-		and Duel.IsExistingMatchingCard(c9910727.desfilter,tp,LOCATION_ONFIELD,0,1,nil,e,tp) end
-	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESREPLACE)
-		local g=Duel.SelectMatchingCard(tp,c9910727.desfilter,tp,LOCATION_ONFIELD,0,1,1,nil,e,tp)
-		e:SetLabelObject(g:GetFirst())
-		g:GetFirst():SetStatus(STATUS_DESTROY_CONFIRMED,true)
-		return true
-	end
-	return false
-end
-function c9910727.desrepval(e,c)
-	return c9910727.repfilter(c,e:GetHandlerPlayer())
-end
-function c9910727.desrepop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,9910727)
-	local tc=e:GetLabelObject()
-	tc:SetStatus(STATUS_DESTROY_CONFIRMED,false)
-	Duel.Destroy(tc,REASON_EFFECT+REASON_REPLACE)
+	Duel.ShuffleHand(tp)
 end
 function c9910727.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED)
