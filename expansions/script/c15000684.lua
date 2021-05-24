@@ -225,6 +225,7 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SendtoGrave(eg,REASON_EFFECT)
 	end

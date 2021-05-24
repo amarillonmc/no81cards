@@ -114,6 +114,7 @@ function cm.effectfilter(e,ct)
 	return e:GetHandler():GetEquipGroup():IsContains(te:GetHandler())
 end
 function cm.immcon(e)
+	local c=e:GetHandler()
 	return Duel.GetMatchingGroupCount(cm.eqfilter,tp,LOCATION_SZONE,LOCATION_SZONE,nil,c)>=3
 end
 function cm.immfilter(e,te)
