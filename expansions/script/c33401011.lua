@@ -61,7 +61,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)	   
+		Duel.ConfirmCards(1-tp,g)	  
 	end 
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -105,7 +105,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,cm.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc:GetCode())
 		local tc2=g:GetFirst()
 		tc2:SetMaterial(nil)
-		if Duel.SpecialSummon(tc2,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)~=0  then
+		local ss=Duel.SpecialSummon(tc2,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
+		tc2:CompleteProcedure()
+		if ss~=0  then
 		Duel.Destroy(tc,REASON_EFFECT)
 		end
 	end

@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.hand(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil)
+	return Duel.IsExistingMatchingCard(cm.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_HAND,0,1,nil)
 end
 function cm.cfilter(c)
 	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_RITUAL) and c:IsAbleToRemoveAsCost()
@@ -28,7 +28,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true  end
 	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,2,nil)  
+		local g=Duel.SelectMatchingCard(tp,cm.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_HAND,0,1,2,nil)  
 		Duel.Remove(g,POS_FACEUP,REASON_COST)
 		local g1=Duel.GetOperatedGroup()
 		g1:KeepAlive()
@@ -40,16 +40,16 @@ function cm.setfilter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local flag=Duel.SelectField(tp,1,0,LOCATION_ONFIELD,0xe000e0)
+	Duel.Hint(HINT_SELECTMSG,e:GetHandlerPlayer(),HINTMSG_TARGET)
+	local flag=Duel.SelectField(e:GetHandlerPlayer(),1,0,LOCATION_ONFIELD,0xe000e0)
 	local seq=math.log(flag>>16,2)
 	e:SetLabel(seq)   
-	Duel.Hint(HINT_ZONE,tp,flag)
+	Duel.Hint(HINT_ZONE,e:GetHandlerPlayer(),flag)
 	if e:GetLabelObject() and e:GetLabelObject():GetCount()>0 then
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,e:GetHandlerPlayer(),1)
 	end
 	if e:GetLabelObject() and e:GetLabelObject():GetCount()>1 then
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,e:GetHandlerPlayer(),LOCATION_REMOVED)
 	end 
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
