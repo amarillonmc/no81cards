@@ -65,7 +65,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end   
 end
 function cm.thfilter2(c)
-	return c:IsSetCard(0x9344,0x6340)  and c:IsAbleToHand()
+	return c:IsSetCard(0x9344)  and c:IsAbleToHand()
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) end

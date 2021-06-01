@@ -62,8 +62,8 @@ function cm.damop1(e,tp,eg,ep,ev,re,r,rp)
 						if seq==3 then flag=flag|(aux.SequenceToGlobal(p,LOCATION_MZONE,6)) end
 					end
 				else
-					if seq==5 then flag=flag|(aux.SequenceToGlobal(p,LOCATION_MZONE,1))
-					if seq==6 then flag=flag|(aux.SequenceToGlobal(p,LOCATION_MZONE,3))
+					if seq==5 then flag=flag|(aux.SequenceToGlobal(p,LOCATION_MZONE,1)) end
+					if seq==6 then flag=flag|(aux.SequenceToGlobal(p,LOCATION_MZONE,3)) end
 				else toGrave=true
 				end
 			elseif tc:IsLocation(LOCATION_SZONE) then
