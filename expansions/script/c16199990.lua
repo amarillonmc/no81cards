@@ -1,5 +1,5 @@
-rk={}
 if not pcall(function() require("expansions/script/c16101100") end) then require("script/c16101100") end
+rk=rk or {}
 function rk.set(code,setcode)
 	if not _G["c"..code] then _G["c"..code]={}
 		setmetatable(_G["c"..code],Card)
@@ -36,12 +36,12 @@ function rk.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return r==REASON_XYZ
 end
 function rk.efop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	e:SetOwnerPlayer(tp)
+	local c=e:GetHandler() 
+	e:SetProperty(EFFECT_FLAG_EVENT_PLAYER+EFFECT_FLAG_IGNORE_IMMUNE)
 	local rc=c:GetReasonCard()
 	local code=e:GetLabel()
 	local reset_flag=RESET_EVENT+RESETS_STANDARD
-	local cid=rc:CopyEffect(code,0,1)
+	local cid=rc:CopyEffect(code,reset_flag,1)
 	--Debug.Message(e:GetOwnerPlayer()==rc:GetControler())
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -59,6 +59,7 @@ function rk.efop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		rc:RegisterEffect(e2,true)
 	end
+	e:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
 end
 function rk.indes(c,code)
 	local tc=c
@@ -101,6 +102,6 @@ end)
 	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsAttribute(att)
 end)
 	e2:SetRange(LOCATION_SZONE)
-	Duel.RegisterEffect(e2,tp)
+	tc:RegisterEffect(e2)
 	return e1,e2
 end
