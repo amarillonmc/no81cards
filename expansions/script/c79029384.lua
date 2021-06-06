@@ -54,13 +54,13 @@ function c79029384.checkcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler():IsSetCard(0xa900)
 end
 function c79029384.checkop(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message("让小僧来！")
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029384,5))
 	local xp=re:GetHandlerPlayer()
 	local flag=Duel.GetFlagEffectLabel(xp,79029384)
 	if flag then
 	Duel.SetFlagEffectLabel(xp,79029384,flag+1)
 	else
+	Debug.Message("让小僧来！")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029384,5))
 	Duel.RegisterFlagEffect(xp,79029384,RESET_PHASE+PHASE_END,0,1,1)
 	end
 end

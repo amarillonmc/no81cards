@@ -22,8 +22,9 @@ function c9910712.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,9910713)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetCost(c9910712.setcost)
 	e2:SetTarget(c9910712.settg)
 	e2:SetOperation(c9910712.setop)
 	c:RegisterEffect(e2)
@@ -41,12 +42,12 @@ function c9910712.thfilter(c)
 	return c:IsSetCard(0xc950) and c:IsAbleToHand()
 end
 function c9910712.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,5) end
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,4) end
 end
 function c9910712.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsPlayerCanDiscardDeck(tp,5) then
-		Duel.ConfirmDecktop(tp,5)
-		local g=Duel.GetDecktopGroup(tp,5)
+	if Duel.IsPlayerCanDiscardDeck(tp,4) then
+		Duel.ConfirmDecktop(tp,4)
+		local g=Duel.GetDecktopGroup(tp,4)
 		if g:GetCount()>0 then
 			Duel.DisableShuffleCheck()
 			if g:IsExists(c9910712.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(9910712,2)) then
@@ -60,6 +61,10 @@ function c9910712.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
 		end
 	end
+end
+function c9910712.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9910712.setfilter(c)
 	return c:IsPosition(POS_FACEUP_ATTACK) and c:IsCanTurnSet()

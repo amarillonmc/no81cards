@@ -25,7 +25,7 @@ function c79029308.initial_effect(c)
 	c:RegisterEffect(e2)   
 end
 function c79029308.tfilter(c)
-	return c:IsCode(79029218)
+	return c:IsSetCard(0xa900)
 end
 function c79029308.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
@@ -66,11 +66,11 @@ function c79029308.synfilter(c,mg)
 end
 function c79029308.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c79029308.filter(chkc,e:GetHandler(),tp) end
-	if chk==0 then return Duel.IsExistingTarget(c79029308.filter,tp,0,LOCATION_MZONE,1,nil,e:GetHandler(),tp) end
+	if chk==0 then return Duel.IsExistingTarget(c79029308.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e:GetHandler(),tp) end
 	Debug.Message("时辰已到，走吧。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029308,2))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c79029308.filter,tp,0,LOCATION_MZONE,1,1,nil,e:GetHandler(),tp)
+	Duel.SelectTarget(tp,c79029308.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e:GetHandler(),tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c79029308.spop(e,tp,eg,ep,ev,re,r,rp)

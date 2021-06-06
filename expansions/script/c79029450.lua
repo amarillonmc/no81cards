@@ -27,10 +27,10 @@ function c79029450.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029450.filter1(c,e,tp)
 	return c:IsSetCard(0xa900) and Duel.GetMZoneCount(tp,c)>0
-		and Duel.IsExistingMatchingCard(c79029450.filter2,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,1,nil,e,tp,c:GetCode())
+		and Duel.IsExistingMatchingCard(c79029450.filter2,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,1,nil,e,tp,c)
 end
-function c79029450.filter2(c,e,tp,tcode)
-	return c:IsSetCard(0xd90c) and c.assault_name==tcode and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+function c79029450.filter2(c,e,tp,tc)
+	return c:IsSetCard(0xd90c) and tc:IsCode(c.assault_name) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c79029450.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -39,14 +39,14 @@ function c79029450.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		return Duel.CheckReleaseGroup(tp,c79029450.filter1,1,nil,e,tp)
 	end
 	local rg=Duel.SelectReleaseGroup(tp,c79029450.filter1,1,1,nil,e,tp)
-	e:SetLabel(rg:GetFirst():GetCode())
+	e:SetLabelObject(rg:GetFirst())
 	Duel.Remove(rg,POS_FACEUP,REASON_COST)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA)
 end
 function c79029450.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=Duel.SelectMatchingCard(tp,c79029450.filter2,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,e,tp,e:GetLabel()):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c79029450.filter2,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,e,tp,e:GetLabelObject()):GetFirst()
 	if tc and Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)>0 then
 	Debug.Message("装载完毕。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029450,0)) 

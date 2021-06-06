@@ -10,12 +10,7 @@ function c60000103.initial_effect(c)
 	e1:SetOperation(c60000103.acop)
 	c:RegisterEffect(e1)
 	--act in hand
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
-	e2:SetCondition(c60000103.ahcon)
-	e2:SetCountLimit(1,60000103)
-	c:RegisterEffect(e2)
+	--咕咕掉了
 	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
@@ -31,7 +26,7 @@ function c60000103.ahcon(e)
 	return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler())
 end
 function c60000103.cfilter(c)
-	return c:IsFacedown() or not c:IsSetCard(0x6a19)
+	return true
 end
 function c60000103.accon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c60000103.cfilter,tp,LOCATION_MZONE,0,1,nil)

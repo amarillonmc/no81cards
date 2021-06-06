@@ -67,6 +67,8 @@ function c79029066.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg=g:Select(tp,1,1,nil)
+	Debug.Message("现场指挥的话......我稍微有些经验。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029066,0))
 	Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,sg)
 end 

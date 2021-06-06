@@ -11,7 +11,7 @@ function c9910522.initial_effect(c)
 	e1:SetOperation(c9910522.activate)
 	c:RegisterEffect(e1)
 end
-function c9910522.thfilter(c)
+function c9910522.thfilter(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0xa950) and c:IsAbleToHand() and Duel.GetMZoneCount(tp,c)>1
 end
 function c9910522.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

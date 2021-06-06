@@ -59,15 +59,14 @@ function c79029124.initial_effect(c)
 	e4:SetCost(c79029124.actcost)
 	e4:SetOperation(c79029124.actop)
 	c:RegisterEffect(e4)
-	--overlay
+	--material
 	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCode(EVENT_PHASE+PHASE_END)
-	e5:SetCondition(c79029124.effcon1)
 	e5:SetCountLimit(1)
-	e5:SetCost(c79029124.cost)
-	e5:SetOperation(c79029124.ovop)
+	e5:SetTarget(c79029124.mttg)
+	e5:SetOperation(c79029124.mtop)
 	c:RegisterEffect(e5)
 end
 function c79029124.mfilter(c,xyzc)
@@ -136,17 +135,29 @@ function c79029124.actop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("满功率输出！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029124,1))
 end
-function c79029124.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,3,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x1099,3,REASON_COST)
+function c79029124.xfilter(c)
+	return c:IsCanOverlay()
 end
-function c79029124.ovop(e,tp,eg,ep,ev,re,r,rp)
-	local a=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
-	local x=a:RandomSelect(tp,1)
-	Duel.Overlay(e:GetHandler(),x)
+function c79029124.mttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c79029124.filter(chkc) and chkc~=e:GetHandler() end
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ)
+		and Duel.IsExistingTarget(c79029124.xfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	Duel.SelectTarget(tp,c79029124.xfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
+end
+function c79029124.mtop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
+		local og=tc:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+	Duel.Overlay(c,Group.FromCards(tc))
 	Debug.Message("这次能捡到什么有趣的东西呢？")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029124,2))
-end 
+	end
+end
 
 
 

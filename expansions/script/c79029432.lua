@@ -61,7 +61,7 @@ function c79029432.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EFFECT_NO_EFFECT_DAMAGE)
 	c:RegisterEffect(e4)
-	--Activate
+	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)

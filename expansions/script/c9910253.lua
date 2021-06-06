@@ -83,7 +83,7 @@ function c9910253.ctop(e,tp,eg,ep,ev,re,r,rp)
 		if c:IsRelateToEffect(e) then c:AddCounter(0x953,2) end
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,c9910253.setfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910253.setfilter),tp,LOCATION_GRAVE,0,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.SSet(tp,g)
 			Duel.ConfirmCards(1-tp,g)

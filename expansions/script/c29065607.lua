@@ -11,14 +11,6 @@ function c29065607.initial_effect(c)
 	e1:SetCondition(c29065607.eqcon)
 	e1:SetOperation(c29065607.eqop)
 	c:RegisterEffect(e1)	
-	--code
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_CHANGE_CODE)
-	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e2:SetValue(29065603)
-	c:RegisterEffect(e2)   
 	--destroy
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(29065607,0))
@@ -27,23 +19,12 @@ function c29065607.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetCountLimit(1,29065607)
+	e3:SetCountLimit(1)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTarget(c29065607.destg)
 	e3:SetOperation(c29065607.desop)
 	c:RegisterEffect(e3)
-	--tohand
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(29065607,1))
-	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCode(EVENT_TO_GRAVE)
-	e4:SetCountLimit(1,29000027)
-	e4:SetCondition(c29065607.thcon)
-	e4:SetTarget(c29065607.thtg)
-	e4:SetOperation(c29065607.thop)
-	c:RegisterEffect(e4)
+
 end
 function c29065607.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) and e:GetHandler():GetMaterial():Filter(Card.IsSetCard,nil,0x87ad):GetCount()>0
@@ -86,25 +67,7 @@ function c29065607.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1-tp,tc:GetBaseAttack(),REASON_EFFECT)
 	end
 end
-function c29065607.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) and e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
-end
-function c29065607.thfilter(c)
-	return c:IsSetCard(0x87ad) and c:IsAbleToHand()
-end
-function c29065607.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c29065607.thfilter,tp,LOCATION_GRAVE,0,nil)
-	if chk==0 then return g:GetClassCount(Card.GetCode)>=2 end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_GRAVE)
-end
-function c29065607.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c29065607.thfilter,tp,LOCATION_GRAVE,0,nil)
-	if g:GetClassCount(Card.GetCode)>=2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g1=g:SelectSubGroup(tp,aux.dncheck,false,2,2)
-		Duel.SendtoHand(g1,nil,REASON_EFFECT)
-	end
-end
+
 
 
 

@@ -3,7 +3,7 @@ function c29065605.initial_effect(c)
 	c:SetSPSummonOnce(29065605)
 	--synchro summon
 	c:EnableReviveLimit()
-	aux.AddSynchroMixProcedure(c,c29065605.matfilter1,nil,nil,aux.NonTuner(Card.IsSetCard,0x87ad),1,99) 
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x87ad),1,99) 
 	--Equip
 	local e1=Effect.CreateEffect(c)   
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS) 
@@ -11,14 +11,6 @@ function c29065605.initial_effect(c)
 	e1:SetCondition(c29065605.eqcon)
 	e1:SetOperation(c29065605.eqop)
 	c:RegisterEffect(e1)   
-	--code
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_CHANGE_CODE)
-	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e2:SetValue(29065604)
-	c:RegisterEffect(e2)
 	--indes
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -34,18 +26,6 @@ function c29065605.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e3:SetValue(aux.tgoval)
 	c:RegisterEffect(e3)  
-	--CalculateDamage
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(29065605,0))
-	e3:SetCategory(CATEGORY_DISABLE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,29065605)
-	e3:SetCondition(c29065605.descon)
-	e3:SetTarget(c29065605.destg)
-	e3:SetOperation(c29065605.desop)
-	c:RegisterEffect(e3)	
 		if not c29065605.global_check then
 		c29065605.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -94,20 +74,6 @@ function c29065605.eqlimit(e,c)
 end
 function c29065605.idtg(e,c)
 	return c:GetEquipGroup():IsExists(Card.IsSetCard,nil,1,0x87ad)
-end
-function c29065605.descon(e,tp,eg,ep,ev,re,r,rp)
-	return (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) and Duel.GetFlagEffect(tp,29065605)~=0
-end
-function c29065605.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
-	if chk==0 then return g:GetCount()>0 end
-end
-function c29065605.desop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
-	if g:GetCount()<=0 then return end
-	tc=g:Select(tp,1,1,nil):GetFirst()
-	Duel.CalculateDamage(c,tc)
 end
 
 

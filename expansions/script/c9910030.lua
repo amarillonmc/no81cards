@@ -40,28 +40,12 @@ function c9910030.initial_effect(c)
 	e4:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EVENT_SUMMON)
+	e4:SetCode(EVENT_SPSUMMON)
 	e4:SetCondition(c9910030.dscon)
 	e4:SetCost(c9910030.cost)
 	e4:SetTarget(c9910030.dstg)
 	e4:SetOperation(c9910030.dsop)
 	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetCode(EVENT_FLIP_SUMMON)
-	c:RegisterEffect(e5)
-	local e6=e4:Clone()
-	e6:SetCode(EVENT_SPSUMMON)
-	c:RegisterEffect(e6)
-	--negate attack
-	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(9910030,2))
-	e7:SetType(EFFECT_TYPE_QUICK_O)
-	e7:SetRange(LOCATION_MZONE)
-	e7:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e7:SetCondition(c9910030.negcon)
-	e7:SetCost(c9910030.cost)
-	e7:SetOperation(c9910030.negop)
-	c:RegisterEffect(e7)
 end
 function c9910030.matfilter(c)
 	return c:IsLinkSetCard(0x3950) and c:GetSummonLocation()==LOCATION_EXTRA 
@@ -99,8 +83,11 @@ function c9910030.disop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
+function c9910030.dsfilter(c,tp)
+	return c:IsSummonPlayer(tp) and c:IsPreviousLocation(LOCATION_EXTRA)
+end
 function c9910030.dscon(e,tp,eg,ep,ev,re,r,rp)
-	return tp~=ep and Duel.GetCurrentChain()==0
+	return tp~=ep and eg:IsExists(c9910030.dsfilter,1,nil,1-tp) and Duel.GetCurrentChain()==0
 end
 function c9910030.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -110,12 +97,4 @@ end
 function c9910030.dsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
 	Duel.Destroy(eg,REASON_EFFECT)
-end
-function c9910030.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
-end
-function c9910030.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateAttack() then
-		Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
-	end
 end

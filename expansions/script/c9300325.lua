@@ -53,7 +53,6 @@ function c9300325.initial_effect(c)
 	e6:SetType(EFFECT_TYPE_IGNITION)
 	e6:SetRange(LOCATION_MZONE+LOCATION_PZONE)
 	e6:SetCountLimit(1,9303325)
-	e6:SetCondition(c9300325.stscon)
 	e6:SetTarget(c9300325.sttg)
 	e6:SetOperation(c9300325.stop)
 	c:RegisterEffect(e6)
@@ -143,20 +142,9 @@ function c9300325.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c9300325.stscon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1
-end
 function c9300325.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>2 end
 end
 function c9300325.stop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SortDecktop(tp,1-tp,3)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_TO_HAND)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,1)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
-	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e1,tp)
 end

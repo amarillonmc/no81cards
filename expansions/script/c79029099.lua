@@ -6,7 +6,6 @@ function c79029099.initial_effect(c)
 	aux.AddFusionProcFunRep(c,c79029099.ffilter,3,true)
 	--pendulum
 	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(13331639,3))
 	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e0:SetCode(EVENT_DESTROYED)
 	e0:SetProperty(EFFECT_FLAG_DELAY)
@@ -14,14 +13,17 @@ function c79029099.initial_effect(c)
 	e0:SetTarget(c79029099.pentg)
 	e0:SetOperation(c79029099.penop)
 	c:RegisterEffect(e0) 
-	--activate limit
+	--disable spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetDescription(aux.Stringid(79029099,0))
+	e1:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_SPSUMMON)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(0,1)
-	e1:SetValue(c79029099.actlimit)
+	e1:SetCountLimit(1)
+	e1:SetCondition(c79029099.dscon)
+	e1:SetTarget(c79029099.dstg)
+	e1:SetOperation(c79029099.dsop)
 	c:RegisterEffect(e1)
 	--negate
 	local e2=Effect.CreateEffect(c)
@@ -133,14 +135,28 @@ end
 end
 function c79029099.recop(e,tp,eg,ep,ev,re,r,rp)
 	if ep~=tp then return end
+	if Duel.GetFlagEffect(tp,79029099)==0 then 
 	Debug.Message("就算不怎么擅长，我也会努力去做的。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029099,0))
-	Duel.Recover(tp,500,REASON_EFFECT)
+	end
+	Duel.RegisterFlagEffect(tp,79029099,RESET_PHASE+PHASE_END,0,1)
+	Duel.Hint(HINT_CARD,0,79029099)
+	Duel.Recover(tp,1000,REASON_EFFECT)
 end
-function c79029099.actlimit(e,re,tp)
-	return not re:GetHandler():IsLocation(LOCATION_ONFIELD)
+function c79029099.dscon(e,tp,eg,ep,ev,re,r,rp)
+	return tp~=ep and eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp) and Duel.GetCurrentChain()==0 and e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
-
+function c79029099.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,eg:GetCount(),0,0)
+end
+function c79029099.dsop(e,tp,eg,ep,ev,re,r,rp,chk)
+	Debug.Message("有没有感觉身体变重了？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029099,4))
+	Duel.NegateSummon(eg)
+	Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
+end
 
 
 

@@ -20,7 +20,7 @@ function c60000117.initial_effect(c)
 	c:RegisterEffect(e2)	
 end
 function c60000117.filter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAbleToHand()
+	return c:IsSetCard(0x6a19) and c:IsAbleToHand()
 end
 function c60000117.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60000117.filter,tp,LOCATION_DECK,0,1,nil) end

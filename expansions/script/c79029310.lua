@@ -29,7 +29,7 @@ function c79029310.reop(e,tp,eg,ep,ev,re,r,rp)
 	end   
 	local c=e:GetHandler()
 	if Duel.GetTurnPlayer()~=tp then return end
-	Duel.Hint(HINT_MUSIC,tp,aux.Stringid(79029310,1))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(79029310,1))
 	local ft=2
 	local ac=0
 	local chk=true

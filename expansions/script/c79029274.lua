@@ -80,6 +80,7 @@ function c79029274.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 end
 end
+c79029274.pendulum_level=7
 function c79029274.matfilter(c)
 	return c:IsSetCard(0xa900) and c:IsXyzType(TYPE_PENDULUM)
 end

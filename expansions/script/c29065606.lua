@@ -21,14 +21,6 @@ function c29065606.initial_effect(c)
 	e1:SetCondition(c29065606.eqcon)
 	e1:SetOperation(c29065606.eqop)
 	c:RegisterEffect(e1)   
-	--code
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_CHANGE_CODE)
-	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e2:SetValue(29065600)
-	c:RegisterEffect(e2)	
 	--Disable
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(29065606,0))
@@ -36,26 +28,11 @@ function c29065606.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,29065606)
+	e3:SetCountLimit(1)
 	e3:SetCondition(c29065606.descon)
 	e3:SetTarget(c29065606.destg)
 	e3:SetOperation(c29065606.desop)
-	c:RegisterEffect(e3)
-	--indes
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(c29065606.idtg)
-	e2:SetValue(1)
-	c:RegisterEffect(e2)
-	--cannot be target
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e3:SetValue(aux.tgoval)
-	c:RegisterEffect(e3)	  
+	c:RegisterEffect(e3)  
 end
 function c29065606.xyzfil(c)
 	return c:IsCanOverlay() and c:IsSetCard(0x87ad) and c:IsLevel(4)
@@ -131,10 +108,6 @@ function c29065606.desop(e,tp,eg,ep,ev,re,r,rp)
 	tc=g:GetNext()   
 	end
 	end
-end
-function c29065606.idtg(e,c)
-	if c:GetEquipTarget()==nil then return false end
-	return c:GetEquipTarget():IsSetCard(0x87ad)
 end
 
 

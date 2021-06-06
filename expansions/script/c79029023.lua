@@ -1,12 +1,12 @@
 --罗德岛·术士干员-天火
 function c79029023.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xa900),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--send to grave
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(79029023,0))
-	e1:SetCategory(CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -43,29 +43,26 @@ function c79029023.val(e,c)
 	local ct=g:GetCount()
 	return ct*300
 end
-function c79029023.filter(c,tp)
-	return c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP) or c:IsType(TYPE_MONSTER)
-end
 function c79029023.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
-function c79029023.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local x=e:GetHandler():GetMaterialCount()
-	if chkc then return chkc:IsOnField() and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,x,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
+function c79029023.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,0,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,0,0)
 end
 function c79029023.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if tg then
-		local g=tg:Filter(Card.IsRelateToEffect,nil,e)
-		if g:GetCount()>0 then
-			Duel.SendtoGrave(g,nil,REASON_EFFECT)
+	local c=e:GetHandler()
+	local x=c:GetMaterialCount()
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if g:GetCount()<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local sg=g:Select(tp,1,x,nil)
+	local d=Duel.Destroy(sg,REASON_EFFECT)
 	Debug.Message("在这天火的威光前拜伏吧。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029023,0))
-		end
+	if d>0 then 
+	Duel.Damage(1-tp,d*800,REASON_EFFECT)
 	end
 end
 function c79029023.disop(e,tp,eg,ep,ev,re,r,rp)
@@ -91,3 +88,4 @@ function c79029023.damop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("天空将你点燃！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029023,1))
 end
+

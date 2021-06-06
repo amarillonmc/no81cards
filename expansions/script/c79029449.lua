@@ -19,7 +19,7 @@ function c79029449.initial_effect(c)
 	c:RegisterEffect(e2)	
 end
 function c79029449.filter(c)
-	return c:IsAbleToHand() and ( c:IsSetCard(0xa900) or c:IsSetCard(0xc90e) or c:IsSetCard(0xb90d) )
+	return c:IsAbleToHand() and (c:IsSetCard(0xa900) or c:IsSetCard(0xc90e) or c:IsSetCard(0xb90d) or c:IsSetCard(0xa90f))
 end
 function c79029449.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029449.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -44,7 +44,7 @@ function c79029449.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029449.aclimit(e,re,tp)
-	return not re:GetHandler():IsSetCard(0xc90e) and not re:GetHandler():IsSetCard(0xb90d) and not re:GetHandler():IsSetCard(0xa900) 
+	return not re:GetHandler():IsSetCard(0xc90e) and not re:GetHandler():IsSetCard(0xb90d) and not re:GetHandler():IsSetCard(0xa900) and not re:GetHandler():IsSetCard(0xa90f)
 end
 function c79029449.thfil(c)
 	return c:IsAbleToHand() and (c:IsSetCard(0xa900) or c:IsSetCard(0xc90e) or c:IsSetCard(0xb90d))

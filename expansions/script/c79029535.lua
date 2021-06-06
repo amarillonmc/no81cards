@@ -85,7 +85,7 @@ function c79029535.cpop(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 function c79029535.winop(e,tp,eg,ep,ev,re,r,rp)
-	local WIN_REASON_BALIAN = 0x7a
+	local WIN_REASON_BALIAN = 0x1
 	local c=e:GetHandler()
 	local a1=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,79029526)
 	local a2=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,79029556)
@@ -94,7 +94,14 @@ function c79029535.winop(e,tp,eg,ep,ev,re,r,rp)
 	local a5=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,79029555)
 	local a6=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,79029531)
 	local a7=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,79029557)
-	if a1 and a2 and a3 and a4 and a5 and a6 and a7 then
+	local b1=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,12744567)
+	local b2=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,67173574)
+	local b3=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,20785975)
+	local b4=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,49456901)
+	local b5=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,85121942)
+	local b6=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,55888045)
+	local b7=c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,68396121)
+	if a1 and a2 and a3 and a4 and a5 and a6 and a7 and b1 and b2 and b3 and b4 and b5 and b6 and b7 then
 		Duel.Win(tp,WIN_REASON_BALIAN)
 	end
 end

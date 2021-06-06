@@ -37,16 +37,9 @@ function c79029102.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c79029102.activate(e,tp,eg,ep,ev,re,r,rp)
-		local val=Duel.Recover(tp,math.ceil(ev),REASON_EFFECT)  
-if val>=800 then
-			Duel.Draw(tp,1,REASON_EFFECT)
-if val>=1600 then
-			Duel.Draw(tp,1,REASON_EFFECT)
-if val>=2400 then
-			Duel.Draw(tp,1,REASON_EFFECT)
-		end
-	end
-end
+	local val=Duel.Recover(tp,math.ceil(ev),REASON_EFFECT)  
+	local x=math.floor(val/800)
+	Duel.Draw(tp,x,REASON_EFFECT)
 end
 function c79029102.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

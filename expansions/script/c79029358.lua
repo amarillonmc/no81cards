@@ -1,7 +1,7 @@
 --召唤兽 伊芙利特
 function c79029358.initial_effect(c)
 	--fusion material
-	aux.AddFusionProcCodeFun(c,79029357,c79029358.mfilter,1,true,true)
+	aux.AddFusionProcCodeFun(c,79029028,c79029358.mfilter,1,true,true)
 	c:EnableReviveLimit()
 	--add code
 	local e2=Effect.CreateEffect(c)

@@ -51,7 +51,7 @@ function c79029039.atkval(e,c)
    if e:GetHandler():GetEquipTarget()==nil then return false end
    local c=e:GetHandler():GetEquipTarget()
    if c:IsType(TYPE_XYZ) then 
-   return c:GetRank()*c:GetOverlayCount()*-200
+   return c:GetRank()*-200
    else 
    return c:GetLevel()*-200
    end

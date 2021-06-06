@@ -54,7 +54,8 @@ function c79029166.desop(e,tp,eg,ep,ev,re,r,rp)
 	local dg=Group.CreateGroup()
 	if seq<5 then dg=Duel.GetMatchingGroup(c79029166.desfilter2,tp,0,LOCATION_MZONE,nil,seq,a:GetControler()) end
 	if dg:GetCount()>0 then
-	if x=Duel.Destroy(dg,REASON_EFFECT)~=0 then  
+	local x=Duel.Destroy(dg,REASON_EFFECT)
+	if x~=0 then  
 	local dam=x*800
 	Duel.Damage(1-tp,dam,REASON_EFFECT)
 	end

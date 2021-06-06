@@ -89,8 +89,7 @@ function c60000106.actcon(e)
 	return (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) and not e:GetHandler():GetOverlayGroup():IsExists(c60000106.ckfil,1,nil)
 end
 function c60000106.actcon1(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	return not e:GetHandler:GetOverlayGroup():IsExists(c60000106.ckfil,1,nil) and re:GetHandler()==e:GetHandler()
+	return  re:GetHandler()==e:GetHandler() and not e:GetHandler():GetOverlayGroup():IsExists(c60000106.ckfil,1,nil) 
 end
 function c60000106.actop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,60000106)

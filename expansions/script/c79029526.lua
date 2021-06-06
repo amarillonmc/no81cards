@@ -82,6 +82,14 @@ function c79029526.remop(e,tp,eg,ep,ev,re,r,rp)
 		local sg3=g3:RandomSelect(tp,1)
 		sg:Merge(sg3)
 	end
+		local tc=sg:GetFirst()
+		while tc do
+		local og=tc:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+		tc=sg:GetNext()
+		end
 	Duel.Overlay(e:GetHandler(),sg)
 end
 function c79029526.spcon(e,tp,eg,ep,ev,re,r,rp)

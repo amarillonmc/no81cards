@@ -81,6 +81,6 @@ function c79029100.ctop(e,tp,eg,ep,ev,re,r,rp)
 	   if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 and  Duel.GetLocationCount(tp,LOCATION_MZONE)>=0 and Duel.IsPlayerCanSpecialSummonMonster(tp,79029101,0,0x4011,0,0,1,RACE_CYBERSE,ATTRIBUTE_WATER) then
 	local token=Duel.CreateToken(tp,79029101)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
-end  
-end
+	   end  
+	end
 end 

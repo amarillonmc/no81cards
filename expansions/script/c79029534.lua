@@ -4,7 +4,7 @@ function c79029534.initial_effect(c)
 	aux.AddXyzProcedure(c,nil,6,4)
 	c:EnableReviveLimit() 
 	--remove+disable
-	local e1=Effect.CreateEffect(c)
+	e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetRange(LOCATION_MZONE)
@@ -14,7 +14,7 @@ function c79029534.initial_effect(c)
 	e1:SetOperation(c79029534.operation)
 	c:RegisterEffect(e1)
 	--dark charge
-	local e2=Effect.CreateEffect(c)
+	e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_DAMAGE_STEP_END)
 	e2:SetCategory(CATEGORY_ATKCHANGE)
@@ -40,26 +40,25 @@ function c79029534.operation(e,tp,eg,ep,ev,re,r,rp)
 	if g:FilterCount(Card.IsAbleToRemove,nil)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,1,1,nil):GetFirst()
-	if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT) then
-		Duel.BreakEffect()
-		local flag=0
-		if tc:IsType(TYPE_FUSION) then flag=bit.bor(flag,TYPE_FUSION) end
-		if tc:IsType(TYPE_SYNCHRO) then flag=bit.bor(flag,TYPE_SYNCHRO) end
-		if tc:IsType(TYPE_XYZ) then flag=bit.bor(flag,TYPE_XYZ) end
-		if tc:IsType(TYPE_PENDULUM) then flag=bit.bor(flag,TYPE_PENDULUM) end
-		if tc:IsType(TYPE_LINK) then flag=bit.bor(flag,TYPE_LINK) end
-		e:SetLabel(flag)
-		local flag=e:GetLabel()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetTargetRange(0,LOCATION_MZONE)
-		e1:SetTarget(c79029534.distg)
-		e1:SetLabel(flag)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		Duel.RegisterEffect(e1,tp)
-	end
+	if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT) then 
+	Duel.BreakEffect()
+	local flag=0
+	if tc:IsType(TYPE_FUSION) then flag=bit.bor(flag,TYPE_FUSION) end
+	if tc:IsType(TYPE_SYNCHRO) then flag=bit.bor(flag,TYPE_SYNCHRO) end
+	if tc:IsType(TYPE_XYZ) then flag=bit.bor(flag,TYPE_XYZ) end
+	if tc:IsType(TYPE_PENDULUM) then flag=bit.bor(flag,TYPE_PENDULUM) end
+	if tc:IsType(TYPE_LINK) then flag=bit.bor(flag,TYPE_LINK) end
+	e:SetLabel(flag)
+	local flag=e:GetLabel()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DISABLE)
+	e1:SetTargetRange(0,LOCATION_MZONE)
+	e1:SetTarget(c79029534.distg)
+	e1:SetLabel(flag)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	Duel.RegisterEffect(e1,tp)
 end
 function c79029534.distg(e,c)
 	return c:IsType(e:GetLabel())
@@ -88,3 +87,5 @@ function c79029534.dcop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
 end
+
+
