@@ -1,4 +1,5 @@
 --梦坠
+xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400013.initial_effect(c)
 	--Activate(nofield)
 	local e1=Effect.CreateEffect(c)
@@ -6,10 +7,10 @@ function c71400013.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCategory(CATEGORY_TOGRAVE)
-	e1:SetCondition(c71400013.condition1)
-	e1:SetTarget(c71400013.target1)
+	e1:SetCondition(yume.nonYumeCon)
+	e1:SetTarget(c71400013.tg1)
 	e1:SetCost(c71400013.cost)
-	e1:SetOperation(c71400013.operation1)
+	e1:SetOperation(c71400013.op1)
 	e1:SetCountLimit(1,71400013+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(e1)
 	--Activate(field)
@@ -18,24 +19,16 @@ function c71400013.initial_effect(c)
 	e2:SetCategory(CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCondition(c71400013.condition2)
-	e2:SetTarget(c71400013.target2)
+	e2:SetCondition(yume.YumeCon)
+	e2:SetTarget(c71400013.tg2)
 	e2:SetCost(c71400013.cost)
-	e2:SetOperation(c71400013.operation2)
+	e2:SetOperation(c71400013.op2)
 	e2:SetCountLimit(1,71400013+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(e2)
 end
 function c71400013.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,500) end
 	Duel.PayLPCost(tp,500)
-end
-function c71400013.condition1(e,tp,eg,ep,ev,re,r,rp)
-	tc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
-	return tc==nil or tc:IsFacedown() or not tc:IsSetCard(0x3714)
-end
-function c71400013.condition2(e,tp,eg,ep,ev,re,r,rp)
-	tc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
-	return tc and tc:IsFaceup() and tc:IsSetCard(0x3714)
 end
 function c71400013.filter1(c,tp)
 	return c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true) and c:IsSetCard(0xb714)
@@ -46,10 +39,10 @@ end
 function c71400013.filter2(c)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
-function c71400013.operation1(e,tp,eg,ep,ev,re,r,rp)
+function c71400013.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=yume.ActivateYumeField(tp,nil,1)
-	local dg=Duel.GetMatchingGroup(c71400013.filter1a,tp,0,LOCATION_ONFIELD,nil)
+	local dg=Duel.GetMatchingGroup(c71400013.filter1a,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if tc and dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400013,3)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local des=dg:Select(tp,1,1,nil)
@@ -72,7 +65,7 @@ function c71400013.operation1(e,tp,eg,ep,ev,re,r,rp)
 	el3:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	c:RegisterEffect(el3)
 end
-function c71400013.operation2(e,tp,eg,ep,ev,re,r,rp)
+function c71400013.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c71400013.filter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,2,2,nil)
@@ -106,7 +99,7 @@ function c71400013.operation2(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(el3)
 end
 function c71400013.discon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and rp==1-tp and re:GetActivateLocation()&(LOCATION_MZONE+LOCATION_GRAVE)~=0
+	return re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()&(LOCATION_MZONE+LOCATION_GRAVE)~=0
 end
 function c71400013.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
@@ -114,11 +107,11 @@ end
 function c71400013.sumlimit(e,c)
 	return not c:IsSetCard(0x714)
 end
-function c71400013.target1(e,tp,eg,ep,ev,re,r,rp,chk)
+function c71400013.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return yume.YumeFieldCheck(tp,0,1) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,0,1-tp,LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_ONFIELD)
 end
-function c71400013.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+function c71400013.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71400013.filter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,2,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,tp,LOCATION_HAND+LOCATION_ONFIELD)
 end

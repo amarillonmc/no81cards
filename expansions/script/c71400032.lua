@@ -3,89 +3,78 @@ xpcall(function() require("expansions/script/c71400001") end,function() require(
 function c71400032.initial_effect(c)
 	--Activate
 	--See AddYumeFieldGlobal
-	--special summon
+	--rece
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(71400032,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e1:SetCountLimit(1)
-	e1:SetCondition(c71400032.con1)
+	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetRange(LOCATION_FZONE)
-	e1:SetTarget(c71400032.tg1)
-	e1:SetOperation(c71400032.op1)
+	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1:SetCode(EFFECT_CHANGE_RACE)
+	e1:SetValue(RACE_PLANT)
 	c:RegisterEffect(e1)
-	--tograve
+	--disable
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(71400032,1))
-	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetDescription(aux.Stringid(71400032,0))
+	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1)
 	e2:SetCondition(c71400032.con2)
 	e2:SetTarget(c71400032.tg2)
 	e2:SetOperation(c71400032.op2)
 	c:RegisterEffect(e2)
-	--self to deck & field activation
+	--self to deck & activate field
 	yume.AddYumeFieldGlobal(c,71400032,2)
 end
-function c71400032.op1(e,tp,eg,ep,ev,re,r,rp)
-	local cnt=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if cnt<=0 or not e:GetHandler():IsRelateToEffect(e) then return end
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then cnt=1 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c71400032.filter1,tp,LOCATION_HAND,0,1,cnt,nil,e,tp)
-	if g:GetCount()==0 then return end
-	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	local lnkg=Duel.GetMatchingGroup(c71400032.lnkfilter,tp,LOCATION_EXTRA,0,nil)
-	if lnkg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400032,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local lnk=lnkg:Select(tp,1,1,nil):GetFirst()
-		Duel.SpecialSummonRule(tp,lnk,SUMMON_TYPE_LINK)
-	end
-end
-function c71400032.filter1(c,e,tp)
-	return c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c71400032.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c71400032.filter1,tp,LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,0)
-end
-function c71400032.con1(e,tp,eg,ep,ev,re,r,rp)
+function c71400032.con2(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
---Select Link Monsters
-function c71400032.lnkfilter(c)
-	return c:IsSetCard(0x716) and c:IsSpecialSummonable(SUMMON_TYPE_LINK)
-end
-function c71400032.con2(e,tp,eg,ep,ev,re,r,rp)
-	local ec=eg:GetFirst()
-	return eg:GetCount()==1 and ec:IsSetCard(0x714) and ec:IsSummonType(SUMMON_TYPE_LINK)
-end
-function c71400032.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
+function c71400032.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c71400032.filter2(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c71400032.filter2,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+	local g=Duel.SelectTarget(tp,c71400032.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function c71400032.op2(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c71400032.filter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
-	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)==1 then
-		local g2=Duel.SelectMatchingCard(tp,c71400032.filter2a,tp,LOCATION_DECK,0,1,1,nil)
-		if g2:GetCount()>0 then
-			Duel.SendtoHand(g2,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g2)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if c:IsFaceup() and c:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsRelateToEffect(e)
+		and tc:IsType(TYPE_EFFECT) and not tc:IsImmuneToEffect(e) then
+		c:SetCardTarget(tc)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetCondition(c71400032.rcon)
+		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_CANNOT_ATTACK)
+		tc:RegisterEffect(e2)
+		local g=Duel.GetMatchingGroup(c71400032.filter2a,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+		if Duel.IsExistingMatchingCard(c71400032.filter2b,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400032,1)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
 		end
 	end
 end
 function c71400032.filter2(c)
-	return c:IsSetCard(0x714) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsFaceup() and c:IsRace(RACE_PLANT)
 end
 function c71400032.filter2a(c)
 	return c:IsSetCard(0xd714) and c:IsAbleToHand()
+end
+function c71400032.filter2b(c)
+	return c:IsSetCard(0x716) and c:IsType(TYPE_LINK) and c:IsFaceup()
+end
+function c71400032.rcon(e)
+	local c=e:GetHandler()
+	return e:GetOwner():IsHasCardTarget(c) and c:IsRace(RACE_PLANT)
 end

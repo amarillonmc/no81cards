@@ -11,7 +11,7 @@ function c71400021.initial_effect(c)
 	e1:SetCountLimit(1,71400021+EFFECT_COUNT_CODE_OATH)
 	e1:SetDescription(aux.Stringid(71400021,0))
 	e1:SetTarget(c71400021.target)
-	e1:SetCondition(yume.YumeCon)
+	e1:SetCondition(yume.YumeLethalCon)
 	e1:SetOperation(c71400021.operation)
 	c:RegisterEffect(e1)
 end

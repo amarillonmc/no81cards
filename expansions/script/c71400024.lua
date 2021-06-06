@@ -31,6 +31,14 @@ function c71400024.initial_effect(c)
 	e2:SetTarget(c71400024.tg2)
 	e2:SetOperation(c71400024.op2)
 	c:RegisterEffect(e2)
+	--skip
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(71400024,1))
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetOperation(c71400024.op3)
+	e3:SetCondition(c71400024.con3)
+	c:RegisterEffect(e3)
 end
 function c71400024.filter1(e,ct)
 	local p=e:GetHandler():GetControler()
@@ -68,4 +76,27 @@ function c71400024.op2(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 		tc=g:GetNext()
 	end
+end
+function c71400024.con3(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_ONFIELD)
+end
+function c71400024.op3(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SKIP_BP)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	if Duel.GetTurnPlayer()==tp and ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then
+		e1:SetLabel(Duel.GetTurnCount())
+		e1:SetCondition(c71400024.skipcon)
+		e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN,2)
+	else
+		e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN,1)
+	end
+	Duel.RegisterEffect(e1,tp)
+end
+function c71400024.skipcon(e)
+	return Duel.GetTurnCount()~=e:GetLabel()
 end

@@ -2,7 +2,7 @@
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400030.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3,3,yume.YumeCheck(c))
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,yume.YumeCheck(c))
 	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)

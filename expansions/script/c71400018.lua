@@ -12,7 +12,7 @@ function c71400018.initial_effect(c)
 	e1:SetDescription(aux.Stringid(71400018,0))
 	e1:SetTarget(c71400018.target)
 	e1:SetCost(c71400018.cost1)
-	e1:SetCondition(yume.YumeCon)
+	e1:SetCondition(yume.YumeLethalCon)
 	e1:SetOperation(c71400018.operation)
 	c:RegisterEffect(e1)
 end
