@@ -23,7 +23,7 @@ function cm.cfilter(c)
 	return #(tama.tamas_getElements(c))~=0
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()==1 and Duel.GetMatchingGroupCount(cm.cfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,nil)>=Duel.GetFieldGroupCount(tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0)*7/5
+	return Duel.GetTurnCount()==1 and Duel.GetMatchingGroupCount(cm.cfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,nil)>=Duel.GetFieldGroupCount(tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0)*7/10
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

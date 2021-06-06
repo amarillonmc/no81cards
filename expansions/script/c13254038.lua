@@ -51,14 +51,14 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	if sg1:GetCount()>0 then
 		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WATER)>0 and Duel.IsPlayerCanDiscardDeck(tp,3) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_MESSAGE,aux.Stringid(m,1))
+			Duel.Hint(HINT_MESSAGE,0,aux.Stringid(m,1))
 			Duel.ShuffleDeck(tp)
 			Duel.DiscardDeck(tp,3,REASON_EFFECT)
 			sg2:Merge(Duel.GetOperatedGroup())
 		end
 		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WIND)>0 and Duel.IsPlayerCanDraw(tp,2) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_MESSAGE,aux.Stringid(m,2))
+			Duel.Hint(HINT_MESSAGE,0,aux.Stringid(m,2))
 			Duel.Draw(tp,2,REASON_EFFECT)
 			Duel.ShuffleHand(tp)
 			Duel.DiscardHand(tp,aux.TRUE,2,2,REASON_EFFECT+REASON_DISCARD)
@@ -68,7 +68,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			local sg3=sg2:Filter(cm.filter2,nil)
 			local ct=sg3:GetCount()
 			Duel.BreakEffect()
-			Duel.Hint(HINT_MESSAGE,aux.Stringid(m,3))
+			Duel.Hint(HINT_MESSAGE,0,aux.Stringid(m,3))
 			Duel.SendtoDeck(sg3,tp,2,REASON_EFFECT)
 			Duel.ShuffleDeck(tp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -77,7 +77,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_MANA)>=3 then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_MESSAGE,aux.Stringid(m,4))
+			Duel.Hint(HINT_MESSAGE,0,aux.Stringid(m,4))
 			--change damage
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
@@ -94,7 +94,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_ENERGY)>=2 and Duel.IsExistingTarget(cm.filter3,tp,LOCATION_MZONE,0,1,nil,eg,ep,ev,re,r,rp) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_MESSAGE,aux.Stringid(m,5))
+			Duel.Hint(HINT_MESSAGE,0,aux.Stringid(m,5))
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 			local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil,eg,ep,ev,re,r,rp):GetFirst()
 			local tep=tc:GetControler()
