@@ -1,12 +1,6 @@
 --梦蚀
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400025.initial_effect(c)
-	--activate from hand
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
-	e0:SetCondition(yume.nonYumeCon)
-	c:RegisterEffect(e0)
 	--Activate(nofield)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71400025,0))

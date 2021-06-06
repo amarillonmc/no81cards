@@ -120,7 +120,13 @@ function yume.YumeCon(e,tp,eg,ep,ev,re,r,rp)
 end
 --Yume Condition for lethal weapons
 function yume.YumeLethalCon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and yume.YumeCon(e,tp,eg,ep,ev,re,r,rp)
+	if not yume.IsYumeFieldOnField(tp) then return false end
+	local ph=Duel.GetCurrentPhase()
+	if Duel.GetTurnPlayer()==tp then
+		return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
+	else
+		return (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
+	end
 end
 function yume.nonYumeCon(e,tp,eg,ep,ev,re,r,rp)
 	if not tp then tp=e:GetHandlerPlayer() end
@@ -231,7 +237,7 @@ function yume.SelfToDeckOp(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 	end
 end
---Field Activation
+--activate field
 function yume.YumeFieldCheck(tp,id,ft,loc)
 	ft=ft or 0
 	id=id or 0
@@ -280,8 +286,7 @@ function yume.ActivateFieldFilter(c,tp,id,ft)
 end
 function yume.ActivateFieldCon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsReason(REASON_EFFECT) and not c:IsLocation(LOCATION_DECK)
-		and c:IsPreviousPosition(POS_FACEUP)
+	return c:IsReason(REASON_EFFECT) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function yume.ActivateFieldOp(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

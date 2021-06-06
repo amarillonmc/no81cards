@@ -22,24 +22,48 @@ function c71400009.initial_effect(c)
 	e2:SetCode(EFFECT_EXTRA_ATTACK)
 	e2:SetValue(c71400009.raval)
 	c:RegisterEffect(e2)
+	--hand des
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DESTROY)
+	e3:SetDescription(aux.Stringid(71400009,1))
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetTarget(c71400009.tg3)
+	e3:SetOperation(c71400009.op3)
+	e3:SetCondition(c71400009.con3)
+	c:RegisterEffect(e3)
 end
 function c71400009.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,0,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
 end
 function c71400009.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local mcount=c:GetOverlayCount()
-	if mcount<=0 or not Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,mcount,nil) then return end
+	if not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local sg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,mcount,nil)
+	local sg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.HintSelection(sg)
 	if Duel.Destroy(sg,REASON_EFFECT)>0 then
 		Duel.BreakEffect()
-		Duel.SetLP(tp,Duel.GetLP(tp)-1000)
+		Duel.SetLP(tp,Duel.GetLP(tp)-800)
 	end
 end
 function c71400009.raval(e,c)
 	local oc=e:GetHandler():GetOverlayCount()
 	return math.max(0,oc-1)
+end
+function c71400009.con3(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_ONFIELD)
+end
+function c71400009.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND)
+end
+function c71400009.op3(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND,0,1,1,nil)
+	if dg:GetCount()>0 then
+		Duel.Destroy(dg,REASON_EFFECT)
+	end
 end
