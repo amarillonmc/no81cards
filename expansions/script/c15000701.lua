@@ -32,7 +32,7 @@ function cm.tcfilter(c,race,att)
 	return c:IsType(TYPE_MONSTER) and bit.band(race,c:GetOriginalRace())==0 and bit.band(att,c:GetOriginalAttribute())==0
 end
 function cm.econ(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.ecfilter,tp,0,LOCATION_MZONE,1,nil,e:GetHandler():GetOriginalRace(),e:GetHandler():GetOriginalAttribute())
+	return Duel.IsExistingMatchingCard(cm.ecfilter,e:GetHandler():GetControler(),0,LOCATION_MZONE,1,nil,e:GetHandler():GetOriginalRace(),e:GetHandler():GetOriginalAttribute())
 end
 function cm.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()

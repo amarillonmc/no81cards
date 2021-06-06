@@ -49,6 +49,7 @@ function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,cm.desfilter,tp,LOCATION_GRAVE,0,3,3,nil,e,tp)
+		g:KeepAlive()
 		e:SetLabelObject(g)
 		return true
 	end

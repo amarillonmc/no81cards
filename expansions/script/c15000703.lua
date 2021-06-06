@@ -69,7 +69,7 @@ function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function cm.cfilter(c)
-	return c:IsAbleToGraveAsCost() and not Duel.IsExistingMatchingCard(cm.wfilter,c:GetControler(),0,LOCATION_MZONE,1,nil,c:GetOriginalRace(),c:GetOriginalAttribute())
+	return c:IsAbleToGraveAsCost() and c:IsType(TYPE_MONSTER) and not Duel.IsExistingMatchingCard(cm.wfilter,c:GetControler(),0,LOCATION_MZONE,1,nil,c:GetOriginalRace(),c:GetOriginalAttribute())
 end
 function cm.wfilter(c,race,att)
 	return bit.band(race,c:GetOriginalRace())~=0 or bit.band(att,c:GetOriginalAttribute())~=0

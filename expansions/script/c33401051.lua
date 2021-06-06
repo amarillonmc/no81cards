@@ -3,6 +3,11 @@ local m=33401051
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	  c:SetUniqueOnField(1,0,m)  
+ --Activate
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_ACTIVATE)
+	e10:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e10)
  --destroy 
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
@@ -58,9 +63,9 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		local dm1=Duel.Destroy(tg1,REASON_EFFECT)
 		if dm1~=0 then 
 		Duel.Damage(1-tp,500*dm1,REASON_EFFECT)
-		Duel.Damage(tp,500*dm1,REASON_EFFECT)	 
+		Duel.Damage(tp,500*dm1,REASON_EFFECT)	
 		end
-		if Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_FZONE,0,1,nil) then			
+		if Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_FZONE,0,1,nil) then		   
 			if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
 			   local seq=tc:GetSequence()
 			   local  dg=Duel.GetMatchingGroup(cm.desfilter2,tp,0,LOCATION_ONFIELD,nil,seq,tp)

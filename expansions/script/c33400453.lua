@@ -1,5 +1,10 @@
 --天使-绝灭天使 光剑
 function c33400453.initial_effect(c)
+ --Activate
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_ACTIVATE)
+	e10:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e10)
 	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(33400453,0))

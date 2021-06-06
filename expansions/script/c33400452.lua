@@ -1,6 +1,11 @@
 --天使-绝灭天使 天翼
 function c33400452.initial_effect(c)
 	 c:SetUniqueOnField(1,0,c33400452.uqfilter,LOCATION_ONFIELD)
+ --Activate
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_ACTIVATE)
+	e10:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e10)
 		--move
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(33400452,0))

@@ -95,16 +95,18 @@ function c79029517.cscon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSequence()>4
 end
 function c79029517.csval1(e,c)
-	if c:GetLeftScale()-Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_EXTRA,0,nil)<0 then return 0 
+	if c:GetLeftScale()-Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_EXTRA,0,nil)<0 then
+		return 1-c:GetRightScale() 
 	else
-	return -Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_EXTRA,0,nil)
-end
+		return -Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_EXTRA,0,nil)
+	end
 end
 function c79029517.csval2(e,c)
-	if c:GetRightScale()+Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_EXTRA,0,nil)>13 then return 13-c:GetRightScale() 
+	if c:GetRightScale()+Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_EXTRA,0,nil)>13 then
+		return 13-c:GetRightScale()
 	else
-	return Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_EXTRA,0,nil)
-end
+		return Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_EXTRA,0,nil)
+	end
 end
 function c79029517.cstg1(e,c)
 	return c:GetSequence()==0 

@@ -44,6 +44,8 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.ctop)
 	c:RegisterEffect(e5)
 	local e6=e5:Clone()
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_FREE_CHAIN)
 	e6:SetCondition(cm.con2)
 	c:RegisterEffect(e6)
 end

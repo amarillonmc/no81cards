@@ -1,6 +1,11 @@
 --天使-绝灭天使 日轮
 function c33400451.initial_effect(c)
   c:SetUniqueOnField(1,0,c33400451.uqfilter,LOCATION_ONFIELD)
+ --Activate
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_ACTIVATE)
+	e10:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e10)
 	--destory
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)

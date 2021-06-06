@@ -92,8 +92,14 @@ function cm.overlaycon(e,tp,eg,ep,ev,re,r,rp)
 end  
 function cm.overlayop(e,tp,eg,ep,ev,re,r,rp)  
 	Duel.Hint(HINT_CARD,0,m)  
-	local g=Duel.SelectMatchingCard(1-tp,nil,1-tp,0x0e,0,1,1,e:GetHandler()) 
-	if g:GetCount()>0 then
+	local g=Duel.SelectMatchingCard(1-tp,nil,1-tp,0x0e,0,1,1,e:GetHandler())
+	local tc=g:GetFirst()
+	if tc then
+		local og=tc:GetOverlayGroup()
+		if #og>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+		tc:CancelToGrave()
 		Duel.Overlay(e:GetHandler(),g)
 	end
 end  

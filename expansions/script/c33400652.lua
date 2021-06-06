@@ -5,6 +5,11 @@ function cm.initial_effect(c)
 	 c:SetUniqueOnField(1,0,m)
 cm.dfc_front_side=33400651
 cm.dfc_back_side=33400652
+ --Activate
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_ACTIVATE)
+	e10:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e10)
  --
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
@@ -97,7 +102,7 @@ local c=e:GetHandler()
 				tc:RegisterEffect(e2)
 Duel.RegisterFlagEffect(tp,m+80001,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)   
 		  end
-		  if op[op1]==2  then	
+		  if op[op1]==2  then   
  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			 local tdc=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_REMOVED,0,4,4,nil)
 			 Duel.SendtoDeck(tdc,tp,2,REASON_EFFECT)
@@ -119,7 +124,7 @@ Duel.RegisterFlagEffect(tp,m+80001,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 				tc:RegisterEffect(e2)
 Duel.RegisterFlagEffect(tp,m+80002,RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
 		  end  
-		  if op[op1]==3  then	  
+		  if op[op1]==3  then	 
 				c:SetEntityCode(33400651,true)
 				c:ReplaceEffect(33400651,0,0)
 Duel.RegisterFlagEffect(tp,m+80003,RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
