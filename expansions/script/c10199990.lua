@@ -2568,7 +2568,7 @@ function rscon.disneg(dn_type, dn_filter, pl_fun)
 		if type(dn_filter) == "string" then 
 			local str_list = rsof.String_Split(dn_filter)
 			for _, dn_str in pairs(str_list) do 
-				if rsef.Effect_Type_Check(dn_str, e) then return true end
+				if rsef.Effect_Type_Check(dn_str, re) then return true end
 			end
 		end
 		return false
@@ -2794,7 +2794,7 @@ function rsop.CheckOperateCorrectly(solve_loc, check_count)
 end 
 --Operation: Send to Deck and Draw 
 function rsop.ToDeckDraw(dp, dct, is_break, check_count) 
-	local res = rsop.CheckOperateCorrectly(solve_loc, check_count)
+	local res, ct, g = rsop.CheckOperateCorrectly(rsloc.de, check_count)
 	if not res then return 0 end
 	if g:IsExists(Card.IsLocation, 1, nil, LOCATION_DECK) then
 		Duel.ShuffleDeck(dp)
@@ -2888,7 +2888,7 @@ function rsop.SendtoHand(corg, p, reason, no_confirm)
 			end
 		end
 	end
-	return ct
+	return ct, og, tc
 end
 --Operation: Send to deck
 function rsop.SendtoDeck(corg, tp, seq, reason)
