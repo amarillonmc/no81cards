@@ -56,7 +56,7 @@ function c71400025.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function c71400025.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not (c:IsType(TYPE_LINK)) and c:IsLocation(LOCATION_EXTRA)
+	return not (c:IsType(TYPE_LINK) and c:IsSetCard(0x714)) and c:IsLocation(LOCATION_EXTRA)
 end
 function c71400025.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsType(TYPE_LINK) and chkc:IsLocation(LOCATION_MZONE) end

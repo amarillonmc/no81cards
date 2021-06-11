@@ -86,6 +86,7 @@ function c71400043.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 		if fc and fc:IsFaceup() then id=fc:GetCode() end
 		return yume.YumeFieldCheck(tp,id,2,LOCATION_GRAVE+LOCATION_DECK)
 	end
+	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
 end
 function c71400043.op2(e,tp,eg,ep,ev,re,r,rp)
 	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
