@@ -42,7 +42,7 @@ function c71400033.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SetLP(tp,Duel.GetLP(tp)-1500)
 		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc and yume.YumeCheckFilter(fc) then
-			Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+			Duel.SendtoDeck(fc,nil,2,REASON_EFFECT)
 		end
 	end
 	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then

@@ -29,7 +29,6 @@ function c71400011.initial_effect(c)
 	e2:SetCost(c71400011.cost)
 	e2:SetTarget(c71400011.tg2)
 	e2:SetOperation(c71400011.op2)
-	e2:SetCondition(c71400011.con2)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	c:RegisterEffect(e2)
 	--fly away
@@ -68,9 +67,6 @@ function c71400011.op1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
-end
-function c71400011.con2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsStatus(STATUS_SPSUMMON_TURN)
 end
 function c71400011.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
