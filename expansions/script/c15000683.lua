@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--tograve (equip)
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DESTROY)
+	e3:SetCategory(CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_SZONE)
@@ -228,6 +228,6 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tp=c:GetControler()
 	local tc=Duel.GetFirstTarget()
 	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
+		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end
 end
