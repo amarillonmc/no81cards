@@ -5,7 +5,6 @@ function c60000104.initial_effect(c)
 	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(c60000104.accon)
 	e1:SetTarget(c60000104.actg)
 	e1:SetOperation(c60000104.acop)
 	c:RegisterEffect(e1)
@@ -21,21 +20,8 @@ function c60000104.initial_effect(c)
 	c:RegisterEffect(e3)
 
 end
-function c60000104.ahcon(e)
-	local tp=e:GetHandlerPlayer()
-	return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler())
-end
-function c60000104.cfilter(c)
-	return true
-end
-function c60000104.accon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c60000104.cfilter,tp,LOCATION_MZONE,0,1,nil)
-end
 function c60000104.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) and Duel.GetTurnPlayer()~=tp then
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
-	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_ONFIELD)
 end
 function c60000104.acop(e,tp,eg,ep,ev,re,r,rp)
