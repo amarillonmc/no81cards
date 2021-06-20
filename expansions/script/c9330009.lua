@@ -11,6 +11,13 @@ function c9330009.initial_effect(c)
 	e1:SetTarget(c9330009.target)
 	e1:SetOperation(c9330009.activate)
 	c:RegisterEffect(e1)
+	--act in set turn
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	e0:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e0:SetCondition(c9330009.actcon)
+	c:RegisterEffect(e0)
 	--atklimit
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -37,9 +44,13 @@ function c9330009.initial_effect(c)
 	e4:SetOperation(c9330009.setop)
 	c:RegisterEffect(e4)
 end
+function c9330009.actcon(e,tp,eg,ep,ev,re,r,rp)
+	local  k=e:GetHandler():GetControler()
+	return Duel.GetFieldGroupCount(k,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(k,LOCATION_ONFIELD,0)
+end
 function c9330009.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and
-		Duel.IsPlayerCanSpecialSummonMonster(tp,9330009,0xf9c,0x21,3000,1500,6,RACE_WARRIOR,ATTRIBUTE_DARK) end
+		Duel.IsPlayerCanSpecialSummonMonster(tp,9330009,0xaf93,0x21,3000,1500,6,RACE_WARRIOR,ATTRIBUTE_DARK) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9330009.filter(c)
@@ -55,14 +66,14 @@ function c9330009.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,9330009,0xf9c,0x21,3000,1500,6,RACE_WARRIOR,ATTRIBUTE_DARK) then return end
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,9330009,0xaf93,0x21,3000,1500,6,RACE_WARRIOR,ATTRIBUTE_DARK) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	if Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)~=0
 		and Duel.IsExistingMatchingCard(c9330009.filter,tp,LOCATION_ONFIELD,0,1,nil)
 		and Duel.IsExistingMatchingCard(c9330009.filter1,tp,LOCATION_MZONE,LOCATION_MZONE,2,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(9330009,2)) then
 		Duel.BreakEffect()
-			c:RegisterFlagEffect(62899696,RESET_EVENT+RESETS_STANDARD,0,1)	
+			c:RegisterFlagEffect(62899696,RESET_EVENT+RESETS_STANDARD,0,1)  
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetCode(EFFECT_SYNCHRO_MATERIAL)
@@ -90,7 +101,7 @@ function c9330009.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9330009.setfilter(c)
-	if not (c:IsSetCard(0xf9c) and c:IsType(TYPE_TRAP+TYPE_SPELL) and not c:IsCode(9330009)) then return false end
+	if not (c:IsSetCard(0xaf93) and c:IsType(TYPE_TRAP+TYPE_SPELL) and not c:IsCode(9330009)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c9330009.settg(e,tp,eg,ep,ev,re,r,rp,chk)

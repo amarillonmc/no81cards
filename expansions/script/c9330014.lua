@@ -11,7 +11,6 @@ function c9330014.initial_effect(c)
 	e2:SetCategory(CATEGORY_NEGATE)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e2:SetCountLimit(1,9330014+EFFECT_COUNT_CODE_OATH)
 	e2:SetCondition(c9330014.condition)
 	e2:SetTarget(c9330014.target)
 	e2:SetOperation(c9330014.activate)
@@ -22,7 +21,7 @@ function c9330014.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCondition(aux.exccon)
-	e3:SetCountLimit(1,9330114+EFFECT_COUNT_CODE_DUEL)
+	e3:SetCountLimit(1,9330014+EFFECT_COUNT_CODE_DUEL)
 	e3:SetCost(c9330014.thcost)
 	e3:SetTarget(c9330014.settg)
 	e3:SetOperation(c9330014.setop)
@@ -34,16 +33,24 @@ end
 function c9330014.handcon(e)
 	return Duel.IsExistingMatchingCard(c9330014.filter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
 end
+function c9330014.filter2(c)
+	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsSetCard(0xaf93)
+end
 function c9330014.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
+	return Duel.GetTurnPlayer()~=tp and
+		   (Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)>1
+			or Duel.IsExistingMatchingCard(c9330014.filter2,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil))
 end
 function c9330014.filter1(c)
 	return c:IsAttackPos()
 end
 function c9330014.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(c9330014.filter1,tp,0,LOCATION_MZONE,1,nil) end
 	local g=Duel.GetMatchingGroup(c9330014.filter1,tp,0,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,g,g:GetCount(),0,0)
+	if not c:IsStatus(STATUS_ACT_FROM_HAND) and c:IsLocation(LOCATION_SZONE) then
+	   and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 	Duel.SetChainLimit(c9330014.chlimit)
 end
 function c9330014.chlimit(e,ep,tp)
@@ -90,26 +97,19 @@ function c9330014.activate(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e8)
 			tc=g:GetNext()
 			end
-		local e9=Effect.CreateEffect(e:GetHandler())
-		e9:SetType(EFFECT_TYPE_FIELD)
-		e9:SetCode(EFFECT_EXTRA_RELEASE_SUM)
-		e9:SetTargetRange(0,LOCATION_MZONE)
-		e9:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e9:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
-		Duel.RegisterEffect(e9,tp)
 		end
 	end
 end  
 function c9330014.synlimit(e,c)
 	if not c then return false end
-	return not c:IsSetCard(0xf9c)
+	return not c:IsSetCard(0xaf93)
 end
 function c9330014.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9330014.setfilter(c)
-	if not (c:IsSetCard(0xf9c) and c:IsType(TYPE_TRAP) and not c:IsCode(9330014)) then return false end
+	if not (c:IsSetCard(0xaf93) and c:IsType(TYPE_TRAP) and not c:IsCode(9330014)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c9330014.settg(e,tp,eg,ep,ev,re,r,rp,chk)

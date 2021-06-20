@@ -1,58 +1,82 @@
 --雪之圆舞曲
-if not pcall(function() require("expansions/script/c25010000") end) then require("script/c25010000") end
-local m,cm=rscf.DefineCard(25000088)
+local m=25000088
+local cm=_G["c"..m]
 function cm.initial_effect(c)
-	local e1=rsef.ACT(c,nil,{m,0},{3,m,1},"td,se,th,dr",nil,nil,nil,cm.tg,cm.act)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	c:RegisterEffect(e2)	
-	local e3=rsef.FC({c,0},EVENT_CHAIN_SOLVING)
-	e3:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e3:SetOperation(cm.chop)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetTarget(cm.tg)
+	e1:SetOperation(cm.op)
+	c:RegisterEffect(e1)
+	--act in hand
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e3:SetCondition(cm.handcon)
+	c:RegisterEffect(e3)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAIN_SOLVING)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function cm.chainfilter(re,tp,cid)
+	return not re:IsActiveType(TYPE_MONSTER)
+end
+function cm.handcon(e)
+	return Duel.GetCustomActivityCount(m,1-e:GetHandlerPlayer(),ACTIVITY_CHAIN)~=0
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local dg=Duel.GetDecktopGroup(tp,8)
-	if chk==0 then return e:GetHandler():IsAbleToDeck() and dg:GetCount()==8 and Duel.IsPlayerCanDraw(tp,1) end
+	local dg=Duel.GetDecktopGroup(tp,12)
+	if chk==0 then return e:GetHandler():IsAbleToDeck() and dg:GetCount()==12 and Duel.IsPlayerCanDraw(tp,3) end
+	local ect=Duel.GetChainInfo(ev,CHAININFO_CHAIN_COUNT)
+	if Duel.GetFlagEffect(tp,m)==0 then
+		Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1,ect)
+		Duel.RegisterFlagEffect(1-tp,m,RESET_CHAIN,0,1,ect)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
 end
-function cm.act(e,tp)
-	local c=rscf.GetSelf(e)
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if not c or not aux.TRUE(c:CancelToGrave()) or Duel.SendtoDeck(c,nil,2,REASON_EFFECT)<=0 or not c:IsLocation(LOCATION_DECK) then return end
 	Duel.ShuffleDeck(tp)
-	Duel.ConfirmDecktop(tp,8)
-	local g=Duel.GetDecktopGroup(tp,8)
+	Duel.ConfirmDecktop(tp,12)
+	local g=Duel.GetDecktopGroup(tp,12)
 	if #g<=0 then return end
 	local ct=g:FilterCount(Card.IsCode,nil,m)
 	Duel.BreakEffect()
-	if ct==0 then
-		rsop.SelectToHand(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,{})
-	elseif ct==1 then
-		Duel.Draw(tp,1,REASON_EFFECT)
+	if ct==1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g1=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		Duel.SendtoHand(g1,nil,REASON_EFFECT)
 	elseif ct==2 then
-		local g2=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-		if #g2>=2 then
-			local tc1=g2:GetMaxGroup(Card.GetSequence):GetFirst()
-			local tc2=g2:GetMinGroup(Card.GetSequence):GetFirst()
-			Duel.SendtoHand(rsgf.Mix2(tc1,tc2),nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,rsgf.Mix2(tc1,tc2))
-		end
+		Duel.Draw(tp,3,REASON_EFFECT)
 	elseif ct==3 then
-		rsop.SelectToHand(tp,Card.IsAbleToHand,tp,LOCATION_DECK,0,1,1,nil,{})
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g3=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_DECK,0,1,1,nil)
+		Duel.SendtoHand(g3,nil,REASON_EFFECT)
 	end
 end
 function cm.thfilter(c)
 	return c:IsAbleToHand() and c:IsCode(m)
 end
-function cm.chop(e,tp,eg,ep,ev,re,r,rp)
-	if ev<=1 then return end
-	local te=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT)
-	if te:GetHandler()==e:GetHandler() then
-		rshint.Card(m)
-		Duel.ChangeTargetCard(ev,Group.CreateGroup())
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local lab=Duel.GetFlagEffectLabel(tp,m)
+	if not lab then return end
+	local ect=Duel.GetChainInfo(ev,CHAININFO_CHAIN_COUNT)
+	if ect>lab then
+		local g=Group.CreateGroup()
+		Duel.ChangeTargetCard(ev,g)
 		Duel.ChangeChainOperation(ev,cm.rep_op)
 	end
 end
 function cm.rep_op(e,tp)
+	Duel.Hint(HINT_CARD,0,m)
 	Duel.Draw(tp,1,REASON_EFFECT)
 end

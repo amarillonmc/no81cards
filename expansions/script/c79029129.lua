@@ -39,8 +39,9 @@ function c79029129.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCountLimit(1,09029129+EFFECT_COUNT_CODE_DUEL)
-	e5:SetTarget(c79029129.target)
-	e5:SetOperation(c79029129.activate)
+	e5:SetCost(aux.bfgcost)
+	e5:SetTarget(c79029129.srtg)
+	e5:SetOperation(c79029129.srop)
 	c:RegisterEffect(e5)   
 end
 function c79029129.splimit(e,c,tp,sumtp,sumpos)
@@ -70,25 +71,16 @@ function c79029129.pcfilter(c)
 	return c:IsSetCard(0x1901) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c79029129.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
-		and Duel.IsExistingMatchingCard(c79029129.pcfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.IsExistingMatchingCard(c79029129.pcfilter,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_EXTRA,0,1,nil) end
 end
 function c79029129.pcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c79029128.splimit1)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
 	Debug.Message("医生就在这里呢，看这边！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029129,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,c79029128.pcfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c79029128.pcfilter,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
 	if g:GetCount()>0 then
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return false end
 		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
@@ -97,24 +89,21 @@ end
 function c79029129.filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xa900) and Duel.GetMZoneCount(tp,e:GetHandler(),tp)>0
 end
-function c79029129.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and c79029129.filter(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c79029129.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
+function c79029129.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029129.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+end
+function c79029129.srop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c79029129.filter,tp,LOCATION_GRAVE,0,nil,e,tp)
+	if g:GetCount()<=0 or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Debug.Message("疼就喊出来，别忍着啊！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029129,2))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c79029129.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-end
-function c79029129.activate(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~0 then
-	local x=tc:GetAttack()
-	Duel.Recover(tp,x,REASON_EFFECT)
-	end
-end
+	local tc=Duel.SelectMatchingCard(tp,c79029129.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+	if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~0 then
+	Duel.BreakEffect()
+	Duel.Recover(tp,tc:GetAttack(),REASON_EFFECT)
+  end
 end
 
 

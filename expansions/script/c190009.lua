@@ -50,7 +50,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local p1=false
 	local p2=false
 	while tc do
-		if ((tc:GetReasonCard() and tc:GetReasonCard():IsSetCard(0xca4) and tc:GetReasonCard():IsType(TYPE_MONSTER)) or (tc:GetReasonEffect() and tc:GetReasonEffect():GetHandler():IsSetCard(0xca4) and tc:GetReasonEffect():GetHandler():IsType(TYPE_MONSTER)))
+		if ((tc:GetReasonCard() and tc:GetReasonCard():IsSetCard(0xca5) and tc:GetReasonCard():IsType(TYPE_MONSTER)) or (tc:GetReasonEffect() and tc:GetReasonEffect():GetHandler():IsSetCard(0xca5) and tc:GetReasonEffect():GetHandler():IsType(TYPE_MONSTER)))
 			and (tc:IsReason(REASON_BATTLE) or tc:IsReason(REASON_EFFECT))
 			and tc:IsType(TYPE_MONSTER) then
 			if tc:GetReasonPlayer()==0 then p1=true else p2=true end
@@ -72,7 +72,7 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and re:IsActiveType(TYPE_MONSTER)
 end
 function cm.rmfilter(c)
-	return c:IsSetCard(0xca4) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xca5) and c:IsAbleToRemoveAsCost()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_GRAVE,0,1,nil) end

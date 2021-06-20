@@ -2,7 +2,7 @@
 function c79029468.initial_effect(c)
 	c:EnableReviveLimit()
 	--fusion material
-	aux.AddFusionProcCodeFunRep(c,79029010,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),1,99,true,true)  
+	aux.AddFusionProcCodeFunRep(c,79029010,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),2,99,true,true)  
 	--cannot target
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)

@@ -11,6 +11,13 @@ function c9330016.initial_effect(c)
 	e1:SetTarget(c9330016.target)
 	e1:SetOperation(c9330016.activate)
 	c:RegisterEffect(e1)
+	--act in set turn
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	e0:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e0:SetCondition(c9330016.actcon)
+	c:RegisterEffect(e0)
 	--atk & def
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -18,7 +25,7 @@ function c9330016.initial_effect(c)
 	e2:SetRange(LOCATION_ONFIELD)
 	e2:SetTargetRange(LOCATION_MZONE,0)
 	e2:SetCondition(c9330016.condition1)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xf9c))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xaf93))
 	e2:SetValue(1000)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
@@ -34,8 +41,11 @@ function c9330016.initial_effect(c)
 	e4:SetValue(c9330016.aclimit)
 	c:RegisterEffect(e4)
 	--cannot remove
-	local e5=e4:Clone()
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
 	e5:SetCode(EFFECT_CANNOT_REMOVE)
+	e5:SetRange(LOCATION_ONFIELD)
+	e5:SetTargetRange(LOCATION_GRAVE,LOCATION_GRAVE)
 	e5:SetValue(c9330016.aclimit2)
 	c:RegisterEffect(e5)
 	--set/to hand
@@ -50,9 +60,13 @@ function c9330016.initial_effect(c)
 	e6:SetOperation(c9330016.setop)
 	c:RegisterEffect(e6)
 end
+function c9330016.actcon(e,tp,eg,ep,ev,re,r,rp)
+	local  k=e:GetHandler():GetControler()
+	return Duel.GetFieldGroupCount(k,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(k,LOCATION_ONFIELD,0)
+end
 function c9330016.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and
-		Duel.IsPlayerCanSpecialSummonMonster(tp,9330016,0xf9c,0x21,2400,1000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT) end
+		Duel.IsPlayerCanSpecialSummonMonster(tp,9330016,0xaf93,0x21,2400,1000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9330016.filter(c)
@@ -62,13 +76,13 @@ function c9330016.mfilter(c,e)
 	return c:IsFaceup() and c:GetLevel()>0 and not c:IsImmuneToEffect(e) and c:IsReleasable()
 end
 function c9330016.filter1(c,e,tp)
-	return c:IsSetCard(0xf9c)
+	return c:IsSetCard(0xaf93)
 end
 function c9330016.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,9330016,0xf9c,0x21,2400,1000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT) then return end
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,9330016,0xaf93,0x21,2400,1000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP) 
 	if Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)~=0 then
 		Duel.BreakEffect()
@@ -111,7 +125,7 @@ function c9330016.condition2(e)
 	return ph==PHASE_STANDBY or ph==PHASE_MAIN1
 end
 function c9330016.etarget(e,c)
-	return c:IsFaceup() and c:IsSetCard(0xf9c) and not c:IsCode(9330016)
+	return c:IsFaceup() and c:IsSetCard(0xaf93) and not c:IsCode(9330016)
 end
 function c9330016.aclimit(e,re,tp)
 	local loc=re:GetActivateLocation()
@@ -125,7 +139,7 @@ function c9330016.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9330016.setfilter(c)
-	if not (c:IsSetCard(0xf9c) and c:IsType(TYPE_TRAP+TYPE_SPELL) and not c:IsCode(9330016)) then return false end
+	if not (c:IsSetCard(0xaf93) and c:IsType(TYPE_TRAP+TYPE_SPELL) and not c:IsCode(9330016)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c9330016.settg(e,tp,eg,ep,ev,re,r,rp,chk)

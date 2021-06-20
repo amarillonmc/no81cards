@@ -94,16 +94,22 @@ function cm.sprcon(e,c)
 	local tc=g:GetFirst()
 	while tc do
 		mg:Merge(tc:GetOverlayGroup())
-		tc:GetNext()
+		tc=g:GetNext()
 	end
-	return g:CheckSubGroup(cm.fselect,3,3,tp,c)
+	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and mg:CheckSubGroup(cm.fselect,3,3,tp,c)
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(cm.sprfilter,tp,LOCATION_MZONE,LOCATION_MZONE,0,nil)
+	local mg=Group.CreateGroup()
+	local tc=g:GetFirst()
+	while tc do
+		mg:Merge(tc:GetOverlayGroup())
+		tc=g:GetNext()
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
-	local mg=g:SelectSubGroup(tp,cm.fselect,false,3,3,tp,c)
-	c:SetMaterial(mg)
-	Duel.SendtoGrave(mg,REASON_MATERIAL)
+	local sg=mg:SelectSubGroup(tp,cm.fselect,false,3,3,tp,c)
+	c:SetMaterial(sg)
+	Duel.SendtoGrave(sg,REASON_COST+REASON_MATERIAL)
 end
 function cm.atop(e,tp,eg,ep,ev,re,r,rp,c)
 	local c=e:GetHandler()

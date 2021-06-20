@@ -88,6 +88,7 @@ function c9910457.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and Duel.IsChainDisablable(ev) and Duel.GetFlagEffect(tp,9910457)<e:GetLabel()
 end
 function c9910457.negop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON) then return end
 	if not Duel.SelectYesNo(tp,aux.Stringid(9910457,0)) then return end
 	Duel.Hint(HINT_CARD,0,9910457)
 	Duel.RegisterFlagEffect(tp,9910457,RESET_PHASE+PHASE_END,0,1)

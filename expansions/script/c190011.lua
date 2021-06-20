@@ -37,10 +37,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.eqlimit(e,c)
-	return c:IsSetCard(0xca4) and c:IsLevelBelow(5)
+	return c:IsSetCard(0xca5) and c:IsLevelBelow(5)
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xca4) and c:IsLevelBelow(5)
+	return c:IsFaceup() and c:IsSetCard(0xca5) and c:IsLevelBelow(5)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc) end

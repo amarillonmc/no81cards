@@ -1,7 +1,7 @@
 --智商扭曲？
 function c11113131.initial_effect(c)
 	c:SetUniqueOnField(1,1,11113131)
-    c:EnableCounterPermit(0x4)
+	c:EnableCounterPermit(0x4)
 	c:SetCounterLimit(0x4,5)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -54,7 +54,7 @@ end
 function c11113131.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	local p=tc:GetSummonPlayer()
-    c11113131[p]=c11113131[p]+1
+	c11113131[p]=c11113131[p]+1
 end
 function c11113131.clear(e,tp,eg,ep,ev,re,r,rp)
 	c11113131[0]=0
@@ -64,23 +64,24 @@ function c11113131.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local ct=c11113131[tp]
+	if ct==0 then ct=1 end
 	if ct<5 then
-	    local t={}
+		local t={}
 		for i=1,6-ct do t[i]=i+(ct-1) end
 		local at=Duel.AnnounceNumber(tp,table.unpack(t))
 		if at==0 then return end
 		c:AddCounter(0x4,at)
 	else
-	    c:AddCounter(0x4,5)
+		c:AddCounter(0x4,5)
 	end
 end
 function c11113131.econ1(e)
-    local tp=e:GetHandlerPlayer()
+	local tp=e:GetHandlerPlayer()
 	local st=c11113131[tp]
 	return st>=e:GetHandler():GetCounter(0x4)
 end
 function c11113131.econ2(e)
-    local tp=e:GetHandlerPlayer()
+	local tp=e:GetHandlerPlayer()
 	local st=c11113131[1-tp]
 	return st>=e:GetHandler():GetCounter(0x4)
 end

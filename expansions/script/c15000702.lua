@@ -73,9 +73,22 @@ function cm.atkfilter(c)
 	return c:IsFaceup() and c:GetRace()~=0
 end
 function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,LOCATION_MZONE,1,c) end
+	local g=Duel.GetMatchingGroup(cm.atkfilter,c:GetControler(),LOCATION_MZONE,LOCATION_MZONE,nil)
+	local att=0
+	local tc=g:GetFirst()
+	while tc do
+		att=bit.bor(att,tc:GetRace())
+		tc=g:GetNext()
+	end
+	local ct=0
+	while att~=0 do
+		if bit.band(att,0x1)~=0 then ct=ct+1 end
+		att=bit.rshift(att,1)
+	end
 	Duel.SetTargetPlayer(1-tp)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,0)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,ct*800)
 end
 function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -92,5 +105,5 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 		att=bit.rshift(att,1)
 	end
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	Duel.Damage(p,ct*200,REASON_EFFECT)
+	Duel.Damage(p,ct*800,REASON_EFFECT)
 end

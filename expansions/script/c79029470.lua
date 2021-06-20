@@ -6,7 +6,8 @@ function c79029470.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetOperation(c79029470.bgmop)
+	e1:SetTarget(c79029470.actg)
+	e1:SetOperation(c79029470.acop)
 	c:RegisterEffect(e1)
 	--race
 	local e2=Effect.CreateEffect(c)
@@ -35,9 +36,50 @@ function c79029470.initial_effect(c)
 	e4:SetTarget(c79029470.detg)
 	e4:SetOperation(c79029470.deop)
 	c:RegisterEffect(e4)
+	--
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_FIELD)
+	e8:SetCode(EFFECT_CANNOT_SSET)
+	e8:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e8:SetRange(LOCATION_FZONE)
+	e8:SetTargetRange(1,0)
+	e8:SetTarget(c79029470.setlimit)
+	c:RegisterEffect(e8)
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_FIELD)
+	e9:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e9:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e9:SetRange(LOCATION_FZONE)
+	e9:SetTargetRange(1,0)
+	e9:SetTarget(c79029470.actlimit)
+	c:RegisterEffect(e9)
 end
-function c79029470.bgmop(e,tp,eg,ep,ev,re,r,rp) 
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(79029470,0)) 
+function c79029470.actg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local c=e:GetHandler()
+	--
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetRange(LOCATION_FZONE)
+	e1:SetCountLimit(1)
+	e1:SetOperation(c79029470.tgop)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,10)
+	c:SetTurnCounter(0)
+	c:RegisterEffect(e1)
+end
+function c79029470.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ct=c:GetTurnCounter()
+	ct=ct+1
+	c:SetTurnCounter(ct)
+	if ct==5 then 
+	Duel.SendtoGrave(c,REASON_RULE)
+	end
+end
+function c79029470.acop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(79029470,0))
 end
 function c79029470.actcon(e)
 	return Duel.GetAttacker():IsSetCard(0x1908) or Duel.GetAttackTarget():IsSetCard(0x1908) 
@@ -58,7 +100,12 @@ function c79029470.deop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=g:Select(tp,1,x,nil)
 	Duel.Destroy(sg,REASON_EFFECT)
 end
-
+function c79029470.setlimit(e,c,tp)
+	return c:IsType(TYPE_FIELD)
+end
+function c79029470.actlimit(e,re,tp)
+	return re:IsActiveType(TYPE_FIELD) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
 
 
 

@@ -1,7 +1,7 @@
 --智商碾压！？
 function c11113127.initial_effect(c)
-    c:SetUniqueOnField(1,1,11113127)
-    c:EnableCounterPermit(0x4)
+	c:SetUniqueOnField(1,1,11113127)
+	c:EnableCounterPermit(0x4)
 	c:SetCounterLimit(0x4,5)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -58,22 +58,23 @@ function c11113127.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local ct=c11113127[tp]
+	if ct==0 then ct=1 end
 	if ct<5 then
-	    local t={}
-	    for i=1,6-ct do t[i]=i+(ct-1) end
+		local t={}
+		for i=1,6-ct do t[i]=i+(ct-1) end
 		local at=Duel.AnnounceNumber(tp,table.unpack(t))
 		c:AddCounter(0x4,at)
 	else
-	    c:AddCounter(0x4,5)
+		c:AddCounter(0x4,5)
 	end
 end
 function c11113127.econ1(e)
-    local tp=e:GetHandlerPlayer()
+	local tp=e:GetHandlerPlayer()
 	local st=c11113127[tp]
 	return st>=e:GetHandler():GetCounter(0x4)
 end
 function c11113127.econ2(e)
-    local tp=e:GetHandlerPlayer()
+	local tp=e:GetHandlerPlayer()
 	local st=c11113127[1-tp]
 	return st>=e:GetHandler():GetCounter(0x4)
 end

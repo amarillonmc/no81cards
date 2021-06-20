@@ -16,7 +16,8 @@ function c9330008.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetTargetRange(LOCATION_SZONE,0)
-	e2:SetCountLimit(1,9330008)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xaf93))
+	e2:SetCountLimit(1,9331008)
 	c:RegisterEffect(e2)
 	--inactivatable
 	local e3=Effect.CreateEffect(c)
@@ -31,15 +32,15 @@ function c9330008.initial_effect(c)
 	e4:SetCode(EFFECT_UPDATE_ATTACK)
 	e4:SetRange(LOCATION_FZONE)
 	e4:SetTargetRange(LOCATION_MZONE,0)
-	e4:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xf9c))
-	e4:SetValue(300)
+	e4:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xaf93))
+	e4:SetValue(500)
 	c:RegisterEffect(e4)
 	local e5=e4:Clone()
 	e5:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e5)
 end
 function c9330008.thfilter(c)
-	return (c:IsSetCard(0xf9c) and c:IsType(TYPE_TRAP) or c:IsCode(9330001)) and c:IsAbleToHand()
+	return ((c:IsSetCard(0xaf93) and c:IsType(TYPE_TRAP)) or c:IsCode(9330001)) and c:IsAbleToHand()
 end
 function c9330008.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
@@ -54,7 +55,7 @@ end
 function c9330008.effectfilter(e,ct)
 	local p=e:GetHandlerPlayer()
 	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return p==tp and te:IsActiveType(TYPE_TRAP) and te:GetHandler():IsSetCard(0xf9c)
+	return p==tp and te:IsActiveType(TYPE_TRAP) and te:GetHandler():IsSetCard(0xaf93)
 end
 
 

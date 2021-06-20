@@ -71,6 +71,7 @@ end
 function c9910462.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
+	if Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON) then return end
 	if not rc:IsCanRemoveCounter(tp,0x1950,1,REASON_EFFECT) then return end
 	Duel.HintSelection(Group.FromCards(c))
 	if Duel.SelectYesNo(tp,aux.Stringid(9910462,1)) then

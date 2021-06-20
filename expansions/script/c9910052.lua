@@ -20,7 +20,7 @@ function c9910052.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910052.thfilter(c)
-	return c:IsAttack(0) and c:IsDefense(1000) and c:IsType(TYPE_TUNER) and c:IsAbleToHand()
+	return c:IsSetCard(0x9951) and c:IsType(TYPE_TUNER) and c:IsAbleToHand()
 end
 function c9910052.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910052.thfilter,tp,LOCATION_DECK,0,1,nil) end

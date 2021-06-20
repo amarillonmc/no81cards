@@ -22,7 +22,7 @@ function c9330013.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCondition(aux.exccon)
-	e3:SetCountLimit(1,9330113+EFFECT_COUNT_CODE_DUEL)
+	e3:SetCountLimit(1,9331013+EFFECT_COUNT_CODE_DUEL)
 	e3:SetCost(c9330013.thcost)
 	e3:SetTarget(c9330013.settg)
 	e3:SetOperation(c9330013.setop)
@@ -35,7 +35,7 @@ function c9330013.handcon(e)
 	return Duel.IsExistingMatchingCard(c9330013.filter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
 end
 function c9330013.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf9c) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0xaf93) and c:IsType(TYPE_MONSTER)
 end
 function c9330013.discon(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsChainDisablable(ev) then return false end
@@ -80,7 +80,7 @@ function c9330013.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9330013.setfilter(c)
-	if not (c:IsSetCard(0xf9c) and c:IsType(TYPE_TRAP) and not c:IsCode(9330013)) then return false end
+	if not (c:IsSetCard(0xaf93) and c:IsType(TYPE_TRAP) and not c:IsCode(9330013)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c9330013.settg(e,tp,eg,ep,ev,re,r,rp,chk)

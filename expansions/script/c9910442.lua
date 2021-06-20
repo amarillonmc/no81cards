@@ -1,4 +1,4 @@
---夜魔
+--双影杀手-布梦者
 function c9910442.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
@@ -20,14 +20,17 @@ end
 function c9910442.discon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_LINK 
 end
+function c9910442.cfilter(c,e)
+	return c:IsAbleToGrave() and not c:IsImmuneToEffect(e)
+end
 function c9910442.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local dg=Duel.GetMatchingGroup(aux.disfilter1,tp,0,LOCATION_ONFIELD,nil)
-	if Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c)
+	if Duel.IsExistingMatchingCard(c9910442.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c,e)
 		and dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910442,0)) then
 		Duel.Hint(HINT_CARD,0,9910442)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local cg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,dg:GetCount(),c)
+		local cg=Duel.SelectMatchingCard(tp,c9910442.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,dg:GetCount(),c,e)
 		if Duel.SendtoGrave(cg,REASON_EFFECT)==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910442,1))
 		local sg=dg:Select(tp,cg:GetCount(),cg:GetCount(),nil)

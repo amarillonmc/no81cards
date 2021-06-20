@@ -1,4 +1,4 @@
---黒魔術のカーテン
+--陷阵营·奔袭！
 function c9330012.initial_effect(c)
 	aux.AddCodeList(c,9330001)
 	--Activate
@@ -33,7 +33,7 @@ function c9330012.initial_effect(c)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCondition(aux.exccon)
-	e4:SetCountLimit(1,9330112+EFFECT_COUNT_CODE_DUEL)
+	e4:SetCountLimit(1,9331012+EFFECT_COUNT_CODE_DUEL)
 	e4:SetCost(c9330012.thcost)
 	e4:SetTarget(c9330012.settg)
 	e4:SetOperation(c9330012.setop)
@@ -46,6 +46,7 @@ function c9330012.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9330012.filter1,tp,LOCATION_DECK,0,1,nil,e,tp)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(9330012,0))
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c9330012.activate1(e,tp,eg,ep,ev,re,r,rp)
@@ -68,7 +69,7 @@ function c9330012.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not (se:IsActiveType(TYPE_TRAP) or c:IsLocation(LOCATION_EXTRA))
 end
 function c9330012.filter(c,e,tp)
-	return c:IsSetCard(0xf9c)
+	return c:IsSetCard(0xaf93)
 end
 function c9330012.mfilter(c)
 	return c:GetLevel()>0 and c:IsRace(RACE_WARRIOR) and c:IsAbleToDeck()
@@ -79,6 +80,7 @@ function c9330012.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 		local mg2=Duel.GetMatchingGroup(c9330012.mfilter,tp,LOCATION_GRAVE,0,nil)
 		return Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_DECK,0,1,nil,c9330012.filter,e,tp,mg1,mg2,Card.GetLevel,"Equal")
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(9330012,1))
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,LOCATION_GRAVE)
 end
@@ -131,7 +133,7 @@ function c9330012.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9330012.setfilter(c)
-	if not (c:IsSetCard(0xf9c) and c:IsType(TYPE_TRAP) and not c:IsCode(9330012)) then return false end
+	if not (c:IsSetCard(0xaf93) and c:IsType(TYPE_TRAP) and not c:IsCode(9330012)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c9330012.settg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -5,7 +5,6 @@ function c60000108.initial_effect(c)
 	e1:SetCategory(CATEGORY_CONTROL)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(c60000108.accon)
 	e1:SetTarget(c60000108.actg)
 	e1:SetOperation(c60000108.acop)
 	c:RegisterEffect(e1)
@@ -20,16 +19,6 @@ function c60000108.initial_effect(c)
 	e3:SetOperation(c60000108.xxop)
 	c:RegisterEffect(e3)
 
-end
-function c60000108.ahcon(e)
-	local tp=e:GetHandlerPlayer()
-	return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler())
-end
-function c60000108.cfilter(c)
-	return true
-end
-function c60000108.accon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c60000108.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c60000108.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and chkc:IsControlerCanBeChanged() end

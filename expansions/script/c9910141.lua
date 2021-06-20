@@ -19,7 +19,6 @@ function c9910141.initial_effect(c)
 	--immune
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910141,2))
-	e2:SetCategory(CATEGORY_DAMAGE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
@@ -34,7 +33,7 @@ function c9910141.xyzfilter(c)
 		and c:IsRace(RACE_MACHINE)
 end
 function c9910141.cfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsType(TYPE_XYZ) and c:IsAbleToRemoveAsCost()
+	return c:IsRace(RACE_MACHINE) and c:IsAbleToRemoveAsCost()
 end
 function c9910141.xmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910141.cfilter,tp,LOCATION_GRAVE,0,1,nil) end
@@ -47,14 +46,12 @@ function c9910141.xmfilter(c,tp)
 end
 function c9910141.xmtarget(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(9910141)<=1
-		and Duel.IsExistingMatchingCard(c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp) end
+	if chk==0 then returnDuel.IsExistingMatchingCard(c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	c:RegisterFlagEffect(9910141,RESET_CHAIN,0,1)
 end
 function c9910141.xmoperation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local g=Duel.SelectMatchingCard(tp,c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
@@ -75,10 +72,8 @@ function c9910141.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9910141.imtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(9910141)<=1 end
+	if chk==0 then return true end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	c:RegisterFlagEffect(9910141,RESET_CHAIN,0,1)
 end
 function c9910141.imop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -87,11 +82,11 @@ function c9910141.imop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
 		e1:SetValue(c9910141.efilter)
+		e1:SetLabelObject(re)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		c:RegisterEffect(e1)
-		Duel.Damage(1-tp,1000,REASON_EFFECT)
 	end
 end
 function c9910141.efilter(e,re)
-	return re:GetOwner()~=e:GetOwner()
+	return re==e:GetLabelObject()
 end

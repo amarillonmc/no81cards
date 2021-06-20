@@ -1,4 +1,4 @@
---陷阵营首领 高顺
+--陷阵营首领
 function c9330007.initial_effect(c)
 	aux.AddCodeList(c,9330001)
 	c:EnableReviveLimit()
@@ -19,18 +19,6 @@ function c9330007.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EFFECT_CANNOT_CHANGE_CONTROL)
 	c:RegisterEffect(e2)
-	--atk & def
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(c9330007.filter1)
-	e3:SetValue(500)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e4)
 	--can not be Negate
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
@@ -58,15 +46,12 @@ function c9330007.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function c9330007.efilter(e,te)
-	return te:IsActiveType(TYPE_TRAP) and not te:GetOwner():IsSetCard(0xf9c)
-end
-function c9330007.filter1(e,c)
-	return c:IsSetCard(0xf9c) and not c:IsCode(9330001)
+	return te:IsActiveType(TYPE_TRAP) and not te:GetOwner():IsSetCard(0xaf93)
 end
 function c9330007.effectfilter(e,ct)
 	local p=e:GetHandler():GetControler()
-	local te,tp,loc=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
-	return p==tp and te:GetHandler():IsSetCard(0xf9c)
+	local te,tp,loc=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+	return p==tp and te:GetHandler():IsSetCard(0xaf93)
 end
 function c9330007.actcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLevelAbove(7)
@@ -77,6 +62,7 @@ end
 function c9330007.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local g=Duel.GetMatchingGroup(c9330007.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(9330007,0))
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function c9330007.actop(e,tp,eg,ep,ev,re,r,rp)
@@ -93,7 +79,7 @@ function c9330007.actop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9330007.effcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_FUSION+REASON_SYNCHRO)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
-		and e:GetHandler():GetReasonCard():IsSetCard(0xf9c)
+		and e:GetHandler():GetReasonCard():IsSetCard(0xaf93)
 end
 function c9330007.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

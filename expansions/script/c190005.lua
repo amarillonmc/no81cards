@@ -65,7 +65,7 @@ function cm.atkval(e,c)
 	return c:GetLevel()*100
 end
 function cm.spfilter(c,lv,e,tp)
-	return c:IsSetCard(0xca4) and c:GetLevel()<=lv and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xca5) and c:GetLevel()<=lv and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lv=e:GetHandler():GetLevel()
@@ -83,7 +83,7 @@ function cm.sp2cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.banfilter(c)
-	return c:IsSetCard(0xca4) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xca5) and c:IsAbleToRemoveAsCost()
 end
 function cm.sp3cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lv=e:GetHandler():GetLevel()
@@ -116,17 +116,17 @@ function cm.sp2op(e,tp,eg,ep,ev,re,r,rp)
 	if tc then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end
 end
 function cm.ssfilter(c,tp)
-	return c:IsControler(tp) and c:IsSetCard(0xca4) and c:IsFaceup()
+	return c:IsControler(tp) and c:IsSetCard(0xca5) and c:IsFaceup()
 end
 function cm.llvfilter(c,tp)
-	return c:IsSetCard(0xca4) and c:IsFaceup() and c:IsLevelAbove(1)
+	return c:IsSetCard(0xca5) and c:IsFaceup() and c:IsLevelAbove(1)
 end
 function cm.sscon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.ssfilter,1,nil,tp)
 end
 function cm.sstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and e:GetHandler():IsSetCard(0xca4) and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0xca4) end
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and e:GetHandler():IsSetCard(0xca5) and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0xca5) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.ssop(e,tp,eg,ep,ev,re,r,rp)

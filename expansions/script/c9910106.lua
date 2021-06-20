@@ -136,16 +136,3 @@ end
 function Zcd.MFilter2(c,xyzc,tp)
 	return Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0
 end
-
---is able to set
-function Zcd.SetFilter(c,e)
-	if c:IsType(TYPE_TOKEN) then return false end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_MONSTER_SSET)
-	e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
-	c:RegisterEffect(e1,true)
-	local res=c:IsSSetable()
-	e1:Reset()
-	return res
-end

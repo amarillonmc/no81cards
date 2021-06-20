@@ -13,18 +13,16 @@ function c9330002.initial_effect(c)
 	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9330002,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,9330002)
+	e2:SetCountLimit(1,9331002)
 	e2:SetTarget(c9330002.sptg)
 	e2:SetOperation(c9330002.spop)
 	c:RegisterEffect(e2)
 	--control
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9330002,1))
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e3:SetCategory(CATEGORY_CONTROL)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
@@ -39,7 +37,7 @@ function c9330002.cfilter(c)
 	return c:IsFaceup() and c:IsCode(9330001)
 end
 function c9330002.sprfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf9c)
+	return c:IsFaceup() and c:IsSetCard(0xaf93)
 end
 function c9330002.sprcon(e,c)
 	if c==nil then return true end
@@ -91,15 +89,5 @@ function c9330002.ctlop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.GetControl(c,1-tp)
 	end
 end
-
-
-
-
-
-
-
-
-
-
 
 

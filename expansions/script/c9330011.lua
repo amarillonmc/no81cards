@@ -1,4 +1,4 @@
---白马义从·轻骑兵
+--陷阵营救
 function c9330011.initial_effect(c)
 	aux.AddCodeList(c,9330001)
 	--Activate
@@ -43,7 +43,7 @@ function c9330011.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9330011.target(e,c)
-	return c:IsSetCard(0xf9c) and not c:IsCode(9330011)
+	return c:IsSetCard(0xaf93) and not c:IsCode(9330011)
 end
 function c9330011.indct(e,re,r,rp)
 	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then
@@ -54,7 +54,7 @@ function c9330011.filter(c)
 	return c:IsCode(9330001) and c:IsFaceup()
 end
 function c9330011.spfilter(c,e,tp,check,tid)
-	return c:IsSetCard(0xf9c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:GetTurnID()==tid
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:GetTurnID()==tid and c:IsSetCard(0xaf93)
 		and (check or c:IsCode(9330001))
 end
 function c9330011.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -63,6 +63,7 @@ function c9330011.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			and Duel.IsExistingMatchingCard(c9330011.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,chk1,Duel.GetTurnCount())
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(9330011,0))
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
 function c9330011.spop1(e,tp,eg,ep,ev,re,r,rp)
@@ -75,12 +76,13 @@ function c9330011.spop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9330011.tdfilter(c)
-	return c:IsSetCard(0xf9c) and c:IsAbleToDeck()
+	return c:IsSetCard(0xaf93) and c:IsAbleToDeck()
 end
 function c9330011.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9330011.tdfilter(chkc) end
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
 		and Duel.IsExistingTarget(c9330011.tdfilter,tp,LOCATION_GRAVE,0,3,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(9330011,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c9330011.tdfilter,tp,LOCATION_GRAVE,0,3,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)

@@ -65,7 +65,7 @@ function cm.atkval(e,c)
 	return c:GetLevel()*100
 end
 function cm.spfilter(c,lv,e,tp)
-	return c:IsSetCard(0xca4) and c:GetLevel()<=lv and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xca5) and c:GetLevel()<=lv and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lv=e:GetHandler():GetLevel()
@@ -83,7 +83,7 @@ function cm.sp2cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.banfilter(c)
-	return c:IsSetCard(0xca4) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xca5) and c:IsAbleToRemoveAsCost()
 end
 function cm.sp3cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lv=e:GetHandler():GetLevel()

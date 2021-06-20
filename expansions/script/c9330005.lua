@@ -21,27 +21,6 @@ function c9330005.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EFFECT_CANNOT_CHANGE_CONTROL)
 	c:RegisterEffect(e2)
-	--atk & def
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(c9330005.filter1)
-	e3:SetValue(500)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e4)
-	--immune effect
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_IMMUNE_EFFECT)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetTargetRange(LOCATION_ONFIELD,0)
-	e5:SetTarget(c9330005.etarget)
-	e5:SetValue(c9330005.efilter2)
-	c:RegisterEffect(e5)
 	--to deck
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(9330005,0))
@@ -64,19 +43,7 @@ function c9330005.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function c9330005.efilter(e,te)
-	return te:IsActiveType(TYPE_TRAP) and not te:GetOwner():IsSetCard(0xf9c)
-end
-function c9330005.filter1(e,c)
-	return c:IsSetCard(0xf9c) and not c:IsCode(9330001)
-end
-function c9330005.etarget(e,c)
-	return c:GetType()==TYPE_TRAP 
-end
-function c9330005.efilter2(e,re)
-	return re:GetOwnerPlayer()~=e:GetHandlerPlayer()
-end
-function c9330005.cfilter(c)
-	return (c:IsSetCard(0xf9c) and c:IsType(TYPE_TUNER)) or c:IsType(TYPE_TRAP)
+	return te:IsActiveType(TYPE_TRAP) and not te:GetOwner():IsSetCard(0xaf93)
 end
 function c9330005.actcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLevelAbove(7)
@@ -86,6 +53,7 @@ function c9330005.tdfilter(c)
 end
 function c9330005.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9330005.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(9330005,0))
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,0)
 end
 function c9330005.tdop(e,tp,eg,ep,ev,re,r,rp)
@@ -101,13 +69,13 @@ function c9330005.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local sg=g:Select(tp,1,3,nil)
-	if Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)>0 then
+	if Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)>0 then
 		local sg2=Duel.GetOperatedGroup()
 		if sg2:IsExists(c9330005.tdfilter,1,nil,tp) then Duel.ShuffleDeck(tp) end
 		if sg2:IsExists(c9330005.tdfilter,1,nil,1-tp) then Duel.ShuffleDeck(1-tp) end
-		if sg:GetCount()==3 then Duel.Draw(tp,1,REASON_EFFECT) end
+		local ct=sg2:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 		if not sg2:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then return end
-			local tc=g:GetFirst()
+			local tc=sg:GetFirst()
 			while tc do
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_FIELD)
@@ -133,8 +101,11 @@ function c9330005.tdop(e,tp,eg,ep,ev,re,r,rp)
 				e3:SetLabelObject(tc)
 				e3:SetReset(RESET_PHASE+PHASE_END)
 				Duel.RegisterEffect(e3,tp)
-				tc=g:GetNext()
+				tc=sg:GetNext()
 			end
+		if ct==3 then
+		Duel.BreakEffect()
+		Duel.Draw(tp,1,REASON_EFFECT) end
 	end
 end
 function c9330005.distg(e,c)
@@ -150,7 +121,7 @@ function c9330005.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9330005.effcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_SYNCHRO+REASON_RITUAL)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
-		and e:GetHandler():GetReasonCard():IsSetCard(0xf9c)
+		and e:GetHandler():GetReasonCard():IsSetCard(0xaf93)
 end
 function c9330005.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

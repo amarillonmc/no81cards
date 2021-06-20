@@ -1,6 +1,13 @@
 --与陷阵营的交锋
 function c9330017.initial_effect(c)
 	aux.AddCodeList(c,9330001)
+	--act in set turn
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	e0:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e0:SetCondition(c9330017.actcon)
+	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -37,15 +44,19 @@ function c9330017.initial_effect(c)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCondition(aux.exccon)
-	e4:SetCountLimit(1,9330117+EFFECT_COUNT_CODE_DUEL)
+	e4:SetCountLimit(1,9331017+EFFECT_COUNT_CODE_DUEL)
 	e4:SetCost(c9330017.thcost)
 	e4:SetTarget(c9330017.settg)
 	e4:SetOperation(c9330017.setop)
 	c:RegisterEffect(e4)
 end
+function c9330017.actcon(e,tp,eg,ep,ev,re,r,rp)
+	local  k=e:GetHandler():GetControler()
+	return Duel.GetFieldGroupCount(k,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(k,LOCATION_ONFIELD,0)
+end
 function c9330017.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and
-		Duel.IsPlayerCanSpecialSummonMonster(tp,9330017,0xf9c,0x21,2200,600,6,RACE_WARRIOR,ATTRIBUTE_WATER) end
+		Duel.IsPlayerCanSpecialSummonMonster(tp,9330017,0xaf93,0x21,2200,600,6,RACE_WARRIOR,ATTRIBUTE_WATER) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9330017.filter(c)
@@ -65,14 +76,14 @@ function c9330017.filter3(c,e)
 	return c:IsOnField() and not c:IsImmuneToEffect(e)
 end
 function c9330017.fcheck(tp,sg,fc)
-	return sg:IsExists(Card.IsFusionSetCard,1,nil,0xf9c)
+	return sg:IsExists(Card.IsFusionSetCard,1,nil,0xaf93)
 end
 function c9330017.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,9330017,0xf9c,0x21,2200,600,6,RACE_WARRIOR,ATTRIBUTE_WATER) then return end
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,9330017,0xaf93,0x21,2200,600,6,RACE_WARRIOR,ATTRIBUTE_WATER) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	if Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP_ATTACK)~=0
 		and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
@@ -120,7 +131,7 @@ function c9330017.condition(e)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF
 end
 function c9330017.etarget(e,c)
-	return c:IsFaceup() and c:IsSetCard(0xf9c) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0xaf93) and c:IsType(TYPE_MONSTER)
 end
 function c9330017.imfilter(e,re,rp)
 	return re:IsActiveType(TYPE_MONSTER) and e:GetOwnerPlayer()~=re:GetOwnerPlayer() 
@@ -133,14 +144,14 @@ function c9330017.attg(e,c)
 end
 function c9330017.atlimit(e,c)
 	local lc=e:GetLabelObject()
-	return c:IsFaceup() and c:IsSetCard(0xf9c) and not lc:GetColumnGroup():IsContains(c)
+	return c:IsFaceup() and c:IsSetCard(0xaf93) and not lc:GetColumnGroup():IsContains(c)
 end
 function c9330017.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9330017.setfilter(c)
-	if not (c:IsSetCard(0xf9c) and c:IsType(TYPE_TRAP+TYPE_SPELL) and not c:IsCode(9330017)) then return false end
+	if not (c:IsSetCard(0xaf93) and c:IsType(TYPE_TRAP+TYPE_SPELL) and not c:IsCode(9330017)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c9330017.settg(e,tp,eg,ep,ev,re,r,rp,chk)

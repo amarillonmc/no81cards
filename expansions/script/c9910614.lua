@@ -28,17 +28,20 @@ end
 function c9910614.filter2(c,check)
 	return check and c:IsFacedown() and c:IsAbleToDeck()
 end
+function c9910614.cfilter(c,e)
+	return c:IsAbleToGrave() and not c:IsImmuneToEffect(e)
+end
 function c9910614.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local check=Duel.IsExistingMatchingCard(Card.IsSummonType,tp,0,LOCATION_MZONE,1,nil,SUMMON_TYPE_NORMAL)
 	local g1=Duel.GetMatchingGroup(c9910614.filter1,tp,0,LOCATION_ONFIELD,nil)
 	local g2=Duel.GetMatchingGroup(c9910614.filter2,tp,0,LOCATION_ONFIELD,nil,check)
-	if Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c)
+	if Duel.IsExistingMatchingCard(c9910614.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c,e)
 		and (g1:GetCount()>0 or g2:GetCount()>0) and Duel.SelectYesNo(tp,aux.Stringid(9910614,0)) then
 		Duel.Hint(HINT_CARD,0,9910614)
 		if g1:GetCount()>0 and (g2:GetCount()==0 or Duel.SelectOption(tp,1104,1105)==0) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local cg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,g1:GetCount(),c)
+			local cg=Duel.SelectMatchingCard(tp,c9910614.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,g1:GetCount(),c,e)
 			if Duel.SendtoGrave(cg,REASON_EFFECT)==0 then return end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 			local sg=g1:Select(tp,cg:GetCount(),cg:GetCount(),nil)
@@ -46,7 +49,7 @@ function c9910614.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		else
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local cg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,g2:GetCount(),c)
+			local cg=Duel.SelectMatchingCard(tp,c9910614.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,g2:GetCount(),c,e)
 			if Duel.SendtoGrave(cg,REASON_EFFECT)==0 then return end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local sg=g2:Select(tp,cg:GetCount(),cg:GetCount(),nil)

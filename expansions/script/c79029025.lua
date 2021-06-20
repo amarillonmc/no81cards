@@ -56,7 +56,7 @@ function c79029025.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=g:Select(tp,1,1,nil)
 	Duel.SendtoHand(sg,tp,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,sg)
-	if Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(79029025,0)) then 
+	if Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and c:GetMaterialCount()~=0 and Duel.SelectYesNo(tp,aux.Stringid(79029025,0)) then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	dg=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,c:GetMaterialCount(),nil)
 	Debug.Message("闪！")

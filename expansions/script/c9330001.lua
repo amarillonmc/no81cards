@@ -62,10 +62,10 @@ function c9330001.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function c9330001.efilter(e,te)
-	return te:IsActiveType(TYPE_TRAP) and not te:GetOwner():IsSetCard(0xf9c)
+	return te:IsActiveType(TYPE_TRAP) and not te:GetOwner():IsSetCard(0xaf93)
 end
 function c9330001.filter1(e,c)
-	return c:IsSetCard(0xf9c) and not c:IsCode(9330001)
+	return c:IsSetCard(0xaf93) and not c:IsCode(9330001)
 end
 function c9330001.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
@@ -81,7 +81,7 @@ local rc=re:GetHandler()
 local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		if rc:IsSetCard(0xf9c) 
+		if rc:IsSetCard(0xaf93) 
 		   and Duel.IsExistingMatchingCard(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 		   and Duel.SelectYesNo(tp,aux.Stringid(9330001,1)) then
 		   Duel.BreakEffect()
@@ -115,7 +115,7 @@ local c=e:GetHandler()
 end
 function c9330001.effcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_FUSION+REASON_SYNCHRO+REASON_XYZ+REASON_LINK+REASON_RITUAL)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
-		and e:GetHandler():GetReasonCard():IsSetCard(0xf9c)
+		and e:GetHandler():GetReasonCard():IsSetCard(0xaf93)
 end
 function c9330001.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -143,10 +143,11 @@ function c9330001.effop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9330001.thfilter(c)
-	return c:IsSetCard(0xf9c) and not c:IsCode(9330001) and c:IsAbleToHand()
+	return c:IsSetCard(0xaf93) and not c:IsCode(9330001) and c:IsAbleToHand()
 end
 function c9330001.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9330001.thfilter,tp,LOCATION_DECK+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(9330001,2))
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_ONFIELD+LOCATION_GRAVE)
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9330001,3))
 end

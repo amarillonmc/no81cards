@@ -13,15 +13,16 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0xca4)
+	return re and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0xca5)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--atk up
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SET_BASE_ATTACK)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(4000)
@@ -37,6 +38,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCountLimit(1)
+	e3:SetCondition(cm.lvcon2)
 	e3:SetTarget(cm.target)
 	e3:SetOperation(cm.operation)
 	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
@@ -48,10 +50,14 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
+	e4:SetCondition(cm.lvcon3)
 	e4:SetTarget(cm.destarget)
 	e4:SetOperation(cm.desoperation)
 	e4:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e4)
+end
+function cm.lvcon2(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetLevel()>=5
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -75,6 +81,10 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e2)
 	end
+end
+
+function cm.lvcon3(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetLevel()>=12
 end
 function cm.desfilter(c,tp)
 	return c:IsType(TYPE_MONSTER) and Duel.GetMZoneCount(tp,c)>=1

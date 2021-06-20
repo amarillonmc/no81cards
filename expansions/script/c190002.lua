@@ -50,7 +50,7 @@ function cm.initial_effect(c)
 	--lv up
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(m,3))
-	e6:SetCategory(CATEGORY_TODECK)
+	e6:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e6:SetType(EFFECT_TYPE_IGNITION)
 	e6:SetRange(LOCATION_HAND)
 	e6:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -63,7 +63,7 @@ function cm.atkval(e,c)
 	return c:GetLevel()*100
 end
 function cm.spfilter(c,lv,e,tp)
-	return c:IsSetCard(0xca4) and c:GetLevel()<=lv and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xca5) and c:GetLevel()<=lv and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lv=e:GetHandler():GetLevel()
@@ -81,7 +81,7 @@ function cm.sp2cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.banfilter(c)
-	return c:IsSetCard(0xca4) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xca5) and c:IsAbleToRemoveAsCost()
 end
 function cm.sp3cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lv=e:GetHandler():GetLevel()
@@ -114,30 +114,28 @@ function cm.sp2op(e,tp,eg,ep,ev,re,r,rp)
 	if tc then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end
 end
 
-function cm.lufilter(c)
-	return c:IsSetCard(0x41) and not c:IsPublic()
+function cm.thfilter(c,lv)
+	return c:IsSetCard(0xca5) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:GetLevel()<=lv
+end
+function cm.lufilter(c,lv)
+	return c:IsSetCard(0x41) and not c:IsPublic() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,lv+c:GetLevel())
 end
 function cm.lutg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingTarget(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x41)
 		and not c:IsPublic()
-		and Duel.IsExistingMatchingCard(cm.lufilter,tp,LOCATION_HAND,0,1,c) end
+		and Duel.IsExistingMatchingCard(cm.lufilter,tp,LOCATION_HAND,0,1,c,c:GetLevel()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,cm.lufilter,tp,LOCATION_HAND,0,1,1,c)
+	local g=Duel.SelectMatchingCard(tp,cm.lufilter,tp,LOCATION_HAND,0,1,1,c,c:GetLevel())
 	local tc=g:GetFirst()
 	g:AddCard(c)
 	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
 	local lv=c:GetLevel()+tc:GetLevel()
-	local num1,num2=math.modf(lv/2)--返回整数和小数部分
-	if(num2==0)then
-		lv=lv/2
-	else
-		lv=(lv/2)+0.5
-	end
 	Duel.SetTargetParam(lv)
 	local lvg=Duel.SelectTarget(tp,Card.IsSetCard,tp,LOCATION_MZONE,0,1,1,nil,0x41)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,tp,LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.luop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -151,6 +149,11 @@ function cm.luop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(lv)
 		tc:RegisterEffect(e1)
 		Duel.BreakEffect()
-		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+		if Duel.SendtoDeck(c,nil,2,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,lv) then 
+		  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		  local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,lv)
+		  Duel.SendtoHand(g,nil,REASON_EFFECT)
+		  Duel.ConfirmCards(1-tp,g)   
+		end
 	end
 end

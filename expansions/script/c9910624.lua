@@ -30,6 +30,7 @@ end
 function c9910624.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
+	if Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON) then return end
 	if not Duel.SelectYesNo(tp,aux.Stringid(9910624,0)) then return end
 	Duel.Hint(HINT_CARD,0,9910624)
 	if Duel.NegateEffect(ev) then
