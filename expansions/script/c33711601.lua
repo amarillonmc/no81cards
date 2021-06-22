@@ -49,14 +49,36 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.remfilter(c,tp)
-	return c:IsAbleToRemove(tp,POS_FACEDOWN,REASON_COST) and c:IsType(TYPE_MONSTER)
+	return c:IsAbleToRemove(tp,POS_FACEDOWN,REASON_COST)
+end
+function cm.typefilter(c)
+	if c:GetType()&(TYPE_SPELL+TYPE_TRAP)~=0 then
+		return c:GetType()&(TYPE_SPELL+TYPE_TRAP)
+	elseif c:GetType()&(TYPE_NORMAL+TYPE_RITUAL+TYPE_FUSION+TYPE_XYZ+TYPE_SYNCHRO+TYPE_LINK)~=0 then
+		return c:GetType()&(TYPE_NORMAL+TYPE_RITUAL+TYPE_FUSION+TYPE_XYZ+TYPE_SYNCHRO+TYPE_LINK)
+	else
+		return TYPE_EFFECT
+	end
+end
+function cm.typefilter1(c,tc)
+	return cm.typefilter(c)==cm.typefilter(tc)
+end
+function cm.gfilter(g)
+	return g:GetClassCount(cm.typefilter)==#g
 end
 function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.remfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,0,nil)
-	if g:GetClassCount(Card.GetCode)>=7 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local rg=g:SelectSubGroup(tp,aux.dncheck,false,7,7)
-		Duel.Remove(rg,POS_FACEDOWN,REASON_COST)
+	local sg=Group.CreateGroup()
+	if g:GetClassCount(cm.typefilter)>=9 then
+		for i=1,7 do
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local tc=g:Select(tp,1,1,nil):GetFirst()
+			if tc then
+				sg:AddCard(tc)
+				g:Remove(cm.typefilter1,nil,tc)
+			end
+		end
+		Duel.Remove(sg,POS_FACEDOWN,REASON_COST)
 	else
 		Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 	end
@@ -102,11 +124,19 @@ end
 function cm.skipcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.remfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,0,nil)
-	if chk==0 then return c:IsAbleToRemove(tp,POS_FACEDOWN,REASON_COST) and g:GetClassCount(Card.GetCode)>=9 end
+	if chk==0 then return c:IsAbleToRemove(tp,POS_FACEDOWN,REASON_COST) and g:GetClassCount(cm.typefilter)>=9 end
+	local sg=Group.CreateGroup()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rg=g:SelectSubGroup(tp,aux.dncheck,false,9,9)
-	rg:AddCard(c)
-	Duel.Remove(rg,POS_FACEDOWN,REASON_COST)
+	for i=1,9 do
+	   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	   local tc=g:Select(tp,1,1,nil):GetFirst()
+	   if tc then
+		   sg:AddCard(tc)
+		   g:Remove(cm.typefilter1,nil,tc)
+	   end
+	end
+	sg:AddCard(c)
+	Duel.Remove(sg,POS_FACEDOWN,REASON_COST)
 end
 function cm.skiptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(1-tp,EFFECT_SKIP_TURN) end

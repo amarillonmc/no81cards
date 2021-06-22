@@ -24,7 +24,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local t_flag_2=true
 	local tossp=1-tp
 	local num=0
-	while (flag==false or flag_1==false) do
+	while (flag==false and flag_1==false) do
 		tossp=1-tossp
 		num=num+1
 		Duel.Hint(HINT_SELECTMSG,tossp,HINTMSG_COIN)

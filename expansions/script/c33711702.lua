@@ -64,13 +64,11 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=tg:Filter(Card.IsAbleToHand,nil)
 	if sg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=sg:Select(tp,1,1,nil)
+		local tg=sg:RandomSelect(tp,1)
 		local tc=tg:GetFirst()
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOHAND,0,0)
 		Duel.SendtoHand(tc,tp,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
-		--tc:ResetEffect(EVENT_CUSTOM+m,RESET_EVENT)
-		--Debug.Message(tc:GetFlagEffect(m))
 	end
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)

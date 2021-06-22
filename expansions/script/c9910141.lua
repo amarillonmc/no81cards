@@ -46,7 +46,7 @@ function c9910141.xmfilter(c,tp)
 end
 function c9910141.xmtarget(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then returnDuel.IsExistingMatchingCard(c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c9910141.xmoperation(e,tp,eg,ep,ev,re,r,rp)
