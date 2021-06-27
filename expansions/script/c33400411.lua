@@ -24,7 +24,6 @@ function c33400411.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1)
 	e2:SetTarget(c33400411.matg)
 	e2:SetOperation(c33400411.maop)
@@ -158,7 +157,7 @@ function c33400411.op3(e,tp,eg,ep,ev,re,r,rp)
 						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 						e1:SetValue(c33400411.eqlimit)
 						e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-						tc:RegisterEffect(e1)	 
+						tc:RegisterEffect(e1)   
 				   end
 				end
 			end
@@ -177,7 +176,7 @@ function c33400411.cfilter1(c)
 	return c:IsSetCard(0x341) 
 end
 function c33400411.matg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(c33400411.cfilter1,tp,LOCATION_GRAVE,0,1,nil) end   
+	if chk==0 then return Duel.IsExistingMatchingCard(c33400411.cfilter1,tp,LOCATION_GRAVE,0,1,nil) end   
 end
 function c33400411.maop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingTarget(c33400411.cfilter1,tp,LOCATION_GRAVE,0,1,nil) then return false end
