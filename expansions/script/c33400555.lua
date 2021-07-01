@@ -38,7 +38,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.mfilter(c,e)
-	return c:IsFaceup() and c:GetLevel()>0 and not c:IsImmuneToEffect(e) and c:IsReleasable() and c:GetCounter(0x1015)~=0
+	return c:IsFaceup() and c:GetLevel()>0 and not c:IsImmuneToEffect(e) and c:IsReleasable() and c:GetCounter(0x1015)~=0 and c:IsCanBeRitualMaterial(nil)
 end
 function cm.refilter(c)
 	return  c:GetCounter(0x1015)==0
@@ -46,52 +46,95 @@ end
 function cm.exfilter(c,e)
 	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_PENDULUM) and c:GetLevel()>0 and not c:IsImmuneToEffect(e) and c:IsDestructable()
 end
-function cm.filter(c,e,tp,m)
-local mg=m:Filter(Card.IsCanBeRitualMaterial,c,c)
-	if bit.band(c:GetType(),0x81)~=0x81 or not (c:IsCode(33400519) or c:IsCode(33400520))
-		or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end 
-	return mg:CheckWithSumGreater(Card.GetRitualLevel,c:GetLevel(),c)  and  (not c:IsLocation(LOCATION_EXTRA) or Duel.GetLocationCountFromEx(tp,tp,mg,c)>0) 
+function cm.filter(c,e,tp)
+	return c:IsCode(33400519) or c:IsCode(33400520)
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local mg1=Duel.GetRitualMaterial(tp)
-		mg1:Remove(Card.IsLocation,nil,LOCATION_HAND)
-		mg1:Remove(cm.refilter,nil)
+function cm.rcheck(tp,g,c)
+	return g:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)<=99
+end
+function cm.rgcheck(g)
+	return g:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)<=99
+end
+function cm.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_equal,chk)
+	if bit.band(c:GetType(),0x81)~=0x81 or (filter and not filter(c,e,tp,chk)) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
+	local mg=m1:Filter(Card.IsCanBeRitualMaterial,c,c)
+	if m2 then
+		mg:Merge(m2)
+	end
+	if c.mat_filter then
+		mg=mg:Filter(c.mat_filter,c,tp)
+	else
+		mg:RemoveCard(c)
+	end
+	local lv=level_function(c)
+	Auxiliary.GCheckAdditional=Auxiliary.RitualCheckAdditional(c,lv,greater_or_equal)
+	local res=mg:CheckSubGroup(cm.RitualCheck,1,lv,tp,c,lv,greater_or_equal)
+	Auxiliary.GCheckAdditional=nil
+	return res
+end
+function cm.RitualCheck(g,tp,c,lv,greater_or_equal)
+	return Duel.GetLocationCountFromEx(tp,tp,g,c)>0 and Auxiliary["RitualCheck"..greater_or_equal](g,c,lv) and Duel.GetMZoneCount(tp,g,tp)>0 and (not c.mat_group_check or c.mat_group_check(g,tp))
+		and (not Auxiliary.RCheckAdditional or Auxiliary.RCheckAdditional(tp,g,c))
+end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk) 
+		if chk==0 then
+		local mg=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_MZONE,0,nil,e)
 		local mg2=Duel.GetMatchingGroup(cm.mfilter,tp,0,LOCATION_MZONE,nil,e)   
-		local mg3=Duel.GetMatchingGroup(cm.exfilter,tp,LOCATION_EXTRA,0,nil,e)
-		mg1:Merge(mg2)
-		mg1:Merge(mg3)
-		return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,e,tp,mg1)
+		local dg=Duel.GetMatchingGroup(cm.exfilter,tp,LOCATION_EXTRA,0,nil,e)
+		mg:Merge(mg2)
+		aux.RCheckAdditional=cm.rcheck
+		aux.RGCheckAdditional=cm.rgcheck
+		local res=Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,cm.filter,e,tp,mg,dg,Card.GetLevel,"Greater")
+		aux.RCheckAdditional=nil
+		aux.RGCheckAdditional=nil
+		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_EXTRA)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local mg1=Duel.GetRitualMaterial(tp)
-	mg1:Remove(Card.IsLocation,nil,LOCATION_HAND)
-	mg1:Remove(cm.refilter,nil)
+	local mg=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_MZONE,0,nil,e)
 	local mg2=Duel.GetMatchingGroup(cm.mfilter,tp,0,LOCATION_MZONE,nil,e)   
-	local mg3=Duel.GetMatchingGroup(cm.exfilter,tp,LOCATION_EXTRA,0,nil,e)
-	mg1:Merge(mg2)
-	mg1:Merge(mg3)
+	local dg=Duel.GetMatchingGroup(cm.exfilter,tp,LOCATION_EXTRA,0,nil,e)
+	mg:Merge(mg2)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,e,tp,mg1)
+	aux.RCheckAdditional=cm.rcheck
+	aux.RGCheckAdditional=cm.rgcheck
+	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.RitualUltimateFilter),tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,cm.filter,e,tp,mg,dg,Card.GetLevel,"Greater")
 	local tc=tg:GetFirst()
 	if tc then
-		local mg=mg1:Filter(Card.IsCanBeRitualMaterial,tc,tc)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local mat=mg:SelectWithSumEqual(tp,Card.GetRitualLevel,tc:GetLevel(),1,99,tc)
+		local mg1=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
+		mg1:Merge(dg)
+		if tc.mat_filter then
+			mg1=mg1:Filter(tc.mat_filter,tc,tp)
+		else
+			mg1:RemoveCard(tc)
+		end
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
+		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
+		local mat=mg1:SelectSubGroup(tp,cm.RitualCheck,false,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater")
+		aux.GCheckAdditional=nil
+		if not mat or mat:GetCount()==0 then
+			aux.RCheckAdditional=nil
+			aux.RGCheckAdditional=nil
+			return
+		end
 		tc:SetMaterial(mat)
 		local dmat=mat:Filter(Card.IsLocation,nil,LOCATION_EXTRA)
 		if dmat:GetCount()>0 then
 			mat:Sub(dmat)
 			Duel.Destroy(dmat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
 		end
-		Duel.ReleaseRitualMaterial(mat)
-		Duel.BreakEffect()  
+		if mat:GetCount()>0 then
+			Duel.ReleaseRitualMaterial(mat)
+		end
+		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		tc:CompleteProcedure()
 	end
+	aux.RCheckAdditional=nil
+	aux.RGCheckAdditional=nil
 end
+
 
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)) end
