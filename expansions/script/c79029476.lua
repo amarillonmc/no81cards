@@ -29,7 +29,7 @@ function c79029476.thfil(c)
 	return c:IsAbleToHand() and c:IsRace(RACE_CYBERSE) and c:IsAttribute(ATTRIBUTE_WATER)
 end
 function c79029476.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029476.thfil,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029476.thfil,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
 end
 function c79029476.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -44,6 +44,7 @@ function c79029476.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,sg)
 	if Duel.CheckLPCost(tp,2000) and Duel.SelectYesNo(tp,aux.Stringid(79029476,0)) then
 	Duel.BreakEffect()
+	Duel.PayLPCost(tp,2000)
 	Debug.Message("好的......我会维持这光亮，大家不要走散。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029476,4))
 	--extra summon

@@ -9,7 +9,6 @@ function c9910202.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,9910202)
 	e1:SetTarget(c9910202.destg)
 	e1:SetOperation(c9910202.desop)
 	c:RegisterEffect(e1)
@@ -20,7 +19,6 @@ function c9910202.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,9910203)
 	e2:SetCondition(c9910202.discon)
 	e2:SetCost(c9910202.discost)
 	e2:SetTarget(c9910202.distg)
@@ -45,6 +43,7 @@ function c9910202.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910202.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+		and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c9910202.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -66,15 +65,24 @@ end
 function c9910202.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_REMOVED)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	end
 end
 function c9910202.spfilter(c,e,tp)
 	return c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function c9910202.locfilter(c)
+	return c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE)
+		or c:IsPreviousLocation(LOCATION_ONFIELD+LOCATION_GRAVE)
+end
 function c9910202.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	if not Duel.NegateActivation(ev) then return end
-	if tg and (tg:IsExists(Card.IsOnField,1,nil) or tg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_ONFIELD))
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Destroy(eg,REASON_EFFECT)
+	end
+	if tg and tg:IsExists(c9910202.locfilter,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9910202.spfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910202,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

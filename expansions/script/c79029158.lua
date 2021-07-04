@@ -11,7 +11,7 @@ function c79029158.initial_effect(c)
 	c:RegisterEffect(e1)   
 	--special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(2688979029158,0))
+	e2:SetDescription(aux.Stringid(79029158,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)

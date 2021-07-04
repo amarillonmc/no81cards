@@ -45,7 +45,7 @@ function c79029327.initial_effect(c)
 	c:RegisterEffect(e3)	  
 end
 function c79029327.ovfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_CYBERSE) and c:IsType(TYPE_DUAL)
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsType(TYPE_DUAL)
 end
 function c79029327.matfilter(c)
 	return c:IsRace(RACE_CYBERSE)
@@ -67,7 +67,7 @@ function c79029327.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c79029327.spfil(c,e,tp)
-	return c:IsRace(RACE_CYBERSE) and c:IsType(TYPE_DUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_DUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c79029327.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -83,7 +83,7 @@ function c79029327.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029327.dixfil(c)
-	return c:IsRace(RACE_CYBERSE) and c:IsType(TYPE_DUAL)
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_DUAL)
 end
 function c79029327.discon(e,c)
 	return e:GetHandler():GetOverlayGroup():IsExists(c79029327.dixfil,1,nil)

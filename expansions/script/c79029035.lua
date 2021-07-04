@@ -12,7 +12,7 @@ function c79029035.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -28,12 +28,12 @@ function c79029035.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa905))
-	e3:SetValue(1200)
+	e3:SetValue(1500)
 	c:RegisterEffect(e2) 
 	--destroy
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(20366274,1))
-	e4:SetCategory(CATEGORY_DESTROY)
+	e4:SetCategory(CATEGORY_REMOVE)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_BATTLE_START)
 	e4:SetCondition(c79029035.descon)
@@ -54,18 +54,19 @@ function c79029035.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c79029035.tgfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsAbleToHand() and (c:IsSetCard(0xb90d) or c:IsSetCard(0xc90e))
 end
 function c79029035.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029035.tgfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029035.tgfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and e:GetHandler():GetMaterialCount()>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c79029035.operation(e,tp,eg,ep,ev,re,r,rp)
+	local x=e:GetHandler():GetMaterialCount()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c79029035.tgfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c79029035.tgfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,x,nil)
 	if g:GetCount()>0 then
-		Duel.SendtoHand(g,tp,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	Duel.SendtoHand(g,tp,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,g)
 	Debug.Message("除了武器，您也别忘记准备防灾用具哦~")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029035,0))  
 	end
@@ -77,14 +78,14 @@ function c79029035.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029035.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler():GetBattleTarget(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler():GetBattleTarget(),1,0,0)
 end
 function c79029035.desop(e,tp,eg,ep,ev,re,r,rp)
 	local bc=e:GetHandler():GetBattleTarget()
 	local x=bc:GetAttack()
 	if bc:IsRelateToBattle() then
-		Duel.Destroy(bc,REASON_EFFECT)
-		Duel.Damage(1-tp,x,REASON_EFFECT)
+	Duel.Remove(bc,POS_FACEDOWN,REASON_EFFECT)
+	Duel.Damage(1-tp,x,REASON_EFFECT)
 	Debug.Message("可能有点热哦？")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029035,1)) 
 	end

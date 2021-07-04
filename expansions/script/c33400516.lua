@@ -23,6 +23,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,m)
 	e1:SetCost(cm.cost)
 	e1:SetCondition(cm.ctcon)
 	e1:SetTarget(cm.cttg)
@@ -75,48 +76,37 @@ end
 function cm.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) 
 end
+function cm.tgfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x341) and c:IsAbleToHand() and c:IsType(TYPE_RITUAL) and c:IsLevelBelow(8)
+end
+function cm.tgfil(c)
+	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x341) and c:IsAbleToHand() and c:IsType(TYPE_RITUAL)
+end
+function cm.thfilter3(c)
+	return ((c:IsType(TYPE_MONSTER)   and c:IsType(TYPE_RITUAL) and c:IsLevelBelow(8)) or  (c:IsType(TYPE_SPELL)  and c:IsType(TYPE_RITUAL)) )and c:IsSetCard(0x341) and c:IsAbleToHand()
+end
 function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
-		and Duel.IsExistingMatchingCard(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,0x1015,1) end
+	 if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) or Duel.IsExistingMatchingCard(cm.tgfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetMatchingGroupCount(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)
-	if ct==0 then return end
-	local g=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)
-	if g:GetCount()==0 then return end
-	for i=1,3 do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		tc:AddCounter(0x1015,1)
-	end  
-	if Duel.IsExistingMatchingCard(aux.disfilter1,tp,0,LOCATION_ONFIELD,1,nil) then
-	 if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then 
-		local g3=Duel.SelectMatchingCard(tp,aux.disfilter1,tp,0,LOCATION_ONFIELD,1,1,nil)
-		local tc=g3:GetFirst()
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e2)
-		if tc:IsType(TYPE_TRAPMONSTER) then
-			local e3=Effect.CreateEffect(e:GetHandler())
-			e3:SetType(EFFECT_TYPE_SINGLE)
-			e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e3)
-		end
-	 end 
-   end 
+	local g1=Duel.GetMatchingGroup(cm.thfilter3,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	if g1:GetCount()==0 then return end 
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=g1:SelectSubGroup(tp,cm.check,false,1,2) 
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end
+function cm.check(g,c)
+	if #g==1 then return true end
+	local res=0
+	if #g==2 then 
+	if g:IsExists(cm.tgfilter,1,nil,c) then res=res+1 end
+	if g:IsExists(cm.tgfil,1,nil,c) then res=res+4 end
+	return res==5 
+	end
 end
 
 function cm.pencon(e,tp,eg,ep,ev,re,r,rp)

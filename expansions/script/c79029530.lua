@@ -1,5 +1,7 @@
 --SNo.39 希望皇 霍普·桃源 
 function c79029530.initial_effect(c)
+--SNo.39 希望皇 霍普·桃源 
+function c79029530.initial_effect(c)
 	aux.AddXyzProcedure(c,nil,7,4,nil,nil,99)
 	c:EnableReviveLimit() 
 	--xyz only
@@ -86,14 +88,4 @@ function c79029530.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(c:GetAttack()*2)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e1)
-	if not Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) then return end
-	if Duel.SelectYesNo(tp,aux.Stringid(79029530,0)) then
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
-	Duel.CalculateDamage(c,g:GetFirst())
 end
-end
-
-
-
-

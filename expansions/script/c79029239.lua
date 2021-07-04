@@ -37,11 +37,23 @@ function c79029239.tiop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e0) 
 	Debug.Message("来了。")   
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029239,0))
+	--act limit
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(c79029239.aclimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c79029239.aclimit(e,re,tp)
+	return not re:GetHandler():IsSetCard(0xa900) and (re:GetHandler():IsType(TYPE_MONSTER))
 end
 function c79029239.tiop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if re:GetHandler():GetControler()==tp then return end
-	if e:GetHandler():GetFlagEffect(79029239)==9 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	if e:GetHandler():GetFlagEffect(79029239)==11 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,true,false,POS_FACEUP)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	local tc=g:GetFirst()

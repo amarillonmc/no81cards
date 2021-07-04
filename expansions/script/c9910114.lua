@@ -10,24 +10,23 @@ function c9910114.initial_effect(c)
 	e1:SetTarget(c9910114.sptg)
 	e1:SetOperation(c9910114.spop)
 	c:RegisterEffect(e1)
-	--pos
+	--activate limit
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_SET_POSITION)
-	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e2:SetCondition(c9910114.poscon)
-	e2:SetTarget(c9910114.postg)
-	e2:SetValue(POS_FACEUP_DEFENSE)
+	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,1)
+	e2:SetCondition(c9910114.condition)
+	e2:SetValue(c9910114.aclimit)
 	c:RegisterEffect(e2)
-	--activate limit
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetTargetRange(1,1)
-	e3:SetCondition(c9910114.poscon)
-	e3:SetValue(c9910114.aclimit)
-	c:RegisterEffect(e3)
+	if not c9910114.global_check then
+		c9910114.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_BATTLED)
+		ge1:SetOperation(c9910114.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
 function c9910114.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
@@ -64,15 +63,22 @@ function c9910114.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end
-function c9910114.poscon(e)
-	local c=e:GetHandler()
-	return c:IsLocation(LOCATION_MZONE) and c:IsDefensePos()
-end
-function c9910114.postg(e,c)
-	return c:IsFaceup()
+function c9910114.condition(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsRace(RACE_MACHINE)
 end
 function c9910114.aclimit(e,re,tp)
-	return re:IsActiveType(TYPE_MONSTER)
-		and (re:GetActivateLocation()==LOCATION_HAND
-		or (re:GetActivateLocation()==LOCATION_MZONE and re:GetHandler():IsAttackPos()))
+	local rc=re:GetHandler()
+	return re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE and rc:IsAttackPos()
+		and rc:GetAttackedCount()==0 and rc:GetFlagEffect(9910114)==0
+end
+function c9910114.atkfilter(c)
+	return c:GetAttackedCount()>0 and c:IsFaceup() and c:GetFlagEffect(9910114)==0
+end
+function c9910114.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9910114.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local tc=g:GetFirst()
+	while tc do
+		tc:RegisterFlagEffect(9910114,RESET_EVENT+RESETS_STANDARD,0,1)
+		tc=g:GetNext()
+	end
 end

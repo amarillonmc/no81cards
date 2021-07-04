@@ -39,13 +39,10 @@ function c30000625.lvtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c30000625.filter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
 end
-function c30000625.filter1(c,att)
-	return c:IsAttribute(att) and c:IsFaceup()
-end
 function c30000625.lvop1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c30000625.filter1,tp,LOCATION_MZONE,0,nil,tc:GetAttribute())
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	if g:GetCount()<1 then return end
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
 		for ac in aux.Next(g) do

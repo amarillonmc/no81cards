@@ -55,10 +55,13 @@ function cm.cfilter5(c)
 	return c:IsType(TYPE_LINK)and c:IsType(TYPE_MONSTER)
 end
 function cm.filter2(c,tp)
-	return c:IsSetCard(0x3344) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable(true) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) 
+	return c:IsSetCard(0x3344,0x6341) and c:IsAbleToHand()
 end
 function cm.filter3(c,e,tp)
 	return c:IsSetCard(0x341) and (c:IsFaceup() or not c:IsLocation(LOCATION_EXTRA))and c:IsLevel(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_GRAVE) or  Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
+end
+function cm.filter4(c)
+	return c:IsSetCard(0x3344) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function cm.pcfilter(c)
 	return  c:IsSetCard(0x341) and c:IsLevelBelow(8) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
@@ -81,15 +84,15 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	op[i]=0 
 	i=i+1
 	end
-	if eg:IsExists(cm.cfilter2,1,nil) and Duel.GetFlagEffect(tp,m+20000)==0 and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_GRAVE,0,1,nil,tp) then 
+	if eg:IsExists(cm.cfilter2,1,nil) and Duel.GetFlagEffect(tp,m+20000)==0  and Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0  then 
 	op[i]=1 
 	i=i+1
 	end
-	if eg:IsExists(cm.cfilter3,1,nil) and Duel.GetFlagEffect(tp,m+30000)==0  and Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
+	if eg:IsExists(cm.cfilter3,1,nil) and Duel.GetFlagEffect(tp,m+30000)==0  and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_GRAVE,0,1,nil,tp)then 
 	op[i]=2 
 	i=i+1
 	end
-	if eg:IsExists(cm.cfilter4,1,nil) and Duel.GetFlagEffect(tp,m+40000)==0  and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,0,1,nil) then 
+	if eg:IsExists(cm.cfilter4,1,nil) and Duel.GetFlagEffect(tp,m+40000)==0  and Duel.IsExistingMatchingCard(cm.filter4,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) then 
 	op[i]=3
 	i=i+1
 	end
@@ -133,9 +136,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					xz=1
 				  end
 				  if op[op1]==1 and xz==0 then 
-				  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-				  local tc3=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_GRAVE,0,1,1,nil,tp)
-					Duel.SSet(tp,tc3)
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+				   local  g=Duel.SelectMatchingCard(tp,cm.filter3,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp)   
+					if g:GetCount()>0 then
+						Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+					end		  
 					Duel.RegisterFlagEffect(tp,m+20000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 					if op1~=i then 
 						for i2=op1,i-1 do
@@ -145,12 +150,10 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					i=i-1
 					xz=1
 				  end
-				  if op[op1]==2 and xz==0 then		  
-				   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				   local  g=Duel.SelectMatchingCard(tp,cm.filter3,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp)		 
-					if g:GetCount()>0 then
-						Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-					end
+				  if op[op1]==2 and xz==0 then	
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+					local tc3=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+					Duel.SendtoHand(tc3,nil,REASON_EFFECT)
 					 Duel.RegisterFlagEffect(tp,m+30000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 					 if op1~=i then 
 						for i2=op1,i-1 do
@@ -161,17 +164,23 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					 xz=1
 				  end
 				  if op[op1]==3 and xz==0 then 
-				   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-				   local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
-					Duel.Destroy(g,REASON_EFFECT)
-					if Duel.GetLocationCount(tp,LOCATION_PZONE)~=0 and Duel.IsExistingMatchingCard(cm.pcfilter,tp,LOCATION_EXTRA,0,1,nil) then 
-						if Duel.SelectYesNo(tp,aux.Stringid(m,7)) then
-							Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-							local g=Duel.SelectMatchingCard(tp,cm.pcfilter,tp,LOCATION_EXTRA,0,1,1,nil)
-							if g:GetCount()>0 then
-								Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
-							end 
-						end
+					if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+					local g=Duel.SelectMatchingCard(tp,cm.filter4,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+					local tc=g:GetFirst()
+					if tc and Duel.SSet(tp,tc)~=0 then
+						local e1=Effect.CreateEffect(e:GetHandler())
+						e1:SetType(EFFECT_TYPE_SINGLE)
+						e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+						e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+						e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+						tc:RegisterEffect(e1)
+						local e2=Effect.CreateEffect(e:GetHandler())
+						e2:SetType(EFFECT_TYPE_SINGLE)
+						e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+						e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+						e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+						tc:RegisterEffect(e2)
 					end
 					  Duel.RegisterFlagEffect(tp,m+40000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 					 if op1~=i then 

@@ -10,14 +10,18 @@ function c9910109.initial_effect(c)
 	e1:SetTarget(c9910109.sptg)
 	e1:SetOperation(c9910109.spop)
 	c:RegisterEffect(e1)
-	--activate limit
+	--active limit
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetCode(EFFECT_CANNOT_TO_HAND)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(0,1)
-	e2:SetValue(c9910109.aclimit)
+	e2:SetCondition(c9910109.condition)
+	e2:SetTarget(c9910109.actlimit)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	c:RegisterEffect(e3)
 end
 function c9910109.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
@@ -54,6 +58,9 @@ function c9910109.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end
-function c9910109.aclimit(e,re,tp)
-	return re:GetActivateLocation()==LOCATION_GRAVE
+function c9910109.condition(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsRace(RACE_MACHINE)
+end
+function c9910109.actlimit(e,c)
+	return c:IsLocation(LOCATION_GRAVE) and c:IsType(TYPE_MONSTER)
 end

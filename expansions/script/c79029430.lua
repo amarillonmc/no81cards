@@ -41,7 +41,7 @@ function c79029430.initial_effect(c)
 	c:RegisterEffect(e8) 
 end
 function c79029430.ovfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_CYBERSE) and c:IsType(TYPE_DUAL)
+	return c:IsFaceup() and c:IsSetCard(0xa900) and c:IsType(TYPE_DUAL)
 end
 function c79029430.cltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) end  
@@ -62,7 +62,7 @@ function c79029430.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c79029430.dixfil(c)
-	return c:IsRace(RACE_CYBERSE) and c:IsType(TYPE_DUAL)
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_DUAL)
 end
 function c79029430.dscon(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=ep and Duel.GetCurrentChain()==0 and e:GetHandler():GetOverlayGroup():IsExists(c79029430.dixfil,1,nil)

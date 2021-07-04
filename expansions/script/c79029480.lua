@@ -30,6 +30,7 @@ function c79029480.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_REMOVE)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,19029480)
 	e3:SetCost(c79029480.spcost)
@@ -101,7 +102,7 @@ end
 function c79029480.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=eg:Filter(c79029480.spfil,nil,e,tp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<sg:GetCount() or (sg:GetCount()>1 and Duel.IsPlayerAffectedByEffect(tp,59822133)) then return end
-	if Duel.SpecialSummon(sg,0,tp,tp,true,false,POS_FACEUP)~=0 then	
+	if Duel.SpecialSummon(sg,0,tp,tp,true,false,POS_FACEUP)~=0 then 
 	if sg:IsExists(Card.IsCode,1,nil,79029359) then 
 	Debug.Message("这里是阿米娅。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029480,2))   

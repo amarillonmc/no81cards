@@ -1,96 +1,117 @@
 --喀兰贸易·近卫干员-银灰
 function c79029072.initial_effect(c)
-   --link summon
+	--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3,99,c79029072.lcheck)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3,6)
-	--immune
+	--SpecialSummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCode(EFFECT_IMMUNE_EFFECT)
-	e1:SetValue(c79029072.efilter)
-	e1:SetCondition(c79029072.imcon)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,79029072)
+	e1:SetCondition(c79029072.spcon)
+	e1:SetTarget(c79029072.sptg)
+	e1:SetOperation(c79029072.spop)
 	c:RegisterEffect(e1)
-	--hand 
+	--immuse
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_HANDES)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetDescription(aux.Stringid(79029072,1))
+	e2:SetCategory(CATEGORY_NEGATE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetCost(c79029072.spcost)
-	e2:SetTarget(c79029072.sptg)
-	e2:SetOperation(c79029072.spop)
+	e2:SetCondition(c79029072.imcon)
+	e2:SetCost(c79029072.imcost)
+	e2:SetTarget(c79029072.imtg)
+	e2:SetOperation(c79029072.imop)
 	c:RegisterEffect(e2)
-	--summon success
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(7200041,0))
-	e4:SetCategory(CATEGORY_COUNTER)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e4:SetTarget(c79029072.addct)
-	e4:SetCondition(c79029072.addcon)
-	e4:SetOperation(c79029072.addc)
-	c:RegisterEffect(e4)
-	--cannot release
-	local e5=e1:Clone()
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCode(EFFECT_UNRELEASABLE_SUM)
-	c:RegisterEffect(e5)
-	local e6=e1:Clone()
-	e6:SetCode(EFFECT_UNRELEASABLE_NONSUM)
-	c:RegisterEffect(e6)	
+	--draw 
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DRAW)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1,19029072)
+	e3:SetTarget(c79029072.drtg)
+	e3:SetOperation(c79029072.drop)
+	c:RegisterEffect(e3)
 end
-function c79029072.addcon(e,tp,eg,ep,ev,re,r,rp)
+function c79029072.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x1906)
+end
+function c79029072.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
-function c79029072.addct(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x1099)
+function c79029072.spfil(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLinkBelow(3) and c:IsSetCard(0x1906)
 end
-function c79029072.addc(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x1099,1)
-	end
+function c79029072.sptg(e,tp,eg,ep,ev,re,r,rp,chk)  
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029072.spfil,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_EXTRA)
 end
-function c79029072.efilter(e,te)
-	return te:GetOwner()~=e:GetOwner()
+function c79029072.spop(e,tp,eg,ep,ev,re,r,rp)  
+	local g=Duel.GetMatchingGroup(c79029072.spfil,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,nil,e,tp)
+	if g:GetCount()<=0 then return end
+	Debug.Message("客随主便，按你的想法安排就好。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029072,0)) 
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sg=g:Select(tp,1,1,nil)
+	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 end
 function c79029072.imcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+end
+function c79029072.ctfil(c)
+	return c:IsSetCard(0x1906) and c:IsAbleToGraveAsCost() and c:IsType(TYPE_MONSTER)
+end
+function c79029072.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029072.ctfil,tp,LOCATION_ONFIELD,0,1,nil) end
+	local g=Duel.SelectMatchingCard(tp,c79029072.ctfil,tp,LOCATION_ONFIELD,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
+end
+function c79029072.imtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+end
+function c79029072.imop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return  c:GetCounter(0x1099)>0
+	Debug.Message("战场之上，善良是无法拯救他人的。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029072,1)) 
+	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
+	local tc=g:GetFirst()
+	while tc do
+	--
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetValue(c79029072.efilter)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+	e1:SetOwnerPlayer(tp)
+	tc:RegisterEffect(e1)   
+	tc=g:GetNext()
+	end
 end
-function c79029072.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x1099,1,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,0x1099,1,REASON_COST)
+function c79029072.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
-function c79029072.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
-	e:SetLabel(Duel.AnnounceType(tp))
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,e:GetHandler(),1,0,0)
+function c79029072.lxfil(c)
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_LINK)
 end
-function c79029072.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT) 
-	Duel.SelectTarget(tp,nil,tp,0,LOCATION_HAND,1,1,nil)
-	local tc=Duel.GetFirstTarget()
-	Duel.ConfirmCards(1-tp,tc)
-	local opt=e:GetLabel()
-   if (opt==0 and tc:IsType(TYPE_MONSTER)) or (opt==1 and tc:IsType(TYPE_SPELL)) or (opt==2 and tc:IsType(TYPE_TRAP)) then
-		if not c:IsRelateToEffect(e) then return end
-	 Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
-	 c:AddCounter(0x1099,1)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(1000)
-		c:RegisterEffect(e1)
+function c79029072.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=e:GetHandler():GetLinkedGroup()
+	if chk==0 then return g:IsExists(c79029072.lxfil,1,nil) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,g:GetCount())
 end
+function c79029072.drop(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetHandler():GetLinkedGroup()
+	if g:GetCount()<=0 then return end
+	Debug.Message("有什么想法？")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029072,2)) 
+	p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	Duel.Draw(p,g:GetCount(),REASON_EFFECT)
 end
+
+
 
 
 

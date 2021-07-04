@@ -73,7 +73,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) 
 end
 function cm.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and (c:IsSetCard(0x341)or c:IsAttribute(ATTRIBUTE_WATER)) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and (c:IsSetCard(0x341)or c:IsAttribute(ATTRIBUTE_WATER))  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and cm.spfilter(chkc,e,tp) end

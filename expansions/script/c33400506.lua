@@ -32,28 +32,25 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_DESTROYED)
+	e2:SetCountLimit(1,m+10000)
 	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.tgtg)
 	e2:SetOperation(cm.tgop)
 	c:RegisterEffect(e2)
 end
-function cm.desfilter(c)
-	return c:GetCounter(0x1015)~=0
-end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.SelectTarget(tp,cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local g=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)
-	if g:GetCount()==0 then return end
-	for i=1,2 do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		tc:AddCounter(0x1015,1)
-	end
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local gc=g:GetFirst()
+	while gc do
+		gc:AddCounter(0x1015,1)
+		gc=g:GetNext()
+	end 
 	local tc1=Duel.GetFirstTarget()
 	local g1=Group.CreateGroup()
 	g1:AddCard(tc1)
@@ -94,13 +91,12 @@ function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)
-	if g:GetCount()==0 then return end
-	for i=1,2 do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		tc:AddCounter(0x1015,1)
-	end
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local gc=g:GetFirst()
+	while gc do
+		gc:AddCounter(0x1015,1)
+		gc=g:GetNext()
+	end 
 	if Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_EXTRA,0,1,nil) then 
 	   if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then 
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

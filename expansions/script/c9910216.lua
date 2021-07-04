@@ -1,85 +1,106 @@
---天空漫步者-追击
+--天空漫步者 保坂实里
 function c9910216.initial_effect(c)
-	--Activate
+	--spsummon link
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_RECOVER+CATEGORY_DRAW)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMING_END_PHASE)
-	e1:SetCondition(c9910216.condition)
-	e1:SetTarget(c9910216.target)
-	e1:SetOperation(c9910216.activate)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e1:SetTarget(c9910216.sptg)
+	e1:SetOperation(c9910216.spop)
 	c:RegisterEffect(e1)
-	if not c9910216.global_check then
-		c9910216.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_DESTROYED)
-		ge1:SetOperation(c9910216.checkop)
-		Duel.RegisterEffect(ge1,0)
-	end
+	--summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SUMMON)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
+	e2:SetCountLimit(1,9910216)
+	e2:SetCondition(c9910216.sumcon)
+	e2:SetCost(c9910216.sumcost)
+	e2:SetTarget(c9910216.sumtg)
+	e2:SetOperation(c9910216.sumop)
+	c:RegisterEffect(e2)
 end
-function c9910216.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	local p1=false
-	local p2=false
-	while tc do
-		if tc:IsPreviousLocation(LOCATION_MZONE) then
-			if tc:GetPreviousControler()~=0 then p1=true else p2=true end
+function c9910216.get_zone(c,seq)
+	local zone=0
+	if seq<4 and c:IsLinkMarker(LINK_MARKER_LEFT) then zone=bit.replace(zone,0x1,seq+1) end
+	if seq>0 and seq<5 and c:IsLinkMarker(LINK_MARKER_RIGHT) then zone=bit.replace(zone,0x1,seq-1) end
+	return zone
+end
+function c9910216.spfilter(c,e,tp,seq)
+	local zone=c9910216.get_zone(c,seq)
+	return zone~=0 and c:IsSetCard(0x955) and c:IsType(TYPE_LINK)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+end
+function c9910216.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local seq=e:GetHandler():GetSequence()
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910216.spfilter(chkc,e,tp,seq) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c9910216.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,seq) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,c9910216.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,seq)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+end
+function c9910216.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if c:IsRelateToEffect(e) and c:IsControler(tp) and tc:IsRelateToEffect(e) then
+		local zone=c9910216.get_zone(tc,c:GetSequence())
+		if zone~=0 and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP,zone) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_SET_ATTACK)
+			e3:SetValue(0)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e3)
 		end
-		tc=eg:GetNext()
+		Duel.SpecialSummonComplete()
 	end
-	if p1 then Duel.RegisterFlagEffect(0,9910216,RESET_PHASE+PHASE_END,0,1) end
-	if p2 then Duel.RegisterFlagEffect(1,9910216,RESET_PHASE+PHASE_END,0,1) end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c9910216.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
-function c9910216.cfilter(c)
-	return c:GetSequence()<5 and (c:IsFacedown() or not c:IsRace(RACE_PSYCHO))
+function c9910216.splimit(e,c)
+	return not c:IsSetCard(0x955)
 end
-function c9910216.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,9910216)~=0
-		and not Duel.IsExistingMatchingCard(c9910216.cfilter,tp,LOCATION_MZONE,0,1,nil)
+function c9910216.sumcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	return g and g:IsContains(c)
 end
-function c9910216.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
+function c9910216.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
-function c9910216.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
-	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,nil)
-	local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
-	local sg=Group.CreateGroup()
-	if g1:GetCount()>0 and ((g2:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(9910216,3))) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg1=g1:Select(tp,1,1,nil)
-		Duel.HintSelection(sg1)
-		sg:Merge(sg1)
-	end
-	if g2:GetCount()>0 and ((sg:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(9910216,4))) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg2=g2:Select(tp,1,1,nil)
-		Duel.HintSelection(sg2)
-		sg:Merge(sg2)
-	end
-	if g3:GetCount()>0 and (sg:GetCount()==0 or Duel.SelectYesNo(tp,aux.Stringid(9910216,5))) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg3=g3:RandomSelect(tp,1)
-		sg:Merge(sg3)
-	end
-	if Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)>0 and Duel.SelectYesNo(1-tp,aux.Stringid(9910216,0)) then
-		Duel.BreakEffect()
-		if not Duel.IsPlayerCanDraw(1-tp,1) then Duel.Recover(1-tp,3000,REASON_EFFECT) return end
-		if Duel.GetCurrentChain()>2 then
-			if Duel.SelectOption(tp,aux.Stringid(9910216,1),aux.Stringid(9910216,2))==0 then
-				Duel.Recover(1-tp,3000,REASON_EFFECT)
-			else
-				Duel.Draw(1-tp,1,REASON_EFFECT)
-			end
-		else
-			if Duel.SelectOption(1-tp,aux.Stringid(9910216,1),aux.Stringid(9910216,2))==0 then
-				Duel.Recover(1-tp,3000,REASON_EFFECT)
-			else
-				Duel.Draw(1-tp,1,REASON_EFFECT)
-			end
-		end
+function c9910216.sumfilter(c)
+	return c:IsSetCard(0x955) and c:IsSummonable(true,nil)
+end
+function c9910216.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910216.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
+end
+function c9910216.sumop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	local g=Duel.SelectMatchingCard(tp,c9910216.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.Summon(tp,tc,true,nil)
 	end
 end

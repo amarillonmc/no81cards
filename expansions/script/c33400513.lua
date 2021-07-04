@@ -19,28 +19,26 @@ function cm.initial_effect(c)
 	 --counter
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_COUNTER)
+	e1:SetCategory(CATEGORY_RECOVER)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCost(cm.cost)
-	e1:SetCondition(cm.ctcon)
-	e1:SetTarget(cm.cttg)
 	e1:SetOperation(cm.ctop)
 	c:RegisterEffect(e1)
-	 --
+	 --negate
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetCountLimit(1,m)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCost(cm.cost)
-	e2:SetCountLimit(1)
-	e2:SetTarget(cm.target)
-	e2:SetOperation(cm.operation)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetCost(cm.cost2)
+	e2:SetCondition(cm.discon)
+	e2:SetTarget(cm.distg)
+	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2)
 --pendulum
 	local e6=Effect.CreateEffect(c)
@@ -82,44 +80,37 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
 	end
 end
-function cm.ctcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) 
-end
-function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
-		and Duel.IsExistingMatchingCard(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,0x1015,1) end
-end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetMatchingGroupCount(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)
-	if ct==0 then return end
-	local g=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)
-	if g:GetCount()==0 then return end
-	for i=1,4 do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		tc:AddCounter(0x1015,1)
-	end  
+  local d=Duel.GetCounter(tp,LOCATION_ONFIELD,LOCATION_ONFIELD,0x1015)
+  Duel.Recover(tp,d*400,REASON_EFFECT)
 end
 
-function cm.filter(c)
-	return c:GetCounter(0x1015)~=0
+function cm.discon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_ONFIELD) and cm.filter(chkc) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(cm.filter,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e)  and tc:GetAttack()<tc:GetBaseAttack() and Duel.Destroy(tc,REASON_EFFECT)~=0 then
-		if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then 
-		Duel.Draw(tp,1,REASON_EFFECT)
-		end 
+function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ct=e:GetLabel()
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x1015,3,REASON_COST) and Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.RemoveCounter(tp,1,1,0x1015,3,REASON_COST)
 end
+function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+end
+function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateActivation(ev) and Duel.IsExistingMatchingCard(cm.ckfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	  local tg=Duel.SelectMatchingCard(tp,cm.ckfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	   Duel.Destroy(tg,REASON_EFFECT)
+	end 
+end
+function cm.ckfilter1(c)
+	return c:GetCounter(0x1015)~=0 
+end
+
 
 function cm.pencon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -48,9 +48,14 @@ function c79029360.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return Duel.GetTurnPlayer()~=tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
 end
+function c79029360.ctfil(c)
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+end
 function c79029360.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(c79029360.ctfil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	local g=Duel.SelectMatchingCard(tp,c79029360.ctfil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	g:AddCard(e:GetHandler())
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c79029360.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and c79029360.filter(chkc) end

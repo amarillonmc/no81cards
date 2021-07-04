@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 --Negate
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
-	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -37,6 +37,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_DESTROYED)
+	e4:SetCountLimit(1,m)
 	e4:SetCost(cm.cost)
 	e4:SetTarget(cm.sptg)
 	e4:SetOperation(cm.spop)
@@ -57,7 +58,7 @@ function cm.ckfilter(c)
 	return c:IsSetCard(0x3344) and c:IsFaceup()
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return   not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)  and ep~=tp and  Duel.IsChainNegatable(ev) and  re:GetHandler():GetCounter(0x1015)~=0
+	return   not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)  and  Duel.IsChainNegatable(ev) 
 end
 function cm.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.ckfilter1,tp,LOCATION_ONFIELD,0,1,nil) and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)) end
@@ -73,17 +74,17 @@ function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	end
 end
+function cm.thfilter(c)
+	return c:IsAbleToHand() and c:GetCounter(0x1015)~=0
+end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp) 
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re)then
-		local ct=Duel.GetMatchingGroupCount(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)  
+		local ct=Duel.GetMatchingGroupCount(cm.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)  
 		Duel.Destroy(eg,REASON_EFFECT)
-		if ct~=0  then 
-		local g=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1015,1)
-			for i=1,3 do
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-			local tc=g:Select(tp,1,1,nil):GetFirst()
-			tc:AddCounter(0x1015,1)
-			end  
+		if ct~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then 
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
 		end
 	end
 end

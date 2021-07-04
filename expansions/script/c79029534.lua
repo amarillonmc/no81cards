@@ -56,8 +56,7 @@ function c79029534.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetTargetRange(0,LOCATION_MZONE)
 		e1:SetTarget(c79029534.distg)
 		e1:SetLabel(flag)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 	end
 end

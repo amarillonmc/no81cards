@@ -86,7 +86,7 @@ function c79029429.chain_operation(e,te,tp,tc,mat,sumtype)
 	Duel.SpecialSummon(tc,sumtype,tp,tp,false,false,POS_FACEUP)
 end
 function c79029429.succon(e,tp,eg,ep,ev,re,r,rp) 
-	return e:GetHandler():GetMaterial():FilterCount(Card.IsSetCard,nil,0xa900)==e:GetHandler():GetMaterialCount()
+	return e:GetHandler():GetMaterial():FilterCount(Card.IsSetCard,nil,0xa900)==e:GetHandler():GetMaterialCount() and e:GetHandler():GetMaterialCount()>0
 end
 function c79029429.sucop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

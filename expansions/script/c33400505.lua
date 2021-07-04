@@ -18,7 +18,8 @@ function cm.initial_effect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_GRAVE)
+	e1:SetRange(LOCATION_GRAVE+LOCATION_HAND)
+	e1:SetCountLimit(1,m)
 	e1:SetCost(cm.spcost)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -54,11 +55,11 @@ function cm.ckfilter(c)
 	return c:IsSetCard(0x3344) and c:IsFaceup()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return  Duel.IsCanRemoveCounter(tp,1,1,0x1015,3,REASON_COST) and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil))  end
+	if chk==0 then return  Duel.IsCanRemoveCounter(tp,1,1,0x1015,4,REASON_COST) and (Duel.CheckLPCost(tp,1000) or Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil))  end
 	if not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_ONFIELD,0,1,nil)then Duel.PayLPCost(tp,1000)
 	end 
 	Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,1))
-	Duel.RemoveCounter(tp,1,1,0x1015,3,REASON_COST)
+	Duel.RemoveCounter(tp,1,1,0x1015,4,REASON_COST)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
