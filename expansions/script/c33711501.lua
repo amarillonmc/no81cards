@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--Remove
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -23,13 +24,14 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1)
-	--e3:SetTarget(cm.condition)
+	e3:SetTarget(cm.condition)
 	e3:SetOperation(cm.operation2)
 	c:RegisterEffect(e3)
 	--SpecialSummon
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
 	e4:SetCode(EVENT_LEAVE_FIELD)
+	e4:SetTarget(cm.condition)
 	e4:SetOperation(cm.spop)
 	c:RegisterEffect(e4)
 end
@@ -58,9 +60,18 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		end 
 	end
 end
+function cm.get(c)
+	return c:GetFlagEffect(m)>0
+end
+function cm.condition(e)
+	return Duel.GetMatchingGroupCount(cm.get,e:GetHandlerPlayer(),LOCATION_REMOVED,LOCATION_REMOVED,nil)>0
+end
+function cm.get1(c,e,tp)
+	return c:GetFlagEffect(m)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local num=Duel.GetMatchingGroupCount(Card.IsHasEffect,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,m)
+	local num=Duel.GetMatchingGroupCount(cm.get,e:GetHandlerPlayer(),LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	if num>0 and Duel.SelectYesNo(e:GetHandlerPlayer(),aux.Stringid(m,1)) then
 		Duel.Destroy(c,REASON_EFFECT)
 		Duel.Recover(tp,num*1500,REASON_EFFECT)  
@@ -68,8 +79,8 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local sg=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,m)
-	if Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0 and Duel.SelectYesNo(e:GetHandlerPlayer(),aux.Stringid(m,2)) then
+	local sg=Duel.GetMatchingGroup(cm.get1,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,e,tp)
+	if Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0 and #sg>0 and Duel.SelectYesNo(e:GetHandlerPlayer(),aux.Stringid(m,2)) then
 	for tc in aux.Next(sg) do
 		if Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)==0 then Duel.SendtoGrave(tc,REASON_RULE) 
 		elseif tc:IsCanBeSpecialSummoned(e,0,e:GetHandler(),false,false) and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then

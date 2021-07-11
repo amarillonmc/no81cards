@@ -85,19 +85,19 @@ function cm.cfilter(c)
 end
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
 local g=Duel.GetMatchingGroup(cm.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_GRAVE,0,nil) 
-	return g:GetCount()>0
+	return g:GetClassCount(Card.GetCode)>0
 end
 function cm.atkfilter(c)
 	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0x341,0x340) and (c:IsType(TYPE_FIELD) or c:IsType(TYPE_CONTINUOUS))
 end
 function cm.val(e,c)
 	local g=Duel.GetMatchingGroup(cm.atkfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil) 
-	return g:GetCount()*500
+	return g:GetClassCount(Card.GetCode)*500
 end
 
 function cm.con2(e)
    local g=Duel.GetMatchingGroup(cm.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_GRAVE,0,nil) 
-	return g:GetCount()>1
+	return g:GetClassCount(Card.GetCode)>1
 end
 function cm.tglimit(e,c)
 	return c:IsSetCard(0x341)
@@ -105,7 +105,7 @@ end
 
 function cm.con3(e)
    local g=Duel.GetMatchingGroup(cm.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_GRAVE,0,nil) 
-	return g:GetCount()>2
+	return g:GetClassCount(Card.GetCode)>2
 end
 function cm.thfilter(c)
 	return c:IsSetCard(0x341)  and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
@@ -135,7 +135,7 @@ end
 
 function cm.con4(e)
    local g=Duel.GetMatchingGroup(cm.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_GRAVE,0,nil) 
-	return g:GetCount()>3
+	return g:GetClassCount(Card.GetCode)>3
 end
 function cm.thfilter2(c)
 	return c:IsSetCard(0x340,0x341)  and c:IsType(TYPE_CONTINUOUS)  and not c:IsForbidden()
@@ -164,7 +164,7 @@ end
 
 function cm.con5(e)
    local g=Duel.GetMatchingGroup(cm.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_GRAVE,0,nil) 
-	return g:GetCount()>4
+	return g:GetClassCount(Card.GetCode)>4
 end
 function cm.target(e,c)
 	return c:IsSetCard(0x341,0x340)
@@ -177,7 +177,7 @@ end
 
 function cm.con6(e)
    local g=Duel.GetMatchingGroup(cm.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_GRAVE,0,nil) 
-	return g:GetCount()>5
+	return g:GetClassCount(Card.GetCode)>5
 end
 function cm.tdfilter(c)
 	return c:IsSetCard(0x340,0x341)  and c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)  and c:IsAbleToRemove()

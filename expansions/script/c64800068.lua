@@ -21,7 +21,6 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_TO_GRAVE)
 	e5:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e5:SetCountLimit(1,m)
-	e5:SetCondition(cm.spcon1)
 	e5:SetTarget(cm.sptg1)
 	e5:SetOperation(cm.spop1)
 	c:RegisterEffect(e5)
@@ -51,9 +50,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 ----------
-function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetPreviousLocation()==LOCATION_MZONE
-end
 function cm.spfilter1(c,e,tp)
 	return c:IsLevel(7,8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsRace(RACE_DRAGON) and not c:IsCode(m)
 end

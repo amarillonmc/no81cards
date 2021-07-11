@@ -3,7 +3,7 @@ local m=14010076
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,cm.xyzfilter,12,2,cm.ovfilter,aux.Stringid(m,0),99,cm.xyzop)
+	aux.AddXyzProcedure(c,nil,12,2,cm.ovfilter,aux.Stringid(m,0),2,cm.xyzop)
 	c:EnableReviveLimit()
 	--destroy
 	local e1=Effect.CreateEffect(c)
@@ -25,7 +25,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.ovfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsType(TYPE_XYZ) and c:GetRank()==10
+	return c:IsFaceup() and c:GetRank()==10 and c:IsRace(RACE_MACHINE)
+end
+function cm.xyzop(e,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

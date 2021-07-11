@@ -8,11 +8,12 @@ function c79029803.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(c79029803.spcon)
 	c:RegisterEffect(e1)
-	--t g
+	--destroy
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1,79029803)
 	e2:SetCondition(c79029803.tgcon)
 	e2:SetTarget(c79029803.detg)
@@ -39,23 +40,23 @@ function c79029803.spcon(e,c)
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and
 	  not  Duel.IsExistingMatchingCard(c79029803.xxfilter,c:GetControler(),LOCATION_MZONE,0,1,nil) and not Duel.IsExistingMatchingCard(Card.IsFacedown,c:GetControler(),LOCATION_MZONE,0,1,nil) and Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)>0
 end
-function c79029803.defilter(c)
-	return c:IsLocation(LOCATION_SZONE) or (c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsFaceup())
-end
 function c79029803.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
-function c79029803.detg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029803.defilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,0,0)
+function c79029803.desfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP)
+end
+function c79029803.detg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and c79029803.desfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c79029803.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,c79029803.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function c79029803.deop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local sg=Duel.SelectMatchingCard(tp,c79029803.defilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
-	if sg:GetCount()>0 then
-		Duel.HintSelection(sg)
-		Duel.Destroy(sg,REASON_EFFECT)
-	end
+	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local sg=tg:Filter(Card.IsRelateToEffect,nil,e)
+	Duel.Destroy(sg,REASON_EFFECT)
 end
 function c79029803.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED+LOCATION_GRAVE,LOCATION_REMOVED+LOCATION_GRAVE,1,nil) end

@@ -2,7 +2,16 @@ local m=31400022
 local cm=_G["c"..m]
 cm.name="娱乐伙伴 异色眼时空之灵摆魔术师"
 function cm.initial_effect(c)
-  aux.EnablePendulumAttribute(c)  
+	--pendulum summon
+	aux.EnablePendulumAttribute(c,false)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(1160)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCost(cm.reg)
+	c:RegisterEffect(e1)
   local e2=Effect.CreateEffect(c)
   e2:SetType(EFFECT_TYPE_FIELD)
   e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
@@ -26,6 +35,10 @@ function cm.initial_effect(c)
   e3:SetOperation(cm.desop)
   c:RegisterEffect(e3)
 end
+function cm.reg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	e:GetHandler():RegisterFlagEffect(m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+end
 function cm.evalue(e,re,rp)
   return re:IsActiveType(TYPE_TRAP) and rp==1-e:GetHandlerPlayer()
 end
@@ -33,7 +46,7 @@ function cm.desfilter(c)
   return c:IsFaceup() and c:IsSetCard(0x98) and c:IsType(TYPE_PENDULUM)
 end
 function cm.descon(e)
-	return Duel.GetTurnCount()~=e:GetHandler():GetTurnID()
+	return e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
   if chkc then return false end
