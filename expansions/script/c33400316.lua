@@ -35,6 +35,7 @@ function cm.initial_effect(c)
 	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e4:SetTargetRange(0,1)
 	e4:SetRange(LOCATION_MZONE)
+	e4:SetCondition(cm.actcon)
 	e4:SetValue(1)
 	c:RegisterEffect(e4)
  --material check
@@ -94,6 +95,11 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e2)
 		end
 	end
+end
+
+function cm.actcon(e)
+	local ph=Duel.GetCurrentPhase()
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
 
 function cm.matcon(e,tp,eg,ep,ev,re,r,rp)
