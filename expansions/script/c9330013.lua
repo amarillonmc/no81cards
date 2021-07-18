@@ -18,6 +18,7 @@ function c9330013.initial_effect(c)
 	c:RegisterEffect(e2)
 	--set/to hand
 	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)

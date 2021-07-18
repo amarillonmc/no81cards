@@ -4,6 +4,7 @@ function c9910855.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,9910855)
 	e1:SetTarget(c9910855.target)
 	e1:SetOperation(c9910855.activate)
 	c:RegisterEffect(e1)
@@ -14,6 +15,7 @@ function c9910855.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetHintTiming(0,TIMING_BATTLE_START)
+	e2:SetCountLimit(1,9910859)
 	e2:SetCondition(c9910855.sumcon)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c9910855.sumtg)
@@ -36,7 +38,7 @@ function c9910855.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return b1 or b2 end
 	local op=0
 	if b1 and b2 then
-		if Duel.GetTurnPlayer()==tp then
+		if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_MAIN1 then
 			op=Duel.SelectOption(tp,aux.Stringid(9910855,0),aux.Stringid(9910855,1),aux.Stringid(9910855,2))
 		else
 			op=Duel.SelectOption(tp,aux.Stringid(9910855,0),aux.Stringid(9910855,1))
@@ -55,7 +57,7 @@ function c9910855.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		Duel.SetTargetCard(g1)
 		g1:GetFirst():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910855,3))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g2=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,2,nil)
+		local g2=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
 		Duel.HintSelection(g2)
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g2,g2:GetCount(),0,0)
 		Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
@@ -83,6 +85,13 @@ function c9910855.activate(e,tp,eg,ep,ev,re,r,rp)
 		if tc and Duel.SendtoGrave(tc,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_GRAVE) then
 			Duel.Draw(tp,2,REASON_EFFECT)
 		end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetTargetRange(1,0)
+		Duel.RegisterEffect(e1,tp)
 	end
 	if op~=0 then
 		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
@@ -92,7 +101,7 @@ function c9910855.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Summon(tp,tc,true,nil)
 		end
 	end
-	if op==2 and Duel.GetTurnPlayer()==tp then
+	if op==2 and Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_MAIN1 then
 		Duel.BreakEffect()
 		Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
 		Duel.SkipPhase(tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)

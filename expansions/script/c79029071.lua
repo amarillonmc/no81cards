@@ -83,12 +83,11 @@ function c79029071.eftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c79029071.efop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
-	if g:GetCount()>0 then
-		Duel.ConfirmCards(tp,g)
-	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,79029072) then
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOGRAVE)
-		local sg=g:Select(tp,1,1,nil)
-	   Duel.SendtoGrave(sg,REASON_EFFECT)
-end
-end
+	if g:GetCount()<=0 then return end
+	Duel.ConfirmCards(tp,g)
+	if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x1906) and Duel.SelectYesNo(tp,aux.Stringid(79029071,0)) then
+	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOGRAVE)
+	local sg=g:Select(tp,1,1,nil)
+	Duel.SendtoGrave(sg,REASON_EFFECT)
+	end
 end

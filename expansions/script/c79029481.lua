@@ -51,7 +51,7 @@ function c79029481.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
 function c79029481.ctfil(c)
-	return c:IsAbleToRemoveAsCost() and c:IsSetCard(0xa900) and c:IsType(TYPE_MONSTER)
+	return c:IsAbleToRemoveAsCost() and c:IsSetCard(0xa904) and c:IsType(TYPE_MONSTER)
 end
 function c79029481.stcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029481.ctfil,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) end

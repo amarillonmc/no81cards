@@ -39,6 +39,7 @@ end
 function c79029102.activate(e,tp,eg,ep,ev,re,r,rp)
 	local val=Duel.Recover(tp,math.ceil(ev),REASON_EFFECT)  
 	local x=math.floor(val/800)
+	Duel.BreakEffect()
 	Duel.Draw(tp,x,REASON_EFFECT)
 end
 function c79029102.spcon(e,tp,eg,ep,ev,re,r,rp)

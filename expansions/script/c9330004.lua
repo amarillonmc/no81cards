@@ -21,7 +21,7 @@ function c9330004.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EFFECT_CANNOT_CHANGE_CONTROL)
 	c:RegisterEffect(e2)
-	--cannot be target
+	--indes
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
@@ -29,7 +29,7 @@ function c9330004.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_ONFIELD,0)
 	e3:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_SPELL+TYPE_TRAP))
-	e3:SetValue(aux.indoval)
+	e3:SetValue(1)
 	c:RegisterEffect(e3)
 	--Negate
 	local e4=Effect.CreateEffect(c)

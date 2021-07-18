@@ -79,7 +79,7 @@ function c79029113.operation1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029113,1))
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		local a=eg:GetCount()   
+		local a=eg:GetSum(Card.GetLevel)   
 	 c:AddCounter(0x1099,a)
 	end
 end

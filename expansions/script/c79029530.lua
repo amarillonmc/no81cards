@@ -1,5 +1,7 @@
 --SNo.39 希望皇 霍普·桃源 
 function c79029530.initial_effect(c)
+--SNo.39 希望皇 霍普·桃源 
+function c79029530.initial_effect(c)
 	aux.AddXyzProcedure(c,nil,7,4,nil,nil,99)
 	c:EnableReviveLimit() 
 	--xyz only

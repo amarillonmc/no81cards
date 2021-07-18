@@ -40,7 +40,7 @@ function c9330015.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)
 end
 function c9330015.filter1(c,e,tp)
-	return c:IsCode(9330001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(9330001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
 function c9330015.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -62,6 +62,12 @@ function c9330015.activate(e,tp,eg,ep,ev,re,r,rp)
 	e0:SetTargetRange(LOCATION_MZONE,0)
 	e0:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e0,tp)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 	if ct>=1 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
@@ -72,30 +78,7 @@ function c9330015.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 	end
-	if ct>=4 then
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e2:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e2:SetTargetRange(0,1)
-		e2:SetValue(c9330015.aclimit)
-		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
-	end
 	if ct>=5 then
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_FIELD)
-		e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-		e3:SetTargetRange(LOCATION_ONFIELD,0)
-		e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xaf93))
-		e3:SetValue(1)
-		e3:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e3,tp)
-		local e4=e3:Clone()
-		e4:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		Duel.RegisterEffect(e4,tp)
-	end
-	if ct>=6 then
 		local e5=Effect.CreateEffect(c)
 		e5:SetType(EFFECT_TYPE_FIELD)
 		e5:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
@@ -117,12 +100,8 @@ function c9330015.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c9330015.filter1,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp)
 	if ct>=3 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 	end
-end
-function c9330015.aclimit(e,re,tp)
-	local c=re:GetHandler()
-	return re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) 
 end
 function c9330015.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

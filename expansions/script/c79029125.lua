@@ -70,12 +70,6 @@ function c79029125.initial_effect(c)
 	e5:SetOperation(c79029125.hdop)
 	c:RegisterEffect(e5)
 end
-function c79029125.dircon(e)
-	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_HAND,0)==0
-end
-function c79029125.actcon(e)
-	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_HAND,0)==0 and Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
-end
 function c79029125.cfilter2(c,e,tp,tc)
 	return c:IsFaceup() and c:IsType(TYPE_TUNER) 
 end

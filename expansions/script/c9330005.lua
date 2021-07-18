@@ -1,11 +1,20 @@
 --陷阵营都督
 function c9330005.initial_effect(c)
 	aux.AddCodeList(c,9330001)
+	aux.AddMaterialCodeList(c,9330001)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,9330001,aux.FilterBoolFunction(Card.IsFusionType,TYPE_EFFECT),1,true,true)
+	aux.AddFusionProcCodeFun(c,9330001,c9330005.mfilter,1,true,true)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,0,Duel.SendtoGrave,REASON_COST+REASON_MATERIAL)
 	--change name
 	aux.EnableChangeCode(c,9330001,LOCATION_MZONE+LOCATION_GRAVE)
+	--spsummon condition
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c9330005.splimit)
+	c:RegisterEffect(e0)
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -41,6 +50,12 @@ function c9330005.initial_effect(c)
 	e7:SetCondition(c9330005.effcon)
 	e7:SetOperation(c9330005.effop)
 	c:RegisterEffect(e7)
+end
+function c9330005.mfilter(c)
+	return c:IsStatus(STATUS_SPSUMMON_TURN) and c:IsLocation(LOCATION_MZONE)
+end
+function c9330005.splimit(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or aux.fuslimit(e,se,sp,st)
 end
 function c9330005.efilter(e,te)
 	return te:IsActiveType(TYPE_TRAP) and not te:GetOwner():IsSetCard(0xaf93)

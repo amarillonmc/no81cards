@@ -1,4 +1,4 @@
---璃奈板
+--虹彩偶像的绘板
 function c9910371.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -29,8 +29,12 @@ function c9910371.initial_effect(c)
 	e3:SetOperation(c9910371.thop)
 	c:RegisterEffect(e3)
 end
+function c9910371.cfilter0(c)
+	return c:IsFaceup() and c:IsSetCard(0x5951)
+end
 function c9910371.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
+		and Duel.IsExistingMatchingCard(c9910371.cfilter0,tp,LOCATION_MZONE,0,2,nil)
 end
 function c9910371.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

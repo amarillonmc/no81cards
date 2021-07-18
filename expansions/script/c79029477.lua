@@ -82,7 +82,7 @@ function c79029477.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029477.operation(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("咔嚓咔嚓。")
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029477,4))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029477,5))
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	Duel.Damage(p,e:GetHandler():GetAttack(),REASON_EFFECT)
 end

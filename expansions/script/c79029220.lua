@@ -42,7 +42,7 @@ function c79029220.fselect(g)
 	return not g:IsExists(c79029220.fcheck,1,nil,g)
 end
 function c79029220.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c79029220.sfil,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED,0,2,2,nil,e,tp)
+	local g=Duel.GetMatchingGroup(c79029220.sfil,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED,0,2,nil,e,tp)
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>=2 and g:CheckSubGroup(c79029220.fselect,2,2) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,0,2,tp,0)
 end

@@ -36,18 +36,18 @@ function c9910850.imop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and c:IsFaceup() then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetValue(c9910850.efilter)
+		e1:SetCode(EFFECT_CANNOT_REMOVE)
 		if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_BATTLE_START then
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE_START+RESET_SELF_TURN,2)
 		else
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE_START+RESET_SELF_TURN)
 		end
 		c:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		e2:SetValue(1)
+		c:RegisterEffect(e2)
 	end
-end
-function c9910850.efilter(e,re)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function c9910850.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLevelBelow(7) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)

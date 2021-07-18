@@ -1,6 +1,7 @@
 --陷阵营统帅
 function c9330003.initial_effect(c)
 	aux.AddCodeList(c,9330001)
+	aux.AddMaterialCodeList(c,9330001)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsCode,9330001),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()

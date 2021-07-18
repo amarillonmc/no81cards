@@ -126,8 +126,8 @@ function c79029159.sdop(e,tp,eg,ep,ev,re,r,rp)
 	 local x=tc:GetAttack()
 	 Duel.SendtoGrave(tc,REASON_EFFECT)
 	 Duel.Recover(tp,x,REASON_EFFECT)
-	Debug.Message("就把你连武器一起切碎！")
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029159,1))
+	 Debug.Message("就把你连武器一起切碎！")
+	 Duel.Hint(HINT_SOUND,0,aux.Stringid(79029159,1))
 end
 
 

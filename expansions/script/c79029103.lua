@@ -45,13 +45,13 @@ function c79029103.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	sg:GetFirst():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c79029103.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	 if chk==0 then return true end
+	if chk==0 then return true end
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
 end
 function c79029103.activate(e,tp,eg,ep,ev,re,r,rp)
-	 local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
 end
 function c79029103.atkcon(e)
@@ -70,12 +70,15 @@ function c79029103.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.SelectTarget(tp,c79029103.sfilter,tp,LOCATION_MZONE,0,1,1,nil)
 end
 function c79029103.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	local e6=Effect.CreateEffect(e:GetHandler())
-	e6:SetType(EFFECT_TYPE_SINGLE)
-	e6:SetCode(EFFECT_DIRECT_ATTACK)
-	e6:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	tc:RegisterEffect(e6)
+	if tc:IsRelateToEffect(e) then 
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_DIRECT_ATTACK)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	tc:RegisterEffect(e1)
+	end
 end
 
 

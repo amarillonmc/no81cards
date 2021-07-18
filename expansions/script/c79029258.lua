@@ -88,13 +88,15 @@ function c79029258.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029258,1))
 end
 function c79029258.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-  if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c79029258.spop(e,tp,eg,ep,ev,re,r,rp,c)
-   local c=e:GetHandler()
-   Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 
 

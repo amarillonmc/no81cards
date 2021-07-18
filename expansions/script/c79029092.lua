@@ -1,7 +1,7 @@
 --卡西米尔·狙击干员-白金
 function c79029092.initial_effect(c)
 	 --synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xa900),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()  
 	--atk change
 	local e1=Effect.CreateEffect(c)
@@ -15,7 +15,8 @@ function c79029092.initial_effect(c)
 	c:RegisterEffect(e1)
 	--sort decktop
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,09029092)
 	e2:SetTarget(c79029092.target)
@@ -29,6 +30,10 @@ end
 function c79029092.attg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,chkc,1,0,0)
+	Duel.SetChainLimit(c79029092.chlimit)
+end
+function c79029092.chlimit(e,ep,tp)
+	return tp==ep
 end
 function c79029092.atop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -58,6 +63,15 @@ function c79029092.atop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Destroy(c:GetBattleTarget(),REASON_EFFECT)
 	Debug.Message("迎战。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029092,0))
+	if c:IsRelateToEffect(e) then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetCode(EFFECT_EXTRA_ATTACK)
+		e2:SetValue(1)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e2)
+	end
 end
 function c79029092.damop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabelObject()==Duel.GetAttacker() then
@@ -65,22 +79,39 @@ function c79029092.damop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029092.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=5 or Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>=5 end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=5 or Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>=5 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) end
 end
 function c79029092.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local b1=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=5
 	local b2=Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>=5
 	if not b1 and not b2 then return end
 	local op=nil
 	if b1 and b2 then
-		op=Duel.SelectOption(tp,aux.Stringid(69394324,0),aux.Stringid(69394324,1))
+		op=Duel.SelectOption(tp,aux.Stringid(79029092,3),aux.Stringid(79029092,4))
 	elseif b1 then
-		op=Duel.SelectOption(tp,aux.Stringid(69394324,0))
+		op=Duel.SelectOption(tp,aux.Stringid(79029092,3))
 	else
-		op=Duel.SelectOption(tp,aux.Stringid(69394324,1))+1
+		op=Duel.SelectOption(tp,aux.Stringid(79029092,4))+1
 	end
 	local p=op==0 and tp or 1-tp
 	Debug.Message("很好啊，已经让我十分享受了呢！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029092,1))
 	Duel.SortDecktop(tp,p,5)
+	local g=Duel.GetDecktopGroup(tp,5)
+	if op==0 and g:IsExists(c79029092.ckfil,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(79029092,5)) then 
+	local dg=g:Filter(c79029092.ckfil,nil)
+	Duel.SendtoGrave(dg,REASON_EFFECT)
+	if c:IsRelateToEffect(e) then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetCode(EFFECT_DIRECT_ATTACK)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e2)
+	end
+	end
 end
+
+
+

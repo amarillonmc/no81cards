@@ -17,7 +17,6 @@ function c79029073.initial_effect(c)
 	e2:SetDescription(aux.Stringid(73594093,1))
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1)
 	e2:SetTarget(c79029073.tdtg)
 	e2:SetOperation(c79029073.tdop)
 	e2:SetCost(c79029073.tdcost)
@@ -100,5 +99,5 @@ function c79029073.tdop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		e4:SetValue(-1000)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e4)
-end
+	  end
 end

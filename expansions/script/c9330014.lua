@@ -49,9 +49,10 @@ function c9330014.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9330014.filter1,tp,0,LOCATION_MZONE,1,nil) end
 	local g=Duel.GetMatchingGroup(c9330014.filter1,tp,0,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,g,g:GetCount(),0,0)
-	if not c:IsStatus(STATUS_ACT_FROM_HAND) and c:IsLocation(LOCATION_SZONE) then
+	if not c:IsStatus(STATUS_ACT_FROM_HAND) and c:IsLocation(LOCATION_SZONE)
 	   and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
-	Duel.SetChainLimit(c9330014.chlimit)
+		Duel.SetChainLimit(c9330014.chlimit)
+	end
 end
 function c9330014.chlimit(e,ep,tp)
 	return tp==ep
@@ -128,4 +129,3 @@ function c9330014.setop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-

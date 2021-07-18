@@ -21,11 +21,12 @@ function c79029098.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_BE_MATERIAL)
+	e4:SetCondition(c79029098.efcon)
 	e4:SetOperation(c79029098.efop)
 	c:RegisterEffect(e4)	 
 end
 function c79029098.mfilter(c)
-	return not c:IsType(TYPE_SYNCHRO)
+	return not c:IsSetCard(0xa900)
 end
 function c79029098.valcheck(e,c)
 	local mg=c:GetMaterial()
@@ -50,14 +51,13 @@ end
 function c79029098.lzop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("不能让他们再这样滥用源石。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029098,1))
-		local g2=Duel.GetMatchingGroup(c79029098.posfilter,tp,0,LOCATION_MZONE,nil)
-		if g2:GetCount()>0 then
-			Duel.ChangePosition(g2,POS_FACEDOWN_DEFENSE)
-		end
+	local g2=Duel.GetMatchingGroup(c79029098.posfilter,tp,0,LOCATION_MZONE,nil)
+	if g2:GetCount()>0 then
+	   Duel.ChangePosition(g2,POS_FACEDOWN_DEFENSE)
+	end
 end
 function c79029098.efcon(e,tp,eg,ep,ev,re,r,rp)
-	local ec=e:GetHandler():GetReasonCard()
-	return ec:IsSetCard(0xa900)
+	return r==REASON_SYNCHRO and e:GetHandler():GetReasonCard():IsRace(RACE_CYBERSE)
 end
 function c79029098.efop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,79029098)

@@ -5,7 +5,6 @@ function cm.initial_effect(c)
 	--fusion summon
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,cm.ffilter,3,false)
-
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -74,7 +73,6 @@ function cm.initial_effect(c)
 		ge3:SetOperation(cm.clear)
 		Duel.RegisterEffect(ge3,0)
 	end
-	
 end
 function cm.ffilter(c,fc,sub,mg,sg)
 	return not sg or not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())
@@ -88,12 +86,12 @@ end
 function cm.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	if not Duel.CheckRemoveOverlayCard(c:GetControler(),1,1,3,REASON_COST) then return false end
+	if not Duel.CheckRemoveOverlayCard(tp,1,1,3,REASON_COST) then return false end
 	local g=Duel.GetMatchingGroup(cm.sprfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local mg=Group.CreateGroup()
 	local tc=g:GetFirst()
 	while tc do
-		mg:Merge(tc:GetOverlayGroup())
+		mg:Merge(tc:GetOverlayGroup():Filter(Card.IsCanBeFusionMaterial,nil))
 		tc=g:GetNext()
 	end
 	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and mg:CheckSubGroup(cm.fselect,3,3,tp,c)
@@ -103,11 +101,11 @@ function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local mg=Group.CreateGroup()
 	local tc=g:GetFirst()
 	while tc do
-		mg:Merge(tc:GetOverlayGroup())
+		mg:Merge(tc:GetOverlayGroup():Filter(Card.IsCanBeFusionMaterial,nil))
 		tc=g:GetNext()
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
-	local sg=mg:SelectSubGroup(tp,cm.fselect,false,3,3,tp,c)
+	local sg=mg:SelectSubGroup(tp,cm.fselect,false,3,mg:GetCount(),tp,c)
 	c:SetMaterial(sg)
 	Duel.SendtoGrave(sg,REASON_COST+REASON_MATERIAL)
 end

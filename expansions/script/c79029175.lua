@@ -17,9 +17,9 @@ function c79029175.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,79029175)
-	e2:SetCost(c79029175.cost)
-	e2:SetTarget(c79029175.target)
-	e2:SetOperation(c79029175.activate)
+	e2:SetCost(c79029175.srcost)
+	e2:SetTarget(c79029175.srtg)
+	e2:SetOperation(c79029175.srop)
 	c:RegisterEffect(e2)  
 	--splimit
 	local e2=Effect.CreateEffect(c)
@@ -30,15 +30,18 @@ function c79029175.initial_effect(c)
 	e2:SetTargetRange(1,0)
 	e2:SetTarget(c79029175.splimit)
 	c:RegisterEffect(e2) 
-	--extra summon
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_IGNITION)
-	e5:SetRange(LOCATION_PZONE)
-	e5:SetCountLimit(1,09029175)
-	e5:SetCost(c79029175.excost)
-	e5:SetTarget(c79029175.extg)
-	e5:SetOperation(c79029175.exop)
-	c:RegisterEffect(e5) 
+	--tohand
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(65518099,0))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_PZONE)
+	e3:SetCountLimit(1)
+	e3:SetCost(c79029175.thcost1)
+	e3:SetTarget(c79029175.thtg1)
+	e3:SetOperation(c79029175.thop1)
+	c:RegisterEffect(e3) 
 end
 function c79029175.splimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xa900) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
@@ -54,37 +57,37 @@ function c79029175.drop(e,tp,eg,ep,ev,re,r,rp)
 	local dc=Duel.GetOperatedGroup():GetFirst()
 	Duel.ConfirmCards(1-tp,dc)
 	if dc:IsType(TYPE_MONSTER) then
-		Duel.BreakEffect()
+	Duel.BreakEffect()
 	Duel.Draw(tp,1,REASON_EFFECT)
 	Duel.Draw(1-tp,1,REASON_EFFECT)
 	local dc=Duel.GetOperatedGroup():GetFirst()
 	Duel.ConfirmCards(1-tp,dc)
 	if dc:IsType(TYPE_MONSTER) then
-		Duel.BreakEffect()
+	Duel.BreakEffect()
 	Duel.Draw(tp,1,REASON_EFFECT)
+	end
+	end
 end
-end
-end
-function c79029175.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c79029175.srcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,1200) end
 	Duel.PayLPCost(tp,1200)
 end
-function c79029175.fil(c)
+function c79029175.srfil(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa900) and c:IsAbleToRemove()
 end
-function c79029175.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029175.fil,tp,LOCATION_DECK,0,1,nil) end
+function c79029175.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029175.srfil,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
-function c79029175.activate(e,tp,eg,ep,ev,re,r,rp)
+function c79029175.srop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("罗德岛治污小队，出发！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029175,2))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c79029175.fil,tp,LOCATION_DECK,0,1,1,nil)
-	local tg=g:GetFirst()
-	if tg==nil then return end
-	Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
-	tg:RegisterFlagEffect(79029175,RESET_EVENT+RESETS_STANDARD,0,1)
+	local g=Duel.SelectMatchingCard(tp,c79029175.srfil,tp,LOCATION_DECK,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc==nil then return end
+	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	tc:RegisterFlagEffect(79029175,RESET_EVENT+RESETS_STANDARD,0,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetRange(LOCATION_REMOVED)
@@ -94,7 +97,7 @@ function c79029175.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCondition(c79029175.thcon)
 	e1:SetOperation(c79029175.thop)
 	e1:SetLabel(0)
-	tg:RegisterEffect(e1)
+	tc:RegisterEffect(e1)
 end
 function c79029175.thop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
@@ -105,47 +108,46 @@ function c79029175.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,e:GetHandler():GetAttack(),REASON_EFFECT)
 	else e:SetLabel(1) end
 end
-function c79029175.fill(c)
-	return c:IsType(TYPE_PENDULUM)
+function c79029175.thcost1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1200) end
+	Duel.PayLPCost(tp,1200)
 end
-function c79029175.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=Duel.GetMatchingGroup(c79029175.fill,tp,LOCATION_HAND,0,nil)
-	return eg:IsContains(ct:GetFirst())
+function c79029175.thfil1(c,lsc,rsc)
+	local lv=c:GetLevel()
+	return c:IsSetCard(0xa900) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand() and lv>lsc and lv<rsc 
 end
-function c79029175.excost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1099,5,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x1099,5,REASON_COST)
+function c79029175.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if Duel.GetFieldGroupCount(tp,LOCATION_PZONE,0)~=2 then return false end
+	local lsc=Duel.GetFieldCard(tp,LOCATION_PZONE,0):GetLeftScale()
+	local rsc=Duel.GetFieldCard(tp,LOCATION_PZONE,1):GetRightScale()
+	if lsc>rsc then lsc,rsc=rsc,lsc end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029175.thfil1,tp,LOCATION_DECK,0,1,nil,lsc,rsc) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c79029175.extg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanSummon(tp) and Duel.IsPlayerCanAdditionalSummon(tp) end
-end
-function c79029175.exop(e,tp,eg,ep,ev,re,r,rp)
+function c79029175.thop1(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFieldGroupCount(tp,LOCATION_PZONE,0)~=2 then return end
+	local lsc=Duel.GetFieldCard(tp,LOCATION_PZONE,0):GetLeftScale()
+	local rsc=Duel.GetFieldCard(tp,LOCATION_PZONE,1):GetRightScale()
+	if lsc>rsc then lsc,rsc=rsc,lsc end
+	if not e:GetHandler():IsRelateToEffect(e) then return end
 	Debug.Message("责任重大呀......我会努力的！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029175,3))
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e1:SetCountLimit(1)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,1)
-	e1:SetCondition(c79029175.thcon)
-	e1:SetOperation(c79029175.exop1)
-	e1:SetLabel(0)
-	Duel.RegisterEffect(e1,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c79029175.thfil1,tp,LOCATION_DECK,0,1,1,nil,lsc,rsc)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end
-function c79029175.exop1(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetDescription(aux.Stringid(39064822,0))
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
-	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
-	e1:SetTarget(c79029175.estg)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-end
-function c79029175.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
-end
-function c79029175.estg(e,c)
-	return c:IsSetCard(0xa900)
-end
+
+
+
+
+
+
+
+
+
+
+
+

@@ -124,7 +124,7 @@ function c79029359.negop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 	Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)
 	e:Reset()
-end
+	end
 end
 
 

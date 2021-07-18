@@ -61,15 +61,15 @@ function c79029069.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return b1 or b2 end
 	local op=0
 	if b1 and b2 then
-		if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,79029070) then
-			op=Duel.SelectOption(tp,aux.Stringid(9418365,0),aux.Stringid(80117527,1),aux.Stringid(86686671,2))
+		if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,e:GetHandler(),0x1906) then
+			op=Duel.SelectOption(tp,aux.Stringid(79029069,0),aux.Stringid(79029069,1),aux.Stringid(79029069,2))
 		else
-			op=Duel.SelectOption(tp,aux.Stringid(9418365,0),aux.Stringid(80117527,0))
+			op=Duel.SelectOption(tp,aux.Stringid(79029069,0),aux.Stringid(79029069,1))
 		end
 	elseif b1 then
-		op=Duel.SelectOption(tp,aux.Stringid(9418365,0))
+		op=Duel.SelectOption(tp,aux.Stringid(79029069,0))
 	else
-		op=Duel.SelectOption(tp,aux.Stringid(80117527,0))+1
+		op=Duel.SelectOption(tp,aux.Stringid(79029069,1))+1
 	end
 	e:SetLabel(op)
 	if op~=0 then

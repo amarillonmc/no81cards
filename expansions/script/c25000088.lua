@@ -7,6 +7,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(cm.tg)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
@@ -30,11 +31,11 @@ function cm.chainfilter(re,tp,cid)
 	return not re:IsActiveType(TYPE_MONSTER)
 end
 function cm.handcon(e)
-	return Duel.GetCustomActivityCount(m,1-e:GetHandlerPlayer(),ACTIVITY_CHAIN)~=0
+	return Duel.GetTurnPlayer()==tp and Duel.GetCustomActivityCount(m,1-e:GetHandlerPlayer(),ACTIVITY_CHAIN)~=0
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local dg=Duel.GetDecktopGroup(tp,12)
-	if chk==0 then return e:GetHandler():IsAbleToDeck() and dg:GetCount()==12 and Duel.IsPlayerCanDraw(tp,3) end
+	local dg=Duel.GetDecktopGroup(tp,8)
+	if chk==0 then return e:GetHandler():IsAbleToDeck() and dg:GetCount()==8 and Duel.IsPlayerCanDraw(tp,3) end
 	local ect=Duel.GetChainInfo(ev,CHAININFO_CHAIN_COUNT)
 	if Duel.GetFlagEffect(tp,m)==0 then
 		Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1,ect)
@@ -46,8 +47,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c or not aux.TRUE(c:CancelToGrave()) or Duel.SendtoDeck(c,nil,2,REASON_EFFECT)<=0 or not c:IsLocation(LOCATION_DECK) then return end
 	Duel.ShuffleDeck(tp)
-	Duel.ConfirmDecktop(tp,12)
-	local g=Duel.GetDecktopGroup(tp,12)
+	Duel.ConfirmDecktop(tp,8)
+	local g=Duel.GetDecktopGroup(tp,8)
 	if #g<=0 then return end
 	local ct=g:FilterCount(Card.IsCode,nil,m)
 	Duel.BreakEffect()

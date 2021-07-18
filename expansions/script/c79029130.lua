@@ -29,18 +29,17 @@ function c79029130.initial_effect(c)
 	e3:SetTarget(c79029130.distg)
 	e3:SetOperation(c79029130.disop)
 	c:RegisterEffect(e3)
-	--Draw
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_DRAW)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCode(EVENT_PHASE+PHASE_BATTLE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1)
-	e4:SetCondition(c79029130.drcon)
-	e4:SetTarget(c79029130.drtg)
-	e4:SetOperation(c79029130.drop)
-	c:RegisterEffect(e4)
+	--atk
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(79029130,1))
+	e2:SetCategory(CATEGORY_ATKCHANGE)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(c79029130.atkcon2)
+	e2:SetCost(c79029130.atkcost2)
+	e2:SetOperation(c79029130.atkop2)
+	c:RegisterEffect(e2)
 end
 function c79029130.atcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -68,22 +67,30 @@ function c79029130.disop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
-function c79029130.dacon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetAttackedCount()>0
+function c79029130.atkcon2(e,tp,eg,ep,ev,re,r,rp)
+	local bc=e:GetHandler():GetBattleTarget()
+	return bc~=nil 
 end
-function c79029130.datg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local x=e:GetHandler():GetAttackedCount()
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(x)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,x)
+function c79029130.atkcost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(79029130)==0 end
+	c:RegisterFlagEffect(79029130,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
 end
-function c79029130.daop(e,tp,eg,ep,ev,re,r,rp)
+function c79029130.atkop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsFaceup() and c:IsRelateToEffect(e) then
 	Debug.Message("过瘾！太过瘾了！")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029130,2))
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+		local atk=c:GetAttack()*2
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e1:SetValue(atk)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e1)
+	end
 end
+
 
 
 

@@ -87,10 +87,10 @@ function c9910851.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910851.retop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanSendtoDeck(1-tp) then return end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,1-tp,LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsAbleToDeck),1-tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
 	if g:GetCount()==0 then return end
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
 	local sg=g:Select(1-tp,1,1,nil)
 	Duel.HintSelection(sg)
-	Duel.SendtoDeck(sg,nil,0,REASON_RULE)
+	Duel.SendtoDeck(sg,nil,1,REASON_RULE)
 end

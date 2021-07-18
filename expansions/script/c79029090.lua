@@ -1,6 +1,6 @@
 --拉特兰·狙击干员-送葬人
 function c79029090.initial_effect(c)
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xa900),2)
 	c:EnableReviveLimit()
 	--atk up 
 	local e1=Effect.CreateEffect(c)
@@ -32,12 +32,9 @@ function c79029090.initial_effect(c)
 	c:RegisterEffect(e4)
 	--Destroy
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(3167573,1))
 	e5:SetCategory(CATEGORY_DESTROY)
-	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCode(EVENT_FREE_CHAIN)
-	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e5:SetCountLimit(1)
 	e5:SetCondition(c79029090.rmcon3)
 	e5:SetTarget(c79029090.destg)
@@ -98,33 +95,27 @@ function c79029090.desop1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029090.cfilter(c,ec)
 	if c:IsLocation(LOCATION_MZONE) then
-		return ec:GetLinkedGroup():IsContains(c)
+		return ec:GetLinkedGroup():IsContains(c) and c:GetAttack()>0
 	else
-		return bit.band(ec:GetLinkedZone(c:GetPreviousControler()),bit.lshift(0x1,c:GetPreviousSequence()))~=0
+		return bit.band(ec:GetLinkedZone(c:GetPreviousControler()),bit.lshift(0x1,c:GetPreviousSequence()))~=0 and c:GetAttack()>0
 	end
 end
 function c79029090.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c79029090.cfilter,1,nil,e:GetHandler())
 end
 function c79029090.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
-	Duel.SetTargetPlayer(tp)
+	if chk==0 then return true end
+	local g=eg:Filter(c79029090.cfilter,nil,e:GetHandler())
+	local atk=g:GetSum(Card.GetAttack)
 	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(1000)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,1-tp,1)
+	Duel.SetTargetParam(atk)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,atk)
 end
 function c79029090.desop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("我完成生者与死者的嘱托。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029090,1))
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0)
-	if g:GetCount()>0 then
-		local sg=g:RandomSelect(p,1)
-		Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
-end
 end
 function c79029090.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return aux.nbcon(tp,re) end

@@ -53,7 +53,7 @@ function c79029203.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c79029203.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and (not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) or Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)==0)
+	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,e:GetHandler())==0
 end
 function c79029203.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -73,7 +73,7 @@ function c79029203.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 function c79029203.dscon(e,tp,eg,ep,ev,re,r,rp)
-	return tp~=ep and Duel.GetCurrentChain()==0 and (not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) or Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)==0)
+	return tp~=ep and Duel.GetCurrentChain()==0 and Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,e:GetHandler())==0
 end
 function c79029203.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -90,7 +90,7 @@ function c79029203.dsop(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 function c79029203.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and (not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) or Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)==0)
+	return Duel.GetTurnPlayer()~=tp and Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,e:GetHandler())==0
 end
 function c79029203.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateAttack() then

@@ -63,7 +63,7 @@ end
 function c79029035.operation(e,tp,eg,ep,ev,re,r,rp)
 	local x=e:GetHandler():GetMaterialCount()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c79029035.tgfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,x,nil)
+	local g=Duel.SelectMatchingCard(tp,c79029035.tgfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 	if g:GetCount()>0 then
 	Duel.SendtoHand(g,tp,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,g)

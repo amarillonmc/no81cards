@@ -40,6 +40,7 @@ function c9330017.initial_effect(c)
 	c:RegisterEffect(e3)
 	--set/to hand
 	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_GRAVE)
@@ -69,14 +70,11 @@ function c9330017.filter1(c,e)
 	return c:IsFaceup() and c:IsCanBeFusionMaterial() and not c:IsImmuneToEffect(e)
 end
 function c9330017.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0xaf93) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c9330017.filter3(c,e)
 	return c:IsOnField() and not c:IsImmuneToEffect(e)
-end
-function c9330017.fcheck(tp,sg,fc)
-	return sg:IsExists(Card.IsFusionSetCard,1,nil,0xaf93)
 end
 function c9330017.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
@@ -86,13 +84,11 @@ function c9330017.activate(e,tp,eg,ep,ev,re,r,rp)
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,9330017,0xaf93,0x21,2200,600,6,RACE_WARRIOR,ATTRIBUTE_WATER) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	if Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP_ATTACK)~=0
-		and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 		and Duel.IsExistingMatchingCard(c9330017.filter,tp,LOCATION_ONFIELD,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(9330017,0)) then
 		Duel.BreakEffect()
 			local chkf=tp
 			local mg1=Duel.GetFusionMaterial(tp):Filter(c9330017.filter3,nil,e)
-			aux.FCheckAdditional=c9330017.fcheck
 			local mg2=Duel.GetMatchingGroup(c9330017.filter1,tp,0,LOCATION_MZONE,nil,e)
 			mg1:Merge(mg2)
 			local sg1=Duel.GetMatchingGroup(c9330017.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
@@ -123,7 +119,6 @@ function c9330017.activate(e,tp,eg,ep,ev,re,r,rp)
 					fop(ce,e,tp,tc,mat2)
 				end
 				tc:CompleteProcedure()
-				aux.FCheckAdditional=nil
 		end
 	end
 end

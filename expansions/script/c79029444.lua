@@ -71,7 +71,7 @@ function c79029444.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetCountLimit(1)
 	e1:SetCondition(c79029444.cicon)
 	e1:SetOperation(c79029444.ciop)
-	e1:SetReset(RESET_EVENT+RESET_CHAIN)
+	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
 end
 function c79029444.disop(e,tp,eg,ep,ev,re,r,rp)
@@ -111,7 +111,7 @@ function c79029444.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029444.cicon(e,tp,eg,ep,ev,re,r,rp)
 	local x=e:GetHandler():GetLinkedGroupCount()
-	return e:GetLabel()+1==ev and Duel.IsPlayerCanDraw(tp,x)
+	return e:GetLabel()+2==ev and Duel.IsPlayerCanDraw(tp,x) and rp==1-tp
 end
 function c79029444.ciop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("我需要更多的力量。")

@@ -17,12 +17,14 @@ function c79029070.initial_effect(c)
 	c:RegisterEffect(e2)	
 	--atk/def 2
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_MZONE)
+	e3:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_DISABLE)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetOperation(c79029070.dsop)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,79029070)
+	e3:SetTarget(c79029070.dstg)
+	e3:SetOperation(c79029070.dsop)
 	c:RegisterEffect(e3)
 	--destory
 	local e4=Effect.CreateEffect(c)
@@ -42,22 +44,39 @@ end
 function c79029070.atktg(e,c)
 	return c:GetMutualLinkedGroupCount()==0
 end
-function c79029070.dsop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c79029070.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end 
+	local tc=Duel.SelectTarget(tp,nil,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,tc,1,0,LOCATION_MZONE)
+end
+function c79029070.dsop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("铃声已至，风雪缠足。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029070,0))
-		Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-		local tc=Duel.GetFirstTarget()
-		if tc and tc:IsRelateToEffect(e) then   
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetCode(EFFECT_UPDATE_ATTACK)
-		e4:SetValue(c79029070.atkval)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e4)
-end
-end
-function c79029070.atkval(e,c)
-	 return c:GetAttack()/-2
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc and tc:IsRelateToEffect(e) then   
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e2)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e3:SetValue(0)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e3)
+		local e4=e3:Clone()
+		e4:SetCode(EFFECT_SET_DEFENSE_FINAL)
+		tc:RegisterFlagEffect(e4)
+	end
 end
 function c79029070.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
@@ -77,3 +96,4 @@ function c79029070.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(c79029070.filter,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	Duel.Destroy(sg,REASON_EFFECT)
 end
+
