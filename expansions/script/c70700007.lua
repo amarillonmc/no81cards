@@ -31,6 +31,6 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local tg=g:Select(tp,2,2,nil)
 	Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
 	if tg:Filter(Card.IsLocation,nil,LOCATION_MZONE):FilterCount(Card.IsCode,nil,m)>0 then
-		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,nil)
+		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	end
 end

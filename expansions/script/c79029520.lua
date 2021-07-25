@@ -40,6 +40,7 @@ function c79029520.initial_effect(c)
 	e6:SetCountLimit(1)
 	c:RegisterEffect(e6)
 end
+c79029520.xyz_number=62
 function c79029520.atkval(e,c)
 	return c:GetOverlayCount()*500
 end

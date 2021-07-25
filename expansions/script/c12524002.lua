@@ -20,7 +20,7 @@ function c12524002.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x732) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return (c:IsSetCard(0x730) or c:IsSetCard(0x732)) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

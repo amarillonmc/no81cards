@@ -14,7 +14,6 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_CHAIN_SOLVING)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetOperation(cm.changeop)
-	e2:SetCountLimit(1)
 	c:RegisterEffect(e2)
 end
 function cm.tgfilter(c)
@@ -32,7 +31,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.changeop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m)>0 then return end
-	Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESET_CHAIN,0,1)
 	local ex_1,tg_1=Duel.GetOperationInfo(ev,CATEGORY_DESTROY)
 	local s1=(ex_1 and tg_1~=nil and tg_1:IsExists(Card.IsType,1,nil,TYPE_MONSTER))
 	local ex_2,tg_2=Duel.GetOperationInfo(ev,CATEGORY_REMOVE)
@@ -41,6 +39,7 @@ function cm.changeop(e,tp,eg,ep,ev,re,r,rp)
 	local s3=(ex_3 and tg_3~=nil and tg_3:IsExists(Card.IsType,1,nil,TYPE_MONSTER))
 	if not (s1 or s2 or s3) then return false end
 	if not Duel.SelectYesNo(tp,aux.Stringid(m,3)) then return false end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local op
 	if s1 then
 		if s2 then

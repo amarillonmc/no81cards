@@ -33,6 +33,7 @@ function c79029525.initial_effect(c)
 	e3:SetOperation(c79029525.op)
 	c:RegisterEffect(e3)
 end
+c79029525.xyz_number=65
 function c79029525.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetLabelObject()
 	return ec==nil or ec:GetFlagEffect(79029525)==0 and e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

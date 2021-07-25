@@ -37,11 +37,6 @@ function c12524008.initial_effect(c)
 	e6:SetTarget(c12524008.sptg)
 	e6:SetOperation(c12524008.spop)
 	c:RegisterEffect(e6)
-	--activate
-	local e8=Effect.CreateEffect(c)
-	e8:SetType(EFFECT_TYPE_ACTIVATE)
-	e8:SetCode(EVENT_FREE_CHAIN)
-	c:RegisterEffect(e8)
 	--excavate
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(12524008,0))
@@ -53,8 +48,6 @@ function c12524008.initial_effect(c)
 	e7:SetTarget(c12524008.thtg)
 	e7:SetOperation(c12524008.thop)
 	c:RegisterEffect(e7)
-
-
 end
 function c12524008.spfilter(c,e,tp)
 	return c:IsSetCard(0x732) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -67,7 +60,7 @@ end
 function c12524008.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c12524008.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c12524008.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
