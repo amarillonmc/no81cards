@@ -1,4 +1,4 @@
---战车道少女·河岛桃
+--战车道少女·米卡
 function c9910139.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -14,17 +14,13 @@ end
 function c9910139.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
-function c9910139.tofifilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_TRAP) and c:IsSSetable()
-end
 function c9910139.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and c:IsAbleToDeck()
-		and Duel.IsExistingMatchingCard(c9910139.tofifilter,tp,LOCATION_DECK,0,1,nil) end
+		and c:IsAbleToDeck() end
 end
 function c9910139.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -46,14 +42,36 @@ function c9910139.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 		end
 	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,c9910139.tofifilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()==0 then return end
-		Duel.SSet(tp,g)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleDeck(tp)
 		if not c:IsRelateToEffect(e) then return end
-		Duel.BreakEffect()
-		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
+		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCountLimit(1)
+		e1:SetCondition(c9910139.thcon)
+		e1:SetOperation(c9910139.thop)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function c9910139.thfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x952) and c:IsAbleToHand()
+end
+function c9910139.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c9910139.thfilter,tp,LOCATION_ONFIELD,0,1,nil)
+		and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil)
+end
+function c9910139.thop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.SelectYesNo(tp,aux.Stringid(9910139,0)) then
+		Duel.Hint(HINT_CARD,0,9910139)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g1=Duel.SelectMatchingCard(tp,c9910139.thfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil)
+		g1:Merge(g2)
+		if g1:GetCount()>0 then
+			Duel.HintSelection(g1)
+			Duel.SendtoHand(g1,nil,REASON_EFFECT)
+		end
 	end
 end

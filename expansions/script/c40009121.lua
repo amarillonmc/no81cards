@@ -27,16 +27,16 @@ function c40009121.initial_effect(c)
 	c:RegisterEffect(e4) 
 end
 function c40009121.thfilter(c,e,tp)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER) and c:IsAbleToHand() and Duel.GetMZoneCount(tp,c) and Duel.IsExistingMatchingCard(c40009121.spfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
+	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER) and c:IsAbleToHand() and Duel.GetMZoneCount(tp,c)>0 and Duel.IsExistingMatchingCard(c40009121.spfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
 end
 function c40009121.spfilter2(c,e,tp,code)
 	return c:IsSetCard(0x6f1d) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c40009121.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c40009121.thfilter(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c40009121.thfilter,tp,LOCATION_MZONE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c40009121.thfilter,tp,LOCATION_MZONE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,c40009121.thfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
+	local g=Duel.SelectTarget(tp,c40009121.thfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end

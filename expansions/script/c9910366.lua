@@ -15,8 +15,10 @@ function c9910366.initial_effect(c)
 	--set
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_POSITION+CATEGORY_TODECK)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9910367)
 	e2:SetTarget(c9910366.settg)
@@ -58,20 +60,28 @@ end
 function c9910366.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910366.spellfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910366.spellfilter,tp,LOCATION_ONFIELD,0,1,nil)
-		and Duel.IsExistingMatchingCard(c9910366.setfilter,tp,0,LOCATION_ONFIELD,1,nil) end
+		and Duel.IsExistingMatchingCard(c9910366.setfilter,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910366,0))
 	local g=Duel.SelectTarget(tp,c9910366.spellfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	g:AddCard(e:GetHandler())
-	local g2=Duel.GetMatchingGroup(c9910366.setfilter,tp,0,LOCATION_ONFIELD,nil)
+	local g2=Duel.GetMatchingGroup(c9910366.setfilter,tp,0,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g2,1,0,0)
 end
 function c9910366.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g2=Duel.SelectMatchingCard(tp,c9910366.setfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g2=Duel.SelectMatchingCard(tp,c9910366.setfilter,tp,0,LOCATION_MZONE,1,1,nil)
 	if g2:GetCount()==0 then return end
 	Duel.HintSelection(g2)
-	if Duel.ChangePosition(g2,POS_FACEDOWN)==0 then return end
+	if Duel.ChangePosition(g2,POS_FACEDOWN_DEFENSE)==0 then return end
+	local og=Duel.GetOperatedGroup()
+	if og:GetFirst() then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		og:GetFirst():RegisterEffect(e1)
+	end
 	local g=Group.CreateGroup()
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()

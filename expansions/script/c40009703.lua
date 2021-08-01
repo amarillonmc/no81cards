@@ -22,7 +22,9 @@ function c40009703.initial_effect(c)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetCondition(c40009703.condition)
+	e3:SetCost(aux.bfgcost)
 	e3:SetTarget(c40009703.target)
 	e3:SetOperation(c40009703.activate)
 	c:RegisterEffect(e3)	
@@ -55,7 +57,7 @@ function c40009703.cfilter(c)
 	return c:IsFaceup() and c:IsCode(40009623)
 end
 function c40009703.condition(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(c40009703.cfilter,tp,LOCATION_FZONE,0,1,nil) then return false end
+	if not Duel.IsExistingMatchingCard(c40009703.cfilter,tp,LOCATION_SZONE,0,1,nil) then return false end
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
 		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(i) then

@@ -16,28 +16,17 @@ function c9910112.initial_effect(c)
 	e1:SetTarget(c9910112.imtg)
 	e1:SetOperation(c9910112.imop)
 	c:RegisterEffect(e1)
-	--destroy
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910112,2))
-	e2:SetCategory(CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCondition(c9910112.descon)
-	e2:SetTarget(c9910112.destg)
-	e2:SetOperation(c9910112.desop)
-	c:RegisterEffect(e2)
 end
 function c9910112.xyzfilter(c)
 	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
 end
 function c9910112.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
 end
 function c9910112.ctfilter(c,tp)
 	local seq=c:GetSequence()
-	if seq>4 or not c:IsFaceup() then return false end
+	if seq>4 or c:IsFacedown() or not c:IsRace(RACE_MACHINE) then return false end
 	return (seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1))
 		or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1))
 end
@@ -78,16 +67,4 @@ function c9910112.imop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 		end
 	end
-end
-function c9910112.descon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and e:GetHandler():GetPreviousControler()==tp
-end
-function c9910112.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-end
-function c9910112.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	Duel.Destroy(g,REASON_EFFECT)
 end

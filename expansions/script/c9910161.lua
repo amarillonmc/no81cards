@@ -1,4 +1,4 @@
---战车道装甲 海盗MK.Ⅳ
+--战车道装甲·海盗MK.Ⅳ
 require("expansions/script/c9910106")
 function c9910161.initial_effect(c)
 	--xyz summon
@@ -78,7 +78,9 @@ function c9910161.imop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910161.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and e:GetHandler():GetPreviousControler()==tp
+	local c=e:GetHandler()
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_XYZ)
+		and rp==1-tp and c:GetPreviousControler()==tp
 end
 function c9910161.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,nil) end

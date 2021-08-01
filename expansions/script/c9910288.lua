@@ -3,15 +3,18 @@ function c9910288.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x957),2)
 	c:EnableReviveLimit()
-	--immune
+	--atk/def
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e1:SetTarget(c9910288.indtg)
-	e1:SetValue(c9910288.efilter)
+	e1:SetValue(300)
 	c:RegisterEffect(e1)
+	local e4=e1:Clone()
+	e4:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e4)
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -34,9 +37,6 @@ function c9910288.initial_effect(c)
 end
 function c9910288.indtg(e,c)
 	return e:GetHandler()==c or (c:IsType(TYPE_PENDULUM) and e:GetHandler():GetLinkedGroup():IsContains(c))
-end
-function c9910288.efilter(e,te)
-	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:IsActiveType(TYPE_MONSTER)
 end
 function c9910288.thfilter(c)
 	return c:IsSetCard(0x957) and c:IsAbleToHand()

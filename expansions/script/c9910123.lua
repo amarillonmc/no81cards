@@ -1,4 +1,4 @@
---战车道少女·松本里子
+--战车道少女·卡特拉斯
 function c9910123.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -10,15 +10,14 @@ function c9910123.initial_effect(c)
 	e1:SetTarget(c9910123.sptg)
 	e1:SetOperation(c9910123.spop)
 	c:RegisterEffect(e1)
-	--draw
+	--xyzlv
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910123,0))
-	e2:SetCategory(CATEGORY_DRAW)
-	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_BATTLE_DAMAGE)
-	e2:SetCondition(c9910123.drcon)
-	e2:SetTarget(c9910123.drtg)
-	e2:SetOperation(c9910123.drop)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_XYZ_LEVEL)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_ONFIELD)
+	e2:SetCondition(c9910123.lvcon)
+	e2:SetValue(c9910123.xyzlv)
 	c:RegisterEffect(e2)
 end
 function c9910123.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -56,17 +55,10 @@ function c9910123.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end
-function c9910123.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp
+function c9910123.lvcon(e)
+	local c=e:GetHandler()
+	return c:IsLocation(LOCATION_MZONE) or c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS 
 end
-function c9910123.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function c9910123.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+function c9910123.xyzlv(e,c,rc)
+	return 0x40000+e:GetHandler():GetLevel()
 end

@@ -1,4 +1,4 @@
---战车道少女·中岛悟子
+--战车道少女·阿银
 function c9910137.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -10,11 +10,14 @@ function c9910137.initial_effect(c)
 	e1:SetTarget(c9910137.sptg)
 	e1:SetOperation(c9910137.spop)
 	c:RegisterEffect(e1)
-	--atk up
+	--xyzlv
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_XMATERIAL)
-	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetValue(1000)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_XYZ_LEVEL)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_ONFIELD)
+	e2:SetCondition(c9910137.lvcon)
+	e2:SetValue(c9910137.xyzlv)
 	c:RegisterEffect(e2)
 end
 function c9910137.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -51,4 +54,11 @@ function c9910137.spop(e,tp,eg,ep,ev,re,r,rp)
 		if not c:IsRelateToEffect(e) then return end
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
+end
+function c9910137.lvcon(e)
+	local c=e:GetHandler()
+	return c:IsLocation(LOCATION_MZONE) or c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS 
+end
+function c9910137.xyzlv(e,c,rc)
+	return 0x60000+e:GetHandler():GetLevel()
 end

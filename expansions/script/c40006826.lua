@@ -1,81 +1,53 @@
---睿智之蓝 LV3
-function c40006826.initial_effect(c)
-	--search S/T
+--苍之战士 门徒宙蓝
+local m=40006826
+local cm=_G["c"..m]
+cm.named_with_blaucavalier=1
+function cm.initial_effect(c)
+	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(40006826,1))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,40006826)
-	e1:SetCost(c40006826.cost)
-	e1:SetTarget(c40006826.sptg)
-	e1:SetOperation(c40006826.spop)
-	c:RegisterEffect(e1)	
-	--spsummon
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetHintTiming(0,TIMING_END_PHASE)
-	e2:SetCountLimit(1,40006826)
-	e2:SetCondition(aux.exccon)
-	e2:SetTarget(c40006826.target)
-	e2:SetOperation(c40006826.operation)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCountLimit(1,m)
+	e1:SetTarget(cm.tg)
+	e1:SetOperation(cm.op)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
+	--activate limit
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(0,1)
+	e3:SetCondition(cm.xmatcon)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)
 end
-function c40006826.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsDiscardable() end
-	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
+function cm.blaucavalier(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_blaucavalier
 end
-function c40006826.filter(c,e,tp)
-	return c:IsCode(40006762) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function cm.filter(c)
+	return not c:IsLevel(3) and cm.blaucavalier(c) and c:IsType(TYPE_TUNER) and c:IsAbleToHand()
 end
-function c40006826.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c40006826.filter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c40006826.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c40006826.filter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c40006826.filter1(c,e,tp,lv)
-	local clv=c:GetLevel()
-	return clv>0 and c:IsType(TYPE_TUNER) and c:IsAbleToRemove()
-		and Duel.IsExistingMatchingCard(c40006826.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,lv+clv)
-end
-function c40006826.filter2(c,e,tp,lv)
-	return c:GetLevel()==lv and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c40006826.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c40006826.filter1(chkc,e,tp,e:GetHandler():GetLevel()) end
-	if chk==0 then return Duel.GetLocationCountFromEx(tp)>0 and e:GetHandler():IsAbleToHand()
-		and Duel.IsExistingTarget(c40006826.filter1,tp,LOCATION_GRAVE,0,1,nil,e,tp,e:GetHandler():GetLevel()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,c40006826.filter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,e:GetHandler():GetLevel())
-	g:AddCard(e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,2,tp,LOCATION_GRAVE)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-end
-function c40006826.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if not c:IsRelateToEffect(e) or not tc:IsRelateToEffect(e) then return end
-	local lv=c:GetLevel()+tc:GetLevel()
-	local g=Group.FromCards(c,tc)
-	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)==2 then
-		if Duel.GetLocationCountFromEx(tp)<=0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=Duel.SelectMatchingCard(tp,c40006826.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,lv)
-		if sg:GetCount()>0 then
-			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-		end
-	end
+function cm.xmatcon(e)
+	local ph=Duel.GetCurrentPhase()
+	return e:GetHandler():GetOriginalRace()==RACE_MACHINE and (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
 end

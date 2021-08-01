@@ -28,7 +28,7 @@ function c9910140.thfilter(c)
 end
 function c9910140.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0
-		and (Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_REMOVED,1,nil)
+		and (Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,nil)
 		or Duel.IsExistingMatchingCard(c9910140.thfilter,tp,LOCATION_GRAVE,0,1,nil)) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end

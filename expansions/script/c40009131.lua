@@ -43,7 +43,7 @@ function c40009131.initial_effect(c)
 	c:RegisterEffect(e4)   
 end
 function c40009131.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsType(TYPE_EQUIP) and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
+	return Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
 end
 function c40009131.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end

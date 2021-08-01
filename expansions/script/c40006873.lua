@@ -1,80 +1,65 @@
 --一人千面·五右卫门
-function c40006873.initial_effect(c)
-	c:SetUniqueOnField(1,0,40006873)
+local m=40006873
+local cm=_G["c"..m]
+cm.named_with_AShapeShifter=1
+function cm.initial_effect(c)
 	--equip
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(40006873,0))
+	e1:SetDescription(aux.Stringid(m,1))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCategory(CATEGORY_EQUIP)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,40006873)
-	e1:SetTarget(c40006873.eqtg)
-	e1:SetOperation(c40006873.eqop)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
+	e1:SetTarget(cm.eqtg)
+	e1:SetOperation(cm.eqop)
 	c:RegisterEffect(e1)	
 	--search
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(40006873,1))
+	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetCountLimit(1,40006874)
-	e2:SetCost(c40006873.cost)
-	e2:SetTarget(c40006873.target)
-	e2:SetOperation(c40006873.operation)
+	e2:SetCountLimit(1,m)
+	e2:SetCost(cm.cost)
+	e2:SetTarget(cm.target)
+	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
-	c40006873.discard_effect=e2
+	cm.discard_effect=e2
 	--special summon
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(40006873,2))
-	e3:SetCategory(CATEGORY_TOHAND)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1)
-	e3:SetCode(EVENT_TO_GRAVE)
-	e3:SetCondition(c40006873.con)
-	e3:SetTarget(c40006873.tg)
-	e3:SetOperation(c40006873.op)
+	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetTarget(cm.tg)
+	e3:SetOperation(cm.op)
 	c:RegisterEffect(e3)
 end
-function c40006873.con(e,tp,eg,ep,ev,re,r,rp)
+function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	return c:GetPreviousLocation()==LOCATION_SZONE and not c:IsReason(REASON_LOST_TARGET)
-end
-function c40006873.filter(c)
-	return c:IsFaceup()
-end
-function c40006873.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c40006873.filter(chkc) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingTarget(c40006873.filter,tp,LOCATION_MZONE,0,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and Card.IsFaceup(chkc) end
+	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,0,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	Duel.SelectTarget(tp,c40006873.filter,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,c)
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
+	c:RegisterFlagEffect(m,RESET_EVENT+0x7e0000+RESET_PHASE+PHASE_END,0,1)
 end
-function c40006873.eqop(e,tp,eg,ep,ev,re,r,rp)
+function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or tc:IsFacedown() or not tc:IsRelateToEffect(e) or not tc:IsControler(tp) then
-		Duel.SendtoGrave(c,REASON_EFFECT)
-		return
-	end
-	Duel.Equip(tp,c,tc,true)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
+	if not c:CheckUniqueOnField(tp,LOCATION_SZONE) or c:IsForbidden() then return end
+	if not Duel.Equip(tp,c,tc) then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_EQUIP_LIMIT)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetReset(RESET_EVENT+0x1fe0000)
-	e1:SetValue(c40006873.eqlimit)
 	e1:SetLabelObject(tc)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetValue(cm.eqlimit)
 	c:RegisterEffect(e1)
-	--race
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_EQUIP)
-	e2:SetCode(EFFECT_CHANGE_RACE)
-	e2:SetValue(RACE_PSYCHO)
-	e2:SetReset(RESET_EVENT+0x1fe0000)
-	c:RegisterEffect(e2)
 	--equip effect
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_EQUIP)
@@ -90,10 +75,14 @@ function c40006873.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetValue(1900)
 	c:RegisterEffect(e4)
 end
-function c40006873.eqlimit(e,c)
+function cm.eqlimit(e,c)
 	return c==e:GetLabelObject()
 end
-function c40006873.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.AShapeShifter(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_AShapeShifter
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToDeckAsCost() end
 	if c:IsLocation(LOCATION_HAND) then
@@ -101,51 +90,39 @@ function c40006873.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SendtoDeck(c,nil,2,REASON_COST)
 end
-function c40006873.ctfilter(c)
-	return c:IsSetCard(0xdf1d) and c:IsType(TYPE_MONSTER) and not c:IsCode(40006873) and c:IsAbleToHand()
+function cm.ctfilter(c)
+	return cm.AShapeShifter(c) and c:IsType(TYPE_MONSTER) and not c:IsCode(m) and c:IsAbleToHand()
 end
-function c40006873.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c40006873.ctfilter,tp,LOCATION_DECK,0,1,nil) end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.ctfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c40006873.operation(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c40006873.ctfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.ctfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c40006873.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+function cm.thfilter0(c)
+	return cm.AShapeShifter(c) and not c:IsCode(m) and c:IsAbleToHand()
 end
-function c40006873.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
-		and ep~=tp and re:IsActiveType(TYPE_TRAP) and Duel.IsChainNegatable(ev) 
-end
-function c40006873.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-end
-function c40006873.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SendtoGrave(eg,REASON_EFFECT)
-	end
-end
-function c40006873.thfilter0(c)
-	return c:IsSetCard(0xdf1d) and not c:IsCode(40006873) and c:IsAbleToHand()
-end
-function c40006873.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c40006873.thfilter0(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c40006873.thfilter0,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,c40006873.thfilter0,tp,LOCATION_GRAVE,0,1,1,nil)
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(m)==0 and Duel.IsExistingMatchingCard(cm.thfilter0,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	c:RegisterFlagEffect(m,RESET_EVENT+0x7e0000+RESET_PHASE+PHASE_END,0,1)
 end
-function c40006873.op(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.SendtoGrave(c,REASON_EFFECT)~=0 and c:IsLocation(LOCATION_GRAVE) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,cm.thfilter0,tp,LOCATION_GRAVE,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
+		end
 	end
 end

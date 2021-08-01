@@ -1,8 +1,8 @@
---战车道的准备
+--战车道的重击
 function c9910136.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_HANDES+CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_DAMAGE+CATEGORY_DRAW+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,9910136+EFFECT_COUNT_CODE_OATH)
@@ -10,54 +10,41 @@ function c9910136.initial_effect(c)
 	e1:SetTarget(c9910136.target)
 	e1:SetOperation(c9910136.activate)
 	c:RegisterEffect(e1)
-	--todeck
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,9910136)
-	e2:SetCost(c9910136.retcost)
-	e2:SetTarget(c9910136.rettg)
-	e2:SetOperation(c9910136.retop)
-	c:RegisterEffect(e2)
 end
-function c9910136.costfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x952) and c:IsReleasable()
-		and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+function c9910136.cfilter(c)
+	return c:IsRace(RACE_MACHINE) and c:IsAbleToRemoveAsCost()
 end
 function c9910136.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910136.costfilter,tp,LOCATION_SZONE,0,1,nil) end
-	local g=Duel.SelectMatchingCard(tp,c9910136.costfilter,tp,LOCATION_SZONE,0,1,1,nil)
-	Duel.Release(g,REASON_COST)
+	local g=Group.CreateGroup()
+	local g1=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	local g2=Duel.GetOverlayGroup(tp,1,0)
+	if g1:GetCount()>0 then g:Merge(g1) end
+	if g2:GetCount()>0 then g:Merge(g2) end
+	if chk==0 then return g:IsExists(c9910136.cfilter,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local sg=g:FilterSelect(tp,c9910136.cfilter,1,1,nil)
+	Duel.Remove(sg,POS_FACEUP,REASON_COST)
 end
 function c9910136.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(2)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c9910136.cfilter2(c)
+	return c:IsFaceup() and c:IsSetCard(0x952)
+end
+function c9910136.ctfilter(c)
+	local g=Group.FromCards(c)
+	g:Merge(c:GetColumnGroup())
+	return g:IsExists(c9910136.cfilter2,2,nil)
 end
 function c9910136.activate(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	if Duel.Draw(p,d,REASON_EFFECT)~=2 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.BreakEffect()
-		Duel.SendtoDeck(g,nil,0,REASON_EFFECT)
-	end
-end
-function c9910136.retcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,aux.TRUE,1,nil) end
-	local g=Duel.SelectReleaseGroup(tp,aux.TRUE,1,1,nil)
-	Duel.Release(g,REASON_COST)
-end
-function c9910136.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeck() end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
-end
-function c9910136.retop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
+	local ct1=Duel.Damage(1-tp,1000,REASON_EFFECT)
+	local ct2=Duel.Draw(tp,1,REASON_EFFECT)
+	if ct1>0 and ct2>0 then
+		local g=Duel.GetMatchingGroup(c9910136.desfilter,tp,0,LOCATION_ONFIELD,nil)
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910136,0)) then
+			Duel.Destroy(g,REASON_EFFECT)
+		end
 	end
 end

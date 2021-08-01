@@ -1,152 +1,125 @@
---睿智之蓝 LV11
-function c40006764.initial_effect(c)
+--苍之战士 行星宙蓝
+local m=40006764
+local cm=_G["c"..m]
+cm.named_with_blaucavalier=1
+function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	--spsummon limit
+	--spsummon condition
 	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(aux.FALSE)
 	c:RegisterEffect(e1)
-	--negate activate
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(40006764,2))
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetCondition(c40006764.oncon)
-	e3:SetTarget(c40006764.target)
-	e3:SetOperation(c40006764.operation)
-	c:RegisterEffect(e3)
-	--
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e0:SetCode(EVENT_CHAINING)
-	e0:SetRange(LOCATION_MZONE)
-	e0:SetOperation(aux.chainreg)
-	c:RegisterEffect(e0)
+	--special summon rule
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EVENT_CHAIN_SOLVED)
-	e2:SetOperation(c40006764.lvop)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetRange(LOCATION_EXTRA)
+	e2:SetCondition(cm.con)
+	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
-	--redirect
+	--tohand
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_HANDES)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetCountLimit(1,m)
+	e3:SetTarget(cm.thtg)
+	e3:SetOperation(cm.thop)
+	c:RegisterEffect(e3)
+	--banish
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e4:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(c40006764.excon)
-	e4:SetTarget(c40006764.extg)
-	e4:SetTargetRange(0xff,0xff)
-	e4:SetValue(LOCATION_REMOVED)
-	c:RegisterEffect(e4)
-	--activate limit
-	local e6=Effect.CreateEffect(c)
-	e6:SetDescription(aux.Stringid(40006764,1))
-	e6:SetCategory(CATEGORY_LVCHANGE)
-	e6:SetType(EFFECT_TYPE_QUICK_O)
-	e6:SetCode(EVENT_FREE_CHAIN)
-	e6:SetRange(LOCATION_MZONE)
-	e6:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e6:SetCountLimit(1)
-	e6:SetCondition(c40006764.exccon)
-	e6:SetOperation(c40006764.actop)
-	c:RegisterEffect(e6)
-	--negate
-	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(40006764,0))
-	e7:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE+CATEGORY_LVCHANGE)
-	e7:SetType(EFFECT_TYPE_QUICK_O)
-	e7:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e7:SetCode(EVENT_CHAINING)
-	e7:SetRange(LOCATION_MZONE)
-	e7:SetCondition(c40006764.negcon)
-	e7:SetTarget(c40006764.negtg)
-	e7:SetOperation(c40006764.negop)
-	c:RegisterEffect(e7)
-end
-c40006764.lvupcount=1
-c40006764.lvup={40006763}
-c40006764.lvdncount=2
-c40006764.lvdn={40006762,40006763}
-function c40006764.lvop(e,tp,eg,ep,ev,re,r,rp)
-	local c=re:GetHandler()
-	if re:IsActiveType(TYPE_MONSTER) and c~=e:GetHandler() and e:GetHandler():GetFlagEffect(1)>0 and e:GetHandler():IsFaceup() then
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetCode(EFFECT_UPDATE_LEVEL)
-		e4:SetValue(1)
-		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e4:SetRange(LOCATION_MZONE)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		e:GetHandler():RegisterEffect(e4)
-	end
-end
-function c40006764.excon(e)
-	return e:GetHandler():IsLevelAbove(13)
-end
-function c40006764.extg(e,c)
-	return c:GetOwner()~=e:GetHandlerPlayer()
-end
-function c40006764.exccon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLevelAbove(20) and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
-end
-function c40006764.negcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and e:GetHandler():IsLevelAbove(16) 
-end
-function c40006764.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsAbleToRemove() end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
-	end
-end
-function c40006764.negop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and c:IsRelateToEffect(e) then
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_UPDATE_LEVEL)
-		e2:SetValue(-4)
-		e2:SetReset(RESET_EVENT+0x1ff0000)
-		c:RegisterEffect(e2)
-		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
-	end
-end
-function c40006764.actop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local e3=Effect.CreateEffect(e:GetHandler())
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e3:SetTargetRange(0,1)
-	e3:SetValue(c40006764.actlimit)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_UPDATE_LEVEL)
-	e4:SetValue(-5)
-	e4:SetReset(RESET_EVENT+0x1ff0000)
+	e4:SetDescription(aux.Stringid(m,1))
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_DAMAGE_STEP_END)
+	e4:SetCountLimit(1,m+1)
+	e4:SetCost(cm.cost)
+	e4:SetTarget(cm.sptg)
+	e4:SetOperation(cm.spop)
 	c:RegisterEffect(e4)
 end
-function c40006764.actlimit(e,re,tp)
-	return not re:GetHandler():IsImmuneToEffect(e)
+function cm.matfilter(c)
+	return c:IsCanOverlay() and c:IsType(TYPE_TUNER) and c:IsLevelAbove(1) and c:IsFaceup()
 end
-function c40006764.oncon(e,tp,eg,ep,ev,re,r,rp)
-	if not re then return false end
-	local rc=re:GetHandler()
-	return rc:IsCode(40006763)
+function cm.gcheck(g,tp,c)
+	return g:CheckWithSumEqual(Card.GetLevel,8,2,2) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0
 end
-function c40006764.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,e:GetHandler()) end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+function cm.con(e,c,tp)
+	local g=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,nil)
+	return g:CheckSubGroup(cm.gcheck,2,2,tp,c)
 end
-function c40006764.operation(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,e:GetHandler())
-	Duel.Destroy(g,REASON_EFFECT)
+function cm.op(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local matg=g:SelectSubGroup(tp,cm.gcheck,false,2,2,tp,c)
+	local og = Group.CreateGroup()
+	for tc in aux.Next(matg) do
+		og:Merge(tc:GetOverlayGroup())
+	end
+	if #og>0 then
+		Duel.SendtoGrave(og,REASON_RULE)
+	end
+	Duel.Overlay(c,matg)
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(1-tp) and chkc:IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,1-tp,1)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc and tc:IsRelateToEffect(e) then
+		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 then
+			Duel.BreakEffect()
+			local g=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
+			local sg=g:RandomSelect(1-tp,1)
+			Duel.SendtoGrave(sg,REASON_DISCARD+REASON_EFFECT)
+		end
+	end
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
+function cm.blaucavalier(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_blaucavalier
+end
+function cm.filter(c,e,tp,mc)
+	return c:IsRank(11) and cm.blaucavalier(c)
+		and mc:IsCanBeXyzMaterial(c)
+		and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+		and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsFaceup() and c:IsRelateToEffect(e) and c:IsControler(tp) and not c:IsImmuneToEffect(e)
+		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,c)
+		local tc=g:GetFirst()
+		if tc then
+			local mg=c:GetOverlayGroup()
+			if mg:GetCount()~=0 then
+				Duel.Overlay(tc,mg)
+			end
+			tc:SetMaterial(Group.FromCards(c))
+			Duel.Overlay(tc,Group.FromCards(c))
+			Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
+			tc:CompleteProcedure()
+		end
+	end
 end

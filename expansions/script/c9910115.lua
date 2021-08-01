@@ -1,4 +1,4 @@
---战车道少女·铃木贵子
+--战车道少女·芙琳特
 function c9910115.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -10,15 +10,14 @@ function c9910115.initial_effect(c)
 	e1:SetTarget(c9910115.sptg)
 	e1:SetOperation(c9910115.spop)
 	c:RegisterEffect(e1)
-	--atkup
+	--xyzlv
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910115,0))
-	e2:SetCategory(CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_BATTLE_DAMAGE)
-	e2:SetCondition(c9910115.atkcon)
-	e2:SetTarget(c9910115.atktg)
-	e2:SetOperation(c9910115.atkop)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_XYZ_LEVEL)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_ONFIELD)
+	e2:SetCondition(c9910115.lvcon)
+	e2:SetValue(c9910115.xyzlv)
 	c:RegisterEffect(e2)
 end
 function c9910115.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -56,24 +55,10 @@ function c9910115.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end
-function c9910115.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp
-end
-function c9910115.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetOverlayCount(tp,1,1)>0 end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-end
-function c9910115.atkop(e,tp,eg,ep,ev,re,r,rp)
+function c9910115.lvcon(e)
 	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		local ct=Duel.GetOverlayCount(tp,1,1)
-		if ct>0 then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(ct*300)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-			c:RegisterEffect(e1)
-		end
-	end
+	return c:IsLocation(LOCATION_MZONE) or c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS 
+end
+function c9910115.xyzlv(e,c,rc)
+	return 0x50000+e:GetHandler():GetLevel()
 end
