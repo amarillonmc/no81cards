@@ -76,7 +76,7 @@ function c60000105.acop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60000105.thfil1(c)
-	return (c:IsSetCard(0xa6a1) or c:IsSetCard(0xa6a2)) and c:IsAbleToHand() and not IsCode(60000105)
+	return (c:IsSetCard(0xa6a1) or c:IsSetCard(0xa6a2)) and c:IsAbleToHand() and not c:IsCode(60000105)
 end
 function c60000105.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60000105.thfil1,tp,LOCATION_GRAVE,0,1,nil) end

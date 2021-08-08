@@ -29,8 +29,8 @@ end
 function c60000116.lcheck(g)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x56a9)
 end
-function c60000116,ckfil(c)
-	return c:IsType(TYPE_MONSTER) and IsSetCard(0x56a9)
+function c60000116.ckfil(c)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x56a9)
 end
 function c60000116.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(c60000116.ckfil,tp,LOCATION_GRAVE,0,1,nil) end
@@ -70,9 +70,6 @@ end
 function c60000116.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,Duel.GetFieldGroup(tp,LOCATION_DECK,0),Duel.GetFieldGroupCount(tp,LOCATION_DECK,0),tp,LOCATION_DECK)
-end
-function c60000116(c)
-	return not c:IsSetCard(0x36a0) 
 end
 function c60000116.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

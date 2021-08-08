@@ -31,7 +31,7 @@ function c9330016.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e3)
-	--
+	--cannot activate
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -46,7 +46,7 @@ function c9330016.initial_effect(c)
 	e5:SetCode(EFFECT_CANNOT_REMOVE)
 	e5:SetRange(LOCATION_ONFIELD)
 	e5:SetTargetRange(LOCATION_GRAVE,LOCATION_GRAVE)
-	e5:SetValue(c9330016.aclimit2)
+	e5:SetTarget(c9330016.aclimit2)
 	c:RegisterEffect(e5)
 	--set/to hand
 	local e6=Effect.CreateEffect(c)

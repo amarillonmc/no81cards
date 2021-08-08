@@ -20,7 +20,7 @@ function c60000117.initial_effect(c)
 	c:RegisterEffect(e2)	
 end
 function c60000117.filter(c)
-	return c:IsSetCard(0x56a9) and c:IsAbleToHand()
+	return c:IsSetCard(0x56a9) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c60000117.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60000117.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -41,12 +41,12 @@ function c60000117.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if not Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x56a9) then return true end
 end
 --「 No Game No Life」 怪 兽
-function c60000117.filter(c)
+function c60000117.filter1(c)
 	return c:IsFaceup() and c:IsSetCard(0x36a0)
 end
 -- 场 上 有 所 述 怪 兽
 function c60000117.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60000117.filter,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c60000117.filter1,tp,LOCATION_MZONE,0,1,nil) end
 end
 -- 可 以 被 效 果 影 响 的「 No Game No Life」 怪 兽
 function c60000117.filter2(c,e)
