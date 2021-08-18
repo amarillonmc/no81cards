@@ -46,7 +46,7 @@ function cm.cfilter2(c)
 	return  c:IsPreviousLocation(LOCATION_HAND) 
 end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)
-	return not eg:IsContains(e:GetHandler()) and eg:IsExists(cm.cfilter,1,nil) 
+	return not eg:IsContains(e:GetHandler()) and eg:IsExists(cm.cfilter2,1,nil) 
 end
 function cm.spfilter1(c,e,tp)
 	return  (c:IsSetCard(0x6344) or c:IsAttribute(ATTRIBUTE_LIGHT)) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

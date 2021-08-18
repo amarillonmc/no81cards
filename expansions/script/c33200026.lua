@@ -37,6 +37,7 @@ function c33200026.initial_effect(c)
 	e4:SetOperation(c33200026.baop)
 	c:RegisterEffect(e4) 
 end
+c33200026.material_type=TYPE_SYNCHRO
 
 --e3
 function c33200026.condition(e,tp,eg,ep,ev,re,r,rp)

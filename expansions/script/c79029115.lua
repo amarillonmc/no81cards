@@ -2,19 +2,18 @@
 function c79029115.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_SYNCHRO),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xa900),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--to extra
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOEXTRA)
-	e1:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_SINGLE)
+	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_TOEXTRA)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_TO_GRAVE)
-	e1:SetRange(LOCATION_GRAVE)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,79029115)
+	e1:SetCondition(c79029115.condition)
 	e1:SetTarget(c79029115.lztg)
 	e1:SetOperation(c79029115.lzop)
-	e1:SetCondition(c79029115.condition)
-	e1:SetCountLimit(1,79029115)
 	c:RegisterEffect(e1)
 	--Disable
 	local e2=Effect.CreateEffect(c)
@@ -46,21 +45,19 @@ function c79029115.initial_effect(c)
 	e6:SetOperation(c79029115.spop)
 	c:RegisterEffect(e6)  
 end
-c79029115.material_type=TYPE_SYNCHRO
 function c79029115.target(e,c)
 	return c:IsRace(RACE_INSECT) or c:IsRace(RACE_REPTILE)
 end
 function c79029115.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsReason(REASON_COST) and re:IsHasType(0x7e0)
-	and c:IsPreviousLocation(LOCATION_OVERLAY)
+	return c:IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c79029115.drfilter(c)
 	return c:IsType(TYPE_MONSTER)
 end
 function c79029115.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsPreviousLocation(LOCATION_OVERLAY) and Duel.IsExistingMatchingCard(c79029115.drfilter,tp,0,LOCATION_EXTRA,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_EXTRA)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029115.drfilter,tp,0,LOCATION_EXTRA,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,0)
 end
 function c79029115.lzop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c79029115.drfilter,tp,0,LOCATION_EXTRA,nil)

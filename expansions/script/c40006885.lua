@@ -74,13 +74,13 @@ function cm.thfilter2(c,e)
 	return cm.AShapeShifter(c) and c:IsCanBeEffectTarget(e) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.thfilter2(chkc) end
 	local g=Duel.GetMatchingGroup(cm.thfilter2,tp,LOCATION_GRAVE,0,nil,e)
-	if chk==0 then return g:GetClassCount(Card.GetCode)>=2 end
+	if chk==0 then return g:GetCount()>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g1=g:SelectSubGroup(tp,aux.dncheck,false,2,2)
+	local g1=g:SelectSubGroup(tp,aux.dncheck,false,1,2)
 	Duel.SetTargetCard(g1)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,g1:GetCount(),0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)

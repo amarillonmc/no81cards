@@ -114,10 +114,10 @@ function c40009170.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c40009170.vfilter(c)
-	return c:IsFaceup() and c:GetSequence()>=5
+function c40009170.vfilter(c,tp)
+	return c:IsLocation(LOCATION_MZONE) and c:GetSequence()>=5 and c:IsControler(tp)
 end
 function c40009170.value(e,c)
-	local g=Duel.GetMatchingGroup(c40009170.vfilter,tp,LOCATION_MZONE,0,c)
+	local g=Duel.GetMatchingGroup(c40009170.vfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
 	return g:GetSum(Card.GetBaseAttack)
 end

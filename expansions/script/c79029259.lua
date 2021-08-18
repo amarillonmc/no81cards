@@ -17,13 +17,7 @@ function c79029259.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,1)
 	c:RegisterEffect(e2) 
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_LOSE)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetRange(LOCATION_ONFIELD)
-	e1:SetTargetRange(1,1)
-	c:RegisterEffect(e1)
+
 end
 function c79029259.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

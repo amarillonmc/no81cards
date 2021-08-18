@@ -1,6 +1,6 @@
 --
 --Script by Real_Scl
-if not pcall(function() require("expansions/script/c40099990") end) then require("script/c40099990") end
+if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
 local m=40008677
 local cm=_G["c"..m]
 if not rsv.InfernalKnight then
@@ -30,15 +30,15 @@ if cm then
 function cm.initial_effect(c)
 	local e1=rsef.ACT(c,nil,nil,{1,m,1},"se,th,tg",nil,nil,nil,rsop.target(cm.thfilter,"th",LOCATION_DECK),cm.activate)
 	--splimit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetRange(LOCATION_FZONE)
-	e1:SetTargetRange(1,0)
-	e1:SetCondition(cm.atkcon)
-	e1:SetTarget(cm.splimit)
-	c:RegisterEffect(e1)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetType(EFFECT_TYPE_FIELD)
+	--e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	--e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	--e1:SetRange(LOCATION_FZONE)
+	--e1:SetTargetRange(1,0)
+	--e1:SetCondition(cm.atkcon)
+	--e1:SetTarget(cm.splimit)
+	--c:RegisterEffect(e1)
 	--activate from hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)

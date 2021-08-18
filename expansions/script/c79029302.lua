@@ -30,6 +30,7 @@ function c79029302.initial_effect(c)
 	e3:SetOperation(c79029302.expop)
 	c:RegisterEffect(e3)
 end
+c79029302.pendulum_level=2 
 function c79029302.mfilter(c)
 	return c:IsLinkSetCard(0xa900) and c:IsLinkType(TYPE_PENDULUM)
 end
@@ -75,6 +76,7 @@ function c79029302.expop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_EXTRA_PENDULUM_SUMMON)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,0)
+	e2:SetCountLimit(1,79029302)
 	e2:SetValue(c79029302.pendvalue)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)

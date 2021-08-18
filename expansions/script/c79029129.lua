@@ -99,8 +99,8 @@ function c79029129.spfil(c,e,tp)
 	return c:IsSetCard(0xa900) and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
 end
 function c79029129.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(c79029129.spfil,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>=2 and (Duel.GetLocationCountFromEx(tp,tp,nil,e:GetHandler())>0 or not e:GetHandler():IsLocation(LOCATION_EXTRA)) and not Duel.IsPlayerAffectedByEffect(tp,59822133) end 
-	local tc=Duel.SelectTarget(tp,c79029129.spfil,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp):GetFirst() 
+	if chk==0 then return Duel.IsExistingTarget(c79029129.spfil,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),e,tp) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>=2 and (Duel.GetLocationCountFromEx(tp,tp,nil,e:GetHandler())>0 or not e:GetHandler():IsLocation(LOCATION_EXTRA)) and not Duel.IsPlayerAffectedByEffect(tp,59822133) end 
+	local tc=Duel.SelectTarget(tp,c79029129.spfil,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,e:GetHandler(),e,tp):GetFirst() 
 	local g=Group.FromCards(e:GetHandler(),tc)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,2,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_HAND+LOCATION_EXTRA)

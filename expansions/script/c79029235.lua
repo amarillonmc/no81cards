@@ -119,6 +119,7 @@ function c79029235.activate(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
+	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
@@ -127,7 +128,6 @@ function c79029235.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(c79029235.splimit)
 	Duel.RegisterEffect(e1,tp)
-end
 end
 function c79029235.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsSetCard(0xa900) and c:IsLocation(LOCATION_EXTRA)

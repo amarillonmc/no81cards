@@ -3,7 +3,7 @@ function c79029317.initial_effect(c)
 	--recover
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCategory(CATEGORY_RECOVER)
+	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_DRAW)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCost(c79029317.reccost)
@@ -20,13 +20,13 @@ function c79029317.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c79029317.xfil(c)
-	return c:IsSetCard(0x1905) and c:IsAbleToExtraAsCost() and not c:IsAttack(0)
+	return c:IsSetCard(0x1905) and c:IsAbleToRemoveAsCost() and c:IsType(TYPE_MONSTER)
 end
 function c79029317.reccost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029317.xfil,tp,LOCATION_MZONE,0,1,nil) end
-	local g=Duel.SelectMatchingCard(tp,c79029317.xfil,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
-	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-	e:SetLabel(g:GetBaseAttack())
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029317.xfil,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end
+	local tc=Duel.SelectMatchingCard(tp,c79029317.xfil,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil):GetFirst()
+	Duel.Remove(tc,POS_FACEUP,REASON_COST)
+	e:SetLabel(tc:GetBaseAttack())
 end
 function c79029317.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local x=e:GetLabel()

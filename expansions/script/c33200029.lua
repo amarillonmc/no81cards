@@ -32,7 +32,7 @@ function c33200029.initial_effect(c)
 	e3:SetOperation(c33200029.spop)
 	c:RegisterEffect(e3)
 end
-
+c33200029.material_type=TYPE_SYNCHRO
 --e1
 function c33200029.con(e)
 	return Duel.GetCurrentPhase()~=PHASE_DRAW

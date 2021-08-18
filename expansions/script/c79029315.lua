@@ -58,13 +58,12 @@ function c79029315.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79029315.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
+	Duel.BreakEffect()
 	local b1=Duel.CheckLocation(tp,LOCATION_MZONE,5)
 	local b2=Duel.CheckLocation(tp,LOCATION_MZONE,6)
 	local b3=c:GetColumnGroup():FilterCount(Card.IsControler,nil,1-tp)~=0
-	if (b1 or b2 or b3) then
-	if not Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) then return end
-	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
-	Duel.BreakEffect()
 	local op=0
 	if (b1 or b2) and b3 then
 	op=Duel.SelectOption(tp,aux.Stringid(79029315,0),aux.Stringid(79029315,1),aux.Stringid(79029315,2))
@@ -117,7 +116,6 @@ function c79029315.spop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end 
   end
-end
 end
 function c79029315.imfilter(e,te)
 	return te:GetOwner():GetControler()~=e:GetOwner():GetControler()

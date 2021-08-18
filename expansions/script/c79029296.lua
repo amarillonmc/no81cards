@@ -10,8 +10,11 @@ function c79029296.initial_effect(c)
 	e1:SetOperation(c79029296.operation)
 	c:RegisterEffect(e1) 
 end
+function c79029296.ckfil(c)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa900) 
+end 
 function c79029296.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local dcount=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
+	local dcount=Duel.GetMatchingGroup(c79029296.ckfil,tp,LOCATION_DECK,0,nil)
 	if chk==0 then return dcount~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
 	local ag=Group.CreateGroup()
@@ -38,11 +41,10 @@ function c79029296.target(e,tp,eg,ep,ev,re,r,rp,chk)
 			table.insert(afilter,TYPE_MONSTER)
 			table.insert(afilter,OPCODE_ISTYPE)
 			table.insert(afilter,OPCODE_AND)
+			table.insert(afilter,0xa900)
+			table.insert(afilter,OPCODE_ISSETCARD)
+			table.insert(afilter,OPCODE_AND)
 	local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
-	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT}
-	table.insert(getmetatable(e:GetHandler()).announce_filter,0xa900)
-	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_ISSETCARD)
-	table.insert(getmetatable(e:GetHandler()).announce_filter,OPCODE_AND)   
 	e:SetLabel(ac)
 end
 function c79029296.operation(e,tp,eg,ep,ev,re,r,rp)

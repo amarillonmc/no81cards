@@ -49,24 +49,26 @@ function c79029465.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
 end
 function c79029465.thop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("和我面对过的灾厄相比，你们也太弱了。")
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029465,3))
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c79029465.thfil,tp,LOCATION_DECK,0,nil)
 	if g:GetCount()<=0 then return end
-	Debug.Message("和我面对过的灾厄相比，你们也太弱了。")
-	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029465,3))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg=g:Select(tp,1,1,nil)
 	Duel.SendtoHand(sg,tp,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,sg)
-	if Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) and Duel.CheckLPCost(tp,3000) and Duel.SelectYesNo(tp,aux.Stringid(79029465,1)) then
+	if Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) and Duel.CheckLPCost(tp,3000) and Duel.SelectYesNo(tp,aux.Stringid(79029465,1)) then
 	Duel.PayLPCost(tp,3000)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local rg=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
+	local rg=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
 	Debug.Message("这种程度的不幸，也只是个开始罢了。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029465,4))
 	Duel.Release(rg,REASON_EFFECT)
-	local mg=c:GetMaterial()
+	local mg=c:GetMaterial() 
+	if mg~=nil then  
 	rg:Merge(mg)
+	end
 	c:SetMaterial(rg)
 	end
 end
