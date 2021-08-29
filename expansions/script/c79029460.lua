@@ -33,11 +33,12 @@ function c79029460.initial_effect(c)
 	e4:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e4)
 end
+c79029460.named_with_RainbowOperator=true 
 function c79029460.counterfilter(c)
 	return c:IsSetCard(0xa900)
 end
 function c79029460.spfil(c,e,tp)
-	return c:IsSetCard(0x4904) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	return c.named_with_RainbowOperator and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c79029460.pendcon(e,c,og)
 	if c==nil then return true end

@@ -34,8 +34,9 @@ function c79029461.initial_effect(c)
 	e3:SetOperation(c79029461.activate2)
 	c:RegisterEffect(e3)   
 end
+c79029461.named_with_AbyssHunter=true 
 function c79029461.thfilter(c)
-	return c:IsSetCard(0x1908) and c:IsAbleToHand() and not c:IsCode(79029461)
+	return c.named_with_AbyssHunter and c:IsAbleToHand() and not c:IsCode(79029461)
 end
 function c79029461.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
@@ -48,10 +49,10 @@ function c79029461.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029461.eftg(e,c)
-	return c:IsSetCard(0x1908) and c:IsType(TYPE_MONSTER)
+	return c.named_with_AbyssHunter and c:IsType(TYPE_MONSTER)
 end
 function c79029461.filter(c)
-	return (c:IsSummonable(true,nil) or c:IsMSetable(true,nil)) and c:IsSetCard(0x1908) 
+	return (c:IsSummonable(true,nil) or c:IsMSetable(true,nil)) and c.named_with_AbyssHunter
 end
 function c79029461.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,1000)

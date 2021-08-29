@@ -37,7 +37,8 @@ function c79029913.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetHintTiming(0,TIMING_STANDBY_PHASE)
-	e4:SetRange(LOCATION_MZONE)
+	e4:SetRange(LOCATION_MZONE) 
+	e4:SetCountLimit(1,09029913)
 	e4:SetCost(c79029913.xxcost)
 	e4:SetTarget(c79029913.xxtg)
 	e4:SetOperation(c79029913.xxop)
@@ -59,7 +60,7 @@ function c79029913.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Overlay(c,g)
 end
 function c79029913.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return aux.nbcon(tp,re) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,0)
 	if re:GetHandler():IsRelateToEffect(re) then

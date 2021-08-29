@@ -21,7 +21,7 @@ function c79029468.initial_effect(c)
 	c:RegisterEffect(e0)  
 	--
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(79029468,0))
+	e1:SetDescription(aux.Stringid(79029468,3))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CHAIN_MATERIAL)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -61,6 +61,10 @@ function c79029468.initial_effect(c)
 	e5:SetTarget(c79029468.tgtg) 
 	e5:SetOperation(c79029468.tgop)
 	c:RegisterEffect(e5)
+end
+c79029468.named_with_AbyssHunter=true 
+function c79029468.filter(c,e)
+	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function c79029468.chain_target(e,te,tp)
 	return Duel.GetMatchingGroup(c79029468.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,te)

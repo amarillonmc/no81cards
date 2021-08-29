@@ -4,7 +4,7 @@ function c60002006.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,60002007+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,60002006+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(e1)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -73,7 +73,7 @@ function c60002006.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
 	Duel.SelectOption(tp,aux.Stringid(60002006,0))
 	Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(60002006,0))
-	Duel.SendtoDeck(e:GetHandler(),nil,REASON_COST)
+	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c60002006.spfil(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCode(98818516)

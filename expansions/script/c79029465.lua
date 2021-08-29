@@ -37,12 +37,13 @@ function c79029465.initial_effect(c)
 	e3:SetOperation(c79029465.spop)
 	c:RegisterEffect(e3) 
 end
+c79029465.named_with_AbyssHunter=true 
 function c79029465.ntop(e,tp,eg,ep,ev,re,r,rp,c)
 	Debug.Message("我习惯了独行。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029465,2))
 end
 function c79029465.thfil(c) 
-	return c:IsAbleToHand() and c:IsSetCard(0x1908)
+	return c:IsAbleToHand() and c.named_with_AbyssHunter
 end
 function c79029465.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029465.thfil,tp,LOCATION_DECK,0,1,nil) end

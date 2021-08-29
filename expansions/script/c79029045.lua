@@ -35,7 +35,7 @@ function c79029045.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c79029045.thfilter(c)
-	return c:IsSetCard(0x1904) and c:IsType(TYPE_TRAP)
+	return c:IsSetCard(0x1904) and c:IsType(TYPE_TRAP) and c:IsAbleToRemove()
 end
 function c79029045.thfilter2(c,e,tp)
 	return c:IsSetCard(0xa900) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

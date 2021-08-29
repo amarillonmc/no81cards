@@ -31,6 +31,7 @@ function c79029912.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_REMOVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,19029912)
 	e3:SetTarget(c79029912.rltg)
 	e3:SetOperation(c79029912.rlop)
 	c:RegisterEffect(e3)
@@ -142,7 +143,7 @@ function c79029912.rlop(e,tp,eg,ep,ev,re,r,rp)
 	if x>0 and g:GetCount()>0 then 
 	Debug.Message("多谢款待。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029912,2))
-	local rg=g:Select(tp,1,1,nil)
+	local rg=g:Select(tp,1,x,nil)
 	Duel.Release(rg,REASON_EFFECT)
 	end
 end

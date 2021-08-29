@@ -29,6 +29,7 @@ function c79029455.initial_effect(c)
 	e3:SetOperation(c79029455.seqop)
 	c:RegisterEffect(e3) 
 end
+c79029455.named_with_RainbowOperator=true 
 function c79029455.ffilter(c,fc)
 	return c:IsFusionSetCard(0xa900)
 end

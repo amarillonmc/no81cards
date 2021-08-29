@@ -72,6 +72,7 @@ function c79029432.initial_effect(c)
 	e1:SetOperation(c79029432.operation)
 	c:RegisterEffect(e1)
 end
+c79029432.named_with_AbyssHunter=true 
 c79029432.material_type=TYPE_SYNCHRO   
 function c79029432.lzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)

@@ -1,6 +1,13 @@
 --艾雅法拉·珊瑚海岸收藏-夏卉
 function c79029908.initial_effect(c)
 	c:EnableReviveLimit()
+	--add code
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_ADD_CODE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetValue(79029035)
+	c:RegisterEffect(e0) 
 	-- 
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

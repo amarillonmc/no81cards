@@ -62,6 +62,7 @@ function c79029085.initial_effect(c)
 	e9:SetOperation(c79029085.spop)
 	c:RegisterEffect(e9)
 end
+c79029085.named_with_AbyssHunter=true 
 function c79029085.ttcon(e,c,minc)
 	if c==nil then return true end
 	return minc<=3 and Duel.CheckTribute(c,3)

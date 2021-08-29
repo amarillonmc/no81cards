@@ -63,7 +63,7 @@ function c79029486.icop(e,tp,eg,ep,ev,re,r,rp)
 	tc:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
-	tc:RegisterEffect(e2)	
+	tc:RegisterEffect(e2)   
 	tc=g:GetNext()
 	end
 		Duel.SetChainLimitTillChainEnd(c79029486.chainlm)
@@ -80,7 +80,7 @@ function c79029486.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp~=tp and te:GetHandler():IsSetCard(0xa900,0x6a19) and Duel.IsChainDisablable(ev)
 end
 function c79029486.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return aux.nbcon(tp,re) end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 	if re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)

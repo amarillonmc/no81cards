@@ -55,6 +55,7 @@ function c79029176.initial_effect(c)
 	e1:SetOperation(c79029176.op)
 	c:RegisterEffect(e1)	
 end
+c79029176.named_with_AbyssHunter=true 
 c79029176.card_code_list={79029137}
 c79029176.assault_name=79029085
 function c79029176.spcon(e,tp,eg,ep,ev,re,r,rp)

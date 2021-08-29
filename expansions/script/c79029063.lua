@@ -60,7 +60,7 @@ end
 function c79029063.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c79029063.filter2,tp,LOCATION_MZONE,0,nil)
 	if g:GetCount()>0 then 
-	local tc=g:Select(tp,1,1,nil)
+	local tc=g:Select(tp,1,1,nil):GetFirst()
 	Duel.Release(tc,REASON_COST)
 	local atk=tc:GetBaseAttack()
 	Duel.Damage(1-tp,atk,REASON_EFFECT)

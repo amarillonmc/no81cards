@@ -29,6 +29,7 @@ function c79029452.initial_effect(c)
 	e3:SetOperation(c79029452.disop)
 	c:RegisterEffect(e3)
 end
+c79029452.named_with_RainbowOperator=true 
 function c79029452.ovcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return Duel.GetTurnPlayer()~=tp and (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) and c:IsPreviousPosition(LOCATION_ONFIELD)

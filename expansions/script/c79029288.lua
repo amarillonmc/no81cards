@@ -32,6 +32,7 @@ function c79029288.initial_effect(c)
 	e2:SetOperation(c79029288.atkop2)
 	c:RegisterEffect(e2)
 end
+c79029288.named_with_AbyssHunter=true 
 function c79029288.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) and re:GetHandlerPlayer()~=tp
 end

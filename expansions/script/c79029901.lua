@@ -23,8 +23,9 @@ function c79029901.initial_effect(c)
 	e2:SetOperation(c79029901.spop)
 	c:RegisterEffect(e2)
 end
+c79029901.named_with_AbyssHunter=true 
 function c79029901.filter(c)
-	return c:IsSetCard(0x1908) and c:IsAbleToHand()
+	return c.named_with_AbyssHunter and c:IsAbleToHand()
 end
 function c79029901.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029901.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -70,7 +71,7 @@ function c79029901.acop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029901.ckfil(c,tp)
-	return c:IsSetCard(0x1908) and c:IsType(TYPE_MONSTER) and c:GetPreviousControler()==tp 
+	return c.named_with_AbyssHunter and c:IsType(TYPE_MONSTER) and c:GetPreviousControler()==tp 
 end
 function c79029901.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c79029901.ckfil,1,nil,tp) 

@@ -42,6 +42,7 @@ function c79029447.initial_effect(c)
 	e4:SetOperation(c79029447.daop)
 	c:RegisterEffect(e4)   
 end
+c79029447.named_with_RainbowOperator=true 
 function c79029447.zcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)

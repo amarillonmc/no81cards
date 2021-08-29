@@ -29,6 +29,7 @@ function c79029147.initial_effect(c)
 	e3:SetOperation(c79029147.tdop)
 	c:RegisterEffect(e3)
 end
+c79029147.named_with_AbyssHunter=true 
 function c79029147.sprfilter(c)
 	return c:IsCode(79029010) and c:IsAbleToGraveAsCost()
 end

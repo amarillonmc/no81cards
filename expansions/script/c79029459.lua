@@ -92,6 +92,7 @@ function c79029459.initial_effect(c)
 		Duel.RegisterEffect(ge2,0)
 	end
 end
+c79029459.named_with_AbyssHunter=true 
 function c79029459.checkop(e,tp,eg,ep,ev,re,r,rp)
 	c79029459.chain_solving=true
 end

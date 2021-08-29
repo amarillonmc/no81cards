@@ -54,6 +54,7 @@ function c79029470.initial_effect(c)
 	e9:SetTarget(c79029470.actlimit)
 	c:RegisterEffect(e9)
 end
+c79029470.named_with_AbyssHunter=true 
 function c79029470.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local c=e:GetHandler()
@@ -82,10 +83,15 @@ function c79029470.acop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(79029470,0))
 end
 function c79029470.actcon(e)
-	return Duel.GetAttacker():IsSetCard(0x1908) or Duel.GetAttackTarget():IsSetCard(0x1908) 
+	local tc1=Duel.GetAttacker()
+	local tc2=Duel.GetAttackTarget()
+	return tc1.named_with_AbyssHunter or tc2.named_with_AbyssHunter 
+end
+function c79029470.ckfil(c)
+	return c.named_with_AbyssHunter 
 end
 function c79029470.detg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x1908) end
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(c79029470.ckfil,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,0,1-tp,LOCATION_ONFIELD)
 	Duel.SetChainLimit(c79029470.chlimit)
 end
@@ -94,7 +100,7 @@ function c79029470.chlimit(e,ep,tp)
 end
 function c79029470.deop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
-	local x=Duel.GetMatchingGroupCount(Card.IsSetCard,tp,LOCATION_MZONE,0,nil,0x1908)
+	local x=Duel.GetMatchingGroupCount(c79029470.ckfil,tp,LOCATION_MZONE,0,nil)
 	if g:GetCount()<=0 or x<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local sg=g:Select(tp,1,x,nil)

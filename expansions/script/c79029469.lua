@@ -22,8 +22,9 @@ function c79029469.initial_effect(c)
 	e2:SetOperation(c79029469.ssop)
 	c:RegisterEffect(e2)  
 end
+c79029469.named_with_RainbowOperator=true 
 function c79029469.tsfil(c)
-	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x4904)
+	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c.named_with_RainbowOperator
 end
 function c79029469.tstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029469.tsfil,tp,LOCATION_DECK,0,1,nil) end
@@ -43,7 +44,7 @@ function c79029469.tsop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end
 function c79029469.ssfil(c,e)
-	return c:IsSSetable() and c:IsSetCard(0x4904)
+	return c:IsSSetable() and c.named_with_RainbowOperator
 end
 function c79029469.sstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMatchingGroupCount(c79029469.ssfil,tp,LOCATION_DECK,0,nil,e)>=1 end

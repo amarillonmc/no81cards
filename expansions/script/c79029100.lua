@@ -39,6 +39,7 @@ function c79029100.initial_effect(c)
 	c:RegisterEffect(e5) 
   
 end
+c79029100.named_with_AbyssHunter=true 
 function c79029100.filter1(c)
 	return c:IsFaceup() and c:IsSetCard(0xa900)
 end
@@ -66,7 +67,7 @@ function c79029100.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsType(TYPE_CONTINUOUS)
 end
 function c79029100.filter(c,e,tp)
-	return c:IsSetCard(0x1908)
+	return c.named_with_AbyssHunter and c:IsAbleToHand()
 end
 function c79029100.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	 if chk==0 then return Duel.IsExistingMatchingCard(c79029100.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>=1 and Duel.IsPlayerCanSpecialSummonMonster(tp,79029101,0,0x4011,0,0,1,RACE_CYBERSE,ATTRIBUTE_WATER)  end

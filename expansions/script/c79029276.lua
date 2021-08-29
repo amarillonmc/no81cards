@@ -52,6 +52,7 @@ function c79029276.initial_effect(c)
 	e3:SetOperation(c79029276.atkop2)
 	c:RegisterEffect(e3)  
 end
+c79029276.named_with_AbyssHunter=true 
 function c79029276.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()

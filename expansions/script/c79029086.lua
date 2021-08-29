@@ -25,6 +25,7 @@ function c79029086.initial_effect(c)
 	e3:SetOperation(c79029086.ctop)
 	c:RegisterEffect(e3)
 end
+c79029086.named_with_AbyssHunter=true 
 function c79029086.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanAddCounter(0x191,1) end
 	Duel.SetTargetPlayer(tp)

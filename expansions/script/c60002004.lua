@@ -14,6 +14,7 @@ function c60002004.initial_effect(c)
 	e1:SetCost(c60002004.spcost)
 	e1:SetTarget(c60002004.sptg)
 	e1:SetOperation(c60002004.spop)
+	c:RegisterEffect(e1)
 	--immunity
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(60303245,0))
@@ -29,7 +30,7 @@ function c60002004.matfilter(c)
 	return c:IsCode(98818516) and not c:IsType(TYPE_LINK)
 end
 function c60002004.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) end
 	Duel.SelectOption(tp,aux.Stringid(60002004,0))
 	Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(60002004,0))
 end
@@ -60,7 +61,7 @@ function c60002004.splimit(e,c)
 	return not c:IsAttribute(ATTRIBUTE_EARTH)
 end
 function c60002004.immtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,0,1,e:GetHandler()) end
+	if chk==0 then return not e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,0,1,1,nil)
 end
