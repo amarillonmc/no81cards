@@ -83,16 +83,16 @@ function c71400051.con2(e,tp,eg,ep,ev,re,r,rp)
 	return yume.YumeCon(e,tp) and de and dp~=tp and re:GetHandler():IsSetCard(0x714) and rp==tp
 end
 function c71400051.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,1,e:GetHandler(),0x717) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,nil) end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,1-tp,LOCATION_ONFIELD+LOCATION_HAND)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,1,e:GetHandler(),0x717) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,1-tp,LOCATION_ONFIELD)
 end
 function c71400051.op2(e,tp,eg,ep,ev,re,r,rp)
 	if not yume.IsYumeFieldOnField(tp) then return end
 	local ct=Duel.GetMatchingGroupCount(Card.IsSetCard,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil,0x717)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
 	if ct>0 and g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local dg=g:Select(tp,1,ct,nil)
 		Duel.HintSelection(dg)
 		Duel.SendtoGrave(dg,REASON_EFFECT)

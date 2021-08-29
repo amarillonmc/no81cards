@@ -2,7 +2,7 @@
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400011.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,yume.YumeCheck(c),4,2)
+	aux.AddXyzProcedure(c,yume.YumeCheck(c,true),4,3)
 	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
@@ -13,7 +13,7 @@ function c71400011.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,71400011+EFFECT_COUNT_CODE_DUEL)
+	e1:SetCountLimit(1,71400011)
 	e1:SetCondition(c71400011.con1)
 	e1:SetTarget(c71400011.tg1)
 	e1:SetOperation(c71400011.op1)

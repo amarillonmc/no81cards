@@ -2,7 +2,7 @@
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400030.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,yume.YumeCheck(c))
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,yume.YumeLMGFilterFunction(c))
 	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
@@ -73,7 +73,7 @@ function c71400030.operation(e,tp,eg,ep,ev,re,r,rp)
 				if tatk>0 then atk=atk+tatk end
 				tc=og:GetNext()
 			end
-			Duel.SetLP(tp,Duel.GetLP(tp)-atk)
+			Duel.SetLP(tp,Duel.GetLP(tp)-math.ceil(atk/2))
 		end
 	end
 end

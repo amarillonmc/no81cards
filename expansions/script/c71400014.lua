@@ -19,20 +19,32 @@ function c71400014.initial_effect(c)
 	--heart
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400014,1))
-	e2:SetCategory(CATEGORY_TOGRAVE)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1)
 	e2:SetCost(c71400014.cost2)
 	e2:SetTarget(c71400014.tg2)
 	e2:SetOperation(c71400014.op2)
 	c:RegisterEffect(e2)
+	--eat each other
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(71400014,2))
+	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetCountLimit(1)
+	e3:SetTarget(c71400014.tg3)
+	e3:SetOperation(c71400014.op3)
+	c:RegisterEffect(e3)
 	--self to deck & activate field
 	yume.AddYumeFieldGlobal(c,71400014,1)
 end
 function c71400014.op1(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.SelectYesNo(tp,aux.Stringid(71400014,3)) then return end
 	Duel.Hint(HINT_CARD,0,71400014)
+	c:RegisterFlagEffect(71400014,RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(71400014,0))
 	Duel.Hint(HINT_SELECTMSG,rp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(rp,nil,rp,LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(re))
 	if g:GetCount()>0 then
@@ -51,23 +63,17 @@ function c71400014.op1(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(c71400014.aclimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,rp)
-	c:RegisterFlagEffect(0,RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(71400014,0))
 end
 function c71400014.aclimit(e,re,tp)
 	return not re:IsActiveType(TYPE_TRAP)
 end
 function c71400014.con1(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_TRAP) and e:GetHandler():GetFlagEffect(1)~=0
+	return re:IsActiveType(TYPE_TRAP) and e:GetHandler():GetFlagEffect(1)~=0 and Duel.GetFlagEffect(tp,71400014)==0
 end
 function c71400014.filter2(c,e,tp)
 	return c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c71400014.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c71400014.filter2,tp,LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_HAND)
-end
-function c71400014.cost2(e,tp,eg,ep,ev,re,r,rp)
+function c71400014.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,1000) end
 	Duel.PayLPCost(tp,1000)
 end
@@ -106,4 +112,30 @@ function c71400014.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+0xff0000)
 	c:RegisterEffect(e1)
 	e:Reset()
+end
+function c71400014.filter3a(c)
+	return c:IsSetCard(0x715) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+end
+function c71400014.filter3b(c)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x714) and (c:IsFaceup() or not c:IsLocation(LOCATION_MZONE))
+end
+function c71400014.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400014.filter3b,tp,LOCATION_HAND+LOCATION_MZONE,0,2,nil)
+		and Duel.IsExistingMatchingCard(c71400014.filter3a,tp,LOCATION_DECK,0,1,nil) end
+	local g=Duel.GetMatchingGroup(c71400014.filter3b,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c71400014.op3(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,c71400014.filter3b,tp,LOCATION_HAND+LOCATION_MZONE,0,2,2,nil)
+	if g:GetCount()==2 and Duel.Destroy(g,REASON_EFFECT)~=0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=Duel.SelectMatchingCard(tp,c71400014.filter3a,tp,LOCATION_DECK,0,1,1,nil)
+		if sg:GetCount()>0 then
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
+		end
+	end
 end

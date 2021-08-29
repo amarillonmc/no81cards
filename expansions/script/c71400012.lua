@@ -2,7 +2,7 @@
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400012.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,yume.YumeCheck(c),aux.NonTuner(yume.YumeCheck(c)),1)
+	aux.AddSynchroProcedure(c,yume.YumeCheck(c,true),aux.NonTuner(yume.YumeCheck(c)),1)
 	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)

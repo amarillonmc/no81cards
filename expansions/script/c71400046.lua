@@ -2,7 +2,7 @@
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400046.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,yume.YumeCheck(c),aux.NonTuner(yume.YumeCheck(c)),1)
+	aux.AddSynchroProcedure(c,yume.YumeCheck(c,true),aux.NonTuner(yume.YumeCheck(c)),1)
 	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
@@ -14,7 +14,7 @@ function c71400046.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(c71400046.con1)
+	--e1:SetCondition(c71400046.con1)
 	e1:SetTarget(c71400046.tg1)
 	e1:SetOperation(c71400046.op1)
 	c:RegisterEffect(e1)
@@ -47,9 +47,9 @@ end
 function c71400046.filter1(c,tp)
 	return c:IsSummonPlayer(1-tp) and c:IsAbleToDeck() and c:IsLocation(LOCATION_MZONE)
 end
-function c71400046.con1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
-end
+--function c71400046.con1(e,tp,eg,ep,ev,re,r,rp)
+--  return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
+--end
 function c71400046.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=eg:Filter(c71400046.filter1,nil,tp)
 	local ct=g:GetCount()

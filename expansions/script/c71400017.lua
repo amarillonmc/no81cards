@@ -16,12 +16,10 @@ function c71400017.initial_effect(c)
 	--banish
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400017,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e2:SetCountLimit(1,71400017+EFFECT_COUNT_CODE_DUEL)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_GRAVE)
+	e2:SetRange(LOCATION_FZONE)
 	e2:SetTarget(c71400017.tg2)
-	e2:SetCost(c71400017.cost)
 	e2:SetOperation(c71400017.op2)
 	c:RegisterEffect(e2)
 	--self to deck & activate field
@@ -54,17 +52,18 @@ end
 function c71400017.filter2(c)
 	return c:IsCode(71400020) and c:IsAbleToHand()
 end
-function c71400017.filter2c(c)
-	return c:IsSetCard(0xe714) and c:IsAbleToRemoveAsCost()
+function c71400017.filter2r(c,tp)
+	return c:IsSetCard(0xe714) and c:IsAbleToRemove(tp)
 end
 function c71400017.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400017.filter2,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400017.filter2,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetMatchingGroupCount(c71400017.filter2r,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,tp)>4 end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,5,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
-function c71400017.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c71400017.filter2c,tp,LOCATION_GRAVE,0,nil)
-	if chk==0 then return c:IsAbleToRemoveAsCost() and g:GetClassCount(Card.GetCode)>4 end
+function c71400017.op2(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	local g=Duel.GetMatchingGroup(c71400017.filter2r,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
+	if g:GetClassCount(Card.GetCode)<5 then return end
 	local rg=Group.CreateGroup()
 	for i=1,5 do
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -72,14 +71,11 @@ function c71400017.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		rg:AddCard(sc)
 		g:Remove(Card.IsCode,nil,sc:GetCode())
 	end
-	rg:AddCard(c)
-	Duel.Remove(rg,POS_FACEUP,REASON_COST)
-end
-function c71400017.op2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c71400017.filter2,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
+	local g2=Duel.SelectMatchingCard(tp,c71400017.filter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	if g2:GetCount()>0 then
+		Duel.SendtoHand(g2,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
