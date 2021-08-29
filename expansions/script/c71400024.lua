@@ -1,4 +1,4 @@
---异梦书中的人偶
+--异梦书中的女儿节人偶
 function c71400024.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,yume.YumeCheck(c),4,2)

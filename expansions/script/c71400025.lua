@@ -28,7 +28,7 @@ function c71400025.initial_effect(c)
 	Duel.AddCustomActivityCounter(71400025,ACTIVITY_SPSUMMON,c71400025.counterfilter)
 end
 function c71400025.counterfilter(c)
-	return c:GetSummonLocation()~=LOCATION_EXTRA or c:IsType(TYPE_LINK)
+	return c:GetSummonLocation()~=LOCATION_EXTRA or c:IsType(TYPE_LINK) and c:IsSetCard(0x714)
 end
 function c71400025.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,800) end

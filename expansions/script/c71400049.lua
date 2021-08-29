@@ -5,25 +5,24 @@ function c71400049.initial_effect(c)
 	--See AddYumeFieldGlobal
 	--self to deck & activate field
 	yume.AddYumeFieldGlobal(c,71400049,1)
-	--special summon
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(71400049,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e1:SetCountLimit(1)
-	e1:SetCondition(c71400049.con1)
-	e1:SetRange(LOCATION_FZONE)
-	e1:SetTarget(c71400049.tg1)
-	e1:SetOperation(c71400049.op1)
-	c:RegisterEffect(e1)
+	--synchro summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(71400049,0))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetCountLimit(1)
+	e2:SetTarget(c71400049.tg1)
+	e2:SetOperation(c71400049.op1)
+	c:RegisterEffect(e2)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400049,1))
-	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_DESTROYED)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1)
 	e2:SetCondition(c71400049.con2)
@@ -31,58 +30,68 @@ function c71400049.initial_effect(c)
 	e2:SetOperation(c71400049.op2)
 	c:RegisterEffect(e2)
 end
+function c71400049.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c71400049.filter1(c)
+	return c:IsSynchroSummonable(nil) and c:IsSetCard(0x717)
+end
 function c71400049.op1(e,tp,eg,ep,ev,re,r,rp)
-	local cnt=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if cnt<=0 or not e:GetHandler():IsRelateToEffect(e) then return end
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then cnt=1 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c71400049.filter1,tp,LOCATION_HAND,0,1,cnt,nil,e,tp)
-	if g:GetCount()==0 then return end
-	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	local syng=Duel.GetMatchingGroup(c71400049.synfilter,tp,LOCATION_EXTRA,0,nil)
-	if syng:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400049,2)) then
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local g=Duel.GetMatchingGroup(c71400049.filter1,tp,LOCATION_EXTRA,0,nil)
+	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local syn=syng:Select(tp,1,1,nil):GetFirst()
-		Duel.SynchroSummon(tp,syn,nil)
+		local sg=g:Select(tp,1,1,nil)
+		local tc=sg:GetFirst()
+		Duel.SynchroSummon(tp,tc,nil)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SPSUMMON_COST)
+		e1:SetOperation(c71400049.regop)
+		e1:SetLabelObject(c)
+		tc:RegisterEffect(e1)
 	end
 end
-function c71400049.filter1(c,e,tp)
-	return c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c71400049.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local lc=e:GetLabelObject()
+	local e1=Effect.CreateEffect(lc)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+	e1:SetOperation(c71400049.sumop)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(lc)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+	c:RegisterEffect(e2)
+	e:Reset()
 end
-function c71400049.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c71400049.filter1,tp,LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,0)
+function c71400049.sumop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SetChainLimitTillChainEnd(c71400049.chainlm)
 end
-function c71400049.con1(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
-end
---Select Synchro Monsters
-function c71400049.synfilter(c)
-	return c:IsSetCard(0x717) and c:IsSpecialSummonable(SUMMON_TYPE_SYNCHRO)
-end
---Synchro Summon Filter
-function c71400049.synfilter2(c)
-	return c:IsSetCard(0x714) and c:IsSummonType(SUMMON_TYPE_SYNCHRO)
+function c71400049.chainlm(e,rp,tp)
+	return aux.ExceptThisCard(e)
 end
 function c71400049.con2(e,tp,eg,ep,ev,re,r,rp)
-	local ct=eg:FilterCount(c71400049.synfilter2,nil)
-	return ct>0
+	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_MZONE)
 end
-function c71400049.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_GRAVE)
+function c71400049.filter2(c,e,tp)
+	return c:IsSetCard(0x717) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c71400049.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c71400049.filter2(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(c71400049.filter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,c71400049.filter2,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c71400049.op2(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local ct=eg:FilterCount(c71400049.synfilter2,nil)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local g=Duel.GetMatchingGroup(c71400049.filter1,tp,LOCATION_GRAVE,0,nil,e,tp)
-	ct=math.min(ct,ft,g:GetCount())
-	if ct<1 then return end
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=g:Select(tp,1,ct,nil)
-	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and e:GetHandler():IsRelateToEffect(e) then
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+	end
 end

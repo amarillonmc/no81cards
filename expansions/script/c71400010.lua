@@ -1,4 +1,4 @@
---异梦书中的脑女
+--异梦书中的擦伤少女
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400010.initial_effect(c)
 	--xyz summon
@@ -11,11 +11,12 @@ function c71400010.initial_effect(c)
 	e1:SetCategory(CATEGORY_CONTROL)
 	e1:SetDescription(aux.Stringid(71400010,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,71400010)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCost(c71400010.cost)
-	e1:SetTarget(c71400010.target1)
-	e1:SetOperation(c71400010.operation1)
+	e1:SetTarget(c71400010.tg1)
+	e1:SetOperation(c71400010.op1)
 	c:RegisterEffect(e1)
 	--control
 	local e2=Effect.CreateEffect(c)
@@ -41,51 +42,35 @@ function c71400010.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c71400010.filter1(c)
-	return c:IsFaceup() and c:IsAbleToChangeControler()
+	return c:IsFaceup() and c:IsControlerCanBeChanged()
 end
-function c71400010.target1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE,1-tp,LOCATION_REASON_CONTROL)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400010.filter1,tp,0,LOCATION_MZONE,1,nil) and ft>0 end
-	local g=Duel.GetMatchingGroup(c71400010.filter1,tp,0,LOCATION_MZONE,c)
-	Duel.SetOperationInfo(0,CATEGORY_CONTROL,g,g:GetCount(),1-tp,LOCATION_MZONE)
+function c71400010.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c71400010.filter1(chkc) end
+	if chk==0 then return true end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
+	local g=Duel.SelectTarget(tp,c71400010.filter1,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_CONTROL,g,1,0,0)
 end
-function c71400010.operation1(e,tp,eg,ep,ev,re,r,rp)
+function c71400010.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE,1-tp,LOCATION_REASON_CONTROL)
-	local g=Duel.GetMatchingGroup(c71400010.filter1,tp,0,LOCATION_MZONE,c)
-	local ct=g:GetCount()
-	if ct>ft then ct=ft end
-	if ct<1 then return end
-	if ct<g:GetCount() then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
-		g=g:Select(tp,ct,ct,nil)
-	end
-	Duel.GetControl(g,tp)
-	local og=Duel.GetOperatedGroup()
-	if og:GetCount()<1 then return end
-	local tc=og:GetFirst()
-	local atk=0
-	while tc do
-		local tatk=tc:GetAttack()
-		if tatk>0 then atk=atk+tatk end
+	local tc=Duel.GetFirstTarget()
+	if c:IsRelateToEffect(e) and c:IsFaceup() and tc and tc:IsRelateToEffect(e)
+		and not tc:IsImmuneToEffect(e) then
+		c:SetCardTarget(tc)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_ADD_SETCODE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-		e1:SetValue(0x714)
-		e1:SetReset(RESET_EVENT+0x1fe0000)
-		tc:RegisterEffect(e1,true)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-		e2:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-		e2:SetValue(1)
-		e2:SetReset(RESET_EVENT+0x1fe0000)
-		tc:RegisterEffect(e2,true)
-		tc=og:GetNext()
+		e1:SetCode(EFFECT_SET_CONTROL)
+		e1:SetValue(tp)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetCondition(c71400010.ctcon)
+		tc:RegisterEffect(e1)
+		Duel.SetLP(tp,Duel.GetLP(tp)-math.ceil(tc:GetBaseAttack()/2))
 	end
-	Duel.SetLP(tp,Duel.GetLP(tp)-atk/2)
+end
+function c71400010.ctcon(e)
+	local c=e:GetOwner()
+	local h=e:GetHandler()
+	return c:IsHasCardTarget(h)
 end
 function c71400010.condition2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

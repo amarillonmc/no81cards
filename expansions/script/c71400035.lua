@@ -10,30 +10,50 @@ function c71400035.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DISABLE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,71400035+EFFECT_COUNT_CODE_OATH)
+	e1:SetDescription(aux.Stringid(71400035,0))
 	e1:SetOperation(c71400035.op1)
 	e1:SetTarget(c71400035.tg1)
 	e1:SetTarget(yume.YumeFieldCheckTarget())
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
 	c:RegisterEffect(e1)
+	--direct attack
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(71400035,1))
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCondition(c71400035.con2)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c71400035.tg2)
+	e2:SetOperation(c71400035.op2)
+	c:RegisterEffect(e2)
 end
 function c71400035.filter1(c)
 	return c:IsSetCard(0xc714) and c:IsAbleToGrave()
 end
 function c71400035.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400035.filter1,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	local c=e:GetHandler() 
+	if chk==0 then
+		if c:IsLocation(LOCATION_ONFIELD) and c:IsFacedown() then
+			return yume.YumeFieldCheck(tp) and Duel.IsExistingMatchingCard(c71400035.filter1,tp,LOCATION_DECK,0,1,nil)
+		else
+		return yume.YumeFieldCheck(tp)
+		end
+	end
+	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
+	if c:IsStatus(STATUS_ACT_FROM_HAND) then
+		e:SetCategory(0)
+	else
+		e:SetCategory(CATEGORY_TOGRAVE)
+		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	end
 end
 function c71400035.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if yume.YumeFieldCheck(tp) and Duel.SelectYesNo(tp,aux.Stringid(71400035,1)) then
-		yume.ActivateYumeField(tp)
-	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c71400035.filter1,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)==1 and Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0) then
-		Duel.BreakEffect()
+	yume.ActivateYumeField(tp)
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_DISABLE)
@@ -58,6 +78,14 @@ function c71400035.op1(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetLabel(c:GetSequence())
 		Duel.RegisterEffect(e3,tp)
 	end
+	if not c:IsStatus(STATUS_ACT_FROM_HAND) and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,c71400035.filter1,tp,LOCATION_DECK,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+		end
+	end
+	--[[
 	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
 	local rct=1
 	if Duel.GetTurnPlayer()~=tp then rct=2 end
@@ -69,11 +97,14 @@ function c71400035.op1(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetTargetRange(1,0)
 	e4:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,rct)
 	Duel.RegisterEffect(e4,tp)
+	--]]
 end
+--[[
 function c71400035.aclimit(e,re,rp)
 	local rc=re:GetHandler()
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and not rc:IsSetCard(0x714) and not rc:IsImmuneToEffect(e)
 end
+--]]
 function c71400035.tg1a(e,c)
 	local seq=e:GetLabel()
 	local p=c:GetControler()
@@ -88,5 +119,27 @@ function c71400035.op1a(e,tp,eg,ep,ev,re,r,rp)
 	seq=aux.MZoneSequence(seq)
 	if ((rp==tp and seq==tseq) or (rp==1-tp and seq==4-tseq)) and (not ec:IsSetCard(0x714) and (ec:IsLocation(loc) or loc&LOCATION_ONFIELD==0) or not (ec:IsPreviousSetCard(0x714) or ec:IsLocation(loc)) and loc&LOCATION_ONFIELD~=0) then
 		Duel.NegateEffect(ev)
+	end
+end
+function c71400035.con2(e,tp,eg,ep,ev,re,r,rp)
+	return aux.exccon(e) and yume.YumeCon(e,tp) and Duel.IsAbleToEnterBP()
+end
+function c71400035.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c71400035.filter2(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c71400035.filter2,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,c71400035.filter2,tp,LOCATION_MZONE,0,1,1,nil)
+end
+function c71400035.filter2(c)
+	return c:IsFaceup() and c:IsSetCard(0x714)
+end
+function c71400035.op2(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DIRECT_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
 	end
 end

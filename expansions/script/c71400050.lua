@@ -56,7 +56,7 @@ function c71400050.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c71400050.splimit(e,c)
-	return not c:IsType(TYPE_SYNCHRO) and c:IsLocation(LOCATION_EXTRA)
+	return not (c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x714)) and c:IsLocation(LOCATION_EXTRA)
 end
 function c71400050.filter2(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0x714)

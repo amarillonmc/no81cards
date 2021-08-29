@@ -16,7 +16,7 @@ function c71400026.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400026,1))
 	e2:SetCountLimit(1,71400026)
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_TOEXTRA)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(c71400026.mixedYumeCon)
@@ -55,20 +55,47 @@ function c71400026.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c71400026.mixedYumeCon(e,tp,eg,ep,ev,re,r,rp)
-	return yume.YumeCon(e,tp,eg,ep,ev,re,r,rp) and aux.exccon(e,tp,eg,ep,ev,re,r,rp)
+	return yume.YumeCon(e,tp) and aux.exccon(e)
 end
 function c71400026.filter2(c)
 	return c:IsSetCard(0xe714) and not c:IsCode(71400026) and c:IsAbleToHand()
 end
+function c71400026.filter2a(c)
+	return c:IsCode(71400011) and c:GetOriginalType()&0x7&TYPE_MONSTER~=0
+end
+function c71400026.filter2b(c)
+	return c:IsSetCard(0xb714) and c:IsType(TYPE_FIELD) and c:IsAbleToHand()
+end
 function c71400026.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400026.filter2,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	local g=Duel.GetMatchingGroup(c71400026.filter2a,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400026.filter2,tp,LOCATION_DECK,0,1,nil) and (not g:GetCount()>0 or g:IsExists(Card.IsAbleToExtra,1,nil) and Duel.IsExistingMatchingCard(c71400026.filter2b,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil))
+	end
+	if g:GetCount()>0 then
+		local fg=g:Filter(Card.IsAbleToExtra,nil)
+		local fct=fg:GetCount()
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK+LOCATION_GRAVE)
+		Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,fg,fct,0,0)
+	else
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	end
 end
 function c71400026.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c71400026.filter2,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
+	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,g)
+		local tg=Duel.GetMatchingGroup(c71400026.filter2a,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil):Filter(Card.IsAbleToDeck,nil)
+		if aux.NecroValleyNegateCheck(tg) then return end
+		Duel.SendtoDeck(tg,nil,0,REASON_EFFECT)
+		local og=Duel.GetOperatedGroup()
+		local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)
+		if ct>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71400026.filter2b),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+			if sg:GetCount()>0 then
+				Duel.SendtoHand(sg,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,sg)
+			end
+		end
 	end
 end

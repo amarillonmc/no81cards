@@ -1,8 +1,8 @@
---梦之眼药商人
+--异梦眼药商人
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400022.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,yume.YumeCheck(c))
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,yume.YumeLMGFilterFunction(c))
 	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)

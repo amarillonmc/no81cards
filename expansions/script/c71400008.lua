@@ -1,4 +1,4 @@
---异梦书中的三足怪物
+--异梦书中的边际鲜活工作者
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400008.initial_effect(c)
 	--xyz summon

@@ -12,9 +12,10 @@ function c71400018.initial_effect(c)
 	e1:SetDescription(aux.Stringid(71400018,0))
 	e1:SetTarget(c71400018.target)
 	e1:SetCost(c71400018.cost1)
-	e1:SetCondition(yume.YumeLethalCon)
+	e1:SetCondition(yume.YumeCon)
 	e1:SetOperation(c71400018.operation)
 	c:RegisterEffect(e1)
+	yume.AddYumeWeaponGlobal(c)
 end
 function c71400018.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
@@ -37,12 +38,14 @@ function c71400018.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
 	Duel.Destroy(sg,REASON_EFFECT)
+--[[
 	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
 		Duel.BreakEffect()
 		c:CancelToGrave()
 		Duel.ChangePosition(c,POS_FACEDOWN)
 		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 	end
+--]]
 end
 function c71400018.limit(g)
 	return  function (e,lp,tp)

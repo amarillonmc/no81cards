@@ -50,6 +50,7 @@ function c71400013.op1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.SendtoGrave(des,REASON_EFFECT)
 	end
+--[[
 	local el1=Effect.CreateEffect(c)
 	el1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	el1:SetType(EFFECT_TYPE_FIELD)
@@ -64,6 +65,7 @@ function c71400013.op1(e,tp,eg,ep,ev,re,r,rp)
 	local el3=el1:Clone()
 	el3:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	c:RegisterEffect(el3)
+--]]
 end
 function c71400013.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

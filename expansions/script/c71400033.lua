@@ -14,6 +14,7 @@ function c71400033.initial_effect(c)
 	e1:SetCondition(yume.YumeCon)
 	e1:SetOperation(c71400033.operation)
 	c:RegisterEffect(e1)
+	yume.AddYumeWeaponGlobal(c)
 end
 function c71400033.filter(c)
 	return c:IsType(TYPE_MONSTER)
@@ -45,12 +46,14 @@ function c71400033.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoDeck(fc,nil,2,REASON_EFFECT)
 		end
 	end
+--[[
 	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
 		Duel.BreakEffect()
 		c:CancelToGrave()
 		Duel.ChangePosition(c,POS_FACEDOWN)
 		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 	end
+--]]
 end
 function c71400033.limit(c)
 	return  function (e,lp,tp)

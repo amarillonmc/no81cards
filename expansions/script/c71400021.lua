@@ -11,9 +11,10 @@ function c71400021.initial_effect(c)
 	e1:SetCountLimit(1,71400021+EFFECT_COUNT_CODE_OATH)
 	e1:SetDescription(aux.Stringid(71400021,0))
 	e1:SetTarget(c71400021.target)
-	e1:SetCondition(yume.YumeLethalCon)
+	e1:SetCondition(yume.YumeCon)
 	e1:SetOperation(c71400021.operation)
 	c:RegisterEffect(e1)
+	yume.AddYumeWeaponGlobal(c)
 end
 function c71400021.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsType(TYPE_MONSTER) end
@@ -36,12 +37,14 @@ function c71400021.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(tc,REASON_EFFECT)
 		end
 	end
+--[[
 	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
 		Duel.BreakEffect()
 		c:CancelToGrave()
 		Duel.ChangePosition(c,POS_FACEDOWN)
 		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 	end
+--]]
 end
 function c71400021.limit(c)
 	return  function (e,lp,tp)
