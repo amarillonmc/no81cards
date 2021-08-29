@@ -51,12 +51,15 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
+function cm.setfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_PENDULUM+TYPE_TOKEN) and c:IsCanTurnSet()
+end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,0,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
 	end
-	local sg=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,0,LOCATION_ONFIELD,nil)
+	local sg=Duel.GetMatchingGroup(cm.setfilter,tp,0,LOCATION_ONFIELD,nil)
 	local tc=sg:GetFirst()
 	while tc do
 		Duel.ChangePosition(tc,POS_FACEDOWN)

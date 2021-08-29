@@ -19,8 +19,8 @@ function cm.initial_effect(c)
 	
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_CARD,0,m)
-	local ct=eg:FilterCount(cm.damfilter,nil,tp)
 	Duel.Recover(tp,300,REASON_EFFECT)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
