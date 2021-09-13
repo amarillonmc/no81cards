@@ -33,7 +33,7 @@ function c82567876.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c82567876.lcheck(g)
-	return g:IsExists(Card.IsRace,1,nil,RACE_BEASTWARRIOR)
+	return g:IsExists(Card.IsLinkRace,1,nil,RACE_BEASTWARRIOR)
 end
 function c82567876.addct(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

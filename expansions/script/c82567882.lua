@@ -35,7 +35,7 @@ function c82567882.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c82567882.fusionfilter(c)
-	return c:IsSetCard(0x825) and c:IsType(TYPE_MONSTER)
+	return c:IsFusionSetCard(0x825) and c:IsType(TYPE_MONSTER)
 end 
 function c82567882.actcon(e)
 	local ph=Duel.GetCurrentPhase()

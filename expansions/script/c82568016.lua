@@ -1,7 +1,7 @@
 --AK-游侠灰烬
 function c82568016.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x825),2,2,c82568016.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x825),2,2,c82568016.lcheck)
 	c:EnableReviveLimit()
 	--counter
 	local e3=Effect.CreateEffect(c)

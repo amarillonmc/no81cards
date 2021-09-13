@@ -1,7 +1,7 @@
 --方舟骑士·占星者 星极
 function c82568031.initial_effect(c)
 	--XYZ summon
-	aux.AddXyzProcedure(c,nil,2,2,c82568031.ovfilter)
+	aux.AddXyzProcedure(c,nil,3,2,c82568031.ovfilter,aux.Stringid(82568031,2),2,c82568031.xyzop)
 	c:EnableReviveLimit()
 	--to hand
 	local e1=Effect.CreateEffect(c)
@@ -15,6 +15,10 @@ function c82568031.initial_effect(c)
 	e1:SetTarget(c82568031.thtg)
 	e1:SetOperation(c82568031.thop)
 	c:RegisterEffect(e1)
+end
+function c82568031.xyzop(e,tp,chk)
+	if chk==0 then return  Duel.GetFlagEffect(tp,82568131)==0 end
+	Duel.RegisterFlagEffect(tp,82568131,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c82568031.handcon(e)
 	return Duel.GetLP(e:GetHandlerPlayer())<=4000

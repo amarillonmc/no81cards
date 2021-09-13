@@ -167,13 +167,13 @@ function c82567854.nearlfilter(c)
 	return c:IsFaceup() and c:IsCode(82567792) 
 end
 function c82567854.nightingalefilter(c)
-	return c:IsFaceup() and (c:IsCode(82567786) or c:IsCode(82567787) or c:IsCode(82568043))  
+	return c:IsFaceup() and (c:IsCode(82567786) or c:IsCode(82567787) or c:IsCode(82568043) or c:IsCode(82568087) or c:IsCode(82568086))  
 end
 function c82567854.nightingalefilter2(c)
-	return c:IsFaceup() and (c:IsCode(82567786) or c:IsCode(82567787) or c:IsCode(82568043)) and c:IsAttackAbove(3000)
+	return c:IsFaceup() and (c:IsCode(82567786) or c:IsCode(82567787) or c:IsCode(82568043) or c:IsCode(82568087) or c:IsCode(82568086)) and c:IsAttackAbove(3000)
 end
 function c82567854.nightingalefilter3(c)
-	return c:IsFaceup() and (c:IsCode(82567786) or c:IsCode(82567787) or c:IsCode(82568043)) and c:IsAttackBelow(2999)
+	return c:IsFaceup() and (c:IsCode(82567786) or c:IsCode(82567787) or c:IsCode(82568043) or c:IsCode(82568087) or c:IsCode(82568086)) and c:IsAttackBelow(2999)
 end
 function c82567854.protectfilter(c)
 	return c:IsFaceup() and c:IsLocation(LOCATION_MZONE)

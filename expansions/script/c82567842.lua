@@ -52,7 +52,7 @@ function c82567842.tgcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c82567842.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,LOCATION_MZONE)
 end
 function c82567842.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

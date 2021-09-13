@@ -15,7 +15,7 @@ function c82567793.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c82567793.linkfilter(c)
-	return c:IsSetCard(0x825) and c:IsRace(RACE_BEASTWARRIOR) 
+	return c:IsLinkSetCard(0x825) and c:IsLinkRace(RACE_BEASTWARRIOR) 
 end
 function c82567793.filter(c,e,tp,zone)
 	return c:IsSetCard(0x825) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone) and c:IsLevelBelow(4)

@@ -95,6 +95,7 @@ function c82567824.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return true end
 	if chk==0 then return Duel.IsExistingMatchingCard(c82567824.kzmerfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
 	 Duel.SetChainLimit(aux.FALSE)
 end
 function c82567824.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -104,8 +105,7 @@ function c82567824.spop(e,tp,eg,ep,ev,re,r,rp)
 	 if not Duel.IsExistingMatchingCard(c82567824.desfilter,tp,0,LOCATION_ONFIELD,1,nil) then return end
 	 if Duel.SelectYesNo(tp,aux.Stringid(82567824,3)) then 
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c82567824.desfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
-	   Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	local g=Duel.SelectMatchingCard(tp,c82567824.desfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	 if g:GetCount()>0 then
 	 Duel.Destroy(g,REASON_EFFECT)
 	end

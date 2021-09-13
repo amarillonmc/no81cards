@@ -54,7 +54,7 @@ end
 function c82567873.spcon(e,c,tp)
 	if c==nil then return true end
 	local tp=e:GetHandler():GetControler()
-	return Duel.IsExistingMatchingCard(c82567873.bwfilter,tp,LOCATION_MZONE,0,1,nil) and not Duel.IsExistingMatchingCard(c82567873.ntbwfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c82567873.bwfilter,tp,LOCATION_MZONE,0,1,nil) and not Duel.IsExistingMatchingCard(c82567873.ntbwfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c82567873.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

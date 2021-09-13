@@ -2,7 +2,7 @@
 function c82567809.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.EnablePendulumAttribute(c,false)
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsSetCard,0x825),aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_FIRE),1,true,true)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x825),aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_FIRE),1,true,true)
 	--plimit
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -133,7 +133,7 @@ function c82567809.encost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,1,0,0x5825,4,REASON_COST)
 end
 function c82567809.enfilter(c)
-	return c:IsFaceup() 
+	return c:IsFaceup() and c:IsType(TYPE_EFFECT) and not c:IsDisabled()
 end
 function c82567809.entg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c82567809.enfilter,tp,0,LOCATION_MZONE,1,e:GetHandler()) end

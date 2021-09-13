@@ -1,5 +1,6 @@
 --逆方舟骑士·暴君 塔露拉
 function c82568007.initial_effect(c)
+	aux.EnablePendulumAttribute(c,false)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x825),10,3)
 	c:EnableReviveLimit()
@@ -278,8 +279,7 @@ function c82568007.sumcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c82568007.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-	Duel.SetChainLimit(aux.FALSE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,LOCATION_PZONE)
 end
 function c82568007.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -43,6 +43,7 @@ function c82568051.rctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	 Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,nil)
+	  Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c82568051.rcfilter(c)
 	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x825) and c:IsAbleToHand()
@@ -60,7 +61,6 @@ function c82568051.rcop(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.SelectMatchingCard(tp,c82568051.rcfilter2,tp,LOCATION_DECK,0,1,1,nil)
 	g:Merge(g2)
 	if g:GetCount()>0 then
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end

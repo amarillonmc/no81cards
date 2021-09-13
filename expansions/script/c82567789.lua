@@ -2,7 +2,7 @@
 function c82567789.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsSetCard,0x825),aux.FilterBoolFunction(Card.IsType,TYPE_TUNER),1,true,true)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x825),aux.FilterBoolFunction(Card.IsFusionType,TYPE_TUNER),1,true,true)
 	--DEF change
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(82567789,2))
@@ -137,6 +137,7 @@ end
 function c82567789.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true  end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	 Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
 function c82567789.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -148,7 +149,6 @@ function c82567789.negop(e,tp,eg,ep,ev,re,r,rp)
 	 then Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c82567789.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp) 
 	   if g:GetCount()>0 then
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 		local tc=g:GetFirst()
 		Duel.SpecialSummon(tc,TYPE_SPSUMMON,tp,tp,false,false,POS_FACEUP) 
 	 if tc then
@@ -222,7 +222,6 @@ function c82567789.naop(e,tp,eg,ep,ev,re,r,rp)
 	 then Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c82567789.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp) 
 	   if g:GetCount()>0 then
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 		local tc=g:GetFirst()
 		Duel.SpecialSummon(tc,TYPE_SPSUMMON,tp,tp,false,false,POS_FACEUP) 
 	   if tc then

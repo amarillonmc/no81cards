@@ -24,7 +24,7 @@ function c82567794.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c82567794.linkfilter(c)
-	return c:IsSetCard(0x825)  
+	return c:IsLinkSetCard(0x825)  
 end
 function c82567794.ovfilter(c)
 	return c:IsCode(82567784)  

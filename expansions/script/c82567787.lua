@@ -74,7 +74,7 @@ function c82567787.xyzop(e,tp,chk)
 	
 end
 function c82567787.filter(c)
-	return c:IsFaceup() and not c:IsCode(82567786) and not c:IsCode(82567787)  
+	return c:IsFaceup() and not c:IsCode(82567786) and not c:IsCode(82567787)  and not c:IsCode(82568087) and not c:IsCode(82568086)
 end
 function c82567787.rdval(e)
 	return e:GetHandler():GetAttack()/2

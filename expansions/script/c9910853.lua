@@ -84,14 +84,47 @@ function c9910853.retcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910853.retop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local mg=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
-	if mg:GetCount()==0 then return end
-	local g=Duel.GetMatchingGroup(Card.IsLinkSummonable,1-tp,LOCATION_EXTRA,0,nil,mg)
-	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
-		local tc=g:Select(1-tp,1,1,nil):GetFirst()
-		if tc then
-			Duel.LinkSummon(1-tp,tc,mg)
-		end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil,1-tp)
+	local ct=g:GetCount()
+	if ct<=0 then return end
+	if ct>2 then ct=2 end
+	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CONFIRM)
+	local sg=g:Select(1-tp,ct,ct,nil)
+	local fid=c:GetFieldID()
+	for tc in aux.Next(sg) do
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		tc:RegisterFlagEffect(9910853,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(9910853,1))
 	end
+	sg:KeepAlive()
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e2:SetCountLimit(1)
+	e2:SetLabel(fid)
+	e2:SetLabelObject(sg)
+	e2:SetCondition(c9910853.rmcon)
+	e2:SetOperation(c9910853.rmop)
+	Duel.RegisterEffect(e2,tp)
+end
+function c9910853.rmfilter(c,fid)
+	return c:GetFlagEffectLabel(9910853)==fid
+end
+function c9910853.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetTurnPlayer()==tp then return false end
+	local g=e:GetLabelObject()
+	if not g:IsExists(c9910853.rmfilter,1,nil,e:GetLabel()) then
+		g:DeleteGroup()
+		e:Reset()
+		return false
+	else return true end
+end
+function c9910853.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	local tg=g:Filter(c9910853.rmfilter,nil,e:GetLabel())
+	Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
 end

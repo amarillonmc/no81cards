@@ -111,7 +111,7 @@ function c82567848.initial_effect(c)
 	e13:SetOperation(c82567848.penop)
 	c:RegisterEffect(e13) 
 end
-c82567816.pendulum_level=4
+c82567848.pendulum_level=4
 function c82567848.pencon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and c:IsPreviousLocation(LOCATION_MZONE) and c:IsFaceup()

@@ -12,6 +12,7 @@ function c82567818.initial_effect(c)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetCountLimit(1,82567818)
 	e4:SetRange(LOCATION_MZONE)
+	e4:SetCost(c82567818.tdcost)
 	e4:SetTarget(c82567818.tdtg)
 	e4:SetOperation(c82567818.tdop)
 	c:RegisterEffect(e4)
@@ -67,10 +68,14 @@ end
 function c82567818.atkupcon(e)
 	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
 end
+function c82567818.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
+		if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x5825,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x5825,2,REASON_COST)
+end
 function c82567818.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
 	if chk==0 then return g:GetCount()>0 and e:GetHandler():IsAbleToGrave() end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,LOCATION_MZONE)
 end
 function c82567818.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)

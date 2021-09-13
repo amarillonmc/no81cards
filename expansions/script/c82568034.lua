@@ -25,13 +25,6 @@ function c82568034.initial_effect(c)
 	e3:SetTarget(c82568034.sptg)
 	e3:SetOperation(c82568034.spop)
 	c:RegisterEffect(e3)
-	--add setname
-	local e9=Effect.CreateEffect(c)
-	e9:SetType(EFFECT_TYPE_SINGLE)
-	e9:SetCode(EFFECT_ADD_SETCODE)
-	e9:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e9:SetValue(0x825)
-	c:RegisterEffect(e9)
 end
 function c82568034.handcon(e)
 	return Duel.GetLP(e:GetHandlerPlayer())<=4000
@@ -115,7 +108,7 @@ function c82568034.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e3)
 		 local e7=Effect.CreateEffect(e:GetHandler())
 		e7:SetType(EFFECT_TYPE_SINGLE)
-		e7:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+		e7:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
 		e7:SetValue(1)
 		e7:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e7)
@@ -140,7 +133,7 @@ function c82568034.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c82568034.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	if tc:GetFlagEffectLabel(82567881)~=e:GetLabel() then
+	if tc:GetFlagEffectLabel(82568034)~=e:GetLabel() then
 		e:Reset()
 		return false
 	else return true end

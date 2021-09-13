@@ -1,6 +1,17 @@
 --AKR-北极星麦哲伦
 function c82568018.initial_effect(c)
+	c:EnableReviveLimit()
 	aux.EnablePendulumAttribute(c)
+	--revive limit
+	aux.EnableReviveLimitPendulumSummonable(c,LOCATION_EXTRA)
+	c:SetSPSummonOnce(82568018)
+	--spsummon condition
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(0)
+	c:RegisterEffect(e0)
 	  --plimit
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -22,6 +33,16 @@ function c82568018.initial_effect(c)
 	e1:SetTarget(c82568018.dwtarget)
 	e1:SetOperation(c82568018.dwop)
 	c:RegisterEffect(e1)
+	--special summon from hand
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(82568018,2))
+	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetRange(LOCATION_HAND)
+	e5:SetCondition(c82568018.spcon1)
+	e5:SetTarget(c82568018.sptg1)
+	e5:SetOperation(c82568018.spop1)
+	c:RegisterEffect(e5)
 	--token Summon
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(82568018,0))
@@ -43,6 +64,22 @@ function c82568018.initial_effect(c)
 	e4:SetTarget(c82568018.target)
 	e4:SetOperation(c82568018.operation)
 	c:RegisterEffect(e4)
+end
+function c82568018.spcon1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFieldCard(tp,LOCATION_PZONE,0) and Duel.GetFieldCard(tp,LOCATION_PZONE,1) and 
+	(Duel.GetFieldCard(tp,LOCATION_PZONE,0):GetLeftScale()-Duel.GetFieldCard(tp,LOCATION_PZONE,1):GetLeftScale()>=7 
+	 or Duel.GetFieldCard(tp,LOCATION_PZONE,1):GetLeftScale()-Duel.GetFieldCard(tp,LOCATION_PZONE,0):GetLeftScale()>=7)
+end
+function c82568018.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,true,true) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c82568018.spop1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	Duel.SpecialSummon(c,SUMMON_TYPE_PENDULUM,tp,tp,true,false,POS_FACEUP)
+	c:CompleteProcedure()
 end
 function c82568018.splimit(e,c,tp,sumtp,sumpos,re)
 	return bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM 
@@ -75,13 +112,13 @@ function c82568018.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c82568018.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,82568019,0,0x4011,0,0,1,RACE_MACHINE,ATTRIBUTE_WIND) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,82568019,0,0x4011,2000,0,4,RACE_MACHINE,ATTRIBUTE_WIND) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c82568018.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,82568019,0,0x4011,0,0,1,RACE_FIEND,ATTRIBUTE_WIND) then return end
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,82568019,0,0x4011,2000,0,4,RACE_FIEND,ATTRIBUTE_WIND) then return end
 	local token=Duel.CreateToken(tp,82568019)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 end

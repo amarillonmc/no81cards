@@ -44,7 +44,7 @@ function c82567811.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c82567811.linkfilter(c)
-	return c:IsSetCard(0x825)  
+	return c:IsLinkSetCard(0x825)  
 end
 function c82567811.spfilter(c,e,tp)
 	return c:IsSetCard(0x825) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

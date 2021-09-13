@@ -45,7 +45,7 @@ function c82567829.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function c82567829.linkfilter(c)
-	return c:IsSetCard(0x825) and c:IsLevelBelow(3)
+	return c:IsLinkSetCard(0x825) and c:IsLevelBelow(3)
 end
 function c82567829.dwfilter(c)
 	return c:IsSetCard(0x825) and c:IsFaceup()

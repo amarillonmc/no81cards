@@ -31,7 +31,8 @@ function c82567800.initial_effect(c)
 	e4:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCountLimit(1)
-	e4:SetTarget(c82567800.thcon)
+	e4:SetCondition(c82567800.thcon)
+	e4:SetTarget(c82567800.thtg)
 	e4:SetOperation(c82567800.thop)
 	c:RegisterEffect(e4)
 end
@@ -78,7 +79,10 @@ function c82567800.drop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c82567800.thcon(e,tp,eg,ep,ev,re,r,rp)
-   if chk==0 then  return Duel.GetTurnPlayer()==tp end
+   return Duel.GetTurnPlayer()==e:GetHandler():GetControler() 
+end
+function c82567800.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+   if chk==0 then  return true  end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,tp,LOCATION_GRAVE)
 end
 function c82567800.thop(e,tp,eg,ep,ev,re,r,rp)

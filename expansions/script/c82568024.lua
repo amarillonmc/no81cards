@@ -60,7 +60,8 @@ end
 function c82568024.spcon2(e,c,tp)
 	if c==nil then return true end
 	local tp=e:GetHandler():GetControler()
-	return Duel.IsExistingMatchingCard(c82568024.bwfilter,tp,LOCATION_MZONE,0,1,nil) and not Duel.IsExistingMatchingCard(c82568024.ntbwfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c82568024.bwfilter,tp,LOCATION_MZONE,0,1,nil) 
+		   and not Duel.IsExistingMatchingCard(c82568024.ntbwfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c82568024.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() and Duel.GetCounter(tp,LOCATION_ONFIELD,0,0x5825)>=2  end
@@ -70,7 +71,7 @@ function c82568024.filter(c,e,tp)
 	return c:IsSetCard(0x825) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c82568024.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c82568024.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c82568024.filter,tp,LOCATION_DECK,0,1,nil,e,tp)  end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK)
 end
 function c82568024.operation(e,tp,eg,ep,ev,re,r,rp)

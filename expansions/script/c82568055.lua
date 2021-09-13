@@ -27,7 +27,7 @@ function c82568055.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c82568055.filter(c,e,tp)
-	return c:IsCode(82568053) 
+	return c:IsCode(82568053) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)
 end
 function c82568055.filter2(c)
 	return c:IsCode(82567786) and c:IsReleasable()
@@ -35,14 +35,14 @@ end
 function c82568055.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return
-   Duel.IsExistingMatchingCard(c82568055.filter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,nil)
+   Duel.IsExistingMatchingCard(c82568055.filter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp)
 	and  Duel.IsExistingMatchingCard(c82568055.filter2,tp,LOCATION_MZONE,0,1,nil)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c82568055.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(82568055,1))
-	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c82568055.filter),tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
+	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c82568055.filter),tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	local tc=tg:GetFirst()
 	if tc then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)

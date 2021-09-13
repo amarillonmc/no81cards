@@ -1,6 +1,7 @@
 --逆方舟骑士·盾 爱国者
 function c82567899.initial_effect(c)
 	--fusion material
+	aux.EnablePendulumAttribute(c,false)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,c82567899.ffilter,3,true)
 	--defense attack
@@ -95,7 +96,7 @@ function c82567899.initial_effect(c)
 	e13:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e13:SetCode(EVENT_PHASE+PHASE_END)
 	e13:SetRange(LOCATION_PZONE)
-	e13:SetCountLimit(1)
+	e13:SetCountLimit(1,82567899+EFFECT_COUNT_CODE_DUEL)
 	e13:SetCondition(c82567899.sumcon)
 	e13:SetTarget(c82567899.sumtg)
 	e13:SetOperation(c82567899.sumop)
@@ -233,8 +234,7 @@ function c82567899.sumcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c82567899.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-	Duel.SetChainLimit(aux.FALSE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,LOCATION_PZONE)
 end
 function c82567899.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

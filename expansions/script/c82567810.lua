@@ -1,7 +1,7 @@
 --方舟骑士·整装待发 凛冬
 function c82567810.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(c82567810.linkfilter),1,2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(c82567810.linksfilter),1,2)
 	c:EnableReviveLimit()
 	--link success
 	local e1=Effect.CreateEffect(c)
@@ -34,8 +34,11 @@ function c82567810.initial_effect(c)
 	c:RegisterEffect(e3)
 	
 end
+function c82567810.linksfilter(c)
+	return c:IsLinkSetCard(0x825) 
+end
 function c82567810.linkfilter(c)
-	return c:IsSetCard(0x825)  
+	return c:IsLinkSetCard(0x825) and c:IsAbleToHand()
 end
 function c82567810.ovfilter(c)
 	return c:IsCode(82567782) and c:GetCounter(0x5825)>=2 

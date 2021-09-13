@@ -107,6 +107,8 @@ function c82568014.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	if  re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+		Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
+		 Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	end
 end
 function c82568014.disop(e,tp,eg,ep,ev,re,r,rp)
@@ -116,8 +118,6 @@ function c82568014.disop(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,82568015,0,0x4011,0,2000,3,RACE_ROCK,ATTRIBUTE_EARTH) and  e:GetHandler():IsRelateToEffect(e) 
 	 and  Duel.SelectYesNo(tp,aux.Stringid(82568014,3)) then 
 	local token=Duel.CreateToken(tp,82568015)
-	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 end
 end
@@ -130,8 +130,6 @@ function c82568014.disop2(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,82568015,0,0x4011,0,2000,3,RACE_ROCK,ATTRIBUTE_EARTH) and  e:GetHandler():IsRelateToEffect(e) 
 	 and  Duel.SelectYesNo(tp,aux.Stringid(82568014,3)) then 
 	local token=Duel.CreateToken(tp,82568015)
-	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 end
 end

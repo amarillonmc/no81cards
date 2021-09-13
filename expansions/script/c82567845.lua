@@ -63,10 +63,10 @@ function c82567845.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c82567845.fusionfilter1(c)
-	return (c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_FAIRY)) or c:IsRace(RACE_FAIRY) or c:IsAttribute(ATTRIBUTE_LIGHT)  
+	return (c:IsFusionAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_FAIRY)) or c:IsRace(RACE_FAIRY) or c:IsFusionAttribute(ATTRIBUTE_LIGHT)  
 end
 function c82567845.fusionfilter2(c)
-	return (c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_FIEND)) or c:IsAttribute(ATTRIBUTE_DARK) or c:IsRace(RACE_FIEND)
+	return (c:IsFusionAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_FIEND)) or c:IsFusionAttribute(ATTRIBUTE_DARK) or c:IsRace(RACE_FIEND)
 end
 function c82567845.ovfilter(c)
 	return c:IsCode(82567844) 

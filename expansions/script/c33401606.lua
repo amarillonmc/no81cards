@@ -1,4 +1,4 @@
---流转之观测者 万由里
+--绽放之观测者 万由里
 local m=33401606
 local cm=_G["c"..m]
 Duel.LoadScript("c33400000.lua")
@@ -31,39 +31,26 @@ XY.mayuri(c)
 	c:RegisterEffect(e8)
 end
 function cm.lcheck(g)
-	return g:GetClassCount(Card.GetLinkAttribute)==g:GetCount()
+	return g:GetClassCount(Card.GetLinkAttribute)==g:GetCount() or g:IsExists(Card.IsLinkSetCard,1,nil,0x6344)
 end
 
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
-function cm.ckfilter(c)
-	return  (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and Duel.IsExistingMatchingCard(cm.ckfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,c:GetAttribute())
+function cm.thfilter(c)
+	return c:IsSetCard(0x6344) and c:IsAbleToHand()
 end
-function cm.ckfilter2(c,at)
-	return  c:IsAbleToHand() and c:IsSetCard(0x6344) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(at)
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)  end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_MZONE) and chkc:IsControler(tp) and cm.ckfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.ckfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.ckfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
-end
-function cm.thfilter(c,at)
-	return c:IsSetCard(0x6344) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(at) and c:IsAbleToHand()
-end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and (tc:IsFaceup() or tc:IsLocation(LOCATION_GRAVE)) and Duel.IsExistingMatchingCard(cm.ckfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tc:GetAttribute())  then
-	   local at=tc:GetAttribute()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,at)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-		end
-	end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)  
+local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)	 
+	end  
 end
 
 function cm.atttg(e,tp,eg,ep,ev,re,r,rp,chk)

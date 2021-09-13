@@ -4,18 +4,18 @@ local cm=_G["c"..m]
 Duel.LoadScript("c33400000.lua")
 function cm.initial_effect(c)
 XY.mayuri(c)
-	--fusion material
+	--fusion
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,cm.ffilter,2,true) 
+	aux.AddFusionProcFunRep(c,cm.ffilter,2,true)
  --pierce
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_SINGLE)
 	e7:SetCode(EFFECT_PIERCE)
 	c:RegisterEffect(e7)
- --extra attack
+ --attack all
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE)
-	e8:SetCode(EFFECT_EXTRA_ATTACK)
+	e8:SetCode(EFFECT_ATTACK_ALL)
 	e8:SetValue(1)
 	c:RegisterEffect(e8)
 end

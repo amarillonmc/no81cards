@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	 --fusion materia
 	c:EnableReviveLimit()
-	 aux.AddFusionProcCode2(c,33400814,33400815,false,false)
+	aux.AddFusionProcFunRep(c,cm.ffilter,2,true)
    aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,0,Duel.SendtoGrave,REASON_COST)
  --spsummon condition
 	local e1=Effect.CreateEffect(c)
@@ -72,11 +72,8 @@ function cm.initial_effect(c)
 	e9:SetOperation(cm.rmop)
 	c:RegisterEffect(e9)
 end
-function cm.fusfilter1(c)
-	return c:IsSetCard(0x3342)
-end
-function cm.fusfilter2(c)
-	return c:IsSetCard(0x341) and  c:IsType(TYPE_RITUAL+TYPE_FUSION+TYPE_XYZ+TYPE_SYNCHRO)
+function cm.ffilter(c,fc,sub,mg,sg)
+	return c:IsCode(33400814,33400815) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode())) and (not sg or  sg:IsExists(Card.IsLocation,1,nil,LOCATION_MZONE))
 end
 
 function cm.splimit(e,se,sp,st)

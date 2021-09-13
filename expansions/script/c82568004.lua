@@ -17,36 +17,26 @@ function c82568004.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c82568004.filter(c,e,tp)
-	return c:IsCode(82567852) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 
+	return c:IsCode(82568005) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true)
 end
 function c82568004.filter2(c)
-	return c:IsType(TYPE_TUNER) and c:IsLocation(LOCATION_HAND)
+	return c:IsSummonType(SUMMON_TYPE_SYNCHRO) and c:IsSetCard(0x825) and c:IsReleasable()
 end
 function c82568004.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local mg1=Duel.GetRitualMaterial(tp)
-		local mg=mg1:Filter(c82568004.filter2,nil)
-		return Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_EXTRA,0,1,nil,c82568004.filter,e,tp,mg,nil,Card.GetOriginalLevel,"Equal")
+		return
+   Duel.IsExistingMatchingCard(c82568004.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+	and  Duel.IsExistingMatchingCard(c82568004.filter2,tp,LOCATION_MZONE,0,2,nil)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c82568004.activate(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetRitualMaterial(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(82568004,1))
-	local tg=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_EXTRA,0,1,1,nil,c82568004.filter,e,tp,mg,nil,Card.GetOriginalLevel,"Equal")
+	local tg=Duel.SelectMatchingCard(tp,c82568004.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	local tc=tg:GetFirst()
 	if tc then
-		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
-		 mg=mg:Filter(c82568004.filter2,nil)
-		if tc.mat_filter then
-			mg=mg:Filter(tc.mat_filter,tc,tp)
-		else
-			mg:RemoveCard(tc)
-		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetOriginalLevel(),"Equal")
-		local mat=mg:SelectSubGroup(tp,aux.RitualCheck,false,1,tc:GetOriginalLevel(),tp,tc,tc:GetOriginalLevel(),"Equal")
-		aux.GCheckAdditional=nil
+		local mat=Duel.SelectMatchingCard(tp,c82568004.filter2,tp,LOCATION_MZONE,0,2,2,nil)
 		local atk=mat:GetSum(Card.GetBaseAttack)/2
 		if not mat or mat:GetCount()==0 then return end
 		tc:SetMaterial(mat)
@@ -78,16 +68,6 @@ function c82568004.activate(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetValue(1)
 	tc:RegisterEffect(e4)
-	local e7=Effect.CreateEffect(e:GetHandler())
-	e7:SetCategory(CATEGORY_DAMAGE)
-	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e7:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_CANNOT_DISABLE+EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_NEGATE)
-	e7:SetReset(RESET_EVENT+RESETS_STANDARD)
-	e7:SetCode(EVENT_DESTROYED)
-	e7:SetCondition(c82568004.dmcon)
-	e7:SetTarget(c82568004.dmtg)
-	e7:SetOperation(c82568004.dmop)
-	tc:RegisterEffect(e7)
 	 local e5=Effect.CreateEffect(e:GetHandler())
 		e5:SetType(EFFECT_TYPE_SINGLE)
 		e5:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)

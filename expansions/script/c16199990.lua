@@ -11,12 +11,17 @@ function rk.set(code,setcode)
 	end
 	return code,ccodem
 end
-
 function rk.check(c,str)
 	local substr=c.rksetcode
 	if substr==nil then return false end
 	if string.match(substr,str)==str then return true end
 	return false
+end
+function rk.selectcard(sel_p,tar_p,f,loc,loc1,min,max,exg,...)
+	if loc&LOCATION_GRAVE~=0 or loc1&LOCATION_GRAVE~=0 then
+		f=aux.NecroValleyFilter(f)
+	end
+	return Duel.SelectMatchingCard(sel_p,f,tar_p,loc,loc1,min,max,exg,...)
 end
 function rk.effectg(c,code)
 	local tc=c
@@ -80,7 +85,7 @@ function rk.indes(c,code)
 	tc:RegisterEffect(e5)
 	return e3,e4,e5
 end
-function rk.indes(c,code,att)
+function rk.indes1(c,code,att)
 	local tc=c
 	--disable spsummon
 	local e1=Effect.CreateEffect(c)

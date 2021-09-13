@@ -1,7 +1,7 @@
 --方舟骑士·枯柏 守林人
 function c82567802.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,c82567852.tunerfilter,aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--Destroy
 	local e1=Effect.CreateEffect(c)
@@ -30,7 +30,7 @@ function c82567802.ovfilter(c)
 	return c:IsCode(82567801) and c:GetCounter(0x5825)>=2 
 end
 function c82567802.descon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) or e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) 
 end
 function c82567802.desfilter(c,atk,e)
 	return c:IsFaceup() and c:IsAttackBelow(atk) 

@@ -118,7 +118,7 @@ function c82567833.disfilter1(c)
 	return c:IsFaceup() and c:IsCode(82567833,82567834)
 end
 function c82567833.disfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
+	return c:IsFaceup() and c:IsType(TYPE_EFFECT) and not c:IsDisabled()
 end
 function c82567833.distg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local pm = Duel.GetMatchingGroupCount(c82567833.disfilter1,tp,LOCATION_MZONE,0,nil)
@@ -153,13 +153,13 @@ function c82567833.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c82567833.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,82567834,0,0x4011,0,0,1,RACE_FIEND,ATTRIBUTE_DARK) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,82567834,0,0x4011,2000,0,1,RACE_FIEND,ATTRIBUTE_DARK) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c82567833.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,82567834,0,0x4011,0,0,1,RACE_FIEND,ATTRIBUTE_DARK) then return end
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,82567834,0,0x4011,2000,0,1,RACE_FIEND,ATTRIBUTE_DARK) then return end
 	local token=Duel.CreateToken(tp,82567834)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 end
