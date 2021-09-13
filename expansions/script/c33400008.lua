@@ -1,5 +1,6 @@
 --时崎狂三---时之战士
 function c33400008.initial_effect(c)
+c:EnableCounterPermit(0x34f)
 	aux.AddLinkProcedure(c,c33400008.mfilter,2)
 	c:EnableReviveLimit()
 		--activate from hand
@@ -14,7 +15,7 @@ function c33400008.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_CHAIN_SOLVED)
 	e2:SetCountLimit(1,33400008)
 	e2:SetRange(LOCATION_MZONE)
@@ -75,9 +76,9 @@ end
 function c33400008.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsOnField() and chkc:IsFaceup() and chkc~=c end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) end
+	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
+	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c33400008.activate(e,tp,eg,ep,ev,re,r,rp)

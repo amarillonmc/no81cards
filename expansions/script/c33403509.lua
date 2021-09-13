@@ -17,7 +17,8 @@ function cm.initial_effect(c)
 end
 
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return  Duel.GetFlagEffect(tp,33413501)<(Duel.GetFlagEffect(tp,33403501)/2+1)and Duel.GetFlagEffect(tp,m+30000)==0 and Duel.GetFlagEffect(tp,33443500)==0
+  local ss=Duel.GetTurnCount()
+	return Duel.GetFlagEffect(tp,33413501)<ss and  Duel.GetFlagEffect(tp,m+30000)==0 and Duel.GetFlagEffect(tp,33443500)==0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
  if chk==0 then return true end
@@ -35,53 +36,19 @@ function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not se:GetHandler():IsSetCard(0x5349)and  not c:IsCode(33403500)
 end
 function cm.filter(c,e,tp)
-	return c:IsType(TYPE_MONSTER)and (c:IsAbleToHand() or c:IsCanBeSpecialSummoned(e,0,tp,false,false)) 
+	return c:IsType(TYPE_MONSTER)and (c:IsAbleToHand() or c:IsCanBeSpecialSummoned(e,0,tp,false,false))  and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return  chkc:GetLocation()==LOCATION_GRAVE+LOCATION_REMOVED and cm.filter(chkc,e,tp) end
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil,e,tp) end  
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
-if e:GetLabel()==1 then 
-	local c=e:GetHandler()
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_NEGATED)
-	e2:SetCondition(cm.regcon)
-	e2:SetOperation(cm.regop2)
-	e2:SetReset(RESET_EVENT+RESET_CHAIN+RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
-	Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1)   --t2
-	Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1) --t1
-	Duel.RegisterFlagEffect(tp,33403501,0,0,0)   --duel 1
+   if e:GetLabel()==1 then 
+	Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1) --t1
+	Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1) --t1+t2
+	Duel.RegisterFlagEffect(tp,33403501,0,0,0)  
 	e:SetLabel(2)
 	end
-end
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsSetCard(0x5349) and rp==tp
-end
-function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
-	local n1=Duel.GetFlagEffect(tp,33413501)
-	local n2=Duel.GetFlagEffect(tp,33403501)
-	local n3=Duel.GetFlagEffect(tp,m+20000)
-	Duel.ResetFlagEffect(tp,33413501)
-	Duel.ResetFlagEffect(tp,33403501)
-	Duel.ResetFlagEffect(tp,m+20000)
-	if n1>=2 then 
-		for i=1,n1-1 do
-		Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1)
-		end 
-	end
-	if n2>=2 then
-		for i=1,n2-1 do
-		 Duel.RegisterFlagEffect(tp,33403501,0,0,0)
-		end 
-	end
-	if n3>=2 then 
-		for i=1,n3 do
-		  Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1)
-		end 
-	end 
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
@@ -98,6 +65,8 @@ local c=e:GetHandler()
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		--indes
 		local e3=Effect.CreateEffect(c)
+		e3:SetDescription(aux.Stringid(m,3))
+		e3:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e3:SetType(EFFECT_TYPE_FIELD)
 		e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 		e3:SetRange(LOCATION_MZONE)

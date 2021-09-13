@@ -64,7 +64,7 @@ function c22020840.splimit(e,c)
 	return not c:IsAttribute(ATTRIBUTE_DARK)
 end
 function c22020840.filter(c,e,tp)
-	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_DRAGON)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_DRAGON) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22020840.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c22020840.filter(chkc,e,tp) end

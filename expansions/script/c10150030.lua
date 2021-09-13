@@ -9,7 +9,7 @@ function c10150030.initial_effect(c)
 	e1:SetCost(c10150030.cost)
 	e1:SetTarget(c10150030.target)
 	e1:SetOperation(c10150030.activate)
-	c:RegisterEffect(e1)	   
+	c:RegisterEffect(e1)
 end
 function c10150030.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
@@ -19,7 +19,7 @@ function c10150030.spfilter(c,e,tp)
 	return c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c10150030.cfilter(c)
-	return Duel.GetLocationCountFromEx(tp,tp,c)>0
+	return Duel.GetMZoneCount(tp,c)>0
 end
 function c10150030.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -40,7 +40,7 @@ function c10150030.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c10150030.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCountFromEx(tp)>0 then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 	   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	   local tc=Duel.SelectMatchingCard(tp,c10150030.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
 		if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
