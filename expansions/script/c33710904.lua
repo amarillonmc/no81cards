@@ -27,26 +27,21 @@ function c33710904.tgop(e,tp,eg,ep,ev,re,r,rp)
 		local sum=(og:GetSum(Card.GetTextAttack)+og:GetSum(Card.GetTextDefense))*3
 		if sum==0 then sum=8000 end
 		Duel.SetLP(1-tp,sum)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-			e1:SetTargetRange(0,1)
-			e1:SetValue(c33710904.aclimit)
-			e1:SetLabelObject(og)
-			Duel.RegisterEffect(e1,tp)
+			for tc in aux.Next(og) do
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_FIELD)
+				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+				e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+				e1:SetTargetRange(0,1)
+				e1:SetValue(c33710904.aclimit)
+				e1:SetLabel(tc:GetOriginalCode())
+				Duel.RegisterEffect(e1,tp)
+			end
 		end
 	end
 end
 function c33710904.aclimit(e,re,tp)
 	local c=re:GetHandler()
-	local tg=e:GetLabelObject()
-	local flag=false
-	if not tg then return false end
-	local tc=tg:GetFirst()
-	while tc do
-		flag=c:IsCode(tc:GetCode())
-		tc=tg:GetNext()
-	end
-	return flag
+	local code=e:GetLabel()
+	return c:IsCode(code)
 end

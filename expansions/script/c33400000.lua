@@ -1,24 +1,6 @@
 --星眼
 XY=XY or {}
 XY.loaded_metatable_list={}
-local cm=XY
-function XY.load_metatable(code)
-	local m1=_G["c"..code]
-	if m1 then return m1 end
-	local m2=XY.loaded_metatable_list[code]
-	if m2 then return m2 end
-	_G["c"..code]={}
-	if pcall(function() dofile("expansions/script/c"..code..".lua") end) or pcall(function() dofile("script/c"..code..".lua") end) then
-		local mt=_G["c"..code]
-		_G["c"..code]=nil
-		if mt then
-			XY.loaded_metatable_list[code]=mt
-			return mt
-		end
-	else
-		_G["c"..code]=nil
-	end
-end
 ------
 function XY.REZS(c)
 if c:IsSetCard(0x5349) and not (c:GetCode()==33403501) then 
@@ -75,7 +57,7 @@ function XY.zsop1(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function XY.handcon(e)
-	return Duel.IsExistingMatchingCard(XY.hdfilter,e:GetHandlerPlayer(),LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0
+	return Duel.IsExistingMatchingCard(XY.hdfilter,e:GetHandlerPlayer(),LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) and Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0
 end
 function XY.hdfilter(c)
 	return c:IsFaceup() and   c:IsCode(33403500) 
@@ -298,6 +280,7 @@ if c:IsType(TYPE_QUICKPLAY) then
 	e2:SetCountLimit(1,cd+EFFECT_COUNT_CODE_OATH)
 	e2:SetCondition(XY.maganechcon)
 	e2:SetCost(XY.maganechcost)
+	e2:SetTarget(XY.maganetg)
 	e2:SetOperation(XY.maganechop)
 	e2:SetLabel(cd)
 	c:RegisterEffect(e2)
@@ -322,7 +305,30 @@ function XY.maganechcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g1=Duel.SelectMatchingCard(tp,XY.maganecostfilter1,tp,LOCATION_HAND,0,1,1,e:GetHandler())
 	local tc=g1:GetFirst()
-	Duel.ConfirmCards(1-tp,tc)
+	Duel.ConfirmCards(1-tp,tc)	  
+end
+function XY.maganetg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	 if chk==0 then return true end
+	if cd==33403521 then  
+	   e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
+	elseif cd==33403522 then 
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_DAMAGE+CATEGORY_TOGRAVE)
+	elseif cd==33403523 then 
+	   e:SetCategory(CATEGORY_DRAW+CATEGORY_DAMAGE+CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
+	 elseif cd==33403524 then 
+		e:SetCategory(CATEGORY_DRAW+CATEGORY_TOGRAVE+CATEGORY_TOHAND)
+	 elseif cd==33403525 then 
+		 e:SetCategory(CATEGORY_CONTROL+CATEGORY_DAMAGE+CATEGORY_RECOVER)
+	 elseif cd==33403526 then 
+		 e:SetCategory(CATEGORY_DISABLE+CATEGORY_DRAW)
+	elseif cd==33403527 then 
+		e:SetCategory(CATEGORY_TOHAND)
+	elseif cd==33403528 then 
+	  e:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
+	 elseif cd==33403529 then 
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
+	end
+   Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function XY.maganechop(e,tp,eg,ep,ev,re,r,rp)
 	local cd=e:GetLabel()
@@ -331,6 +337,8 @@ function XY.maganechop(e,tp,eg,ep,ev,re,r,rp)
 	ck=1
 	Duel.RegisterFlagEffect(tp,33423530,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 	end
+	local gg=Duel.GetMatchingGroup(nil,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
+	Duel.ConfirmCards(1-tp,gg)
 	if cd==33403521 then  
 		if Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) and ((ck==1 and Duel.SelectYesNo(tp,aux.Stringid(cd,3))) or  (ck==0 and Duel.SelectYesNo(1-tp,aux.Stringid(cd,3)))) then 
 			local g=Group.CreateGroup()
@@ -558,7 +566,7 @@ function XY.maganetgfilter2(c,tp)
 	return  c:IsFacedown() and c:IsControler(1-tp)
 end
 function XY.maganeop2(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(XY.maganesetfilter2,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(1-tp,aux.Stringid(33403522,5)) then 
+	if Duel.IsExistingMatchingCard(XY.maganesetfilter2,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(33403522,5)) then 
 		local ss=Duel.GetLocationCount(tp,LOCATION_SZONE)
 		if ss>2 then ss=2 end 
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SET)
@@ -566,7 +574,7 @@ function XY.maganeop2(e,tp,eg,ep,ev,re,r,rp)
 		if g1:GetCount()>0 and Duel.SSet(tp,g1)~=0 then
 		   local tc=g1:GetFirst()
 		   while tc do 
-			 local g=c:GetColumnGroup():FilterCount(XY.maganetgfilter2,nil,tp) 
+			 local g=tc:GetColumnGroup():FilterCount(XY.maganetgfilter2,nil,tp) 
 			 if g:GetCount()>0 then 
 			 Duel.SendtoGrave(g,REASON_EFFECT)
 			 end
@@ -602,7 +610,7 @@ function XY.maganeop3(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	local ss=Duel.SendtoGrave(sg,REASON_EFFECT)
 	Duel.Damage(1-tp,ss*300,REASON_EFFECT)
-	if (Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_GRAVE,0,1,nil) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(XY.maganespfilter3,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp))) and Duel.SelectYesNo(1-tp,aux.Stringid(33403523,2)) then 
+	if (Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_GRAVE,0,1,nil) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(XY.maganespfilter3,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp))) and Duel.SelectYesNo(tp,aux.Stringid(33403523,2)) then 
 		if Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_GRAVE,0,1,nil) and (not (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(XY.maganespfilter3,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp)) or Duel.SelectOption(tp,aux.Stringid(33403523,4),aux.Stringid(33403523,5))==0) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_GRAVE,0,1,1,nil)
@@ -725,7 +733,7 @@ function XY.maganetrickop6(e,tp,eg,ep,ev,re,r,rp)
 	else
 		e0:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,1)
 	end
-	Duel.RegisterEffect(e1,tp)
+	Duel.RegisterEffect(e0,tp)
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_CHANGE_DAMAGE)
@@ -963,7 +971,7 @@ function XY.maganethfilter0(c,tp)
 	end
 	return  ss==1
 end
-function XY.maganethfilter10(c,tp)
+function XY.maganeckfilter10(c,tp)
 	local ss=0
 	if c:IsCode(33403521) and Duel.IsExistingMatchingCard(XY.maganethfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) then
 	ss=1
@@ -1000,10 +1008,10 @@ function XY.maganethfilter10(c,tp)
 	return  ss==1
 end
 function XY.maganetrickop10(e,tp,eg,ep,ev,re,r,rp)
-   if not  Duel.IsExistingMatchingCard(XY.maganeckfilter10,tp,LOCATION_GRAVE,0,1,nil,tp) then return end
+   if not  Duel.IsExistingMatchingCard(XY.maganeckfilter10,1-tp,LOCATION_GRAVE,0,1,nil,1-tp) then return end
    local c=e:GetHandler()
    Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33403530,1))
-   local g=Duel.SelectMatchingCard(tp,XY.maganeckfilter10,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+   local g=Duel.SelectMatchingCard(1-tp,XY.maganeckfilter10,1-tp,LOCATION_GRAVE,0,1,1,nil,1-tp)
    if g:GetCount()>0 then
 	local tc=g:GetFirst()
 	if tc:IsCode(33403521)  then
@@ -1040,6 +1048,53 @@ function XY.maganetrickop10(e,tp,eg,ep,ev,re,r,rp)
 	end  
    end 
 Duel.RegisterFlagEffect(tp,33413530,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
+end
+
+function XY.maganeop10(e,tp,eg,ep,ev,re,r,rp)
+ if   Duel.IsExistingMatchingCard(XY.maganeckfilter10,tp,LOCATION_GRAVE,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(33403530,4)) then
+   local c=e:GetHandler()
+   local g=Duel.GetMatchingGroup(XY.maganeckfilter10,tp,LOCATION_GRAVE,0,nil,tp)
+   Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33403530,1))
+   local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,2)
+   if sg:GetCount()>0 then
+		local tc=sg:GetFirst()
+		while tc do
+		if tc:IsCode(33403521)  then
+		  XY.maganere1(e,tp,eg,ep,ev,re,r,rp)
+		end
+		if tc:IsCode(33403522)  then
+		 XY.maganere2(e,tp,eg,ep,ev,re,r,rp)
+		end
+		if tc:IsCode(33403523) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) then
+		XY.maganere3(e,tp,eg,ep,ev,re,r,rp)
+		end
+		if tc:IsCode(33403524) and Duel.IsPlayerCanDraw(tp,3) then
+		XY.maganere4(e,tp,eg,ep,ev,re,r,rp)
+		end
+		if tc:IsCode(33403525) and (Duel.IsExistingMatchingCard(Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,1,nil) or Duel.GetLocationCount(1-tp,LOCATION_MZONE)==0) then
+		 XY.maganere5(e,tp,eg,ep,ev,re,r,rp)
+		end
+		if tc:IsCode(33403526) and Duel.IsPlayerCanDraw(tp,1) then
+		XY.maganere6(e,tp,eg,ep,ev,re,r,rp)
+		end
+		if tc:IsCode(33403527) and Duel.IsExistingMatchingCard(XY.maganethfilter4,tp,LOCATION_GRAVE,0,1,nil) then
+		 XY.maganere7(e,tp,eg,ep,ev,re,r,rp)
+		end
+		if tc:IsCode(33403528)  then
+		XY.maganere8(e,tp,eg,ep,ev,re,r,rp)
+		end
+		cm1=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
+		cm2=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
+		if tc:IsCode(33403529) and cm1>=4 and  cm2>=4 and Duel.IsPlayerCanDraw(tp,1) then
+		 XY.maganere9(e,tp,eg,ep,ev,re,r,rp)
+		end
+		if tc:IsCode(33403530)  then
+		 XY.maganere10(e,tp,eg,ep,ev,re,r,rp)
+		end  
+		tc=sg:GetNext()
+	  end
+   end 
+ end
 end
 
 function XY.maganere1(e,tp,eg,ep,ev,re,r,rp)
@@ -1098,7 +1153,7 @@ function XY.maganere5(e,tp,eg,ep,ev,re,r,rp)
 		local g3=Duel.SelectMatchingCard(tp,Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,1,3,nil)
 		if g3:GetCount()>0 and Duel.GetControl(g3,tp)~=0 then 
 			local tc1=g3:GetFirst()
-			local at1=tg1:GetAttack()
+			local at1=tc1:GetAttack()
 			local tc2=g3:GetNext()
 			while tc2 do 
 				at1=at1+tc2:GetAttack() 
@@ -1126,7 +1181,7 @@ function XY.maganere6(e,tp,eg,ep,ev,re,r,rp)
 	else
 		e0:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,1)
 	end
-	Duel.RegisterEffect(e1,tp)
+	Duel.RegisterEffect(e0,tp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
@@ -1136,9 +1191,10 @@ function XY.maganere6(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,tp)
 Duel.RegisterFlagEffect(tp,33413526,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
+Duel.Draw(tp,1,REASON_EFFECT)
 end
 function XY.maganereactlimit(e,re,tp)
-	return re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE and not c:IsCode(33403520)
+	return re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE and not re:GetHandler():IsCode(33403520)
 end
 
 function XY.maganere7(e,tp,eg,ep,ev,re,r,rp)
@@ -1184,21 +1240,21 @@ function XY.maganere8(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e3)
 		tc=g:GetNext()
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(0,1)
-	e1:SetCondition(XY.maganeactcon)
-	e1:SetValue(1)
+	local e4=Effect.CreateEffect(e:GetHandler())
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e4:SetTargetRange(0,1)
+	e4:SetCondition(XY.maganeactcon)
+	e4:SetValue(1)
 	if Duel.GetTurnPlayer()==tp  then
-		e0:SetLabel(Duel.GetTurnCount())
-		e0:SetCondition(XY.maganebpcon6)
-		e0:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)
+		e4:SetLabel(Duel.GetTurnCount())
+		e4:SetCondition(XY.maganebpcon6)
+		e4:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)
 	else
-		e0:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,1)
+		e4:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,1)
 	end
-	Duel.RegisterEffect(e1,tp)
+	Duel.RegisterEffect(e4,tp)
 	Duel.RegisterFlagEffect(tp,33413528,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
 end
 

@@ -32,6 +32,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
+	   Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.filter(c)
 	return c:IsCode(33403520) and c:IsAbleToHand()

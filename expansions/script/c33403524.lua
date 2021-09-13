@@ -26,6 +26,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g1=Duel.SelectMatchingCard(tp,cm.costfilter1,tp,LOCATION_HAND,0,1,1,e:GetHandler())
 	local tc=g1:GetFirst()
 	Duel.ConfirmCards(1-tp,tc)
+  Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.filter(c,tp)
 	return (c:IsSetCard(0x6349) or c:IsCode(33403520) or c:GetOwner()==1-tp) and c:IsAbleToGrave()
