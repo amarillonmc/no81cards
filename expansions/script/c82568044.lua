@@ -125,7 +125,7 @@ function c82568044.spop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=sg:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
 		if sg1:IsContains(tc) and (sg3==nil or not sg3:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
-			if tc:IsSetCard(0x825) then
+			if tc:IsRace(RACE_BEASTWARRIOR) then
 				local mat1=Duel.SelectFusionMaterial(tp,tc,mg2,nil,chkf)
 				tc:SetMaterial(mat1)
 				local mat2=mat1:Filter(Card.IsLocation,nil,LOCATION_GRAVE)

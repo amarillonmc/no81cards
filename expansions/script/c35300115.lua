@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev) and rp==1-tp 
+	return Duel.IsChainNegatable(ev) and rp==1-tp 
 end
 function cm.cfilter(c,tp)
 	return c:IsRace(RACE_WARRIOR+RACE_DRAGON) and (c:IsControler(tp) or c:IsFaceup()) and not c:IsStatus(STATUS_BATTLE_DESTROYED)

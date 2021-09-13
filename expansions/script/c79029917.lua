@@ -77,7 +77,7 @@ function c79029917.filter(c,e)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function c79029917.chain_target(e,te,tp)
-	return Duel.GetMatchingGroup(c79029917.filter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,te)
+	return Duel.GetMatchingGroup(c79029917.filter,tp,LOCATION_MZONE+LOCATION_DECK,0,nil,te)
 end
 function c79029917.chain_operation(e,te,tp,tc,mat,sumtype)
 	if not sumtype then sumtype=SUMMON_TYPE_FUSION end
