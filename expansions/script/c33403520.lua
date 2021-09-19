@@ -81,36 +81,37 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
    Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33403530,1))
    local g=Duel.SelectMatchingCard(tp,XY.maganeckfilter10,tp,LOCATION_GRAVE,0,1,1,nil,tp)
    if g:GetCount()>0 then
-	if c:IsCode(33403521)  then
+	local tc=g:GetFirst()
+	if tc:IsCode(33403521)  then
 	  XY.maganere1(e,tp,eg,ep,ev,re,r,rp)
 	end
-	if c:IsCode(33403522)  then
+	if tc:IsCode(33403522)  then
 	 XY.maganere2(e,tp,eg,ep,ev,re,r,rp)
 	end
-	if c:IsCode(33403523) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) then
+	if tc:IsCode(33403523) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) then
 	XY.maganere3(e,tp,eg,ep,ev,re,r,rp)
 	end
-	if c:IsCode(33403524) and Duel.IsPlayerCanDraw(tp,3) then
+	if tc:IsCode(33403524) and Duel.IsPlayerCanDraw(tp,3) then
 	XY.maganere4(e,tp,eg,ep,ev,re,r,rp)
 	end
-	if c:IsCode(33403525) and (Duel.IsExistingMatchingCard(Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,1,nil) or Duel.GetLocationCount(1-tp,LOCATION_MZONE)==0) then
+	if tc:IsCode(33403525) and (Duel.IsExistingMatchingCard(Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,1,nil) or Duel.GetLocationCount(1-tp,LOCATION_MZONE)==0) then
 	 XY.maganere5(e,tp,eg,ep,ev,re,r,rp)
 	end
-	if c:IsCode(33403526) and Duel.IsPlayerCanDraw(tp,1) then
+	if tc:IsCode(33403526) and Duel.IsPlayerCanDraw(tp,1) then
 	XY.maganere6(e,tp,eg,ep,ev,re,r,rp)
 	end
-	if c:IsCode(33403527) and Duel.IsExistingMatchingCard(XY.maganethfilter4,tp,LOCATION_GRAVE,0,1,nil) then
+	if tc:IsCode(33403527) and Duel.IsExistingMatchingCard(XY.maganethfilter4,tp,LOCATION_GRAVE,0,1,nil) then
 	 XY.maganere7(e,tp,eg,ep,ev,re,r,rp)
 	end
-	if c:IsCode(33403528)  then
+	if tc:IsCode(33403528)  then
 	XY.maganere8(e,tp,eg,ep,ev,re,r,rp)
 	end
 	cm1=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
 	cm2=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
-	if c:IsCode(33403529) and cm1>=4 and  cm2>=4 and Duel.IsPlayerCanDraw(tp,1) then
+	if tc:IsCode(33403529) and cm1>=4 and  cm2>=4 and Duel.IsPlayerCanDraw(tp,1) then
 	 XY.maganere9(e,tp,eg,ep,ev,re,r,rp)
 	end
-	if c:IsCode(33403530)  then
+	if tc:IsCode(33403530)  then
 	 XY.maganere10(e,tp,eg,ep,ev,re,r,rp)
 	end  
    end 
@@ -118,13 +119,13 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(XY.maganeckfilter0,tp,LOCATION_GRAVE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(XY.maganethfilter0,tp,LOCATION_GRAVE,0,1,nil,tp) end
 end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
-	 if not  Duel.IsExistingMatchingCard(XY.maganeckfilter0,tp,LOCATION_GRAVE,0,1,nil,tp) then return end
+	 if not  Duel.IsExistingMatchingCard(XY.maganethfilter0,tp,LOCATION_GRAVE,0,1,nil,tp) then return end
    local c=e:GetHandler()
    Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33403530,1))
-   local g=Duel.SelectMatchingCard(tp,XY.maganeckfilter0,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+   local g=Duel.SelectMatchingCard(tp,XY.maganethfilter0,tp,LOCATION_GRAVE,0,1,1,nil,tp)
    if g:GetCount()>0 then
 	local tc=g:GetFirst()
 	if tc:IsCode(33403521)  then

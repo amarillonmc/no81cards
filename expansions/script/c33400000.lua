@@ -305,7 +305,7 @@ function XY.maganechcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g1=Duel.SelectMatchingCard(tp,XY.maganecostfilter1,tp,LOCATION_HAND,0,1,1,e:GetHandler())
 	local tc=g1:GetFirst()
-	Duel.ConfirmCards(1-tp,tc)	  
+	Duel.ConfirmCards(1-tp,tc)  
 end
 function XY.maganetg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	 if chk==0 then return true end
@@ -705,7 +705,7 @@ function XY.maganeop5(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Recover(tp,at2,REASON_EFFECT)
 		end   
 	else
-	Duel.Damage(tp,2000,REASON_EFFECT)
+	Duel.Damage(1-tp,2000,REASON_EFFECT)
 	end
 end  
 
@@ -1264,13 +1264,13 @@ function XY.maganere9(e,tp,eg,ep,ev,re,r,rp)
 	local cm2=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
 	if cm1>=4 then
 		local g=Duel.GetDecktopGroup(tp,4)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.SortDecktop(1-tp,tp,4)
+		Duel.ConfirmCards(tp,g)
+		Duel.SortDecktop(tp,tp,4)
 	end
 	if cm2>=4 then
 		  local g=Duel.GetDecktopGroup(1-tp,4)
-		  Duel.ConfirmCards(1-tp,g)
-		  Duel.SortDecktop(1-tp,1-tp,4)   
+		  Duel.ConfirmCards(tp,g)
+		  Duel.SortDecktop(tp,1-tp,4)   
 	end
 	local tg=Duel.GetMatchingGroup(nil,tp,0,LOCATION_HAND,nil)
 	local tg2=Duel.GetMatchingGroup(Card.IsFacedown,tp,0,LOCATION_ONFIELD,nil)

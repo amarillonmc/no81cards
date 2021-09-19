@@ -9,7 +9,6 @@ function c9910884.initial_effect(c)
 	--race
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910884,0))
-	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
