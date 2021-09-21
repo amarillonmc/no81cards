@@ -80,7 +80,7 @@ end
 function cm.spfilter(c,sc)
 	return c:IsCanBeLinkMaterial(sc) and c:IsAbleToRemoveAsCost()
 end
-function cm.spcon(e,c)
+function cm.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	if Duel.GetLocationCountFromEx(tp,tp,nil,c)<=0 then return false end
