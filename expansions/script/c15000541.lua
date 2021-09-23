@@ -11,6 +11,7 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
+	cm.FlipEffect_Deobra=e1
 	--be target
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -24,7 +25,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sp2tg)
 	e2:SetOperation(cm.sp2op)
 	c:RegisterEffect(e2)
-	cm.self_flip_effect2=e2
+	cm.TargetEffect_Deobra=e2
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)

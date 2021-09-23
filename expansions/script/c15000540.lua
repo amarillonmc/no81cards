@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
+	cm.FlipEffect_Deobra=e1
 	--be target
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
@@ -36,7 +37,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
-	cm.self_flip_effect2=e2
+	cm.TargetEffect_Deobra=e2
 	--immune
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
