@@ -2,9 +2,8 @@
 local m=64800022
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	   --synchro summon
-	aux.AddSynchroMixProcedure(c,cm.mfilter1,cm.mfilter2,nil,aux.NonTuner(nil),1,1)
 	c:EnableReviveLimit()
+	aux.AddSynchroMixProcedure(c,aux.Tuner(Card.IsSynchroType,TYPE_SYNCHRO),aux.Tuner(nil),nil,aux.NonTuner(nil),1,99)
  --BGM
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
