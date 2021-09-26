@@ -49,13 +49,14 @@ function c82567794.defop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c82567794.cfilter(c,g)
-	return g:IsContains(c) and c:IsSetCard(0x825) and c:IsFaceup()
+	return c:IsSetCard(0x825) and c:IsFaceup() and c:IsAbleToHandAsCost()
 end
 function c82567794.descost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lg=e:GetHandler():GetLinkedGroup()
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c82567794.cfilter,1,nil,lg) end
-	local g=Duel.SelectReleaseGroup(tp,c82567794.cfilter,1,1,nil,lg)
-	Duel.SendtoHand(g,tp,1)
+	if chk==0 then return lg:Filter(c82567794.cfilter,nil):GetCount()>0 end
+	local thlg=lg:Filter(c82567794.cfilter,nil)
+	local g=thlg:Select(tp,1,1,nil)
+	Duel.SendtoHand(g,nil,1)
 end
 function c82567794.destg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(1-tp) end

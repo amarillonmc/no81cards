@@ -23,12 +23,6 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 end
-function cm.filter0(c)
-	return  c:IsAbleToRemove()
-end
-function cm.filter1(c,e)
-	return  c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
-end
 function cm.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x341) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
@@ -39,9 +33,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp):Filter(cm.filter0,nil)
-		local mg2=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_GRAVE,0,nil)
-		mg1:Merge(mg2)
+		local mg1=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_GRAVE,0,nil)
 		local res=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -55,13 +47,11 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_ONFIELD+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
-	local mg1=Duel.GetFusionMaterial(tp):Filter(cm.filter1,nil,e)
-	local mg2=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_GRAVE,0,nil)
-	mg1:Merge(mg2)
+	local mg1=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_GRAVE,0,nil)
 	local sg1=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 	local mg3=nil
 	local sg2=nil

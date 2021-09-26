@@ -55,7 +55,7 @@ function c82567814.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(c82567814.sprfilter,tp,LOCATION_MZONE,0,nil)
-	return g:GetCount()>2
+	return g:GetCount()>=2
 end
 function c82567814.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local mg=Duel.GetMatchingGroup(c82567814.sprfilter,tp,LOCATION_MZONE,0,nil)
