@@ -12,7 +12,7 @@ function c82557937.initial_effect(c)
 end
 function c82557937.filter1(c,e,tp)
 	local rk=c:GetRank()
-	return rk>0 and c:IsFaceup() and c:IsSetCard(0x829)
+	return rk>0 and c:IsFaceup() and c:IsRace(RACE_MACHINE)
 		and Duel.IsExistingMatchingCard(c82557937.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk+1)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end

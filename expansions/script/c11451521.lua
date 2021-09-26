@@ -49,7 +49,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.CheckLocation(tp,LOCATION_PZONE,0) then num=num+1 end
 	if Duel.CheckLocation(tp,LOCATION_PZONE,1) then num=num+1 end
 	if chk==0 then return (#Group.__band(tg,eg)>0 or num>0) and eg:IsExists(cm.repfilter,1,c,tp) end
-	if not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then return false end
+	if Duel.GetFlagEffect(tp,m)~=0 or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then return false end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local g=eg:Filter(cm.repfilter,c,tp)
 	if #g>1 then
@@ -124,7 +124,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
 		if Duel.GetLocationCountFromEx(tp)>0 then loc=loc+LOCATION_EXTRA end
 		if loc==0 then return false end
-		local g=Duel.GetMatchingGroup(nil,tp,loc,0,nil)
+		local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,loc,0,nil,0x97c)
 		return g:IsExists(cm.PConditionFilter,1,nil,e,tp,lscale,rscale,nil)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
@@ -146,7 +146,7 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	if ft1>0 then loc=loc|LOCATION_HAND end
 	if ft2>0 then loc=loc|LOCATION_EXTRA end
 	if loc==0 then return false end
-	local tg=Duel.GetMatchingGroup(nil,tp,loc,0,nil)
+	local tg=Duel.GetMatchingGroup(Card.IsSetCard,tp,loc,0,nil,0x97c)
 	tg=tg:Filter(cm.PConditionFilter,nil,e,tp,lscale,rscale,nil)
 	if #tg==0 then return false end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -172,6 +172,6 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	Duel.Draw(p,1,REASON_EFFECT)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
 end

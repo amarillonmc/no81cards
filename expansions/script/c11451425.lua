@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetTarget(cm.tg)
+	e3:SetCondition(cm.con)
 	e3:SetOperation(cm.op)
 	c:RegisterEffect(e3)
 end
@@ -35,10 +35,10 @@ end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)==0
 end
-function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_MZONE,0,1,nil) end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_MZONE,0,1,nil)
 end
-function cm.op(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	--effect phase end
 	local e3=Effect.CreateEffect(e:GetHandler())
 	e3:SetDescription(aux.Stringid(m,1))
@@ -51,8 +51,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.condition3(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil)
-	return g:GetCount()~=0
+	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil)
 end
 function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)

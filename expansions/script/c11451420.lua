@@ -76,6 +76,7 @@ function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	if Duel.GetFieldGroupCount(p,LOCATION_DECK,0)<5 then return end
 	Duel.ConfirmDecktop(p,5)
 	local g=Duel.GetDecktopGroup(p,5)
 	if g:GetCount()>0 and g:IsExists(cm.filter2,1,nil) and Duel.SelectYesNo(p,aux.Stringid(m,0)) then

@@ -62,7 +62,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.trcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost() and (c:IsFaceup() or (Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and c:GetEquipTarget())) end
+	if chk==0 then return c:IsAbleToGraveAsCost() and (c:IsFaceup() or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)) and c:GetEquipTarget() end
 	if c:IsFacedown() then Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD) end
 	e:SetLabelObject(c:GetEquipTarget())
 	Duel.SendtoGrave(c,REASON_COST)
@@ -71,7 +71,7 @@ function cm.filter(c,tp)
 	return c:IsFaceup() and c:IsSummonPlayer(1-tp) and c:IsCanTurnSet()
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) end
+	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) and not eg:IsContains(e:GetHandler():GetEquipTarget()) end
 	local g=eg:Filter(cm.filter,nil,tp)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,#g,0,0)

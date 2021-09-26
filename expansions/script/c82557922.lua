@@ -2,7 +2,7 @@
 function c82557922.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsCode,82557921),aux.FilterBoolFunction(Card.IsFusionSetCard,0x829),false)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionCode,82557921),aux.FilterBoolFunction(Card.IsFusionSetCard,0x829),false)
 	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE,0,Duel.Release,REASON_COST+REASON_MATERIAL)
 	--ATK
 	local e1=Effect.CreateEffect(c)

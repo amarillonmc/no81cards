@@ -45,16 +45,13 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	  Duel.RemoveCounter(tp,1,0,0x34f,2,REASON_COST)
 	end   
 end
-function cm.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x9344)
-end
 function cm.cecon(e,tp,eg,ep,ev,re,r,rp)
 	if e==re  or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	if not g or g:GetCount()~=1 then return false end
 	local tc=g:GetFirst()
 	e:SetLabelObject(tc)
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return true
 end
 function cm.cefilter(c,ct,oc)
 	return oc~=c and Duel.CheckChainTarget(ct,c)
@@ -81,7 +78,7 @@ function cm.ceop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)  
-	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev) 
 end
 function cm.mvfilter2(c,tp)
 	return c:IsFaceup()  and c:GetSequence()<5 and c:IsSetCard(0x9344)

@@ -29,12 +29,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-  local ss=Duel.GetFlagEffect(tp,33403501)/2  
-	if ss<4 then ss=4 end 
-	return Duel.GetFlagEffect(tp,33413501)<ss and Duel.GetFlagEffect(tp,m+30000)==0  and Duel.GetFlagEffect(tp,33443500)==0
+  local ss=Duel.GetTurnCount()
+	return Duel.GetFlagEffect(tp,33413501)<ss and  Duel.GetFlagEffect(tp,m+30000)==0 and Duel.GetFlagEffect(tp,33443500)==0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
-e:SetLabel(1)
+e:SetLabel(m)
  if chk==0 then return true end
    local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -66,7 +65,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		 Duel.SetChainLimit(aux.FALSE)
 		end
 	end
-	if e:GetLabel()==1 then 
+	if e:GetLabel()==m then 
 	Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1) --t1
 	Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1) --t1+t2
 	Duel.RegisterFlagEffect(tp,33403501,0,0,0)  
@@ -109,7 +108,7 @@ function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	te:SetLabelObject(e:GetLabelObject())
 	e:SetLabelObject(te)
 	Duel.ClearOperationInfo(0)
-	if e:GetLabel()==1 then 
+	if e:GetLabel()==m then 
 	Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1) --t1
 	Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1) --t1+t2
 	Duel.RegisterFlagEffect(tp,33403501,0,0,0)  

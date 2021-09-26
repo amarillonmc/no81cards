@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e2:SetRange(LOCATION_EXTRA)
 	e2:SetCondition(cm.sprcon)
+	e2:SetTarget(cm.sprtg)
 	e2:SetOperation(cm.sprop)
 	c:RegisterEffect(e2)
 	--to hand
@@ -43,8 +44,9 @@ end
 function cm.mzfilter(c)
 	return c:IsAbleToGraveAsCost() and (c:GetLevel()>=1)
 end
-function cm.fselect(g,lv)
-	return g:GetSum(Card.GetLevel)==lv and g:GetCount()>=2 and g:IsExists(Card.IsRace,1,nil,RACE_PSYCHO)
+function cm.fselect(g,lv,c)
+	local tp=c:GetControler()
+	return g:GetSum(Card.GetLevel)==lv and g:GetCount()>=2 and g:IsExists(Card.IsRace,1,nil,RACE_PSYCHO) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0
 end
 function cm.sprcon(e,c)
 	if c==nil then return true end
@@ -52,26 +54,33 @@ function cm.sprcon(e,c)
 	local g=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_MZONE,0,nil)
 	local lv=4
 	while lv<=g:GetSum(Card.GetLevel) do
-		local tc=g:CheckSubGroup(cm.fselect,2,#g,lv)
-		if tc then return true end
+		local res=g:CheckSubGroup(cm.fselect,2,#g,lv,c)
+		if res then return true end
 		lv=lv+4
 	end
 	return false
 end
-function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_MZONE,0,nil)
 	local tp=c:GetControler()
 	local list={}
 	local lv=4
 	while lv<=g:GetSum(Card.GetLevel) do
-		local tc=g:CheckSubGroup(cm.fselect,2,#g,lv)
-		if tc then table.insert(list,lv) end
+		if g:CheckSubGroup(cm.fselect,2,#g,lv,c) then table.insert(list,lv) end
 		lv=lv+4
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
 	local clv=Duel.AnnounceNumber(tp,table.unpack(list))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local sg=g:SelectSubGroup(tp,cm.fselect,false,2,#g,clv)
+	local sg=g:SelectSubGroup(tp,cm.fselect,Duel.IsSummonCancelable(),2,#g,clv,c)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local sg=e:GetLabelObject()
 	Card.SetMaterial(c,sg)
 	Duel.SendtoGrave(sg,REASON_COST+REASON_MATERIAL)
 end
@@ -88,7 +97,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_REMOVED,0,1,2,nil)
 	if #g>0 then
-		Duel.SendtoHand(g,tp,REASON_EFFECT)
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		local num=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_HAND)
 		if num>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)

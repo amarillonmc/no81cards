@@ -30,6 +30,9 @@ function c82557934.initial_effect(c)
 	e3:SetTarget(c82557934.target)
 	e3:SetOperation(c82557934.operation)
 	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e4)
 end
 function c82557934.psplimit(e,c,tp,sumtp,sumpos)
 	return not c:IsRace(RACE_MACHINE) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
@@ -43,7 +46,7 @@ function c82557934.ntcon(e,c,minc)
 		and Duel.IsExistingMatchingCard(c82557934.ntfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
 function c82557934.filter(c)
-	return c:IsSetCard(0x829) and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and c:IsAbleToHand()
+	return (c:IsSetCard(0x829) or c:IsSetCard(0x95)) and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and c:IsAbleToHand()
 end
 function c82557934.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c82557934.filter(chkc) end

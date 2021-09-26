@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e2:SetRange(LOCATION_EXTRA)
 	e2:SetCondition(cm.sprcon)
+	e2:SetTarget(cm.sprtg)
 	e2:SetOperation(cm.sprop)
 	c:RegisterEffect(e2)
 	--remove
@@ -51,8 +52,9 @@ end
 function cm.mzfilter(c)
 	return c:IsAbleToGraveAsCost() and (c:GetLevel()>=1) and c:IsRace(RACE_PSYCHO)
 end
-function cm.fselect(g,lv)
-	return g:GetSum(Card.GetLevel)==lv and g:GetCount()>=2
+function cm.fselect(g,lv,c)
+	local tp=c:GetControler()
+	return g:GetSum(Card.GetLevel)==lv and g:GetCount()>=2 and Duel.GetLocationCountFromEx(tp,tp,g,c)>0
 end
 function cm.sprcon(e,c)
 	if c==nil then return true end
@@ -60,26 +62,33 @@ function cm.sprcon(e,c)
 	local g=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_MZONE,0,nil)
 	local lv=6
 	while lv<=g:GetSum(Card.GetLevel) do
-		local tc=g:CheckSubGroup(cm.fselect,2,#g,lv)
-		if tc then return true end
+		local res=g:CheckSubGroup(cm.fselect,2,#g,lv,c)
+		if res then return true end
 		lv=lv+6
 	end
 	return false
 end
-function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_MZONE,0,nil)
 	local tp=c:GetControler()
 	local list={}
 	local lv=6
 	while lv<=g:GetSum(Card.GetLevel) do
-		local tc=g:CheckSubGroup(cm.fselect,2,#g,lv)
-		if tc then table.insert(list,lv) end
+		if g:CheckSubGroup(cm.fselect,2,#g,lv,c) then table.insert(list,lv) end
 		lv=lv+6
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
 	local clv=Duel.AnnounceNumber(tp,table.unpack(list))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local sg=g:SelectSubGroup(tp,cm.fselect,false,2,#g,clv)
+	local sg=g:SelectSubGroup(tp,cm.fselect,Duel.IsSummonCancelable(),2,#g,clv,c)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local sg=e:GetLabelObject()
 	Card.SetMaterial(c,sg)
 	Duel.SendtoGrave(sg,REASON_COST+REASON_MATERIAL)
 end
@@ -99,7 +108,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	if tg:GetCount()>0 then Duel.Remove(tg,POS_FACEDOWN,REASON_EFFECT) end
 end
 function cm.filter3(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsControler(1-tp) and c:IsLocation(LOCATION_GRAVE) and c:IsAbleToRemove()
+	return c:IsType(TYPE_MONSTER) and c:IsControler(1-tp) and c:IsLocation(LOCATION_GRAVE) and c:IsAbleToRemove(POS_FACEDOWN)
 end
 function cm.ertg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -129,7 +138,7 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
 	if not rc or not rc:IsRace(RACE_PSYCHO) then return end
-	local e5=Effect.CreateEffect(c)
+	local e5=Effect.CreateEffect(rc)
 	e5:SetDescription(aux.Stringid(m,2))
 	e5:SetCategory(CATEGORY_REMOVE+CATEGORY_DEFCHANGE)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)

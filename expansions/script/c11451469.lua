@@ -13,14 +13,14 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_BE_MATERIAL)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
 	e2:SetOperation(cm.efop)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	--change code
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_CHANGE_CODE)
+	e3:SetCode(EFFECT_ADD_CODE)
 	e3:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e3:SetTarget(cm.chtg)
-	e3:SetValue(11451460)
+	e3:SetValue(11451461)
 	e3:SetRange(LOCATION_SZONE)
 	c:RegisterEffect(e3)
 	--special summon
@@ -63,7 +63,7 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CHANGE_CODE)
 	e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e1:SetTarget(cm.chtg)
-	e1:SetValue(11451460)
+	e1:SetValue(11451461)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
@@ -87,13 +87,13 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11451460,0x97a,0x4011,0,0,2,RACE_PSYCHO,ATTRIBUTE_DARK) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11451460,0x97a,0x4011,0,0,2,RACE_FIEND,ATTRIBUTE_DARK) end
 	local ec=eg:FilterCount(cm.filter,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,11451460,0x97a,0x4011,0,0,2,RACE_PSYCHO,ATTRIBUTE_DARK) or not e:GetHandler():IsRelateToEffect(e) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,11451460,0x97a,0x4011,0,0,2,RACE_FIEND,ATTRIBUTE_DARK) or not e:GetHandler():IsRelateToEffect(e) then return end
 	local token=Duel.CreateToken(tp,11451460)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 end

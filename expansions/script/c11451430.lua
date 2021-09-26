@@ -6,6 +6,13 @@ function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1115),4,2)
 	c:EnableReviveLimit()
+	--spsummon condition
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(aux.xyzlimit)
+	c:RegisterEffect(e0)
 	--attribute
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -89,6 +96,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local sg=g:Select(tp,1,1,nil)
+	Duel.HintSelection(sg)
 	if Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 then
 		local tc=Duel.GetFirstTarget()
 		if not tc:IsRelateToEffect(e) then return end

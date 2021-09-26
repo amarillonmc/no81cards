@@ -49,12 +49,12 @@ function cm.actcon(e)
 end
 
 function cm.cpfilter(c)
-	return c:IsType(TYPE_SYNCHRO) and c:IsAbleToRemoveAsCost()
+	return c:IsType(TYPE_SYNCHRO) and c:IsAbleToRemoveAsCost() and c:IsRace(RACE_DRAGON+RACE_WARRIOR)
 end
 function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_EXTRA+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,cm.cpfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.cpfilter,tp,LOCATION_EXTRA+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
@@ -64,15 +64,10 @@ function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,#eg,0,0)
-	end
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-			Duel.SendtoDeck(eg,nil,2,REASON_EFFECT)
-		end
+	Duel.NegateActivation(ev)
 end
 
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)

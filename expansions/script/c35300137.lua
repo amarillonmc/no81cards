@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3ac1)
+	return c:IsFaceup() and c:IsRace(RACE_DRAGON+RACE_WARRIOR)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.filter(chkc) end
@@ -44,7 +44,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
-		e1:SetValue(1000)
+		e1:SetValue(1500)
 		tc:RegisterEffect(e1)
 		local e3=e1:Clone()
 		e3:SetCode(EFFECT_UPDATE_DEFENSE)

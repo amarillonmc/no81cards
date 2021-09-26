@@ -92,7 +92,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	ct=Duel.GetFlagEffectLabel(tp,m+1)
 	if ct==5 or ct==8 or ct==11 or ct==14 or ct==17 then
 		Duel.Hint(HINT_CARD,0,m)
-		Duel.Recover(tp,1500,REASON_EFFECT)
+		Duel.Recover(tp,1000,REASON_EFFECT)
 	end
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
@@ -111,7 +111,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	ct=Duel.GetFlagEffectLabel(tp,m+2)
 	if ct==4 or ct==8 or ct==12 or ct==16 or ct==20 then
 		Duel.Hint(HINT_CARD,0,m)
-		Duel.Recover(tp,1500,REASON_EFFECT)
+		Duel.Recover(tp,1000,REASON_EFFECT)
 	end
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
@@ -119,7 +119,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local lab=e:GetLabel()
 	if (0xaa8-lab)&(1<<ct)~=0 then
 		Duel.Hint(HINT_CARD,0,m)
-		Duel.Recover(tp,1500,REASON_EFFECT)
+		Duel.Recover(tp,1000,REASON_EFFECT)
 		lab=lab|(1<<ct)
 		e:SetLabel(lab)
 	end

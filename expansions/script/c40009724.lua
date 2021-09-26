@@ -1,4 +1,7 @@
 --苍岚业龙 灾漩逆
+local m=40009724
+local cm=_G["c"..m]
+cm.named_with_Reverse=1
 function c40009724.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6f1d),aux.NonTuner(nil),1)
@@ -34,7 +37,7 @@ function c40009724.initial_effect(c)
 end
 function c40009724.valcheck(e,c)
 	local g=c:GetMaterial()
-	if g:IsExists(Card.IsSetCard,1,nil,0x7f1d) then
+	if g:IsExists(Card.IsCode,1,nil,40009070) then
 		e:GetLabelObject():SetLabel(1)
 	else
 		e:GetLabelObject():SetLabel(0)

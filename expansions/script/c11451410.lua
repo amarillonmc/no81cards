@@ -43,42 +43,44 @@ function cm.actarget(e,te,tp)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,3,3,nil)
 	local cg=g:Filter(Card.IsFacedown,nil)
 	if #cg>0 then Duel.ConfirmCards(1-c:GetControler(),cg) end
 	c:SetMaterial(g)
 	Duel.SendtoDeck(g,nil,2,REASON_COST+REASON_MATERIAL)
+	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+end
+function cm.spfilter(c,e,tp)
+	return c:IsCode(11451406) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11451406,0,0x21,0,0,1,RACE_WARRIOR,ATTRIBUTE_LIGHT)
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
+	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0
 	local b2=Duel.IsExistingMatchingCard(nil,tp,LOCATION_DECK,0,1,nil)
-	if chk==0 then return b1 or b2 end
+	if chk==0 then return b2 end
 	local num=e:GetLabelObject():GetLabel()
 	local op=0
-	if b1 and b2 then
+	if b1 then
 		if num==3 then
 			op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2))
 		else
 			op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))
 		end
-	elseif b1 then
-		op=Duel.SelectOption(tp,aux.Stringid(m,0))
 	else
 		op=Duel.SelectOption(tp,aux.Stringid(m,1))+1
 	end
 	e:SetLabel(op)
-	if op~=1 then
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,op))
+	if op~=1 then Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
 	local op=e:GetLabel()
 	local c=e:GetHandler()
-	if op~=1 and c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11451406,0,0x21,0,0,1,RACE_WARRIOR,ATTRIBUTE_LIGHT) then
-		c:SetEntityCode(11451406,true)
-		c:ReplaceEffect(11451406,0)
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
+	if op~=1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0 then
+		local tg=g:Select(tp,1,1,nil)
+		Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
 	end
 	if op~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))

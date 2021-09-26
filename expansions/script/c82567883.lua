@@ -55,20 +55,27 @@ function c82567883.initial_effect(c)
 	c:RegisterEffect(e7) 
 	--atk/def
 	local e8=Effect.CreateEffect(c)
-	e8:SetType(EFFECT_TYPE_QUICK_F)
+	e8:SetType(EFFECT_TYPE_QUICK_O)
 	e8:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e8:SetRange(LOCATION_MZONE)
+	e8:SetCost(c82567883.atkcost)
 	e8:SetCondition(c82567883.adcon)
 	e8:SetOperation(c82567883.operation)
 	c:RegisterEffect(e8)
 	--atk/def2
 	local e10=Effect.CreateEffect(c)
-	e10:SetType(EFFECT_TYPE_QUICK_F)
+	e10:SetType(EFFECT_TYPE_QUICK_O)
 	e10:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e10:SetRange(LOCATION_MZONE)
+	e10:SetCost(c82567883.atkcost)
 	e10:SetCondition(c82567883.adcon2)
 	e10:SetOperation(c82567883.operation2)
 	c:RegisterEffect(e10)
+end
+function c82567883.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(82567883)==0 end
+	c:RegisterFlagEffect(82567883,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
 end
 function c82567883.splimit(e,c,tp,sumtp,sumpos)
 	return bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
@@ -170,6 +177,7 @@ end
 function c82567883.adcon(e)
 	return  Duel.GetAttackTarget()~=0 and (Duel.GetAttacker()==e:GetHandler() 
 	or Duel.GetAttackTarget()==e:GetHandler() ) and e:GetHandler():IsPosition(POS_FACEUP_ATTACK)
+	and Duel.IsExistingMatchingCard(c82567883.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function c82567883.filter(c)
 	return c:IsFaceup() and c:IsDefenseAbove(0)
@@ -198,6 +206,7 @@ end
 function c82567883.adcon2(e)
 	return  Duel.GetAttackTarget()~=0 and (Duel.GetAttacker()==e:GetHandler() 
 	or Duel.GetAttackTarget()==e:GetHandler() ) and not e:GetHandler():IsPosition(POS_FACEUP_ATTACK)
+	and Duel.IsExistingMatchingCard(c82567883.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler())
 end
 function c82567883.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c82567883.filter,tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())

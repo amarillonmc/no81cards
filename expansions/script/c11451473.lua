@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--effect1
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_HAND)
@@ -75,7 +75,7 @@ end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or not c:IsSpecialSummonable(0) then return end
-	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) then
+	--[[if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(m,1))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -85,7 +85,7 @@ function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(cm.thop)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
-	end
+	end--]]
 	Duel.SpecialSummonRule(tp,c,0)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

@@ -9,11 +9,12 @@ function c82567846.initial_effect(c)
 	c:RegisterEffect(e1)
 	--atk down
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_QUICK_F)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e3:SetCategory(CATEGORY_ATKCHANGE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCondition(c82567846.atkcon)
+	e3:SetCost(c82567846.atkcost)
 	e3:SetOperation(c82567846.operation)
 	c:RegisterEffect(e3)
 	--xyzlv
@@ -43,7 +44,11 @@ function c82567846.atkcon(e)
 	return  Duel.GetAttackTarget()~=0 and Duel.GetAttacker()==e:GetHandler() 
 	and Duel.GetAttackTarget():GetAttack() >  Duel.GetAttacker():GetAttack()
 end
-
+function c82567846.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(82567846)==0 end
+	c:RegisterFlagEffect(82567846,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
+end
 function c82567846.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateAttack()
 	local d=Duel.GetAttackTarget()

@@ -2,6 +2,7 @@
 --21.05.21
 local m=11451566
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--pendulum summon
 	c:EnableReviveLimit()

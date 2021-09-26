@@ -46,6 +46,19 @@ function cm.initial_effect(c)
 	e7:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e7:SetValue(1)
 	c:RegisterEffect(e7)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD)
+		ge1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE)
+		ge1:SetCode(EFFECT_MATERIAL_CHECK)
+		ge1:SetValue(cm.valcheck)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function cm.valcheck(e,c)
+	local g=c:GetMaterial()
+	if not g:IsExists(cm.filter2,1,nil) then c:RegisterFlagEffect(m,RESET_EVENT+0x4fe0000,0,1) end
 end
 function cm.filter(c,tp)
 	return c:GetSummonPlayer()==tp
@@ -54,7 +67,7 @@ function cm.filter2(c)
 	return not c:IsType(TYPE_MONSTER) or not c:IsType(TYPE_RITUAL)
 end
 function cm.filter3(c)
-	return c:IsFaceup() and bit.band(c:GetType(),0x81)==0x81 and c:IsSetCard(0x6978) and c:IsSummonType(SUMMON_TYPE_RITUAL) and c:GetMaterialCount()>0 and not c:GetMaterial():IsExists(cm.filter2,1,nil)
+	return c:IsFaceup() and bit.band(c:GetType(),0x81)==0x81 and c:IsSetCard(0x6978) and c:IsSummonType(SUMMON_TYPE_RITUAL) and c:GetMaterialCount()>0 and c:GetFlagEffect(m)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
@@ -83,19 +96,20 @@ function cm.atkval(e)
 	return math.min(dt:GetAttack(),13500)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter,1,nil,1-tp)
+	return eg:IsExists(cm.filter,1,nil,1-tp) and Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if c:IsRelateToEffect(e) and g:GetCount()>0 then
+	if c:IsRelateToEffect(e) and #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		Duel.Equip(tp,e:GetHandler(),tc)
+		local tg=g:Select(tp,1,1,nil)
+		Duel.HintSelection(tg)
+		Duel.Equip(tp,e:GetHandler(),tg:GetFirst())
 	end
 end

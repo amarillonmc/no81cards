@@ -58,7 +58,7 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.trcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost() and (c:IsFaceup() or (Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and c:GetEquipTarget())) end
+	if chk==0 then return c:IsAbleToGraveAsCost() and (c:IsFaceup() or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)) and c:GetEquipTarget() end
 	if c:IsFacedown() then Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD) end
 	Duel.SendtoGrave(c,REASON_COST)
 end
@@ -72,7 +72,7 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,0,nil)
 	if #g>0 and Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 then
 		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK)
-		if ct>0 then
+		if ct>1 then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetDescription(aux.Stringid(m,1))
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

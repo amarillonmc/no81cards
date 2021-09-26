@@ -5,6 +5,7 @@ function c82567812.initial_effect(c)
 	--Destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetDescription(aux.Stringid(82567812,0))
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
@@ -13,14 +14,42 @@ function c82567812.initial_effect(c)
 	e1:SetTarget(c82567812.destg2)
 	e1:SetOperation(c82567812.desop2)
 	c:RegisterEffect(e1)
-	--ATK UP
+	--search
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_BE_MATERIAL)
-	e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
-	e2:SetCondition(c82567812.atkcon)
-	e2:SetOperation(c82567812.atkop)
+	e2:SetDescription(aux.Stringid(82567812,1))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,82567712+EFFECT_COUNT_CODE_DUEL)
+	e2:SetTarget(c82567812.target)
+	e2:SetOperation(c82567812.activate)
 	c:RegisterEffect(e2)
+end
+function c82567812.filter(c)
+	return c:IsSetCard(0xa826) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+end
+function c82567812.tdfilter(c)
+	return not c:IsPublic() and c:IsAbleToDeck()
+end
+function c82567812.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c82567812.filter,tp,LOCATION_DECK,0,1,nil)
+		and Duel.IsExistingMatchingCard(c82567812.tdfilter,tp,LOCATION_HAND,0,2,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c82567812.activate(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,c82567812.tdfilter,tp,LOCATION_HAND,0,2,2,nil)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g1=Duel.SelectMatchingCard(tp,c82567812.filter,tp,LOCATION_DECK,0,2,2,nil)
+	if g1:GetCount()~=0 then
+		Duel.SendtoHand(g1,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g1)
+		Duel.BreakEffect()
+		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+	else
+		Duel.ShuffleHand(tp)
+	end
 end
 function c82567812.desfilter(c)
 	return c:IsFaceup()  
@@ -50,19 +79,6 @@ function c82567812.desop2(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
-end
-function c82567812.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_LINK
-end
-function c82567812.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local sync=c:GetReasonCard()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(800)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	sync:RegisterEffect(e1,true)
 end
 
 

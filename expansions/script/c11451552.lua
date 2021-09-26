@@ -65,16 +65,18 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 end
+	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_DECK)
 end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 or not c:IsRelateToEffect(e) then return end
-	local g=Duel.GetDecktopGroup(tp,3)
-	Duel.ConfirmCards(tp,g)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local tc=g:Select(tp,1,1,nil):GetFirst()
-	if Duel.Equip(tp,tc,c,false) then
+	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	if Duel.GetFieldGroupCount(p,LOCATION_DECK,0)<3 or not c:IsRelateToEffect(e) then return end
+	local g=Duel.GetDecktopGroup(p,3)
+	Duel.ConfirmCards(p,g)
+	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_EQUIP)
+	local tc=g:Select(p,1,1,nil):GetFirst()
+	if Duel.Equip(p,tc,c,false) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
@@ -83,6 +85,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(cm.eqlimit)
 		tc:RegisterEffect(e1)
 	end
+	Duel.ShuffleDeck(p)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
@@ -90,5 +93,5 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetTargetRange(1,0)
 	e2:SetValue(2)
 	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
+	Duel.RegisterEffect(e2,p)
 end

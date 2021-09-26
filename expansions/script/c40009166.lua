@@ -2,6 +2,10 @@
 local m=40009166
 local cm=_G["c"..m]
 cm.named_with_BLASTER=1
+function cm.BLASTERBlade(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTERBlade
+end
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -39,7 +43,7 @@ function cm.BLASTER(c)
 	return m and m.named_with_BLASTER
 end
 function cm.tgfilter(c)
-	return c:IsCode(40009154) and c:IsAbleToGrave()
+	return cm.BLASTERBlade(c) and c:IsAbleToGrave()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -64,20 +68,12 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if e:GetHandler():IsRelateToEffect(e) and e:GetLabel()==1 then
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+		if g:GetCount()>0 then
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-end
 end
 function cm.splimit(e,c)
 	return not cm.BLASTER(c) and c:IsLocation(LOCATION_EXTRA)

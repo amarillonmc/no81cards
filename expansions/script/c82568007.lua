@@ -41,7 +41,6 @@ function c82568007.initial_effect(c)
 	e4:SetCategory(CATEGORY_COUNTER)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e4:SetCondition(c82568007.addcon)
 	e4:SetTarget(c82568007.addct)
 	e4:SetOperation(c82568007.addc)
 	c:RegisterEffect(e4)
@@ -127,9 +126,6 @@ function c82568007.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function c82568007.ctfilter(c)
 	return c:IsSetCard(0x825) and c:IsType(TYPE_MONSTER)
-end
-function c82568007.addcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetPreviousLocation(LOCATION_EXTRA)
 end
 function c82568007.addct(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -220,7 +216,7 @@ end
 function c82568007.pencon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and c:IsPreviousLocation(LOCATION_MZONE) and c:IsFaceup()
-			   and (c:GetOverlayCount()>0 or c:IsSummonType(TYPE_RITUAL))
+			   and (c:IsSummonType(TYPE_XYZ) or c:IsSummonType(TYPE_RITUAL))
 end
 function c82568007.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end

@@ -14,12 +14,8 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 end
-function cm.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x9344)
-end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)  
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
-	and ep~=tp and Duel.IsChainNegatable(ev)
+	return  ep~=tp and Duel.IsChainNegatable(ev)
 end
 function cm.refilter(c)
 	return ((c:IsType(TYPE_EFFECT) and c:IsDisabled()) or c:IsType(TYPE_NORMAL) or c:IsType(TYPE_TOKEN)) and c:IsReleasable()

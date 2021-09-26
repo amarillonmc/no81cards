@@ -109,8 +109,8 @@ function c82568050.apfilter(c)
 	return c:IsFaceup()
 end
 function c82568050.gravepnfilter(c,csc,apsc,e,tp)
-	return (c:GetLevel()>csc and c:GetLevel()<apsc) or (c:GetLevel()<csc and c:GetLevel()>apsc) 
-		   and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:GetLevel()>csc and c:GetLevel()<apsc) or (c:GetLevel()<csc and c:GetLevel()>apsc) 
+			
 end
 function c82568050.gpencon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c82568050.apfilter,tp,LOCATION_PZONE,0,1,e:GetHandler()) 

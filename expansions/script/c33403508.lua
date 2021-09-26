@@ -13,15 +13,10 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
- --act in hand
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	e3:SetCondition(cm.handcon)
-	c:RegisterEffect(e3)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
- return Duel.GetFlagEffect(tp,33413501)<(Duel.GetFlagEffect(tp,33403501)/2+1)and Duel.GetFlagEffect(tp,m+30000)==0 and Duel.GetFlagEffect(tp,33443500)==0
+ local ss=Duel.GetTurnCount()
+	return Duel.GetFlagEffect(tp,33413501)<ss and  Duel.GetFlagEffect(tp,m+30000)==0 and Duel.GetFlagEffect(tp,33443500)==0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
 e:SetLabel(1)
@@ -41,46 +36,12 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil) end
  Duel.SetOperationInfo(0,CATEGORY_CONTROL,nil,1,0,0)
-	if e:GetLabel()==1 then 
-	local c=e:GetHandler()
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_NEGATED)
-	e2:SetCondition(cm.regcon)
-	e2:SetOperation(cm.regop2)
-	e2:SetReset(RESET_EVENT+RESET_CHAIN+RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
-	Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1)   
-	Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1) 
-	Duel.RegisterFlagEffect(tp,33403501,0,0,0)   
+	 if e:GetLabel()==1 then 
+	Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1) --t1
+	Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1) --t1+t2
+	Duel.RegisterFlagEffect(tp,33403501,0,0,0)  
 	e:SetLabel(2)
 	end
-end
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsSetCard(0x5349) and rp==tp
-end
-function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
-	local n1=Duel.GetFlagEffect(tp,33413501)
-	local n2=Duel.GetFlagEffect(tp,33403501)
-	local n3=Duel.GetFlagEffect(tp,m+20000)
-	Duel.ResetFlagEffect(tp,33413501)
-	Duel.ResetFlagEffect(tp,33403501)
-	Duel.ResetFlagEffect(tp,m+20000)
-	if n1>=2 then 
-		for i=1,n1-1 do
-		Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1)
-		end 
-	end
-	if n2>=2 then
-		for i=1,n2-1 do
-		 Duel.RegisterFlagEffect(tp,33403501,0,0,0)
-		end 
-	end
-	if n3>=2 then 
-		for i=1,n3 do
-		  Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1)
-		end 
-	end 
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
@@ -96,8 +57,9 @@ if not Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZ
 		if Duel.GetControl(tc,tp)~=0 then
 			--cannot be target
 			local e5=Effect.CreateEffect(c)
+			e5:SetDescription(aux.Stringid(m,0))
 			e5:SetType(EFFECT_TYPE_FIELD)
-			e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CLIENT_HINT)
 			e5:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 			e5:SetRange(LOCATION_MZONE)
 			e5:SetTargetRange(LOCATION_MZONE,0)
@@ -123,11 +85,4 @@ if not Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZ
 			e2:SetCode(EFFECT_IGNORE_BATTLE_TARGET)
 			tc1:RegisterEffect(e2)
 	end
-end
-
-function cm.filter(c)
-	return c:IsFaceup() and c:IsCode(33403500)
-end
-function cm.handcon(e)
-	return Duel.IsExistingMatchingCard(cm.filter,e:GetHandlerPlayer(),LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 end

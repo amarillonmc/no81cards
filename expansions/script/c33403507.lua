@@ -16,8 +16,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)   
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	local ss=Duel.GetTurnCount()
 	local ph=Duel.GetCurrentPhase()
-	return  ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and Duel.GetFlagEffect(tp,33413501)<(Duel.GetFlagEffect(tp,33403501)/2+1)and Duel.GetFlagEffect(tp,m+30000)==0 and Duel.GetFlagEffect(tp,33443500)==0
+	return  ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and  Duel.GetFlagEffect(tp,33413501)<ss and Duel.GetFlagEffect(tp,m+30000)==0 and Duel.GetFlagEffect(tp,33443500)==0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
  if chk==0 then return true end
@@ -39,46 +40,12 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	 local ct=500*Duel.GetFlagEffect(tp,33403501) 
 	 if ct>=4000 then ct=4000 end 
 	 Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,ct)
-if e:GetLabel()==1 then 
-	local c=e:GetHandler()
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_NEGATED)
-	e2:SetCondition(cm.regcon)
-	e2:SetOperation(cm.regop2)
-	e2:SetReset(RESET_EVENT+RESET_CHAIN+RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
-	Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1)   --t2
-	Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1) --t1
-	Duel.RegisterFlagEffect(tp,33403501,0,0,0)   --duel 1
+   if e:GetLabel()==1 then 
+	Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1) --t1
+	Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1) --t1+t2
+	Duel.RegisterFlagEffect(tp,33403501,0,0,0)  
 	e:SetLabel(2)
 	end
-end
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsSetCard(0x5349) and rp==tp
-end
-function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
-	local n1=Duel.GetFlagEffect(tp,33413501)
-	local n2=Duel.GetFlagEffect(tp,33403501)
-	local n3=Duel.GetFlagEffect(tp,m+20000)
-	Duel.ResetFlagEffect(tp,33413501)
-	Duel.ResetFlagEffect(tp,33403501)
-	Duel.ResetFlagEffect(tp,m+20000)
-	if n1>=2 then 
-		for i=1,n1-1 do
-		Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1)
-		end 
-	end
-	if n2>=2 then
-		for i=1,n2-1 do
-		 Duel.RegisterFlagEffect(tp,33403501,0,0,0)
-		end 
-	end
-	if n3>=2 then 
-		for i=1,n3 do
-		  Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1)
-		end 
-	end 
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()

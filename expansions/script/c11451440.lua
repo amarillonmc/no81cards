@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e2:SetRange(LOCATION_EXTRA)
 	e2:SetCondition(cm.sprcon)
+	e2:SetTarget(cm.sprtg)
 	e2:SetOperation(cm.sprop)
 	c:RegisterEffect(e2)
 	--negate
@@ -31,8 +32,9 @@ end
 function cm.mzfilter(c)
 	return c:IsAbleToGraveAsCost() and (c:GetLevel()>=1) and c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
-function cm.fselect(g,lv)
-	return g:GetSum(Card.GetLevel)==lv and g:GetCount()>=2
+function cm.fselect(g,lv,c)
+	local tp=c:GetControler()
+	return g:GetSum(Card.GetLevel)==lv and g:GetCount()>=2 and Duel.GetLocationCountFromEx(tp,tp,g,c)>0
 end
 function cm.sprcon(e,c)
 	if c==nil then return true end
@@ -40,25 +42,33 @@ function cm.sprcon(e,c)
 	local g=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_MZONE,0,nil)
 	local lv=10
 	while lv<=g:GetSum(Card.GetLevel) do
-		local tc=g:CheckSubGroup(cm.fselect,2,#g,lv)
-		if tc then return true end
+		local res=g:CheckSubGroup(cm.fselect,2,#g,lv,c)
+		if res then return true end
 		lv=lv+10
 	end
 	return false
 end
-function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_MZONE,0,nil)
 	local tp=c:GetControler()
 	local list={}
 	local lv=10
 	while lv<=g:GetSum(Card.GetLevel) do
-		local tc=g:CheckSubGroup(cm.fselect,2,#g,lv)
-		if tc then table.insert(list,lv) end
+		if g:CheckSubGroup(cm.fselect,2,#g,lv,c) then table.insert(list,lv) end
 		lv=lv+10
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
 	local clv=Duel.AnnounceNumber(tp,table.unpack(list))
-	local sg=g:SelectSubGroup(tp,cm.fselect,false,2,#g,clv)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local sg=g:SelectSubGroup(tp,cm.fselect,Duel.IsSummonCancelable(),2,#g,clv,c)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local sg=e:GetLabelObject()
 	Card.SetMaterial(c,sg)
 	Duel.SendtoGrave(sg,REASON_COST+REASON_MATERIAL)
 end

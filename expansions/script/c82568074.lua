@@ -78,7 +78,8 @@ function c82568074.ctcon(e,re,r,rp)
 end
 function c82568074.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
- and re:IsActiveType(TYPE_MONSTER) end
+ and re:IsActiveType(TYPE_MONSTER) 
+end
 function c82568074.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeckAsCost(tp,3) end
 	Duel.DiscardDeck(tp,3,REASON_COST)

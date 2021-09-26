@@ -30,7 +30,7 @@ function c82568055.filter(c,e,tp)
 	return c:IsCode(82568053) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)
 end
 function c82568055.filter2(c)
-	return c:IsCode(82567786) and c:IsReleasable()
+	return (c:IsCode(82567786) or c:IsCode(82567787) or c:IsCode(82568086) or c:IsCode(82568087)) and c:IsReleasable()
 end
 function c82568055.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

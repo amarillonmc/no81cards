@@ -46,6 +46,9 @@ end
 function cm.spfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
+function cm.thfilter(c)
+	return c:IsRace(RACE_INSECT)
+end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,c:GetControler(),LOCATION_ONFIELD,0,3,nil)
@@ -56,19 +59,19 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil,RACE_INSECT) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,1-tp,LOCATION_HAND)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil) end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
-	local g=Duel.SelectMatchingCard(tp,Card.IsRace,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,1,nil,RACE_INSECT)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,1,nil)
 	if #g==0 then return end
 	local tc=g:GetFirst()
 	if tc==c then c:CancelToGrave() end
 	if Duel.SendtoHand(tc,1-tp,REASON_EFFECT)>0 then
-		Duel.ShuffleHand(tp)
+		if tc:IsPreviousLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
 		if not tc:IsLocation(LOCATION_HAND) or not tc:IsControler(1-tp) then return end
+		Duel.ShuffleHand(1-tp)
 		Duel.ConfirmCards(tp,tc)
 		if tc:IsSpecialSummonable(0) then
 			Duel.BreakEffect()
@@ -84,7 +87,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
 end
 function cm.desfilter(c,atk)
-	return c:GetAttack()>atk and c:IsType(TYPE_MONSTER)
+	return c:GetAttack()<atk and c:IsType(TYPE_MONSTER)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

@@ -2,9 +2,17 @@
 local m=40009156
 local cm=_G["c"..m]
 cm.named_with_BLASTER=1
+function cm.BLASTER(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTER
+end
+function cm.BLASTERBlade(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTERBlade
+end
 function cm.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkCode,40009154),1,1)
+	aux.AddLinkProcedure(c,cm.matfilter,1,1)
 	c:EnableReviveLimit()   
 	--effect
 	local e1=Effect.CreateEffect(c)
@@ -29,12 +37,12 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 end
-function cm.BLASTER(c)
-	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_BLASTER
+function cm.matfilter(c)
+	return cm.BLASTERBlade(c)
 end
+
 function cm.cfilter1(c)
-	return c:IsCode(40009154) and ((c:IsFaceup() and c:IsLocation(LOCATION_MZONE)) or c:IsLocation(LOCATION_HAND)) and c:IsAbleToGraveAsCost()
+	return cm.BLASTERBlade(c) and ((c:IsFaceup() and c:IsLocation(LOCATION_MZONE)) or c:IsLocation(LOCATION_HAND)) and c:IsAbleToGraveAsCost()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,tp) end

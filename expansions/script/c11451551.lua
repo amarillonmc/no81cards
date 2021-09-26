@@ -75,13 +75,18 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	if e:GetHandler():IsLocation(LOCATION_GRAVE) then e:SetLabel(1) else e:SetLabel(0) end
+	if e:GetHandler():IsLocation(LOCATION_GRAVE) then
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_HANDES)
+		Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	else
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and e:GetLabel()==1 then
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and e:IsHasCategory(CATEGORY_HANDES) then
 		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 	end
 end

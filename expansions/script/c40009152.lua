@@ -3,6 +3,14 @@ local m=40009152
 local cm=_G["c"..m]
 cm.named_with_BLASTER=1
 cm.named_with_ALFRED=1
+function cm.BLASTER(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTER 
+end
+function cm.BLASTERBlade(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTERBlade
+end
 function cm.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkAttribute,ATTRIBUTE_LIGHT),2)
@@ -75,34 +83,41 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD) 
 end  
-function cm.filter(c,e,tp,zone)  
-	return c:IsCode(40009154) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)  
-end  
+function cm.filter(c)
+	return cm.BLASTERBlade(c) and c:IsFaceup()
+end
+function cm.spfilter(c,e,tp,check,zone)
+	return cm.BLASTER(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+		and (check or cm.BLASTERBlade(c))
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)  
-	if chk==0 then  
+	if chk==0 then
 		local zone=e:GetHandler():GetLinkedZone(tp)  
-		return zone~=0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp,zone)  
-	end  
+		local chk1=Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil)
+		return zone~=0
+			and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,chk1,zone)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)  
 end  
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)  
-		local zone=e:GetHandler():GetLinkedZone(tp)
-		if zone==0 then return end  
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp,zone)
-		local tc=sg:GetFirst()
-		if tc and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP,zone) then
-		local e1=Effect.CreateEffect(e:GetHandler())
+	local zone=e:GetHandler():GetLinkedZone(tp)
+	if zone==0 then return end  
+	local chk1=Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sg=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,chk1,zone)
+	local tc=sg:GetFirst()
+	if tc and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP,zone) then
+	local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(1000)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
-		end
+	end
 	Duel.SpecialSummonComplete()
 end  
 function cm.atkfilter(c)
-	return c:IsFaceup() and c:IsCode(40009154)
+	return c:IsFaceup() and cm.BLASTERBlade(c)
 end
 function cm.atkcon(e)
 	return Duel.IsExistingMatchingCard(cm.atkfilter,e:GetHandler():GetControler(),LOCATION_MZONE,0,1,nil)

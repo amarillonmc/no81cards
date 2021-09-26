@@ -4,8 +4,15 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:SetSPSummonOnce(m)
 	--synchro summon
-	cm.AddSynchroProcedureFun(c,nil,aux.NonTuner(Card.IsSetCard,0x1115),1,99)
+	aux.AddSynchroMixProcedure(c,aux.NonTuner(Card.IsSetCard,0x1115),nil,nil,aux.Tuner(nil),1,99)
 	c:EnableReviveLimit()
+	--spsummon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.synlimit)
+	c:RegisterEffect(e1)
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -34,66 +41,6 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.sptg)
 	e4:SetOperation(cm.spop)
 	c:RegisterEffect(e4)
-end
-function cm.AddSynchroProcedureFun(c,f1,f2,minc,maxc)
-	if maxc==nil then maxc=99 end
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(1164)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetCondition(cm.SynCondition(f1,f2,minc,maxc))
-	e1:SetTarget(cm.SynTarget(f1,f2,minc,maxc))
-	e1:SetOperation(aux.SynOperation(f1,f2,minc,maxc))
-	e1:SetValue(SUMMON_TYPE_SYNCHRO)
-	c:RegisterEffect(e1)
-end
-function cm.tunfilter(c)
-	return c:IsType(TYPE_TUNER) or c:IsLocation(LOCATION_MZONE)
-end
-function cm.SynCondition(f1,f2,minc,maxc)
-	return function(e,c,smat,mg,min,max)
-		if c==nil then return true end
-		if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
-		local minc=minc
-		local maxc=maxc
-		if min then
-			if min>minc then minc=min end
-			if max<maxc then maxc=max end
-			if minc>maxc then return false end
-		end
-		local exg=Duel.GetMatchingGroup(cm.tunfilter,c:GetControler(),LOCATION_HAND+LOCATION_MZONE,0,nil)
-		if mg then mg:Merge(exg) else mg=exg end
-		if smat and smat:IsType(TYPE_TUNER) and (not f1 or f1(smat)) then
-			return Duel.CheckTunerMaterial(c,smat,f1,f2,minc,maxc,mg)
-		end
-		return Duel.CheckSynchroMaterial(c,f1,f2,minc,maxc,smat,mg)
-	end
-end
-function cm.SynTarget(f1,f2,minc,maxc)
-	return function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg,min,max)
-		local minc=minc
-		local maxc=maxc
-		if min then
-			if min>minc then minc=min end
-			if max<maxc then maxc=max end
-			if minc>maxc then return false end
-		end
-		local g=nil
-		local exg=Duel.GetMatchingGroup(cm.tunfilter,c:GetControler(),LOCATION_HAND+LOCATION_MZONE,0,nil)
-		if mg then mg:Merge(exg) else mg=exg end
-		if smat and smat:IsType(TYPE_TUNER) and (not f1 or f1(smat)) then
-			g=Duel.SelectTunerMaterial(c:GetControler(),c,smat,f1,f2,minc,maxc,mg)
-		else
-			g=Duel.SelectSynchroMaterial(c:GetControler(),c,f1,f2,minc,maxc,smat,mg)
-		end
-		if g then
-			g:KeepAlive()
-			e:SetLabelObject(g)
-			return true
-		else return false end
-	end
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)

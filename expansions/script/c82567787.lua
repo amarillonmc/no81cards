@@ -44,14 +44,6 @@ function c82567787.initial_effect(c)
 	e5:SetValue(c82567787.efilter)
 	e5:SetCondition(c82567787.iefcon)
 	c:RegisterEffect(e5)
-	--code
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_SINGLE)
-	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e6:SetCode(EFFECT_CHANGE_CODE)
-	e6:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e6:SetValue(82567786)
-	c:RegisterEffect(e6)
    if not c82567787.global_check then
 		c82567787.global_check=true
 		local ge1=Effect.CreateEffect(c)

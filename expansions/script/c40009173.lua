@@ -3,18 +3,14 @@ local m=40009173
 local cm=_G["c"..m]
 cm.named_with_BLASTER=1
 cm.named_with_BLASTERBlade=1
+function cm.BLASTERBlade(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTERBlade
+end
 function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,cm.mfilter,7,2,cm.ovfilter,aux.Stringid(m,0),2,cm.xyzop)
 	c:EnableReviveLimit()  
-	--code
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_CHANGE_CODE)
-	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e1:SetValue(40009154)
-	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -45,7 +41,7 @@ function cm.mfilter(c)
 	return c:IsRace(RACE_WARRIOR) 
 end
 function cm.ovfilter(c)
-	return c:IsFaceup() and c:IsCode(40009154)
+	return c:IsFaceup() and cm.BLASTERBlade(c) and not c:IsType(TYPE_XYZ)
 end
 function cm.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end

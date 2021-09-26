@@ -84,7 +84,7 @@ function c82567817.cfilter2(c,e,tp,tc)
 		and Duel.IsExistingMatchingCard(c82567817.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetLevel()+tc:GetLevel(),Group.FromCards(c,tc))
 end
 function c82567817.spfilter(c,e,tp,lv,mg)
-	return  c:IsLevel(lv) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return  c:IsLevel(lv) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 		and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0 and c:IsLevelBelow(8)
 end   
 function c82567817.syncost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -113,10 +113,10 @@ function c82567817.synactivate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 	local tc=g:GetFirst()
 	 if tc:IsType(TYPE_SYNCHRO) then
-		Duel.SpecialSummon(g,SUMMON_TYPE_SYNCHRO,tp,tp,true,false,POS_FACEUP)
+		Duel.SpecialSummon(g,SUMMON_TYPE_SYNCHRO,tp,tp,true,true,POS_FACEUP)
 		  tc:CompleteProcedure()  
 	 else if tc then
-		Duel.SpecialSummon(g,SUMMON_TYPE_SYNCHRO,tp,tp,true,false,POS_FACEUP)
+		Duel.SpecialSummon(g,SUMMON_TYPE_SYNCHRO,tp,tp,true,true,POS_FACEUP)
 	 end
 	 end
 	end

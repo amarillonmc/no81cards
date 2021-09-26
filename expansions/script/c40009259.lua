@@ -2,6 +2,14 @@
 local m=40009259
 local cm=_G["c"..m]
 cm.named_with_BlackChains=1
+function cm.BLASTERBlade(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTERBlade
+end
+function cm.BLASTERdark(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTERdark
+end
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -47,7 +55,7 @@ function cm.BLASTERMirage(c)
 	return m and m.named_with_BLASTERMirage
 end
 function cm.cefilter(c)
-	return c:IsFaceup() and (c:IsCode(40009154) or c:IsCode(40009249))
+	return c:IsFaceup() and (cm.BLASTERBlade(c) or cm.BLASTERdark(c))
 end
 function cm.handcon(e)
 	return Duel.IsExistingMatchingCard(cm.cefilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
@@ -91,7 +99,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter(c,tp)
-	return c:IsFaceup() and (cm.BLASTERMirage(c) or c:IsCode(40009249)) and c:GetSummonPlayer()==tp
+	return c:IsFaceup() and (cm.BLASTERMirage(c) or cm.BLASTERdark(c)) and c:GetSummonPlayer()==tp
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp)
@@ -118,7 +126,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.target1(e,c)
-	return (cm.BLASTERMirage(c) or c:IsCode(40009249))
+	return (cm.BLASTERMirage(c) or cm.BLASTERdark(c))
 end
 function cm.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:IsActiveType(TYPE_TRAP)

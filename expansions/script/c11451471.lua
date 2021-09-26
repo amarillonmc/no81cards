@@ -13,14 +13,14 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_BE_MATERIAL)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
 	e2:SetOperation(cm.efop)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	--change code
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_CHANGE_CODE)
+	e3:SetCode(EFFECT_ADD_CODE)
 	e3:SetTargetRange(LOCATION_GRAVE,LOCATION_GRAVE)
 	e3:SetTarget(cm.chtg)
-	e3:SetValue(11451460)
+	e3:SetValue(11451461)
 	e3:SetRange(LOCATION_SZONE)
 	c:RegisterEffect(e3)
 	--special summon
@@ -58,7 +58,7 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CHANGE_CODE)
 	e1:SetTargetRange(LOCATION_GRAVE,LOCATION_GRAVE)
 	e1:SetTarget(cm.chtg)
-	e1:SetValue(11451460)
+	e1:SetValue(11451461)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
@@ -91,5 +91,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then
 		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 		Duel.Recover(tp,tc:GetAttack(),REASON_EFFECT)
+		Duel.Recover(1-tp,tc:GetAttack(),REASON_EFFECT)
 	end
 end

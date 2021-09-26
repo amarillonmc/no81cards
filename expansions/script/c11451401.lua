@@ -21,10 +21,10 @@ function cm.initial_effect(c)
 end
 cm.traveler_saga=true
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)
+	return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND+LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)
 end
 function cm.filter(c,tp)
-	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and c:IsAbleToHand() and (c:IsReason(REASON_BATTLE) or (c:GetDestination()==LOCATION_GRAVE and c:GetLeaveFieldDest()==0 and c:IsReason(REASON_EFFECT) and not c:IsType(TYPE_PENDULUM)))
+	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and (c:IsAbleToHand() or c:IsStatus(STATUS_LEAVE_CONFIRMED)) and c:GetLeaveFieldDest()==0 and (c:IsReason(REASON_BATTLE) or (c:GetDestination()==LOCATION_GRAVE and c:IsReason(REASON_EFFECT))) and not c:IsType(TYPE_TOKEN)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -33,7 +33,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=eg:Filter(cm.filter,c,tp)
 		if #g>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-			g=g:Select(tp,1,ct,nil)
+			g=g:Select(tp,1,#g,nil)
 		end
 		for tc in aux.Next(g) do
 			local e1=Effect.CreateEffect(c)
@@ -43,7 +43,25 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			e1:SetValue(LOCATION_HAND)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1)
+			tc:RegisterFlagEffect(m,RESET_EVENT+0x1de0000+RESET_PHASE+PHASE_END,0,1)
 		end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e1:SetCode(EVENT_TO_HAND)
+		e1:SetCountLimit(1)
+		e1:SetCondition(cm.thcon)
+		e1:SetOperation(cm.thop)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
 		return true
 	else return false end
+end
+function cm.thfilter(c)
+	return c:GetFlagEffect(m)~=0
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.thfilter,1,nil)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ShuffleHand(tp)
 end

@@ -59,7 +59,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e4,tp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return sumpos==POS_FACEDOWN_ATTACK or sumpos==POS_FACEDOWN_DEFENSE
+	return sumpos&POS_FACEDOWN>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)

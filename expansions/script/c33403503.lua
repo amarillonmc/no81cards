@@ -17,7 +17,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,33413501)<(Duel.GetFlagEffect(tp,33403501)/2+1)and Duel.GetFlagEffect(tp,m+30000)==0 and Duel.GetFlagEffect(tp,33443500)==0
+	local ss=Duel.GetTurnCount()
+	return Duel.GetFlagEffect(tp,33413501)<ss and  Duel.GetFlagEffect(tp,m+30000)==0 and Duel.GetFlagEffect(tp,33443500)==0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
 e:SetLabel(1)
@@ -41,45 +42,11 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return true end
 	if chk==0 then return b1 or b2 end
 	if e:GetLabel()==1 then 
-	local c=e:GetHandler()
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_NEGATED)
-	e2:SetCondition(cm.regcon)
-	e2:SetOperation(cm.regop2)
-	e2:SetReset(RESET_EVENT+RESET_CHAIN+RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
-	Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1)   --t2
-	Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1) --t1
-	Duel.RegisterFlagEffect(tp,33403501,0,0,0)   --duel 1
+	Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1) --t1
+	Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1) --t1+t2
+	Duel.RegisterFlagEffect(tp,33403501,0,0,0)  
 	e:SetLabel(2)
 	end
-end
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsSetCard(0x5349) and rp==tp
-end
-function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
-	local n1=Duel.GetFlagEffect(tp,33413501)
-	local n2=Duel.GetFlagEffect(tp,33403501)
-	local n3=Duel.GetFlagEffect(tp,m+20000)
-	Duel.ResetFlagEffect(tp,33413501)
-	Duel.ResetFlagEffect(tp,33403501)
-	Duel.ResetFlagEffect(tp,m+20000)
-	if n1>=2 then 
-		for i=1,n1-1 do
-		Duel.RegisterFlagEffect(tp,33413501,RESET_PHASE+PHASE_END,0,1)
-		end 
-	end
-	if n2>=2 then
-		for i=1,n2-1 do
-		 Duel.RegisterFlagEffect(tp,33403501,0,0,0)
-		end 
-	end
-	if n3>=2 then 
-		for i=1,n3 do
-		  Duel.RegisterFlagEffect(tp,m+20000,RESET_PHASE+PHASE_END,0,1)
-		end 
-	end 
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -100,12 +67,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		while tc do
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(m,2))
 			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
 			e1:SetCode(EFFECT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1)
 			local e2=Effect.CreateEffect(c)
+			e2:SetDescription(aux.Stringid(m,2))
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
@@ -114,6 +83,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e2)
 			if tc:IsType(TYPE_TRAPMONSTER) then
 				local e3=Effect.CreateEffect(c)
+				e3:SetDescription(aux.Stringid(m,2))
 				e3:SetType(EFFECT_TYPE_SINGLE)
 				e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
@@ -129,6 +99,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc2=tg2:GetFirst()
 	 --atk
 	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,3))	   
+	e3:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e3:SetRange(LOCATION_MZONE)

@@ -2,6 +2,10 @@
 local m=40009251
 local cm=_G["c"..m]
 cm.named_with_BLASTER=1
+function cm.BLASTERBlade(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTERBlade
+end
 function cm.initial_effect(c)
 	--to grave
 	local e1=Effect.CreateEffect(c)
@@ -34,7 +38,7 @@ function cm.BLASTER(c)
 	return m and m.named_with_BLASTER
 end
 function cm.tgfilter(c)
-	return (c:IsCode(40009154) and c:IsFaceup())
+	return (cm.BLASTERBlade(c) and c:IsFaceup())
 end
 function cm.aspfilter(c,e,tp)
 	return c:IsCode(40009249) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -57,14 +61,6 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,0)
-	e2:SetTarget(cm.splimit)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
 end
 function cm.splimit(e,c)
 	return not cm.BLASTER(c) and c:IsLocation(LOCATION_EXTRA)

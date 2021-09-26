@@ -164,7 +164,7 @@ function c82567854.shiningfilter(c)
 	return c:IsFaceup() and (c:IsCode(82567853) or c:IsCode(82567855) or c:IsCode(82568042)) 
 end
 function c82567854.nearlfilter(c)
-	return c:IsFaceup() and c:IsCode(82567792) 
+	return c:IsFaceup() and (c:IsCode(82567792) or c:IsCode(82568088)) 
 end
 function c82567854.nightingalefilter(c)
 	return c:IsFaceup() and (c:IsCode(82567786) or c:IsCode(82567787) or c:IsCode(82568043) or c:IsCode(82568087) or c:IsCode(82568086))  

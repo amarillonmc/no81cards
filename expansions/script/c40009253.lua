@@ -2,6 +2,10 @@
 local m=40009253
 local cm=_G["c"..m]
 cm.named_with_BLASTER=1
+function cm.BLASTERBlade(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTERBlade
+end
 function cm.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
@@ -44,7 +48,7 @@ function cm.filter(c)
 	return cm.BlackChains(c) and c:IsType(TYPE_CONTINUOUS+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.tgfilter(c)
-	return (c:IsCode(40009154) and c:IsFaceup())
+	return (cm.BLASTERBlade(c) and c:IsFaceup())
 end
 function cm.aspfilter(c,e,tp)
 	return c:IsCode(40009249) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

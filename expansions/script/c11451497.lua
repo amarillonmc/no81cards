@@ -65,7 +65,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e8)
 end
 function cm.filter(c,tp)
-	return c:IsPreviousLocation(LOCATION_GRAVE) and c:GetPreviousControler()==tp
+	return c:IsPreviousLocation(LOCATION_GRAVE) and c:GetPreviousControler()==tp and not c:IsLocation(LOCATION_GRAVE)
 end
 function cm.tg(e,c)
 	return c:IsFaceup()

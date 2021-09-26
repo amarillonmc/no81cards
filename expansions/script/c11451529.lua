@@ -2,6 +2,7 @@
 --21.04.29
 local m=11451529
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c) 
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_CONTROL)
@@ -20,7 +21,7 @@ function cm.cacon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cacost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsControlerCanBeChanged() and Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL) and c:IsAttackable() end
+	if chk==0 then return c:IsControlerCanBeChanged() and Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0 and c:IsAttackable() end
 	Duel.GetControl(c,1-tp)
 end
 function cm.catg(e,tp,eg,ep,ev,re,r,rp,chk)

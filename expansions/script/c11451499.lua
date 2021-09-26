@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetTarget(cm.target)
+	e0:SetCost(cm.cost)
 	e0:SetOperation(cm.activate)
 	c:RegisterEffect(e0)
 	--spring
@@ -84,7 +84,7 @@ function cm.initial_effect(c)
 	e9:SetValue(cm.actlimit)
 	c:RegisterEffect(e9)
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local c=e:GetHandler()
 	--to grave

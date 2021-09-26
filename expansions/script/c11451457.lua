@@ -4,7 +4,6 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCost(cm.cost)
@@ -42,7 +41,12 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 			local g=Duel.GetDecktopGroup(tp,num)
 			Duel.DisableShuffleCheck()
 			e:SetLabel(Duel.Remove(g,POS_FACEDOWN,REASON_COST))
+			e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+		else
+			e:SetCategory(0)
 		end
+	else
+		e:SetCategory(0)
 	end
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -66,21 +70,21 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=Duel.GetTurnPlayer()
 end
 function cm.filter2(c,e,tp,rc)
-	if not (c:IsType(TYPE_SYNCHRO) and (rc%c:GetLevel()==0) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)) then return false end
+	if not (c:IsType(TYPE_SYNCHRO) and (rc%c:GetLevel()==0) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0) then return false end
 	--continuously updating
-	local tab={14000248,14010109,79029117,98731001}
+	local tab={14000248,14010109,79029117,92361302,92361306,98731001}
 	for _,code in pairs(tab) do
 		if c:GetOriginalCode()==code then return true end
 	end
 	local eset={c:IsHasEffect(EFFECT_SPSUMMON_CONDITION)}
 	for _,te in pairs(eset) do
-		if te:GetValue()==0 then return true end
+		if te:GetOwner()==c and te:GetValue()==0 then return true end
 	end
 	return false
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
-	if chk==0 then return rc>0 and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,rc) and Duel.GetLocationCountFromEx(tp)>0 end
+	if chk==0 then return rc>0 and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,rc) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)

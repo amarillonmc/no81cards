@@ -38,7 +38,7 @@ function c82557943.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c82557943.eqfilter(c,tp)
-	return c:IsSetCard(0x829) and c:CheckUniqueOnField(tp) and not c:IsForbidden() and not c:IsType(TYPE_EQUIP)
+	return c:IsLinkSetCard(0x829) and c:CheckUniqueOnField(tp) and not c:IsForbidden() and not c:IsType(TYPE_EQUIP)
 end
 function c82557943.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c82557943.eqfilter,tp,LOCATION_DECK,0,1,nil,tp)

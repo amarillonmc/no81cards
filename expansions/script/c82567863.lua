@@ -43,11 +43,13 @@ function c82567863.thfilter(c)
 	return c:IsSetCard(0x825) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToHand()
 end
 function c82567863.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:GetDefense()>0 and chkc:IsSetCard(0x825) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:GetDefense()>0 and chkc:IsSetCard(0x825) and chkc:IsFaceup() end
 	if chk==0 then return Duel.IsExistingTarget(c82567863.tkfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,c82567863.tkfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	 Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	 local tc=g:GetFirst():GetDefense()/2
+	 Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,1,tp,tc)
 end
 function c82567863.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

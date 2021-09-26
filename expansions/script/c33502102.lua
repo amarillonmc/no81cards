@@ -106,7 +106,7 @@ function cm.hop(e,tp,eg,ep,ev,re,r,rp)
 		e8:SetValue(TYPE_EFFECT)
 		token:RegisterEffect(e8,true)
 	end
-	Duel.SpecialSummonComplete()
 	end
+	Duel.SpecialSummonComplete()
 	end
 end

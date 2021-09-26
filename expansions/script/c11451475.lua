@@ -7,6 +7,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,0x11e0)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
@@ -36,8 +37,7 @@ function cm.actarget(e,te,tp)
 	return te:GetHandler()==e:GetHandler()
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -64,6 +64,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,0,0)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
@@ -81,16 +82,14 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 		tc:RegisterEffect(e1,true)
 		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetDescription(aux.Stringid(m,0))
 		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER+EFFECT_FLAG_CLIENT_HINT)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
 		e2:SetCode(EVENT_LEAVE_FIELD_P)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e2:SetOperation(cm.efop1)
 		local e3=Effect.CreateEffect(e:GetHandler())
-		e3:SetDescription(aux.Stringid(m,0))
 		e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER+EFFECT_FLAG_CLIENT_HINT)
+		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
 		e3:SetCode(EVENT_BE_MATERIAL)
 		e3:SetOperation(cm.efop2)
 		e2:SetLabelObject(e3)
@@ -104,12 +103,13 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetLabelObject(e3)
 		e4:SetOperation(cm.resop)
 		tc:RegisterEffect(e4,true)
+		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	end
 end
 function cm.efop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ref=c:GetReasonEffect()
-	if not (c:IsReason(REASON_COST) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC) then return end
+	if not ((c:IsReason(REASON_COST) or c:IsReason(REASON_MATERIAL)) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC) then return end
 	local rc=ref:GetHandler()
 	if not rc then return end
 	local e0=Effect.CreateEffect(c)
@@ -169,6 +169,7 @@ function cm.efop1(e,tp,eg,ep,ev,re,r,rp)
 		if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
 		rc:RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
 	end
+	c:ResetFlagEffect(0)
 	local te=e:GetLabelObject()
 	if te~=nil and aux.GetValueType(te)=="Effect" then te:Reset() end
 	e:Reset()
@@ -239,6 +240,7 @@ function cm.efop2(e,tp,eg,ep,ev,re,r,rp)
 		if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
 		rc:RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
 	end
+	c:ResetFlagEffect(0)
 	local te=e:GetLabelObject()
 	if te~=nil and aux.GetValueType(te)=="Effect" then te:Reset() end
 	e:Reset()
@@ -281,8 +283,8 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c:GetFlagEffect(m+1)<2 end
 	c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(2)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

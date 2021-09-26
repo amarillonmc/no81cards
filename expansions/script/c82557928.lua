@@ -37,6 +37,9 @@ function c82557928.initial_effect(c)
 	e4:SetCountLimit(1,82557928)
 	e4:SetOperation(c82557928.dwop)
 	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e5)
 end
 function c82557928.psplimit(e,c,tp,sumtp,sumpos)
 	return not c:IsRace(RACE_MACHINE) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM

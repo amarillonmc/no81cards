@@ -2,6 +2,10 @@
 local m=40009168
 local cm=_G["c"..m]
 cm.named_with_ALFRED=1
+function cm.BLASTERBlade(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTERBlade
+end
 function cm.initial_effect(c)
 	--effect
 	local e1=Effect.CreateEffect(c)
@@ -32,7 +36,7 @@ function cm.battlecheck(tp)
 	return res,a
 end
 function cm.gvfilter(c)
-	return c:IsFaceup() and c:IsCode(40009154) and c:IsAbleToGrave() 
+	return c:IsFaceup() and cm.BLASTERBlade(c) and c:IsAbleToGrave() 
 end
 function cm.spfilter(c,e,tp)
 	return (cm.SAVER(c) or c:IsCode(82593786)) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)

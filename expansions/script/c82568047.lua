@@ -115,7 +115,7 @@ function c82568047.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c82568047.wfilter(c)
-	return  c:IsSetCard(0x825) and c:IsAttribute(ATTRIBUTE_WATER)
+	return  c:IsSetCard(0x825) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsFaceup()
 end
 function c82568047.con(e,tp,eg,ep,ev,re,r,rp,chk)
 	return Duel.IsExistingMatchingCard(c82568047.wfilter,e:GetHandler():GetControler(),LOCATION_MZONE,0,1,nil)

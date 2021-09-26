@@ -45,52 +45,40 @@ function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	local fd=Duel.SelectDisableField(tp,1,0,LOCATION_MZONE,0)
 	Duel.Hint(HINT_ZONE,tp,fd)
+	Duel.Hint(HINT_ZONE,1-tp,fd>>16)
 	fd=fd>>16
 	e:SetLabel(fd)
 	local seq=math.log(fd,2)
 	local dg=Group.CreateGroup()
 	local g=nil
-	local exg=nil
 	for i=math.max(0,seq-1),math.min(4,seq+1) do
-		g=Duel.GetMatchingGroup(aux.FilterEqualFunction,tp,0,LOCATION_ONFIELD,nil,Card.GetSequence,i)
+		g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_ONFIELD,nil,1-tp,i)
 		dg:Merge(g)
-		if i==1 then
-			exg=Duel.GetMatchingGroup(aux.FilterEqualFunction,tp,0,LOCATION_MZONE,0,nil,Card.GetSequence,5)
-			dg:Merge(exg)
-		elseif i==3 then
-			exg=Duel.GetMatchingGroup(aux.FilterEqualFunction,tp,0,LOCATION_MZONE,0,nil,Card.GetSequence,6)
-			dg:Merge(exg)
-		end
 	end
 	dg:AddCard(c)
 	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,c,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,dg,dg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,dg,#dg,0,0)
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local fd=e:GetLabel()
 	local seq=math.log(fd,2)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or c:IsImmuneToEffect(e) or not c:IsControler(tp) or not Duel.CheckLocation(1-tp,LOCATION_MZONE,seq) then return end
+	if not c:IsRelateToEffect(e) or c:IsImmuneToEffect(e) or not c:IsControler(tp) or not Duel.CheckLocation(1-tp,LOCATION_MZONE,seq) or not c:IsFaceup() then return end
 	Duel.GetControl(c,1-tp,0,0,fd)
 	if c:GetSequence()==seq then
 		local dg=Group.CreateGroup()
 		local g=nil
-		local exg=nil
 		for i=math.max(0,seq-1),math.min(4,seq+1) do
-			g=Duel.GetMatchingGroup(aux.FilterEqualFunction,tp,0,LOCATION_ONFIELD,nil,Card.GetSequence,i)
+			g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_ONFIELD,nil,1-tp,i)
 			dg:Merge(g)
-			if i==1 then
-				exg=Duel.GetMatchingGroup(aux.FilterEqualFunction,tp,0,LOCATION_MZONE,0,nil,Card.GetSequence,5)
-				dg:Merge(exg)
-			elseif i==3 then
-				exg=Duel.GetMatchingGroup(aux.FilterEqualFunction,tp,0,LOCATION_MZONE,0,nil,Card.GetSequence,6)
-				dg:Merge(exg)
-			end
 		end
-		if dg:GetCount()>0 then
+		if #dg>0 then
 			Duel.HintSelection(dg)
 			Duel.Remove(dg,POS_FACEDOWN,REASON_EFFECT)
 		end
 	end
+end
+function cm.rmfilter(c,tp,seq)
+	return aux.GetColumn(c,tp)==seq
 end

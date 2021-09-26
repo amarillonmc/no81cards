@@ -1,4 +1,4 @@
---领袖钢战-火焰擎天柱
+--游星钢战-星辰擎天柱
 function c82557918.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),7,2)

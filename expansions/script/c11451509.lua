@@ -57,19 +57,51 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-	e1:SetTargetRange(LOCATION_ONFIELD,0)
-	e1:SetValue(LOCATION_HAND)
-	e1:SetTarget(cm.rmtg)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCode(EFFECT_SEND_REPLACE)
+	e1:SetTarget(cm.reptg)
+	e1:SetValue(function(e,c) e:SetLabel(100) return false end)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function cm.rmtg(e,c)
-	local res=(c:IsReason(REASON_RELEASE) and e:GetLabel()==0)
-	if res then e:SetLabel(100) end
-	return res
+function cm.filter(c,tp)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and (c:IsAbleToHand() or c:IsStatus(STATUS_LEAVE_CONFIRMED)) and c:GetLeaveFieldDest()==0 and c:GetDestination()==LOCATION_GRAVE and c:IsReason(REASON_RELEASE) and not c:IsType(TYPE_TOKEN)
+end
+function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) end
+	if e:GetLabel()==0 then
+		local g=eg:Filter(cm.filter,nil,tp)
+		for tc in aux.Next(g) do
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetValue(LOCATION_HAND)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e1)
+			tc:RegisterFlagEffect(m,RESET_EVENT+0x1de0000+RESET_PHASE+PHASE_END,0,1)
+		end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e1:SetCode(EVENT_TO_HAND)
+		e1:SetCountLimit(1)
+		e1:SetCondition(cm.thcon)
+		e1:SetOperation(cm.thop)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+		return true
+	else return false end
+end
+function cm.thfilter(c)
+	return c:GetFlagEffect(m)~=0
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.thfilter,1,nil)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ShuffleHand(tp)
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 	return re==e:GetLabelObject()

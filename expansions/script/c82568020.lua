@@ -53,7 +53,7 @@ function c82568020.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c82568020.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x5825,1,REASON_COST) and Duel.IsExistingMatchingCard(c82568020.rtfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0  and Duel.IsCanRemoveCounter(tp,1,0,0x5825,1,REASON_COST) and Duel.IsExistingMatchingCard(c82568020.rtfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.RemoveCounter(tp,1,0,0x5825,1,REASON_COST)
 end
 function c82568020.rtfilter1(c,e,tp)
@@ -108,7 +108,7 @@ function c82568020.splimit(e,c)
 	return c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_EXTRA)
 end
 function c82568020.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x5825,2,REASON_COST) and Duel.IsExistingMatchingCard(c82568020.rtfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0  and Duel.IsCanRemoveCounter(tp,1,0,0x5825,2,REASON_COST) and Duel.IsExistingMatchingCard(c82568020.rtfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.RemoveCounter(tp,1,0,0x5825,2,REASON_COST)
 end
 function c82568020.rtfilter2(c,e,tp)
@@ -148,7 +148,7 @@ function c82568020.activate2(e,tp,eg,ep,ev,re,r,rp,ft,lv)
 	end
 end
 function c82568020.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x5825,3,REASON_COST) and Duel.IsExistingMatchingCard(c82568020.rtfilter3,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0  and Duel.IsCanRemoveCounter(tp,1,0,0x5825,3,REASON_COST) and Duel.IsExistingMatchingCard(c82568020.rtfilter3,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.RemoveCounter(tp,1,0,0x5825,3,REASON_COST)
 end
 function c82568020.rtfilter3(c,e,tp)
@@ -188,7 +188,7 @@ function c82568020.activate3(e,tp,eg,ep,ev,re,r,rp,ft,lv)
 	end
 end
 function c82568020.cost4(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x5825,4,REASON_COST) and Duel.IsExistingMatchingCard(c82568020.rtfilter4,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0  and Duel.IsCanRemoveCounter(tp,1,0,0x5825,4,REASON_COST) and Duel.IsExistingMatchingCard(c82568020.rtfilter4,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.RemoveCounter(tp,1,0,0x5825,4,REASON_COST)
 end
 function c82568020.rtfilter4(c,e,tp)

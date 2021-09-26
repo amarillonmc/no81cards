@@ -18,7 +18,7 @@ function cm.cfilter(c)
 	return c:GetSequence()<5
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return aux.bpcon() and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.filter2(c)
 	return c:IsFaceup() and c:IsSetCard(0x1115) and c:IsType(TYPE_MONSTER)
@@ -44,7 +44,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_SPELL)<3 then return end
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetCode(EFFECT_IMMUNE_EFFECT)
+		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 		e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e2:SetTargetRange(LOCATION_ONFIELD,0)
 		e2:SetValue(cm.efilter)
@@ -60,5 +60,5 @@ function cm.atklimit(e,c)
 end
 function cm.efilter(e,re)
 	local c=e:GetLabelObject()
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and (c:GetRealFieldID()~=e:GetLabel() or not (re:IsHasType(EFFECT_TYPE_ACTIONS) and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(re)))
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and (c:GetRealFieldID()~=e:GetLabel() or not ((re:IsHasType(EFFECT_TYPE_ACTIONS) and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(re)) or re:IsHasCardTarget(c)))
 end

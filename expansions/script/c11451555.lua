@@ -71,25 +71,22 @@ function cm.ncfilter(c)
 	return not c:IsAbleToGraveAsCost()
 end
 function cm.desfilter(c,tp,seq)
-	local seq1=c:GetSequence()
-	if c:IsLocation(LOCATION_MZONE) and seq1==5 then seq1=1 end
-	if c:IsLocation(LOCATION_MZONE) and seq1==6 then seq1=3 end
-	if not c:IsControler(tp) then seq1=4-seq1 end
-	return seq1==seq
+	return aux.GetColumn(c,tp)==seq
 end
 function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,0,nil)
 	if chk==0 then return #g>0 and not g:IsExists(cm.ncfilter,1,nil) end
 	local dg=Group.CreateGroup()
+	local lab=0
 	for tc in aux.Next(g) do
 		dg:Merge(tc:GetColumnGroup())
-		e:SetLabel(e:GetLabel()|1<<tc:GetSequence())
+		lab=lab|1<<tc:GetSequence()
 	end
 	dg:Sub(g)
 	dg:KeepAlive()
 	e:SetLabelObject(dg)
 	local num=Duel.SendtoGrave(g,REASON_COST)
-	e:SetLabel(e:GetLabel(),num)
+	e:SetLabel(lab,num)
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

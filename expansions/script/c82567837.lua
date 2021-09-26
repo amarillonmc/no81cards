@@ -22,9 +22,10 @@ function c82567837.initial_effect(c)
 end
 function c82567837.tkfilter(c)
 	return (c:IsType(TYPE_FUSION) or c:IsType(TYPE_RITUAL) or c:IsType(TYPE_SYNCHRO) or c:IsType(TYPE_XYZ) or c:IsType(TYPE_LINK)) and c:IsSetCard(0x825) 
+	and c:IsFaceup() 
 end
 function c82567837.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:IsCanAddCounter(0x5825,2) and (chkc:IsType(TYPE_FUSION) or chkc:IsType(TYPE_RITUAL) or chkc:IsType(TYPE_SYNCHRO) or chkc:IsType(TYPE_XYZ) or chkc:IsType(TYPE_LINK)) and chkc:IsSetCard(0x825) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:IsCanAddCounter(0x5825,2) and (chkc:IsType(TYPE_FUSION) or chkc:IsType(TYPE_RITUAL) or chkc:IsType(TYPE_SYNCHRO) or chkc:IsType(TYPE_XYZ) or chkc:IsType(TYPE_LINK)) and chkc:IsSetCard(0x825) and chkc:IsFaceup() end
 	if chk==0 then return Duel.IsExistingTarget(c82567837.tkfilter,tp,LOCATION_MZONE,0,1,nil,0x5825,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,c82567837.tkfilter,tp,LOCATION_MZONE,0,1,1,nil,0x5825,2)

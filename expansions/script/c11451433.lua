@@ -39,18 +39,20 @@ function cm.filter(c)
 end
 function cm.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 and Duel.GetDecktopGroup(tp,3):FilterCount(Card.IsAbleToHand,nil)>0 and Duel.GetDecktopGroup(tp,3):FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)>0 end
+	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_DECK)
 end
 function cm.scop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 then return end
-	Duel.ConfirmDecktop(tp,3)
-	local g=Duel.GetDecktopGroup(tp,3)
-	if g:GetCount()>0 and g:IsExists(cm.filter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g2=g:FilterSelect(tp,cm.filter,1,1,nil)
+	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	if Duel.GetFieldGroupCount(p,LOCATION_DECK,0)<3 then return end
+	Duel.ConfirmDecktop(p,3)
+	local g=Duel.GetDecktopGroup(p,3)
+	if g:GetCount()>0 and g:IsExists(cm.filter,1,nil) and Duel.SelectYesNo(p,aux.Stringid(m,0)) then
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
+		local g2=g:FilterSelect(p,cm.filter,1,1,nil)
 		Duel.DisableShuffleCheck()
 		if Duel.SendtoHand(g2,nil,REASON_EFFECT)>0 then
-			Duel.ConfirmCards(1-tp,g2)
+			Duel.ConfirmCards(1-p,g2)
 			g:Sub(g2)
 		end
 	end

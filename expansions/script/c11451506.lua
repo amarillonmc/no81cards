@@ -89,6 +89,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	re:SetOperation(cm.activate)
 	re:SetCategory(0)
 	re:SetLabel(0)
+	re:SetProperty(0)
 end
 function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED) and re:GetHandler():IsSetCard(0x97d) and re:GetHandler():GetType()&0x100004==0x100004 and re:IsHasType(EFFECT_TYPE_ACTIVATE)
@@ -101,6 +102,7 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+			Duel.HintSelection(g)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 		end
 	end

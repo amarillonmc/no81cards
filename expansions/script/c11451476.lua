@@ -74,10 +74,11 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SendtoHand(g,nil,REASON_EFFECT)==0 then return end
 		Duel.ConfirmCards(1-tp,g)
 		local sg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
-		if #sg>0 and sg:FilterCount(cm.filter,nil)==#sg and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		if #sg>0 and sg:FilterCount(cm.filter,nil)==#sg and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.BreakEffect()
 			local tg=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 			Duel.SSet(tp,tg)
+			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		end
 	end
 end

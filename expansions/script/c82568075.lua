@@ -2,7 +2,7 @@
 function c82568075.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,82567806,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9825),1,true,true)
+	aux.AddFusionProcFun2(c,c82568075.codefilter,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9825),true)
 	--Code
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -45,6 +45,9 @@ function c82568075.initial_effect(c)
 	e4:SetTarget(c82568075.thtg)
 	e4:SetOperation(c82568075.thop)
 	c:RegisterEffect(e4)
+end
+function c82568075.codefilter(c)
+	return c:IsCode(82567806)  or c:IsCode(82568045)
 end
 function c82568075.tg(e,c)
 	return c:IsFaceup()

@@ -2,15 +2,20 @@
 local m=40009249
 local cm=_G["c"..m]
 cm.named_with_BLASTER=1
+cm.named_with_BLASTERdark=1
+function cm.BLASTERBlade(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_BLASTERBlade
+end
 function cm.initial_effect(c)
-	--code
+	--setcode
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_ADD_SETCODE)
 	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e0:SetCode(EFFECT_CHANGE_CODE)
 	e0:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e0:SetValue(40009154)
-	c:RegisterEffect(e0)	
+	e0:SetValue(cm.subval)
+	c:RegisterEffect(e0)   
 	--to grave
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -41,6 +46,9 @@ end
 function cm.BLASTER(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_BLASTER
+end
+function cm.subval(e,c)
+	return cm.BLASTERBlade(c)
 end
 function cm.tgfilter(c)
 	return c:IsType(TYPE_MONSTER) and cm.BLASTER(c) and c:IsAbleToGrave()

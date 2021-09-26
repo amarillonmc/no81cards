@@ -93,6 +93,6 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
 		local g5=g3:RandomSelect(1-tp,1)
 		Duel.ShuffleDeck(tp)
-		Duel.SendtoHand(g5,tp,REASON_EFFECT)
+		Duel.SendtoHand(g5,nil,REASON_EFFECT)
 	end
 end

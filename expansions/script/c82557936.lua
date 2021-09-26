@@ -16,8 +16,7 @@ function c82557936.initial_effect(c)
 	--Activate
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(EFFECT_FLAG_NO_TURN_RESET)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_NO_TURN_RESET)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,82557836)
 	e2:SetTarget(c82557936.mttg)
@@ -33,7 +32,7 @@ end
 function c82557936.cefilter(c,tc,ct,e,tp)
 	if not c:IsType(TYPE_XYZ) then return false end
 	local r=c:GetRank()-tc:GetRank()
-	return c:IsSetCard(0x829)
+	return c:IsSetCard(0x829) 
 		and tc:IsCanBeXyzMaterial(c) and r>0 and ct>=r
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 		and Duel.GetLocationCountFromEx(tp,tp,tc,c)>0
@@ -41,7 +40,7 @@ end
 function c82557936.cfilter(c,e,tp)
 	local ct=Duel.GetMatchingGroupCount(c82557936.cgfilter,tp,LOCATION_GRAVE,0,nil)
 	return c:IsType(TYPE_XYZ) and c:IsRace(RACE_MACHINE) 
-		and c:IsCanBeEffectTarget(e)
+		and c:IsCanBeEffectTarget(e) and c:IsFaceup()
 		and Duel.IsExistingMatchingCard(c82557936.cefilter,tp,LOCATION_EXTRA,0,1,nil,c,ct,e,tp)
 end
 function c82557936.cost(e,tp,eg,ep,ev,re,r,rp,chk)

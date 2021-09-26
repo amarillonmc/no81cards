@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_CHAIN_SOLVED)
-	e3:SetRange(LOCATION_ONFIELD+LOCATION_GRAVE)
+	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e3:SetCountLimit(1,m)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCondition(cm.condition4)
@@ -46,7 +46,7 @@ function cm.filter(c,tp)
 	return c:IsSetCard(0x6978) and bit.band(c:GetType(),0x82)==0x82 and c:IsAbleToGraveAsCost() and c:CheckActivateEffect(true,true,false)~=nil
 end
 function cm.filter2(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_SEASERPENT) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6978) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)

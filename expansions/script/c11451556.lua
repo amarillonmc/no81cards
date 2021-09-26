@@ -43,7 +43,7 @@ function cm.matfilter(c)
 	return c:IsRace(RACE_WARRIOR) or cm.fdfilter(c)
 end
 function cm.fdfilter(c)
-	return c:IsFacedown()
+	return c:IsFacedown() and c:IsAbleToDeckOrExtraAsCost()
 end
 function cm.LConditionFilter(c,f,lc)
 	return (((c:IsFaceup() or not c:IsOnField()) and c:IsCanBeLinkMaterial(lc)) or (Duel.GetFlagEffect(lc:GetControler(),m)==0 and cm.fdfilter(c))) and (not f or f(c))

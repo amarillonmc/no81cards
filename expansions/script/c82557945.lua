@@ -43,13 +43,13 @@ function c82557945.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c82557945.con1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetOverlayGroup():GetCount()>=4
+	return e:GetHandler():GetOverlayGroup():GetCount()>=3
 end
 function c82557945.rmtg(e,c)
 	return c:GetOwner()~=e:GetHandlerPlayer()
 end
 function c82557945.con2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetOverlayGroup():GetCount()>=5
+	return e:GetHandler():GetOverlayGroup():GetCount()>=4
 end
 function c82557945.filter(c)
 	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsCanOverlay() and c:IsFaceup()

@@ -39,6 +39,9 @@ function c82557930.initial_effect(c)
 	e3:SetTarget(c82557930.target)
 	e3:SetOperation(c82557930.thop)
 	c:RegisterEffect(e3)
+	local e5=e3:Clone()
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e5)
 end
 function c82557930.psplimit(e,c,tp,sumtp,sumpos)
 	return not c:IsRace(RACE_MACHINE) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM

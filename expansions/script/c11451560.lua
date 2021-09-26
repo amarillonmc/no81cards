@@ -42,9 +42,6 @@ function cm.initial_effect(c)
 	e4:SetValue(cm.efilter)
 	c:RegisterEffect(e4)
 end
-function cm.ffilter(c,fc,sub,mg,sg)
-	return not sg or sg:FilterCount(aux.TRUE,c)==0 or (sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()) or sg:IsExists(Card.IsRace,1,c,c:GetRace()))
-end
 function cm.eqfilter(c)
 	return c:GetFlagEffect(m)~=0
 end
@@ -68,9 +65,9 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local phase=Duel.GetCurrentPhase()
 	local c=e:GetHandler()
 	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or c:IsStatus(STATUS_BATTLE_DESTROYED) then return end
-	if not c:GetEquipGroup():IsExists(cm.eqfilter,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)>0 then
+	if not c:GetEquipGroup():IsExists(cm.eqfilter,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)>0 then
 		Duel.Hint(HINT_CARD,0,m)
-		local tc=Duel.GetFieldCard(tp,LOCATION_EXTRA,Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)-1)
+		local tc=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil):GetMaxGroup(Card.GetSequence):GetFirst()
 		Duel.DisableShuffleCheck()
 		if cm.equipfd(c,tp,tc) then Duel.Readjust() end
 	end

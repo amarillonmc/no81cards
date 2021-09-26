@@ -9,18 +9,11 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
-	e1:SetCondition(cm.con)
 	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 
-end
-function cm.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x9344)
-end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)  
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.refilter(c)
 	return ((c:IsType(TYPE_EFFECT) and c:IsDisabled()) or c:IsType(TYPE_NORMAL) or c:IsType(TYPE_TOKEN)) and c:IsReleasable()
@@ -109,7 +102,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 					e2:SetType(EFFECT_TYPE_QUICK_O)
 					e2:SetCode(EVENT_FREE_CHAIN)
 					e2:SetCost(cm.rmcost)
-					sc:RegisterEffect(e2)	  
+					sc:RegisterEffect(e2)	 
   sc:RegisterFlagEffect(m+2,RESET_EVENT+0x1fe0000,0,nil,0,0)
 				   sc:SetUniqueOnField(1,0,cm.onfilter2,LOCATION_MZONE) 
 				 else

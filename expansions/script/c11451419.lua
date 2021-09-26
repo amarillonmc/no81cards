@@ -64,7 +64,7 @@ end
 function cm.rule(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and (Duel.IsExistingMatchingCard(cm.sprfilter,0,LOCATION_MZONE,0,1,nil) or Duel.IsExistingMatchingCard(cm.sprfilter,1,LOCATION_MZONE,0,1,nil))
+	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.IsExistingMatchingCard(cm.sprfilter,0,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.sprfilter,tp,LOCATION_MZONE,0,1,nil) and not Duel.IsExistingMatchingCard(cm.sprfilter,tp,0,LOCATION_MZONE,1,nil)

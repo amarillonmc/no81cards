@@ -13,14 +13,14 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_BE_MATERIAL)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
 	e2:SetOperation(cm.efop)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	--change code
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_CHANGE_CODE)
+	e3:SetCode(EFFECT_ADD_CODE)
 	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e3:SetTarget(cm.chtg)
-	e3:SetValue(11451460)
+	e3:SetValue(11451461)
 	e3:SetRange(LOCATION_SZONE)
 	c:RegisterEffect(e3)
 	--draw
@@ -52,10 +52,6 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.filter(c)
-	if Duel.IsPlayerAffectedByEffect(c:GetControler(),11451461) and ((c:IsOnField() and c:IsStatus(STATUS_EFFECT_ENABLED)) or c:IsLocation(LOCATION_HAND)) then return true end
-	return false
-end
 function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
@@ -65,7 +61,7 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CHANGE_CODE)
 	e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e1:SetTarget(cm.chtg)
-	e1:SetValue(11451460)
+	e1:SetValue(11451461)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
@@ -78,6 +74,9 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 		rc:RegisterEffect(e2,true)
 	end
 	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+end
+function cm.filter(c)
+	return Duel.IsPlayerAffectedByEffect(c:GetControler(),11451461) and ((c:IsOnField() and c:IsStatus(STATUS_EFFECT_ENABLED)) or c:IsLocation(LOCATION_HAND))
 end
 function cm.filter6(c,e)
 	return c:GetFlagEffectLabel(m)==e:GetLabel()

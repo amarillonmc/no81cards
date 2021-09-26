@@ -58,7 +58,7 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.trcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost() and (c:IsFaceup() or (Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and c:GetEquipTarget())) end
+	if chk==0 then return c:IsAbleToGraveAsCost() and (c:IsFaceup() or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)) and c:GetEquipTarget() end
 	if c:IsFacedown() then Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD) end
 	Duel.SendtoGrave(c,REASON_COST)
 end
@@ -66,11 +66,11 @@ function cm.filter(c)
 	return c:GetEquipTarget() and c:IsFacedown()
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.GetLocationCount(1-tp,LOCATION_SZONE,PLAYER_NONE,0)>0 end
 end
 function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
-	local ft=Duel.GetLocationCount(1-tp,LOCATION_SZONE)
+	local ft=Duel.GetLocationCount(1-tp,LOCATION_SZONE,PLAYER_NONE,0)
 	if ft==0 then return end
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,ft,nil)
 	if not g or #g==0 then return end
@@ -89,9 +89,14 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetDescription(aux.Stringid(m,3))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	if Duel.GetCurrentPhase()==PHASE_STANDBY then
+		e1:SetLabel(Duel.GetTurnCount())
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
+	else
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+	end
 	e1:SetCondition(cm.tgcon)
 	e1:SetOperation(cm.tgop)
-	e1:SetReset(RESET_PHASE+PHASE_STANDBY)
 	e1:SetCountLimit(1)
 	e1:SetLabelObject(tg)
 	Duel.RegisterEffect(e1,tp)
@@ -123,8 +128,9 @@ function cm.seqfilter(c,tc,tp)
 	return (x1==x2 and math.abs(y1-y2)==1) or (y1==y2 and math.abs(x1-x2)==1)
 end
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	local ct=e:GetLabel()
 	local tg=e:GetLabelObject()
-	return tg and tg:IsExists(cm.tgfilter,1,nil)
+	return tg and tg:IsExists(cm.tgfilter,1,nil) and (not ct or Duel.GetTurnCount()~=ct)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)

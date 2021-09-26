@@ -73,6 +73,4 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	cm[p]=cm[p]+1
-	Debug.Message(cm[p])
-	Debug.Message(cm[1-p])
 end
