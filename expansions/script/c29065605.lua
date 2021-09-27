@@ -2,8 +2,8 @@
 function c29065605.initial_effect(c)
 	c:SetSPSummonOnce(29065605)
 	--synchro summon
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1,1)
 	c:EnableReviveLimit()
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x87ad),1,99) 
 	--Equip
 	local e1=Effect.CreateEffect(c)   
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS) 
