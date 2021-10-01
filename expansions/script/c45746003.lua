@@ -58,6 +58,7 @@ end)
 		end
 	end)
 	c:RegisterEffect(e1)
+end
 --e3
 function cm.tf3(c,mc)
 	return c:IsSetCard(0x5880) and mc:IsType(TYPE_XYZ) and c:IsCanOverlay()

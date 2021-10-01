@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 		return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 	end)
 	e3:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if chk==0 then return Duel.IsExistingMatchingCard(cm.t3,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp) end
+		if chk==0 then return Duel.IsExistingMatchingCard(cm.t3,tp,LOCATION_DECK,0,1,nil) end
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,0)
 	end)
 	e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)

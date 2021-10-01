@@ -54,7 +54,8 @@ function c67200082.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 --spsummon
 function c67200082.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)
+	local c=e:GetHandler()
+	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function c67200082.spfilter(c,e,tp)
 	return c:IsSetCard(0x673) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

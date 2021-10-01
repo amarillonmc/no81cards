@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 		if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and cm.tf1(chkc) end
 		if chk==0 then return Duel.IsExistingTarget(cm.tf1,tp,0,LOCATION_MZONE,1,nil) end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-		local g=Duel.SelectTarget(tp,cm.tf1,tp,LOCATION_GRAVE,0,1,1,nil)
+		local g=Duel.SelectTarget(tp,cm.tf1,tp,0,LOCATION_MZONE,1,1,nil)
 	end)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()

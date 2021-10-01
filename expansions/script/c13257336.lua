@@ -51,7 +51,7 @@ end
 function cm.im(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if not rc then return end
-	local BMe=tama.tamas_getTargetTable(rc,"bomb")
+	local BMe=tama.getTargetTable(rc,"bomb")
 	if BMe and re==BMe then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)

@@ -38,7 +38,7 @@ function c9910576.operation(e,tp,eg,ep,ev,re,r,rp)
 	local loc=LOCATION_HAND 
 	local chain=Duel.GetCurrentChain()
 	if chain>1 then
-		local te=Duel.GetChainInfo(chain,CHAININFO_TRIGGERING_EFFECT)
+		local te=Duel.GetChainInfo(chain-1,CHAININFO_TRIGGERING_EFFECT)
 		if te:GetHandler()==e:GetHandler() then loc=LOCATION_HAND+LOCATION_DECK end
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

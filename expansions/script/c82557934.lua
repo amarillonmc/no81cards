@@ -22,7 +22,7 @@ function c82557934.initial_effect(c)
 	--tohand
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(82557934,1))
-	e3:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e3:SetCategory(CATEGORY_TOHAND)
 	e3:SetCountLimit(1,82557934)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
