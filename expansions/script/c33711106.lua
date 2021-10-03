@@ -69,7 +69,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsLocation(LOCATION_HAND+LOCATION_GRAVE)
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
-	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 	c:CreateEffectRelation(e)
 end
 function cm.mtop(e,tp,eg,ep,ev,re,r,rp)

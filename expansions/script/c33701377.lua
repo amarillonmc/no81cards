@@ -19,7 +19,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ct=1
 	m[ct]=aux.Stringid(m,0) n[ct]=1 ct=ct+1
 	if t2 then m[ct]=aux.Stringid(m,1) n[ct]=2 ct=ct+1 end
-	local sp=Duel.SelectOption(tp,table.unpack(m))
+	local sp=Duel.SelectOption(1-tp,table.unpack(m))
 	op=n[sp+1]
 	Duel.BreakEffect()
 	if op==1 then
