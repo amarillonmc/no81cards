@@ -33,10 +33,10 @@ function cm.Foreigner(c)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=re:GetHandler()
-	if e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER) and cm.Foreigner(tc) then 
+	if e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER+TYPE_TRAP+TYPE_SPELL) and cm.Foreigner(tc) then 
 		e:SetLabel(1)
 	end
-	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE))
+	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and (re:IsActiveType(TYPE_MONSTER+TYPE_TRAP+TYPE_SPELL) or re:IsHasType(EFFECT_TYPE_ACTIVATE))
 end
 function cm.spfilter(c,e,tp)
 	return cm.Foreigner(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -54,13 +54,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD,nil)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and e:GetLabel()==1 and (Duel.GetFlagEffect(tp,m)==0 or Duel.GetFlagEffect(tp,m+1)==0 or Duel.GetFlagEffect(tp,m-2)==0 or Duel.GetFlagEffect(tp,m-1)==0) then
+		if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and e:GetLabel()==1 and Duel.GetFlagEffect(tp,m-2)==0 then
 			Duel.ConfirmCards(1-tp,g)
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local sg=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+			Duel.RegisterFlagEffect(tp,m-2,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 		end
 	end
 end

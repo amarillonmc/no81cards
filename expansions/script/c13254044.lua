@@ -45,7 +45,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_CHAOS,2}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_GRAVE,0,e:GetHandler())),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 
 		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el) and e:GetHandler():IsAbleToRemoveAsCost()

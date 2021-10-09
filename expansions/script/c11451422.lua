@@ -2,6 +2,7 @@
 local m=11451422
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,22702055)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
