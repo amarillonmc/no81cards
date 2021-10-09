@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,5) end
 end
 function cm.filter(c)
 	return c:IsSetCard(0x356)
@@ -85,11 +85,11 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 			e1:SetTargetRange(1,0)
 			e1:SetValue(0)
-			e1:SetReset(RESET_PHASE+PHASE_END)
+			e1:SetReset(RESET_PHASE+PHASE_END,2)
 			Duel.RegisterEffect(e1,tp)
 			local e2=e1:Clone()
 			e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
-			e2:SetReset(RESET_PHASE+PHASE_END)
+			e2:SetReset(RESET_PHASE+PHASE_END,2)
 			Duel.RegisterEffect(e2,tp)
 		end
 		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_ENERGY)>=2 and Duel.IsExistingTarget(cm.filter3,tp,LOCATION_MZONE,0,1,nil,eg,ep,ev,re,r,rp) then
