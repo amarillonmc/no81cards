@@ -50,9 +50,13 @@ function cm.hint(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetDescription(aux.Stringid(m,1))
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e3:SetCode(EVENT_FREE_CHAIN)
+		e3:SetCondition(cm.debcon)
 		e3:SetOperation(cm.debug)
 		Duel.RegisterEffect(e3,tp)
 	end
+end
+function cm.debcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.debug(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil)
