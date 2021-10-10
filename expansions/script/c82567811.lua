@@ -137,10 +137,10 @@ function c82567811.dwtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,dwc) end
 	
 	Duel.SetTargetPlayer(tp)
-	if dwc<3 then
+	if dwc<2 then
 	Duel.SetTargetParam(dwc)
 	else 
-	Duel.SetTargetParam(3)
+	Duel.SetTargetParam(2)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,dwc)
 end
 end

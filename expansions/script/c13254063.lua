@@ -17,11 +17,11 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.activate1)
 	c:RegisterEffect(e2)
 	
-	elements={{"tama_elements",{{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_CHAOS,1},{TAMA_ELEMENT_LIFE,1}}}}
+	elements={{"tama_elements",{{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_LIFE,1}}}}
 	cm[c]=elements
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_CHAOS,1}}
+	local el={{TAMA_ELEMENT_ORDER,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
 	if chk==0 then 

@@ -62,9 +62,6 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.splimit(e,c)
-	return not cm.BLASTER(c) and c:IsLocation(LOCATION_EXTRA)
-end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_EFFECT)
 end

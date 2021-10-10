@@ -33,6 +33,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetLabelObject() then return end
 	local t=Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 	local j=tama.tamas_getElementCount(tama.tamas_sumElements(e:GetLabelObject()),TAMA_ELEMENT_MANA)
+	j=math.floor(j/2)
 	local i=0
 	while i<j and (i==0 or Duel.SelectYesNo(tp,aux.Stringid(m,1))) do
 		Duel.BreakEffect()
@@ -63,7 +64,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		if op==2 or op1 then
-			Duel.Damage(1-tp,800,REASON_EFFECT)
+			Duel.Damage(1-tp,1000,REASON_EFFECT)
 		end
 		if op==3 or op1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

@@ -1,0 +1,52 @@
+--怪物·幻翼
+function c188832.initial_effect(c)
+	c:EnableReviveLimit()
+	--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(188832,0))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SPSUM_PARAM)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetTargetRange(POS_FACEUP_ATTACK,1)
+	e1:SetCondition(c188832.spcon)
+	e1:SetOperation(c188832.spop)
+	c:RegisterEffect(e1)
+end
+function c188832.filter(c,tp)
+	return Duel.GetMZoneCount(1-tp,c,tp)>0
+end
+function c188832.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local rg=Duel.GetMatchingGroup(Card.IsAbleToGraveAsCost,tp,0,LOCATION_ONFIELD,nil)
+	return rg:IsExists(c188832.filter,1,nil,tp)
+end
+function c188832.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	local c=e:GetHandler()
+	local rg=Duel.GetMatchingGroup(Card.IsAbleToGraveAsCost,tp,0,LOCATION_ONFIELD,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=rg:FilterSelect(tp,c188832.filter,1,1,nil,tp)
+	Duel.SendtoGrave(g,REASON_COST)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e1:SetTargetRange(1,0)
+		e1:SetValue(c188832.actlimit)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e1,tp)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e3:SetCode(EFFECT_CANNOT_SUMMON)
+		e3:SetTargetRange(1,0)
+		e3:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e3,tp)
+		local e2=e3:Clone()
+		e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		Duel.RegisterEffect(e2,tp)
+end
+function c188832.actlimit(e,re,tp)
+	return re:IsActiveType(TYPE_MONSTER)
+end

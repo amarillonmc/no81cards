@@ -49,8 +49,14 @@ end
 function c40009308.setop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,c40009308.setfilter3,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,tp)
-	if g:GetCount()>0 then
-		Duel.SSet(tp,g:GetFirst())
+	local tc=g:GetFirst()
+	if tc and Duel.SSet(tp,tc)~=0 then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
 	end
 end
 function c40009308.spcost(e,tp,eg,ep,ev,re,r,rp,chk)

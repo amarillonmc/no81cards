@@ -2,6 +2,7 @@
 local m=40010050
 local cm=_G["c"..m]
 cm.named_with_Revenger=1
+cm.named_with_Reverse=1
 function cm.Revenger(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Revenger

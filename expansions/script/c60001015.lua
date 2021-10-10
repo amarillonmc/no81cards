@@ -15,6 +15,7 @@ function c60001015.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,60001015)
 	e2:SetHintTiming(0,TIMING_END_PHASE)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c60001015.settg)
@@ -25,13 +26,16 @@ end
 function c60001015.cfilter(c)
 	return c:GetSequence()<5
 end
+function c60001015.rmvfil(c)
+	return c:IsAbleToRemove() and c:IsType(TYPE_MONSTER)
+end
 function c60001015.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c60001015.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c60001015.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) 
 		and Duel.IsPlayerCanDraw(tp,1) end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(c60001015.rmvfil,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end

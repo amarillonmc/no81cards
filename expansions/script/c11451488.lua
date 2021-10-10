@@ -91,8 +91,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
-	local ct=g:GetCount()-2
-	if chk==0 then return Duel.IsPlayerCanRelease(1-tp) and ct>0 and g:IsExists(Card.IsReleasable,1,nil,1-tp) end
+	if chk==0 then return Duel.IsPlayerCanRelease(1-tp) and g:IsExists(Card.IsReleasable,1,nil,1-tp) and (#g>2 or (Duel.IsPlayerAffectedByEffect(tp,11451482) and #g>1)) end
 	local op=0
 	if Duel.IsPlayerAffectedByEffect(tp,11451482) then
 		op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))
@@ -103,13 +102,13 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	e:SetLabel(op)
-	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,ct,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,#g-2+op,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanRelease(1-tp) then return end
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
 	local op=e:GetLabel()
-	local ct=g:GetCount()-2+op
+	local ct=#g-2+op
 	if ct>0 then
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_RELEASE)
 		local sg=g:FilterSelect(1-tp,Card.IsReleasable,ct,ct,nil,1-tp)

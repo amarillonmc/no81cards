@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	cm[c]=elements
 	
 end
+local to_deck=1
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.dFilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
@@ -59,21 +60,21 @@ function cm.rmfilter1(c)
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_EXTRA) and cm.rmfilter1(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.rmfilter1,tp,0,LOCATION_EXTRA,2,nil) end
+	if chk==0 then return Duel.IsExistingTarget(cm.rmfilter1,tp,0,LOCATION_EXTRA,to_deck,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=Duel.SelectTarget(tp,cm.rmfilter1,tp,0,LOCATION_EXTRA,2,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,2,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,1-tp,LOCATION_ONFIELD)
+	local sg=Duel.SelectTarget(tp,cm.rmfilter1,tp,0,LOCATION_EXTRA,to_deck,to_deck,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,to_deck,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,to_deck,1-tp,LOCATION_ONFIELD)
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if g:FilterCount(Card.IsRelateToEffect,nil,e)~=2 then return end
-	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)==2 then
+	if g:FilterCount(Card.IsRelateToEffect,nil,e)~=to_deck then return end
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)==to_deck then
 		local sg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_REMOVED,nil)
-		if sg:GetCount()>=2 then
+		if sg:GetCount()>=to_deck then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local sg1=sg:Select(tp,2,2,nil)
+			local sg1=sg:Select(tp,to_deck,to_deck,nil)
 			Duel.SendtoDeck(sg1,nil,2,REASON_EFFECT)
 		end
 	end

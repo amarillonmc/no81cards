@@ -6,16 +6,9 @@ function c67200061.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,67200061)
-	e1:SetCondition(c67200061.nospcon)
 	e1:SetTarget(c67200061.sptg)
 	e1:SetOperation(c67200061.spop)
-	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_BATTLE_START+TIMING_END_PHASE)
-	e2:SetCondition(c67200061.spcon)
-	c:RegisterEffect(e2) 
+	c:RegisterEffect(e1) 
 	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -25,12 +18,7 @@ function c67200061.initial_effect(c)
 	e3:SetOperation(c67200061.atkop)
 	c:RegisterEffect(e3)  
 end
-function c67200061.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-end
-function c67200061.nospcon(e,tp,eg,ep,ev,re,r,rp)
-	return not c67200061.spcon(e,tp,eg,ep,ev,re,r,rp)
-end
+--
 function c67200061.filter1(c,e)
 	return c:IsLocation(LOCATION_HAND+LOCATION_MZONE) and not c:IsImmuneToEffect(e)
 end

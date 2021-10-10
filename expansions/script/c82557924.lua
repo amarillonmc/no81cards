@@ -1,16 +1,5 @@
 --怒焰钢战-魔神Z
-function c82557924.initial_effect(c)
-	--pendulum summon
-	aux.EnablePendulumAttribute(c)
-	--splimit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_PZONE)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c82557924.psplimit)
-	c:RegisterEffect(e1)
+function c82557924.initial_effect(c)\
 	--summon with no tribute
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(82557924,0))
@@ -30,9 +19,6 @@ function c82557924.initial_effect(c)
 	e3:SetTarget(c82557924.destg)
 	e3:SetOperation(c82557924.desop)
 	c:RegisterEffect(e3)
-end
-function c82557924.psplimit(e,c,tp,sumtp,sumpos)
-	return not c:IsRace(RACE_MACHINE) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c82557924.ntfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x829)

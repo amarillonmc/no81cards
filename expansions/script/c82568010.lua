@@ -103,13 +103,5 @@ function c82568010.activate(e,tp,eg,ep,ev,re,r,rp)
 	   tc:SetMaterial(g2)
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		 tc:CompleteProcedure() 
-	if Duel.IsExistingMatchingCard(c82568010.thfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(82568010,2)) then
-	  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c82568010.thfilter),tp,LOCATION_GRAVE,0,0,1,nil)
-	if g:GetCount()>0 then
-		 
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		end
-	 end 
 end
 end

@@ -1,5 +1,7 @@
 --一瞬即永远的少女们
-function c40009318.initial_effect(c)
+local m=40009318
+local cm=_G["c"..m]
+function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DISABLE)
@@ -7,50 +9,62 @@ function c40009318.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetHintTiming(TIMING_DAMAGE_STEP,TIMINGS_CHECK_MONSTER+TIMING_DAMAGE_STEP)
-	e1:SetCountLimit(1,40009318)
+	e1:SetCountLimit(1,m)
 	e1:SetCondition(aux.dscon)
-	e1:SetCost(c40009318.cost)
-	e1:SetTarget(c40009318.target)
-	e1:SetOperation(c40009318.activate)
+	e1:SetCost(cm.cost)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)  
 	--act in hand
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	e3:SetCondition(c40009318.handcon)
+	e3:SetCondition(cm.handcon)
 	c:RegisterEffect(e3) 
 	--to deck
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(40009318,0))
+	e4:SetDescription(aux.Stringid(m,0))
 	e4:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e4:SetCountLimit(1,40009318)
-	e4:SetTarget(c40009318.tdtg)
-	e4:SetOperation(c40009318.tdop)
+	e4:SetCountLimit(1,m)
+	e4:SetTarget(cm.tdtg)
+	e4:SetOperation(cm.tdop)
 	c:RegisterEffect(e4)	
+	--normal monster
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e5:SetRange(LOCATION_HAND)
+	e5:SetCode(EFFECT_ADD_TYPE)
+	e5:SetCondition(cm.nmcon)
+	e5:SetValue(TYPE_NORMAL+TYPE_MONSTER)
+	c:RegisterEffect(e1)
 end
-function c40009318.filter(c)
+function cm.nmcon(e)
+	return e:GetHandler():GetFlagEffect(40010097)>0
+end
+function cm.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
 end
-function c40009318.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
 	if chk==0 then return true end
 end
-function c40009318.discfilter(c)
+function cm.discfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x4f1d) and c:IsAbleToGraveAsCost()
 end
-function c40009318.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local dg=Duel.GetMatchingGroup(c40009318.filter,tp,0,LOCATION_MZONE,nil)
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local dg=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_MZONE,nil)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
-		return Duel.IsExistingMatchingCard(c40009318.discfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) and dg:GetCount()>0
+		return Duel.IsExistingMatchingCard(cm.discfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) and dg:GetCount()>0
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local cg=Duel.SelectMatchingCard(tp,c40009318.discfilter,tp,LOCATION_HAND,0,1,dg:GetCount(),e:GetHandler())
+	local cg=Duel.SelectMatchingCard(tp,cm.discfilter,tp,LOCATION_HAND,0,1,dg:GetCount(),e:GetHandler())
 	local tc=cg:GetFirst()
 	local ctype=0
 	while tc do
@@ -66,10 +80,10 @@ function c40009318.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,dg,cg:GetCount(),0,0)
 end
 
-function c40009318.activate(e,tp,eg,ep,ev,re,r,rp)
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local label,count=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c40009318.filter,tp,0,LOCATION_MZONE,count,count,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,0,LOCATION_MZONE,count,count,nil)
 	if g:GetCount()==count then
 		Duel.HintSelection(g)
 		local c=e:GetHandler()
@@ -91,20 +105,20 @@ function c40009318.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c40009318.tdfilter(c)
+function cm.tdfilter(c)
 	return c:IsSetCard(0x4f1d) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
-function c40009318.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c40009318.tdfilter(chkc) and chkc~=e:GetHandler() end
+function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.tdfilter(chkc) and chkc~=e:GetHandler() end
 	if chk==0 then return e:GetHandler():IsAbleToDeck()
-		and Duel.IsExistingTarget(c40009318.tdfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
+		and Duel.IsExistingTarget(cm.tdfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c40009318.tdfilter,tp,LOCATION_GRAVE,0,1,1,e:GetHandler())
+	local g=Duel.SelectTarget(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,1,1,e:GetHandler())
 	g:AddCard(e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-function c40009318.tdop(e,tp,eg,ep,ev,re,r,rp)
+function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then
@@ -115,9 +129,9 @@ function c40009318.tdop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
-function c40009318.handfilter(c)
+function cm.handfilter(c)
 	return c:IsFaceup() and (c:IsSetCard(0x4f1d) and c:IsType(TYPE_SYNCHRO))
 end
-function c40009318.handcon(e)
-	return Duel.IsExistingMatchingCard(c40009318.handfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil) or Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
+function cm.handcon(e)
+	return Duel.IsExistingMatchingCard(cm.handfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil) or Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
 end

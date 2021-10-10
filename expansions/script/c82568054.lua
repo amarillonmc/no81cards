@@ -1,7 +1,7 @@
 --泰拉机灵-护型/夜昼号
 function c82568054.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,9,3)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x825),9,3)
 	c:EnableReviveLimit()
 	--Code
 	local e1=Effect.CreateEffect(c)

@@ -17,7 +17,7 @@ end
 function c9910578.chainfilter(re,tp,cid)
 	local rc=re:GetHandler()
 	return not (re:IsActiveType(TYPE_MONSTER) and not rc:IsLocation(LOCATION_MZONE)
-		and rc:IsType(TYPE_RITUAL+TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_PENDULUM+TYPE_LINK))
+		and not rc:IsSummonableCard())
 end
 function c9910578.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(9910578,tp,ACTIVITY_CHAIN)==0 end
@@ -33,7 +33,7 @@ end
 function c9910578.aclimit(e,re,tp)
 	local rc=re:GetHandler()
 	return re:IsActiveType(TYPE_MONSTER) and not rc:IsLocation(LOCATION_MZONE)
-		and rc:IsType(TYPE_RITUAL+TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_PENDULUM+TYPE_LINK)
+		and not rc:IsSummonableCard()
 end
 function c9910578.desfilter(c,g)
 	return g:IsContains(c)

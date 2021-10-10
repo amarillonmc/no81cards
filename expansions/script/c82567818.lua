@@ -40,13 +40,17 @@ function c82567818.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function c82567818.dmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetMutualLinkedGroupCount()>0 and 
+	if chk==0 then return e:GetHandler():GetMutualLinkedGroupCount()>0 
+		   and e:GetHandler():GetMutualLinkedGroup():IsExists(c82567818.lfilter,1,nil) and 
 		   Duel.CheckReleaseGroup(1-tp,nil,1,nil) end
 	 local sg=Duel.GetMatchingGroup(c82567818.costfilter,tp,0,LOCATION_MZONE,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local tc=sg:Select(tp,1,1,nil)
 	Duel.Release(tc,REASON_COST)
 end
+function c82567818.lfilter(c)
+	return c:IsSetCard(0x825) and c:IsLinkAbove(2)
+end 
 function c82567818.costfilter(c)
 	return c:IsReleasable()
 end 

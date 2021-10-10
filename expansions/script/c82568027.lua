@@ -56,7 +56,7 @@ function c82568027.cfilter(c)
 	return c:IsSummonType(SUMMON_TYPE_XYZ) and c:IsSetCard(0x825)
 end
 function c82568027.thfilter(c)
-	return c:IsSetCard(0x46) and c:IsAbleToHand()
+	return c:IsCode(82568057) and c:IsAbleToHand()
 end 
 function c82568027.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()

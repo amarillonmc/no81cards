@@ -65,6 +65,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e8)
 	
 end
+function cm.Cardinal(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Cardinal
+end
 function cm.thcon(e)
 	return e:GetHandler():GetControler()==e:GetHandler():GetOwner()
 end

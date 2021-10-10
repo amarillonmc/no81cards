@@ -34,6 +34,9 @@ end
 function cm.filter2(c)
 	return c:IsSetCard(0x356) and c:IsAbleToDeck()
 end
+function cm.filter2a(c)
+	return c:IsAbleToDeck()
+end
 function cm.filter3(c,eg,ep,ev,re,r,rp)
 	local PCe=tama.getTargetTable(c,"power_capsule")
 	return c:IsFaceup() and PCe and cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
@@ -59,11 +62,12 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WIND)>0 and Duel.IsPlayerCanDraw(tp,2) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_MESSAGE,0,aux.Stringid(m,2))
-			Duel.Draw(tp,2,REASON_EFFECT)
+			Duel.Draw(tp,1,REASON_EFFECT)
 			Duel.ShuffleHand(tp)
-			Duel.DiscardHand(tp,aux.TRUE,2,2,REASON_EFFECT+REASON_DISCARD)
+			Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
 			sg2:Merge(Duel.GetOperatedGroup())
 		end
+		--[[
 		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_CHAOS)>0 and sg2:IsExists(cm.filter2,1,nil) then
 			local sg3=sg2:Filter(cm.filter2,nil)
 			local ct=sg3:GetCount()
@@ -74,6 +78,20 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local sg4=Duel.SelectMatchingCard(tp,cm.filter1,tp,LOCATION_DECK,0,ct,ct,nil)
 			Duel.SendtoGrave(sg4,REASON_EFFECT)
+		end
+		]]
+		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_CHAOS)>0 and sg2:IsExists(cm.filter2a,1,nil) then
+			local sg3=sg2:Filter(cm.filter2a,nil)
+			Duel.ConfirmCards(tp,sg3)
+			if Duel.SelectYesNo(aux.Stringid(m,10)) then
+				local ct=sg3:GetCount()
+				Duel.BreakEffect()
+				Duel.Hint(HINT_MESSAGE,0,aux.Stringid(m,3))
+				Duel.SendtoDeck(sg3,tp,2,REASON_EFFECT)
+				Duel.ShuffleDeck(tp)
+				Duel.DiscardDeck(tp,ct,REASON_EFFECT)
+				sg2=Duel.GetOperatedGroup():Clone()
+			end
 		end
 		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_MANA)>=3 then
 			Duel.BreakEffect()

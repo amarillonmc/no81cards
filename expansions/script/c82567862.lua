@@ -11,7 +11,7 @@ function c82567862.initial_effect(c)
 	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e1:SetCondition(c82567862.atkcon)
 	e1:SetTarget(c82567862.atktg)
-	e1:SetValue(1400)
+	e1:SetValue(700)
 	c:RegisterEffect(e1)
 	--indestrucble
 	local e2=e1:Clone()

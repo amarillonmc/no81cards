@@ -74,19 +74,7 @@ function c82567842.poop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if  c:IsFaceup() and c:IsRelateToEffect(e) then
 	local g=Duel.GetMatchingGroup(c82567842.filter,tp,0,LOCATION_MZONE,nil)
-	if Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)~=0 then
-		local og=Duel.GetOperatedGroup()
-		local tc=og:GetFirst()
-		while tc do
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
-			tc:RegisterEffect(e1)
-			tc=og:GetNext()
-		
-	end
-end
+	 Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
 end
 end
 function c82567842.atlimit(e,c)

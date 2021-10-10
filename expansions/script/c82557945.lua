@@ -31,25 +31,15 @@ function c82557945.initial_effect(c)
 	e2:SetTarget(c82557945.rmtg)
 	e2:SetCondition(c82557945.con2)
 	c:RegisterEffect(e2)
-	--material
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(82557945,1))
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,82557945)
-	e1:SetTarget(c82557945.target)
-	e1:SetOperation(c82557945.operation)
-	c:RegisterEffect(e1)
 end
 function c82557945.con1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetOverlayGroup():GetCount()>=3
+	return e:GetHandler():GetOverlayGroup():GetCount()>=4
 end
 function c82557945.rmtg(e,c)
 	return c:GetOwner()~=e:GetHandlerPlayer()
 end
 function c82557945.con2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetOverlayGroup():GetCount()>=4
+	return e:GetHandler():GetOverlayGroup():GetCount()>=6
 end
 function c82557945.filter(c)
 	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsCanOverlay() and c:IsFaceup()

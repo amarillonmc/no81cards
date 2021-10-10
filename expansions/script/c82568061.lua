@@ -33,7 +33,7 @@ function c82568061.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,nil,1,tp,ct*300)
 end
 function c82568061.atkfilter(c)
-	return c:IsSetCard(0x825) and c:IsFaceup()	
+	return c:IsSetCard(0x825) and c:IsFaceup()  
 end
 function c82568061.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -67,7 +67,7 @@ function c82568061.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c82568061.thfilter(c)
 	return c:IsAbleToHand()
-		   and c:IsType(TYPE_SPELL) and c:IsType(TYPE_RITUAL)
+		   and c:IsCode(82567785)
 end
 function c82568061.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ph=Duel.GetCurrentPhase()

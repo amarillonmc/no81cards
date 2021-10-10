@@ -16,7 +16,8 @@ function c82549999.initial_effect(c)
 	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCountLimit(1,82549999)
 	e2:SetTarget(c82549999.rmtg)
 	e2:SetCost(c82549999.rmcost)
 	e2:SetOperation(c82549999.rmop)
@@ -53,21 +54,24 @@ function c82549999.initial_effect(c)
 	e6:SetOperation(c82549999.aroperation)
 	c:RegisterEffect(e6)
 end
+function c82549999.desfilter(c)
+	return c:IsAbleToRemove()
+end
 function c82549999.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c82549999.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if chk==0 then return g:GetCount()>0 end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+function c82549999.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc~=e:GetHandler() and chkc:IsAbleToRemove() end
+	if chk==0 then return Duel.IsExistingTarget(c82549999.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectTarget(tp,c82549999.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,LOCATION_ONFIELD,g,1,0,0)
 end
 function c82549999.rmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	 local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
 end
 function c82549999.idcon(e,tp,eg,ep,ev,re,r,rp)
@@ -85,6 +89,22 @@ function c82549999.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(c:GetAttack()*2)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
+		local e3=Effect.CreateEffect(e:GetHandler())
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CHANGE_DAMAGE)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetTargetRange(1,0)
+	e3:SetValue(c82549999.damval1)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e3,1-tp)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,1-tp)
+end
+function c82549999.damval1(e,re,val,r,rp,rc)
+	if bit.band(r,REASON_EFFECT)~=0 then return 0
+	else return val end
 end
 function c82549999.arcondition(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and e:GetHandler():GetOverlayGroup():GetClassCount(Card.GetCode)>=5

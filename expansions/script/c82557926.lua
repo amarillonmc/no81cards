@@ -1,16 +1,5 @@
 --天翔钢战-弥赛亚·瓦尔基里
 function c82557926.initial_effect(c)
-	 --pendulum summon
-	aux.EnablePendulumAttribute(c)
-	--splimit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_PZONE)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c82557926.psplimit)
-	c:RegisterEffect(e1)
 	--summon with no tribute
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(82557926,0))

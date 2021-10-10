@@ -42,8 +42,8 @@ function c82567882.actcon(e)
 	return  ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
 function c82567882.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x5825,1,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x5825,1,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x5825,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x5825,2,REASON_COST)
 end
 function c82567882.filter(c,e,tp)
 	return c:IsFaceup()

@@ -55,7 +55,7 @@ function rsad.TributeTFun(c,code,cate,flag,tg,op)
 	return e1
 end
 function cm.tstcon(e)
-	return e:GetHandler():IsReason(REASON_EFFECT)
+	return e:GetHandler():IsReason(REASON_EFFECT+REASON_COST)
 end
 ------------------
 function cm.initial_effect(c)

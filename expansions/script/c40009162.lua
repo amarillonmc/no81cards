@@ -58,9 +58,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function cm.splimit(e,c)
-	return not cm.BLASTER(c) and c:IsLocation(LOCATION_EXTRA)
-end
 function cm.cfilter(c)
 	return cm.BLASTERBlade(c) and c:IsAbleToDeckAsCost()
 end

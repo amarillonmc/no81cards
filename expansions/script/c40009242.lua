@@ -19,14 +19,14 @@ function c40009242.initial_effect(c)
 	e1:SetTarget(c40009242.cttg)
 	e1:SetOperation(c40009242.ctop)
 	c:RegisterEffect(e1)
-	--get effect
+	--atk up
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_XMATERIAL)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetValue(2000)
-	c:RegisterEffect(e2) 
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_BE_MATERIAL)
+	e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
+	e2:SetCondition(c40009242.efcon)
+	e2:SetOperation(c40009242.efop)
+	c:RegisterEffect(e2)
 end
 function c40009242.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -113,7 +113,4 @@ function c40009242.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e1)
 	end
-end
-function c40009242.xmatcon(e)
-	return e:GetHandler():GetOriginalType()==TYPE_XYZ 
 end

@@ -26,8 +26,8 @@ function c82568090.initial_effect(c)
 end
 function c82568090.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() and e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) 
-	   and Duel.IsCanRemoveCounter(tp,1,0,0x5825,2,REASON_COST) and Duel.GetTurnPlayer()~=e:GetHandler():GetControler() end
-	Duel.RemoveCounter(tp,1,0,0x5825,2,REASON_COST)
+	   and Duel.IsCanRemoveCounter(tp,1,0,0x5825,3,REASON_COST) and Duel.GetTurnPlayer()~=e:GetHandler():GetControler() end
+	Duel.RemoveCounter(tp,1,0,0x5825,3,REASON_COST)
 end
 function c82568090.spfilter(c,e,tp,mg)
 	return c:IsSetCard(0x825) and (c:IsLevelBelow(9) or c:IsRankBelow(6) or c:IsLinkBelow(5)) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)

@@ -26,6 +26,7 @@ function c82557930.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_SUMMON_PROC)
 	e4:SetRange(LOCATION_HAND)
+	e4:SetOperation(c82557930.ntop)
 	e4:SetCondition(c82557930.ntcon2)
 	c:RegisterEffect(e4)
 	--tohand
@@ -42,6 +43,17 @@ function c82557930.initial_effect(c)
 	local e5=e3:Clone()
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e5)
+end
+function c82557930.ntop(e,tp,eg,ep,ev,re,r,rp,c)
+	--change base attack
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetReset(RESET_EVENT+0xff0000)
+	e1:SetCode(EFFECT_SET_BASE_ATTACK)
+	e1:SetValue(c:GetBaseAttack()/2)
+	c:RegisterEffect(e1)
 end
 function c82557930.psplimit(e,c,tp,sumtp,sumpos)
 	return not c:IsRace(RACE_MACHINE) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM

@@ -35,7 +35,7 @@ function c82567786.initial_effect(c)
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetCountLimit(2,82567776+EFFECT_COUNT_CODE_DUEL)
+	e4:SetCountLimit(1,82567875)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetHintTiming(0,TIMING_BATTLE_START+TIMING_END_PHASE+TIMING_STANDBY_PHASE+TIMING_MAIN_END+TIMING_SUMMON+TIMING_SPSUMMON+TIMINGS_CHECK_MONSTER)
 	e4:SetCondition(c82567786.spcon)
@@ -54,6 +54,27 @@ function c82567786.initial_effect(c)
 	e5:SetValue(c82567786.efilter)
 	e5:SetCondition(c82567786.iefcon)
 	c:RegisterEffect(e5)
+	--cage release
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(82567786,4))
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e6:SetCode(EVENT_PHASE+PHASE_END)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCountLimit(1)
+	e6:SetTarget(c82567786.acttg)
+	e6:SetOperation(c82567786.actop)
+	c:RegisterEffect(e6)
+end
+function c82567786.cagefilter(c)
+	return c:IsLocation(LOCATION_MZONE) and c:IsCode(82567788)
+end
+function c82567786.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return  Duel.CheckReleaseGroup(tp,c82567786.cagefilter,1,nil)  end
+end
+function c82567786.actop(e,tp,eg,ep,ev,re,r,rp)
+	if not  Duel.CheckReleaseGroup(tp,c82567786.cagefilter,1,nil) then return false end 
+	local g1=Duel.SelectReleaseGroup(tp,c82567786.cagefilter,1,1,nil)
+	Duel.Release(g1,REASON_COST)
 end
 function c82567786.filter(c)
 	return c:IsFaceup() and not c:IsCode(82567786) and not c:IsCode(82567787)  and not c:IsCode(82568087) and not c:IsCode(82568086)
@@ -136,7 +157,6 @@ function c82567786.efilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:GetOwner()~=e:GetOwner() and  te:IsActiveType(TYPE_TRAP+TYPE_SPELL+TYPE_MONSTER)
 end
 function c82567786.iefcon(e)
-	return Duel.IsExistingMatchingCard(Card.IsCode,e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,82567788) or
-		 Duel.IsExistingMatchingCard(Card.IsCode,e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,82567815)
+	return Duel.IsExistingMatchingCard(Card.IsCode,e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,82567788) 
 end
 

@@ -26,7 +26,7 @@ function c40009386.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c40009386.costfilter(c,matk)
-	return c:IsAttackAbove(matk) and c:IsFaceup() and c:IsSetCard(0x1f1b)
+	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsAttackAbove(matk) and c:IsFaceup() and c:IsSetCard(0x1f1b)
 end
 --function c40009386.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	--e:SetLabel(100)

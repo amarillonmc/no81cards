@@ -63,8 +63,8 @@ function c82567841.filter(c)
 	return c:IsFaceup() 
 end
 function c82567841.indcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x5825,6,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x5825,6,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x5825,8,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x5825,8,REASON_COST)
 end
 function c82567841.indtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c82567841.filter,tp,0,LOCATION_MZONE,1,nil) end

@@ -84,7 +84,7 @@ function c82568082.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c82568082.thfilter(c)
-	return c:IsSetCard(0x825) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(4) and c:IsAbleToHand()
+	return c:IsSetCard(0x825) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(4) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c82568082.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c82568082.thfilter,tp,LOCATION_DECK,0,1,nil) end

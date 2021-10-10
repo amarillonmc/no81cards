@@ -29,6 +29,7 @@ function cm.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_ACTIVATE)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_SZONE)
+	e5:SetCondition(cm.con)
 	e5:SetTarget(cm.tg)
 	e5:SetOperation(cm.op)
 	c:RegisterEffect(e5)
@@ -57,6 +58,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_ONFIELD,0,3,3,nil)
 	Duel.SendtoGrave(g,REASON_COST)
+end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetType()==TYPE_SPELL
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil) end

@@ -24,9 +24,9 @@ function c82567856.initial_effect(c)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_SINGLE)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e5:SetTarget(c82567856.potg)
-	e5:SetOperation(c82567856.poop)
+	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e5:SetTarget(c82567856.acttarget)
+	e5:SetOperation(c82567856.actoperation)
 	c:RegisterEffect(e5)
 	--ATK Gain
 	local e6=Effect.CreateEffect(c)
@@ -36,6 +36,28 @@ function c82567856.initial_effect(c)
 	e6:SetRange(LOCATION_MZONE)
 	e6:SetValue(c82567856.val)
 	c:RegisterEffect(e6)
+end
+function c82567856.actfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_EFFECT) 
+end
+function c82567856.acttarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c82567856.actfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c82567856.actfilter,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,c82567856.actfilter,tp,0,LOCATION_MZONE,1,1,nil)
+end
+function c82567856.actoperation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if c:IsRelateToEffect(e) and c:IsFaceup() and tc and tc:IsRelateToEffect(e) and tc:IsFaceup()
+		and not tc:IsImmuneToEffect(e) then
+		c:SetCardTarget(tc)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_TRIGGER)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+	end
 end
 function c82567856.hspfilter(c)
 	return c:GetCounter(0x5825)>=1
@@ -79,7 +101,7 @@ function c82567856.filter(c)
 	return c:GetLevel()>=4 and c:IsFaceup()
 end
 function c82567856.val(e,c)
-	return Duel.GetMatchingGroupCount(c82567856.filter,c:GetControler(),0,LOCATION_MZONE,nil)*500
+	return Duel.GetMatchingGroupCount(c82567856.filter,c:GetControler(),0,LOCATION_MZONE,nil)*300
 end
 function c82567856.thcon(e,c)
 	if c==nil then return true end

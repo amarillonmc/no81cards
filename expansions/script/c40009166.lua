@@ -75,9 +75,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.splimit(e,c)
-	return not cm.BLASTER(c) and c:IsLocation(LOCATION_EXTRA)
-end
 function cm.atkcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsCode,1,nil,tp,SUMMON_TYPE_LINK,40009156)
 end

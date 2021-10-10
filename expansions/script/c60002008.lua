@@ -31,7 +31,7 @@ function c60002008.thfil(c)
 	return c:IsAbleToHand() and c:IsSetCard(0xa9e1) 
 end
 function c60002008.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60002008.thfil,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c60002008.thfil,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
 end
 function c60002008.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -39,17 +39,12 @@ function c60002008.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c60002008.thfil,tp,LOCATION_DECK,0,nil)
 	if g:GetCount()<=0 then return end
 	local tc=g:Select(tp,1,1,nil):GetFirst()
-	Duel.SendtoHand(tc,tp,REASON_EFFECT)
+	if Duel.SendtoHand(tc,tp,REASON_EFFECT)==0 then return end
 	Duel.ConfirmCards(1-tp,tc)
-	if (tc:IsSummonable(true,nil) or tc:IsMSetable(true,nil)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(60002008,2)) then 
-		local s1=tc:IsSummonable(true,nil)
-		local s2=tc:IsMSetable(true,nil)
-		if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
-			Duel.Summon(tp,tc,true,nil)
-		else
-			Duel.MSet(tp,tc,true,nil)
-		end 
-	end
+	if tc:IsLocation(LOCATION_HAND) and tc:IsSummonable(true,nil)
+		and Duel.SelectYesNo(tp,aux.Stringid(60002008,2)) then
+		Duel.BreakEffect()
+		Duel.Summon(tp,tc,true,nil)
 		local fid=e:GetHandler():GetFieldID()
 		tc:RegisterFlagEffect(60002008,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -62,6 +57,7 @@ function c60002008.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCondition(c60002008.descon)
 		e1:SetOperation(c60002008.desop)
 		Duel.RegisterEffect(e1,tp)
+	end
 end
 function c60002008.descon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()

@@ -160,10 +160,11 @@ function c82567817.filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsDefenseBelow(atk)
 end
 function c82567817.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsCanBeSpecialSummoned(e,0,tp,false,false) and chkc:IsDefenseBelow(e:GetHandler():GetAttack()) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and chkc:IsCanBeSpecialSummoned(e,0,tp,false,false) and chkc:IsDefenseBelow(e:GetHandler():GetAttack()) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and 
+	 Duel.IsExistingTarget(c82567817.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectTarget(tp,c82567817.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp) 
+		local g=Duel.SelectTarget(tp,c82567817.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp) 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_GRAVE)
 end
 function c82567817.spop(e,tp,eg,ep,ev,re,r,rp)

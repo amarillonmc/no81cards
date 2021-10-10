@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	--tornado
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCost(cm.cost1)
@@ -56,6 +56,13 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,0,LOCATION_ONFIELD,1,nil) end
 	local sg=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,sg:GetCount(),0,0)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		Duel.SetChainLimit(
+			function (e,lp,tp)
+				return not e:GetHandler():IsFacedown()
+			end
+		)
+	end
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_ONFIELD,nil)
@@ -74,7 +81,7 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(sg:GetCount())
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
@@ -87,7 +94,7 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 			dg:AddCard(tc)
 			Duel.HintSelection(dg)
 			local d1=Duel.TossDice(tp,1)
-			if d1~=6 then
+			if d1<5 then
 				g:AddCard(tc)
 			end
 			tc=sg:GetNext()
@@ -98,13 +105,14 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(dg)
 			sg:Sub(dg)
 			local d1=Duel.TossDice(tp,1)
-			if d1~=6 then
+			if d1<5 then
 				g:Merge(dg)
 			end
 		end
 	end
 	if g:GetCount()>0 then
-		Duel.Destroy(g,REASON_EFFECT)
+		local ct=Duel.Destroy(g,REASON_EFFECT)
+		Duel.Draw(tp,ct,REASON_EFFECT)
 	end
 end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)

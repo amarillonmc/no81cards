@@ -76,19 +76,21 @@ function c82568013.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c82568013.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if Duel.GetLocationCountFromEx(tp,tp,nil,tc)<=0 then return end
+	local atk=tc:GetAttack()
+	local def=tc:GetDefense()
+	local val=math.max(atk,def)
 	if Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)~=0
 	then
 	Duel.BreakEffect()
-	if  Duel.GetLP(e:GetHandlerPlayer())>=4000 and tc:GetAttack()>0 then
-	local dmg = tc:GetAttack()
-	Duel.Damage(tp,dmg,REASON_EFFECT)
+	if  Duel.GetLP(e:GetHandlerPlayer())>=4000 then
+	Duel.Damage(tp,val,REASON_EFFECT)
    end
 end
 end
 function c82568013.spfilter2(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true) and 
 		   c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL)  
-				  and c:IsRace(RACE_FIEND) and c:IsSetCard(0x825)
+				  and c:IsRace(RACE_FIEND) and c:IsSetCard(0x825) and (c:IsLevelBelow(9) or c:IsRankBelow(6))
 end
 function c82568013.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c82568013.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp) end
@@ -101,14 +103,15 @@ function c82568013.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0  then return end
 	if Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)~=0 then
-		 tc:CompleteProcedure() 
+	local atk=tc:GetAttack()
+	local def=tc:GetDefense()
+	local val=math.max(atk,def)
+	tc:CompleteProcedure() 
 	Duel.BreakEffect()
-	if  Duel.GetLP(e:GetHandlerPlayer())>=4000 and tc:GetAttack()>0 then
-	local dmg = tc:GetAttack()
-	Duel.Damage(tp,dmg,REASON_EFFECT)
+	if  Duel.GetLP(e:GetHandlerPlayer())>=4000  then
+	Duel.Damage(tp,val,REASON_EFFECT)
 end
 end
-
 end
 function c82568013.costfilter(c,e,tp,lv)
 	return  c:IsRace(RACE_FIEND) and c:IsAbleToRemoveAsCost()

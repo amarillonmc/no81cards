@@ -12,7 +12,7 @@ function c82557941.initial_effect(c)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_MACHINE))
-	e2:SetValue(c82557941.val)
+	e2:SetValue(500)
 	c:RegisterEffect(e2)
 	--summon
 	local e3=Effect.CreateEffect(c)
@@ -34,14 +34,6 @@ function c82557941.initial_effect(c)
 	e4:SetTarget(c82557941.thtg)
 	e4:SetOperation(c82557941.thop)
 	c:RegisterEffect(e4)
-end
-function c82557941.atkfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE)
-end
-function c82557941.val(e,c)
-	local tp=e:GetHandler()
-	local g=Duel.GetMatchingGroupCount(c82557941.atkfilter,tp,LOCATION_MZONE,0,nil)
-	return g*200
 end
 function c82557941.sumfilter(c)
 	return c:IsRace(RACE_MACHINE) and c:IsSummonable(true,nil)

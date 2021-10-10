@@ -88,9 +88,9 @@ function c82567801.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c82567801.costfilter,tp,LOCATION_MZONE,0,1,e:GetHandler()) end
 function c82567801.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsSetCard(0x825) and chkc:IsFaceup() and chkc:IsControler(tp) and chkc:GetCounter(0x5825)>=2 and chkc:GetAttack()>0 end
-	if chk==0 then return  Duel.IsExistingMatchingCard(c82567801.costfilter,tp,LOCATION_MZONE,0,1,e:GetHandler()) end
+	if chk==0 then return  Duel.IsExistingMatchingCard(c82567801.costfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c82567801.costfilter,tp,LOCATION_MZONE,0,1,1,e:GetHandler())   
+	Duel.SelectTarget(tp,c82567801.costfilter,tp,LOCATION_MZONE,0,1,1,nil)   
 end
 function c82567801.desfilter(c,e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget() 

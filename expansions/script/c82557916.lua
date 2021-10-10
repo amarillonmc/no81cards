@@ -1,16 +1,5 @@
 --猎狼钢战-GUNDAM Barbatos Lupus REX
 function c82557916.initial_effect(c)
-	--pendulum summon
-	aux.EnablePendulumAttribute(c)
-	--splimit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_PZONE)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c82557916.psplimit)
-	c:RegisterEffect(e1)
 	--summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(82557916,0))
@@ -18,6 +7,7 @@ function c82557916.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_SUMMON_PROC)
 	e2:SetRange(LOCATION_HAND)
+	e2:SetOperation(c82557916.ntop)
 	e2:SetCondition(c82557916.ntcon)
 	c:RegisterEffect(e2)
 	--search
@@ -34,6 +24,17 @@ function c82557916.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
+end
+function c82557916.ntop(e,tp,eg,ep,ev,re,r,rp,c)
+	--change base attack
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetReset(RESET_EVENT+0xff0000)
+	e1:SetCode(EFFECT_SET_BASE_ATTACK)
+	e1:SetValue(c:GetBaseAttack()/2)
+	c:RegisterEffect(e1)
 end
 function c82557916.psplimit(e,c,tp,sumtp,sumpos)
 	return not c:IsRace(RACE_MACHINE) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM

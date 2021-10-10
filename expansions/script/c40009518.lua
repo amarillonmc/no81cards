@@ -1,9 +1,10 @@
 --黄金之剑毅 格吉特·布雷德
 function c40009518.initial_effect(c)
+	aux.AddMaterialCodeList(c,40009510)
 	aux.AddCodeList(c,40009510)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsCode,40009510),aux.NonTuner(nil),1)
-	c:EnableReviveLimit()	
+	c:EnableReviveLimit()   
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(40009518,0))
@@ -51,7 +52,7 @@ function c40009518.cfilter(c)
 	return c:IsFacedown() or not c:IsRace(RACE_WARRIOR)
 end
 function c40009518.tscon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c40009518.cfilter,tp,LOCATION_MZONE,0,1,nil)		
+	return not Duel.IsExistingMatchingCard(c40009518.cfilter,tp,LOCATION_MZONE,0,1,nil)	 
 end
 function c40009518.tsfilter(c)
 	return c:IsRace(RACE_WARRIOR) and c:IsAbleToHand()

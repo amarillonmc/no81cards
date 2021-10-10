@@ -45,7 +45,7 @@ function c82568062.initial_effect(c)
 	--coin
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(82568062,0))
-	e6:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SEARCH+CATEGORY_DECKDES+CATEGORY_TOGRAVE)
+	e6:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES+CATEGORY_TOGRAVE)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e6:SetTarget(c82568062.cointg)
@@ -71,7 +71,7 @@ function c82568062.coinop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	local res=Duel.TossCoin(tp,1)
 	if res==1 then
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end	
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end  
 	   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	   local g=Duel.SelectMatchingCard(tp,c82568062.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	   if g:GetCount()>0 then

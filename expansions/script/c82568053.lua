@@ -53,8 +53,8 @@ function c82568053.mtcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function c82568053.mtop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsCanRemoveCounter(tp,1,0,0x5825,1,REASON_COST) then
-	Duel.RemoveCounter(tp,1,0,0x5825,1,REASON_COST)
+	if Duel.IsCanRemoveCounter(tp,1,0,0x5825,2,REASON_COST) then
+	Duel.RemoveCounter(tp,1,0,0x5825,2,REASON_COST)
 	else
 		Duel.Destroy(e:GetHandler(),REASON_COST)
 	end

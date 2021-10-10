@@ -37,7 +37,7 @@ function c82568089.initial_effect(c)
 end
 c82568089.pendulum_level=2
 function c82568089.mfilter(c,xyzc)
-	return c:IsFaceup() and c:IsSetCard(0x825)
+	return c:IsFaceup() and c:IsSetCard(0x825) and c:IsLevelAbove(1)
 end
 function c82568089.xyzcheck(g)
 	return g:GetClassCount(Card.GetLevel)==1

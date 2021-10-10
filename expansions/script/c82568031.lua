@@ -28,7 +28,7 @@ function c82568031.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c82568031.ovfilter(c)
-	return c:IsSetCard(0x825) and c:GetCounter(0x5825)>0 
+	return c:IsSetCard(0x825) and c:GetCounter(0x5825)>1 
 end
 function c82568031.thfilter(c)
 	return c:IsAbleToHand() and c:IsSetCard(0x825)

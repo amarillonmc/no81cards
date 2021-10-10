@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)   
-
+	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetType(EFFECT_TYPE_IGNITION)
@@ -46,24 +46,25 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)
-	if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then return end
-	if Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local sg=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_ONFIELD,1,1,nil,TYPE_SPELL+TYPE_TRAP)
-		Duel.HintSelection(sg)
-		Duel.Destroy(sg,REASON_EFFECT)
-	end
-	if Duel.GetFlagEffect(tp,m)==0 then 
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(m,3))
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
-		e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
-		e1:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_WARRIOR))
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+	if g:GetCount()>0 then
+		if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
+			Duel.BreakEffect()
+			if Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+				local sg=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_ONFIELD,1,1,nil,TYPE_SPELL+TYPE_TRAP)
+				Duel.HintSelection(sg)
+				Duel.Destroy(sg,REASON_EFFECT)
+			end
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(m,3))
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
+			e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+			e1:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_WARRIOR))
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+		end
 	end
 end
 

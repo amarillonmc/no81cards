@@ -26,8 +26,8 @@ function c40009593.initial_effect(c)
 	c:RegisterEffect(e2)   
 end
 function c40009593.filter(c,e,tp)
-	return c:IsFaceup() and (c:IsSetCard(0xaf1b) and c:IsAbleToDeck()
-		and Duel.IsExistingMatchingCard(c40009593.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode()) or (c:IsAttackAbove(1) or c:IsDefenseAbove(1) or aux.disfilter1(c)))
+	return c:IsFaceup() and ((c:IsControler(tp) and c:IsAbleToDeck()
+		and Duel.IsExistingMatchingCard(c40009593.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())) or ((c:IsAttackAbove(1) or c:IsDefenseAbove(1) or aux.disfilter1(c)) and c:IsControler(1-tp)))
 end
 function c40009593.spfilter(c,e,tp,code)
 	return c:IsSetCard(0xaf1b) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

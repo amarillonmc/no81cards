@@ -25,6 +25,9 @@ function c82568037.initial_effect(c)
 	e4:SetOperation(c82568037.thop)
 	c:RegisterEffect(e4)
 end
+function c82568037.splimit(e,se,sp,st)
+	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
+end
 function c82568037.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x825) and c:IsType(TYPE_LINK) and c:IsLinkAbove(2) 
 end
@@ -86,7 +89,7 @@ function c82568037.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c82568037.filter(c,e,tp)
 	return c:IsSetCard(0x825) and c:IsType(TYPE_MONSTER) and 
-			 c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and c:IsLevelBelow(6)
+			 c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) 
 end
 function c82568037.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return  Duel.GetLocationCount(tp,LOCATION_MZONE)>0

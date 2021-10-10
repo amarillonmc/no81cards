@@ -11,6 +11,7 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+	rsfwh.ExtraRitualFun(c,e1,LOCATION_HAND+LOCATION_GRAVE,cm.filter)
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))

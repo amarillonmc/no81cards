@@ -15,7 +15,7 @@ function c82568009.initial_effect(c)
 	--spsummon
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(82568009,1))
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetCountLimit(1,82568009)
@@ -48,15 +48,6 @@ function c82568009.ssoperation(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(c82568009.desfilter,tp,0,LOCATION_MZONE,nil,atk,e)
 	Duel.Destroy(g,REASON_EFFECT)
-	if Duel.IsExistingMatchingCard(c82568009.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(82568009,0)) then
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c82568009.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,tp,LOCATION_DECK)
-		Duel.SendtoGrave(g,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
-end
 end
 function c82568009.cfilter2(c,e,tp)
 	return not c:IsType(TYPE_TUNER)  and c:IsReleasable()
@@ -95,13 +86,6 @@ function c82568009.activate(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:GetFirst()
 		tc:SetMaterial(g2)
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-		 tc:CompleteProcedure() 
-	if Duel.IsExistingMatchingCard(c82568009.thfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(82568009,2)) then
-	  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c82568009.thfilter),tp,LOCATION_GRAVE,0,0,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		end
-	 end 
+		 tc:CompleteProcedure()
 end
 end

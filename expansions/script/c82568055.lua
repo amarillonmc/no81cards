@@ -1,12 +1,5 @@
 --泰拉机圣的降临
 function c82568055.initial_effect(c)
-   --add code
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_ADD_CODE)
-	e1:SetValue(82567785)
-	c:RegisterEffect(e1)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -21,7 +14,7 @@ function c82568055.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET+EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,82568055)
 	e2:SetTarget(c82568055.cttg)
 	e2:SetOperation(c82568055.ctop)
 	c:RegisterEffect(e2)

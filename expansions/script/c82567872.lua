@@ -35,8 +35,12 @@ end
 function c82567872.thfilter(c)
 	return c:IsType(TYPE_FIELD) and c:IsAbleToHand()
 end
+function c82567872.pfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x825)
+end
 function c82567872.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c82567872.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c82567872.thfilter,tp,LOCATION_DECK,0,1,nil) 
+	  and Duel.IsExistingMatchingCard(c82567872.pfilter,tp,LOCATION_PZONE,0,1,nil)  end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c82567872.thop(e,tp,eg,ep,ev,re,r,rp)

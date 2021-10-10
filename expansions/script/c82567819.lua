@@ -70,7 +70,7 @@ function c82567819.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c82567819.efilter(e,re)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) 
 end
 function c82567819.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xa826) 

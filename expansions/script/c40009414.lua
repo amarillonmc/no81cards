@@ -11,6 +11,7 @@ function c40009414.initial_effect(c)
 	e1:SetOperation(c40009414.regop)
 	c:RegisterEffect(e1) 
 end
+c40009414.material_type=TYPE_SYNCHRO
 function c40009414.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end

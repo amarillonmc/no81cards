@@ -74,7 +74,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.SelectMatchingCard(tp,cm.cfilter2,tp,loc,0,4,4,nil)
 	local g2=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_MZONE,nil)
 	if g1:GetCount()>0 and Duel.Release(g1,REASON_EFFECT)>0 and g2:GetCount()>0   then
-		Duel.SendtoGrave(g,REASON_EFFECT)
+		Duel.SendtoGrave(g2,REASON_EFFECT)
 		local sg=Duel.GetMatchingGroup(cm.sspfilter2,tp,LOCATION_DECK,0,nil,e,tp)
 		if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()

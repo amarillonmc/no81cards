@@ -27,6 +27,7 @@ function cm.initial_effect(c)
 	elements={{"tama_elements",{{TAMA_ELEMENT_WIND,2}}}}
 	cm[c]=elements
 end
+local to_deck=1
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.dFilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
@@ -76,21 +77,21 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and chkc:IsAbleToHand() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,2,nil) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,to_deck,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local sg=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,2,2,nil)
+	local sg=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,to_deck,to_deck,nil)
 	--local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,nil)
 	--Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,sg,2,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,1-tp,2)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,sg,to_deck,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,1-tp,to_deck)
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if g:FilterCount(Card.IsRelateToEffect,nil,e)~=2 then return end
-	if Duel.SendtoHand(g,nil,REASON_EFFECT)==2 then
+	if g:FilterCount(Card.IsRelateToEffect,nil,e)~=to_deck then return end
+	if Duel.SendtoHand(g,nil,REASON_EFFECT)==to_deck then
 		local g1=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
-		if g1:GetCount()<2 then return end
-		local sg=g:RandomSelect(tp,2)
+		if g1:GetCount()<1 then return end
+		local sg=g:RandomSelect(tp,to_deck)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 	end
 end

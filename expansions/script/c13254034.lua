@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	cm[c]=elements
 	
 end
+local to_deck=1
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.dFilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
@@ -56,13 +57,13 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and Card.IsFaceup(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_ONFIELD,2,nil) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_ONFIELD,to_deck,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local sg=Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,2,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,2,0,0)
+	local sg=Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,to_deck,to_deck,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,to_deck,0,0)
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if g:FilterCount(Card.IsRelateToEffect,nil,e)~=2 then return end
+	if g:FilterCount(Card.IsRelateToEffect,nil,e)~=to_deck then return end
 	Duel.Destroy(g,REASON_EFFECT)
 end

@@ -1,16 +1,5 @@
 --零钢战-GAWAIN&SHINKIRO
 function c82557932.initial_effect(c)
-	--pendulum summon
-	aux.EnablePendulumAttribute(c)
-	--splimit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_PZONE)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c82557932.psplimit)
-	c:RegisterEffect(e1)
 	--summon with no tribute
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(82557932,0))
@@ -33,9 +22,6 @@ function c82557932.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
-end
-function c82557932.psplimit(e,c,tp,sumtp,sumpos)
-	return not c:IsRace(RACE_MACHINE) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c82557932.ntfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x829)

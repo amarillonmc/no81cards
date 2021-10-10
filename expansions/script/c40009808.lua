@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.srcon)
-	e1:SetTarget(cm.tgtg)
+	--e1:SetTarget(cm.tgtg)
 	e1:SetOperation(cm.tgop)
 	c:RegisterEffect(e1) 
 	--search
@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,m+1)
+	e3:SetCountLimit(1,m)
 	e3:SetCost(aux.bfgcost)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
@@ -60,15 +60,21 @@ function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)   
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,0,LOCATION_MZONE,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-		if Duel.SendtoGrave(g,REASON_EFFECT)~=1 then
-			if Duel.IsPlayerCanDraw(tp,2) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-				Duel.BreakEffect()
-				Duel.Draw(tp,2,REASON_EFFECT)
+	if Duel.GetMatchingGroup(cm.tgfilter,tp,0,LOCATION_MZONE,nil)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,0,LOCATION_MZONE,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.HintSelection(g)
+			if Duel.SendtoGrave(g,REASON_EFFECT)~=1 then
+				if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+					Duel.BreakEffect()
+					Duel.Draw(tp,1,REASON_EFFECT)
+				end
 			end
+		end
+	else
+		if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 	end
 end

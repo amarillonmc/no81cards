@@ -4,9 +4,27 @@ local m=33701009
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	rscf.SetSummonCondition(c)
-	aux.AddXyzProcedureLevelFree(c,cm.mfilter,aux.TRUE,40,40)  
-	local e0=rsef.I(c,{m,0},{1,m,2},"sp",nil,LOCATION_EXTRA,nil,rscost.lpcost(true),cm.sptg,cm.spop)
-	local e1=rsef.I(c,{m,0},{1,m,2},"sp",nil,LOCATION_GRAVE,nil,rscost.lpcost(true),cm.sptg,cm.spop)
+	aux.AddXyzProcedureLevelFree(c,cm.mfilter,aux.TRUE,40,40)
+	--special summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e0:SetType(EFFECT_TYPE_IGNITION)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
+	e0:SetCost(cm.spcost)
+	e0:SetTarget(cm.sptg)
+	e0:SetOperation(cm.spop)
+	c:RegisterEffect(e0)
+	--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_GRAVE)
+	e1:SetCountLimit(1,9910100+EFFECT_COUNT_CODE_DUEL)
+	e1:SetCost(cm.spcost)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
+	c:RegisterEffect(e1)
 	local e3=rsef.SV_ADD(c,"att",cm.attfilter)
 	local e5=rsef.SV_INDESTRUCTABLE(c,"battle",1,cm.con(ATTRIBUTE_LIGHT))
 	local e8=rsef.I(c,{m,2},1,"th","tg",LOCATION_MZONE,cm.con(ATTRIBUTE_WATER),nil,rstg.target({Card.IsAbleToHand,"th",LOCATION_ONFIELD,0,1,1,c}),cm.thop)
@@ -51,7 +69,7 @@ function cm.initial_effect(c)
 	e15:SetCode(EFFECT_DIRECT_ATTACK)
 	e15:SetRange(LOCATION_MZONE)
 	e15:SetTargetRange(LOCATION_MZONE,0)
-	e15:SetCondition(cm.con(ATTRIBUTE_DEVINE))
+	e15:SetCondition(cm.con(ATTRIBUTE_DIVINE))
 	c:RegisterEffect(e15)
 	local e16=Effect.CreateEffect(c)
 	e16:SetType(EFFECT_TYPE_FIELD)
@@ -59,7 +77,7 @@ function cm.initial_effect(c)
 	e16:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e16:SetRange(LOCATION_MZONE)
 	e16:SetTargetRange(0,1)
-	e16:SetCondition(cm.con(ATTRIBUTE_DEVINE))
+	e16:SetCondition(cm.damcon)
 	e16:SetValue(cm.damval)
 	c:RegisterEffect(e16)
 	local e17=Effect.CreateEffect(c)
@@ -74,20 +92,21 @@ function cm.rcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousPosition(POS_FACEUP)
 end
 function cm.rfilter(c,e,tp)
-	return c:IsLocation(LOCATION_GRAVE) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsLocation(LOCATION_GRAVE) or (c:IsLocation(LOCATION_REMOVED) and c:IsFaceup()))
+		and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local og=e:GetLabelObject():GetLabelObject()
 	if chk==0 then return og and og:IsExists(cm.rfilter,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetTargetCard(og)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function cm.rop(e,tp)
 	local c=e:GetHandler()
 	local og=rsgf.GetTargetGroup()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=og:FilterSelect(tp,cm.rfilter,1,1,nil):GetFirst()
+	local tc=og:FilterSelect(tp,cm.rfilter,1,1,nil,e,to):GetFirst()
 	if tc and rssf.SpecialSummon(tc)>0 then
 		local e1=rsef.SV_IMMUNE_EFFECT({c,tc},rsval.imoe,nil,rsreset.est)
 		local e2=rsef.SV_INDESTRUCTABLE({c,tc},"battle",1,nil,rsreset.est)
@@ -104,8 +123,11 @@ function cm.leaveop(e,tp)
 		e:SetLabelObject(nil)
 	end
 end
-function cm.val(e,re,dam,r,rp,rc)
-	return dam*2
+function cm.damcon(e)
+	return e:GetHandler():IsAttribute(ATTRIBUTE_DIVINE)
+end
+function cm.damval(e,re,dam,r,rp,rc)
+	return dam*3
 end
 function cm.mfilter(c,xyzc)
 	return c:IsRace(RACE_PSYCHO)
@@ -113,9 +135,16 @@ end
 function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLocation(LOCATION_EXTRA)
 end
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local lp=math.floor(Duel.GetLP(tp)/2)
+	local ct=math.floor(lp/1000)
+	if chk==0 then return ct>0 and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_DECK,0,ct,nil) end
+	Duel.PayLPCost(tp,lp)
+	e:SetLabel(ct)
+end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.cfilter(c)
@@ -124,13 +153,12 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)~=0 then
+	if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
 		c:CompleteProcedure()
-		local lp=rscost.costinfo[e]
-		if not lp or lp<1000 or not c:IsType(TYPE_XYZ) then return end
-		local ct=math.floor(lp/1000)
+		local ct=e:GetLabel()
 		local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_DECK,0,nil)
-		if #g<ct then return end
+		if ct>#g then ct=#g end
+		if ct<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 		local xg=g:Select(tp,ct,ct,nil)
 		Duel.Overlay(c,xg)

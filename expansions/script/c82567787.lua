@@ -1,7 +1,7 @@
 --方舟骑士·庇护者挽歌 夜莺
 function c82567787.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,5,2,c82567787.ovfilter,aux.Stringid(82567787,4),nil,c82567787.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x825),5,2,c82567787.ovfilter,aux.Stringid(82567787,4),nil,c82567787.xyzop)
 	c:EnableReviveLimit()
 	--atklimit
 	local e1=Effect.CreateEffect(c)
@@ -44,6 +44,16 @@ function c82567787.initial_effect(c)
 	e5:SetValue(c82567787.efilter)
 	e5:SetCondition(c82567787.iefcon)
 	c:RegisterEffect(e5)
+	--cage release
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(82567787,5))
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e6:SetCode(EVENT_PHASE+PHASE_END)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCountLimit(1)
+	e6:SetTarget(c82567787.acttg)
+	e6:SetOperation(c82567787.actop)
+	c:RegisterEffect(e6)
    if not c82567787.global_check then
 		c82567787.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -53,13 +63,24 @@ function c82567787.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+function c82567787.cagefilter(c)
+	return c:IsLocation(LOCATION_MZONE) and c:IsCode(82567788)
+end
+function c82567787.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return  Duel.CheckReleaseGroup(tp,c82567787.cagefilter,1,nil)  end
+end
+function c82567787.actop(e,tp,eg,ep,ev,re,r,rp)
+	if not  Duel.CheckReleaseGroup(tp,c82567787.cagefilter,1,nil) then return false end 
+	local g1=Duel.SelectReleaseGroup(tp,c82567787.cagefilter,1,1,nil)
+	Duel.Release(g1,REASON_COST)
+end
 function c82567787.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if bit.band(r,REASON_EFFECT)~=0 then return
 		Duel.RegisterFlagEffect(ep,82567787,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c82567787.ovfilter(c,tp)
-	return c:IsFaceup() and ((c:IsType(TYPE_XYZ) and c:IsRank(4) and c:IsSetCard(0x825)) or (c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER))) 
+	return c:IsFaceup() and (c:IsType(TYPE_XYZ) and c:IsRank(4) and c:IsSetCard(0x825))
 end
 function c82567787.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,82567787)~=0  end
@@ -135,7 +156,6 @@ function c82567787.efilter(e,te)
 		and te:IsActiveType(TYPE_MONSTER)
 end
 function c82567787.iefcon(e)
-	return Duel.IsExistingMatchingCard(Card.IsCode,e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,82567788) or
-		 Duel.IsExistingMatchingCard(Card.IsCode,e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,82567815)
+	return Duel.IsExistingMatchingCard(Card.IsCode,e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,82567788) 
 end
 

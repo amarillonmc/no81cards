@@ -57,7 +57,7 @@ function cm.aclimit(e,re,tp)
 	return re:GetHandler():IsCode(e:GetLabel())
 end
 function cm.tgfilter(c)
-	return  not c:IsCode(m) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsAbleToGrave()
+	return c:IsSetCard(0x7f1b) and not c:IsCode(m) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsAbleToGrave()
 end
 function cm.tgop(e,tp)
 	local g = Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_DECK,0,nil)

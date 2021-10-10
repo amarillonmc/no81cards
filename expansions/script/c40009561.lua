@@ -86,7 +86,8 @@ function cm.ssfop(op,ex_op,code)
 	end
 end
 function rsfwh.CheckSSCon(e)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF 
+	local c = e:GetHandler()
+	return c:GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF or (c:GetFlagEffect(c:GetOriginalCodeRule()) > 0 and c:IsType(TYPE_RITUAL))
 end
 function rsfwh.ExtraEffect(e)
 	local tg = e:GetTarget() or aux.TRUE 
@@ -116,13 +117,99 @@ function cm.ssftg2(cate,tg,op)
 		e:SetOperation(cm.ssfop(reg_op,ex_op,code))
 	end
 end
+function rsfwh.ExtraRitualFun(c,re,sum_loc,sum_filter)
+	local tg = re:GetTarget()
+	local op = re:GetOperation()
+	re:SetTarget(cm.erftg(tg))
+	re:SetOperation(cm.erfop(tg,op,sum_loc,sum_filter))
+end
+function cm.erftg(tg)
+	return function(e,tp,eg,ep,ev,re,r,rp,chk)
+		local b1 = not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)
+		local sg = Duel.GetMatchingGroup(cm.erfspfilter,tp,sum_loc,0,nil,e,tp)
+		local b2 = #sg > 0
+		if chk == 0 then 
+			return b1 or b2
+		end
+		tg(e,tp,eg,ep,ev,re,r,rp,1)
+	end
+end
+function cm.erfop(tg,op,sum_loc,sum_filter)
+	return function(e,tp,eg,ep,ev,re,r,rp,chk)
+		local f = sum_filter
+		sum_filter = function(c,...)
+			return aux.NecroValleyFilter(f)(c,...)
+		end
+		local b1 = not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)
+		local sg = Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.erfspfilter),tp,sum_loc,0,nil,e,tp)
+		local b2 = #sg > 0
+		sum_filter = f 
+		local cop = 1
+		if b1 and not b2 then cop = 1
+		elseif not b1 and b2 then cop = 2
+		elseif b1 and b2 then 
+			cop = rshint.SelectOption(tp,true,{m,3},true,{m,4})
+		else
+			sum_filter = f
+			return 
+		end
+		if cop == 1 then 
+			op(e,tp,eg,ep,ev,re,r,rp)
+		elseif cop == 2 then
+			local og,ritc = rsop.SelectCards("sp",tp,aux.NecroValleyFilter(cm.erfspfilter),tp,sum_loc,0,1,1,nil,e,tp)
+			cm.attach_list[ritc] = nil
+			local og2,matc = rsop.SelectCards("xmat",tp,cm.erfmatfilter,tp,LOCATION_ONFIELD,0,1,1,nil,e,tp,ritc.rsfwh_ex_ritual)
+			local matg = matc:GetOverlayGroup()
+			if #matg > 0 then
+				Duel.Overlay(ritc,matg)
+			end
+			ritc:SetMaterial(Group.FromCards(matc))
+			Duel.Overlay(ritc,matc)
+			Duel.BreakEffect()
+			Duel.SpecialSummon(ritc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+			local e1 = rsef.FC_PhaseLeave({ritc,tp},ritc,nil,nil,PHASE_END,cm.ovlop2(matc),rsrst.std)
+			local code = ritc:GetOriginalCodeRule()
+			matc:RegisterFlagEffect(m,rsrst.std,0,1)
+			ritc:RegisterFlagEffect(code,rsrst.std,0,1)
+			Duel.RegisterFlagEffect(tp,code,rsrst.ep,0,1)
+			local tc = ritc:GetOverlayGroup():Filter(Card.IsSetCard,nil,0x7f1b):GetFirst()
+			cm.attach_list[ritc] = tc
+		end
+		sum_filter = f
+	end
+end
+function cm.ovlop2(matc)
+	return function(g,e,tp)
+		local tc = g:GetFirst()
+		local og = tc:GetOverlayGroup()
+		if og:IsContains(matc) and matc:GetFlagEffect(m) > 0 then 
+			if matc:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0 then
+				Duel.MoveToField(matc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+			elseif matc:IsSetCard(0x6f1b) and matc:IsType(TYPE_MONSTER) and rscf.spfilter2()(matc,e,tp) then 
+				local matg2 = og - matc
+				Duel.SpecialSummon(matc,0,tp,tp,false,false,POS_FACEUP)
+				if #matg2 > 0 then 
+					Duel.Overlay(matc, matg2)
+				end
+			end
+		end
+		Duel.SendtoGrave(tc,REASON_EFFECT)
+	end
+end
+function cm.erfspfilter(c,e,tp)
+	local mat_filter = c.rsfwh_ex_ritual
+	return mat_filter and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and Duel.IsExistingMatchingCard(cm.erfmatfilter,tp,LOCATION_ONFIELD,0,1,nil,e,tp,mat_filter) and Duel.GetFlagEffect(tp, c:GetOriginalCodeRule()) == 0
+end
+function cm.erfmatfilter(c,e,tp,mat_filter)
+	return c:IsCanOverlay() and mat_filter(c,e,tp) and Duel.GetMZoneCount(tp,c,tp) > 0
+end
 ------------------------------------
 function cm.initial_effect(c)
 	local e1 = rsfwh.OvelayFun(c,m)
 	local e2,e3 = rsfwh.SummonFun(c,m,CATEGORY_SEARCH+CATEGORY_TOHAND,cm.thtg,cm.thop,CATEGORY_SPECIAL_SUMMON,cm.sptg,cm.spop)
 end
 function cm.filter(c)
-	return not c:IsCode(m) and c:IsSetCard(0x6f1b)
+	return not c:IsCode(m) and c:IsSetCard(0x6f1b) and c:IsType(TYPE_MONSTER)
 end
 function cm.thfilter(c)
 	return cm.filter(c) and c:IsAbleToHand()

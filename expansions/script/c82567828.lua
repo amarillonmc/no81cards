@@ -1,17 +1,5 @@
 --方舟騎士·硬币弹匣 杰西卡
 function c82567828.initial_effect(c)
-	--Summon 
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(82567828,1))
-	e1:SetCategory(CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,82567828+EFFECT_COUNT_CODE_DUEL)
-	e1:SetCondition(c82567828.thcon)
-	e1:SetTarget(c82567828.thtg)
-	e1:SetOperation(c82567828.thop)
-	c:RegisterEffect(e1)
 	--Draw
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_DRAW)
@@ -23,13 +11,6 @@ function c82567828.initial_effect(c)
 	e3:SetTarget(c82567828.dwtg)
 	e3:SetOperation(c82567828.dwop)
 	c:RegisterEffect(e3)
-	--add setname
-	local e9=Effect.CreateEffect(c)
-	e9:SetType(EFFECT_TYPE_SINGLE)
-	e9:SetCode(EFFECT_ADD_SETCODE)
-	e9:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e9:SetValue(0x825)
-	c:RegisterEffect(e9)
 end
 function c82567828.dwfilter(c)
 	return c:IsSetCard(0x825) and c:IsFaceup()

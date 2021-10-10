@@ -81,7 +81,7 @@ function c82567849.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 function c82567849.condition(e)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_NORMAL)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE)
 end
 function c82567849.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end

@@ -26,7 +26,7 @@ function c82568064.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return
    Duel.IsExistingMatchingCard(c82568064.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-	and  Duel.IsExistingMatchingCard(c82568064.filter2,tp,LOCATION_MZONE,0,2,nil)
+	and  Duel.IsExistingMatchingCard(c82568064.filter2,tp,LOCATION_MZONE,0,3,nil)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
@@ -36,7 +36,7 @@ function c82568064.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=tg:GetFirst()
 	if tc then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local mat=Duel.SelectMatchingCard(tp,c82568064.filter2,tp,LOCATION_MZONE,0,2,2,nil)
+		local mat=Duel.SelectMatchingCard(tp,c82568064.filter2,tp,LOCATION_MZONE,0,3,3,nil)
 		if not mat or mat:GetCount()==0 then return end
 		tc:SetMaterial(mat)
 		Duel.ReleaseRitualMaterial(mat)

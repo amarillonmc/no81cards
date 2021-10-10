@@ -71,7 +71,7 @@ function c82567876.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Card.RemoveCounter(c,tp,0x5825,1,REASON_COST)
 end
 function c82567876.spfilter(c,e,tp)
-	return c:IsSetCard(0x825) and c:IsRace(RACE_BEASTWARRIOR)
+	return c:IsSetCard(0x825) and c:IsRace(RACE_BEASTWARRIOR) and c:IsLevelBelow(4)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
 end
 function c82567876.spcon(e,c)

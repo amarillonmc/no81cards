@@ -34,8 +34,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,2,2,nil)
-	if g:GetCount()>0 and Duel.Release(g,REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
-		Duel.SendtoHand(c,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,c)
+	if g:GetCount()>0 and Duel.Release(g,REASON_EFFECT) then
+		if c:IsRelateToEffect(e) then
+			Duel.SendtoHand(c,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,c)
+		end
 	end
 end

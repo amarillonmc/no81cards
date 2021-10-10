@@ -27,6 +27,7 @@ function cm.initial_effect(c)
 	elements={{"tama_elements",{{TAMA_ELEMENT_EARTH,2}}}}
 	cm[c]=elements
 end
+local to_deck=1
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.dFilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
@@ -64,9 +65,9 @@ function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_GRAVE) and cm.setfilter(chkc,e,tp) end
 	if chk==0 then return 
 		(not Duel.IsExistingMatchingCard(cm.setfilter1,tp,0,LOCATION_GRAVE,1,nil,e,tp) or Duel.IsPlayerAffectedByEffect(tp,59822133))
-		and Duel.IsExistingTarget(cm.setfilter,tp,0,LOCATION_GRAVE,2,nil,e,tp) 
+		and Duel.IsExistingTarget(cm.setfilter,tp,0,LOCATION_GRAVE,to_deck,nil,e,tp) 
 	end
-	local ft=2
+	local ft=to_deck
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then 
 		ft=1
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
@@ -82,12 +83,12 @@ function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	else
 		e:SetCategory(bit.band(cat,bit.bnot(CATEGORY_SPECIAL_SUMMON)))
 	end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,1-tp,LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,to_deck,1-tp,LOCATION_ONFIELD)
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if g:FilterCount(Card.IsRelateToEffect,nil,e)~=2 or 
-		(g:IsExists(Card.IsType,2,nil,TYPE_MONSTER) and Duel.IsPlayerAffectedByEffect(tp,59822133)) then return end
+	if g:FilterCount(Card.IsRelateToEffect,nil,e)~=to_deck or 
+		(g:IsExists(Card.IsType,to_deck,nil,TYPE_MONSTER) and Duel.IsPlayerAffectedByEffect(tp,59822133)) then return end
 	local tc=g:GetFirst()
 	local ct=0
 	while tc do
@@ -108,10 +109,10 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 		tc=g:GetNext()
 	end
 	local sg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
-	if ct==2 and sg:GetCount()>=2 then
+	if ct==to_deck and sg:GetCount()>=to_deck then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg1=sg:Select(tp,2,2,nil)
+		local sg1=sg:Select(tp,to_deck,to_deck,nil)
 		Duel.SendtoDeck(sg1,nil,2,REASON_EFFECT)
 	end
 end

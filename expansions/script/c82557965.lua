@@ -1,16 +1,5 @@
 --共鸣钢战-Z敢达
 function c82557965.initial_effect(c)
-	 --pendulum summon
-	aux.EnablePendulumAttribute(c)
-	--splimit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_PZONE)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c82557965.psplimit)
-	c:RegisterEffect(e1)
 	--summon with no tribute
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(82557965,0))
@@ -73,7 +62,7 @@ function c82557965.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_UPDATE_ATTACK)
 		e2:SetProperty(EFFECT_CANNOT_DISABLE)
-		e2:SetValue(Duel.GetMatchingGroup(c82557965.atkfilter2,tp,LOCATION_GRAVE,0,nil):GetClassCount(Card.GetCode)*200)
+		e2:SetValue(Duel.GetMatchingGroup(c82557965.atkfilter2,tp,LOCATION_GRAVE,0,nil):GetClassCount(Card.GetCode)*100)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e2)
 	end
