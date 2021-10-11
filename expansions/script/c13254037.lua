@@ -113,12 +113,14 @@ function cm.remop(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_DECK,nil)
 	local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,nil)
 	local sg=Group.CreateGroup()
+	local a=0
 	if g1:GetCount()>0 and ((g2:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(m,2))) then
 		Duel.ConfirmCards(tp,g1)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg1=g1:Select(tp,1,1,nil)
 		Duel.HintSelection(sg1)
 		sg:Merge(sg1)
+		a=a+1
 	end
 	if g2:GetCount()>0 and ((sg:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(m,3))) then
 		Duel.ConfirmCards(tp,g2)
@@ -126,12 +128,17 @@ function cm.remop(e,tp,eg,ep,ev,re,r,rp)
 		local sg2=g2:Select(tp,1,1,nil)
 		Duel.HintSelection(sg2)
 		sg:Merge(sg2)
+		a=a+2
 	end
 	if g3:GetCount()>0 and (sg:GetCount()==0 or Duel.SelectYesNo(tp,aux.Stringid(m,4))) then
 		Duel.ConfirmCards(tp,g3)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg3=g3:Select(tp,1,1,nil)
 		sg:Merge(sg3)
+		a=a+4
 	end
 	Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
+	if bit.band(a,1) then Duel.ShuffleHand(1-tp) end
+	if bit.band(a,2) then Duel.ShuffleDeck(1-tp) end
+	if bit.band(a,4) then Duel.ShuffleExtra(1-tp) end
 end
