@@ -66,7 +66,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SendtoDeck(sg,tp,2,REASON_EFFECT)
+	Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_EARTH,1},{TAMA_ELEMENT_FIRE,1}}
