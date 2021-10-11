@@ -349,7 +349,7 @@ function tama.tamas_selectElementsForEqual(c,mg,sg,codes)
 	sg:RemoveCard(c)
 	return res
 end
---target:2A,2B,storage:(A+B)*2,3A*1,3B*1,final:(A+B)*2 or 3A+3B
+--target:2A,2B,storage:(A+B)*2,3A*1,3B*1,final:true
 function tama.tamas_selectElementsForAbove(c,mg,sg,codes)
 	local targetCodes=tama.DeepCopy(codes)
 	sg:AddCard(c)
@@ -498,22 +498,37 @@ function tama.tamas_elementsSelectFilterForAbove(c,mg,sg,codes,allSelect,selecte
 				tama.tamas_addElementsGroupToTable(allSelect,sg,selectedElements2)
 			else
 				local tc=mg:GetFirst()
+				--[[
 				while tc do
 					tama.tamas_elementsSelectFilterForAbove(tc,mg:Clone(),sg,targetCodes1,allSelect,selectedElements2)
 					tc=mg:GetNext()
+				end
+				]]
+				while tc do
+					tama.tamas_elementsSelectFilterForAbove(tc,mg:Clone(),sg,targetCodes1,allSelect,selectedElements2)
+					mg:RemoveCard(tc)
+					tc=mg:GetFirst()
 				end
 			end
 		end
 	elseif mg:GetCount()>0 then
 		local tc=mg:GetFirst()
+		--[[
 		while tc do
 			tama.tamas_elementsSelectFilterForAbove(tc,mg:Clone(),sg,targetCodes,allSelect,selectedElements1)
 			tc=mg:GetNext()
+		end
+		]]
+		while tc do
+			tama.tamas_elementsSelectFilterForAbove(tc,mg:Clone(),sg,targetCodes,allSelect,selectedElements1)
+			mg:RemoveCard(tc)
+			tc=mg:GetFirst()
 		end
 	end
 	if c~=nil then sg:RemoveCard(c) end
 	return #allSelect>0
 end
+--target:2A,2B,storage:(A+B)*2,3A*1,3B*1,final:(A+B)*2 or 3A+3B
 function tama.tamas_getAllSelectForAbove(mg,codes)
 	local targetCodes=tama.DeepCopy(codes)
 	local allSelect={}
