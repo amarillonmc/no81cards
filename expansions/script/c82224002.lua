@@ -18,7 +18,7 @@ function c82224002.initial_effect(c)
 	c:RegisterEffect(e2)  
 end  
 function c82224002.handcon(e)  
-	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD)>5 
+	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD)>=5 
 end  
 function c82224002.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return true end  

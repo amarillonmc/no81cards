@@ -60,7 +60,7 @@ function c40009304.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToExtraAsCost() end
 	Duel.SendtoDeck(e:GetHandler(),nil,0,REASON_COST)
 end
-function c40009304.spfilter(c,sync)
+function c40009304.spfilter(c,tp,sync)
 	return c:IsControler(tp) and c:IsLocation(LOCATION_GRAVE)
 		and bit.band(c:GetReason(),0x80008)==0x80008 and c:GetReasonCard()==sync
 		and c:IsAbleToHand()
@@ -71,7 +71,7 @@ function c40009304.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=mg:GetCount()
 	if chk==0 then return c:IsSummonType(SUMMON_TYPE_SYNCHRO)
 		and ct>0
-		and mg:FilterCount(c40009304.spfilter,nil,c)==ct end
+		and mg:FilterCount(c40009304.spfilter,nil,tp,c)==ct end
 	Duel.SetTargetCard(mg)
 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,mg,ct,tp,LOCATION_GRAVE)
