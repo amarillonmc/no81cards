@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function cm.ffilter(c,fc,sub,mg,sg)
-	return c:IsLevelAbove(1) and (not sg or sg:FilterCount(aux.TRUE,c)==0 or not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()))
+	return c:IsLevelAbove(1) and (not sg or not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()))
 end
 function cm.dptcheck(g)
 	return g:GetClassCount(Card.GetPosition)==#g
