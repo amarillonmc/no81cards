@@ -39,7 +39,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.val(e,re,rp)
-	return rp==re:GetHandlerPlayer() and re:IsActiveType(TYPE_MONSTER)
+	return aux.tgoval(e,re,rp) and re:IsActiveType(TYPE_MONSTER)
 end
 function cm.fs(c)
 	return c:IsPreviousLocation(LOCATION_EXTRA) and c:IsType(TYPE_SYNCHRO)

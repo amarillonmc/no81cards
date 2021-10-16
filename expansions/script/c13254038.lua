@@ -81,7 +81,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		]]
 		if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_CHAOS)>0 and sg2:IsExists(cm.filter2a,1,nil) then
-			local sg3=sg2:Filter(cm.filter2a,nil)
+			local sg3=sg2:Filter(cm.filter2a,nil):Clone()
 			Duel.ConfirmCards(tp,sg3)
 			if Duel.SelectYesNo(aux.Stringid(m,10)) then
 				local ct=sg3:GetCount()

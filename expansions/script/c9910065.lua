@@ -92,6 +92,7 @@ end
 function c9910065.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=eg:Filter(c9910065.repfilter,nil,tp)
 	if chk==0 then return g:GetCount()>0 end
+	g:KeepAlive()
 	e:SetLabelObject(g)
 	return true
 end
@@ -108,4 +109,5 @@ function c9910065.desrepop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Draw(tc:GetControler(),1,REASON_EFFECT)
 		tc=g:GetNext()
 	end
+	g:DeleteGroup()
 end

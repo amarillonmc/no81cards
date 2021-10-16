@@ -55,7 +55,7 @@ end
 function cm.filter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,0,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
@@ -75,8 +75,8 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
-function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then Duel.IsExistingTarget(aux.disfilter1,tp,0,LOCATION_ONFIELD,1,nil) end
+function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingTarget(aux.disfilter1,tp,0,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
 end
