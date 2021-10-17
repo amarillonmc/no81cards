@@ -83,6 +83,9 @@ end
 function cm.fselect(g)
 	return g:GetClassCount(Card.GetAttribute)==g:GetCount()
 end
+function cm.matfilter(c)
+	return c:GetAttribute()>0
+end
 function cm.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
@@ -91,7 +94,7 @@ function cm.sprcon(e,c)
 	local mg=Group.CreateGroup()
 	local tc=g:GetFirst()
 	while tc do
-		mg:Merge(tc:GetOverlayGroup():Filter(Card.IsCanBeFusionMaterial,nil))
+		mg:Merge(tc:GetOverlayGroup():Filter(cm.matfilter,nil))
 		tc=g:GetNext()
 	end
 	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and mg:CheckSubGroup(cm.fselect,3,3,tp,c)
@@ -101,7 +104,7 @@ function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local mg=Group.CreateGroup()
 	local tc=g:GetFirst()
 	while tc do
-		mg:Merge(tc:GetOverlayGroup():Filter(Card.IsCanBeFusionMaterial,nil))
+		mg:Merge(tc:GetOverlayGroup():Filter(cm.matfilter,nil))
 		tc=g:GetNext()
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
