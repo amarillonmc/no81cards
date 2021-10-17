@@ -35,8 +35,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local j=tama.tamas_getElementCount(tama.tamas_sumElements(e:GetLabelObject()),TAMA_ELEMENT_MANA)
 	j=math.floor(j/2)
 	local i=0
-	while i<j and (i==0 or Duel.SelectYesNo(tp,aux.Stringid(m,1))) do
-		Duel.BreakEffect()
+	while i<j do
+		if i>0 and not Duel.SelectYesNo(tp,aux.Stringid(m,1))) then break end
 		local t1=Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
 		local t2=Duel.IsExistingMatchingCard(cm.rfilter,tp,0,LOCATION_GRAVE+LOCATION_EXTRA,1,nil)
 
@@ -57,6 +57,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 
 		if op==1 or op1 then
+			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 			if g:GetCount()>0 then
@@ -64,9 +65,11 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		if op==2 or op1 then
+			Duel.BreakEffect()
 			Duel.Damage(1-tp,1000,REASON_EFFECT)
 		end
 		if op==3 or op1 then
+			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local g=Duel.SelectMatchingCard(tp,cm.rfilter,tp,0,LOCATION_GRAVE+LOCATION_EXTRA,1,1,nil)
 			if g:GetCount()>0 then

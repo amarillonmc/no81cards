@@ -25,16 +25,12 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_MZONE)
+	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e3:SetCountLimit(1,m+1)
 	e3:SetCost(cm.spcost)
 	e3:SetTarget(cm.settg)
 	e3:SetOperation(cm.setop)
-	c:RegisterEffect(e3) 
-	local e4=e3:Clone()
-	e4:SetRange(LOCATION_GRAVE)
-	e4:SetCost(aux.bfgcost)
-	c:RegisterEffect(e4)	  
+	c:RegisterEffect(e3)	  
 end
 function cm.BLASTER(c)
 	local m=_G["c"..c:GetCode()]
@@ -58,10 +54,14 @@ function cm.cfilter(c)
 	return cm.BLASTERBlade(c) and c:IsAbleToDeckAsCost()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return (e:GetHandler():IsReleasable() and e:GetHandler():IsLocation(LOCATION_MZONE)) or (e:GetHandler():IsAbleToRemoveAsCost() and e:GetHandler():IsLocation(LOCATION_GRAVE)) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.Release(e:GetHandler(),REASON_COST)
+	if e:GetHandler():IsLocation(LOCATION_MZONE) then
+		Duel.Release(e:GetHandler(),REASON_COST)
+	else
+		Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
+	end
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function cm.setfilter(c)
