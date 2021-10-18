@@ -20,7 +20,7 @@ function c29065603.initial_effect(c)
 	e3:SetCategory(CATEGORY_NEGATE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
 	e3:SetCondition(c29065603.discon)
@@ -53,7 +53,7 @@ end
 function c29065603.negfilter(c)
 	return aux.disfilter1(c)
 end
-function c29065603.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c29065603.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and c29065603.negfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c29065603.negfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)

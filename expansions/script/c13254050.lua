@@ -36,7 +36,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	j=math.floor(j/2)
 	local i=0
 	while i<j do
-		if i>0 and not Duel.SelectYesNo(tp,aux.Stringid(m,1))) then break end
+		if i>0 and not Duel.SelectYesNo(tp,aux.Stringid(m,1)) then break end
 		local t1=Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
 		local t2=Duel.IsExistingMatchingCard(cm.rfilter,tp,0,LOCATION_GRAVE+LOCATION_EXTRA,1,nil)
 

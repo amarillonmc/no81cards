@@ -223,9 +223,23 @@ function cm.syop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(1)
 			e1:SetOperation(cm.synop)
 			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e2:SetCode(EVENT_SPSUMMON)
+			e2:SetCountLimit(1)
+			e2:SetLabelObject(e1)
+			e2:SetOperation(cm.adjustop)
+			e2:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e2,tp)
 		end
 		Duel.SynchroSummon(tp,sg:GetFirst(),nil)
 	end
+end
+function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	if te and aux.GetValueType(te)=="Effect" then te:Reset() end
+	e:Reset()
 end
 function cm.syncheck(c,g,mg,tp,lv,syncard,minc,maxc)
 	g:AddCard(c)

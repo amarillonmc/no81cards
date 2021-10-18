@@ -90,7 +90,7 @@ function cm.filter1(c)
 	return c:IsFaceup() and c:IsAbleToRemove() and c:IsCanBeFusionMaterial()
 end
 function cm.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION+0x10000000) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false,POS_FACEDOWN_DEFENSE) and c:CheckFusionMaterial(m,nil,chkf)
+	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false,POS_FACEDOWN_DEFENSE) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function cm.filter3(c,e)
 	return c:IsOnField() and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)

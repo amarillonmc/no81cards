@@ -31,10 +31,10 @@ function c82224002.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetTurnPlayer()
 	Duel.Hint(HINT_SELECTMSG,p,aux.Stringid(82224002,0))
 	if Duel.GetCurrentPhase()==PHASE_MAIN1 then
-		Duel.SkipPhase(p,PHASE_MAIN1,RESET_PHASE+PHASE_BATTLE,1)
+		Duel.SkipPhase(p,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
 	else
 		if Duel.GetCurrentPhase()==PHASE_BATTLE_START or Duel.GetCurrentPhase()==PHASE_BATTLE or Duel.GetCurrentPhase()==PHASE_BATTLE_STEP then
-			Duel.SkipPhase(p,PHASE_BATTLE,RESET_PHASE+PHASE_MAIN2,1)
+			Duel.SkipPhase(p,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
 		else
 			Duel.SkipPhase(p,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
 		end
