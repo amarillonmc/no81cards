@@ -23,7 +23,7 @@ function c114514.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c114514.rfilter(c,tp)
-	return c:IsControler(tp) or c:IsFaceup()
+	return c:IsControler(tp) and c:IsFaceup() and not c:IsCode(114514)
 end
 function c114514.sumfilter(c)
 	return c:GetAttack()

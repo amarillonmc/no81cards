@@ -10,18 +10,28 @@ function c33710903.initial_effect(c)
 	c:RegisterEffect(e1) 
 	if not c33710903.global_check then
 		c33710903.global_check=true
+		Count_Time_For_This_Effect={0,0,0,0}
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_CHAINING)
 		ge1:SetOperation(c33710903.checkop)
 		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_TURN_END)
+		ge2:SetOperation(c33710903.checkop2)
+		Duel.RegisterEffect(ge2,0)
 	end
 end
 function c33710903.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=re:GetHandler()
-	if tc then
-		Duel.RegisterFlagEffect(re:GetHandler():GetControler(),16133710903+Duel.GetTurnCount(),RESET_PHASE+PHASE_END,0,2)
-	end
+	Count_Time_For_This_Effect[re:GetHandlerPlayer()+3]=Count_Time_For_This_Effect[re:GetHandlerPlayer()+3]+1
+end
+function c33710903.checkop2(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message(0)
+	Count_Time_For_This_Effect[1]=Count_Time_For_This_Effect[3]
+	Count_Time_For_This_Effect[2]=Count_Time_For_This_Effect[4]
+	Count_Time_For_This_Effect[3]=0
+	Count_Time_For_This_Effect[4]=0
 end
 function c33710903.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
@@ -59,12 +69,13 @@ function c33710903.actlimit(e,te,tp)
 		and g:GetFirst():IsFaceup()
 end
 function c33710903.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsRelateToEffect(e) end
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,Duel.GetFlagEffect(1-tp,16133710903+Duel.GetTurnCount()-1)*500)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,Count_Time_For_This_Effect[2-tp]*500)
 end
 function c33710903.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then	
-		Duel.Damage(1-tp,Duel.GetFlagEffect(1-tp,16133710903+Duel.GetTurnCount()-1)*500,REASON_EFFECT)
+	Duel.Damage(1-tp,Count_Time_For_This_Effect[2-tp]*500,REASON_EFFECT)
+	if c:IsRelateToEffect(e) then
+		Duel.ShuffleHand(tp)
 	end
 end
