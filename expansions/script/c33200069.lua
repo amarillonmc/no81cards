@@ -50,13 +50,8 @@ function c33200069.activate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
 		local sg=g:FilterSelect(tp,c33200069.filter,1,1,nil,e,tp)
-		if sg:GetFirst():IsAbleToHand() then
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-p,sg)
-			Duel.ShuffleHand(p)
-		else
-			Duel.SendtoGrave(sg,REASON_RULE)
-		end
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-p,sg)
 		Duel.ShuffleDeck(p)
 	end
 end

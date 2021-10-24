@@ -44,10 +44,10 @@ function c45745906.initial_effect(c)
 
 end
 function c45745906.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsPlayerAffectedByEffect(tp,33200100) and not Duel.IsPlayerAffectedByEffect(tp,45745921)
+	return not Duel.IsPlayerAffectedByEffect(tp,33200100)
 end
 function c45745906.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,33200100) or Duel.IsPlayerAffectedByEffect(tp,45745921)
+	return Duel.IsPlayerAffectedByEffect(tp,33200100)
 end
 --e1e2
 function c45745906.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -58,7 +58,7 @@ function c45745906.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function c45745906.filter(c,e,tp)
-	return c:IsSetCard(0x881,0x324) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
+	return c:IsSetCard(0x881,0x324) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c45745906.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -70,7 +70,7 @@ function c45745906.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c45745906.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	end
 end
 --e3
@@ -111,29 +111,6 @@ function c45745906.operation1(e,tp,eg,ep,ev,re,r,rp)
 		end
 		tc:RegisterEffect(e1)
 	end
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e2:SetTargetRange(1,0)
-	e2:SetTarget(c45745906.splimit)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
-
-	local e3=Effect.CreateEffect(e:GetHandler())
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e3:SetTargetRange(1,0)
-	e3:SetTarget(c45745906.splimit2)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
-end
-function c45745906.splimit(e,c)
-	return c:IsLocation(LOCATION_DECK) and not c:IsSetCard(0x881,0x324)
-end
-function c45745906.splimit2(e,c)
-	return c:IsLocation(LOCATION_EXTRA) and c:IsType(TYPE_LINK) and not c:IsSetCard(0x323) 
 end
 --e4
 function c45745906.eqcon(e,tp,eg,ep,ev,re,r,rp)

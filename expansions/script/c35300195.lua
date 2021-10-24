@@ -5,6 +5,7 @@ function cm.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_DRAGON),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
+	--revive
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -15,6 +16,7 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.atktg1)
 	e1:SetOperation(cm.atkop1)
 	c:RegisterEffect(e1)
+	--destroy
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_IGNITION)
@@ -23,6 +25,7 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.rmtg)
 	e3:SetOperation(cm.rmop)
 	c:RegisterEffect(e3)
+	--equip
 	local e5=Effect.CreateEffect(c)
 	e5:SetCategory(CATEGORY_EQUIP+CATEGORY_LEAVE_GRAVE)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -36,6 +39,7 @@ function cm.initial_effect(c)
 	e6:SetCode(EVENT_TO_GRAVE)
 	c:RegisterEffect(e6)
 end
+--revive
 function cm.spfilter1(c,e,tp)
 	return  c:IsRace(RACE_DRAGON+RACE_WARRIOR) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
@@ -52,7 +56,7 @@ function cm.atkop1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-
+--destroy
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
@@ -65,7 +69,7 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
-
+--equip
 function cm.eqfilter(c,tp)
 	if not c:IsFaceup() then return false end
 	if c:IsType(TYPE_TRAPMONSTER) then return Duel.GetLocationCount(tp,LOCATION_SZONE,tp,LOCATION_REASON_CONTROL)>0 and Duel.GetLocationCount(tp,LOCATION_SZONE,tp,0)>=1 end

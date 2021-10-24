@@ -1,5 +1,6 @@
 --铁战灵兽 M巨钳螳螂
 function c33200055.initial_effect(c)
+	aux.AddCodeList(c,33200061) 
 	--spsm
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x322),6,99,c33200055.ovfilter,aux.Stringid(33200055,2),99,c33200055.xyzop)
 	c:EnableReviveLimit()

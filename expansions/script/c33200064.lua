@@ -25,7 +25,7 @@ end
 
 --e1
 function c33200064.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x322) and c:IsType(TYPE_MONSTER) and not c:IsCode(33200064)
+	return c:IsFaceup() and c:IsSetCard(0x322,0x881) and c:IsType(TYPE_MONSTER) and not c:IsCode(33200064)
 end
 function c33200064.condition(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE)  

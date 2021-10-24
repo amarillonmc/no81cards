@@ -93,7 +93,7 @@ function cm.initial_effect(c)
 		return rp==tp and re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(m-2)
 	end)
 	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if chk==0 then return e:GetHandler():IsSSetable() and Duel.GetFlagEffect(m-1)==0 end
+		if chk==0 then return e:GetHandler():IsSSetable() and Duel.GetFlagEffect(tp,m-1)==0 end
 		Duel.RegisterFlagEffect(tp,m-1,RESET_CHAIN,0,1)
 		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 	end)

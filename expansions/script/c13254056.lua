@@ -90,19 +90,10 @@ end
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,1-tp)
 end
-function cm.tgfilter(c)
-	return #(tama.tamas_getElements(c))~=0 and c:IsAbleToGrave()
-end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_CARD,0,m)
-		if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local g=g:Select(tp,1,1,nil)
-			if g:GetCount()>0 then
-				Duel.SendtoGrave(g,REASON_EFFECT)
-			end
-		end
+		Duel.DiscardDeck(tp,1,REASON_EFFECT)
 	end
 end

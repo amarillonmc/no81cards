@@ -23,6 +23,36 @@ function rk.selectcard(sel_p,tar_p,f,loc,loc1,min,max,exg,...)
 	end
 	return Duel.SelectMatchingCard(sel_p,f,tar_p,loc,loc1,min,max,exg,...)
 end
+function rk.yk(c,loc)
+	local tc=c
+	local e=Effect.CreateEffect(c)
+	e:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e:SetCode(EVENT_ADJUST)
+	e:SetProperty(EFFECT_FLAG_DELAY)
+	e:SetRange(loc)
+	e:SetCondition(rk.con1)
+	e:SetOperation(rk.op2)
+	tc:RegisterEffect(e)
+	return e
+end
+function rk.con1(e,tp)
+	local phase=Duel.GetCurrentPhase()
+	local d_val=getmetatable(e:GetHandler()).yk_filter
+	if phase>=0x08 and phase<=0x80 and d_val then
+		return d_val[1]<0x08
+	end
+	return d_val==nil or d_val[1]~=Duel.GetCurrentPhase()
+end
+function rk.op2(e,tp)
+	local phase=Duel.GetCurrentPhase()
+	local d_val=getmetatable(e:GetHandler()).yk_filter
+	if not d_val then
+		getmetatable(e:GetHandler()).yk_filter={phase} 
+	else
+		Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
+		getmetatable(e:GetHandler()).yk_filter=nil
+	end
+end
 function rk.effectg(c,code)
 	local tc=c
 	--effect gain

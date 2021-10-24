@@ -1,5 +1,6 @@
 --铁战灵兽 M波士可多拉
 function c33200073.initial_effect(c)
+	aux.AddCodeList(c,33200071) 
 	--spesm
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x322),9,99,c33200073.ovfilter,aux.Stringid(33200073,0),99,c33200073.xyzop)
 	c:EnableReviveLimit()   

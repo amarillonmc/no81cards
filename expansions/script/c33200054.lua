@@ -1,5 +1,6 @@
 --铁战灵兽 M大嘴娃
 function c33200054.initial_effect(c)
+	aux.AddCodeList(c,33200060) 
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x322),2,99,c33200054.ovfilter,aux.Stringid(33200054,0),99,c33200054.xyzop)
 	c:EnableReviveLimit()   

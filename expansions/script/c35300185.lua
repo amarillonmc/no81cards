@@ -5,6 +5,7 @@ function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,4,2)
 	c:EnableReviveLimit()
+	--revive
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -15,26 +16,29 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,m)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetCondition(cm.negcon)
-	e2:SetCost(cm.cost)
-	e2:SetOperation(cm.negop)
-	c:RegisterEffect(e2)
+	--resistance 
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(0,1)
-	e3:SetValue(cm.aclimit)
-	e3:SetCondition(cm.actcon)
+	e3:SetCountLimit(1,m+1)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetCondition(cm.negcon)
+	e3:SetCost(cm.cost2)
+	e3:SetOperation(cm.negop)
 	c:RegisterEffect(e3)
+	--utopia the lightning
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetTargetRange(0,1)
+	e4:SetValue(cm.aclimit)
+	e4:SetCondition(cm.actcon)
+	c:RegisterEffect(e4)
 end
+--revive
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
@@ -54,9 +58,19 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+        local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,1,1,nil)
+        Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
 end
-
+--resistance 
+function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.CheckLPCost(tp,2000) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	Duel.PayLPCost(tp,2000)
+end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp,chk)
 	return ep~=tp
 end
@@ -75,7 +89,7 @@ end
 function cm.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
-
+--utopia the lightning
 function cm.aclimit(e,re,tp)
 	return not re:GetHandler():IsImmuneToEffect(e) and re:IsActiveType(TYPE_MONSTER)
 end

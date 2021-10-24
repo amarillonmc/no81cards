@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
-	e1:SetCost(cm.cost)
+	--e1:SetCost(cm.cost)
 	e1:SetTarget(cm.rmtg)
 	e1:SetOperation(cm.rmop)
 	c:RegisterEffect(e1)
@@ -43,10 +43,10 @@ end
 function cm.tdfilter(c)
 	return  c:IsAbleToDeck()
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
-end
+--function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	--if chk==0 then return true end
+	--Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
+--end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)

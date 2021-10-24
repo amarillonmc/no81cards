@@ -79,13 +79,13 @@ end
 
 --e2
 function c33200261.igfilter(c)
-	return c:IsFaceup() and c:IsCode(33200250)
+	return c:IsFaceup() and c:IsCode(33200250) and not c:IsType(TYPE_TUNER)
 end
 function c33200261.igtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c33200261.gifilter(chkc) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingTarget(c33200261.gifilter,tp,LOCATION_MZONE,0,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c33200261.igfilter(chkc) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingTarget(c33200261.igfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c33200261.gifilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SelectTarget(tp,c33200261.igfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)

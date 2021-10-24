@@ -117,6 +117,7 @@ function c33200255.cgop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_CANNOT_TRIGGER)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			c:RegisterEffect(e1)
+			c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(33200255,4))
 		end
 	end
 end

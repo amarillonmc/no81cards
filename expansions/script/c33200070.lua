@@ -29,8 +29,8 @@ end
 function c33200070.filter1(c,e,tp)
 	return c:IsSetCard(0x322) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c33200070.filter2(c,e,tp,mc,level)
-	return c:IsType(TYPE_XYZ) and c:GetRank()==level and c:IsSetCard(0x322)
+function c33200070.filter2(c,e,tp,mc)
+	return c:IsType(TYPE_XYZ) and aux.IsCodeListed(c,mc:GetCode())
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) 
 end
 function c33200070.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -46,11 +46,11 @@ function c33200070.activate(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
-	if Duel.IsExistingMatchingCard(c33200070.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc,tc:GetLevel())
+	if Duel.IsExistingMatchingCard(c33200070.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc)
 	and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and 
 	Duel.GetLocationCountFromEx(tp,tp,tc,TYPE_XYZ)>0 and Duel.SelectYesNo(tp,aux.Stringid(33200070,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c33200070.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc,tc:GetLevel())
+		local g=Duel.SelectMatchingCard(tp,c33200070.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
 		local sc=g:GetFirst()
 		if sc then
 			local mg=tc:GetOverlayGroup()

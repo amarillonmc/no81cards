@@ -2,6 +2,7 @@
 local m=35300305
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	c:SetSPSummonOnce(m)
 	--link summon
 	aux.AddLinkProcedure(c,cm.matfilter,1)
 	c:EnableReviveLimit()
@@ -29,30 +30,30 @@ function cm.initial_effect(c)
 	local e6=e4:Clone()
 	e6:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
 	c:RegisterEffect(e6)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.eqtg)
-	e1:SetOperation(cm.eqop)
-	c:RegisterEffect(e1)  
+	local e7=Effect.CreateEffect(c)
+	e7:SetDescription(aux.Stringid(m,0))
+	e7:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e7:SetType(EFFECT_TYPE_QUICK_O)
+	e7:SetCode(EVENT_FREE_CHAIN)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetCountLimit(1,m)
+	e7:SetTarget(cm.eqtg)
+	e7:SetOperation(cm.eqop)
+	c:RegisterEffect(e7)  
 end
 function cm.matfilter(c)
-	return c:IsLinkRace(RACE_REPTILE) and c:IsAttack(0) 
+	return c:IsLinkRace(RACE_REPTILE) and c:IsAttack(0) and c:IsDefense(0)
 end
 function cm.matval(e,lc,mg,c,tp)
 	if e:GetHandler()~=lc then return false,nil end
 	return true,not mg or not mg:IsExists(Card.IsControler,1,nil,1-tp)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsOnField,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(aux.TRUE,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,e:GetHandler())
 end
 
 function cm.ovfilter1(c)
-	return c:IsFaceup() and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
+	return aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) 
 end
 function cm.filter(c,e,tp,mc)
 	return c:IsType(TYPE_XYZ) and c:IsRankBelow(4) and c:IsRace(RACE_FIEND+RACE_DRAGON+RACE_WARRIOR) and c:IsAttack(0) and c:IsDefense(0)
@@ -65,7 +66,7 @@ end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sg=Duel.SelectMatchingCard(tp,cm.ovfilter1,1-tp,LOCATION_MZONE,0,1,1,nil,e,tp)
-	if #sg>0 then
+	if #sg>0 and not sg:GetFirst():IsImmuneToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then

@@ -16,12 +16,12 @@ function c33200052.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c33200052.filter1(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x322) and c:IsLevelAbove(1)
-		and Duel.IsExistingMatchingCard(c33200052.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,c:GetLevel())
+	return c:IsFaceup() and (c:IsSetCard(0x322) or c:IsSetCard(0x324) or c:IsSetCard(0x881))
+		and Duel.IsExistingMatchingCard(c33200052.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.GetLocationCountFromEx(tp,tp,c,TYPE_XYZ)>0
 end
-function c33200052.filter2(c,e,tp,mc,level)
-	return c:IsType(TYPE_XYZ) and c:GetRank()==level and c:IsSetCard(0x322)
+function c33200052.filter2(c,e,tp,mc)
+	return c:IsType(TYPE_XYZ) and aux.IsCodeListed(c,mc:GetCode())
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) 
 end
 function c33200052.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -35,7 +35,7 @@ function c33200052.op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFacedown() or not tc:IsRelateToEffect(e) or tc:IsControler(1-tp) or tc:IsImmuneToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c33200052.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc,tc:GetLevel())
+	local g=Duel.SelectMatchingCard(tp,c33200052.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
 	local sc=g:GetFirst()
 	if sc then
 		local mg=tc:GetOverlayGroup()

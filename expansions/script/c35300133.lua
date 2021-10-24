@@ -2,8 +2,9 @@
 local m=35300133
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	--disable 
 	local e1=Effect.CreateEffect(c)  
-	e1:SetDescription(aux.Stringid(m,0))  
+	e1:SetDescription(aux.Stringid(m,1))  
 	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY)  
 	e1:SetType(EFFECT_TYPE_ACTIVATE)  
 	e1:SetCode(EVENT_FREE_CHAIN)  
@@ -20,16 +21,18 @@ function cm.initial_effect(c)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(cm.handcon)
 	c:RegisterEffect(e2)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m+1)
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCost(aux.bfgcost)
-	e1:SetOperation(cm.operation2)
-	c:RegisterEffect(e1)
+	--bout endow 
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCountLimit(1,m+1)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCost(aux.bfgcost)
+	e3:SetOperation(cm.operation2)
+	c:RegisterEffect(e3)
 end
+--disable
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
@@ -78,7 +81,7 @@ end
 function cm.handcon(e)
 	return Duel.IsExistingMatchingCard(cm.filter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
-
+--bout endow 
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
@@ -97,5 +100,5 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e5,tp)
 end
 function cm.etarget(e,c)
-	return c:IsFaceup() and c:IsLevelBelow(4)
+	return c:IsFaceup() and c:IsAttackBelow(2500)
 end

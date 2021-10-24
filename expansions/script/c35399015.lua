@@ -1,102 +1,83 @@
 --大炎蛇 真炎之主
-function c35399015.initial_effect(c)
---
-	c:EnableReviveLimit()
+local m=35399015
+local cm=_G["c"..m]
+function cm.initial_effect(c)
+	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
---
+	c:EnableReviveLimit()
+	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetValue(c35399015.val1)
+	e1:SetValue(cm.efilter)
 	c:RegisterEffect(e1)
---
+	--to deck and damage
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(35399015,0))
-	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK+CATEGORY_DAMAGE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_ATKCHANGE)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(c35399015.con2)
-	e2:SetTarget(c35399015.tg2)
-	e2:SetOperation(c35399015.op2)
+	e2:SetCountLimit(1,m)
+	e2:SetCondition(cm.atkcon)
+	e2:SetTarget(cm.atktg)
+	e2:SetOperation(cm.atkop)
 	c:RegisterEffect(e2)
---
+	--destroy
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(35399015,1))
+	e3:SetDescription(aux.Stringid(m,2))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetCountLimit(1,35399015)
-	e3:SetCondition(c35399015.con3)
-	e3:SetTarget(c35399015.tg3)
-	e3:SetOperation(c35399015.op3)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e3:SetCountLimit(1,m+100)
+	e3:SetCondition(cm.spcon)
+	e3:SetTarget(cm.sptg)
+	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
---
 end
---
-function c35399015.val1(e,te)
-	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
+--immune
+function cm.efilter(e,re)
+	return re:IsActiveType(TYPE_MONSTER) and re:IsActiveType(TYPE_LINK)
 end
---
-function c35399015.con2(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
-end
-function c35399015.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsAbleToDeck() and re:GetHandler():IsRelateToEffect(re) end
-	if re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
-	end
-	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(1200)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1200)
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-end
-function c35399015.op2(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.SendtoDeck(eg,nil,2,REASON_EFFECT)>0 then
-		local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-		Duel.Damage(p,d,REASON_EFFECT)
-	end
-end
---
-function c35399015.con3(e,tp,eg,ep,ev,re,r,rp)
+--atk
+function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return (c:IsReason(REASON_BATTLE) or (c:GetReasonPlayer()==1-tp and c:IsReason(REASON_EFFECT)))
-		and c:IsPreviousLocation(LOCATION_MZONE)
+	local tc=c:GetBattleTarget()
+	e:SetLabelObject(tc)
+	return tc 
 end
-function c35399015.tfilter3(c)
-	return c:IsFaceup() and not c:IsDisabled()
-		and ((c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0) or c:IsType(TYPE_SPELL+TYPE_TRAP))
+function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	e:GetLabelObject():CreateEffectRelation(e)
 end
-function c35399015.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c35399015.tfilter3,tp,0,LOCATION_ONFIELD,1,nil) end
-end
-function c35399015.op3(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetMatchingGroup(c35399015.tfilter3,tp,0,LOCATION_ONFIELD,nil)
-	if sg:GetCount()<1 then return end
-	for tc in aux.Next(sg) do
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local e3_1=Effect.CreateEffect(e:GetHandler())
-		e3_1:SetType(EFFECT_TYPE_SINGLE)
-		e3_1:SetCode(EFFECT_DISABLE)
-		e3_1:SetReset(RESET_EVENT+0x1fe0000)
-		tc:RegisterEffect(e3_1)
-		local e3_2=Effect.CreateEffect(e:GetHandler())
-		e3_2:SetType(EFFECT_TYPE_SINGLE)
-		e3_2:SetCode(EFFECT_DISABLE_EFFECT)
-		e3_2:SetValue(RESET_TURN_SET)
-		e3_2:SetReset(RESET_EVENT+0x1fe0000)
-		tc:RegisterEffect(e3_2)
-		if tc:IsType(TYPE_TRAPMONSTER) then
-			local e3_3=e3_1:Clone()
-			e3_3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-			tc:RegisterEffect(e3_3)
-		end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=e:GetLabelObject()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsControler(1-tp) and not tc:IsImmuneToEffect(e) and Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)~=0 then
+		Duel.Damage(1-tp,1200,REASON_EFFECT)
 	end
-	Duel.BreakEffect()
-	Duel.Draw(tp,1,REASON_EFFECT)
+end
+--destroy
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return rp==1-tp and c:IsReason(REASON_EFFECT) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp)
+end
+function cm.spfilter(c,e,tp)
+	return c:IsRace(RACE_ZOMBIE) and c:IsLevelBelow(4) and not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if chk==0 then return g:GetCount()>0 end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
+	if g:GetCount()>0 then
+		Duel.HintSelection(g)
+		Duel.Destroy(g,REASON_EFFECT)
+	end
 end

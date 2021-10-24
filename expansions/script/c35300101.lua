@@ -18,28 +18,30 @@ function cm.initial_effect(c)
 	--negate
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
+	e4:SetCategory(CATEGORY_NEGATE)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCost(cm.tgcost)
 	e4:SetCountLimit(1,m)
 	e4:SetCondition(cm.negcon)
 	e4:SetTarget(cm.negtg)
 	e4:SetOperation(cm.negop)
 	c:RegisterEffect(e4)
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,2))
-	e4:SetCategory(CATEGORY_TOHAND)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_LEAVE_FIELD)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCondition(cm.thcon)
-	e4:SetTarget(cm.thtg)
-	e4:SetOperation(cm.thop)
-	c:RegisterEffect(e4)
+	--to hand
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,2))
+	e5:SetCategory(CATEGORY_TOHAND)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e5:SetCode(EVENT_LEAVE_FIELD)
+	e5:SetProperty(EFFECT_FLAG_DELAY)
+	e5:SetCountLimit(1,m+1)
+	e5:SetCondition(cm.thcon)
+	e5:SetTarget(cm.thtg)
+	e5:SetOperation(cm.thop)
+	c:RegisterEffect(e5)
 end
+--actlimit
 function cm.actfilter(c,tp)
 	return c and c:IsFaceup() and c:IsRace(RACE_DRAGON+RACE_WARRIOR) and c:IsType(TYPE_MONSTER) and c:IsControler(tp)
 end
@@ -47,18 +49,9 @@ function cm.actcon(e)
 	local tp=e:GetHandlerPlayer()
 	return cm.actfilter(Duel.GetAttacker(),tp) or cm.actfilter(Duel.GetAttackTarget(),tp)
 end
-
-function cm.cpfilter(c)
-	return c:IsType(TYPE_SYNCHRO) and c:IsAbleToRemoveAsCost() and c:IsRace(RACE_DRAGON+RACE_WARRIOR)
-end
-function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_EXTRA+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,cm.cpfilter,tp,LOCATION_EXTRA+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-end
+--negate
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and rp==1-tp
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -69,7 +62,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.NegateActivation(ev)
 end
-
+--to hand
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_SYNCHRO) and c:IsPreviousControler(tp)

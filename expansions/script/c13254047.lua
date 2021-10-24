@@ -9,10 +9,10 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_RECOVER)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.rectg)
 	e1:SetOperation(cm.recop)
 	c:RegisterEffect(e1)
+	--[[
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
@@ -23,6 +23,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
+	]]
 	elements={{"tama_elements",{{TAMA_ELEMENT_MANA,2}}}}
 	cm[c]=elements
 	

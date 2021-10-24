@@ -1,5 +1,6 @@
 --铁战灵兽 M路卡利欧
 function c33200056.initial_effect(c)
+	aux.AddCodeList(c,33200062) 
 	--spesm
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x322),7,99,c33200056.ovfilter,aux.Stringid(33200056,3),99,c33200056.xyzop)
 	c:EnableReviveLimit() 

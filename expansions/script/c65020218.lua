@@ -2,20 +2,16 @@
 function c65020218.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(65020218,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_RELEASE)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_CUSTOM+65020218)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,65020218)
 	e1:SetCondition(c65020218.spcon)
 	e1:SetTarget(c65020218.sptg)
 	e1:SetOperation(c65020218.spop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetCondition(c65020218.spcon2)
-	c:RegisterEffect(e2)
 	--immune
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -35,15 +31,47 @@ function c65020218.initial_effect(c)
 	e4:SetTarget(c65020218.distg)
 	e4:SetOperation(c65020218.disop)
 	c:RegisterEffect(e4)
+	if not c65020218.global_check then
+		c65020218.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_RELEASE)
+		ge1:SetCondition(c65020218.regcon1)
+		ge1:SetOperation(c65020218.regop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_TO_GRAVE)
+		ge2:SetCondition(c65020218.regcon2)
+		Duel.RegisterEffect(ge2,0)
+	end
 end
-function c65020218.cfilter(c,tp)
-	return c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_MZONE)
+function c65020218.spcfilter1(c,tp)
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
+end
+function c65020218.regcon1(e,tp,eg,ep,ev,re,r,rp)
+	local v=0
+	if eg:IsExists(c65020218.spcfilter1,1,nil,0) then v=v+1 end
+	if eg:IsExists(c65020218.spcfilter1,1,nil,1) then v=v+2 end
+	if v==0 then return false end
+	e:SetLabel(({0,1,PLAYER_ALL})[v])
+	return true
+end
+function c65020218.spcfilter2(c,tp,rp)
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE) and rp~=tp
+end
+function c65020218.regcon2(e,tp,eg,ep,ev,re,r,rp)
+	local v=0
+	if eg:IsExists(c65020218.spcfilter2,1,nil,0,rp) then v=v+1 end
+	if eg:IsExists(c65020218.spcfilter2,1,nil,1,rp) then v=v+2 end
+	if v==0 then return false end
+	e:SetLabel(({0,1,PLAYER_ALL})[v])
+	return true
+end
+function c65020218.regop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+65020218,re,r,rp,ep,e:GetLabel())
 end
 function c65020218.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c65020218.cfilter,1,nil,tp)
-end
-function c65020218.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c65020218.cfilter,1,nil,tp) and rp~=tp
+	return ev==tp or ev==PLAYER_ALL
 end
 function c65020218.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -92,18 +120,18 @@ function c65020218.disop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 		e1:SetValue(math.ceil(tc:GetAttack()/2))
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_DISABLE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e2)
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_SINGLE)
 		e3:SetCode(EFFECT_DISABLE_EFFECT)
 		e3:SetValue(RESET_TURN_SET)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
 	end
 end

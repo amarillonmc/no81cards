@@ -97,12 +97,12 @@ function c33200258.setop(e,tp,eg,ep,ev,re,r,rp)
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e2:SetCode(EVENT_PHASE+PHASE_END)
-			e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 			e2:SetRange(LOCATION_SZONE)
 			e2:SetCountLimit(1)   
 			e2:SetOperation(c33200258.thop)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CONTROL+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e2)
+			tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(33200258,2))
 		end
 	end
 end
