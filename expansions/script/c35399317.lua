@@ -67,7 +67,7 @@ function c35399317.can_equip_monster(c)
 	return true
 end
 function c35399317.eqfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) or c:IsAbleToChangeControler()
+	return c:IsType(TYPE_MONSTER) and (c:IsControler(tp) or c:IsAbleToChangeControler()) and c:IsFaceup()
 end
 function c35399317.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0

@@ -33,7 +33,7 @@ function cm.intg(e,c)
 end
 
 function cm.refilter(c)
-	return  c:IsAbleToRemove() and c:IsSetCard(0x6344) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
+	return  c:IsAbleToRemove() and c:IsSetCard(0x6344) and c:IsType(TYPE_MONSTER) 
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_MZONE+LOCATION_HAND,0,1,nil) end 
@@ -47,7 +47,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,e,tp)
-		Duel.Destroy(g,REASON_EFFECT)		 
+		Duel.Destroy(g,REASON_EFFECT)		
 	end 
 	 local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
@@ -73,7 +73,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCountLimit(1)  
 	e2:SetTarget(cm.sptg3)
 	e2:SetOperation(cm.spop3)
-	Duel.RegisterEffect(e2,tp)	
+	Duel.RegisterEffect(e2,tp)  
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnCount()~=e:GetLabel() and Duel.GetFlagEffect(tp,m)>Duel.GetFlagEffect(tp,m+1)

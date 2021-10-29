@@ -49,7 +49,7 @@ function cm.initial_effect(c)
 end
 --equip
 function cm.eqfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and (c:IsControler(tp) or c:IsAbleToChangeControler())
+	return c:IsType(TYPE_MONSTER) and (c:IsControler(tp) or c:IsAbleToChangeControler()) and c:IsFaceup()
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0

@@ -205,21 +205,21 @@ function XY.mayuribfcon(e)
 end
 function XY.mayuriregop(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
-	c:RegisterFlagEffect(c:GetCode(),RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,nil,0,aux.Stringid(33401601,0))
+	c:RegisterFlagEffect(c:GetCode(),RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(33401601,0))
 end
 function XY.mayuriregcon(e,tp,eg,ep,ev,re,r,rp)
 	return  re:GetHandler()==e:GetHandler()
 end
 function XY.mayuriregop1(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
-	c:RegisterFlagEffect(c:GetCode(),RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,nil,0,aux.Stringid(33401601,0))
+	c:RegisterFlagEffect(c:GetCode(),RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(33401601,0))
 end
 function XY.mayuriregop2(e,tp,eg,ep,ev,re,r,rp)
   local c=e:GetHandler()
 	local fs=c:GetFlagEffect(c:GetCode())
 	c:ResetFlagEffect(c:GetCode())
 	for i=1,fs-1 do
-	c:RegisterFlagEffect(c:GetCode(),RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,nil,0,aux.Stringid(33401601,0))
+	c:RegisterFlagEffect(c:GetCode(),RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(33401601,0))
 	end
 end
 --sp
@@ -765,7 +765,7 @@ function XY.maganechop(e,tp,eg,ep,ev,re,r,rp)
 			 Duel.SelectYesNo(tp,aux.Stringid(cd,2))	then 
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 				local g1=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
-				if Duel.SendtoGrave(g1,REASON_EFFECT)~=0 then		 
+				if Duel.SendtoGrave(g1,REASON_EFFECT)~=0 then	   
 				Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(cd,3)) 
 					local e0=Effect.CreateEffect(e:GetHandler())
 					e0:SetType(EFFECT_TYPE_FIELD)
@@ -1000,7 +1000,7 @@ function XY.maganechop(e,tp,eg,ep,ev,re,r,rp)
 		  Duel.ShuffleHand(tp)
 		  Duel.SortDecktop(tp,1-tp,3)
 		  else Duel.SortDecktop(tp,1-tp,4) 
-		  end										 
+		  end									   
 			 if Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) and  Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) and 
 			 Duel.SelectYesNo(tp,aux.Stringid(cd,2))	then 
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -1265,7 +1265,7 @@ function XY.maganechop(e,tp,eg,ep,ev,re,r,rp)
 				local e5=e4:Clone()
 				e5:SetCode(EFFECT_SET_DEFENSE_FINAL)
 				tc:RegisterEffect(e5)   
-			   end		  
+			   end	  
 			 if Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) and  Duel.IsExistingMatchingCard(XY.maganethfilter7,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and 
 			 Duel.SelectYesNo(tp,aux.Stringid(ac,2))	then 
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -1339,7 +1339,7 @@ function XY.maganechop(e,tp,eg,ep,ev,re,r,rp)
 		  Duel.ShuffleHand(tp)
 		  Duel.SortDecktop(tp,1-tp,3)
 		  else Duel.SortDecktop(tp,1-tp,4) 
-		  end										 
+		  end									   
 			 if Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) and  Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) and 
 			 Duel.SelectYesNo(tp,aux.Stringid(ac,2))	then 
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

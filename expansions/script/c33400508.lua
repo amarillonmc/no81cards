@@ -75,7 +75,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.thfilter(c)
-	return (c:IsSetCard(0x3344) or (c:IsSetCard(0x6341) and c:IsType(TYPE_QUICKPLAY)))  and c:IsAbleToHand()
+	return c:IsSetCard(0x3344,0x6341) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -91,24 +91,22 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.filter(c)
-	return c:IsFaceup() and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and c:IsCanAddCounter(0x1015,2)
-end
-function cm.filter2(c)
-	return c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)
+	return c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsCanAddCounter(0x1015,2)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD)  and cm.filter(chkc) end
-	if chk==0 then return true end
+	if chkc then return chkc:IsOnField() and cm.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e)  then
 		tc:AddCounter(0x1015,2)
 		if tc:GetCounter(0x1015)>=6 then 
-			if Duel.SelectYesNo(tp,aux.Stringid(m,3)) then 
-				local tc2=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+			if Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+				local tc2=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nilTYPE_SPELL+TYPE_TRAP)
 				Duel.Destroy(tc2,REASON_EFFECT)
 			end
 		end

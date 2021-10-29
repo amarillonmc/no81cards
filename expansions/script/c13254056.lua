@@ -92,7 +92,7 @@ function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
-	if g:GetCount()>0 then
+	if g>0 then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.DiscardDeck(tp,1,REASON_EFFECT)
 	end

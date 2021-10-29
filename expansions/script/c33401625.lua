@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function cm.ckfilter2(c,at)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER)   and  c:IsAttribute(at)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER)   and  c:GetAttribute()&at~=0
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()

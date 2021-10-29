@@ -48,11 +48,11 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end
-function cm.efilter(c)
+function cm.efilter1(c)
 	return c:IsType(TYPE_SPELL) and c:IsFaceup()
 end
 function cm.econ(e)
-	return Duel.IsExistingMatchingCard(cm.efilter,tp,LOCATION_SZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(cm.efilter1,tp,LOCATION_SZONE,0,1,nil)
 end
 function cm.efilter(e,te)
 	return te:IsActiveType(TYPE_MONSTER) and te:GetOwner()~=e:GetOwner()

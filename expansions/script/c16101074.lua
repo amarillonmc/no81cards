@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 		cm.Fusion_R_Check=true
 		function aux.Fus_R_Filter(c,tp)
 			local re=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
-			return re and c:IsHasEffect(m) and c:IsControler(tp) and c:IsCanBeSpecialSummoned(re,0,tp,false,false)
+			return re and c:IsHasEffect(m) and c:IsControler(tp) and c:IsCanBeSpecialSummoned(re,0,tp,true,false)
 		end
 		_SpecialSummon=Duel.SpecialSummon
 		_SpecialSummonStep=Duel.SpecialSummonStep
@@ -26,10 +26,10 @@ function cm.initial_effect(c)
 			local rg=Duel.GetMatchingGroup(aux.Fus_R_Filter,sumplayer,LOCATION_HAND+LOCATION_DECK,0,nil,tp)
 			if not rg then
 				return _SpecialSummon(targets,sumtype,sumplayer,target_player,nocheck,nolimit,pos,...)
-			elseif rg and Duel.SelectYesNo(tp,aux.Stringid(m,0))  then
+			elseif rg and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 				local tc=rg:Select(tp,1,1,nil):GetFirst()
-				if _SpecialSummonStep(tc,sumtype,sumplayer,target_player,nocheck,nolimit,pos,...) then
+				if _SpecialSummonStep(tc,sumtype,sumplayer,target_player,true,nolimit,pos,...) then
 					if aux.GetValueType(targets)=="Group" then
 						targets=targets:GetFirst()
 					end
@@ -61,7 +61,7 @@ function cm.initial_effect(c)
 			elseif rg and Duel.SelectYesNo(tp,aux.Stringid(m,0))  then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 				local tc=rg:Select(tp,1,1,nil):GetFirst()
-				if _SpecialSummonStep(tc,sumtype,sumplayer,target_player,nocheck,nolimit,pos,...) then
+				if _SpecialSummonStep(tc,sumtype,sumplayer,target_player,true,nolimit,pos,...) then
 					local code=targets:GetOriginalCodeRule()
 					local e1=Effect.CreateEffect(tc)
 					e1:SetType(EFFECT_TYPE_SINGLE)

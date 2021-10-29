@@ -30,7 +30,7 @@ function c33200424.con(e,tp,eg,ep,ev,re,r,rp)
 end
 function c33200424.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,33200426,0,0x4011,1000,1500,4,RACE_BEASTWARRIOR,ATTRIBUTE_EARTH,POS_FACEUP,1-tp) and Duel.IsPlayerCanSummon(tp) and Duel.IsPlayerCanAdditionalSummon(tp) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,33200426,0,0x4011,1000,1500,4,RACE_BEASTWARRIOR,ATTRIBUTE_EARTH,POS_FACEUP,1-tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
