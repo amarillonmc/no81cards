@@ -24,7 +24,7 @@ function c9910371.initial_effect(c)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,9910371)
-	e3:SetCondition(c9910371.drcon)
+	e3:SetCondition(c9910371.thcon)
 	e3:SetTarget(c9910371.thtg)
 	e3:SetOperation(c9910371.thop)
 	c:RegisterEffect(e3)
@@ -53,6 +53,9 @@ function c9910371.drop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x5951))
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+end
+function c9910371.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
 end
 function c9910371.cfilter(c)
 	return c:IsSetCard(0x5951) and (c:IsAbleToHand() or c:IsAbleToGrave())
