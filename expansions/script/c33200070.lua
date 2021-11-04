@@ -44,23 +44,23 @@ end
 function c33200070.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	end
-	if Duel.IsExistingMatchingCard(c33200070.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc)
-	and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and 
-	Duel.GetLocationCountFromEx(tp,tp,tc,TYPE_XYZ)>0 and Duel.SelectYesNo(tp,aux.Stringid(33200070,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c33200070.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
-		local sc=g:GetFirst()
-		if sc then
-			local mg=tc:GetOverlayGroup()
-			if mg:GetCount()~=0 then
-				Duel.Overlay(sc,mg)
+		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) and
+		Duel.IsExistingMatchingCard(c33200070.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc)
+		and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and 
+		Duel.GetLocationCountFromEx(tp,tp,tc,TYPE_XYZ)>0 and Duel.SelectYesNo(tp,aux.Stringid(33200070,0)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local g=Duel.SelectMatchingCard(tp,c33200070.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
+			local sc=g:GetFirst()
+			if sc then
+				local mg=tc:GetOverlayGroup()
+				if mg:GetCount()~=0 then
+					Duel.Overlay(sc,mg)
+				end
+				sc:SetMaterial(Group.FromCards(tc))
+				Duel.Overlay(sc,Group.FromCards(tc))
+				Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+				sc:CompleteProcedure()
 			end
-			sc:SetMaterial(Group.FromCards(tc))
-			Duel.Overlay(sc,Group.FromCards(tc))
-			Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
-			sc:CompleteProcedure()
 		end
 	end
 end
