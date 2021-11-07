@@ -46,6 +46,13 @@ function c29010013.initial_effect(c)
 	e5:SetValue(c29010013.desrepval)
 	e5:SetOperation(c29010013.desrepop)
 	c:RegisterEffect(e5)
+	--cannot be fusion material
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e6:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	e6:SetValue(1)
+	c:RegisterEffect(e6)
 end
 function c29010013.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
