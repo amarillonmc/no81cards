@@ -1,7 +1,6 @@
 --倒影君主 阿米娅-奇美拉
 function c29065507.initial_effect(c)
 	aux.AddCodeList(c,29065500)
-	c:EnableCounterPermit(0x1ae)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,8,2)
 	c:EnableReviveLimit()
@@ -62,7 +61,7 @@ function c29065507.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c29065507.lvtg(e,c)
-	return c:IsLevelAbove(1) and c:GetCounter(0x1ae)>0 and c:IsSetCard(0x87af)
+	return c:IsLevelAbove(1) and c:GetCounter(0x10ae)>0
 end
 function c29065507.lvval(e,c,rc)
 	local lv=c:GetLevel()

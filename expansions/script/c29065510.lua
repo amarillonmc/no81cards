@@ -1,7 +1,7 @@
 --明日的方舟·罗德岛
 c29065510.named_with_Arknight=1
 function c29065510.initial_effect(c)
-	c:EnableCounterPermit(0x1ae)
+	c:EnableCounterPermit(0x10ae)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_COUNTER)
@@ -37,20 +37,20 @@ function c29065510.atktg(e,c)
 end
 function c29065510.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsCanAddCounter(tp,0x1ae,1,c) end
+	if chk==0 then return Duel.IsCanAddCounter(tp,0x10ae,1,c) end
 end
 function c29065510.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		c:AddCounter(0x1ae,1)
+		c:AddCounter(0x10ae,1)
 	end
 end
 function c29065510.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1ae,1,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x1ae,1,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_COST)
 end
 function c29065510.spfilter(c,e,tp)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c29065510.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

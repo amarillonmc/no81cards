@@ -81,7 +81,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local g2=Duel.SelectMatchingCard(tp,cm.rfilter,tp,LOCATION_HAND,0,1,1)
+		local g2=Duel.SelectMatchingCard(tp,cm.rfilter,tp,LOCATION_HAND,0,1,1,nil)
 		if g2:GetCount()>0 and Duel.Release(g2,REASON_EFFECT)>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local g3=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,1,nil)

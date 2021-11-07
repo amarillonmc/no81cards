@@ -16,10 +16,14 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.spcon)
+	e1:SetCondition(cm.spcon1)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1) 
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_RELEASE)
+	e2:SetCondition(cm.spcon2)
+	c:RegisterEffect(e2)
 	--Destroy
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
@@ -32,8 +36,11 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.operation)
 	c:RegisterEffect(e4)   
 end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
+end
+function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return bit.band(r,REASON_EFFECT)~=0
 end
 function cm.cfilter(c)
 	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect()

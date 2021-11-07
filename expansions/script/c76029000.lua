@@ -39,6 +39,7 @@ function c76029000.initial_effect(c)
 	e4:SetCode(EFFECT_DIRECT_ATTACK)
 	c:RegisterEffect(e4)
 end
+c76029000.named_with_Kazimierz=true 
 function c76029000.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsDiscardable() end

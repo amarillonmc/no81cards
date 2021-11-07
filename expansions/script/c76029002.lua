@@ -40,6 +40,7 @@ function c76029002.initial_effect(c)
 	e3:SetOperation(c76029002.deop)
 	c:RegisterEffect(e3)
 end
+c76029002.named_with_Kazimierz=true 
 function c76029002.ntcon(e,c,minc)
 	if c==nil then return true end
 	return minc==0 and c:IsLevelAbove(5)

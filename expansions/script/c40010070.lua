@@ -41,7 +41,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)  
 end
 function cm.atkval(e,c)
-	return e:GetHandler():GetCounter(0x5d)*100
+	return e:GetHandler():GetCounter(0x588)*100
 end
 function cm.cfilter(c)
 	return c:IsPreviousLocation(LOCATION_ONFIELD+LOCATION_HAND)
@@ -49,7 +49,7 @@ end
 function cm.counter(e,tp,eg,ep,ev,re,r,rp)
 	local ct=eg:FilterCount(cm.cfilter,nil)
 	if ct>0 then
-		e:GetHandler():AddCounter(0x5d,ct)
+		e:GetHandler():AddCounter(0x588,ct)
 	end
 end
 function cm.repfilter(c,tp)
@@ -60,7 +60,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local count=eg:FilterCount(cm.repfilter,nil,tp)
 		e:SetLabel(count)
-		return count>0 and Duel.IsCanRemoveCounter(tp,1,0,0x5d,count,REASON_COST)
+		return count>0 and Duel.IsCanRemoveCounter(tp,1,0,0x588,count,REASON_COST)
 	end
 
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
@@ -70,5 +70,5 @@ function cm.repval(e,c)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	local count=e:GetLabel()
-	Duel.RemoveCounter(tp,1,0,0x5d,count,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x588,count,REASON_COST)
 end

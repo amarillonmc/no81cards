@@ -62,7 +62,7 @@ function c29065509.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function c29065509.lvtg(e,c)
-	return c:IsLevelAbove(1) and c:GetCounter(0x1ae)>0 and c:IsSetCard(0x87af)
+	return c:IsLevelAbove(1) and c:GetCounter(0x10ae)>0
 end
 function c29065509.lvval(e,c,rc)
 	local lv=c:GetLevel()

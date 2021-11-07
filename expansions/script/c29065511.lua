@@ -2,7 +2,6 @@
 c29065511.named_with_Arknight=1
 function c29065511.initial_effect(c)
 	aux.AddCodeList(c,29065500)
-	c:EnableCounterPermit(0x1ae)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)

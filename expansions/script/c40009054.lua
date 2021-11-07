@@ -1,8 +1,11 @@
 --狱炎之零点龙 德拉库玛
-function c40009054.initial_effect(c)
+local m=40009054
+local cm=_G["c"..m]
+cm.named_with_ZerothDragon=1
+function cm.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_SYNCHRO),aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),4)
-	c:EnableReviveLimit()	
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),4,4)
+	c:EnableReviveLimit()   
 	--special summon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -11,60 +14,96 @@ function c40009054.initial_effect(c)
 	e1:SetRange(LOCATION_EXTRA)
 	e1:SetValue(aux.synlimit)
 	c:RegisterEffect(e1)
-	--to hand
+	--draw
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(40009054,0))
-	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetCondition(c40009054.thcon)
-	e2:SetCost(c40009054.cost)
-	e2:SetTarget(c40009054.target)
-	e2:SetOperation(c40009054.operation)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1)
+	e2:SetCondition(cm.con)
+	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
-	--summon success
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetOperation(c40009054.sumsuc)
-	c:RegisterEffect(e3)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_MATERIAL_CHECK)
+	e3:SetValue(cm.valcheck)
+	e3:SetLabelObject(e2)
+	c:RegisterEffect(e3) 
+	--disable search
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_CANNOT_TO_HAND)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetTargetRange(0,1)
+	e4:SetCondition(cm.con)
+	e4:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
+	c:RegisterEffect(e4)
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_MATERIAL_CHECK)
+	e8:SetValue(cm.valcheck)
+	e8:SetLabelObject(e4)
+	c:RegisterEffect(e8) 
 end
-function c40009054.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) then return end
-	Duel.SetChainLimitTillChainEnd(aux.FALSE)
-end
-function c40009054.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
-end
-function c40009054.costfilter(c)
-	return c:IsAbleToGraveAsCost()
-end
-function c40009054.costfilter1(c)
-	return c:IsAbleToRemove()
-end
-function c40009054.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c40009054.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) end
-	local rt=Duel.GetTargetCount(c40009054.costfilter1,tp,0,LOCATION_ONFIELD,POS_FACEDOWN)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local cg=Duel.SelectMatchingCard(tp,c40009054.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,rt,e:GetHandler())
-	Duel.SendtoGrave(cg,REASON_COST)
-	e:SetLabel(cg:GetCount())
-end
-function c40009054.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsAbleToRemove() end
-	if chk==0 then return Duel.IsExistingTarget(c40009054.costfilter1,tp,0,LOCATION_ONFIELD,1,POS_FACEDOWN) end
-	local ct=e:GetLabel()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local tg=Duel.SelectTarget(tp,c40009054.costfilter1,tp,0,LOCATION_ONFIELD,ct,ct,POS_FACEDOWN)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,tg,ct,0,0)
-end
-function c40009054.operation(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local rg=tg:Filter(Card.IsRelateToEffect,nil,e)
-	if rg:GetCount()>0 then 
-		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
+function cm.valcheck(e,c)
+	local g=c:GetMaterial()
+	if g:FilterCount(Card.IsType,nil,TYPE_SYNCHRO)==#g then
+		e:GetLabelObject():SetLabel(1)
+	else
+		e:GetLabelObject():SetLabel(0)
 	end
 end
+function cm.con(e,tp,eg,ep,ev,re,r,rp,chk)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and e:GetLabel()==1
+end
+function cm.filter2(c,e,tp)
+	return  c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
+	if g:GetCount()>0 then
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	end
+	Duel.BreakEffect()
+		local hg=Duel.GetFieldGroup(tp,0,LOCATION_HAND)--检测全部手牌
+		if hg:GetCount()==0 then Duel.Win(tp,nil) return end--手牌数为0直接跳过
+		local ct=3
+		if hg==2 or hg==1 then
+			ct=hg
+		end
+		local sg3=hg:Select(1-tp,ct,ct,nil)--尽可能选3张手牌
+		local ct3=sg3:GetCount()
+		Duel.ConfirmCards(tp,sg3)
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_DISCARD)
+		local ct2=2
+		if sg3==1 then
+			ct2=1
+		end
+		local tg=sg3:Select(1-tp,ct2,ct2,nil)--尽可能选2张手牌
+		Duel.SendtoGrave(tg,REASON_EFFECT+REASON_DISCARD)
+		local hg=Duel.GetFieldGroup(tp,0,LOCATION_HAND)--检测全部手牌
+		if hg:GetCount()==0 then Duel.Win(tp,nil) return end--手牌数为0直接跳过
+		ct3=sg3:GetCount()-tg:GetCount()
+		if ct3>0 then
+			if Duel.GetLocationCount(1-tp,LOCATION_MZONE)<=0 then Duel.Win(tp,nil) return end
+			local spg=Duel.SelectMatchingCard(1-tp,cm.filter2,1-tp,LOCATION_HAND,0,1,1,nil,e,1-tp)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local tc=spg:GetFirst()
+			if tc then 
+				Duel.SpecialSummon(tc,0,1-tp,1-tp,false,false,POS_FACEUP)
+			else 
+				Duel.Win(tp,nil)
+			end
+		end
+		Duel.ShuffleHand(1-tp)
+end
+
+
+
+
+
+
 
 

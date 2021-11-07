@@ -1,5 +1,4 @@
 --方舟骑士怒号光明
-c29065512.named_with_Arknight=1
 function c29065512.initial_effect(c)
 	aux.AddCodeList(c,29065500)
 	--Activate

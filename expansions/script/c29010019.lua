@@ -1,5 +1,4 @@
 --方舟之骑士·巫恋
-c29010019.named_with_Arknight=1
 function c29010019.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2)
@@ -94,7 +93,7 @@ function c29010019.deop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Destroy(c,REASON_EFFECT)
 end 
-function c29010019.ckfil(c,seq) 
+function c29010019.ckfil(c,seq)	
 	return math.abs(seq-c:GetSequence())==1 or ((c:GetSequence()==5 and seq==3) or (c:GetSequence()==6 and seq==1))
 end
 function c29010019.adtg(e,c)

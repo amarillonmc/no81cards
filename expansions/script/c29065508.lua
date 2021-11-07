@@ -1,7 +1,6 @@
 --乘云赤龙 陈-绝影
 function c29065508.initial_effect(c)
 	aux.AddCodeList(c,29065505)
-	c:EnableCounterPermit(0x1ae)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,8,2)
 	c:EnableReviveLimit()
@@ -59,7 +58,7 @@ function c29065508.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c29065508.lvtg(e,c)
-	return c:IsLevelAbove(1) and c:GetCounter(0x1ae)>0 and c:IsSetCard(0x87af)
+	return c:IsLevelAbove(1) and c:GetCounter(0x10ae)>0
 end
 function c29065508.lvval(e,c,rc)
 	local lv=c:GetLevel()

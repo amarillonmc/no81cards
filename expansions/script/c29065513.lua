@@ -1,7 +1,6 @@
 --交织宵影 阿米娅-青色怒火
 function c29065513.initial_effect(c)
 	aux.AddCodeList(c,29065507,29065508)
-	c:EnableCounterPermit(0x1ae)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,9,2)
 	c:EnableReviveLimit()

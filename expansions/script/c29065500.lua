@@ -2,7 +2,7 @@
 c29065500.named_with_Arknight=1
 function c29065500.initial_effect(c)
 	aux.AddCodeList(c,29065500)
-	c:EnableCounterPermit(0x1ae)
+	c:EnableCounterPermit(0x10ae)
 	--copy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29065500,0)) 
@@ -22,7 +22,7 @@ function c29065500.initial_effect(c)
 	e4:SetDescription(aux.Stringid(29065500,1))  
 	e4:SetCategory(CATEGORY_COUNTER)	
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)	
-	e4:SetProperty(EFFECT_FLAG_DELAY)   
+	e4:SetProperty((EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL))   
 	e4:SetCode(EVENT_LEAVE_FIELD)  
 	e4:SetCondition(c29065500.thcon)	
 	e4:SetTarget(c29065500.thtg)	
@@ -30,7 +30,7 @@ function c29065500.initial_effect(c)
 	c:RegisterEffect(e4)	
 end
 function c29065500.efil(c,e,tp,eg,ep,ev,re,r,rp) 
-	if not ((c:IsSetCard(0x87af) and c:IsType(TYPE_MONSTER)) or (_G["c"..c:GetCode()].named_with_Arknight) and not c:IsPublic() and not c:IsCode(29065500)) then return false end 
+	if not ((c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost() and not c:IsCode(29065500)) then return false end 
 	local m=_G["c"..c:GetCode()]
 	if not m then return false end 
 	local te=m.summon_effect	if not te then return false end
@@ -38,12 +38,9 @@ function c29065500.efil(c,e,tp,eg,ep,ev,re,r,rp)
 	return not tg or tg and tg(e,tp,eg,ep,ev,re,r,rp,0)
  end
 function c29065500.cocost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29065500.efil,tp,LOCATION_HAND,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
-	local tc=Duel.SelectMatchingCard(tp,c29065500.efil,tp,LOCATION_HAND,0,1,1,nil,e,tp,eg,ep,re,r,rp):GetFirst()
-	Duel.ConfirmCards(1-tp,tc)
-	if e:GetHandler(tc):IsLocation(LOCATION_HAND) then
-	Duel.ShuffleHand(tp) 
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065500.efil,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
+	local tc=Duel.SelectMatchingCard(tp,c29065500.efil,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp,eg,ep,re,r,rp):GetFirst()
+	Duel.SendtoGrave(tc,REASON_COST)
 	e:SetLabelObject(tc)
 end
 function c29065500.cotg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -79,5 +76,5 @@ end
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
-	tc:AddCounter(0x1ae,n)
+	tc:AddCounter(0x10ae,n)
 end
