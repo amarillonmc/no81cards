@@ -2,7 +2,7 @@
 if not pcall(function() require("expansions/script/c10199991") end) then require("script/c10199991") end
 local m = 10199990
 local vm = 10199991
-local Version_Number = 20210513
+local Version_Number = 20210618
 if rsv.Library_Switch then return end
 rsv.Library_Switch = true 
 -----------------------"Part_Effect_Base"-----------------------
@@ -4657,57 +4657,6 @@ function rshint.SelectOption(p, ...)
 		return opval[op]
 	end
 end
---Function: Select many options (nexpage and lastpage)
-function rshint.SelectOption_Page(p, hint_list1, ...)
-	local hint_list = { hint_list1, ... }
-	local nextpage = {m + 1, 4 }
-	local lastpage = {m + 1, 5 }
-	local null = {m + 1, 6 }
-	local agree = {m + 1, 7 }
-	local op, currentpage = 0, 1
-	local len = #hint_list
-	local maxpage = len <= 4 and 1 or math.ceil((len - 1) / 3)
-	local pagehint = { }
-	for page = 1, maxpage do 
-		pagehint[page] = { }
-		if page == 1 then
-			pagehint[page] = { hint_list[1], hint_list[2] or null, hint_list[3] or null, hint_list[4] or null }
-		elseif page > 1 then
-			local idx = page * 3-1
-			pagehint[page] = { hint_list[idx] or null, hint_list[idx + 1] or null, hint_list[idx + 2] or null }
-		end
-		if page ~= 1 then 
-			table.insert(pagehint[page], 1, lastpage)
-		end
-		if page ~= maxpage then 
-			table.insert(pagehint[page], 5, nextpage)
-		end
-		if page == maxpage then 
-			table.insert(pagehint[page], 5, agree)
-		end
-	end
-	local currentpage = 1 
-	repeat 
-		op = Duel.SelectOption(p, rshint.SwitchHintFormat("s", pagehint[currentpage]) ) + 1
-		--null
-		if type(pagehint[currentpage][op]) == "table" and pagehint[currentpage][op][1] == null[1] and pagehint[currentpage][op][2] == null[2] then op = 0 end
-		--action agree
-		local res1 = currentpage == maxpage and op == 5
-		--action selected
-		local res2 = op ~= 1 and op ~= 5
-		--action selected first page
-		local res3 = op == 1 and currentpage == 1 
-		--next page
-		if op == 5 and currentpage < maxpage then currentpage = currentpage + 1 end
-		--last page
-		if op == 1 and currentpage > 1 then currentpage = currentpage - 1 end
-	until op ~= 0 and (res1 or res2 or res3)
-	if op ~= 5 and op ~= 1 and currentpage ~= 1 then 
-		op = 3 * currentpage + op - 3
-	end
-	local isfinsh = currentpage == maxpage and op == 5
-	return isfinsh and 0 or op
-end
 --Function: Select number options
 function rshint.AnnounceNumber(tp, maxdigit)
 	maxdigit = maxdigit or 7
@@ -4741,43 +4690,6 @@ function rshint.AnnounceNumber(tp, maxdigit)
 		end
 	until op == 0
 	return num
-end
---Function: Select number options 2
-function rshint.AnnounceNumber_List(tp, num1, ...)
-	local selectnum = {m + 1, 8 }
-	local add = {m + 1, 11 }
-	local confirm = {m + 1, 9 }
-	local clear = {m + 1, 10 }
-	local agree = {m + 1, 7 }   
-	local num = 0
-	repeat 
-		op = rsop.SelectOption_Page(tp, selectnum, add, confirm, clear)
-		if op == 3 then
-			Debug.Message("Confirm select number:" .. num)
-		elseif op == 4 then
-			num = 0
-		elseif op == 1 then
-			num = Duel.AnnounceNumber(tp, num1, ...)
-		elseif op == 2 then
-			num = num + Duel.AnnounceNumber(tp, num1, ...)
-		end
-	until op == 0
-	return num
-end
---Function: Announce number from file , for TEST CARD
-function rshint.AnnounceNumber_Default(tp, file_loc, sel_list_str)
-	dofile(file_loc)
-	local sel_list_name = rsv[sel_list_str]
-	if sel_list_name then 
-		if type(sel_list_name) == "table" then
-			return Duel.AnnounceNumber(tp, table.unpack(sel_list_name))
-		elseif type(sel_list_name) == "number" then
-			return Duel.AnnounceNumber(tp, sel_list_name)
-		end
-	else
-		Debug.Message("rshint.Select_Presupposition,  sel_list_name not found.")
-		return 
-	end
 end
 
 -------------------"Part_Other_Function"---------------------

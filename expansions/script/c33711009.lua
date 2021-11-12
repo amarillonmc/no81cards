@@ -1,7 +1,7 @@
 --动物朋友 二色薮猫
 function c33711009.initial_effect(c)
 	  --xyz summon
-	aux.AddXyzProcedureLevelFree(c,aux.FilterBoolFunction(Card.IsSetCard,0x442),aux.FilterBoolFunction(Card.IsFaceup),2,2)
+	aux.AddXyzProcedureLevelFree(c,aux.FilterBoolFunction(Card.IsSetCard,0x442),aux.TRUE,2,2)
 	c:EnableReviveLimit()  
 	--code
 	local e1=Effect.CreateEffect(c)

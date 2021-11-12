@@ -1,5 +1,5 @@
 --Real Scl Version - Variable
-local Version_Number = 20210505
+local Version_Number = 20210618
 local m = 10199990
 local vm = 10199991
 if rsv then return end
@@ -121,9 +121,12 @@ rsflag.list =   {
 	
 		["tg"] = EFFECT_FLAG_CARD_TARGET, ["ptg"] = EFFECT_FLAG_PLAYER_TARGET, ["de"] = EFFECT_FLAG_DELAY, ["dsp"] = EFFECT_FLAG_DAMAGE_STEP 
 	  , ["dcal"] = EFFECT_FLAG_DAMAGE_CAL, ["ii"] = EFFECT_FLAG_IGNORE_IMMUNE, ["sa"] = EFFECT_FLAG_SET_AVAILABLE, ["ir"] = EFFECT_FLAG_IGNORE_RANGE 
-	  , ["sr"] = EFFECT_FLAG_SINGLE_RANGE, ["bs"] = EFFECT_FLAG_BOTH_SIDE, ["uc"] = EFFECT_FLAG_UNCOPYABLE, ["cd"] = EFFECT_FLAG_CANNOT_DISABLE 
-	  , ["cn"] = EFFECT_FLAG_CANNOT_NEGATE, ["ch"] = EFFECT_FLAG_CLIENT_HINT, ["lz"] = EFFECT_FLAG_LIMIT_ZONE, ["atg"] = EFFECT_FLAG_ABSOLUTE_TARGET 
+	  , ["sr"] = EFFECT_FLAG_SINGLE_RANGE, ["bs"] = EFFECT_FLAG_BOTH_SIDE, ["uc"] = EFFECT_FLAG_UNCOPYABLE 
+	  , ["ch"] = EFFECT_FLAG_CLIENT_HINT, ["lz"] = EFFECT_FLAG_LIMIT_ZONE, ["atg"] = EFFECT_FLAG_ABSOLUTE_TARGET 
 	  , ["sp"] = EFFECT_FLAG_SPSUM_PARAM, ["ep"] = EFFECT_FLAG_EVENT_PLAYER, ["oa"] = EFFECT_FLAG_OATH , ["ntr"] = EFFECT_FLAG_NO_TURN_RESET 
+	  , ["neg~"] = EFFECT_FLAG_CANNOT_INACTIVATE 
+	  , ["cn"] = EFFECT_FLAG_CANNOT_NEGATE, ["dise~"] = EFFECT_FLAG_CANNOT_NEGATE 
+	  , ["cd"] = EFFECT_FLAG_CANNOT_DISABLE , ["dis~"] = EFFECT_FLAG_CANNOT_DISABLE,
 
 }   
 
@@ -482,10 +485,7 @@ function rsof.Escape_Old_Functions()
 
 	rsop.SelectYesNo = rshint.SelectYesNo 
 	rsop.SelectOption = rshint.SelectOption
-	rsop.SelectOption_Page = rshint.SelectOption_Page
 	rsop.AnnounceNumber = rshint.AnnounceNumber
-	rsop.AnnounceNumber_List = rshint.AnnounceNumber_List
-	rsop.AnnounceNumber_Default = rshint.AnnounceNumber_Default
 	rsop.eqop = rsop.Equip
 	rsop.SelectOC = rsop.SelectExPara
 
