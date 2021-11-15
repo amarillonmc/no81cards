@@ -44,6 +44,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
@@ -63,6 +64,7 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	e:SetLabel(sg:GetCount())
@@ -77,7 +79,7 @@ function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter1,tp,0,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,nil)
-	Duel.SendtoDeck(sg,tp,2,REASON_EFFECT)
+	Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_FIRE,2},{TAMA_ELEMENT_EARTH,1}}
@@ -86,6 +88,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end

@@ -72,6 +72,9 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 	c:CreateEffectRelation(e)
 end
+function cm.activate2(e,tp,eg,ep,ev,re,r,rp,chk)
+	
+end
 function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsCanRemoveCounter(tp,0x1442,1,REASON_COST) then
 		e:GetHandler():RemoveCounter(tp,0x1442,1,REASON_COST)
@@ -137,7 +140,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp,chk)
 	if (op1==0 or op2==0 or op3==0) and cm.selop1(e,tp,eg,ep,ev,re,r,rp) then ct=ct+1 end
 	if (op1==1 or op2==1 or op3==1) and cm.selop2(e,tp,eg,ep,ev,re,r,rp) then ct=ct+1 end
 	if (op1==2 or op2==2 or op3==2) and cm.selop3(e,tp,eg,ep,ev,re,r,rp) then ct=ct+1 end
-	if ct>0 then c:AddCounter(0x1442,ct) end
+	if ct>0 then
+		c:AddCounter(0x1442,ct)
+		c:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
 end
 function cm.selop3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
