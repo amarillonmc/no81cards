@@ -91,14 +91,12 @@ function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.aclimit1(e,tp,eg,ep,ev,re,r,rp)
     local n=0
-    if ep~=tp then n=100000 end
     if re:IsActiveType(TYPE_SPELL) then n=n+10000 end
     if re:IsActiveType(TYPE_TRAP) then n=n+20000 end
     Duel.RegisterFlagEffect(tp,m+n,RESET_PHASE+PHASE_END,0,2)
 end
 function cm.elimit(e,te,tp)
     local n=0
-    if e:GetHandlerPlayer()~=tp then n=100000 end
     if te:IsActiveType(TYPE_SPELL) then n=n+10000 end
     if te:IsActiveType(TYPE_TRAP) then n=n+20000 end
     return Duel.GetFlagEffect(tp,m+n)>0

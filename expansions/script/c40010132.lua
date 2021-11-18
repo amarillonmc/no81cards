@@ -86,7 +86,7 @@ end
 function c40010132.spfilter(c,tp)
 	return c:IsCode(40009623) and (c:IsAbleToHand() or c:GetActivateEffect():IsActivatable(tp,true,true))
 end
-function c40010132.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function c40010132.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c40010132.spfilter,tp,LOCATION_DECK,0,1,nil,tp) end
 	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)

@@ -111,6 +111,9 @@ function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return (re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:IsActiveType(TYPE_MONSTER))
 		and re:GetHandler()~=e:GetHandler() and Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_EXTRA,0,10,nil)
 end
+function cm.filter1(c)
+	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) 
+end
 function cm.costfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsAbleToDeckAsCost()
 end
