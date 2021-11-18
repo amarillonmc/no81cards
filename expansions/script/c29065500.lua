@@ -30,7 +30,7 @@ function c29065500.initial_effect(c)
 	c:RegisterEffect(e4)	
 end
 function c29065500.efil(c,e,tp,eg,ep,ev,re,r,rp) 
-	if not ((c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost() and not c:IsCode(29065500)) then return false end 
+	if not ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost() and not c:IsCode(29065500)) then return false end 
 	local m=_G["c"..c:GetCode()]
 	if not m then return false end 
 	local te=m.summon_effect	if not te then return false end
@@ -64,7 +64,7 @@ function c29065500.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) 
 end 
 function c29065500.thfilter(c)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
 end 
 function c29065500.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
  if chk==0 then return Duel.IsExistingMatchingCard(c29065500.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end 

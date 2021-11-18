@@ -12,7 +12,7 @@ function c29065512.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c29065512.filter1(c,e,tp)
-	return c:IsFaceup() and (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 		and Duel.IsExistingMatchingCard(c29065512.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,c:GetOriginalCode())
 end
 function c29065512.filter2(c,e,tp,mc,code)

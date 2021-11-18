@@ -58,11 +58,11 @@ function c115036.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c115036.atktg(e,c)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c115036.cfilter(c,tp,rp)
 	return (c:IsReason(REASON_BATTLE) or (rp==1-tp and c:IsReason(REASON_DESTROY)))
-		and (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight)
+		and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 		and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp)
 end
 function c115036.spcon(e,tp,eg,ep,ev,re,r,rp)

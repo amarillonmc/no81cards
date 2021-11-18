@@ -50,7 +50,7 @@ function c29065505.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) 
 end 
 function c29065505.thfilter(c)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
  end 
 function c29065505.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
  if chk==0 then return Duel.IsExistingMatchingCard(c29065505.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end 

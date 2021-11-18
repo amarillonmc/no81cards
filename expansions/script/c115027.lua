@@ -47,7 +47,7 @@ function c115027.recop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(p,d,REASON_EFFECT)
 end
 function c115027.cfilter2(c,tp)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and (c:IsReason(REASON_EFFECT) or c:IsReason(REASON_BATTLE)) and c:IsPreviousLocation(LOCATION_ONFIELD)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and (c:IsReason(REASON_EFFECT) or c:IsReason(REASON_BATTLE)) and c:IsPreviousLocation(LOCATION_ONFIELD)
 		and c:GetPreviousControler()==tp and c:IsPreviousPosition(POS_FACEUP)
 end
 function c115027.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -64,7 +64,7 @@ function c115027.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function c115027.rthfil(c) 
-	return c:IsType(TYPE_MONSTER) and (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_PENDULUM) and (c:IsLocation(LOCATION_GRAVE) or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()))
+	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_EXTRA) and c:IsFaceup())
 end
 function c115027.rectg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c115027.rthfil,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil) and e:GetHandler():IsReason(REASON_EFFECT) end

@@ -50,7 +50,7 @@ function c115042.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c115042.filter(c)
-	return c:IsFaceup() and (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c115042.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c115042.filter(chkc) end

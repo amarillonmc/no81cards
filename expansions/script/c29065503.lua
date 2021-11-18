@@ -41,7 +41,7 @@ function c29065503.initial_effect(c)
 	c:RegisterEffect(e4)	
 end
 function c29065503.spfilter1(c,e,tp)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c29065503.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -86,7 +86,7 @@ function c29065503.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) 
 end 
 function c29065503.thfilter(c)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
  end 
 function c29065503.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
  if chk==0 then return Duel.IsExistingMatchingCard(c29065503.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end 

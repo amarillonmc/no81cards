@@ -46,13 +46,13 @@ function c115034.valcheck(e,c)
 	end
 end
 function c115034.lmfilter(c)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
 end
 function c115034.lcheck(g)
 	return g:IsExists(c115034.lmfilter,1,nil)
 end
 function c115034.thfilter(c)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsAbleToHand() and c:IsType(TYPE_SPELL)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand() and c:IsType(TYPE_SPELL)
 end
 function c115034.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetLabel()==1
@@ -73,7 +73,7 @@ function c115034.desfilter(c)
 	return c:IsFaceup()
 end
 function c115034.tefilter(c)
-	return c:IsType(TYPE_PENDULUM) and (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight)
+	return c:IsType(TYPE_PENDULUM) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c115034.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

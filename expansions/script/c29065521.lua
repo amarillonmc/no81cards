@@ -26,7 +26,7 @@ function c29065521.initial_effect(c)
 	c29065521.summon_effect=e2
 end
 function c29065521.spfilter(c)
-	return c:IsFaceup() and (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_MONSTER)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function c29065521.spcon(e,c)
 	if c==nil then return true end

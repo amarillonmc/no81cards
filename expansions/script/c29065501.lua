@@ -44,7 +44,7 @@ function c29065501.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) 
 end 
 function c29065501.thfilter(c)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end 
 function c29065501.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
  if chk==0 then return Duel.IsExistingMatchingCard(c29065501.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end 
@@ -66,7 +66,7 @@ function c29065501.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c29065501.athfilter(c,tp)
-	return c:IsSetCard(0x87af) and c:GetType()==0x20002
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:GetType()==0x20002
 end
 function c29065501.cfilter(c)
 	return c:IsFaceup() and c:IsCode(29065500)
@@ -80,7 +80,7 @@ function c29065501.thop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c29065501.stfilter(c,tp)
-	return c:IsSetCard(0x87af) and c:GetType()==0x20002 and not c:IsForbidden() and c:CheckUniqueOnField(tp)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:GetType()==0x20002 and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function c29065501.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c29065501.cfilter,tp,LOCATION_ONFIELD,0,1,nil)

@@ -37,14 +37,14 @@ function c115020.initial_effect(c)
 	c:RegisterEffect(e4)  
 end
 function c115020.thfil(c)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
 end
 function c115020.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,Duel.GetLP(tp)/2) end
 	Duel.PayLPCost(tp,Duel.GetLP(tp)/2)
 end
 function c115020.spfil(c,e,tp)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function c115020.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -102,5 +102,5 @@ function c115020.recop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c115020.imtg(e,c)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
 end

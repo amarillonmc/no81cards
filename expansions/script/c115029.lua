@@ -34,7 +34,7 @@ function c115029.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c115029.thfil(c)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
 end
 function c115029.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c115029.thfil,tp,LOCATION_DECK,0,1,nil) end

@@ -56,9 +56,12 @@ end
 function cm.filter(c,tp)
 	return c:IsControler(tp) and c:IsSetCard(0x6978)
 end
+function cm.mfilter(c)
+	return c:IsPreviousLocation(LOCATION_MZONE) or (c:GetPreviousLocation()&LOCATION_ONFIELD==0 and c:GetOriginalType()&0x1>0)
+end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(Card.IsType,nil,TYPE_MONSTER)
-	local g2=g:Filter(Card.IsSetCard,nil,0x6978)
+	local g=eg:Filter(cm.mfilter,nil)
+	local g2=g:Filter(Card.IsPreviousSetCard,nil,0x6978)
 	local count0=g2:FilterCount(Card.GetPreviousControler,nil,0)
 	local count1=g2:FilterCount(Card.GetPreviousControler,nil,1)
 	cm[0]=cm[0]+count0

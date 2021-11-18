@@ -12,7 +12,7 @@ function c115045.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c115045.exfilter0(c)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 		and c:IsType(TYPE_PENDULUM) and c:IsFaceup() and c:IsLevelAbove(1) and c:IsAbleToGrave()
 end
 function c115045.filter(c)

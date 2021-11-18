@@ -28,7 +28,7 @@ function c115023.initial_effect(c)
 	c:RegisterEffect(e2)   
 end
 function c115023.cfilter2(c,tp)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsReason(REASON_EFFECT) and c:IsPreviousLocation(LOCATION_ONFIELD)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsReason(REASON_EFFECT) and c:IsPreviousLocation(LOCATION_ONFIELD)
 		and c:GetPreviousControler()==tp and c:IsPreviousPosition(POS_FACEUP)
 end
 function c115023.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -49,7 +49,7 @@ function c115023.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c115023.spfil(c,e,tp)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c115023.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c115023.spfil,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0  end
@@ -72,5 +72,5 @@ function c115023.spop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c115023.actfilter(e,c)
-	return c:GetControler()==e:GetHandlerPlayer() and not (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_MONSTER)
+	return c:GetControler()==e:GetHandlerPlayer() and not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER)
 end

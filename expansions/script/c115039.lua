@@ -59,11 +59,11 @@ function c115039.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c115039.atktg(e,c)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c115039.cfilter(c,tp,rp)
 	return (c:IsReason(REASON_BATTLE) or (rp==1-tp and c:IsReason(REASON_DESTROY)))
-		and (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight)
+		and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 		and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp)
 end
 function c115039.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -84,7 +84,7 @@ function c115039.codecon(e)
 	return c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()
 end
 function c115039.negfilter(c,tp)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 		and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsControler(tp)
 end
 function c115039.negcon(e,tp,eg,ep,ev,re,r,rp)
@@ -97,7 +97,7 @@ function c115039.negcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c115039.tdfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsAbleToDeckAsCost()
-		and (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight)
+		and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c115039.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c115039.tdfilter,tp,LOCATION_EXTRA,0,1,nil) end

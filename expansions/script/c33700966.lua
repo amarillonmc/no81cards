@@ -48,6 +48,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp,chk)
 	e2:SetTargetRange(LOCATION_GRAVE,LOCATION_GRAVE)
 	e2:SetCode(EFFECT_CHANGE_CODE)
 	e2:SetValue(m)
+	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.xyzcheck(g)

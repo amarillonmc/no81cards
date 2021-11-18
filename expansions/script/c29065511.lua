@@ -27,7 +27,7 @@ function c29065511.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c29065511.tdfil(c)
-	return c:IsAbleToHand() and c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return c:IsAbleToHand() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29065511.spfil(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_NORMAL) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -59,7 +59,7 @@ function c29065511.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c29065511.target(e,c)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29065511.indct(e,re,r,rp)
 	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then

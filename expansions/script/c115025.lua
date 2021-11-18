@@ -31,7 +31,7 @@ function c115025.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c115025.thfil(c)
-	return c:IsAbleToHand() and (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM)
+	return c:IsAbleToHand() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM)
 end
 function c115025.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c115025.thfil,tp,LOCATION_DECK,0,1,nil) end
@@ -48,13 +48,13 @@ function c115025.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,tc:GetAttack()/2,REASON_EFFECT)
 end
 function c115025.stfil(c)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_PENDULUM) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_PENDULUM) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c115025.xgfilter(c)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight)
+	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
 end
 function c115025.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c115025.xgfilter,tp,LOCATION_PZONE,0,1,nil) and ep==tp and re:GetHandler():IsSetCard(0x87af)or _G["c"..re:GetHandler():GetCode()].named_with_Arknight and Duel.IsExistingMatchingCard(c115025.stfil,tp,LOCATION_DECK,0,2,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c115025.xgfilter,tp,LOCATION_PZONE,0,1,nil) and ep==tp and (re:GetHandler():IsSetCard(0x87af) or (_G["c"..re:GetHandler():GetCode()] and  _G["c"..re:GetHandler():GetCode()].named_with_Arknight)) and Duel.IsExistingMatchingCard(c115025.stfil,tp,LOCATION_DECK,0,2,nil) end
 	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,tp,LOCATION_PZONE)

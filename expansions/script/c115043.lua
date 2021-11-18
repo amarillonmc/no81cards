@@ -65,10 +65,10 @@ function c115043.mat_filter(c)
 	return not c:IsLevel(11)
 end
 function c115043.imtg(e,c)
-	return c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c115043.thfilter(c)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 		and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
 end
 function c115043.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
