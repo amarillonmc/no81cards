@@ -2,18 +2,8 @@
 function c29065606.initial_effect(c)
 	c:SetSPSummonOnce(29065606)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),5,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),5,2,c29065606.ovfilter,aux.Stringid(29065606,1))
 	c:EnableReviveLimit()
-	--xyz summon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetValue(SUMMON_TYPE_XYZ)
-	e1:SetCondition(c29065606.sprcon)
-	e1:SetOperation(c29065606.sprop)
-	c:RegisterEffect(e1)
 	--Equip
 	local e1=Effect.CreateEffect(c)   
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS) 
@@ -33,23 +23,11 @@ function c29065606.initial_effect(c)
 	e3:SetOperation(c29065606.desop)
 	c:RegisterEffect(e3)  
 end
-function c29065606.xyzfil(c)
-	return c:IsCanOverlay() and c:IsSetCard(0x87ad) and c:IsLevel(4)
-end
-function c29065606.sprcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(c29065606.xyzfil,tp,LOCATION_MZONE,0,1,nil) and Duel.GetCurrentPhase()==PHASE_MAIN2 
+function c29065606.ovfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x87ad) and c:IsLevel(4) and Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c29065606.eqfil(c,tc)
 	return c:GetPreviousEquipTarget()==tc
-end
-function c29065606.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,c29065606.xyzfil,tp,LOCATION_MZONE,0,1,1,nil)
-	c:SetMaterial(g)
-	Duel.Overlay(c,g)  
 end
 function c29065606.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetMaterial():Filter(Card.IsSetCard,nil,0x7ad):GetCount()>0
