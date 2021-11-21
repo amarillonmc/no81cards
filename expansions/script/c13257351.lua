@@ -74,6 +74,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
 		e1:SetCode(EFFECT_EQUIP_LIMIT)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetLabelObject(ec)
 		e1:SetValue(cm.eqlimit2)
 		tc:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(c)
@@ -100,7 +101,7 @@ function cm.phop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.eqlimit2(e,c)
-	return e:GetOwner()==c
+	return e:GetLabelObject()==c
 end
 function cm.efilter1(e,re)
 	return e:GetHandler()~=re:GetHandler()
