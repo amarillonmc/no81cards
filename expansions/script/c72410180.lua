@@ -1,4 +1,5 @@
 --方舟骑士 泥岩
+cm.named_with_Arknight=1
 function c72410180.initial_effect(c)
 	--special summon rule
 	local e1=Effect.CreateEffect(c)

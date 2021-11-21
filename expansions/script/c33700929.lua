@@ -33,6 +33,7 @@ function c33700929.initial_effect(c)
 	e2:SetTarget(c33700929.atktg)
 	e2:SetOperation(c33700929.atkop)
 	c:RegisterEffect(e2)
+	e2:SetLabelObject(e1)
 	--
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)

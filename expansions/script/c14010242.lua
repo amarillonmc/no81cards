@@ -1,6 +1,7 @@
 --方舟骑士-莫斯提马
 local m=14010242
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)

@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_DAMAGE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.damtg)
 	e1:SetOperation(cm.damop)
 	c:RegisterEffect(e1)
@@ -33,7 +34,7 @@ end
 function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
-	if Duel.GetActivityCount(m,tp,ACTIVITY_CHAIN)==1 then
+	if Duel.GetActivityCount(m,tp,ACTIVITY_CHAIN)==0 then
 		Duel.BreakEffect()
 		Duel.Damage(p,1000,REASON_EFFECT)
 	end
