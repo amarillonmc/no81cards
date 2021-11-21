@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetRange(LOCATION_GRAVE)
-	e1:SetValue(1)
+	e1:SetValue(SUMMON_VALUE_SELF)
 	e1:SetCondition(cm.dualscon)
 	e1:SetOperation(cm.dualsop)
 	c:RegisterEffect(e1)
@@ -42,7 +42,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.dualcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetOwner():GetOriginalCode()==31400050
+	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF 
 end
 function cm.dualop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():EnableDualState()

@@ -1,8 +1,9 @@
 local m=15000129
 local cm=_G["c"..m]
-cm.name="方舟之骑士·卡夫卡"
+cm.name="方舟骑士·卡夫卡"
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x11ae)
+	c:EnableCounterPermit(0x10ae)
 	--Destroy and SpecialSummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
@@ -78,10 +79,10 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetLabelObject():SetLabel(fid)
 end
 function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanAddCounter(0x11ae,1) end
+	if chk==0 then return e:GetHandler():IsCanAddCounter(0x10ae,1) end
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsCanAddCounter(0x11ae,1) then return end
+	if not e:GetHandler():IsCanAddCounter(0x10ae,1) then return end
 	if e:GetHandler():IsRelateToEffect(e) then
 		local list={}
 		local ct=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil):GetCount()
@@ -95,7 +96,7 @@ function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 			n=n+1
 		end
-		e:GetHandler():AddCounter(0x11ae,n)
+		e:GetHandler():AddCounter(0x10ae,n)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)

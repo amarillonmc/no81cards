@@ -17,6 +17,17 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.recon)
 	e2:SetOperation(cm.reop)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(57953380,0))
+	e3:SetCategory(CATEGORY_DRAW)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(EVENT_PHASE+PHASE_END)
+	e3:SetCountLimit(1)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetTarget(cm.drtg)
+	e3:SetOperation(cm.drop)
+	c:RegisterEffect(e3)
 	
 end
 function cm.cfilter(c)
@@ -29,10 +40,11 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_CARD,1-tp,m)
-		Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
+		Duel.Remove(c,POS_FACEUP,REASON_RULE)
 		if c:GetPreviousLocation()==LOCATION_HAND then
 			Duel.Draw(tp,1,REASON_RULE)
 		end
+		--[[
 		Duel.DiscardDeck(tp,5,REASON_EFFECT)
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(m,1))
@@ -43,8 +55,29 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(cm.aclimit)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
+		]]
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_HAND_LIMIT)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(1,0)
+		e1:SetValue(3)
+		Duel.RegisterEffect(e1,tp)
 	end
 end
 function cm.aclimit(e,re,tp)
 	return re:GetActivateLocation()==LOCATION_GRAVE
+end
+function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
+end
+function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
 end

@@ -63,11 +63,13 @@ function c9910723.chlimit(e,ep,tp)
 end
 function c9910723.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local lv=Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c9910723.filter,tp,LOCATION_DECK,0,1,2,nil,lv+1,e,tp)
-		if g:GetCount()>0 then
-			Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
-		end
+	local ct=1
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	if ft>1 then ct=2 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c9910723.filter,tp,LOCATION_DECK,0,1,ct,nil,lv+1,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
 	end
 end

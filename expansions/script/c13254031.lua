@@ -12,6 +12,7 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
+--[[
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND)
@@ -24,6 +25,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.target1)
 	e2:SetOperation(cm.operation1)
 	c:RegisterEffect(e2)
+]]
 	elements={{"tama_elements",{{TAMA_ELEMENT_WIND,2}}}}
 	cm[c]=elements
 end
@@ -48,30 +50,13 @@ function cm.elementsFilter(c)
 	return c:IsAbleToDeckAsCost() and tama.tamas_isExistElement(c,TAMA_ELEMENT_WIND)
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	--[[
-	local el={{13254031,2}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	local sg=Group.CreateGroup()
-	if chk==0 then 
-		--return mg:CheckWithSumGreater(tama.tamas_getElementCount,2,13254031)
-		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
-	end
-	while mg:IsExists(tama.tamas_selectElementsForAbove,1,sg,mg,sg,el) do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=mg:FilterSelect(tp,tama.tamas_selectElementsForAbove,1,1,sg,mg,sg,el)
-		el=tama.tamas_decreaseElements(el,tama.tamas_getElements(g:GetFirst()))
-		sg:Merge(g)
-	end
-	Duel.SendtoDeck(sg,nil,2,REASON_COST)]]
-
 	local el={{TAMA_ELEMENT_WIND,2}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	local sg=Group.CreateGroup()
 	if chk==0 then 
 		--return mg:CheckWithSumGreater(tama.tamas_getElementCount,2,13254031)
-		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
+		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end
-	local sg,elements=tama.tamas_selectAllSelectForAbove(mg,el,tp)
+	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	--Debug.Message(elements[1][1].."+"..elements[1][2])
 end

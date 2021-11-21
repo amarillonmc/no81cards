@@ -52,14 +52,14 @@ end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local el={{TAMA_ELEMENT_FIRE,1},{TAMA_ELEMENT_ORDER,1}}
+	local el={{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_EARTH,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,Group.CreateGroup(),el)
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local el={{TAMA_ELEMENT_FIRE,1},{TAMA_ELEMENT_ORDER,1}}
+	local el={{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_EARTH,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
+	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
 function cm.tdfilter(c)

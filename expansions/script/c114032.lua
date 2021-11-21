@@ -1,4 +1,4 @@
---斗士·塔露拉
+--不息之斗士·塔露拉
 local m=114032
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -73,7 +73,7 @@ function cm.recop(e,tp,eg,ep,ev,re,r,rp)
 end
 ----
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x87af) and c:IsRace(RACE_DRAGON) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_DRAGON) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

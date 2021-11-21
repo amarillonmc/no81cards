@@ -158,10 +158,3 @@ end
 function c114031.eqlimit(e,c)
 	return e:GetOwner()==c
 end
-
-
-
-
-
-
-

@@ -32,7 +32,7 @@ function c67210000.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c67210000.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and tc:IsType(TYPE_EQUIP) and Duel.HintSelection(g)~=0 and tc:GetOwner()==1-tp then
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and tc:IsType(TYPE_EQUIP) and tc:GetOwner()==1-tp then
 	   local e1=Effect.CreateEffect(e:GetHandler())
 	   e1:SetType(EFFECT_TYPE_FIELD)
 	   e1:SetCode(EFFECT_CANNOT_ACTIVATE)

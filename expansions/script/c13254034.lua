@@ -12,6 +12,7 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
+--[[
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_DESTROY)
@@ -24,6 +25,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.target1)
 	e2:SetOperation(cm.operation1)
 	c:RegisterEffect(e2)
+]]
 	elements={{"tama_elements",{{TAMA_ELEMENT_FIRE,2}}}}
 	cm[c]=elements
 	
@@ -48,11 +50,10 @@ end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_FIRE,2}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	local sg=Group.CreateGroup()
 	if chk==0 then 
-		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
+		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end
-	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
+	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

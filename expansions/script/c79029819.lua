@@ -47,14 +47,14 @@ function c79029819.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c79029819.cfilter(c)
-	return c:IsCode(79029817) and c:IsAbleToRemoveAsCost()
+	return c:IsCode(79029817) and c:IsAbleToDeckAsCost()
 end
 function c79029819.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xa991) and c:IsType(TYPE_XYZ)
 end
 function c79029819.xyzop(e,tp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c79029819.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) end
-	local g=Duel.SelectMatchingCard(tp,c79029819.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029819.cfilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,nil) end
+	local g=Duel.SelectMatchingCard(tp,c79029819.cfilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c79029819.thcon(e,tp,eg,ep,ev,re,r,rp)

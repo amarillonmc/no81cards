@@ -48,7 +48,7 @@ function cm.filter(c)
 	return c:IsFaceup() and c.named_with_Kazimierz and c:IsCanTurnSet()
 end
 function cm.filter2(c,e,tp)
-	return c.named_with_Kazimierz and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c.named_with_Kazimierz and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
 end
 function cm.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -63,7 +63,8 @@ function cm.posop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() then
 	Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE) 
-	Duel.BreakEffect()
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,tc)
+	Duel.SendtoGrave(g,REASON_EFFECT)
 	local g=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if g:GetCount()<=0 or ft<=0 then return end 
@@ -71,6 +72,7 @@ function cm.posop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:Select(tp,ft,ft,nil)
 	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+	Duel.BreakEffect()
 	local xg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)  
 	Duel.ShuffleSetCard(xg)
 	local xc=xg:Select(1-tp,1,1,nil):GetFirst()

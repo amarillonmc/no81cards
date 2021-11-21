@@ -1,7 +1,7 @@
 --星辉之夜尽女神
 function c9910626.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsRace,RACE_FAIRY),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--material
 	local e1=Effect.CreateEffect(c)
@@ -10,7 +10,7 @@ function c9910626.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1,9910626)
+	e1:SetCountLimit(1)
 	e1:SetTarget(c9910626.mattg)
 	e1:SetOperation(c9910626.matop)
 	c:RegisterEffect(e1)
@@ -20,7 +20,7 @@ function c9910626.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,9910627)
+	e2:SetCondition(c9910626.thcon)
 	e2:SetTarget(c9910626.thtg)
 	e2:SetOperation(c9910626.thop)
 	c:RegisterEffect(e2)
@@ -61,6 +61,9 @@ function c9910626.matop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Overlay(sc,Group.FromCards(tc))
 	end
 end
+function c9910626.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
+end
 function c9910626.thfilter(c)
 	return bit.band(c:GetType(),0x81)==0x81 and c:IsAbleToHand()
 end
@@ -81,14 +84,15 @@ function c9910626.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9910626.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c9910626.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
 		Duel.ConfirmCards(1-tp,tc)
+		if not c:IsRelateToEffect(e) or not c:IsLocation(LOCATION_GRAVE) then return end
 		e:SetLabel(tc:GetOriginalCodeRule())
-		e:GetHandler():RegisterFlagEffect(9910626,RESET_EVENT+0x1e60000,0,1)
+		c:RegisterFlagEffect(9910626,RESET_EVENT+0x1e60000,0,1)
 	end
 end
 function c9910626.thcon2(e,tp,eg,ep,ev,re,r,rp)

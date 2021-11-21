@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.cfilter(c,tp)
-	return c:GetPreviousControler()==tp
+	return c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:FilterCount(cm.cfilter,nil,tp)==1 and Duel.GetTurnPlayer()~=tp

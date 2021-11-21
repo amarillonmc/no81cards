@@ -2,7 +2,7 @@
 local m=16160007
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	aux.AddCodeList(c,16160006)
+	aux.AddCodeList(c,16161000)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -41,7 +41,7 @@ function cm.dfilter(c)
 	return c:IsType(TYPE_PENDULUM) and c:IsFaceup() and c:IsAbleToGrave() and c:IsLevelAbove(1)
 end
 function cm.filter(c,e,tp)
-	return aux.IsCodeListed(c,16160006)
+	return aux.IsCodeListed(c,16161000)
 end
 function cm.rcheck(tp,g,c)
 	return g:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)<=99
@@ -105,7 +105,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --e2
 function cm.cfilter(c,tp)
-	return aux.IsCodeListed(c,16160006) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)
+	return aux.IsCodeListed(c,16161000) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	local v=0

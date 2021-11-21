@@ -1,6 +1,8 @@
 --异端的降临者 阿比盖尔
+local m=16160006
+local cm=_G["c"..m]
 function c16160006.initial_effect(c)
-	aux.AddCodeList(c,16160006)
+	aux.AddCodeList(c,16161000)
 	c:EnableReviveLimit()
 	aux.EnablePendulumAttribute(c,true) 
 --------------"Pendulum EFFECT"----------------
@@ -65,7 +67,7 @@ end
 function c16160006.cscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
-	Duel.Release(g,REASON_COST)
+	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 end
 function c16160006.cstarget(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHand() end
@@ -88,6 +90,7 @@ function c16160006.chcondition(e,tp,eg,ep,ev,re,r,rp)
 	return true
 end
 function c16160006.choperation(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
 	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED)
 	local ce,cp=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
 	local tf=ce:GetTarget()
@@ -97,8 +100,12 @@ function c16160006.choperation(e,tp,eg,ep,ev,re,r,rp)
 	if tf(ce,cp,ceg,cep,cev,cre,cr,crp,0,tc) then
 		Duel.ChangeTargetCard(ev,tg)
 	else
-		Duel.NegateEffect(ev)
+		e:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		Duel.ChangeChainOperation(ev,cm.opa)
 	end
+end
+function cm.opa(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
 end
 function c16160006.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,3000) end
@@ -110,35 +117,72 @@ function c16160006.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,2,0,0)
 end
 function c16160006.tkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.IsPlayerCanSpecialSummonMonster(tp,16160010,nil,0x4011,3500,3500,10,RACE_FIEND,ATTRIBUTE_DARK) then
 		for i=1,2 do
 			local token=Duel.CreateToken(tp,16160010)
 			Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetDescription(aux.Stringid(16160006,2))
-			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_DESTROYED)
-			e1:SetRange(LOCATION_MZONE)
-			e1:SetOperation(c16160006.desop)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			token:RegisterEffect(e1,true)
+			token:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,2))
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_DESTROYED)
+			e2:SetCondition(cm.spcona)
+			e2:SetLabelObject(token)
+			e2:SetOperation(c16160006.desop)
+			Duel.RegisterEffect(e2,tp)
+			local e3=e2:Clone()
+			e3:SetCode(EVENT_BATTLE_DESTROYED)
+			e3:SetCondition(cm.spcon1)
+			e3:SetLabelObject(token)
+			Duel.RegisterEffect(e3,tp)
 		end
 		Duel.SpecialSummonComplete()
+		if c:GetFlagEffect(m)==0 then
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_DESTROYED)
+			e2:SetCondition(cm.spcona)
+			e2:SetLabelObject(c)
+			e2:SetOperation(c16160006.desop)
+			Duel.RegisterEffect(e2,tp)
+			local e3=e2:Clone()
+			e3:SetCode(EVENT_BATTLE_DESTROYED)
+			e3:SetCondition(cm.spcon1)
+			e3:SetLabelObject(c)
+			Duel.RegisterEffect(e3,tp)
+			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,0,0,aux.Stringid(m,2))
+		end
 	end
 end
-function c16160006.filter(c,sc)
-	if c:GetReasonCard() and sc then
-		return c:GetReasonCard()==sc
-	elseif c:GetReasonEffect():GetHandler() and sc then
-		return c:GetReasonEffect():GetHandler()==sc 
+function cm.cfilter(c,tp,flag,r,ac)
+	if not c:IsPreviousControler(1-tp) then return false end
+	if flag==1 and r&REASON_EFFECT~=0 then
+		local ce=c:GetReasonEffect()
+		if ce then
+			local rc=ce:GetHandler()
+			if rc and aux.GetValueType(rc)=="Card" then
+				return rc==ac and rc:IsControler(tp)
+			end
+		end
+	elseif flag==2 then 
+		local rc=c:GetReasonCard()
+		return rc:IsControler(tp) and rc==ac
 	else
 		return false
 	end
 end
+function cm.spcona(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetLabelObject() or not e:GetLabelObject():IsLocation(LOCATION_ONFIELD) or e:GetLabelObject():GetFlagEffect(m)==0  then e:Reset() return false end
+	local c=e:GetLabelObject()
+	return eg:IsExists(cm.cfilter,1,nil,tp,1,r,c)
+end
+function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetLabelObject() or not e:GetLabelObject():IsLocation(LOCATION_ONFIELD) or e:GetLabelObject():GetFlagEffect(m)==0  then e:Reset() return false end
+	local c=e:GetLabelObject()
+	return eg:IsExists(cm.cfilter,1,nil,tp,2,r,c)
+end
 function c16160006.desop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=eg:Filter(c16160006.filter,nil,e:GetHandler())
-	if sg:GetCount()==0 then return end
+	if not e:GetLabelObject() or not e:GetLabelObject():IsLocation(LOCATION_ONFIELD) or e:GetLabelObject():GetFlagEffect(m)==0  then e:Reset() return end
 	Duel.Damage(1-tp,1000,REASON_EFFECT)
 end
 ----
@@ -146,7 +190,7 @@ function c16160006.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsReason(REASON_DRAW)
 end
 function c16160006.spfilter(c)
-	return aux.IsCodeListed(c,16160006) and c:IsAbleToHand()
+	return aux.IsCodeListed(c,16161000) and c:IsAbleToHand()
 end
 function c16160006.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

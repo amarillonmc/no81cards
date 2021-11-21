@@ -43,23 +43,23 @@ function cm.spcon(e,c)
 	local tp=c:GetControler()
 	local el={{TAMA_ELEMENT_FIRE,1},{TAMA_ELEMENT_ORDER,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,Group.CreateGroup(),el)
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local el={{TAMA_ELEMENT_FIRE,1},{TAMA_ELEMENT_ORDER,1}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
+	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
 function cm.conditon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_SUMMON_TURN)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.filter(chkc) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and cm.filter(chkc) end
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_GRAVE,0,3,nil) end
+		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,3,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_GRAVE,0,1,3,nil)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
@@ -78,11 +78,10 @@ end
 function cm.thcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_ENERGY,4}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	local sg=Group.CreateGroup()
 	if chk==0 then 
-		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
+		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end
-	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
+	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
 function cm.thfilter1(c)

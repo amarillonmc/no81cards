@@ -86,8 +86,8 @@ function cm.phop(e,tp,eg,ep,ev,re,r,rp)
 	local el=tama.tamas_increaseElements(tama.tamas_getElements(c),{{TAMA_ELEMENT_MANA,1}})
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	local sg=Group.CreateGroup()
-	if mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el) then
-		local sg,elements=tama.tamas_selectAllSelectForAbove(mg,el,tp)
+	if tama.tamas_isCanSelectElementsForAbove(mg,el) then
+		local sg,elements=tama.tamas_selectElementsMaterial(mg,el,tp)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 	else
 		Duel.Remove(c,POS_FACEDOWN,REASON_RULE)

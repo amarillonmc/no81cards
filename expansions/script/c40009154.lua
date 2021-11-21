@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)  
 	local e3=e2:Clone()
 	e3:SetRange(LOCATION_HAND)
+	e3:SetCountLimit(1,m)
 	e3:SetCost(cm.spcost)
 	c:RegisterEffect(e3) 
 	--to grave

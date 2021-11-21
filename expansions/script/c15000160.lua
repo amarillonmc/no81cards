@@ -3,7 +3,6 @@ local cm=_G["c"..m]
 cm.name="卡夫卡·异数魔剪"
 function cm.initial_effect(c)
 	aux.AddCodeList(c,15000129)
-	c:EnableCounterPermit(0x11ae)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,8,2)
 	c:EnableReviveLimit()
@@ -66,7 +65,7 @@ function cm.initial_effect(c)
 	--SpecialSummon
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e7:SetCode(EVENT_ADD_COUNTER+0x11ae)
+	e7:SetCode(EVENT_ADD_COUNTER+0x10ae)
 	e7:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
 	e7:SetOperation(cm.spop1)
 	local e8=Effect.CreateEffect(c)
@@ -79,7 +78,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e8)
 end
 function cm.lvtg(e,c)
-	return c:IsLevelAbove(1) and c:GetCounter(0x11ae)>0 and c:IsSetCard(0x87af)
+	return c:IsLevelAbove(1) and c:GetCounter(0x10ae)>0
 end
 function cm.lvval(e,c,rc)
 	local lv=c:GetLevel()
@@ -108,7 +107,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,15000129)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x87af) and c:IsLevelBelow(6) and c:IsLevelAbove(1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsLevelBelow(6) and c:IsLevelAbove(1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end

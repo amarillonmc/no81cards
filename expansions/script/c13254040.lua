@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	--tornado
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCost(cm.cost1)
@@ -38,14 +38,13 @@ function cm.initial_effect(c)
 	
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{TAMA_ELEMENT_EARTH,2},{TAMA_ELEMENT_WIND,1}}
+	local el={{TAMA_ELEMENT_EARTH,2},{TAMA_ELEMENT_WIND,2}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	local sg=Group.CreateGroup()
 	if chk==0 then 
-		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
+		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
+	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	e:SetLabel(sg:GetCount())
 end
@@ -69,19 +68,18 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{TAMA_ELEMENT_EARTH,1},{TAMA_ELEMENT_FIRE,1}}
+	local el={{TAMA_ELEMENT_EARTH,3},{TAMA_ELEMENT_FIRE,3}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	local sg=Group.CreateGroup()
 	if chk==0 then 
-		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
+		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
+	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	e:SetLabel(sg:GetCount())
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
@@ -111,19 +109,17 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if g:GetCount()>0 then
-		local ct=Duel.Destroy(g,REASON_EFFECT)
-		Duel.Draw(tp,ct,REASON_EFFECT)
+		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{TAMA_ELEMENT_EARTH,2},{TAMA_ELEMENT_WATER,1}}
+	local el={{TAMA_ELEMENT_EARTH,3},{TAMA_ELEMENT_WATER,2}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
-	local sg=Group.CreateGroup()
 	if chk==0 then 
-		return mg:GetCount()>0 and mg:IsExists(tama.tamas_selectElementsForAbove,1,nil,mg,sg,el)
+		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	local sg=tama.tamas_selectAllSelectForAbove(mg,el,tp)
+	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	e:SetLabel(sg:GetCount())
 end

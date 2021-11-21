@@ -28,6 +28,9 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.rfilter,tp,loc,0,nil)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,g:GetCount(),0,0)
 end
+function cm.spfilter(c,e,tp)
+	return cm.Revenger(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local loc=LOCATION_MZONE 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
