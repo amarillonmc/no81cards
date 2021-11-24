@@ -157,8 +157,8 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummonComplete()
 	elseif e:GetLabel()==3 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
-		if c:IsRelateToEffect(e) and c:IsFaceup() and Duel.GetLocationCount(tp,LOCATION_SZONE)>=g:GetCount() and Duel.SelectYesNo(tp,aux.Stringid(m,6)) then
+		local g=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,c,tp)
+		if c:IsRelateToEffect(e) and c:IsFaceup() and g:GetFirst():CheckEquipTarget(c) and Duel.GetLocationCount(tp,LOCATION_SZONE)>=g:GetCount() and Duel.SelectYesNo(tp,aux.Stringid(m,6)) then
 			local tc=g:GetFirst()
 			while tc do
 				Duel.Equip(tp,tc,c,true,true)
@@ -189,7 +189,7 @@ function cm.tokendes(e)
 	return not e:GetOwner():GetCardTarget():IsContains(e:GetHandler())
 end
 function cm.tdfilter(c,ec,tp)
-	return c:IsSetCard(0x352) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and ((c:CheckEquipTarget(ec) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or c:IsAbleToExtra())
+	return c:IsSetCard(0x352) and c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and ((c:CheckEquipTarget(ec) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or c:IsAbleToExtra())
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

@@ -9,6 +9,7 @@ function c115029.initial_effect(c)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,115029)
+	e1:SetCondition(c115029.thcon)
 	e1:SetTarget(c115029.thtg)
 	e1:SetOperation(c115029.thop)
 	c:RegisterEffect(e1)
@@ -33,8 +34,14 @@ function c115029.initial_effect(c)
 	e4:SetOperation(c115029.spop1)
 	c:RegisterEffect(e4)
 end
+function c115029.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c115029.sslfilter,tp,LOCATION_PZONE,0,1,e:GetHandler())
+end
 function c115029.thfil(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
+end
+function c115029.sslfilter(c)
+	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
 end
 function c115029.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c115029.thfil,tp,LOCATION_DECK,0,1,nil) end

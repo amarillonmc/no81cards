@@ -33,7 +33,7 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.ovfilter(c)
-	return c:IsFaceup() and not c:IsCode(m)
+	return c:IsFaceup() and c:IsSetCard(0x442) and not c:IsCode(m)
 end
 function cm.xyzcheck(g)
 	return g:GetClassCount(Card.GetCode)==3

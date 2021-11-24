@@ -25,12 +25,12 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end
 	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
-	local ct=tama.tamas_getElementCount(tamas_sumElements(sg),TAMA_ELEMENT_FIRE)
+	local ct=tama.tamas_getElementCount(tama.tamas_sumElements(sg),TAMA_ELEMENT_FIRE)
 	local ct1=tama.tamas_getElementCount(tamas_sumElements(sg),TAMA_ELEMENT_EARTH)-0
 	e:SetLabel(ct,ct1)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
-function cm.desfilter(c,ct)
+function cm.desfilter(c,ec,ct)
 	return c:IsAttackBelow(ec:GetAttack()+ct*200)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)

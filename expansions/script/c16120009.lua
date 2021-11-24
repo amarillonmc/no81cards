@@ -61,11 +61,11 @@ function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.mttg(e,c)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove() and c:IsRace(RACE_FAIRY)
 end
 function cm.mtval(e,c)
 	if not c then return false end
-	return c:IsRace(RACE_FAIRY)
+	return true
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmc,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,re) end

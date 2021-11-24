@@ -22,6 +22,7 @@ function c115025.initial_effect(c)
 	e3:SetCode(EVENT_RECOVER)
 	e3:SetRange(LOCATION_PZONE)
 	e3:SetCountLimit(1,115026)
+	e3:SetCondition(c115025.stcon)
 	e3:SetTarget(c115025.sttg)
 	e3:SetOperation(c115025.stop)
 	c:RegisterEffect(e3)
@@ -49,6 +50,9 @@ function c115025.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c115025.stfil(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_PENDULUM) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+end
+function c115025.stcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c115025.xgfilter,tp,LOCATION_PZONE,0,1,e:GetHandler())
 end
 function c115025.xgfilter(c)
 	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)

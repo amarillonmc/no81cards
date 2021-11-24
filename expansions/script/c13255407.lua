@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.chainfilter(re,tp,cid)
-	return re:GetActivateLocation()==LOCATION_HAND
+	return not re:GetActivateLocation()==LOCATION_HAND
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)==0 end

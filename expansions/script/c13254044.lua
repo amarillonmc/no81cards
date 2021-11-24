@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{TAMA_ELEMENT_CHAOS,1}}
+	local el={{TAMA_ELEMENT_CHAOS,3}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	if chk==0 then 
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)

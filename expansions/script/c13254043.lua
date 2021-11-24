@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{TAMA_ELEMENT_ORDER,1}}
+	local el={{TAMA_ELEMENT_ORDER,2}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
 	if chk==0 then 
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
@@ -47,7 +47,7 @@ function cm.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{TAMA_ELEMENT_ORDER,2}}
+	local el={{TAMA_ELEMENT_ORDER,3}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_GRAVE,0,e:GetHandler()),el)
 	if chk==0 then 
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el) and e:GetHandler():IsAbleToRemoveAsCost()

@@ -9,6 +9,7 @@ function c115031.initial_effect(c)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,115031)
+	e1:SetCondition(c115031.spcon)
 	e1:SetTarget(c115031.sptg)
 	e1:SetOperation(c115031.spop)
 	c:RegisterEffect(e1)
@@ -37,11 +38,14 @@ function c115031.initial_effect(c)
 	e4:SetOperation(c115031.spop1)
 	c:RegisterEffect(e4)
 end
+function c115031.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c115031.myfilter,tp,LOCATION_PZONE,0,1,e:GetHandler())
+end
 function c115031.myfilter(c)
-	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
+	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and _G["c"..c:GetCode()].named_with_Arknight)
 end
 function c115031.spfil(c,e,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and ((c:IsLocation(LOCATION_HAND+LOCATION_GRAVE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup() and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 )) 
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and ((c:IsLocation(LOCATION_HAND+LOCATION_GRAVE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup() and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 )) 
 end
 function c115031.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c115031.myfilter,tp,LOCATION_PZONE,0,1,nil) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c115031.spfil,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,e,tp) end

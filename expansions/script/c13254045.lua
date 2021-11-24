@@ -14,6 +14,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.remop)
 	c:RegisterEffect(e1)
 	elements={{"tama_elements",{{TAMA_ELEMENT_WIND,1},{TAMA_ELEMENT_EARTH,1},{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_FIRE,1},{TAMA_ELEMENT_ORDER,1},{TAMA_ELEMENT_CHAOS,1}}}}
+	cm[c]=elements
 	
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)

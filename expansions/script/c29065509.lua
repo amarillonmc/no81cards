@@ -79,7 +79,7 @@ function c29065509.valcheck(e,c)
 end
 function c29065509.discon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return re:GetHandler():GetControler()~=tp and e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,29065584) and (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) and e:GetHandler():GetFlagEffect(29065509)>0
+	return re:GetHandler():GetControler()~=tp and (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) and e:GetHandler():GetFlagEffect(29065509)>0
 end
 function c29065509.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)

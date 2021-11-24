@@ -16,6 +16,13 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetOperation(cm.acop)
 	c:RegisterEffect(e2)
+  --Add counter2
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e5:SetCode(EVENT_TO_GRAVE)
+	e5:SetRange(LOCATION_FZONE)
+	e5:SetOperation(cm.acop2)
+	c:RegisterEffect(e5)
 	 --atk down
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -51,14 +58,23 @@ function cm.down(c)
 	return c:IsSetCard(0x3340) or c:IsSetCard(0x3341)
 end
 function cm.cfilter(c,tp)
-	return c:GetPreviousLocation()==LOCATION_ONFIELD and c:GetPreviousControler()==tp
+	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:GetPreviousControler()==tp
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(cm.cfilter,1,nil,tp) then
-		e:GetHandler():AddCounter(0x34f,1)
+	local ct=eg:FilterCount(cm.cfilter,nil,e:GetHandlerPlayer())
+	if ct>0 then
+		e:GetHandler():AddCounter(0x34f,ct,true)
 	end
 end
-
+function cm.cfilter2(c,tp,re)
+	return c:GetPreviousControler()==1-tp and c:IsPreviousLocation(LOCATION_ONFIELD) and ((c:IsType(TYPE_MONSTER) and  c:IsReason(REASON_BATTLE) and c:GetReasonCard():IsSetCard(0x3341,0x3340)) or (c:IsReason(REASON_EFFECT) and c:GetReasonEffect():GetHandler():IsSetCard(0x3341,0x3340)))
+end
+function cm.acop2(e,tp,eg,ep,ev,re,r,rp)
+	 local ct=eg:FilterCount(cm.cfilter2,nil,e:GetHandlerPlayer(),re)
+	if ct>0 then
+		e:GetHandler():AddCounter(0x34f,ct,true)
+	end
+end
 function cm.ctp(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=c:GetCounter(0x34f)

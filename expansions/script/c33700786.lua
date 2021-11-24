@@ -40,14 +40,17 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.recop2)
 	c:RegisterEffect(e4)
 end
+function cm.filter0(c,tp)
+	return c:GetOwner()==tp
+end
 function cm.reccon1(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetHandler():GetMutualLinkedGroup()
-	return eg:IsExists(Card.IsControler,1,nil,1-tp)
+	return eg:IsExists(cm.filter0,1,nil,tp)
 		and (not re or not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS)) and g:IsExists(Card.IsCode,1,nil,m+1)
 end
 function cm.recop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	local ct=eg:FilterCount(Card.IsControler,nil,1-tp)
+	local ct=eg:FilterCount(cm.filter0,nil,tp)
 	Duel.Recover(tp,ct*300,REASON_EFFECT)
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
@@ -55,18 +58,19 @@ function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return re and re:IsHasType(EFFECT_TYPE_ACTIONS) and not re:IsHasType(EFFECT_TYPE_CONTINUOUS) and g:IsExists(Card.IsCode,1,nil,m+1)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1,eg:GetCount())
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1,eg:FilterCount(cm.filter0,nil,tp))
 end
 function cm.reccon2(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetHandler():GetMutualLinkedGroup()
 	return e:GetHandler():GetFlagEffect(m)>0 and g:IsExists(Card.IsCode,1,nil,m+1)
 end
 function cm.recop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,m)
 	local labels={e:GetHandler():GetFlagEffectLabel(m)}
 	local ct=0
 	for i=1,#labels do ct=ct+labels[i] end
 	e:GetHandler():ResetFlagEffect(m)
+	if ct<=0 then return end
+	Duel.Hint(HINT_CARD,0,m)
 	Duel.Recover(tp,ct*300,REASON_EFFECT)
 end
 function cm.filter(c)
