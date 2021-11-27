@@ -63,7 +63,7 @@ function c7409805.drop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetCode(EFFECT_UPDATE_DEFENSE)
 			tc:RegisterEffect(e2)
 		else
-			local g=Duel.GetMatchingGroup(c7409805.Grimy_Goons_filter,p,LOCATION_HAND,0,nil)
+			local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,p,LOCATION_HAND,0,nil)
 			if g:GetCount()==0 then return end
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)

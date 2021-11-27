@@ -1,6 +1,6 @@
 --加帕里公园 - 神圣之山
 function c33700103.initial_effect(c)
-    local e0=Effect.CreateEffect(c)
+	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
@@ -42,7 +42,7 @@ function c33700103.filter1(c,e,tp,sg)
   and Duel.IsExistingMatchingCard(c33700103.filter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,sg,nil,e,tp,c:GetCode())
 end
 function c33700103.filter2(c,e,tp,g)
-   return c:GetCode()~=g and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+   return c:GetCode()~=g and c:IsSetCard(0x442) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c33700103.filter3(c,e,tp,pg)
    return not pg:IsExists(c33700103.filter4,1,nil,c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -85,7 +85,7 @@ end
 end
 function c33700103.filter5(c,e,tp,sg)
    return c:IsAbleToDeck() and c:IsSetCard(0x442) and c:IsFaceup()
-  and Duel.IsExistingMatchingCard(c33700103.filter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,sg,nil,e,tp,c:GetCode())
+  and Duel.IsExistingMatchingCard(c33700103.filter2,tp,LOCATION_DECK,0,sg,nil,e,tp,c:GetCode())
 end
 function c33700103.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	 local sg=Duel.GetMatchingGroup(c33700103.filter0,tp,LOCATION_MZONE,0,nil) 
