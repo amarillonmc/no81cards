@@ -62,7 +62,7 @@ function c33700085.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 function c33700085.confilter(c,ec)
-	return c:IsCanBeSynchroMaterial(ec) and c:IsSetCard(0x442) and c:IsFaceup() and c:IsAbleToGraveAsCost() and c:GetLevel()>0 and c:IsSummonableCard()
+	return c:IsSetCard(0x442) and c:IsFaceup() and c:IsAbleToGraveAsCost() and c:GetLevel()>0 and c:IsSummonableCard()
 end
 function c33700085.gcheck(g,tp,fc)
 	return Duel.GetLocationCountFromEx(tp,tp,g,fc)>0 and g:GetSum(Card.GetLevel)==4
