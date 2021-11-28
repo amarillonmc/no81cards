@@ -31,7 +31,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetTargetRange(0,1)
 		e1:SetValue(cm.damval)
 		Duel.RegisterEffect(e1,tp)
-	else op==2 then
+	elseif op==2 then
 		Duel.Draw(tp,3,REASON_EFFECT)
 	end
 end

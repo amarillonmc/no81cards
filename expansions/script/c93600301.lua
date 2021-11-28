@@ -248,7 +248,7 @@ function cm.xcon(e)
 	end
 end
 function cm.imfilter(c,e)
-	return not c:IsImmuneToEffect(e)
+	return not c:IsImmuneToEffect(e) and not c:IsType(TYPE_TOKEN)
 end
 function cm.filter(c,tp)
 	return aux.GetColumn(c,tp)==1 
@@ -325,7 +325,7 @@ function  cm.xop(e)
 		end
 		sg:RemoveCard(c)
 		for tc in aux.Next(sg) do
-			if tc:IsCanOverlay() and not tc:IsImmuneToEffect(e) then
+			if tc:IsCanOverlay() and not tc:IsImmuneToEffect(e) and not c:IsType(TYPE_TOKEN) then
 				local sg=tc:GetOverlayGroup()
 				if sg then
 					Duel.SendtoGrave(sg,REASON_RULE)
