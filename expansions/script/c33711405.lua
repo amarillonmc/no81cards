@@ -27,6 +27,10 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
+	if not cm.Decla then
+		cm.Decla=true
+		cm.Declatable={}
+	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -54,6 +58,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	local c=e:GetHandler()
+	cm.Declatable[#cm.Declatable+1]=ac
 	--damage
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -68,10 +73,20 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.rmfilter(c,code)
-	return c:IsAbleToRemoveAsCost() and c:IsCode(code)
+	local code1,code2=c:GetOriginalCodeRule()
+	return c:IsAbleToRemoveAsCost() and (cm.include(code1,cm.Declatable) or cm.include(code2,cm.Declatable))
+end
+function cm.include(value,tab)
+	if not value then return false end
+	if tab==nil then return false end
+	for k,v in ipairs(tab) do
+	  if v == value then
+		  return true
+	  end
+	end
+	return false
 end
 function cm.effcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local code=e:GetLabelObject():GetLabel()
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_DECK,0,1,nil,code) and not e:GetHandler():IsControler(tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_DECK,0,1,1,nil,code)

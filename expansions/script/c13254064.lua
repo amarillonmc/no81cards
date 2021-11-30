@@ -26,7 +26,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	local ct=tama.tamas_getElementCount(tama.tamas_sumElements(sg),TAMA_ELEMENT_FIRE)
-	local ct1=tama.tamas_getElementCount(tamas_sumElements(sg),TAMA_ELEMENT_EARTH)-0
+	local ct1=tama.tamas_getElementCount(tama.tamas_sumElements(sg),TAMA_ELEMENT_EARTH)-0
 	e:SetLabel(ct,ct1)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end

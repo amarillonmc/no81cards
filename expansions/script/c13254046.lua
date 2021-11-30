@@ -72,7 +72,7 @@ function cm.cfilter1(c)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
-	return g:FilterCount(cfilter1,nil)==g:GetCount() and g:GetClassCount(Card.GetCode)==g:GetCount()
+	return g:FilterCount(cm.cfilter1,nil)==g:GetCount() and g:GetClassCount(Card.GetCode)==g:GetCount()
 end
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)~=0
