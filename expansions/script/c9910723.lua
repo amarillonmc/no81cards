@@ -53,22 +53,26 @@ function c9910723.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910723.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lv=Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then lv=lv+1 end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9910723.filter,tp,LOCATION_DECK,0,1,nil,lv+1,e,tp) end
+		and Duel.IsExistingMatchingCard(c9910723.filter,tp,LOCATION_DECK,0,1,nil,lv,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
-	Duel.SetChainLimit(c9910723.chlimit)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		Duel.SetChainLimit(c9910723.chlimit)
+	end
 end
 function c9910723.chlimit(e,ep,tp)
 	return tp==ep
 end
 function c9910723.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local lv=Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then lv=lv+1 end
 	local ct=1
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if ft<=0 then return end
-	if ft>1 then ct=2 end
+	if ft>1 and e:IsHasType(EFFECT_TYPE_ACTIVATE) then ct=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9910723.filter,tp,LOCATION_DECK,0,1,ct,nil,lv+1,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c9910723.filter,tp,LOCATION_DECK,0,1,ct,nil,lv,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
 	end

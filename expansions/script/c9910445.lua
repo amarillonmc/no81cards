@@ -50,15 +50,34 @@ function c9910445.activate(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DisableShuffleCheck()
 	local tg=dg:Filter(Card.IsAbleToHand,nil)
 	local thct=0
-	if tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910445,0)) then
+	local flag=true
+	local g1=Group.CreateGroup()
+	while tg:GetCount()>10 do
+		if not Duel.SelectYesNo(tp,aux.Stringid(9910445,0)) then
+			flag=false
+			break
+		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local tc=tg:Select(tp,1,1,nil):GetFirst()
+		g1:AddCard(tc)
+		local sg=Group.CreateGroup()
+		if tc:IsType(TYPE_SPELL+TYPE_TRAP) then sg=tg:Filter(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP) end
+		if tc:IsType(TYPE_MONSTER) then sg=tg:Filter(Card.IsLevel,nil,tc:GetLevel()) end
+		tg:Sub(sg)
+	end
+	if flag and tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910445,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=tg:SelectSubGroup(tp,c9910445.thfilter,false,1,tg:GetCount())
-		thct=Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg)
-		Duel.ShuffleHand(tp)
-		dg:Sub(sg)
+		g1:Merge(sg)
 	end
-	Duel.Remove(dg,POS_FACEDOWN,REASON_EFFECT)
+	if g1:GetCount()>0 then
+		Duel.SendtoHand(g1,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g1)
+		Duel.ShuffleHand(tp)
+		thct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_HAND)
+	end
+	local g2=dg:Filter(Card.IsLocation,nil,LOCATION_DECK)
+	Duel.Remove(g2,POS_FACEDOWN,REASON_EFFECT)
 	if thct>=ct and Duel.GetTurnPlayer()==tp then
 		Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
 		Duel.SkipPhase(tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)

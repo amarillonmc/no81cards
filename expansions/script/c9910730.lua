@@ -15,7 +15,6 @@ function c9910730.initial_effect(c)
 	--cost
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910730,1))
-	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -84,10 +83,15 @@ function c9910730.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if ft>2 then ft=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectTarget(tp,Ygzw.SetFilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ft,nil,e,tp)
+	local cate=0
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) then
-		e:SetCategory(CATEGORY_LEAVE_GRAVE+CATEGORY_REMOVE)
+		cate=cate+CATEGORY_LEAVE_GRAVE 
 	end
-	Duel.SetChainLimit(c9910730.chlimit)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		cate=cate+CATEGORY_REMOVE 
+		Duel.SetChainLimit(c9910730.chlimit)
+	end
+	e:SetCategory(cate)
 end
 function c9910730.chlimit(e,ep,tp)
 	return tp==ep
@@ -111,7 +115,7 @@ function c9910730.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if g:GetCount()==0 or g:GetCount()>ft then return end
 	local og=Ygzw.Set2(g,e,tp):Filter(Card.IsOnField,nil)
-	if og:GetCount()==0 then return end
+	if og:GetCount()==0 or not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
 	local tg=Duel.GetMatchingGroup(c9910730.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,og)
 	if tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910730,2)) then
 		Duel.BreakEffect()

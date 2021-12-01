@@ -49,14 +49,18 @@ end
 function c9910709.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910709.filter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetChainLimit(c9910709.chlimit)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		Duel.SetChainLimit(c9910709.chlimit)
+	end
 end
 function c9910709.chlimit(e,ep,tp)
 	return tp==ep
 end
 function c9910709.activate2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910709.filter,tp,LOCATION_DECK,0,1,2,nil)
+	local ct=1
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then ct=2 end
+	local g=Duel.SelectMatchingCard(tp,c9910709.filter,tp,LOCATION_DECK,0,1,ct,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)

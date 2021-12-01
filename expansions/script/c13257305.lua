@@ -162,7 +162,7 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 			local tc=g:GetFirst()
 			while tc do
 				Duel.Equip(tp,tc,c,true,true)
-				tc=sg:GetNext()
+				tc=g:GetNext()
 			end
 			Duel.EquipComplete()
 		else
