@@ -1,4 +1,4 @@
---五河士道 哥哥
+	--五河士道 哥哥
 local m=33401318
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -6,8 +6,8 @@ function cm.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e0:SetCode(EVENT_CUSTOM+m)
 	e0:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e0:SetCode(EVENT_DESTROYED)
 	e0:SetRange(LOCATION_GRAVE+LOCATION_HAND)
 	e0:SetCountLimit(1,m)
 	e0:SetCondition(cm.spcon)
@@ -24,32 +24,12 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.sptg2)
 	e1:SetOperation(cm.spop2)
 	c:RegisterEffect(e1)
-	if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_DESTROYED)
-		ge1:SetCondition(cm.regcon)
-		ge1:SetOperation(cm.regop)
-		Duel.RegisterEffect(ge1,0)
-	end
 end
-function cm.spcfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
-end
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	local v=0
-	if eg:IsExists(cm.spcfilter,1,nil,0) then v=v+1 end
-	if eg:IsExists(cm.spcfilter,1,nil,1) then v=v+2 end
-	if v==0 then return false end
-	e:SetLabel(({0,1,PLAYER_ALL})[v])
-	return true
-end
-function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,e:GetLabel())
+function cm.spfilter(c,tp)
+	return c:IsPreviousControler(tp)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return ev==tp or ev==PLAYER_ALL
+	return eg:IsExists(cm.spfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -117,7 +97,7 @@ function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
 			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
 			tc:SetMaterial(mat1)
-			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
+			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION+REASON_DESTROY)
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 		else

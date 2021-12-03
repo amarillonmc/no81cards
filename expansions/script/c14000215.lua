@@ -75,7 +75,6 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
 	local g=eg:Filter(cm.cfilter,nil,tp)
 	local tc=g:GetFirst()
 	while tc do
@@ -109,7 +108,6 @@ function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
 	local g=eg:Filter(cm.cfilter,nil,tp)
 	local tc=g:GetFirst()
 	while tc do
