@@ -2,6 +2,10 @@
 local m=40006881
 local cm=_G["c"..m]
 cm.named_with_AShapeShifter=1
+function cm.AShapeShifter(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_AShapeShifter
+end
 function cm.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
@@ -59,7 +63,7 @@ function cm.ssop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return cm.AShapeShifter(c)
+	return re and cm.AShapeShifter(re)
 end
 function cm.eqfilter(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_DARK) and not c:IsForbidden()
