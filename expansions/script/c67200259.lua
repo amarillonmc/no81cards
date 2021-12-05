@@ -63,7 +63,7 @@ function c67200259.tgfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
 end
 function c67200259.eqfilter(c)
-	return c:IsSetCard(0x674) and c:IsType(TYPE_PENDULUM) and c:IsLevelBelow(4)
+	return c:IsSetCard(0x674) and c:IsType(TYPE_PENDULUM) and c:IsLevelBelow(4) and not c:IsForbidden()
 end
 function c67200259.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c67200259.tgfilter(chkc) end

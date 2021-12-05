@@ -86,8 +86,8 @@ function c30005000.drcon(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c30005000.drop(e,tp,eg,ep,ev,re,r,rp)
-	--Duel.Hint(HINT_CARD,0,30005000)
-	--Duel.Draw(tp,1,REASON_EFFECT)
+	Duel.Hint(HINT_CARD,0,30005000)
+	Duel.Draw(tp,1,REASON_EFFECT)
 end
 function c30005000.thfilter(c)
 	return c:IsCode(30005000) and c:IsAbleToHand()

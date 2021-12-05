@@ -45,7 +45,7 @@ function cm.initial_effect(c)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
-	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_HAND,0)==1
+	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_HAND,0)<=2
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

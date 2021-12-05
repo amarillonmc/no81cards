@@ -94,10 +94,21 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		local s1=tc:IsSummonable(true,nil,1)
 		if s1 then
 			Duel.Summon(tp,tc,true,nil,1)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(m,5))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(TAMA_COSMIC_BATTLESHIP_CODE_ADD_CORE_LEVEL)
+			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetRange(LOCATION_MZONE)
+			e1:SetValue(1)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+			tc:RegisterEffect(e1,true)
+			--[[
 			local label=tc:GetFlagEffectLabel(13257200)
 			tc:ResetFlagEffect(13257200)
 			tc:RegisterFlagEffect(13257200,RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,1,label+1,aux.Stringid(m,5))
 			tc:RegisterFlagEffect(13257200,0,0,0,label)
+			]]
 		end
 	end
 end

@@ -26,7 +26,7 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,5) end
 end
 function cm.filter(c)
-	return c:IsSetCard(0x356)
+	return #(tama.tamas_getElements(c))~=0
 end
 function cm.filter1(c)
 	return c:IsSetCard(0x356) and c:IsAbleToGrave() and c:IsType(TYPE_MONSTER)

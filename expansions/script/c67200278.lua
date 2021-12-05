@@ -20,7 +20,7 @@ function c67200278.initial_effect(c)
 	e3:SetCode(EVENT_RELEASE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_HAND)
-	e3:SetCountLimit(1,67200278)
+	e3:SetCountLimit(2,67200278)
 	e3:SetCondition(c67200278.spcon)
 	e3:SetTarget(c67200278.sptg)
 	e3:SetOperation(c67200278.spop)
@@ -29,11 +29,11 @@ end
 --
 function c67200278.actcon(e)
 	local a=Duel.GetAttacker()
-	return a and a:IsControler(e:GetHandlerPlayer()) and a:IsSetCard(0x120)
+	return a and a:IsControler(e:GetHandlerPlayer()) and a:IsSetCard(0x674)
 end
 --
 function c67200278.spfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsSetCard(0x674)
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsSetCard(0x674)
 end
 function c67200278.pfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x674) and c:IsAbleToHand()
@@ -42,7 +42,7 @@ function c67200278.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c67200278.spfilter,1,nil,tp)
 end
 function c67200278.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c67200278.spop(e,tp,eg,ep,ev,re,r,rp)

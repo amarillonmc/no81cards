@@ -30,7 +30,7 @@ function c72411250.initial_effect(c)
 	e3:SetOperation(c72411250.thop)
 	c:RegisterEffect(e3)
 end
-function c72411250.thfilter(c,e,tp)
+function c72411250.spfilter(c,e,tp)
 	return c:IsSetCard(0xe728) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c72411250.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

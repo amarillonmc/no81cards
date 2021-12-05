@@ -70,6 +70,8 @@ function c7409797.activate(e,tp,eg,ep,ev,re,r,rp)
 			local tc=tg:GetFirst()
 			while tc do
 				local e1=Effect.CreateEffect(c)
+				e1:SetDescription(aux.Stringid(7409797,3))
+				e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_PUBLIC)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)

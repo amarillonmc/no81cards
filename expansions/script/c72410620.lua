@@ -46,7 +46,7 @@ function c72410620.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	local m=Group.GetCount(sg)-Group.GetCount(rg)
 	local g=Group.__add(rg,sg)
-	Duel.Destroy(g,REASON_COST+REASON_RULE)
+	Duel.SendtoGrave(g,REASON_COST)
 	if m>0 then
 		while m>0 do 
 			Duel.SetLP(tp,math.ceil(Duel.GetLP(tp)/2))

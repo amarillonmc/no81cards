@@ -43,8 +43,7 @@ function cm.initial_effect(c)
 	e12:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e12:SetOperation(cm.bgmop)
 	c:RegisterEffect(e12)
-	c:RegisterFlagEffect(13257200,0,0,0,3)
-	eflist={{"deck_equip",e2}}
+	eflist={{"deck_equip",e2},{"core_level",3}}
 	cm[c]=eflist
 	
 end

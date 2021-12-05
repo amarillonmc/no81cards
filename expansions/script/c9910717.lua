@@ -24,23 +24,29 @@ function c9910717.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910717.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return
-		Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 end
 function c9910717.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetCount()==0 or Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)==0 then return end
-	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if ft==0 then return end
-	if ft>3 then ft=3 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local sg=Duel.SelectMatchingCard(tp,Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,ft,ft,nil,e,tp)
-	if sg:GetCount()>0 then Ygzw.Set2(sg,e,tp) end
+	if g:GetCount()>0 then
+		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+	end
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e3:SetCode(EFFECT_CHANGE_DAMAGE)
+		e3:SetTargetRange(0,1)
+		e3:SetValue(0)
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e3,tp)
+		local e4=e3:Clone()
+		e4:SetCode(EFFECT_NO_EFFECT_DAMAGE)
+		e4:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e4,tp)
+	end
 end
 function c9910717.cfilter(c)
 	return c:IsFacedown() and c:IsAbleToGraveAsCost()
@@ -49,72 +55,56 @@ function c9910717.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910717.cfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9910717.cfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
-	if g:GetFirst():IsSetCard(0xc950) then e:SetLabel(1) end
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9910717.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return
-		Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
-	end
-	if e:GetLabel()==1 then
-		e:SetCategory(CATEGORY_POSITION+CATEGORY_TOHAND)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
-	Duel.SetChainLimit(c9910717.chlimit)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		Duel.SetChainLimit(c9910717.chlimit)
+	end
 end
 function c9910717.chlimit(e,ep,tp)
 	return tp==ep
 end
 function c9910717.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetCount()==0 or Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)==0 then return end
+	if g:GetCount()>0 then
+		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+	end
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e3:SetCode(EFFECT_CHANGE_DAMAGE)
+		e3:SetTargetRange(0,1)
+		e3:SetValue(0)
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e3,tp)
+		local e4=e3:Clone()
+		e4:SetCode(EFFECT_NO_EFFECT_DAMAGE)
+		e4:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e4,tp)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCountLimit(1)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetCondition(c9910717.setcon)
+		e1:SetOperation(c9910717.setop)
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function c9910717.setcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingMatchingCard(Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
+end
+function c9910717.setop(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if ft==0 then return end
 	if ft>3 then ft=3 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local sg=Duel.SelectMatchingCard(tp,Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,ft,ft,nil,e,tp)
-	if sg:GetCount()==0 then return end
-	local sc=sg:GetFirst()
-	local sg2=Group.CreateGroup()
-	local b1=e:GetLabel()==1
-	local b2=true
-	while sc do
-		Duel.HintSelection(Group.FromCards(sc))
-		if b1 and sc:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(9910717,2)) then
-			b1=false
-			b2=false
-			Duel.SendtoHand(sc,nil,REASON_EFFECT)
-		end
-		if b1 and Duel.GetLocationCount(1-tp,LOCATION_SZONE,tp)>0
-			and Duel.SelectYesNo(tp,aux.Stringid(9910717,3)) then
-			b1=false
-			b2=false
-			if not sc:IsImmuneToEffect(e) and Duel.MoveToField(sc,tp,1-tp,LOCATION_SZONE,POS_FACEDOWN,true) then
-				sg2:AddCard(sc)
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetCode(EFFECT_CHANGE_TYPE)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-				e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
-				sc:RegisterEffect(e1)
-			end
-		end
-		if b2 and not sc:IsImmuneToEffect(e) and Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true) then
-			sg2:AddCard(sc)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetCode(EFFECT_CHANGE_TYPE)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-			e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
-			sc:RegisterEffect(e1)
-		end
-		b2=true
-		sc=sg:GetNext()
-	end
-	Duel.RaiseEvent(sg2,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+	if sg:GetCount()>0 then Ygzw.Set2(sg,e,tp) end
 end

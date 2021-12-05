@@ -34,7 +34,7 @@ end
 function c72412190.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c72412190.desfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND)
 end
 function c72412190.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) then
@@ -46,7 +46,7 @@ function c72412190.negop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c72412190.thfilter1(c)
-	return c:IsCode(72412200) 
+	return c:IsCode(72412200) or (Duel.IsPlayerAffectedByEffect(c:GetOwner(),72412340) and c:IsSetCard(0x9728))
 end
 function c72412190.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,72412190,RESET_PHASE+PHASE_END,0,1)

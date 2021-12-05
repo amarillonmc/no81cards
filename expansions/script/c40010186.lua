@@ -2,6 +2,7 @@
 local m=40010186
 local cm=_G["c"..m]
 cm.named_with_linkjoker=1
+cm.named_with_BLASTER=1
 function cm.linkjoker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_linkjoker

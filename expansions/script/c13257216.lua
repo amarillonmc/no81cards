@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	e11:SetType(EFFECT_TYPE_SINGLE)
 	e11:SetCode(EFFECT_EQUIP_LIMIT)
 	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e11:SetValue(cm.eqlimit)
+	e11:SetValue(tama.cosmicBattleship_equipLimit_primaryWeapon)
 	c:RegisterEffect(e11)
 	--immune
 	local e12=Effect.CreateEffect(c)
@@ -44,25 +44,9 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
 	c:RegisterEffect(e3)
-	c:RegisterFlagEffect(13257201,0,0,0,2)
+	eflist={{"equipment_rank",2}}
+	cm[c]=eflist
 	
-end
-function cm.eqlimit(e,c)
-	local eg=c:GetEquipGroup()
-	local lv=c:GetOriginalLevel()
-	if lv==nil then lv=0 end
-	if not eg:IsContains(e:GetHandler()) then
-		eg:AddCard(e:GetHandler())
-	end
-	local cl=c:GetFlagEffectLabel(13257200)
-	if cl==nil then
-		cl=0
-	end
-	local er=e:GetHandler():GetFlagEffectLabel(13257201)
-	if er==nil then
-		er=0
-	end
-	return not (er>cl) and not (eg:Filter(Card.IsSetCard,nil,0x354):GetSum(Card.GetLevel)>lv) and not c:GetEquipGroup():IsExists(Card.IsCode,1,e:GetHandler(),e:GetHandler():GetCode())
 end
 function cm.econ(e)
 	return e:GetHandler():GetEquipTarget()
@@ -82,7 +66,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local c=e:GetHandler()
 	if e:GetHandler():IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		local ct=c:GetEquipTarget():GetFlagEffectLabel(13257200)
+		local ct=tama.cosmicBattleship_getCoreLevel(ec)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_LEVEL)

@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	--extra link
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e0:SetRange(LOCATION_EXTRA)
 	e0:SetTarget(cm.mattg)
 	e0:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
@@ -61,8 +61,9 @@ end
 function cm.lfilter(c)
 	return c:IsLinkRace(RACE_CYBERSE+RACE_MACHINE) or c:IsType(TYPE_SPELL)
 end
-function cm.matval(e,c,mg)
-	return c:IsCode(m)
+function cm.matval(e,lc,mg,c,tp)
+	if e:GetHandler()~=lc then return false,nil end
+	return true,true
 end
 function cm.mattg(e,c)
 	return c:IsFaceup() and c:IsType(TYPE_SPELL)

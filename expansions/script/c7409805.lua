@@ -48,6 +48,8 @@ function c7409805.drop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Draw(p,d,REASON_EFFECT)==1 then
 		local tc=Duel.GetOperatedGroup():GetFirst()
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(7409805,3))
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_PUBLIC)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
@@ -63,7 +65,7 @@ function c7409805.drop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetCode(EFFECT_UPDATE_DEFENSE)
 			tc:RegisterEffect(e2)
 		else
-			local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,p,LOCATION_HAND,0,nil)
+			local g=Duel.GetMatchingGroup(c7409805.Grimy_Goons_filter,p,LOCATION_HAND,0,nil)
 			if g:GetCount()==0 then return end
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)

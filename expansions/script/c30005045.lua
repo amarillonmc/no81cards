@@ -38,9 +38,6 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_REMOVE)
 	c:RegisterEffect(e2)
-	local e3=e1:Clone()
-	e3:SetCode(EVENT_TO_DECK)
-	c:RegisterEffect(e3)
 	--search
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
@@ -58,10 +55,10 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsReason(REASON_DRAW)
 end
 function cm.costfilter(c,tp)
-	return c:IsType(TYPE_RITUAL) and (c:IsControler(tp) and c:IsLocation(LOCATION_HAND) or c:IsFaceup() and c:IsControler(1-tp))
+	return c:IsType(TYPE_RITUAL) and (c:IsControler(tp) and c:IsLocation(LOCATION_HAND) or c:IsFaceup())
 end
 function cm.costfilter1(c,tp)
-	return c:IsType(TYPE_RITUAL) and (c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) or c:IsFaceup() and c:IsControler(1-tp))
+	return c:IsType(TYPE_RITUAL) and (c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) or c:IsFaceup())
 end
 function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g1=Duel.GetReleaseGroup(tp,true):Filter(cm.costfilter,e:GetHandler(),tp)
@@ -131,6 +128,7 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCountLimit(1)
 		e2:SetTarget(cm.target)
 		e2:SetOperation(cm.operation)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e2)
 		local e3=Effect.CreateEffect(c)
 		e3:SetDescription(aux.Stringid(m,3))
@@ -142,6 +140,7 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetCountLimit(1)
 		e3:SetTarget(cm.rtg)
 		e3:SetOperation(cm.rtop)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e3)
 	end
 end
@@ -172,6 +171,9 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
+function cm.dfilter(c)
+	return c:IsReleasable() and c:GetOriginalLevel()>0
+end
 function cm.filter(c,e,tp)
 	return true
 end
@@ -195,20 +197,39 @@ function cm.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_e
 	Auxiliary.GCheckAdditional=nil
 	return res
 end
+function cm.rcheck(tp,g,c)
+	return g:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)<=99
+end
+function cm.rgcheck(g)
+	return g:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)<=99
+end
+function cm.extra(c)
+	return c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)
+end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local mg=Duel.GetRitualMaterial(tp)  
-		return Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,e:GetHandler(),nil,e,tp,mg,mg2,Card.GetLevel,"Greater")
+		local mg=Duel.GetRitualMaterial(tp)
+		local dg=Duel.GetMatchingGroup(cm.dfilter,tp,LOCATION_SZONE,0,nil)
+		aux.RCheckAdditional=cm.rcheck
+		aux.RGCheckAdditional=cm.rgcheck
+		local res=Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,e:GetHandler(),cm.filter,e,tp,mg,dg,Card.GetLevel,"Greater")
+		aux.RCheckAdditional=nil
+		aux.RGCheckAdditional=nil
+		return res
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_REMOVED)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function cm.rtop(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetRitualMaterial(tp)
+	local m=Duel.GetRitualMaterial(tp)
+	local dg=Duel.GetMatchingGroup(cm.dfilter,tp,LOCATION_SZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tg=Duel.SelectMatchingCard(tp,cm.RitualUltimateFilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,e:GetHandler(),nil,e,tp,mg,mg2,Card.GetLevel,"Greater")
+	aux.RCheckAdditional=cm.rcheck
+	aux.RGCheckAdditional=cm.rgcheck
+	local tg=Duel.SelectMatchingCard(tp,cm.RitualUltimateFilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,e:GetHandler(),cm.filter,e,tp,m,dg,Card.GetLevel,"Greater")
 	local tc=tg:GetFirst()
 	if tc then
-		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
+		local mg=m:Filter(Card.IsCanBeRitualMaterial,tc,tc)
+		mg:Merge(dg)
 		if tc.mat_filter then
 			mg=mg:Filter(tc.mat_filter,tc,tp)
 		else
@@ -218,11 +239,19 @@ function cm.rtop(e,tp,eg,ep,ev,re,r,rp)
 		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
 		local mat=mg:SelectSubGroup(tp,aux.RitualCheck,false,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater")
 		aux.GCheckAdditional=nil
-		if not mat or mat:GetCount()==0 then return end
-		tc:SetMaterial(mat) 
-		Duel.ReleaseRitualMaterial(mat)
+		if not mat or mat:GetCount()==0 then
+			aux.RCheckAdditional=nil
+			aux.RGCheckAdditional=nil
+			return
+		end
+		tc:SetMaterial(mat)
+		if mat:GetCount()>0 then
+			Duel.ReleaseRitualMaterial(mat)
+		end
 		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		tc:CompleteProcedure()
-	end   
+	end
+	aux.RCheckAdditional=nil
+	aux.RGCheckAdditional=nil
 end

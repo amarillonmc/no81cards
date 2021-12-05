@@ -76,8 +76,7 @@ function cm.initial_effect(c)
 	local e13=e12:Clone()
 	e13:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e13)
-	c:RegisterFlagEffect(13257200,0,0,0,1)
-	eflist={{"deck_equip",e8}}
+	eflist={{"deck_equip",e8},{"core_level",1}}
 	cm[c]=eflist
 	
 end

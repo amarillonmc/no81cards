@@ -10,10 +10,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--remove
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e2:SetCountLimit(1,TAMA_THEME_CODE)
+	e2:SetCountLimit(1,TAMA_THEME_CODE+EFFECT_COUNT_CODE_DUEL)
+	e2:SetCondition(cm.recon)
 	e2:SetOperation(cm.reop)
 	c:RegisterEffect(e2)
 	--[[
@@ -33,10 +36,11 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
 	e3:SetCountLimit(1)
 	e3:SetRange(LOCATION_FZONE)
-	e3:SetCondition(cm.drcon)
 	e3:SetTarget(cm.drtg)
 	e3:SetOperation(cm.drop)
 	c:RegisterEffect(e3)
+	elements={{"theme_effect",e2}}
+	cm[c]=elements
 	
 end
 function cm.cfilter(c)
@@ -64,6 +68,9 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 ]]
+function cm.recon(e,tp)
+	return not e:GetHandler():IsForbidden() and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_CARD,1-tp,m)
@@ -79,7 +86,10 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(TAMA_THEME_CODE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(m)
 	Duel.RegisterEffect(e1,tp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
@@ -101,17 +111,22 @@ end
 function cm.aclimit(e,re,tp)
 	return re:GetActivateLocation()==LOCATION_GRAVE
 end
-function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
-end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	if chk==0 then return true end
+	local ht=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
+	local ct=2
+	if tama.isTheme(tp,m) then ct=3 end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct-ht)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+	local ht=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
+	local ct=2
+	if ht<ct then
+		Duel.Draw(tp,ct-ht,REASON_EFFECT)
+	end
+	if tama.isTheme(tp,m) then
+		Duel.BreakEffect()
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
 end

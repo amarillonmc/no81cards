@@ -49,7 +49,7 @@ function cm.initial_effect(c)
 end
 function cm.ntcon(e,c,minc)
 	if c==nil then return true end
-	return minc==0 and c:IsLevelAbove(5) and Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_HAND)>=5
+	return minc==0 and c:IsLevelAbove(5) and Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_HAND)>=3
 end
 function cm.efilter(e,ct)
 	local te=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT)

@@ -45,21 +45,10 @@ function c67200265.pcop(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,67200266,0x674,TYPES_TOKEN_MONSTER,0,0,1,RACE_PSYCHO,ATTRIBUTE_LIGHT) then
 		local token=Duel.CreateToken(tp,67200266)
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e2:SetRange(LOCATION_MZONE)
-		e2:SetAbsoluteRange(tp,1,0)
-		e2:SetTarget(c67200265.splimit1)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		token:RegisterEffect(e2,true)
 		Duel.SpecialSummonComplete()
 	end
 end
 function c67200265.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsSetCard(0x674) and bit.band(sumtype,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
-function c67200265.splimit1(e,c)
-	return not c:IsType(TYPE_PENDULUM) and c:IsLocation(LOCATION_EXTRA)
-end
+

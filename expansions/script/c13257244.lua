@@ -41,8 +41,7 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.eqop)
 	c:RegisterEffect(e5)
 	
-	c:RegisterFlagEffect(13257200,0,0,0,1)
-	eflist={{"deck_equip",e5}}
+	eflist={{"deck_equip",e5},{"core_level",1}}
 	cm[c]=eflist
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
@@ -68,7 +67,7 @@ function cm.eftg(e,c)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	if bit.band(r,REASON_EFFECT)<=0 then return false end
-	return rc:GetHandler()==c:GetHandler()
+	return re:GetHandler()==e:GetHandler()
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,e:GetHandler():GetCode())

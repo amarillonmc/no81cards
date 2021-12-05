@@ -18,19 +18,7 @@ function c67200261.initial_effect(c)
 	e1:SetTarget(c67200261.sptg)
 	e1:SetOperation(c67200261.spop)
 	c:RegisterEffect(e1) 
-	--spsummon2
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(67200261,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_DESTROYED)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,67200261)
-	e2:SetCondition(c67200261.condition)
-	e2:SetTarget(c67200261.target)
-	e2:SetOperation(c67200261.activate)
-	c:RegisterEffect(e2)   
+ 
 end
 function c67200261.cfilter(c)
 	return (c:IsType(TYPE_MONSTER) and not c:IsPreviousLocation(LOCATION_SZONE)) or c:IsPreviousLocation(LOCATION_MZONE) and c:IsSetCard(0x674)
@@ -64,30 +52,4 @@ function c67200261.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 	end
 	Duel.SpecialSummonComplete()
-end
---
-function c67200261.cfilter1(c,tp)
-	return (c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==1-tp)
-		and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsCode(67200259)
-end
-function c67200261.condition(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c67200261.cfilter1,1,nil,tp)
-end
-function c67200261.filter(c,e,tp)
-	return c:IsCode(67200262) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
-end
-function c67200261.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c67200261.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK+LOCATION_HAND)
-end
-function c67200261.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c67200261.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
-		tc:CompleteProcedure()
-	end
 end

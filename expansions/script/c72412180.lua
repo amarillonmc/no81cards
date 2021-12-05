@@ -40,7 +40,7 @@ function c72412180.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c72412180.thfilter1(c)
-	return c:IsCode(72412190) 
+	return c:IsCode(72412190) or (Duel.IsPlayerAffectedByEffect(c:GetOwner(),72412340) and c:IsSetCard(0x9728))
 end
 function c72412180.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,72412180,RESET_PHASE+PHASE_END,0,1)

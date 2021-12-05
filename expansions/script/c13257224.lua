@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e11:SetType(EFFECT_TYPE_SINGLE)
 	e11:SetCode(EFFECT_EQUIP_LIMIT)
 	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e11:SetValue(cm.eqlimit)
+	e11:SetValue(tama.cosmicBattleship_equipLimit_lightWeapon)
 	c:RegisterEffect(e11)
 	--immune
 	local e12=Effect.CreateEffect(c)
@@ -60,25 +60,9 @@ function cm.initial_effect(c)
 	e5:SetTarget(cm.tgdisable)
 	e5:SetOperation(cm.opdisable)
 	c:RegisterEffect(e5)
-	c:RegisterFlagEffect(13257201,0,0,0,3)
+	eflist={{"equipment_rank",3}}
+	cm[c]=eflist
 	
-end
-function cm.eqlimit(e,c)
-	local eg=c:GetEquipGroup()
-	local lv=c:GetOriginalLevel()
-	if lv==nil then lv=0 end
-	if not eg:IsContains(e:GetHandler()) then
-		eg:AddCard(e:GetHandler())
-	end
-	local cl=c:GetFlagEffectLabel(13257200)
-	if cl==nil then
-		cl=0
-	end
-	local er=e:GetHandler():GetFlagEffectLabel(13257201)
-	if er==nil then
-		er=0
-	end
-	return not (er>cl) and not (eg:Filter(Card.IsSetCard,nil,0x354):GetSum(Card.GetLevel)>lv) and not c:GetEquipGroup():IsExists(Card.IsCode,1,e:GetHandler(),e:GetHandler():GetCode())
 end
 function cm.econ(e)
 	return e:GetHandler():GetEquipTarget()
@@ -89,7 +73,7 @@ end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetEquipTarget()
 	if ec and e:GetHandler():GetFlagEffect(1)>0 and re:GetHandlerPlayer()~=tp then
-		local ct=ec:GetFlagEffectLabel(13257200)
+		local ct=tama.cosmicBattleship_getCoreLevel(ec)
 		if ct==nil then ct=0 end
 		if ct>0 then
 			--ct=math.floor(math.sqrt(ct))

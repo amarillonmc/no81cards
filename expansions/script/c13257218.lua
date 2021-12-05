@@ -38,8 +38,7 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.eqtg)
 	e4:SetOperation(cm.eqop)
 	c:RegisterEffect(e4)
-	c:RegisterFlagEffect(13257200,0,0,0,1)
-	eflist={{"deck_equip",e4}}
+	eflist={{"deck_equip",e4},{"core_level",1}}
 	cm[c]=eflist
 	
 end

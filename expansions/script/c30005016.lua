@@ -23,10 +23,13 @@ c:EnableReviveLimit()
 	c:RegisterEffect(e1)
 --activate
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetCode(EVENT_TO_GRAVE)
-	e3:SetOperation(cm.regop)
+	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_PHASE+PHASE_END)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCost(cm.thcost)
+	e3:SetTarget(cm.acttg)
+	e3:SetOperation(cm.actop)
 	c:RegisterEffect(e3)
 end
 function cm.matfilter(c)
@@ -43,7 +46,7 @@ end
 function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp)
 		and Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_GRAVE,0,3,nil,e,tp) end
-	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,cm.desfilter,tp,LOCATION_GRAVE,0,3,3,nil,e,tp)
 		g:KeepAlive()
@@ -59,22 +62,7 @@ function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=e:GetLabelObject() 
 	Duel.SendtoDeck(tg,nil,2,REASON_EFFECT+REASON_REPLACE)
 end
-function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsPreviousLocation(LOCATION_ONFIELD) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetCategory(CATEGORY_TOHAND)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetRange(LOCATION_GRAVE)
-		e1:SetCountLimit(1,m)
-		e1:SetCost(cm.thcost)
-		e1:SetTarget(cm.acttg)
-		e1:SetOperation(cm.actop)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		c:RegisterEffect(e1)
-	end
-end
+
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToExtraAsCost() end
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
@@ -94,5 +82,3 @@ function cm.actop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,g)
 		end
 end
-
-

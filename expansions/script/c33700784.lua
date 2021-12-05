@@ -5,8 +5,8 @@ if not RSVoVal then
    RSVoVal=RSVoVal or {}
    rsvo=RSVoVal
 --other link material bug repair
-function Auxiliary.LCheckOtherMaterial(c,mg,lc)
-	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL)}
+function Auxiliary.LCheckOtherMaterial(c,mg,lc,tp)
+	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
 	if #le==0 then return true end
 	for _,te in pairs(le) do
 		local f=te:GetValue()
@@ -14,9 +14,9 @@ function Auxiliary.LCheckOtherMaterial(c,mg,lc)
 	end
 	return false
 end
-function Auxiliary.LExtraFilter(c,f,lc)
+function Auxiliary.LExtraFilter(c,f,lc,tp)
 	if c:IsLocation(LOCATION_ONFIELD) and not c:IsFaceup() then return false end
-	return c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL) and (c:IsCanBeLinkMaterial(lc) or ((bit.band(c:GetOriginalType(),TYPE_SPELL)~=0 or bit.band(c:GetOriginalType(),TYPE_TRAP)~=0) and not c:IsType(TYPE_MONSTER))) and (not f or f(c))
+	return c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp) and (c:IsCanBeLinkMaterial(lc) or ((bit.band(c:GetOriginalType(),TYPE_SPELL)~=0 or bit.band(c:GetOriginalType(),TYPE_TRAP)~=0) and not c:IsType(TYPE_MONSTER))) and (not f or f(c))
 end
 function rsvo.LPLinkFunction(c)   
 	c:EnableReviveLimit()
@@ -170,8 +170,9 @@ end
 function cm.lfilter(c)
 	return c:IsLinkRace(RACE_CYBERSE+RACE_MACHINE) or c:IsType(TYPE_TRAP)
 end
-function cm.matval(e,c,mg)
-	return c:IsCode(m)
+function cm.matval(e,lc,mg,c,tp)
+	if e:GetHandler()~=lc then return false,nil end
+	return true,true
 end
 function cm.mattg(e,c)
 	return c:IsFaceup() and c:IsType(TYPE_TRAP)

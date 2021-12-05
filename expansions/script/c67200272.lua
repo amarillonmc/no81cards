@@ -21,10 +21,12 @@ function c67200272.initial_effect(c)
 	e7:SetProperty(EFFECT_FLAG_DELAY)
 	e7:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e7:SetCountLimit(1,67200273)
-	e7:SetCondition(c67200272.spcon)
 	e7:SetTarget(c67200272.sptg)
 	e7:SetOperation(c67200272.spop)
-	c:RegisterEffect(e7)	
+	c:RegisterEffect(e7)  
+	local e3=e7:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e3)  
 end
 function c67200272.scfilter1(c,e,tp)
 	return c:IsSetCard(0x674) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -50,33 +52,20 @@ function c67200272.scop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
 		tc:RegisterEffect(e2)
-		local c=e:GetHandler()
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e3:SetReset(RESET_EVENT+RESETS_REDIRECT)
-		e3:SetValue(LOCATION_REMOVED)
-		tc:RegisterEffect(e3,true)
 	end
 	if Duel.SpecialSummonComplete()==0 then return end
 end
 --
-function c67200272.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_PENDULUM)
-end
 function c67200272.spfilter(c,e,tp)
 	return c:IsSetCard(0x674) and c:IsType(TYPE_PENDULUM) and not c:IsCode(67200272)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and c:IsFaceup()
 end
 function c67200272.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c67200272.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c67200272.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c67200272.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if Duel.GetLocationCountFromEx(tp,tp,nil,c)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c67200272.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()

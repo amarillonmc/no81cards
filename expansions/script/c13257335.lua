@@ -18,6 +18,19 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
+	--remove
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e3:SetCountLimit(1,TAMA_THEME_CODE+EFFECT_COUNT_CODE_DUEL)
+	e3:SetCondition(cm.recon)
+	e3:SetOperation(cm.reop)
+	c:RegisterEffect(e3)
+	elements={{"theme_effect",e3}}
+	cm[c]=elements
 	
 end
 function cm.filter(c)
@@ -91,4 +104,38 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,spcard)
 		Duel.ShuffleHand(tp)
 	end
+end
+function cm.recon(e,tp)
+	return not e:GetHandler():IsForbidden() and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+end
+function cm.reop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_CARD,1-tp,m)
+	Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,2))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(TAMA_THEME_CODE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(m)
+	Duel.RegisterEffect(e1,tp)
+	--inactivatable
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,3))
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_INACTIVATE)
+	e2:SetValue(cm.effectfilter)
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CANNOT_DISEFFECT)
+	e3:SetValue(cm.effectfilter)
+	Duel.RegisterEffect(e3,tp)
+end
+function cm.effectfilter(e,ct)
+	local p=e:GetHandler():GetControler()
+	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+	local tc=te:GetHandler()
+	return p==tp and tc:IsCode(13257329,13257330,13257331,13257332)
 end

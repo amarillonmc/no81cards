@@ -2,7 +2,7 @@ tama=tama or {}
 
 --[[To use this, have to add
 xpcall(function() require("expansions/script/c" + "code") end,function() require("script/c" + "code") end) ]]
-TAMA_THEME_CODE=13254060
+TAMA_THEME_CODE=13250000
 tama.loaded_metatable_list=tama.loaded_metatable_list or {}
 function tama.load_metatable(code)
 	local m1=_G["c"..code]
@@ -78,6 +78,38 @@ function tama.getTargetTable(c,str)
 		i=i+1
 	end
 	return nil
+end
+--[[
+	Custom field effect example:
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(11111111)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetTargetRange(LOCATION_HAND+LOCATION_GRAVE,0)
+	e1:SetLabel(1)
+	e1:SetValue(2)
+	c:RegisterEffect(e1)
+]]
+function tama.getCardAffectedEffectTable(c,code)
+	local et={c:IsHasEffect(code)}
+	return et
+end
+function tama.getPlayerAffectedEffectTable(p,code)
+	local et={Duel.IsPlayerAffectedByEffect(p,code)}
+	return et
+end
+--[[Theme is a effect for player.
+	I think each player should have at most one theme.
+	Don't use EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS!
+]]
+function tama.getTheme(p)
+	local et=tama.getPlayerAffectedEffectTable(p,TAMA_THEME_CODE)
+	local themeCode=0
+	if #et>0 then themeCode=Effect.GetValue(et[1]) end
+	return themeCode
+end
+function tama.isTheme(p,themeCode)
+	return tama.getTheme(p)==themeCode
 end
 --[[
 	_G bind with code
@@ -492,6 +524,7 @@ end
 --select elements material equal or above target
 function tama.tamas_selectElementsMaterial(mg,codes,tp)
 	if not tama.tamas_isCanSelectElementsForAbove(mg,codes) then return nil end
+	--[[
 	local sg=Group.CreateGroup()
 	while true do
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(TAMA_ELEMENT_HINTCODE,0))
@@ -500,7 +533,13 @@ function tama.tamas_selectElementsMaterial(mg,codes,tp)
 		else Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(TAMA_ELEMENT_HINTCODE,1))
 		end
 	end
+	]]
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(TAMA_ELEMENT_HINTCODE,0))
+	local sg=mg:SelectSubGroup(tp,tama.tamas_elementsMaterialFilter,false,1,mg:GetCount(),codes)
 	return sg
+end
+function tama.tamas_elementsMaterialFilter(g,codes)
+	return tama.tamas_isCanSelectElementsForAbove(g,codes)
 end
 --[[if A={{a,2}{b,2}}, B={{a,2}{b,2}}, A<=B
 if A={{a,2}{b,?}}, B={{a,2}}, A>B
@@ -522,12 +561,16 @@ function tama.tamas_checkCardElementsGreater(card,targetCard)
 	return tama.tamas_checkElementsGreater(codes,targetCodes)
 end
 
-COSMIC_BATTLESHIP_SHIELD=0x353
-COSMIC_BATTLESHIP_CHARGE=0x354
+TAMA_COSMIC_BATTLESHIP_COUNTER_SHIELD=0x353
+TAMA_COSMIC_BATTLESHIP_COUNTER_CHARGE=0x354
+TAMA_CORE_LEVEL=13257200
+TAMA_EQUIPMENT_RANK=13257201
+TAMA_COSMIC_BATTLESHIP_CODE_ADD_CORE_LEVEL=13257200
 function tama.cosmicBattleship_equipShield(targetCard,count)
+	local COUNTER_SHIELD=TAMA_COSMIC_BATTLESHIP_COUNTER_SHIELD
 	if not targetCard:IsFaceup() or not targetCard:IsOnField() then return end
-	if not targetCard:IsDisabled() and not targetCard:IsCanAddCounter(COSMIC_BATTLESHIP_SHIELD,count) then
-		targetCard:EnableCounterPermit(COSMIC_BATTLESHIP_SHIELD)
+	if not targetCard:IsDisabled() and not targetCard:IsCanAddCounter(COUNTER_SHIELD,count) then
+		targetCard:EnableCounterPermit(COUNTER_SHIELD)
 		--Destroy replace
 		local e1=Effect.CreateEffect(targetCard)
 		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
@@ -535,19 +578,89 @@ function tama.cosmicBattleship_equipShield(targetCard,count)
 		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e1:SetRange(LOCATION_MZONE)
 		e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
-				if chk==0 then return e:GetHandler():IsReason(REASON_EFFECT+REASON_BATTLE)
-					and e:GetHandler():GetCounter(COSMIC_BATTLESHIP_SHIELD)>0 end
+				local c=e:GetHandler()
+				if chk==0 then return c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE) and e:GetHandler():GetCounter(COUNTER_SHIELD)>0 end
 				return true
 			end)
 		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 				local c=e:GetHandler()
-				c:RemoveCounter(ep,COSMIC_BATTLESHIP_SHIELD,1,REASON_EFFECT)
-				Duel.RaiseEvent(c,EVENT_REMOVE_COUNTER+COSMIC_BATTLESHIP_SHIELD,e,REASON_EFFECT+REASON_REPLACE,tp,tp,1)
+				c:RemoveCounter(ep,COUNTER_SHIELD,1,REASON_EFFECT)
+				Duel.RaiseEvent(c,EVENT_REMOVE_COUNTER+COUNTER_SHIELD,e,REASON_EFFECT+REASON_REPLACE,tp,tp,1)
 			end)
 		e1:SetReset(RESET_EVENT+0x1fe0000)
 		targetCard:RegisterEffect(e1,true)
 	end
-	if targetCard:IsCanAddCounter(COSMIC_BATTLESHIP_SHIELD,count) then
-		targetCard:AddCounter(COSMIC_BATTLESHIP_SHIELD,count)
+	if targetCard:IsCanAddCounter(COUNTER_SHIELD,count) then
+		targetCard:AddCounter(COUNTER_SHIELD,count)
 	end
+end
+function tama.cosmicBattleship_getCoreLevel(c)
+	local coreLevel=0
+	local cl=tama.getTargetTable(c,"core_level")
+	if cl~=nil then
+		coreLevel=cl
+	end
+	local et=tama.getCardAffectedEffectTable(c,TAMA_COSMIC_BATTLESHIP_CODE_ADD_CORE_LEVEL)
+	local i=1
+	while et[i] do
+		coreLevel=coreLevel+Effect.GetValue(et[i])
+		i=i+1
+	end
+	return coreLevel
+end
+function tama.cosmicBattleship_getEquipmentRank(c)
+	local equipRank=0
+	local er=tama.getTargetTable(c,"equipment_rank")
+	if er~=nil then
+		equipRank=er
+	end
+	return equipRank
+end
+function tama.cosmicBattleship_equipLimit_lightWeapon(e,c)
+	local eg=c:GetEquipGroup()
+	local lv=c:GetOriginalLevel()
+	if lv==nil then lv=0 end
+	if not eg:IsContains(e:GetHandler()) then
+		eg:AddCard(e:GetHandler())
+	end
+	--[[
+	local cl=c:GetFlagEffectLabel(13257200)
+	if cl==nil then
+		cl=0
+	end
+	local er=e:GetHandler():GetFlagEffectLabel(13257201)
+	if er==nil then
+		er=0
+	end
+	]]
+	local cl=tama.cosmicBattleship_getCoreLevel(c)
+	local er=tama.cosmicBattleship_getEquipmentRank(e:GetHandler())
+	return not (er>cl) and not (eg:Filter(Card.IsSetCard,nil,0x354):GetSum(Card.GetLevel)>lv) and not c:GetEquipGroup():IsExists(Card.IsCode,1,e:GetHandler(),e:GetHandler():GetCode())
+end
+function tama.cosmicBattleship_equipLimit_heavyWeapon(e,c)
+	local eg=c:GetEquipGroup()
+	local lv=c:GetOriginalLevel()
+	if lv==nil then lv=0 end
+	if not eg:IsContains(e:GetHandler()) then
+		eg:AddCard(e:GetHandler())
+	end
+	local cl=tama.cosmicBattleship_getCoreLevel(c)
+	local er=tama.cosmicBattleship_getEquipmentRank(e:GetHandler())
+	return not (er>cl) and c:GetOriginalLevel()>=7 and not (eg:Filter(Card.IsSetCard,nil,0x354):GetSum(Card.GetLevel)>lv)
+end
+function tama.cosmicBattleship_equipLimit_primaryWeapon(e,c)
+	local eg=c:GetEquipGroup()
+	local lv=c:GetOriginalLevel()
+	if lv==nil then lv=0 end
+	if not eg:IsContains(e:GetHandler()) then
+		eg:AddCard(e:GetHandler())
+	end
+	local cl=tama.cosmicBattleship_getCoreLevel(c)
+	local er=tama.cosmicBattleship_getEquipmentRank(e:GetHandler())
+	return not (er>cl) and not (eg:Filter(Card.IsSetCard,nil,0x354):GetSum(Card.GetLevel)>lv)
+end
+function tama.cosmicBattleship_equipLimit_shield(e,c)
+	local cl=tama.cosmicBattleship_getCoreLevel(c)
+	local er=tama.cosmicBattleship_getEquipmentRank(e:GetHandler())
+	return not (er>cl) and (c:GetOriginalLevel()>=e:GetHandler():GetRank()) and not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x9354)
 end

@@ -51,6 +51,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
+function cm.filter(c)
+	return c:IsAbleToDeck()
+end
 function cm.conditon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_SUMMON_TURN)
 end

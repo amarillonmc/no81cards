@@ -3,6 +3,7 @@ local m=13257302
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
+	--[[
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetCategory(CATEGORY_EQUIP)
@@ -12,9 +13,21 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.eqtg)
 	e1:SetOperation(cm.eqop)
 	c:RegisterEffect(e1)
-	--[[local e2=e1:Clone()
+	local e2=e1:Clone()
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	c:RegisterEffect(e2)]]
+	c:RegisterEffect(e2)
+	]]
+	e1:SetDescription(aux.Stringid(m,5))
+	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCost(cm.descost)
+	e1:SetTarget(cm.destg)
+	e1:SetOperation(cm.desop)
+	c:RegisterEffect(e1)
 	--Power Capsule
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
@@ -44,6 +57,7 @@ end
 function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x352) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
 end
+--[[
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,e:GetHandler()) end
@@ -57,6 +71,39 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		local tc=g:GetFirst()
 		Duel.Equip(tp,tc,c)
+	end
+end
+]]
+function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local fg=tama.cosmicFighters_getOptions(e:GetHandler())
+	if chk==0 then return fg:IsExists(Card.IsReleasable,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local rc=fg:FilterSelect(tp,Card.IsReleasable,1,1,nil)
+	Duel.Release(rc,REASON_COST)
+end
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) end
+	if chk==0 then return Duel.IsExistingTarget(nil,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+end
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(-2000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_UPDATE_DEFENSE)
+		tc:RegisterEffect(e2)
+		if tc:IsAttack(0) or tc:IsDefense(0) then
+			Duel.BreakEffect()
+			Duel.Destroy(tc,REASON_EFFECT)
+		end
 	end
 end
 function cm.pcfilter(c,tp)
@@ -199,7 +246,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		Duel.ConfirmCards(1-tp,c)
 	end
 end

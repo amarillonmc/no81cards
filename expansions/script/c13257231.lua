@@ -3,7 +3,6 @@ local m=13257231
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x353)
 	local e10=Effect.CreateEffect(c)
 	e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e10:SetType(EFFECT_TYPE_SINGLE)
@@ -66,8 +65,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e13)
 	Duel.AddCustomActivityCounter(13257231,ACTIVITY_SPSUMMON,cm.counterfilter)
 	Duel.AddCustomActivityCounter(13257231,ACTIVITY_NORMALSUMMON,cm.counterfilter)
-	c:RegisterFlagEffect(13257200,0,0,0,1)
-	eflist={{"deck_equip",e5}}
+	eflist={{"deck_equip",e5},{"core_level",1}}
 	cm[c]=eflist
 	
 end

@@ -39,8 +39,7 @@ function cm.initial_effect(c)
 	e12:SetCode(EVENT_SUMMON_SUCCESS)
 	e12:SetOperation(cm.bgmop)
 	c:RegisterEffect(e12)
-	c:RegisterFlagEffect(13257200,0,0,0,5)
-	eflist={{"deck_equip",e4}}
+	eflist={{"deck_equip",e4},{"core_level",5}}
 	cm[c]=eflist
 	Duel.AddCustomActivityCounter(13257233,ACTIVITY_NORMALSUMMON,cm.counterfilter)
 	Duel.AddCustomActivityCounter(13257233,ACTIVITY_SPSUMMON,cm.counterfilter)

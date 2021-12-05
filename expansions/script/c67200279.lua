@@ -39,11 +39,11 @@ function c67200279.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67200279.drconfil(c)
-	return c:IsSetCard(0x674) and c:IsPreviousLocation(LOCATION_MZONE)
+	return c:IsSetCard(0x674) and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c67200279.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local eeg=eg:Filter(c67200279.drconfil,nil)
-	return eeg:GetCount()>0 and eeg:FilterCount(Card.IsAbleToDeck,nil)==eeg:GetCount() 
+	return eeg:GetCount()>0 and eeg:FilterCount(Card.IsAbleToDeck,nil)==eeg:GetCount()
 end
 function c67200279.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local eeg=eg:Filter(c67200279.drconfil,nil)
