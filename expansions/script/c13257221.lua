@@ -93,7 +93,7 @@ function cm.damop1(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetEquipTarget()
 	local ct=eg:FilterCount(cm.damfilter,nil,1-tp)
 	if ec then
-		local ct1=ec:GetFlagEffectLabel(13257200)*150
+		local ct1=tama.cosmicBattleship_getCoreLevel(ec)*150
 		if ct>0 and ct1>0 then
 			Duel.Hint(HINT_CARD,1,m)
 			Duel.Damage(1-tp,ct*ct1,REASON_EFFECT)

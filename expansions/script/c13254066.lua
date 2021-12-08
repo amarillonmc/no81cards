@@ -66,7 +66,7 @@ function cm.fselect1(g,tp)
 	return g:GetClassCount(Card.GetCode)==1 and g:GetCount()>=2 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.thfilter1),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,g:GetFirst():GetCode())
 end
 function cm.thfilter1(c,code)
-	return c:IsCode(tc:GetCode()) and c:IsAbleToHand()
+	return c:IsCode(code) and c:IsAbleToHand()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,0x5356)

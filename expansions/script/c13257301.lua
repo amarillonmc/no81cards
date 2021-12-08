@@ -32,6 +32,9 @@ function cm.initial_effect(c)
 	cm[c]=eflist
 	
 end
+function cm.eqfilter(c,ec)
+	return c:IsSetCard(0x352) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
+end
 function cm.pcfilter(c,tp)
 	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp
 end

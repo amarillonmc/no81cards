@@ -44,7 +44,7 @@ function c9910268.activate1(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local c=e:GetHandler()
 	if c:IsFaceup() and c:IsRelateToEffect(e) and e:IsHasType(EFFECT_TYPE_ACTIVATE)
-		and Duel.IsExistingMatchingCard(c9910268.cfilter,tp,LOCATION_MZONE,0,1,nil) then
+		and Duel.IsExistingMatchingCard(c9910268.cfilter1,tp,LOCATION_MZONE,0,1,nil) then
 		c:CancelToGrave()
 		c:AddCounter(0x953,2)
 	end

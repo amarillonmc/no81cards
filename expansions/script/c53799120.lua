@@ -2,7 +2,6 @@ local m=53799120
 local cm=_G["c"..m]
 cm.name="双魂共斗"
 function cm.initial_effect(c)
-	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_LEAVE_GRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -21,32 +20,45 @@ function cm.filter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil)
-	if chk==0 then return g:CheckSubGroup(aux.gfcheck,2,2,Card.IsCode,m-1,m+1) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>1 and g:CheckSubGroup(aux.gfcheck,2,2,Card.IsCode,m-1,m+1) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<2 then return end
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	local g1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	g2=Group.__add(g,g1)
-	if #g2>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=g2:FilterSelect(tp,Card.IsAbleToHand,1,1,nil)
-		local tc=tg:GetFirst()
-		if g:IsContains(tc) then
-			g2:Sub(g)
-		else
-			g2:Sub(g1)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local sg=g:SelectSubGroup(tp,aux.gfcheck,false,2,2,Card.IsCode,m-1,m+1)
+	if #sg==2 and Duel.SSet(tp,sg)==2 then
+		for tc in aux.Next(sg) do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 		end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local tg1=g2:FilterSelect(tp,Card.IsSSetable,1,1,nil)
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
-		Duel.SSet(tp,tg1)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tg1:GetFirst():RegisterEffect(e1)
+		sg:KeepAlive()
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetCode(EFFECT_ACTIVATE_COST)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e2:SetTargetRange(1,0)
+		e2:SetLabelObject(sg)
+		e2:SetTarget(cm.actarget)
+		e2:SetOperation(cm.costop)
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e2,tp)
 	end
+end
+function cm.actarget(e,te,tp)
+	return e:GetLabelObject():IsContains(te:GetHandler()) and te:GetHandler():GetFlagEffect(m)>0
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	for tc in aux.Next(g) do
+		tc:ResetEffect(EFFECT_TRAP_ACT_IN_SET_TURN,RESET_CODE)
+		tc:ResetFlagEffect(m)
+	end
+	e:Reset()
 end

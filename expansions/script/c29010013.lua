@@ -3,7 +3,7 @@ function c29010013.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	--fusion material
-	aux.AddFusionProcCodeFunRep(c,29010010,aux.FilterBoolFunction(Card.IsRace,RACE_AQUA),1,99,true,true)
+	aux.AddFusionProcCodeFunRep(c,29010010,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),1,99,true,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,0,Duel.SendtoGrave,REASON_COST+REASON_MATERIAL)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)

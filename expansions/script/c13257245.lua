@@ -45,7 +45,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m)>0 then return end
-	Duel.RegisterFlagEffect(tp,m,0,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+	Duel.RegisterFlagEffect(tp,m,0,EFFECT_FLAG_CLIENT_HINT,1,aux.Stringid(m,1))
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)

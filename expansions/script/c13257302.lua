@@ -17,6 +17,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e2)
 	]]
+	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,5))
 	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_QUICK_O)

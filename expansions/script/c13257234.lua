@@ -99,7 +99,7 @@ function cm.chkfilter(c,tp)
 	return c:IsSetCard(0x353) and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.chkfilter,1,nil,tp) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0
+	return eg:IsExists(cm.chkfilter,1,nil,tp) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function cm.spfilter(c,e,tp)
 	return c:IsLevelAbove(6) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

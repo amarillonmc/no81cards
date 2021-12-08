@@ -97,7 +97,7 @@ function c53705003.activate(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 		local tc=Duel.GetOperatedGroup():GetFirst()
-		if tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) and tc:IsPreviousSetCard(0x3534) and tc:IsPreviousPosition(POS_FACEUP) then 
+		if tc and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) and tc:IsPreviousSetCard(0x3534) and tc:IsPreviousPosition(POS_FACEUP) then 
 			Duel.ShuffleDeck(tp)
 			Duel.BreakEffect()
 			Duel.Draw(tp,1,REASON_EFFECT)
