@@ -77,7 +77,7 @@ function cm.caop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ec=c:GetEquipTarget()
 	if not ec:IsRelateToBattle() or not c:IsRelateToEffect(e) then return end
-	Duel.ChainAttack(ec)
+	Duel.ChainAttack()
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and eg:GetFirst()==e:GetHandler():GetEquipTarget()

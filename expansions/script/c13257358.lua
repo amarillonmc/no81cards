@@ -31,7 +31,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x351) and c:IsAbleToHand()
+	return c:IsSetCard(0x351) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
