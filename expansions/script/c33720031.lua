@@ -39,7 +39,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_PUBLIC)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				e:GetHandler():RegisterEffect(e1)
+				tc:RegisterEffect(e1)
 			end
 			Duel.BreakEffect()
 			Duel.SkipPhase(tp,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
