@@ -1,13 +1,7 @@
 --滑翔机小姐
 --Scripted by: XGlitchy30
-function GetID()
-	local str=string.match(debug.getinfo(2,'S')['source'],"c%d+%.lua")
-	str=string.sub(str,1,string.len(str)-4)
-	local scard=_G[str]
-	local s_id=tonumber(string.sub(str,2))
-	return scard,s_id
-end
-local s,id=GetID()
+local id=33720016
+local s=_G["c"..tostring(id)]
 function s.initial_effect(c)
 	--cannot link material
 	local e0=Effect.CreateEffect(c)

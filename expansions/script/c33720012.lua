@@ -1,12 +1,6 @@
 --虚拟YouTuber 有栖与莓
-function GetID()
-	local str=string.match(debug.getinfo(2,'S')['source'],"c%d+%.lua")
-	str=string.sub(str,1,string.len(str)-4)
-	local scard=_G[str]
-	local s_id=tonumber(string.sub(str,2))
-	return scard,s_id
-end
-local s,id=GetID()
+local id=33720012
+local s=_G["c"..tostring(id)]
 function s.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),aux.Tuner(nil),nil,aux.NonTuner(nil),2,99)
