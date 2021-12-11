@@ -37,7 +37,7 @@ function cm.cfilter(c,tp)
 	return c:IsRace(RACE_FIEND) and bit.band(c:GetReason(),0x41)==0x41 and c:IsControler(tp)
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,2,nil,tp)
+	return eg:IsExists(cm.cfilter,2,nil,e:GetHandler():GetControler())
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,ev)
