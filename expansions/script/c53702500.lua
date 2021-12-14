@@ -272,6 +272,7 @@ function cm.ALCYakuActCost2(e,tp,eg,ep,ev,re,r,rp,chk)
 		local cg=g2:Select(tp,1,1,nil)
 		g1:Merge(cg)
 	end
+	Duel.ConfirmCards(tp,g1)
 	local list={}
 	for tc in aux.Next(g1) do
 		table.insert(list,tc:GetCode())
