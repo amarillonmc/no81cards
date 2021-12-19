@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x17d7)
    --xyz summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x7d8),1,1)
+	aux.AddLinkProcedure(c,cm.mf,1,1)
 	c:EnableReviveLimit()
 	--summon success
 	local e1=Effect.CreateEffect(c)
@@ -22,6 +22,9 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.tg)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
+end
+function cm.mf(c)
+	return c:IsSetCard(0x7d8) and not c:IsType(TYPE_LINK)
 end
 function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

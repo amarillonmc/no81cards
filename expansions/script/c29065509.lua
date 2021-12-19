@@ -1,4 +1,4 @@
---炽热勇者 煌-沸腾爆裂
+--炽热勇者-煌
 function c29065509.initial_effect(c)
 	aux.AddCodeList(c,29065503)
 	--xyz summon
@@ -22,21 +22,7 @@ function c29065509.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e2:SetValue(29065503)
 	c:RegisterEffect(e2) 
-	--summon success
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetCondition(c29065509.regcon)
-	e3:SetOperation(c29065509.regop)
-	c:RegisterEffect(e3)
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetCode(EFFECT_MATERIAL_CHECK)
-	e5:SetValue(c29065509.valcheck)
-	e5:SetLabelObject(e3)
-	c:RegisterEffect(e5)
-	--
+	--dis
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAIN_SOLVING)
@@ -50,6 +36,7 @@ function c29065509.initial_effect(c)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e6:SetProperty(EFFECT_FLAG_DELAY)
+	e6:SetCountLimit(1,29065509)
 	e6:SetCondition(c29065509.decon)
 	e6:SetTarget(c29065509.destg)
 	e6:SetOperation(c29065509.desop)
@@ -79,7 +66,7 @@ function c29065509.valcheck(e,c)
 end
 function c29065509.discon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return re:GetHandler():GetControler()~=tp and (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) and e:GetHandler():GetFlagEffect(29065509)>0
+	return re:GetHandler():GetControler()~=tp and (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
 end
 function c29065509.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
@@ -101,12 +88,4 @@ function c29065509.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local g=Duel.GetMatchingGroup(c29065509.desfilter,tp,0,LOCATION_MZONE,nil,c:GetAttack())
 	Duel.Destroy(g,REASON_EFFECT)
-end
-function c29065509.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetLabel()==1
-end
-function c29065509.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	c:RegisterFlagEffect(29065509,RESET_EVENT+RESETS_STANDARD,0,1)
-	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(29065509,3))
 end

@@ -1,6 +1,6 @@
 --方舟骑士怒号光明
 function c29065512.initial_effect(c)
-	aux.AddCodeList(c,29065500)
+	aux.AddCodeList(c,29065500,29065505)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -12,23 +12,29 @@ function c29065512.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c29065512.filter1(c,e,tp)
-	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 		and Duel.IsExistingMatchingCard(c29065512.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,c:GetOriginalCode())
 end
 function c29065512.filter2(c,e,tp,mc,code)
 	return aux.IsCodeListed(c,code) and mc:IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
-function c29065512.filter3(c)
-	return c:IsCode(29065500) and c:IsFaceup()
+function c29065512.filter3(c,code)
+	return c:IsCode(code) and c:IsFaceup()
 end
 function c29065512.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29065512.filter1,tp,LOCATION_MZONE,0,1,nil,e,tp) end
-	if e:IsHasType(EFFECT_TYPE_ACTIVATE)
-		and Duel.IsExistingMatchingCard(c29065512.filter3,tp,LOCATION_MZONE,0,1,nil) then
+	local ct=0
+	if Duel.IsExistingMatchingCard(c29065512.filter3,tp,LOCATION_MZONE,0,1,nil,29065500) then ct=ct+1 end
+	if Duel.IsExistingMatchingCard(c29065512.filter3,tp,LOCATION_MZONE,0,1,nil,29065505) then ct=ct+1 end
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and ct>0 then
 		e:SetLabel(1)
+		if ct==2 then
+			e:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+		end
 	else
 		e:SetLabel(0)
+		e:SetProperty(0)
 	end
 end
 function c29065512.activate(e,tp,eg,ep,ev,re,r,rp)

@@ -47,7 +47,7 @@ function c46260003.filter(c,e,tp,mg)
 	else
 		tg:RemoveCard(c)
 	end
-	local lv=c:GetOriginalLevel()
+	local lv=c:GetLevel()
 	aux.GCheckAdditional=aux.RitualCheckAdditional(c,lv,"Greater")
 	local res=tg:CheckSubGroup(aux.RitualCheck,1,lv,tp,c,lv,"Greater")
 	aux.GCheckAdditional=nil
@@ -74,7 +74,7 @@ function c46260003.rop(e,tp,eg,ep,ev,re,r,rp)
 			mg:RemoveCard(tc)
 		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local lv=tc:GetOriginalLevel()
+		local lv=tc:GetLevel()
 		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,lv,"Greater")
 		local mat=mg:SelectSubGroup(tp,aux.RitualCheck,false,1,lv,tp,tc,lv,"Greater")
 		aux.GCheckAdditional=nil

@@ -142,7 +142,7 @@ end
 function cm.tdop(e,tp)
 	local ct=e:GetValue()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local tg=Duel.SelectMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,ct,ct,nil)
+	local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,ct,ct,nil)
 	if #tg>0 then
 		Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)
 	end

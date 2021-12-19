@@ -1,0 +1,231 @@
+--链环傀儡 欧米茄·超机神
+local m=40010218
+local cm=_G["c"..m]
+cm.named_with_linkjoker=1
+function cm.linkjoker(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_linkjoker
+end
+function cm.Reverse(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Reverse
+end
+function cm.initial_effect(c)
+		 c:EnableReviveLimit()
+	aux.AddLinkProcedure(c,cm.matfilter,3)   
+	--atkup
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(cm.spcon)
+	e1:SetCost(cm.spcost)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
+	c:RegisterEffect(e1)
+	local e6=e1:Clone()
+	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e6)
+	--cannot trigger
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CANNOT_TRIGGER)
+	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(0,LOCATION_ONFIELD)
+	e3:SetTarget(cm.distg)
+	c:RegisterEffect(e3)
+	--immune
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_IMMUNE_EFFECT)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(0,LOCATION_MZONE)
+	e2:SetTarget(cm.distg)
+	e2:SetValue(cm.efilter)
+	c:RegisterEffect(e2)
+	--cannot release
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCode(EFFECT_UNRELEASABLE_SUM)
+	e4:SetTargetRange(0,LOCATION_MZONE)
+	e4:SetTarget(cm.distg)
+	e4:SetValue(1)
+	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+	c:RegisterEffect(e5)
+	--add setcode
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetTargetRange(LOCATION_MZONE+LOCATION_GRAVE,0)
+	e7:SetCode(EFFECT_ADD_SETCODE)
+	e6:SetTarget(cm.etarget2)
+	e6:SetValue(cm.efilter2)
+	c:RegisterEffect(e7)
+end
+function cm.etarget2(e,c)
+	return cm.Reverse(c)
+end
+function cm.efilter2(e,c)
+	return cm.linkjoker(c)
+end
+function cm.matfilter(c)
+	return cm.linkjoker(c)
+end
+function cm.efilter(e,re)
+	return not cm.linkjoker(re)
+end
+function cm.cfilter(c,tp)
+	return c:IsFaceup() and cm.Reverse(c)  and c:IsSummonPlayer(tp)
+end
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.cfilter,1,nil,tp)
+end
+function cm.distg(e,c)
+	return c:IsFacedown()
+end
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,1-tp,1)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(1-tp,LOCATION_MZONE)<=0 then return end
+	local g=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
+	--Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	if g:GetCount()>0 then
+		local sg=g:RandomSelect(1-tp,1)
+		local tc=sg:GetFirst()
+		if tc:GetType(TYPE_MONSTER) then
+			Duel.SpecialSummon(tc,0,1-tp,1-tp,true,false,POS_FACEDOWN_ATTACK)
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
+			local e6=Effect.CreateEffect(e:GetHandler())
+			e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e6:SetCode(EVENT_PHASE+PHASE_END)
+			e6:SetCountLimit(1)
+			e6:SetReset(RESET_PHASE+RESETS_STANDARD-RESET_TURN_SET)
+			e6:SetCondition(cm.flipcon)
+			e6:SetOperation(cm.flipop)
+			e6:SetLabelObject(tc)
+			Duel.RegisterEffect(e6,tp)
+			local e7=Effect.CreateEffect(e:GetHandler())
+			e7:SetType(EFFECT_TYPE_SINGLE)
+			e7:SetCode(EFFECT_CANNOT_FLIP_SUMMON)
+			--e7:SetCondition(cm.rcon)
+			e7:SetReset(RESET_EVENT+RESETS_STANDARD)
+			Duel.RegisterEffect(e7,tp)
+			local e8=Effect.CreateEffect(e:GetHandler())
+			e8:SetType(EFFECT_TYPE_SINGLE)
+			e8:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
+			e8:SetReset(RESET_EVENT+RESETS_STANDARD)
+			Duel.RegisterEffect(e8,tp)
+	local de=Effect.CreateEffect(e:GetHandler())
+	de:SetType(EFFECT_TYPE_SINGLE)
+	de:SetCode(EVENT_CHANGE_POS)
+	de:SetReset(RESET_EVENT+RESETS_REDIRECT)
+	de:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+		de:SetCountLimit(1)
+	--de:SetLabel(fid2)
+	de:SetLabelObject(tc)
+		--de:SetCondition(cm.descon)
+		de:SetOperation(cm.desop)
+	g:GetFirst():RegisterEffect(de,tp)
+		end
+		local fid2=e:GetHandler():GetFieldID()
+		if not tc:GetType(TYPE_MONSTER) then
+			while tc do
+				local e1=Effect.CreateEffect(tc)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_CHANGE_TYPE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetValue(TYPE_NORMAL+TYPE_MONSTER)
+				e1:SetReset(RESET_EVENT+0x47c0000)
+				tc:RegisterEffect(e1,true)
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_REMOVE_RACE)
+				e2:SetValue(RACE_ALL)
+				tc:RegisterEffect(e2,true)
+				local e3=e1:Clone()
+				e3:SetCode(EFFECT_REMOVE_ATTRIBUTE)
+				e3:SetValue(0xff)
+				tc:RegisterEffect(e3,true)
+				local e4=e1:Clone()
+				e4:SetCode(EFFECT_SET_BASE_ATTACK)
+				e4:SetValue(0)
+				tc:RegisterEffect(e4,true)
+				local e5=e1:Clone()
+				e5:SetCode(EFFECT_SET_BASE_DEFENSE)
+				e5:SetValue(0)
+				tc:RegisterEffect(e5,true)
+				tc:RegisterFlagEffect(m+1,RESET_EVENT+0x47c0000+RESET_PHASE+RESETS_STANDARD-RESET_TURN_SET,0,1,fid2)
+				tc:SetStatus(STATUS_NO_LEVEL,true)
+				tc=g:GetNext()
+			end
+			Duel.SpecialSummon(g,0,1-tp,1-tp,true,false,POS_FACEDOWN_ATTACK)
+			g:KeepAlive()
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
+			local e6=Effect.CreateEffect(e:GetHandler())
+			e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e6:SetCode(EVENT_PHASE+PHASE_END)
+			e6:SetCountLimit(1)
+			e6:SetReset(RESET_PHASE+RESETS_STANDARD-RESET_TURN_SET)
+			e6:SetCondition(cm.flipcon)
+			e6:SetOperation(cm.flipop)
+			e6:SetLabelObject(tc)
+			Duel.RegisterEffect(e6,tp)
+			local e7=Effect.CreateEffect(e:GetHandler())
+			e7:SetType(EFFECT_TYPE_SINGLE)
+			e7:SetCode(EFFECT_CANNOT_FLIP_SUMMON)
+			--e7:SetCondition(cm.rcon)
+			e7:SetReset(RESET_EVENT+RESETS_STANDARD)
+			Duel.RegisterEffect(e7,tp)
+			local e8=Effect.CreateEffect(e:GetHandler())
+			e8:SetType(EFFECT_TYPE_SINGLE)
+			e8:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
+			e8:SetReset(RESET_EVENT+RESETS_STANDARD)
+			Duel.RegisterEffect(e8,tp)
+	local de=Effect.CreateEffect(e:GetHandler())
+	de:SetType(EFFECT_TYPE_SINGLE)
+	de:SetCode(EVENT_CHANGE_POS)
+	de:SetReset(RESET_EVENT+RESETS_REDIRECT)
+	de:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+		de:SetCountLimit(1)
+	de:SetLabel(fid2)
+	de:SetLabelObject(g)
+		de:SetCondition(cm.descon)
+		de:SetOperation(cm.desop)
+	Duel.RegisterEffect(de,tp)
+		end
+	end
+	Duel.RegisterFlagEffect(tp,40010160,RESET_PHASE+PHASE_STANDBY,EFFECT_FLAG_OATH,2,Duel.GetTurnCount())
+		Duel.Draw(tp,1,REASON_EFFECT)
+end
+function cm.flipcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	return tc:IsFacedown() and Duel.GetTurnPlayer()==tc:GetControler() and tc:GetFlagEffect(m)~=0 and Duel.GetFlagEffect(tp,40010160)==0
+end
+function cm.flipop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.ChangePosition(tc,POS_FACEUP_ATTACK)
+end
+function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(m+1)~=e:GetLabel() then
+		e:Reset()
+		return false
+	else return true end
+end
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
+end

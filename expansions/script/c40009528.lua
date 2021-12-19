@@ -1,76 +1,77 @@
 --真抹消者 后裔·Σ
-function c40009528.initial_effect(c)
-	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5f1b),aux.NonTuner(nil),1)
-	c:EnableReviveLimit()  
-	--indes
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e3:SetValue(1)
-	c:RegisterEffect(e3)
-	--damage val
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetCode(EFFECT_NO_BATTLE_DAMAGE)
-	e5:SetValue(1)
-	c:RegisterEffect(e5)
-	local e8=Effect.CreateEffect(c)
-	e8:SetType(EFFECT_TYPE_SINGLE)
-	e8:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
-	e8:SetValue(1)
-	c:RegisterEffect(e8) 
-	--actlimit
+local m=40009528
+local cm=_G["c"..m]
+cm.named_with_Dragonic=1
+cm.named_with_Vanquisher=1
+function cm.Dragonic(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Dragonic
+end
+function cm.initial_effect(c)
+	--xyz summon
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_THUNDER),8,2)
+	c:EnableReviveLimit()
+	--banish
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1,m)
+	e1:SetCost(cm.rmcost)
+	e1:SetTarget(cm.rmtg)
+	e1:SetOperation(cm.rmop)
+	c:RegisterEffect(e1)
+	--atk/def
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c40009528.atkcon)
-	e2:SetOperation(c40009528.atkop)
-	c:RegisterEffect(e2) 
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetValue(cm.atkval)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e3)
 end
-function c40009528.atkcon(e)
-	return Duel.GetAttacker()==e:GetHandler() and Duel.GetAttackTarget()~=nil
-		and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,2,nil)
+function cm.costfilter(c)
+	return cm.Dragonic(c) and c:IsAbleToRemoveAsCost()
 end
-function c40009528.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsFaceup() and Duel.SelectYesNo(tp,aux.Stringid(40009528,1)) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetCategory(CATEGORY_DESTROY)
-		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-		e1:SetCode(EVENT_BATTLED)
-		e1:SetTarget(c40009528.destg)
-		e1:SetOperation(c40009528.desop)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_BATTLE)
-		c:RegisterEffect(e1)
-	end
+function cm.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) and Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
-function c40009528.desfilter(c,atk)
-	return (c:IsAttackPos() and c:IsAttackBelow(atk)) or (c:IsFaceup() and c:IsDefensePos() and c:IsDefenseBelow(atk))
+function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsAbleToRemove()  end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
-function c40009528.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(c40009528.desfilter,tp,0,LOCATION_MZONE,nil,e:GetHandler():GetAttack())
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-end
-function c40009528.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c40009528.desfilter,tp,0,LOCATION_MZONE,nil,e:GetHandler():GetAttack())
-	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
-	--Duel.Destroy(g,REASON_EFFECT)
-	--local pc=g:GetNext()
-	local seq=0
-	local pc=g:GetFirst()
-	--while pc do 
-	while seq<=6 do
-		Duel.CalculateDamage(e:GetHandler(),pc)
-		pc=g:GetNext()
-		--pc=g:GetNext()
-		--pc=g:GetFirst()
-	end
-	--pc=g:GetNext()
-end
+function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0  then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g1=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,1,nil)
+		Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
+		local g2=Duel.SelectMatchingCard(1-tp,Card.IsAbleToRemove,1-tp,LOCATION_HAND,0,1,1,nil)
 
 
+
+
+
+
+		Duel.Remove(g2,POS_FACEUP,REASON_EFFECT)
+	end
+end
+
+function cm.atkval(e,c)
+	return Duel.GetMatchingGroupCount(nil,0,LOCATION_REMOVED,LOCATION_REMOVED,nil)*100
+end

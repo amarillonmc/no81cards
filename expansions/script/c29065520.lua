@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPSUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_BATTLE_START)
@@ -17,19 +17,16 @@ function cm.initial_effect(c)
 		cm.globle_check=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		ge1:SetCode(EVENT_TO_GRAVE)
+		ge1:SetCode(EVENT_LEAVE_FIELD)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
---function cm.cfilter1(c,tp)
-	--return c:IsType(TYPE_MONSTER) and c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD) and (c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==1-tp)
---end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsType(TYPE_MONSTER) and tc:IsPreviousLocation(LOCATION_ONFIELD) and (tc:IsReason(REASON_BATTLE) or tc:IsReason(REASON_EFFECT) and tc:GetReasonPlayer()==1-tp) then
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		if tc:IsType(TYPE_MONSTER) and tc:IsPreviousLocation(LOCATION_MZONE) and (tc:IsReason(REASON_BATTLE) or (tc:IsReason(REASON_EFFECT) and tc:GetReasonPlayer()~=tc:GetOwner()) ) then
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,rp)
 		end
 		tc=eg:GetNext()
 	end

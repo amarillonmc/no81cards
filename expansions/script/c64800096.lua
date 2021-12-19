@@ -3,7 +3,7 @@ local m=64800096
 local cm=_G["c"..m]
 function cm.initial_effect(c)
   c:EnableReviveLimit()
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+   aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WIND),aux.NonTuner(cm.sfilter),1,1)
 	  --immunity
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
@@ -29,6 +29,10 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 end
+function cm.sfilter(c)
+	return  c:IsType(TYPE_SYNCHRO)
+end
+
 function cm.immcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsReleasable() end

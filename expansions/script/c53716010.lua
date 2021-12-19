@@ -43,7 +43,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
 	local list={}
 	for tc in aux.Next(g) do
-		if tc:IsLocation(LOCATION_SZONE) then table.insert(list,tc:GetSequence()) end
+		if tc:IsLocation(LOCATION_SZONE) and tc:IsFacedown() and tc:GetSequence()<5 then table.insert(list,tc:GetSequence()) end
 	end
 	if #list>0 then
 		table.insert(list,5)

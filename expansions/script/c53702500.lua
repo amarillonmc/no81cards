@@ -153,32 +153,46 @@ end
 --
 function cm.FanippetTrap(c,lpc,code,atk,def,rac,att)
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetCondition(cm.FanippetTrapLeaveField)
-	e1:SetValue(LOCATION_REMOVED)
+	e1:SetDescription(aux.Stringid(53702500,0))
+	e1:SetCode(EVENT_CUSTOM+code)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCondition(cm.FanippetTrapSPCondition)
+	e1:SetCost(cm.FanippetTrapSPCost(code))
+	e1:SetTarget(cm.FanippetTrapSPTarget(code,atk,def,rac,att))
+	e1:SetOperation(cm.FanippetTrapSPOperation(lpc,code,atk,def,rac,att))
 	c:RegisterEffect(e1)
-	if lpc==800 then
-		local e2=Effect.CreateEffect(c)
-		e2:SetCategory(CATEGORY_DECKDES)
-		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-		e2:SetCode(EVENT_RELEASE)
-		e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
-		e2:SetCondition(cm.FanippetTrapTGCondition)
-		e2:SetTarget(cm.FanippetTrapTGTarget)
-		e2:SetOperation(cm.FanippetTrapTGOperation)
-		c:RegisterEffect(e2)
-	end
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e6:SetCode(EVENT_CUSTOM+53716000)
-	e6:SetRange(LOCATION_REMOVED)
-	e6:SetOperation(cm.FanippetTrapSPOperation(code,atk,def,rac,att,1))
-	c:RegisterEffect(e6)
-end
-function cm.FanippetTrapLeaveField(e)
-	return e:GetHandler():IsFaceup() and e:GetHandler():IsSummonLocation(LOCATION_GRAVE)
+	local e2=e1:Clone()
+	e2:SetRange(LOCATION_GRAVE)
+	c:RegisterEffect(e2)
+	local e21=e1:Clone()
+	e21:SetCode(EVENT_FREE_CHAIN)
+	e21:SetProperty(0)
+	e21:SetCondition(function(e)return false end)
+	c:RegisterEffect(e21)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_ACTIVATE_COST)
+	e4:SetRange(LOCATION_GRAVE)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetTargetRange(1,0)
+	e4:SetCost(cm.GraveActCostchk)
+	e4:SetTarget(cm.GraveActCostTarget)
+	e4:SetOperation(cm.GraveActCostOp)
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetCategory(CATEGORY_DECKDES)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e5:SetCode(EVENT_RELEASE)
+	e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e5:SetCondition(cm.FanippetTrapTGCondition)
+	e5:SetTarget(cm.FanippetTrapTGTarget)
+	e5:SetOperation(cm.FanippetTrapTGOperation)
+	c:RegisterEffect(e5)
 end
 function cm.FanippetTrapTGCondition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
@@ -190,11 +204,23 @@ end
 function cm.FanippetTrapTGOperation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.DiscardDeck(tp,1,REASON_EFFECT)
 end
-function cm.FanippetTrapSPCost(lpc,code)
+function cm.GraveActCostchk(e,te,tp)
+	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+end
+function cm.GraveActCostTarget(e,te,tp)
+	return te:GetHandler()==e:GetHandler() and te:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function cm.GraveActCostOp(e,tp,eg,ep,ev,re,r,rp)
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+end
+function cm.FanippetTrapSPCondition(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp or ep==1-tp
+end
+function cm.FanippetTrapSPCost(code)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if chk==0 then return Duel.CheckLPCost(tp,lpc) and Duel.GetFlagEffect(tp,code)==0 end
-		Duel.PayLPCost(tp,lpc)
+		local c=e:GetHandler()
+		if chk==0 then return Duel.GetFlagEffect(tp,code)==0 and not c:IsLocation(LOCATION_ONFIELD) end
 		Duel.RegisterFlagEffect(tp,code,RESET_CHAIN,0,1)
 	end
 end
@@ -202,19 +228,34 @@ function cm.FanippetTrapSPTarget(code,atk,def,rac,att)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp,chk)
 		local c=e:GetHandler()
-		if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,atk,def,4,rac,att) end
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+		if chk==0 then return c:IsLocation(LOCATION_HAND) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,atk,def,4,rac,att)) end
+		if not c:IsPreviousLocation(LOCATION_HAND) then
+			e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+			Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+		end
+		e:SetLabel(c:GetPreviousLocation())
 	end
 end
-function cm.FanippetTrapSPOperation(code,atk,def,rac,att,lab)
+function cm.FanippetTrapSPOperation(lpc,code,atk,def,rac,att)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp)
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or e:GetLabel()==LOCATION_HAND then return end
 		local c=e:GetHandler()
-		if (c:IsRelateToEffect(e) or lab~=0) and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,atk,def,4,rac,att) then
+		if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,atk,def,4,rac,att) then
 			c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
-			Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
+			if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
+				Duel.SetLP(tp,Duel.GetLP(tp)-lpc)
+				if e:GetLabel()==LOCATION_GRAVE then
+					local e1=Effect.CreateEffect(c)
+					e1:SetDescription(aux.Stringid(53702500,5))
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
+					e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+					e1:SetValue(LOCATION_REMOVED)
+					c:RegisterEffect(e1,true)
+				end
+			end
 		end
 	end
 end

@@ -1,6 +1,11 @@
 --群魔战术
 local m=40010014
 local cm=_G["c"..m]
+cm.named_with_Diablotherhood=1
+function cm.Diablotherhood(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Diablotherhood
+end
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -54,7 +59,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.thcfilter,1,nil,tp)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0xcf1b) and c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsAbleToHand() and not c:IsCode(m)
+	return cm.Diablotherhood(c) and c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -73,7 +78,7 @@ function cm.cncost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function cm.cnfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xcf1b) and not c:IsCode(40009560)
+	return c:IsFaceup() and cm.Diablotherhood(c) and not c:IsCode(40009560)
 end
 function cm.cntg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.cnfilter(chkc) end

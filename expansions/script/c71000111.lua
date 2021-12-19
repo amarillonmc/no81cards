@@ -1,7 +1,7 @@
 --翼龙的你
 if bm then return end
 bm=bm or {}
-local Version_Number=20210414
+local Version_Number=20210723
 bm.name=71000111
 
 --Instructions about how to use this
@@ -52,7 +52,7 @@ rm=LOCATION_REMOVED
 ha=LOCATION_HAND 
 fz=LOCATION_FZONE 
 loc_ncp=of+rm --need check public
-loc_nncp=dk+ha+ga --not need check public
+loc_nncp=dk+ha+ga+ex --not need check public
 
 --Check function
 --pos can be e_target
@@ -72,13 +72,18 @@ function bm.c.npos(c,code,e)
 	return bm.c.pos(c,e) and c:IsCode(code)
 end
 --can SpecialSummon
-function bm.c.sp(c,e,tp,code,sg,sumtype,pos,num)
+function bm.c.sp(c,e,tp,code,sg,sumtype,pos,num,toplayer,zone)
 	sg=sg or nil
 	sumtype=sumtype or 0
 	pos=pos or POS_FACEUP 
 	num=num or 1 
+	toplayer=toplayer or tp
+	zone=zone or 0xff
 	local flag=bm.c.pos(c) and Duel.GetMZoneCount(tp,sg)>=num 
-				and c:IsCanBeSpecialSummoned(e,sumtype,tp,false,false,pos)
+				and c:IsCanBeSpecialSummoned(e,sumtype,tp,false,false,pos,toplayer,zone)
+	if c:IsLocation(ex) then
+		flag=Duel.GetLocationCountFromEx(tp,tp,sg,c)>0 and c:IsCanBeSpecialSummoned(e,sumtype,tp,false,false,pos,toplayer,zone)
+	end
 	if not code then return flag end
 	return flag and c:IsSetCard(code)
 end
@@ -156,7 +161,7 @@ end
 --ce	卡片，描述，效果类型，影响范围类型
 --sl	触发方法，使用次数，生效区域
 --ef	条件，代价，场合，处理，值
-function bm.b.ce(c,ce_desc,ce_cate,ce_type,sl_code,sl_lim,sl_range,ef_con,ef_cost,ef_tg,ef_op,ef_val)	
+function bm.b.ce(c,ce_desc,ce_cate,ce_type,sl_code,sl_lim,sl_range,ef_con,ef_cost,ef_tg,ef_op,ef_val)   
 	local e=Effect.CreateEffect(c)
 	if ce_desc then
 		e:SetDescription(ce_desc)

@@ -22,40 +22,25 @@ function c29065508.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e2:SetValue(29065505)
 	c:RegisterEffect(e2)  
-	--summon success
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e4:SetCondition(c29065508.regcon)
-	e4:SetOperation(c29065508.regop)
-	c:RegisterEffect(e4)
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_SINGLE)
-	e6:SetCode(EFFECT_MATERIAL_CHECK)
-	e6:SetValue(c29065508.valcheck)
-	e6:SetLabelObject(e4)
-	c:RegisterEffect(e6)
 	--Double attack
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_EXTRA_ATTACK)
-	e3:SetCondition(c29065508.dacon)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
 	--negate
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(29065508,1))
-	e5:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_CHAINING)
-	e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_NO_TURN_RESET)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1)
-	e5:SetCondition(c29065508.discon)
-	e5:SetTarget(c29065508.distg)
-	e5:SetOperation(c29065508.disop)
-	c:RegisterEffect(e5)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(29065508,1))
+	e4:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1,29065508)
+	e4:SetCondition(c29065508.discon)
+	e4:SetTarget(c29065508.distg)
+	e4:SetOperation(c29065508.disop)
+	c:RegisterEffect(e4)
 end
 function c29065508.lvtg(e,c)
 	return c:IsLevelAbove(1) and c:GetCounter(0x10ae)>0
@@ -65,19 +50,11 @@ function c29065508.lvval(e,c,rc)
 	if rc==e:GetHandler() then return 8
 	else return lv end
 end
-function c29065508.valcheck(e,c)
-	local g=c:GetMaterial()
-	if g:IsExists(Card.IsCode,1,nil,29065505) then
-		e:GetLabelObject():SetLabel(1)
-	else
-		e:GetLabelObject():SetLabel(0)
-	end
-end
-function c29065508.dacon(e)
-	return e:GetHandler():GetFlagEffect(29065508)>0
-end
 function c29065508.discon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and e:GetHandler():GetFlagEffect(29065508)>0
+	local c=e:GetHandler()
+	local mg=c:GetMaterial()
+	local og=c:GetOverlayGroup()
+	return rp==1-tp and c:IsSummonType(SUMMON_TYPE_XYZ) and mg:IsExists(Card.IsCode,1,nil,29065505) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function c29065508.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -87,15 +64,8 @@ function c29065508.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c29065508.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
-end
-function c29065508.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetLabel()==1
-end
-function c29065508.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	c:RegisterFlagEffect(29065508,RESET_EVENT+RESETS_STANDARD,0,1)
-	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(29065508,3))
 end

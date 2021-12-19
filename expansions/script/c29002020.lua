@@ -33,7 +33,7 @@ end
 function c29002020.ovfilter(c)
 local tp=c:GetControler()
 	local x=Duel.GetActivityCount(tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SPSUMMON)
-	return c:IsFaceup() and x>=12 and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and x>=12 and c:IsType(TYPE_XYZ) and not c:IsCode(29002020)
 end
 function c29002020.effcon(e)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

@@ -1,7 +1,7 @@
 --时机降神 神工巨匠
 function c40009209.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,11,3)
+	aux.AddXyzProcedure(c,nil,11,3,c40009209.ovfilter,aux.Stringid(40009209,3),3,c40009209.xyzop)
 	c:EnableReviveLimit()
 	--spsummon limit
 	local e0=Effect.CreateEffect(c)
@@ -57,6 +57,13 @@ function c40009209.initial_effect(c)
 	e1:SetTarget(c40009209.rettg)
 	e1:SetOperation(c40009209.retop)
 	c:RegisterEffect(e1)
+end
+function c40009209.ovfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xf1c) and c:IsType(TYPE_XYZ)
+end
+function c40009209.xyzop(e,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,40009209)==0 end
+	Duel.RegisterFlagEffect(tp,40009209,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c40009209.nnegcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0xf2c,3,REASON_COST) end

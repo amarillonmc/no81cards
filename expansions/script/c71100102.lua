@@ -36,13 +36,16 @@ end
 function cm.tar(e,tp,eg,ep,ev,re,r,rp,chk)
 	local num=bm.c.get(e,tp,bm.c.cpos,mz,0,nil,code2):GetCount()
 	local locn=Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)
-	if chk==0 then return num>0 and (locn>0 or num>1) end
+	if chk==0 then return num>1 and (locn>0 or num>0) end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if not cm.tar(e,tp,eg,ep,ev,re,r,rp,0) then return end
 	local sg=bm.c.get(e,tp,bm.c.cpos,mz,0,nil,code2)
+	local locn=Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)
+	local min=1
+	if locn<1 then min=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local tg=sg:Select(tp,1,2,nil)
+	local tg=sg:Select(tp,min,2,nil)
 	if #tg==2 then
 		Duel.HintSelection(tg)
 		local tc1=tg:GetFirst()

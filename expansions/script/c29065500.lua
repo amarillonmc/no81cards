@@ -17,16 +17,16 @@ function c29065500.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-	--tohand	
+	--counter   
 	local e4=Effect.CreateEffect(c)   
 	e4:SetDescription(aux.Stringid(29065500,1))  
 	e4:SetCategory(CATEGORY_COUNTER)	
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)	
 	e4:SetProperty((EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL))   
 	e4:SetCode(EVENT_LEAVE_FIELD)  
-	e4:SetCondition(c29065500.thcon)	
-	e4:SetTarget(c29065500.thtg)	
-	e4:SetOperation(c29065500.thop)  
+	e4:SetCondition(c29065500.coucon)   
+	e4:SetTarget(c29065500.coutg)   
+	e4:SetOperation(c29065500.couop)  
 	c:RegisterEffect(e4)	
 end
 function c29065500.efil(c,e,tp,eg,ep,ev,re,r,rp) 
@@ -60,21 +60,19 @@ function c29065500.coop(e,tp,eg,ep,ev,re,r,rp,chk)
 		if op then op(e,tp,eg,ep,ev,re,r,rp) 
 end
 end
-function c29065500.thcon(e,tp,eg,ep,ev,re,r,rp)
+--counter
+function c29065500.coucon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) 
 end 
-function c29065500.thfilter(c)
+function c29065500.coufilter(c)
 	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
 end 
-function c29065500.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
- if chk==0 then return Duel.IsExistingMatchingCard(c29065500.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end 
+function c29065500.coutg(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return Duel.IsExistingMatchingCard(c29065500.coufilter,tp,LOCATION_ONFIELD,0,1,nil) end 
 end
- function c29065500.thop(e,tp,eg,ep,ev,re,r,rp) 
+ function c29065500.couop(e,tp,eg,ep,ev,re,r,rp) 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP) 
-	local tc=Duel.SelectMatchingCard(tp,c29065500.thfilter,tp,LOCATION_ONFIELD,0,1,1,nil):GetFirst()	
+	local tc=Duel.SelectMatchingCard(tp,c29065500.coufilter,tp,LOCATION_ONFIELD,0,1,1,nil):GetFirst()   
 	local n=1 
-	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
-	n=n+1
-	end
 	tc:AddCounter(0x10ae,n)
 end

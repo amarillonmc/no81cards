@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
 	--counter 
-	local e1=bm.b.ce(c,bm.hint.nege,CATEGORY_COUNTER,EFFECT_TYPE_QUICK_O,EVENT_FREE_CHAIN,{1,m},sz,bm.b.con,cm.cost(1),cm.tar,cm.op)
+	local e1=bm.b.ce(c,bm.hint.nege,CATEGORY_COUNTER,EFFECT_TYPE_QUICK_O,EVENT_FREE_CHAIN,{1,m},sz,bm.b.con,cm.cost,cm.tar,cm.op)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	c:RegisterEffect(e1)
 	--set 
@@ -27,22 +27,27 @@ end
 function cm.f(c,tp,ct)
 	return c:IsCanRemoveCounter(tp,code3,ct,bm.re.c) and c:IsControler(tp) and c:IsType(TYPE_MONSTER) and c:IsSetCard(code2)
 end
-function cm.cost(ct)
+function cm.cost()
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
-		local tg=e:GetHandler():GetColumnGroup():Filter(cm.f,nil,tp,ct)
+		local ct,no=Duel.AnnounceNumber(tp,1,2,3,4,5,6)
+		local tg=e:GetHandler():GetColumnGroup():Filter(cm.f,nil,tp,1)
 		if chk==0 then return #tg>0 end
 		Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 		local tc=tg:Select(tp,1,1,nil):GetFirst()
-		tc:RemoveCounter(tp,code3,ct,REASON_COST)
+		if ct>tc:GetCounter(code3) then ct=tc:GetCounter(code3) end
+		if tc:RemoveCounter(tp,code3,ct,REASON_COST) then
+			e:SetLabel(ct)
+		end
 	end
 end
 function cm.ft(c,tp,ct,e)
 	return c:IsCanRemoveCounter(tp,code3,ct,bm.re.e) and c:IsControler(1-tp) and c:IsType(TYPE_MONSTER) and c:IsCanBeEffectTarget(e)
 end
 function cm.tar(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return cm.ft(chkc,tp,6,e) end
-	local g=bm.c.get(e,tp,cm.ft,0,mz,nil,tp,6,e)
-	if chk==0 then return #g>0 end
+	local ct=e:GetLabel()
+	if chkc then return cm.ft(chkc,tp,1,e) end
+	local g=bm.c.get(e,tp,cm.ft,0,mz,nil,tp,1,e)
+	if chk==0 then return ct>0 and #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local tg=g:Select(tp,1,1,nil)
 	Duel.SetTargetCard(tg)
@@ -51,12 +56,14 @@ end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
+	local ct=e:GetLabel()
+	if ct>tc:GetCounter(code3) then ct=tc:GetCounter(code3) end
 	if c:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		tc:RemoveCounter(tp,code3,6,bm.re.e) 
-		local g=bm.c.get(e,tp,cm.ft,0,mz,tc,tp,6,e)
+		tc:RemoveCounter(tp,code3,ct,bm.re.e) 
+		local g=bm.c.get(e,tp,cm.ft,0,mz,tc,tp,ct,e)
 		if #g>0 and c:GetColumnGroup():FilterCount(bm.c.npos,nil,m-3)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			for sc in aux.Next(g) do
-				sc:RemoveCounter(tp,code3,6,bm.re.e) 
+				sc:RemoveCounter(tp,code3,ct,bm.re.e) 
 			end
 		end
 	end
@@ -68,7 +75,7 @@ function cm.setf(c,e,tp)
 	return bm.c.go(c,sz,e,tp,bm.re.e) and c:IsSetCard(code1)
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return bm.c.get(e,tp,cm.setf,dk,0,nil,e,tp):GetCount() end
+	if chk==0 then return bm.c.get(e,tp,cm.setf,dk,0,nil,e,tp):GetCount()>0 end
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

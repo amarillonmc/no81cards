@@ -1,15 +1,10 @@
 --nezha,invader of dragon palace
+--21.12.15
 local m=11451419
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:SetUniqueOnField(1,1,m)
 	c:EnableReviveLimit()
-	--spsummon condition
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	c:RegisterEffect(e1)
 	--special summon rule
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -78,7 +73,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local c=e:GetHandler()
 	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,nil,0x6978)
-	if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) and c:IsFaceup() then Duel.GetControl(e:GetHandler(),1-tp) end
+	if #g>0 then Duel.Destroy(g,REASON_EFFECT) end
+	if c:IsRelateToEffect(e) and c:IsFaceup() then Duel.GetControl(e:GetHandler(),1-tp) end
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local bc=e:GetHandler():GetBattleTarget()

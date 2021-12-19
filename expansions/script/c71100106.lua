@@ -52,7 +52,7 @@ function cm.setf(c,e,tp)
 	return bm.c.go(c,sz,e,tp,bm.re.e) and c:IsSetCard(code1)
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return bm.c.get(e,tp,cm.setf,dk,0,nil,e,tp):GetCount() end
+	if chk==0 then return bm.c.get(e,tp,cm.setf,dk,0,nil,e,tp):GetCount()>0 end
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

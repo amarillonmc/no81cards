@@ -60,6 +60,7 @@ function c9910134.operation(e,tp,eg,ep,ev,re,r,rp)
 		if og:GetCount()>0 then
 			Duel.SendtoGrave(og,REASON_RULE)
 		end
+		tc:CancelToGrave()
 		Duel.Overlay(sc,Group.FromCards(tc))
 	end
 end

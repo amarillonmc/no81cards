@@ -33,8 +33,8 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.actfilter),tp,0x3d,0,nil,e,tp)
-	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SendtoHand(sg,tp,REASON_EFFECT)
 	end

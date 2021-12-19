@@ -82,15 +82,15 @@ function c9910649.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
 end
-function c9910649.xfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ)
+function c9910649.xfilter(c,e)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
 end
 function c9910649.ofilter(c)
 	return not c:IsType(TYPE_TOKEN)
 end
 function c9910649.dsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
-	local g=Duel.GetMatchingGroup(c9910649.xfilter,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(c9910649.xfilter,tp,LOCATION_MZONE,0,nil,e)
 	if g:GetCount()==0 or Duel.SelectOption(tp,1191,aux.Stringid(9910649,1))==0 then
 		Duel.SendtoGrave(eg,REASON_EFFECT)
 	else

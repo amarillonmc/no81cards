@@ -20,17 +20,12 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.tg)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(m,7))
-	e5:SetCategory(CATEGORY_DECKDES+CATEGORY_TOGRAVE)
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_CHAINING)
-	e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e5:SetRange(LOCATION_SZONE)
-	e5:SetCondition(cm.discon)
-	e5:SetTarget(cm.distg)
-	e5:SetOperation(cm.disop)
-	c:RegisterEffect(e5)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetOperation(cm.disop)
+	c:RegisterEffect(e2)
 end
 function cm.costfilter(c)
 	return c:IsType(TYPE_CONTINUOUS) and c:IsReleasable()
@@ -44,7 +39,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
 	local list={}
 	for tc in aux.Next(g) do
-		if tc:IsLocation(LOCATION_SZONE) then table.insert(list,tc:GetSequence()) end
+		if tc:IsLocation(LOCATION_SZONE) and tc:IsFacedown() and tc:GetSequence()<5 then table.insert(list,tc:GetSequence()) end
 	end
 	if #list>0 then
 		table.insert(list,5)
@@ -84,39 +79,32 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
-function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	return rp==1-tp and rc:IsOnField() and not e:GetHandler():GetColumnGroup():IsContains(rc)
-end
 function cm.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsAbleToGrave()
 end
-function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local ct1=c:GetFlagEffect(m)
-	local ct2=c:GetFlagEffect(m+50)
-	if chk==0 then return (ct1<2 and Duel.IsPlayerCanDiscardDeck(tp,1)) or (ct2<2 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_REMOVED,0,1,nil)) end
-end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
+	local rc=re:GetHandler()
 	local ct1=c:GetFlagEffect(m)
 	local ct2=c:GetFlagEffect(m+50)
 	local b1=Duel.IsPlayerCanDiscardDeck(tp,1) and ct1<2
 	local b2=Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_REMOVED,0,1,nil) and ct2<2
-	local opt=0
-	if b1 and b2 then opt=Duel.SelectOption(1-tp,aux.Stringid(m,1),aux.Stringid(m,2))
-	elseif b1 then opt=Duel.SelectOption(1-tp,aux.Stringid(m,1))
-	else opt=Duel.SelectOption(1-tp,aux.Stringid(m,2))+1 end
-	if opt==0 then
-		Duel.DiscardDeck(tp,1,REASON_EFFECT)
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,ct1+3))
-		c:ResetFlagEffect(m+50)
-	else 
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(1-tp,cm.filter,1-tp,0,LOCATION_REMOVED,1,1,nil)
-		if #g>0 then Duel.SendtoGrave(g,REASON_EFFECT+REASON_RETURN) end
-		c:RegisterFlagEffect(m+50,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,ct2+5))
-		c:ResetFlagEffect(m)
+	if rp==1-tp and rc:IsOnField() and not e:GetHandler():GetColumnGroup():IsContains(rc) and (b1 or b2) then
+		Duel.Hint(HINT_CARD,0,m)
+		local opt=0
+		if b1 and b2 then opt=Duel.SelectOption(1-tp,aux.Stringid(m,1),aux.Stringid(m,2))
+		elseif b1 then opt=Duel.SelectOption(1-tp,aux.Stringid(m,1))
+		else opt=Duel.SelectOption(1-tp,aux.Stringid(m,2))+1 end
+		if opt==0 then
+			Duel.DiscardDeck(tp,1,REASON_EFFECT)
+			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,ct1+3))
+			c:ResetFlagEffect(m+50)
+		else 
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			local g=Duel.SelectMatchingCard(1-tp,cm.filter,1-tp,0,LOCATION_REMOVED,1,1,nil)
+			if #g>0 then Duel.SendtoGrave(g,REASON_EFFECT+REASON_RETURN) end
+			c:RegisterFlagEffect(m+50,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,ct2+5))
+			c:ResetFlagEffect(m)
+		end
 	end
 end

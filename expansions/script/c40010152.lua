@@ -2,9 +2,18 @@
 local m=40010152
 local cm=_G["c"..m]
 cm.named_with_linkjoker=1
+cm.named_with_ChaosBreaker=1
 function cm.linkjoker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_linkjoker
+end
+function cm.ChaosBreaker(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_ChaosBreaker
+end
+function cm.Reverse(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Reverse
 end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()

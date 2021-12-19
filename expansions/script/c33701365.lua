@@ -39,20 +39,18 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetCurrentChain()>0 then
-		local dg=Group.CreateGroup()
-		for i=1,ev do
+	local ct=Duel.GetCurrentChain()
+	if ct>1 then
+		for i=1,ct-1 do
 			local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 			local tc=te:GetHandler()
-			if (te:IsHasType(EFFECT_TYPE_ACTIVATE) or te:IsActiveType(TYPE_MONSTER))
-				and Duel.NegateActivation(i) and tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) then
-				dg:AddCard(tc)
+			if (te:IsHasType(EFFECT_TYPE_ACTIVATE) or te:IsActiveType(TYPE_MONSTER)) then
+				Duel.NegateActivation(i)
 			end
 		end
 	end
 	Duel.BreakEffect()
 	Duel.Draw(tp,1,REASON_EFFECT)
-	
 	if Duel.GetTurnPlayer()~=tp then
 		Duel.SkipPhase(1-tp,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
 		Duel.SkipPhase(1-tp,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
@@ -84,7 +82,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local e3=Effect.CreateEffect(c)
+	local e3=Effect.CreateEffect(e:GetHandler())
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 	e3:SetCode(EFFECT_CANNOT_ACTIVATE)

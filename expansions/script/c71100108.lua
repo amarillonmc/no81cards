@@ -46,7 +46,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		if g:FilterCount(bm.c.npos,nil,m-5)>0 and Duel.SelectYesNo(tp,bm.hint.lvd) then
-			local e1=Effect.CreateEffect(c)
+			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_LEVEL)
 			e1:SetValue(-2)
@@ -65,7 +65,7 @@ function cm.setf(c,e,tp)
 	return bm.c.go(c,sz,e,tp,bm.re.e) and c:IsSetCard(code1)
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return bm.c.get(e,tp,cm.setf,dk,0,nil,e,tp):GetCount() end
+	if chk==0 then return bm.c.get(e,tp,cm.setf,dk,0,nil,e,tp):GetCount()>0 end
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

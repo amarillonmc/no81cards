@@ -32,8 +32,7 @@ function cm.initial_effect(c)
 	e6:SetTarget(cm.attack)
 	c:RegisterEffect(e6)
 	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(m,0))
-	e7:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e7:SetDescription(aux.Stringid(m,3))
 	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e7:SetCode(EVENT_PHASE+PHASE_END)
 	e7:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -65,7 +64,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		local cg=g:Filter(Card.IsFacedown,nil)
 		if #cg>0 then Duel.ConfirmCards(1-tp,cg) end 
 		local tc=g:GetFirst()
-		if tc:IsLocation(LOCATION_SZONE) then
+		if tc:IsLocation(LOCATION_SZONE) and tc:IsFacedown() and tc:GetSequence()<5 then
 			local list={}
 			table.insert(list,tc:GetSequence())
 			table.insert(list,5)
@@ -79,7 +78,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
 		local list={}
 		for tc in aux.Next(g) do
-			if tc:IsLocation(LOCATION_SZONE) then table.insert(list,tc:GetSequence()) end
+			if tc:IsLocation(LOCATION_SZONE) and tc:IsFacedown() and tc:GetSequence()<5 then table.insert(list,tc:GetSequence()) end
 		end
 		if #list>0 then
 			table.insert(list,5)
@@ -136,19 +135,54 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==1-tp
 end
 function cm.filter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x353b) and bit.band(c:GetType(),0x20004)==0x20004 and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,c:GetTextAttack(),c:GetTextDefense(),4,c:GetOriginalRace(),c:GetOriginalAttribute()) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	if c:IsFaceup() and c:IsSetCard(0x353b) and bit.band(c:GetType(),0x20004)==0x20004 and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,c:GetTextAttack(),c:GetTextDefense(),4,c:GetOriginalRace(),c:GetOriginalAttribute()) and c:IsCanBeSpecialSummoned(e,0,tp,true,true) then
+		if c:CheckActivateEffect(true,true,false)~=nil then return true end
+		local te=c:GetActivateEffect()
+		if te:GetCode()~=EVENT_CHAINING then return false end
+		local tg=te:GetTarget()
+		if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then return false end
+		return true
+	else return false end
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED) and cm.filter(chkc,e,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(cm.filter,tp,LOCATION_REMOVED,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.RaiseSingleEvent(tc,EVENT_CUSTOM+53716000,e,0,0,0,0)
+		local tpe=tc:GetType()
+		local te=tc:GetActivateEffect()
+		local tg=te:GetTarget()
+		local op=te:GetOperation()
+		e:SetCategory(te:GetCategory())
+		e:SetProperty(te:GetProperty())
+		Duel.ClearTargetCard()
+		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.Hint(HINT_CARD,0,tc:GetCode())
+		tc:CreateEffectRelation(te)
+		tc:CancelToGrave(false)
+		if tg then tg(te,tp,eg,ep,ev,re,r,rp,1) end
+		Duel.BreakEffect()
+		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		if g then
+			local etc=g:GetFirst()
+			while etc do
+				etc:CreateEffectRelation(te)
+				etc=g:GetNext()
+			end
+		end
+		if op then op(te,tp,eg,ep,ev,re,r,rp) end
+		tc:ReleaseEffectRelation(te)
+		if etc then 
+			etc=g:GetFirst()
+			while etc do
+				etc:ReleaseEffectRelation(te)
+				etc=g:GetNext()
+			end
+		end
 	end
 end

@@ -2,6 +2,7 @@
 local m=29065524
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,29065500,29065505)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -35,7 +36,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.splimit(e,c)
-	return not (cm.Ark_Knight_check(c) or c:IsType(TYPE_XYZ))
+	return c:IsLocation(LOCATION_EXTRA) and not (cm.Ark_Knight_check(c) or c:IsType(TYPE_XYZ))
 end
 function cm.ffilter(c,e,tp)
 	return c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,c,e,tp)

@@ -30,8 +30,7 @@ function c67220001.spfilter(c,e,tp,tc)
 	return c:IsLevelAbove(1) and c:IsCode(tc:GetCode()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c67220001.fselect(g,tp)
-	return g:GetClassCount(Card.GetLocation)==g:GetCount() and g:GetClassCount(Card.GetLevel)==1
-		and Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,g,2,2)
+	return Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,g,2,2)
 end
 function c67220001.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
