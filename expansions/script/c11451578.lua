@@ -9,7 +9,6 @@ function cm.initial_effect(c)
 	--effect1
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_DECKDES+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
@@ -71,7 +70,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		op=Duel.SelectOption(tp,aux.Stringid(m,3))+2
 	end
 	if op==1 then
+		e:SetCategory(CATEGORY_DECKDES)
 		Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,1)
+	elseif op==2 then
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
+	else
+		e:SetCategory(0)
 	end
 	e:SetLabel(op)
 end

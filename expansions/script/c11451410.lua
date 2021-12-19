@@ -2,6 +2,7 @@
 --21.04.13
 local m=11451410
 local cm=_G["c"..m]
+cm.IsFusionSpellTrap=true
 function cm.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -35,10 +36,6 @@ function cm.initial_effect(c)
 	e5:SetRange(0xff)
 	e5:SetValue(TYPE_FUSION)
 	c:RegisterEffect(e5)
-	local e6=e5:Clone()
-	e6:SetCode(EFFECT_ADD_TYPE)
-	e6:SetValue(0x10000000)
-	c:RegisterEffect(e6)
 end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()

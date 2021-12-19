@@ -23,8 +23,6 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabelObject():IsOriginalCodeRule(ac) then
 		if Duel.CheckLPCost(tp,3000) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.PayLPCost(tp,3000)
-			Duel.NegateEffect(0)
-			return
 		else
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

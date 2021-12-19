@@ -73,6 +73,9 @@ function cm.sumcon(e,tp,eg,ep,ev,re,r,rp)
     return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
 end
 function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+    Duel.ResetFlagEffect(tp,m)
+    Duel.ResetFlagEffect(tp,m+10000)
+    Duel.ResetFlagEffect(tp,m+20000)
     local c=e:GetHandler()
     local e3=Effect.CreateEffect(c)
     e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
@@ -93,13 +96,13 @@ function cm.aclimit1(e,tp,eg,ep,ev,re,r,rp)
     local n=0
     if re:IsActiveType(TYPE_SPELL) then n=n+10000 end
     if re:IsActiveType(TYPE_TRAP) then n=n+20000 end
-    Duel.RegisterFlagEffect(tp,m+n,RESET_PHASE+PHASE_END,0,2)
+    Duel.RegisterFlagEffect(e:GetHandlerPlayer(),m+n,0,0,0)
 end
 function cm.elimit(e,te,tp)
     local n=0
     if te:IsActiveType(TYPE_SPELL) then n=n+10000 end
     if te:IsActiveType(TYPE_TRAP) then n=n+20000 end
-    return Duel.GetFlagEffect(tp,m+n)>0
+    return Duel.GetFlagEffect(e:GetHandlerPlayer(),m+n)>0
 end
 function cm.indvalue(e,re)
     return re:GetHandlerPlayer()~=e:GetHandlerPlayer()

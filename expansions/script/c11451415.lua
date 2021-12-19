@@ -59,7 +59,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		op=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))+1
 	end
 	e:SetLabel(op)
-	if op==1 then e:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION) end
+	if op==1 then e:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION) else e:SetCategory(0) end
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end

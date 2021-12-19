@@ -86,7 +86,7 @@ end
 function cm.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,c,tp,c)
-	if chk==0 then return #g>0 end
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) and #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	sg=g:Select(tp,1,1,nil)
 	Duel.Overlay(c,sg)

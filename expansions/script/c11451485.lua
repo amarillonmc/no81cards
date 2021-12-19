@@ -106,7 +106,7 @@ function cm.thfilter(c)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
-	if chk==0 then return g:GetClassCount(Card.GetCode)>=2 or (#g>0 and Duel.IsPlayerAffectedByEffect(tp,11451481)) end
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) and g:GetClassCount(Card.GetCode)>=2 or (#g>0 and Duel.IsPlayerAffectedByEffect(tp,11451481)) end
 	local op=0
 	if Duel.IsPlayerAffectedByEffect(tp,11451481) then
 		if g:GetClassCount(Card.GetCode)>=2 then

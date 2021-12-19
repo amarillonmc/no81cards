@@ -24,17 +24,17 @@ function cm.ffilter(c,fc,sub,mg,sg)
 	return c:IsFusionSetCard(0x341) and (not sg or not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()))
 end
 
-function cm.ckfilter(c)
+function cm.ckfilter(c,tp)
 	return  (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and Duel.IsExistingMatchingCard(cm.ckfilter2,tp,0,LOCATION_MZONE,1,nil,c:GetAttribute())
 end
 function cm.ckfilter2(c,at)
 	return c:IsFaceup() and c:IsType(TYPE_MONSTER)   and  c:GetAttribute()&at~=0
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_MZONE) and chkc:IsControler(tp) and cm.ckfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.ckfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_MZONE) and chkc:IsControler(tp) and cm.ckfilter(chkc,tp) end
+	if chk==0 then return Duel.IsExistingTarget(cm.ckfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.ckfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.ckfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,tp)
 	 local tc=g:GetFirst()
 	local tg=Duel.GetMatchingGroup(cm.ckfilter2,tp,0,LOCATION_MZONE,nil,tc:GetAttribute())
 	 Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,tg:GetCount()*500) 

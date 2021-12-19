@@ -92,7 +92,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x1530) and c:IsType(TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x1535) and c:IsType(TYPE_TRAP) and c:IsSSetable()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

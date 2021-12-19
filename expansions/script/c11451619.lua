@@ -2,6 +2,7 @@
 --21.09.21
 local m=11451619
 local cm=_G["c"..m]
+cm.IsFusionSpellTrap=true
 function cm.initial_effect(c)
 	--fusion set
 	aux.AddFusionProcFunRep2(c,cm.ffilter,3,63,true)
@@ -31,10 +32,6 @@ function cm.initial_effect(c)
 	e5:SetRange(0xff)
 	e5:SetValue(TYPE_FUSION)
 	c:RegisterEffect(e5)
-	local e6=e5:Clone()
-	e6:SetCode(EFFECT_ADD_TYPE)
-	e6:SetValue(0x10000000)
-	c:RegisterEffect(e6)
 end
 function cm.ffilter(c,fc,sub,mg,sg)
 	return c:IsLevelAbove(1) and (not sg or not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()))

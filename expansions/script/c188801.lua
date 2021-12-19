@@ -1,11 +1,9 @@
---毅飞冲天-泽塔·阿尔法装甲
 local m=188801
 local cm=_G["c"..m]
+cm.name="毅飞冲天-泽塔·阿尔法装甲"
 function cm.initial_effect(c)
- --synchro summon
+	cm.AddSynchroMixProcedure(c,cm.matfilter,nil,nil,aux.NonTuner(nil),1,99)
 	c:EnableReviveLimit()
-	cm.AddSynchroMixProcedure(c,nil,nil,nil,nil,1,99,nil)
---atkup
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -17,7 +15,6 @@ function cm.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e3)
- --indes
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -29,7 +26,6 @@ function cm.initial_effect(c)
 	local e5=e4:Clone()
 	e5:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	c:RegisterEffect(e5)
---attack twice
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_SINGLE)
 	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -38,18 +34,8 @@ function cm.initial_effect(c)
 	e6:SetValue(1)
 	c:RegisterEffect(e6)
 end
-function cm.AddSynchroMixProcedure(c,f1,f2,f3,f4,minc,maxc,gc)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(1164)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetCondition(cm.SynMixCondition(f1,f2,f3,f4,minc,maxc,gc))
-	e1:SetTarget(cm.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc))
-	e1:SetOperation(cm.SynMixOperation(f1,f2,f3,f4,minc,maxc,gc))
-	e1:SetValue(SUMMON_TYPE_SYNCHRO)
-	c:RegisterEffect(e1)
+function cm.matfilter(c)
+	return c:IsSynchroType(TYPE_TUNER) or (c:IsSetCard(0x7e) and c:IsLocation(LOCATION_OVERLAY))
 end
 function cm.AddSynchroMixProcedure(c,f1,f2,f3,f4,minc,maxc,gc)
 	local e1=Effect.CreateEffect(c)
@@ -73,12 +59,18 @@ end
 function cm.GetSynchroLevelFlowerCardian(c)
 	return 2
 end
+function cm.filtersyn(c,syncard)
+	return c:IsCanBeSynchroMaterial(syncard)
+end
 function cm.GetSynMaterials(tp,syncard)
-	local mg=Duel.GetMatchingGroup(cm.SynMaterialFilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,syncard)
+	local mg=Duel.GetMatchingGroup(cm.SynMaterialFilter,tp,LOCATION_MZONE+LOCATION_OVERLAY,LOCATION_MZONE,nil,syncard)
 	if mg:IsExists(Card.GetHandSynchro,1,nil) then
 		local mg2=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_HAND,0,nil,syncard)
 		if mg2:GetCount()>0 then mg:Merge(mg2) end
 	end
+	local sg=Duel.GetOverlayGroup(tp,LOCATION_ONFIELD,0)
+	sg:Filter(cm.filtersyn,nil,syncard)
+	mg:Merge(sg)
 	return mg
 end
 function cm.SynMixCondition(f1,f2,f3,f4,minc,maxc,gc)
@@ -199,7 +191,7 @@ function cm.SynMixFilter4(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc,mgchk)
 	else
 		mg:Sub(sg)
 	end
-	return cm.SynMixCheck(mg,sg,minc-1,maxc-1,syncard,smat,gc,mgchk)
+	return aux.SynMixCheck(mg,sg,minc-1,maxc-1,syncard,smat,gc,mgchk)
 end
 function cm.SynMixCheck(mg,sg1,minc,maxc,syncard,smat,gc,mgchk)
 	local tp=syncard:GetControler()
@@ -244,25 +236,6 @@ function cm.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
 		if not found then return false end
 	end
 	for c in aux.Next(g) do
-			if c:IsLocation(LOCATION_OVERLAY) and c:IsSetCard(0x7e) then
-				if not c:IsSynchroType(TYPE_TUNER) and g:IsExists(Card.IsSynchroType,2,nil,TYPE_TUNER) then
-					return false
-				end
-				if c:IsSynchroType(TYPE_TUNER) and g:IsExists(Card.IsSynchroType,1,c,TYPE_TUNER) then
-					return false
-				end
-			end
-			if c:IsLocation(LOCATION_OVERLAY) and not c:IsSetCard(0x7e) then
-				if c:IsSynchroType(TYPE_TUNER) and g:IsExists(Card.IsSynchroType,1,c,TYPE_TUNER) then
-					return false
-				end
-				if not c:IsSynchroType(TYPE_TUNER) and g:IsExists(Card.IsSynchroType,2,nil,TYPE_TUNER) then
-					return false
-				end
-			end
-			if g:FilterCount(Card.IsSynchroType,nil,TYPE_TUNER)==0 and not g:IsExists(Card.IsLocation,1,nil,LOCATION_OVERLAY) then 
-				return false
-			end
 		local le,lf,lloc,lmin,lmax=c:GetTunerLimit()
 		if le then
 			local lct=g:GetCount()-1
@@ -276,37 +249,9 @@ function cm.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
 	end
 	return true
 end
-function cm.SynMaterialFilter(c,syncard)
-	return c:IsFaceup() and c:IsCanBeSynchroMaterial(syncard)
-end
-function cm.SynLimitFilter(c,f,e,syncard)
-	return f and not f(e,c,syncard)
-end
-function cm.GetSynchroLevelFlowerCardian(c)
-	return 2
-end
-function cm.filtersyn(c,syncard)
-	return c:IsCanBeSynchroMaterial(syncard)
-end
-function cm.GetSynMaterials(tp,syncard)
-	local mg=Duel.GetMatchingGroup(cm.SynMaterialFilter,tp,LOCATION_MZONE+LOCATION_OVERLAY,LOCATION_MZONE,nil,syncard)
-	if mg:IsExists(Card.GetHandSynchro,1,nil) then
-		local mg2=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_HAND,0,nil,syncard)
-		if mg2:GetCount()>0 then mg:Merge(mg2) end
-	end
-	local sg=Duel.GetOverlayGroup(tp,LOCATION_ONFIELD,0)
-	sg:Filter(cm.filtersyn,nil,syncard)
-	mg:Merge(sg)
-	return mg
-end
 function cm.cfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x107f) and c:GetOverlayCount()>0
 end
 function cm.atkcon(e)
-	return  Duel.IsExistingMatchingCard(cm.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(cm.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
-
-
-
-
-

@@ -56,16 +56,13 @@ end
 function cm.filter(c,tp)
 	return c:IsControler(tp) and c:IsSetCard(0x6978)
 end
-function cm.mfilter(c)
-	return c:IsPreviousLocation(LOCATION_MZONE) or (c:GetPreviousLocation()&LOCATION_ONFIELD==0 and c:GetOriginalType()&0x1>0)
-end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(cm.mfilter,nil)
-	local g2=g:Filter(Card.IsPreviousSetCard,nil,0x6978)
-	local count0=g2:FilterCount(Card.GetPreviousControler,nil,0)
-	local count1=g2:FilterCount(Card.GetPreviousControler,nil,1)
-	cm[0]=cm[0]+count0
-	cm[1]=cm[1]+count1
+	for tc in aux.Next(eg) do
+		if (tc:IsPreviousLocation(LOCATION_MZONE) or (tc:GetPreviousLocation()&LOCATION_ONFIELD==0 and tc:GetOriginalType()&0x1>0)) and tc:IsSetCard(0x6978) then
+			local p=tc:GetReasonPlayer()
+			cm[p]=cm[p]+1
+		end
+	end
 end
 function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 	cm[0]=0
@@ -113,13 +110,13 @@ end
 function cm.condition3(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsType,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil,TYPE_MONSTER)
 	g=g:Filter(Card.IsReleasable,nil)
-	return g:GetCount()>0 and cm[tp]>0
+	return #g>0 and cm[tp]>0
 end
 function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	local g=Duel.GetMatchingGroup(Card.IsType,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil,TYPE_MONSTER)
 	g=g:Filter(Card.IsReleasable,nil)
-	local count=math.min(g:GetCount(),cm[tp])
+	local count=math.min(#g,cm[tp])
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_RELEASE)
 	local g2=g:Select(1-tp,count,count,nil)
 	Duel.HintSelection(g2)
