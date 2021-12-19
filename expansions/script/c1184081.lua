@@ -46,10 +46,13 @@ function c1184081.op2(e,tp,eg,ep,ev,re,r,rp)
 	e2_2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2_2,tp)
 end
+function c1184081.cfilter2_1(c)
+	return c:IsSetCard(0x3e12) and c:IsReason(REASON_EFFECT+REASON_COST)
+end
 function c1184081.con2_1(e,tp,eg,ep,ev,re,r,rp)
 	return rp==Duel.GetTurnPlayer()
 		and re:IsHasType(EFFECT_TYPE_ACTIONS) and not re:IsHasType(EFFECT_TYPE_CONTINUOUS)
-		and eg:IsExists(Card.IsReason,1,nil,REASON_COST+REASON_EFFECT)
+		and eg:IsExists(c1184081.cfilter2_1,1,nil)
 end
 function c1184081.op2_1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,1184081,RESET_CHAIN,0,1)
