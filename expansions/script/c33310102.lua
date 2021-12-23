@@ -1,12 +1,28 @@
 --睡美人的小憇
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
-local m,cm=rsof.DefineCard(33310102)
+local m=33310102
+local cm=_G["c"..m]
 function cm.initial_effect(c)
-	local e1=rsef.ACT(c,nil,nil,nil,"sp,rm",nil,nil,nil,cm.tg,cm.act)
-	local e2=rsef.I(c,{m,0},nil,"td,th","tg",LOCATION_GRAVE,nil,nil,rstg.target({cm.tdfilter,"td",LOCATION_REMOVED },rsop.list(Card.IsAbleToHand,"th")),cm.tdop)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetTarget(cm.tg)
+	e1:SetOperation(cm.act)
+	c:RegisterEffect(e1)
+	--tohand
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCountLimit(1,m)
+	e2:SetTarget(cm.tdtg)
+	e2:SetOperation(cm.tdop)
+	c:RegisterEffect(e2)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and c:CheckSetCard("Cochrot") and Duel.IsExistingMatchingCard(cm.matfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,c,c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and _G["c"..c:GetCode()].rssetcode and _G["c"..c:GetCode()].rssetcode=="Cochrot" and Duel.IsExistingMatchingCard(cm.matfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,c,c,e,tp)
 end
 function cm.matfilter(c,tc,e,tp)
 	if c:GetRitualLevel(tc)<tc:GetLevel() then return false end
@@ -26,10 +42,10 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,tp,LOCATION_GRAVE)
 end
 function cm.act(e,tp)
-	rsof.SelectHint(tp,"sp")
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
 	if not tc then return end
-	rsof.SelectHint(tp,"res")
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local matc=Duel.SelectMatchingCard(tp,cm.matfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,tc,tc,e,tp):GetFirst()
 	tc:SetMaterial(Group.FromCards(matc))
 	if matc:IsLocation(LOCATION_GRAVE) then
@@ -41,11 +57,20 @@ function cm.act(e,tp)
 	tc:CompleteProcedure()
 end
 function cm.tdfilter(c)
-	return c:IsAbleToDeck() and c:CheckSetCard("Cochrot") and c:IsFaceup()
+	return c:IsAbleToDeck() and _G["c"..c:GetCode()].rssetcode and _G["c"..c:GetCode()].rssetcode=="Cochrot" and c:IsFaceup() and c:IsType(TYPE_MONSTER)
 end
-function cm.tdop(e,tp)
-	local c,tc=aux.ExceptThisCard(e),rscf.GetTargetCard()
-	if tc and Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_DECK) and c then
-		Duel.SendtoHand(c,nil,REASON_EFFECT)
+function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and cm.tdfilter(chkc) end
+	if chk==0 then return e:GetHandler():IsAbleToHand() and Duel.IsExistingTarget(cm.tdfilter,tp,LOCATION_REMOVED,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectTarget(tp,cm.tdfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+end
+function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 and tc:IsRelateToEffect(e) then
+		Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 	end
 end

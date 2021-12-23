@@ -1,33 +1,82 @@
 --可可莉柯特·兽耳布偶
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
-local m,cm=rsof.DefineCard(33310103,"Cochrot")
+local m=33310103
+local cm=_G["c"..m]
+cm.rssetcode="Cochrot"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	local e1=rsef.I(c,{m,0},{1,m},"se,th,sp,dish,ga",nil,LOCATION_HAND,nil,nil,rsop.target({aux.FilterBoolFunction(Card.IsDiscardable,REASON_EFFECT),"dish",LOCATION_HAND },{cm.thfilter,"th",LOCATION_DECK }),cm.thop)
-	local e2=rsef.FC(c,EVENT_SPSUMMON_SUCCESS)
+	--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_HANDES+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,m)
+	e1:SetCost(cm.spcost)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
+	c:RegisterEffect(e1)
+	--summon success
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetOperation(cm.limitop)
-	local e3=rsef.RegisterClone(c,e2,"code",EVENT_SUMMON_SUCCESS)
-	local e4=rsef.RegisterClone(c,e2,"code",EVENT_FLIP_SUMMON_SUCCESS)
-	local e5=rsef.RegisterClone(c,e2,"code",EVENT_TO_GRAVE,"op",cm.limitop2)
-	local e6=rsef.STO(c,EVENT_REMOVE,{m,1},{1,m+100},"th","de,dsp",nil,nil,rsop.target(cm.thfilter2,"th",LOCATION_GRAVE),cm.thop2)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e3)
+	local e4=e2:Clone()
+	e4:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+	c:RegisterEffect(e4)
+	local e5=e2:Clone()
+	e5:SetCode(EVENT_TO_GRAVE)
+	e5:SetOperation(cm.limitop2)
+	c:RegisterEffect(e5)
+	--tohand
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(m,1))
+	e6:SetCategory(CATEGORY_TOHAND)
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e6:SetCode(EVENT_REMOVE)
+	e6:SetCountLimit(1,m+100)
+	e6:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e6:SetTarget(cm.thtg)
+	e6:SetOperation(cm.thop2)
+	c:RegisterEffect(e6)
+end
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return not e:GetHandler():IsPublic() end
 end
 function cm.thfilter(c)
 	return c:IsCode(33310102) and c:IsAbleToHand()
 end
-function cm.thop(e,tp)
-	local ct=Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT,nil,REASON_EFFECT)
-	if ct==0 then return end
-	rsof.SelectHint(tp,"th")
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if #g<=0 or Duel.SendtoHand(g,nil,REASON_EFFECT)<=0 then return end
-	Duel.ConfirmCards(1-tp,g)
-	local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,0,LOCATION_GRAVE,nil,e,tp)
-	if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-		Duel.BreakEffect()
-		rsof.SelectHint(tp,"sp")
-		local sc=sg:Select(tp,1,1,nil):GetFirst()
-		if Duel.SpecialSummon(sc,0,tp,1-tp,false,false,POS_FACEUP)>0 then
-			local e1,e2=rsef.SV_LIMIT({e:GetHandler(),sc,true},"dis,dise",nil,nil,rsreset.est)
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+		if #g<=0 or Duel.SendtoHand(g,nil,REASON_EFFECT)<=0 then return end
+		Duel.ConfirmCards(1-tp,g)
+		local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,0,LOCATION_GRAVE,nil,e,tp)
+		if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local sc=sg:Select(tp,1,1,nil):GetFirst()
+			if Duel.SpecialSummonStep(sc,0,tp,1-tp,false,false,POS_FACEUP) then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+				local e2=Effect.CreateEffect(c)
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetCode(EFFECT_DISABLE_EFFECT)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e2)
+			end
+			Duel.SpecialSummonComplete()
 		end
 	end
 end
@@ -43,7 +92,7 @@ function cm.limitop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter2(c,tp)
-	return c:GetOwner()~=tp
+	return c:GetOwner()~=tp and c:IsType(TYPE_MONSTER)
 end
 function cm.limitop2(e,tp,eg,ep,ev,re,r,rp)
 	if eg:IsExists(cm.cfilter2,1,nil,tp) then
@@ -56,8 +105,12 @@ end
 function cm.thfilter2(c)
 	return c:IsAbleToHand() and c:GetType()&0x82==0x82
 end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
+end
 function cm.thop2(e,tp)
-	rsof.SelectHint(tp,"th")
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter2),tp,LOCATION_GRAVE,0,1,1,nil)
-	rsof.SendtoHand(g)
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
 end
