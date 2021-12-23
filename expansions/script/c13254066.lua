@@ -29,7 +29,7 @@ function cm.tdfilter(c)
 	return #tama.tamas_getElements(c)>0 and c:IsAbleToDeck()
 end
 function cm.thfilter(c,el)
-	return c:IsAbleToHand() and c:IsSetCard(0x3356) and tamas_isAllElementsNotAbove(tama.tamas_getElements(c),el)
+	return c:IsAbleToHand() and c:IsSetCard(0x3356) and tama.tamas_isAllElementsNotAbove(tama.tamas_getElements(c),el)
 end
 function cm.smtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	--if chk==0 then return Duel.IsExistingTarget(cm.tdfilter,tp,0,LOCATION_GRAVE,1,nil) end

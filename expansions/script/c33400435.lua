@@ -99,7 +99,7 @@ function c33400435.cccfilter2(c)
 end
 function c33400435.actcon(e)
 local tc=e:GetHandler():GetBattleTarget()
-	return tc:IsFaceup() and (Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()) and (tc:IsSetCard(0x341) or (Duel.IsExistingMatchingCard(c33400435.cccfilter1,tp,LOCATION_SZONE,0,1,nil) or  Duel.IsExistingMatchingCard(c33400435.cccfilter2,tp,LOCATION_MZONE,0,1,nil)))
+	return tc and tc:IsFaceup() and (Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()) and (tc:IsSetCard(0x341) or (Duel.IsExistingMatchingCard(c33400435.cccfilter1,tp,LOCATION_SZONE,0,1,nil) or  Duel.IsExistingMatchingCard(c33400435.cccfilter2,tp,LOCATION_MZONE,0,1,nil)))
 end
 
 function c33400435.eqcon(e)

@@ -214,7 +214,7 @@ function cm.GraveActCostOp(e,tp,eg,ep,ev,re,r,rp)
 	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 end
 function cm.FanippetTrapSPCondition(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp or ep==1-tp
+	return rp==1-tp or ep==1-tp or re:GetHandler():IsCode(53716006)
 end
 function cm.FanippetTrapSPCost(code)
 	return
