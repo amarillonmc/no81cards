@@ -38,7 +38,7 @@ function cm.smtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
 end
 function cm.smop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroupCount(cm.tdfilter,tp,LOCATION_GRAVE,0)
+	local g=Duel.GetMatchingGroupCount(cm.tdfilter,tp,LOCATION_GRAVE,0,nil)
 	--[[
 	if g:GetCount()<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
