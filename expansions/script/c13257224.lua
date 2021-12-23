@@ -3,8 +3,8 @@ local m=13257224
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x354,LOCATION_SZONE)
-	c:SetCounterLimit(0x354,8)
+	c:EnableCounterPermit(TAMA_COSMIC_BATTLESHIP_COUNTER_CHARGE,LOCATION_SZONE)
+	c:SetCounterLimit(TAMA_COSMIC_BATTLESHIP_COUNTER_CHARGE,8)
 	c:EnableReviveLimit()
 	--equip limit
 	local e11=Effect.CreateEffect(c)
@@ -78,13 +78,13 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 		if ct>0 then
 			--ct=math.floor(math.sqrt(ct))
 			ct=math.ceil(ct/2)
-			e:GetHandler():AddCounter(COSMIC_BATTLESHIP_CHARGE,ct)
+			e:GetHandler():AddCounter(TAMA_COSMIC_BATTLESHIP_COUNTER_CHARGE,ct)
 		end
 	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,COSMIC_BATTLESHIP_CHARGE,8,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,COSMIC_BATTLESHIP_CHARGE,8,REASON_COST)
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,TAMA_COSMIC_BATTLESHIP_COUNTER_CHARGE,8,REASON_COST) end
+	e:GetHandler():RemoveCounter(tp,TAMA_COSMIC_BATTLESHIP_COUNTER_CHARGE,8,REASON_COST)
 end
 function cm.codisable(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetEquipTarget()

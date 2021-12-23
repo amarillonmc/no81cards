@@ -4,21 +4,25 @@ function c188806.initial_effect(c)
 	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),nil,nil,aux.NonTuner(nil),1,1,c188806.syncheck)
 	--SpecialSummon
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(188806,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,188806)
+	e1:SetCondition(c188806.spcon)
 	e1:SetTarget(c188806.sptg)
 	e1:SetOperation(c188806.spop)
 	c:RegisterEffect(e1)
 	--Negate
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(188806,2))
+	e2:SetDescription(aux.Stringid(188806,1))
 	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,088806)
 	e2:SetCondition(c188806.negcon)
 	e2:SetCost(c188806.negcost)
 	e2:SetTarget(c188806.negtg)
@@ -28,6 +32,9 @@ end
 function c188806.syncheck(g)
 	local sg=g:Clone()
 	return sg:GetClassCount(Card.GetOriginalAttribute)==sg:GetCount() and sg:GetClassCount(Card.GetOriginalRace)==sg:GetCount()
+end
+function c188806.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c188806.spfil(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x3f38) and not c:IsAttribute(ATTRIBUTE_DARK)
@@ -42,7 +49,7 @@ function c188806.spop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()<=0 or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:Select(tp,1,1,nil)
-	Duel.SpecialSummon(sg,0,tp,tp,false,false)
+	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 end
 function c188806.ckfil(c)
 	return c:IsOnField() and c:IsSetCard(0x3f38)
@@ -78,6 +85,3 @@ end
 function c188806.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
-
-
-

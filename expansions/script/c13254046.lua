@@ -94,7 +94,6 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0)
 	if g:GetCount()==0 then return end
 	Duel.SendtoGrave(g,REASON_EFFECT+REASON_DISCARD)
-	Duel.ShuffleDeck(p)
 	Duel.BreakEffect()
 	Duel.Draw(p,g:GetCount(),REASON_EFFECT)
 end

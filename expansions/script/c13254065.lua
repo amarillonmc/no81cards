@@ -75,7 +75,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Recover(tp,1000,REASON_EFFECT)
 		end
 	end
-	if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_CHAOS)>=2 and Duel.GetFieldGroup(tp,0,LOCATION_DECK)>0 then
+	if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_CHAOS)>=2 and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 then
 		Duel.Hint(HINT_MESSAGE,0,aux.Stringid(m,6))
 		Duel.ConfirmCards(tp,g)
 		for i=1,j do
