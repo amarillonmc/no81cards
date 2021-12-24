@@ -106,7 +106,7 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsChainDisablable(0) and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,0,LOCATION_HAND,diff,nil,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_DISCARD)
 		local g=Duel.SelectMatchingCard(1-tp,Card.IsDiscardable,tp,0,LOCATION_HAND,diff,diff,nil,REASON_EFFECT)
-		if #g>0 and Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)>0 then
+		if #g>0 and Duel.SendtoGrave(g,REASON_EFFECT+REASON_DISCARD)>0 then
 			Duel.NegateEffect(0)
 			return
 		end
