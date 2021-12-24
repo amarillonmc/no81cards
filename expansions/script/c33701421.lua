@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.condition)
 	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
+	local e3=Effect.CreateEffect(e:GetHandler())
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EFFECT_DESTROY_REPLACE)
 	e3:SetTarget(cm.reptg)
@@ -63,7 +63,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	return true
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=math.ceil(c:GetCounter(0x144e)/2)
+	local ct=math.ceil(e:GetHandler():GetCounter(0x144e)/2)
 	e:GetHandler():RemoveCounter(tp,0x144e,ct,REASON_EFFECT)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
