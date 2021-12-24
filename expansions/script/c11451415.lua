@@ -1,4 +1,4 @@
---dragon-king palace,the crystal city
+--dragon-king palace, the crystal city
 local m=11451415
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -51,11 +51,14 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(cm.sfilter2,tp,LOCATION_DECK,0,1,nil)
+	local b2=(Duel.GetCurrentPhase()~=PHASE_END)
 	if chk==0 then return true end
-	local op=0
-	if b1 then
+	local op=1
+	if b1 and b2 then
 		op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2))
-	else
+	elseif b1 then
+		op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))
+	elseif b2 then
 		op=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))+1
 	end
 	e:SetLabel(op)

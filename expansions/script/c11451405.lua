@@ -1,4 +1,4 @@
---幻旅传说·激斗
+--traveler saga clash
 --21.04.10
 local m=11451405
 local cm=_G["c"..m]
@@ -35,8 +35,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(sg)
 		local tc=sg:GetFirst()
 		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(m,0))
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
 		e1:SetRange(LOCATION_MZONE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
 		e1:SetValue(cm.efilter)

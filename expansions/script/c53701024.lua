@@ -43,7 +43,7 @@ function c53701024.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c53701024.cpfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_SPELL) and c:IsAbleToGraveAsCost() and c:IsSetCard(0x3530)
 		and c:CheckActivateEffect(false,true,false)~=nil
 end
 function c53701024.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)

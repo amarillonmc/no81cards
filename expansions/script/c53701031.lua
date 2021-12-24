@@ -37,6 +37,7 @@ end
 function c53701031.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
+	e:GetHandler():RegisterFlagEffect(53701031,RESET_EVENT+RESETS_STANDARD,0,0)
 end
 function c53701031.filter(c,e,tp)
 	return c:IsSetCard(0x3530) and not c:IsCode(53701031) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -55,10 +56,9 @@ function c53701031.activate(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c53701031.filter),tp,LOCATION_GRAVE,0,nil,e,tp)
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)	
+		local sc=g:Select(tp,1,1,nil):GetFirst()
+		if sc then Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP) end 
 	end
-	e:GetHandler():RegisterFlagEffect(53701031,RESET_EVENT+RESETS_STANDARD,0,0)
 end
 function c53701031.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp and Duel.GetCurrentPhase()==PHASE_MAIN1 

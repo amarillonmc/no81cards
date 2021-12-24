@@ -1,4 +1,4 @@
---幻旅传说·遭遇
+--traveler saga encounter
 --21.04.09
 local m=11451400
 local cm=_G["c"..m]
@@ -31,7 +31,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local rc=eg:GetFirst()
-	if not rc:IsRelateToEffect(e) then return end
+	if not rc:IsRelateToEffect(e) or not Duel.IsPlayerCanSpecialSummon(tp) then return end
 	local g=Duel.GetFieldGroup(tp,LOCATION_EXTRA,0)
 	if #g>0 then
 		local tc=g:RandomSelect(1-tp,1):GetFirst()
