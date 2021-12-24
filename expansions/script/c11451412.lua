@@ -1,4 +1,4 @@
---crab,soidier of dragon palace
+--crab, soidier of dragon palace
 local m=11451412
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -16,6 +16,11 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
+	local e4=e1:Clone()
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetCode(0)
+	e4:SetCondition(cm.condition0)
+	c:RegisterEffect(e4)
 	--effect2
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -40,7 +45,10 @@ function cm.mat_filter(c)
 	return c:IsAttribute(ATTRIBUTE_WATER)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return (tp~=Duel.GetTurnPlayer() or Duel.IsPlayerAffectedByEffect(tp,11451425)) and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and not e:GetHandler():IsPublic()
+	return tp~=Duel.GetTurnPlayer() and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and not e:GetHandler():IsPublic()
+end
+function cm.condition0(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsPlayerAffectedByEffect(tp,11451425) and not e:GetHandler():IsPublic()
 end
 function cm.filter(c,tp)
 	return c:IsSetCard(0x6978) and bit.band(c:GetType(),0x82)==0x82 and c:IsAbleToGraveAsCost() and c:CheckActivateEffect(true,true,false)~=nil

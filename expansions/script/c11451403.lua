@@ -1,4 +1,4 @@
---幻旅传说·迷途
+--traveler saga stray
 --21.04.10
 local m=11451403
 local cm=_G["c"..m]
@@ -60,14 +60,14 @@ function cm.reop1(e,tp,eg,ep,ev,re,r,rp)
 	local n1,n2=ne:GetLabel()
 	if #g1>0 and n1>0 then
 		local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
-		g=g:Filter(Card.IsAbleToRemove,nil,tp,POS_FACEUP,REASON_RULE)
+		g=g:Filter(Card.IsAbleToRemove,nil,tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local tg=g:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
 		Duel.HintSelection(tg)
 		if tc:IsLocation(LOCATION_MZONE) then
 			Duel.Hint(HINT_CARD,0,m)
-			if Duel.Remove(tc,POS_FACEUP,REASON_RULE+REASON_TEMPORARY)>0 then
+			if Duel.Remove(tc,0,REASON_RULE+REASON_TEMPORARY)>0 then
 				n1=n1-1
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetDescription(aux.Stringid(m,0))
@@ -108,7 +108,7 @@ function cm.reop1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(tg)
 		if tc:IsLocation(LOCATION_MZONE) then
 			Duel.Hint(HINT_CARD,0,m)
-			if Duel.Remove(tc,POS_FACEUP,REASON_RULE+REASON_TEMPORARY)>0 then
+			if Duel.Remove(tc,0,REASON_RULE+REASON_TEMPORARY)>0 then
 				n2=n2-1
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetDescription(aux.Stringid(m,0))
@@ -167,14 +167,14 @@ function cm.reop2(e,tp,eg,ep,ev,re,r,rp)
 	local n1,n2=ne:GetLabel()
 	if #g1>0 and n1>0 then
 		local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
-		g=g:Filter(Card.IsAbleToRemove,nil,tp,POS_FACEUP,REASON_RULE)
+		g=g:Filter(Card.IsAbleToRemove,nil,tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local tg=g:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
 		Duel.HintSelection(tg)
 		if tc:IsLocation(LOCATION_MZONE) then
 			Duel.Hint(HINT_CARD,0,m)
-			if Duel.Remove(tc,POS_FACEUP,REASON_RULE+REASON_TEMPORARY)>0 then
+			if Duel.Remove(tc,0,REASON_RULE+REASON_TEMPORARY)>0 then
 				n1=n1-1
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetDescription(aux.Stringid(m,0))
@@ -215,7 +215,7 @@ function cm.reop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(tg)
 		if tc:IsLocation(LOCATION_MZONE) then
 			Duel.Hint(HINT_CARD,0,m)
-			if Duel.Remove(tc,POS_FACEUP,REASON_RULE+REASON_TEMPORARY)>0 then
+			if Duel.Remove(tc,0,REASON_RULE+REASON_TEMPORARY)>0 then
 				n2=n2-1
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetDescription(aux.Stringid(m,0))

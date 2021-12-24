@@ -154,7 +154,7 @@ function cm.spcon(e,c)
 	local bg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_EXTRA,0,c,e,tp)
 	if #bg==0 then return false end
 	local mg=aux.GetSynMaterials(tp,c)
-	return mg:IsExists(cm.SynMixFilter1,1,nil,cm.tfilter,nil,nil,cm.ntfilter,1,99,c,mg,nil,cm.chkfilter,false,e)
+	return mg:IsExists(cm.SynMixFilter1,1,nil,cm.tfilter,nil,nil,cm.ntfilter,1,99,c,mg,nil,cm.chkfilter,false,e) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,true)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	local c=e:GetHandler()
