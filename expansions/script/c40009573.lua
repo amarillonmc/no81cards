@@ -40,7 +40,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT) > 0 then
 		Duel.ConfirmCards(1-tp,tc)
-		if tc:IsLocation(LOCATION_HAND) and not tc:IsCode(40009579) and not tc:IsSetCard(0x8f1b) then
+		if tc:IsLocation(LOCATION_HAND) and not tc:IsCode(40009579) and not tc:IsSetCard(0xcf1b) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -57,7 +57,7 @@ function cm.aclimit(e,re,tp)
 	return re:GetHandler():IsCode(e:GetLabel())
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x7f1b) and not c:IsCode(m) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsAbleToGrave()
+	return  not c:IsCode(m) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsAbleToGrave()
 end
 function cm.tgop(e,tp)
 	local g = Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_DECK,0,nil)

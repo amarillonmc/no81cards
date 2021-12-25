@@ -1,4 +1,4 @@
---aoguang,king of dragon palace
+--ao guang, king of dragon palace
 local m=11451414
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -33,6 +33,9 @@ function cm.initial_effect(c)
 	e3:SetCondition(cm.condition4)
 	e3:SetOperation(cm.operation4)
 	c:RegisterEffect(e3)
+	local e5=e3:Clone()
+	e5:SetCode(EVENT_CHAIN_NEGATED)
+	c:RegisterEffect(e5)
 	--check release count
 	if not cm.global_check then
 		cm.global_check=true
@@ -92,7 +95,7 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
 end
 function cm.condition4(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(m)>0
+	return e:GetHandler():GetFlagEffect(m)>0 and Duel.GetCurrentChain()==1
 end
 function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():ResetFlagEffect(m)

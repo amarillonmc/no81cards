@@ -72,7 +72,7 @@ end
 function cm.filter2(c,e,tp,rc)
 	if not (c:IsType(TYPE_SYNCHRO) and (rc%c:GetLevel()==0) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0) then return false end
 	--continuously updating
-	local tab={14000248,14010109,79029117,92361302,92361306,98731001}
+	local tab={14000248,14010109,79029117,90700065,90700066,90700067,90700068,90700069,92361302,92361306,98731001}
 	for _,code in pairs(tab) do
 		if c:GetOriginalCode()==code then return true end
 	end

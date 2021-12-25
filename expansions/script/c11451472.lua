@@ -25,7 +25,7 @@ function cm.filter(c)
 	return c:GetOriginalType()&0x21==0x21 and c:IsRace(RACE_INSECT) and c:IsFaceup()
 end
 function cm.filter2(c)
-	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAttackAbove(1000) and not c:IsHasEffect(EFFECT_REVERSE_UPDATE) and not c:IsHasEffect(EFFECT_SET_ATTACK_FINAL)
+	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAttackAbove(1000) and not c:IsHasEffect(EFFECT_REVERSE_UPDATE)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
@@ -82,6 +82,7 @@ function cm.mvcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(-1000)
 	tc:RegisterEffect(e1,true)

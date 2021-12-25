@@ -2,6 +2,7 @@
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
 local m , cm = rscf.DefineCard(40009575)
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40009579)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

@@ -27,6 +27,9 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
+	local e4=e2:Clone()
+	e4:SetCode(EVENT_CHAIN_NEGATED)
+	c:RegisterEffect(e4)
 	--setname
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
@@ -128,7 +131,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local num=Duel.GetFlagEffectLabel(tp,11451480)
 	if not num then return false end
 	e:SetLabel(num)
-	return num>=1
+	return num>=1 and Duel.GetCurrentChain()==1
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsRace(RACE_FAIRY)
