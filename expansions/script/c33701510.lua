@@ -93,11 +93,8 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	while tc do
-		if tc:IsLevelAbove(1) and tc:IsSetCard(0x9440) then
-			cm[ep]=bit.bor(cm[ep],0x1<<tc:GetLevel())
-		end
-		tc=eg:GetNext()
+	local tc=re:GetHandler()
+	if tc:IsLevelAbove(1) and tc:IsSetCard(0x9440) then
+		cm[ep]=bit.bor(cm[ep],0x1<<tc:GetLevel())
 	end
 end

@@ -89,11 +89,8 @@ function cm.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	while tc do
-		if tc:IsLevelAbove(1) and tc:IsSetCard(0x9440) and not cm[ep]:IsContains(tc) then
-			cm[ep]:AddCard(tc)
-		end
-		tc=eg:GetNext()
+	local tc=re:GetHandler()
+	if tc:IsLevelAbove(1) and tc:IsSetCard(0x9440) and not cm[ep]:IsContains(tc) then
+		cm[ep]:AddCard(tc)
 	end
 end
