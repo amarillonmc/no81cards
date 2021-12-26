@@ -42,13 +42,11 @@ function c9910211.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c9910211.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then
+	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND)
+		and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoGrave(g,REASON_EFFECT+REASON_DISCARD)
-		end
+		Duel.ShuffleHand(tp)
+		Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD,nil)
 	end
 end
 function c9910211.spcon(e,tp,eg,ep,ev,re,r,rp)
