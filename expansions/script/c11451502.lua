@@ -71,6 +71,6 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-p,tc)
 		end
+		cm[p]=cm[p]+1
 	end
-	cm[p]=cm[p]+1
 end
