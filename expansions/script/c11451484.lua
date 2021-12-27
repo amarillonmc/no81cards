@@ -2,6 +2,7 @@
 local m=11451484
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	Duel.EnableGlobalFlag(GLOBALFLAG_SPSUMMON_COUNT)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -37,14 +38,14 @@ function cm.filter2(c,e,tp,att)
 	return c:IsSetCard(0x151) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(att) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK,1-tp)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)<2 end
+	local sp=Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)
+	if chk==0 then return sp<2 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetCode(EFFECT_SPSUMMON_COUNT_LIMIT)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetLabel(tp)
-	e1:SetCondition(function(e,tp) return Duel.GetActivityCount(e:GetLabel(),ACTIVITY_SPSUMMON)>=2 end)
 	e1:SetTargetRange(1,0)
+	e1:SetValue(2-sp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
