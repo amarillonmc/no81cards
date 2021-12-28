@@ -51,9 +51,9 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local phase=Duel.GetCurrentPhase()
 	local c=e:GetHandler()
 	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or c:IsStatus(STATUS_BATTLE_DESTROYED) then return end
-	if not c:GetEquipGroup():IsExists(cm.eqfilter,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>3 and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,0,LOCATION_DECK,nil)>0 then
+	if not c:GetEquipGroup():IsExists(cm.eqfilter,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_DECK,0,nil)>0 then
 		Duel.Hint(HINT_CARD,0,m)
-		local tc=Duel.GetMatchingGroup(Card.IsFacedown,tp,0,LOCATION_DECK,nil):GetMaxGroup(Card.GetSequence):GetFirst()
+		local tc=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_DECK,0,nil):GetMaxGroup(Card.GetSequence):GetFirst()
 		Duel.DisableShuffleCheck()
 		if cm.equipfd(c,tp,tc) then Duel.Readjust() end
 	end

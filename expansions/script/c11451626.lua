@@ -72,9 +72,9 @@ end
 function cm.imval(e,te)
 	if te:GetHandlerPlayer()==e:GetHandlerPlayer() then return false end
 	if not te:IsActivated() then return true end
+	local lab=e:GetHandler():GetFlagEffectLabel(m)
 	local ev=Duel.GetChainInfo(0,CHAININFO_CHAIN_COUNT)
-	local re=Duel.GetChainInfo(ev+1,CHAININFO_TRIGGERING_EFFECT)
-	return not (re and re:GetHandler() and e:GetHandler()==re:GetHandler())
+	return ev and ev>0 and not (lab and lab==ev+1)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
@@ -91,7 +91,8 @@ function cm.spfilter2(c,e,tp,mc,tc)
 	return c:IsSetCard(0x14f) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp,tc)>0 and math.abs(c:GetOriginalLevel()-mc:GetOriginalLevel())==1
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_MZONE,0,1,nil,e,tp,false) and not e:GetHandler():IsStatus(STATUS_CHAINING) and not Duel.IsPlayerAffectedByEffect(tp,59822133) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_MZONE,0,1,nil,e,tp,false) and e:GetHandler():GetFlagEffect(m)==0 and not Duel.IsPlayerAffectedByEffect(tp,59822133) end
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1,Duel.GetCurrentChain())
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,0,nil,e,tp,false)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_EXTRA+LOCATION_GRAVE)
@@ -113,7 +114,8 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) end
+	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 end
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1,Duel.GetCurrentChain())
 	if Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)

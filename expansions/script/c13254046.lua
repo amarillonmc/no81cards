@@ -55,7 +55,7 @@ function cm.sumfilter(c)
 	return c:IsSetCard(0x3356) and c:IsSummonable(true,nil)
 end
 function cm.smtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.smop(e,tp,eg,ep,ev,re,r,rp)
