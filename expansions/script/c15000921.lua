@@ -21,6 +21,8 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_CANNOT_SUMMON)
 	c:RegisterEffect(e2)
+	cm.deadrose_effect_onfield_splimit=e1
+	cm.deadrose_effect_onfield_slimit=e2
 	--cannot remove
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -30,6 +32,7 @@ function cm.initial_effect(c)
 	e3:SetTargetRange(1,1)
 	e3:SetTarget(cm.crtg)
 	c:RegisterEffect(e3)
+	cm.deadrose_effect_onfield=e3
 	--fusion!
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
@@ -39,6 +42,7 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.tgtg)
 	e4:SetOperation(cm.tgop)
 	c:RegisterEffect(e4)
+	cm.deadrose_effect_three=e4
 end
 function cm.splimcon(e)
 	return not e:GetHandler():IsForbidden()
@@ -67,7 +71,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g1=g:SelectSubGroup(tp,cm.fselect,false,2,2)
-	if g1:GetCount()==2 and Duel.SendtoGrave(g1,REASON_EFFECT)==2 then
+	if g1 and g1:GetCount()==2 and Duel.SendtoGrave(g1,REASON_EFFECT)==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g3=Duel.SelectMatchingCard(tp,cm.tg3filter,tp,LOCATION_EXTRA,0,1,1,nil)
 		if g3:GetCount()~=0 then

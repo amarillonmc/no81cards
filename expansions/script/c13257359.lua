@@ -105,9 +105,9 @@ function cm.thfilter(c)
 end
 function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
 	local ct1=eg:GetCount()
 	local t1=ct1>0
-	if chk==0 then return t1 and Duel.IsPlayerCanDraw(tp,1) end
 	local op=0
 	local m1={}
 	local n1={}

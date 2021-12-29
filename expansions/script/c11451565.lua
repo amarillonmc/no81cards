@@ -56,7 +56,8 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if Duel.Draw(tp,1,REASON_EFFECT)>0 and tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local ec=Duel.SelectMatchingCard(tp,cm.notpublic,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
+		local ec=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
+		if ec and ec:IsPublic() then Duel.MoveToField(ec,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
 		if ec and Duel.Equip(tp,ec,tc,false) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
@@ -67,9 +68,6 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 			ec:RegisterEffect(e1)
 		end
 	end
-end
-function cm.notpublic(c)
-	return not c:IsPublic()
 end
 function cm.acfilter(c,tp)
 	return c:IsPreviousControler(tp) and c:GetEquipTarget()

@@ -88,6 +88,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 		local dc=Duel.GetOperatedGroup():GetFirst()
 		Duel.ConfirmCards(1-tp,dc)
 		if dc:IsAttribute(ATTRIBUTE_WATER) and c:IsRelateToEffect(e) and c:IsChainAttackable() then Duel.ChainAttack() end
+		Duel.ShuffleHand(tp)
 	end
 end
 function cm.eqcon(e,tp,eg,ep,ev,re,r,rp)
