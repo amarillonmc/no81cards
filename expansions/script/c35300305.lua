@@ -71,11 +71,14 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 		   local tc1=g:GetFirst()
-		   sg:AddCard(c)
-		   tc1:SetMaterial(sg)
-		   Duel.SpecialSummon(tc1,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP) 
-		   Duel.Overlay(tc1,sg)
-		   tc1:CompleteProcedure()
+		   if sg:GetFirst():IsOnField() then
+			  if not (sg:GetFirst():IsOnField() and c:IsOnField()) then return end
+			  sg:AddCard(c)
+			  tc1:SetMaterial(sg)
+			  Duel.SpecialSummon(tc1,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP) 
+			  Duel.Overlay(tc1,sg)
+			  tc1:CompleteProcedure()
+		   end
 		end
 	end
 end

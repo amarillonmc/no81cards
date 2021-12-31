@@ -56,7 +56,8 @@ function cm.sltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
 	local c=e:GetHandler()
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_GRAVE,0,2,nil) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,mg) and not (c:IsStatus(STATUS_EFFECT_ENABLED) and c:IsStatus(STATUS_CHAINING)) end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_GRAVE,0,2,nil) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,mg) and e:GetHandler():GetFlagEffect(m)==0 end
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,cm.filter1,tp,LOCATION_GRAVE,0,2,2,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)

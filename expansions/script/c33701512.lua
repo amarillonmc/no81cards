@@ -24,16 +24,6 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(cm.condition)
-	e2:SetCost(cm.cost)
-	e2:SetOperation(cm.operation)
-	c:RegisterEffect(e2)
 	if not cm.global_check then
 		cm.global_check=true
 		cm[0]=0
@@ -47,7 +37,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.discon(e)
-	return bit.band(cm[e:GetControler()],0x1<<(e:GetHandler():GetLevel()-1))>0
+	return bit.band(cm[e:GetControler()],0x1<<(e:GetHandler():GetLevel()-1))<=0
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
@@ -63,7 +53,33 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,33701517,0,0x4011,2000,2000,5,RACE_FAIRY,ATTRIBUTE_LIGHT) then return end
 	local token=Duel.CreateToken(tp,33701517)
-	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SET_BASE_ATTACK)
+	e1:SetValue(2000)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+	token:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_SET_BASE_DEFENSE)
+	token:RegisterEffect(e2)
+	local e3=e1:Clone()
+	e3:SetCode(EFFECT_CHANGE_LEVEL)
+	e3:SetValue(5)
+	token:RegisterEffect(e3)
+	Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,1))
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1)
+	e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e4:SetCondition(cm.condition)
+	e4:SetCost(cm.spcost)
+	e4:SetOperation(cm.operation)
+	token:RegisterEffect(e4,true)
+	Duel.SpecialSummonComplete()
 end
 function cm.indfilter(c)
 	return c:IsCode(33701507) and c:IsFaceup()

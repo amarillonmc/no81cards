@@ -44,14 +44,21 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local num=eg:FilterCount(Card.IsType,nil,TYPE_MONSTER)
 	return rp==1-tp and num>=1
 end
-function cm.spfilter(c,e,tp,eg)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and eg:IsContains(c)
+function cm.tgfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_GRAVE)
+end
+function cm.spfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.spfilter2(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsRelateToEffect(e)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local num=eg:FilterCount(Card.IsType,nil,TYPE_MONSTER)
-	local tg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e,tp,eg)
-	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451481) and num>=1)) and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and #tg>0 end
+	local tg=eg:Filter(cm.tgfilter,nil)
+	local spg=tg:Filter(cm.spfilter,nil,e,tp)
+	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451481) and num>=1)) and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and #spg>0 end
 	if Duel.IsPlayerAffectedByEffect(tp,11451481) then
 		if num>=2 then
 			local op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))
@@ -73,7 +80,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) or Duel.GetLocationCount(tp,LOCATION_MZONE)<2 or not c:IsRelateToEffect(e) or not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(aux.NecroValleyFilter(Card.IsRelateToEffect),nil,e)
+	local tg=g:Filter(aux.NecroValleyFilter(cm.spfilter2),nil,e,tp)
 	if #tg>0 then
 		tg:AddCard(c)
 		Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)

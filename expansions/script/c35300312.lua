@@ -76,12 +76,15 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 then
 		   local tc1=g:GetFirst()
 		   local tc2=sg:GetFirst()
-		   local g1=Group.FromCards(c,tc2)
-		   Duel.HintSelection(g1)
-		   Duel.SendtoGrave(g1,REASON_EFFECT)
-		   Duel.BreakEffect()
-		   Duel.SpecialSummon(tc1,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP) 
-		   tc1:CompleteProcedure()
+		   if sg:GetFirst():IsOnField() then
+			  if not (sg:GetFirst():IsOnField() and c:IsOnField()) then return end
+			  local g1=Group.FromCards(c,tc2)
+			  Duel.HintSelection(g1)
+			  Duel.SendtoGrave(g1,REASON_EFFECT)
+			  Duel.BreakEffect()
+			  Duel.SpecialSummon(tc1,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP) 
+			  tc1:CompleteProcedure()
+		   end
 		end
 	end
 end

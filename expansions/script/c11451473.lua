@@ -69,7 +69,8 @@ function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local te=e:GetLabelObject()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(te,0,tp,true,false) and not e:GetHandler():IsStatus(STATUS_CHAINING) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(te,0,tp,true,false) and e:GetHandler():GetFlagEffect(m)==0 end
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)

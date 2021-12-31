@@ -28,8 +28,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	if not cm.global_check then
 		cm.global_check=true
-		cm[0]=Group.CreateGroup()
-		cm[1]=Group.CreateGroup()
+		cm[0]=0
+		cm[1]=0
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_CHAIN_SOLVED)
@@ -63,7 +63,15 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return cm[ep]:Group.GetClassCount(Card.GetLevel())>=7
+	local ct=0
+	local n=cm[ep]
+	while n do
+		if (n%2)==1 then
+			ct=ct+1
+		end
+		n=n>>1
+	end
+	return ct>=7
 end
 function cm.winop(e,tp,eg,ep,ev,re,r,rp)
 	local WIN_REASON_CREATORGOD=0x13
@@ -71,11 +79,8 @@ function cm.winop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Win(p,WIN_REASON_CREATORGOD)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	while tc do
-		if tc:IsLevelAbove(1) and tc:IsSetCard(0x9440) and not cm[ep]:IsContains(tc) then
-			cm[ep]:AddCard(tc)
-		end
-		tc=eg:GetNext()
+	local tc=re:GetHandler()
+	if tc:IsLevelAbove(1) and tc:IsSetCard(0x9440) then
+		cm[ep]=bit.bor(cm[ep],0x1<<tc:GetLevel())
 	end
 end

@@ -42,7 +42,7 @@ function c33701511.initial_effect(c)
 	
 end
 function cm.discon(e)
-	return bit.band(cm[e:GetControler()],0x1<<(e:GetHandler():GetLevel()-1))>0
+	return bit.band(cm[e:GetControler()],0x1<<(e:GetHandler():GetLevel()-1))<=0
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
@@ -58,18 +58,33 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,33701517,0,0x4011,1500,1500,4,RACE_FAIRY,ATTRIBUTE_LIGHT) then return end
 	local token=Duel.CreateToken(tp,33701517)
-	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SET_BASE_ATTACK)
+	e1:SetValue(0)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+	token:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_SET_BASE_DEFENSE)
+	token:RegisterEffect(e2)
+	local e3=e1:Clone()
+	e3:SetCode(EFFECT_CHANGE_LEVEL)
+	e3:SetValue(1)
+	token:RegisterEffect(e3)
+	Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
 	--end battle phase
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,2))
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e1:SetCondition(cm.atcon)
-	e1:SetCost(cm.spcost)
-	e1:SetTarget(cm.attg)
-	e1:SetOperation(cm.atop)
-	token:RegisterEffect(e1,true)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,2))
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e4:SetCondition(cm.atcon)
+	e4:SetCost(cm.spcost)
+	e4:SetTarget(cm.attg)
+	e4:SetOperation(cm.atop)
+	e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+	token:RegisterEffect(e4,true)
+	Duel.SpecialSummonComplete()
 end
 function cm.indfilter(c)
 	return c:IsCode(33701507) and c:IsFaceup()

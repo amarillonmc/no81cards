@@ -86,7 +86,8 @@ function cm.ngcon(e,tp,eg,ep,ev,re,r,rp)
 	return ((a>=1 and Duel.IsPlayerAffectedByEffect(tp,11451482)) or a>=2) and b>0
 end
 function cm.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDestructable() and not e:GetHandler():IsStatus(STATUS_CHAINING) end
+	if chk==0 then return e:GetHandler():IsDestructable() and e:GetHandler():GetFlagEffect(m)==0 end
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	local a,b=0,1
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)

@@ -98,6 +98,10 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetOperation(cm.rsop)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e2,true)
+			local e3=e2:Clone()
+			e3:SetCode(EVENT_CHAIN_NEGATED)
+			e3:SetOperation(cm.rsop2)
+			tc:RegisterEffect(e3,true)
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 		end
 	end
@@ -113,4 +117,7 @@ function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():ResetFlagEffect(m)
+end
+function cm.rsop2(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 end

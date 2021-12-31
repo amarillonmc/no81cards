@@ -77,7 +77,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetRank()+3,c) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) end
-	c:RegisterFlagEffect(m,RESET_CHAIN,0,0)
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)

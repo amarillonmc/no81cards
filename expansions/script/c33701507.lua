@@ -2,6 +2,8 @@
 local m=33701507
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	c:EnableCounterPermit(0x9440)
+	c:SetCounterLimit(0x9440,5)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -105,12 +107,9 @@ function cm.indcon(e)
 	return Duel.IsExistingMatchingCard(cm.indfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	while tc do
-		if tc:IsLevelAbove(1) and tc:IsSetCard(0x9440) then
-			cm[ep]=math.max(cm[ep],tc:GetLevel())
-		end
-		tc=eg:GetNext()
+	local tc=re:GetHandler()
+	if tc:IsLevelAbove(1) and tc:IsSetCard(0x9440) then
+		cm[ep]=math.max(cm[ep],tc:GetLevel())
 	end
 end
 function cm.clear(e,tp,eg,ep,ev,re,r,rp)

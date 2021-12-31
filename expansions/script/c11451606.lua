@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	e8:SetCode(EFFECT_ADD_TYPE)
 	e8:SetValue(TYPE_EFFECT)
 	e8:SetRange(LOCATION_SZONE)
-	e8:SetTargetRange(LOCATION_HAND+LOCATION_GRAVE,0)
+	e8:SetTargetRange(LOCATION_HAND+LOCATION_GRAVE+LOCATION_MZONE,0)
 	e8:SetTarget(cm.betg)
 	c:RegisterEffect(e8)
 end
@@ -110,8 +110,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 end
 function cm.eftg(e,c)
-	return c:IsSetCard(0x132)
+	return c:IsSetCard(0x132) and c:IsType(TYPE_MONSTER)
 end
 function cm.betg(e,c)
-	return c:IsSetCard(0x132) and not c:IsType(TYPE_EFFECT)
+	return c:IsSetCard(0x132) and c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_EFFECT)
 end

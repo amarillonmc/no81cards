@@ -57,13 +57,13 @@ function c72100124.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c72100124.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil)
+		and Duel.IsExistingMatchingCard(c72100124.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,0,1,c)
 	local b2=Duel.IsExistingMatchingCard(c72100124.spfilter2,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,tp)
 	return b1 or b2
 end
 function c72100124.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c72100124.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil)
+		and Duel.IsExistingMatchingCard(c72100124.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,1,c)
 	local b2=Duel.IsExistingMatchingCard(c72100124.spfilter2,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,tp)
 	if b2 and (not b1 or Duel.SelectYesNo(tp,aux.Stringid(48829461,0))) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -73,7 +73,7 @@ function c72100124.spop(e,tp,eg,ep,ev,re,r,rp,c)
 		Duel.Remove(tg,POS_FACEUP,REASON_COST)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local tg=Duel.SelectMatchingCard(tp,c72100124.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil)
+		local tg=Duel.SelectMatchingCard(tp,c72100124.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,c)
 		Duel.Remove(tg,POS_FACEUP,REASON_COST)
 	end
 end
