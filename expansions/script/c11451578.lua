@@ -3,6 +3,7 @@
 local m=11451578
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,11451581)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_SPELLCASTER),1,2)
 	c:EnableReviveLimit()

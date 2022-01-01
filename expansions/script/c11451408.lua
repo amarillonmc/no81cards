@@ -1,4 +1,4 @@
---幻旅传说·空境
+--traveler saga kyoukaisen
 --21.04.10
 local m=11451408
 local cm=_G["c"..m]
@@ -42,6 +42,10 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.MoveSequence(mg:GetFirst(),0)
 	end
 	Duel.ConfirmDecktop(tp,seq+1)
+	if tc:IsType(TYPE_RITUAL) and (tc.mat_filter or tc.mat_group_check) then
+		Duel.ShuffleDeck(tp)
+		return
+	end
 	local mg=Duel.GetDecktopGroup(tp,seq):Filter(cm.mfilter,nil)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and #mg>=tc:GetLevel() then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

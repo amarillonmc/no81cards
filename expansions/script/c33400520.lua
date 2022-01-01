@@ -81,7 +81,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local lc=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if not (lc>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp))  then return end 
-	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,0,nil)   
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp)   
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	if lc>2 then lc=2 end
 	local g1=g:SelectSubGroup(tp,cm.check,false,1,lc)
