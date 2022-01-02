@@ -19,7 +19,7 @@ function c9910235.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c9910235.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9910235.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x955) and c:IsType(TYPE_LINK)
+	return c:IsFaceup() and c:IsRace(RACE_PSYCHO) and c:IsType(TYPE_LINK)
 end
 function c9910235.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910235.filter(chkc) end
@@ -31,9 +31,6 @@ function c9910235.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	else
 		e:SetCategory(CATEGORY_ATKCHANGE)
 	end
-end
-function c9910235.rmfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
 end
 function c9910235.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -47,16 +44,6 @@ function c9910235.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		e1:SetValue(link*500)
 		tc:RegisterEffect(e1)
-	end
-	local g=Duel.GetMatchingGroup(c9910235.rmfilter,tp,zone,zone,aux.ExceptThisCard(e))
-	if Duel.GetCurrentChain()>2 and #g>=link and Duel.SelectYesNo(tp,aux.Stringid(9910235,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg=g:Select(tp,link,link,nil)
-		Duel.HintSelection(sg)
-		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
-	end
-	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
-	if tc:IsRelateToEffect(e) then
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD)
 		e2:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
@@ -65,19 +52,15 @@ function c9910235.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetLabel(tc:GetFieldID())
 		e2:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e2,tp)
-	else
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_FIELD)
-		e3:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
-		e3:SetTargetRange(LOCATION_MZONE,0)
-		e3:SetTarget(c9910235.atktg2)
-		e3:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e3,tp)
+	end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,zone,zone,aux.ExceptThisCard(e))
+	if Duel.GetCurrentChain()>2 and #g>=link and Duel.SelectYesNo(tp,aux.Stringid(9910235,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg=g:Select(tp,link,link,nil)
+		Duel.HintSelection(sg)
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
 end
 function c9910235.atktg(e,c)
 	return e:GetLabel()~=c:GetFieldID()
-end
-function c9910235.atktg2(e,c)
-	return true
 end

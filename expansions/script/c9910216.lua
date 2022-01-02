@@ -22,50 +22,58 @@ function c9910216.initial_effect(c)
 	e2:SetOperation(c9910216.sumop)
 	c:RegisterEffect(e2)
 end
-function c9910216.get_zone(c,seq)
+function c9910216.cfilter1(c,tp)
+	return c:IsFaceup() and c:IsType(TYPE_LINK) and c:IsRace(RACE_PSYCHO)
+		and (c:IsControler(tp) or c:GetSequence()>4)
+end
+function c9910216.cfilter2(c,tp,b1,b2,b3,b4,seq)
+	if c:IsFacedown() or not c:IsRace(RACE_PSYCHO) then return false end
+	local res1=b1 and c:GetSequence()==seq-1
+	local res2=b2 and c:GetSequence()==seq+1
+	local res3=b3 and ((c:IsControler(tp) and c:GetSequence()==5) or (c:IsControler(1-tp) and c:GetSequence()==6))
+	local res4=b4 and ((c:IsControler(tp) and c:GetSequence()==6) or (c:IsControler(1-tp) and c:GetSequence()==5))
+	return res1 or res2 or res3 or res4
+end
+function c9910216.get_zone(c,tp)
+	local lg=Duel.GetMatchingGroup(c9910216.cfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 	local zone=0
-	if seq<4 and c:IsLinkMarker(LINK_MARKER_LEFT) then zone=bit.replace(zone,0x1,seq+1) end
-	if seq>0 and seq<5 and c:IsLinkMarker(LINK_MARKER_RIGHT) then zone=bit.replace(zone,0x1,seq-1) end
+	for lc in aux.Next(lg) do zone=bit.bor(zone,bit.band(lc:GetLinkedZone(tp),0x1f)) end
+	local b1=c:IsLinkMarker(LINK_MARKER_LEFT)
+	local b2=c:IsLinkMarker(LINK_MARKER_RIGHT)
+	local b3=c:IsLinkMarker(LINK_MARKER_TOP)
+	local b4=c:IsLinkMarker(LINK_MARKER_TOP_LEFT)
+	local b5=c:IsLinkMarker(LINK_MARKER_TOP_RIGHT)
+	if Duel.IsExistingMatchingCard(c9910216.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,false,b2,b5,false,0)
+		then zone=bit.replace(zone,0x1,0) end
+	if Duel.IsExistingMatchingCard(c9910216.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,b1,b2,b3,false,1)
+		then zone=bit.replace(zone,0x1,1) end
+	if Duel.IsExistingMatchingCard(c9910216.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,b1,b2,b4,b5,2)
+		then zone=bit.replace(zone,0x1,2) end
+	if Duel.IsExistingMatchingCard(c9910216.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,b1,b2,false,b3,3)
+		then zone=bit.replace(zone,0x1,3) end
+	if Duel.IsExistingMatchingCard(c9910216.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,b1,false,false,b4,4)
+		then zone=bit.replace(zone,0x1,4) end
 	return zone
 end
-function c9910216.spfilter(c,e,tp,seq)
-	local zone=c9910216.get_zone(c,seq)
-	return zone~=0 and c:IsSetCard(0x955) and c:IsType(TYPE_LINK)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+function c9910216.spfilter(c,e,tp)
+	local zone=c9910216.get_zone(c,tp)
+	return zone~=0 and c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 end
 function c9910216.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local seq=e:GetHandler():GetSequence()
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910216.spfilter(chkc,e,tp,seq) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp)
+		and c9910216.spfilter(chkc,e,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c9910216.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,seq) end
+		and Duel.IsExistingTarget(c9910216.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c9910216.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,seq)
+	local g=Duel.SelectTarget(tp,c9910216.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c9910216.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and c:IsControler(tp) and tc:IsRelateToEffect(e) then
-		local zone=c9910216.get_zone(tc,c:GetSequence())
-		if zone~=0 and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP,zone) then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_SINGLE)
-			e3:SetCode(EFFECT_SET_ATTACK)
-			e3:SetValue(0)
-			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e3)
-		end
-		Duel.SpecialSummonComplete()
+	if tc:IsRelateToEffect(e) then
+		local zone=c9910216.get_zone(tc,tp)
+		if zone~=0 then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone) end
 	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -90,7 +98,7 @@ function c9910216.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9910216.sumfilter(c)
-	return c:IsSetCard(0x955) and c:IsSummonable(true,nil)
+	return c:IsRace(RACE_PSYCHO) and c:IsSummonable(true,nil)
 end
 function c9910216.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910216.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end

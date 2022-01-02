@@ -72,9 +72,12 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.ConfirmCards(1-tp,tg)
 	end
 end
+function cm.cfilter1(c)
+	return #(tama.tamas_getElements(c))~=0 and c:IsAbleToDeckAsCost()
+end
 function cm.thcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_MANA,5}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter1,tp,LOCATION_GRAVE,0,nil),el)
 	if chk==0 then 
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end

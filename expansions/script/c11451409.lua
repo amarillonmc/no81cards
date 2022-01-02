@@ -1,4 +1,4 @@
---幻旅传说·荒蜃
+--traveler saga mirageruin
 --21.04.10
 local m=11451409
 local cm=_G["c"..m]
@@ -18,11 +18,11 @@ function cm.initial_effect(c)
 	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e2:SetValue(cm.tglimit)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	--todeck
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
-	e4:SetCategory(CATEGORY_TODECK)
+	e4:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e4:SetCode(EVENT_CHAINING)
@@ -71,7 +71,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
 	Duel.SendtoDeck(sg,nil,1,REASON_EFFECT)
 	local og=Duel.GetOperatedGroup()
-	if og:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and c:GetFlagEffect(m+9)==0 then
+	if og:IsExists(Card.IsType,2,nil,TYPE_MONSTER) or og:IsExists(Card.IsType,2,nil,TYPE_SPELL) or og:IsExists(Card.IsType,2,nil,TYPE_TRAP) then
+		Duel.BreakEffect()
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
+	--[[if og:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and c:GetFlagEffect(m+9)==0 then
 		c:RegisterFlagEffect(m+9,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 	end
 	if og:IsExists(Card.IsType,1,nil,TYPE_SPELL) and c:GetFlagEffect(m+10)==0 then
@@ -79,7 +83,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	if og:IsExists(Card.IsType,1,nil,TYPE_TRAP) and c:GetFlagEffect(m+11)==0 then
 		c:RegisterFlagEffect(m+11,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
-	end
+	end--]]
 end
 function cm.tglimit(e,re,rp)
 	local c=e:GetHandler()

@@ -6,6 +6,7 @@ function c9910237.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetTarget(c9910237.target)
 	e1:SetOperation(c9910237.operation)
 	c:RegisterEffect(e1)
@@ -23,58 +24,54 @@ function c9910237.initial_effect(c)
 	e2:SetOperation(c9910237.tgop)
 	c:RegisterEffect(e2)
 end
-function c9910237.filter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x955) and c:IsAbleToDeck()
-		and Duel.IsExistingMatchingCard(c9910237.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
+function c9910237.filter(c)
+	return c:IsFaceup() and c:IsRace(RACE_PSYCHO) and c:IsAbleToDeck()
 end
-function c9910237.spfilter(c,e,tp,code)
-	return c:IsSetCard(0x955) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c9910237.spfilter(c,e,tp)
+	return c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910237.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910237.filter(chkc,e,tp) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910237.filter(chkc) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c9910237.filter,tp,LOCATION_MZONE,0,1,nil,e,tp) end
+		and Duel.IsExistingTarget(c9910237.filter,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.IsExistingMatchingCard(c9910237.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c9910237.filter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
+	local g=Duel.SelectTarget(tp,c9910237.filter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c9910237.operation(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		local tc=Duel.GetFirstTarget()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c9910237.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,tc:GetCode())
-		if g:GetCount()>0 then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-			if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-				Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
-			end
+		local g=Duel.SelectMatchingCard(tp,c9910237.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and tc:IsRelateToEffect(e) then
+			Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 		end
 	end
 end
-function c9910237.lvfilter(c,tp)
-	local lv=c:GetLevel()
-	return lv>0 and c:IsAttribute(ATTRIBUTE_WIND)
-		and Duel.IsExistingMatchingCard(c9910237.tgfilter,tp,LOCATION_DECK,0,1,nil,lv)
+function c9910237.lvfilter(c)
+	return c:IsRace(RACE_PSYCHO) and c:IsAbleToDeck()
 end
-function c9910237.tgfilter(c,lv)
-	return c:IsSetCard(0x955) and not c:IsLevel(lv) and c:IsLevelAbove(1) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+function c9910237.tgfilter(c)
+	return c:IsSetCard(0x955) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c9910237.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910237.lvfilter(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c9910237.lvfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910237.lvfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910237.lvfilter,tp,LOCATION_GRAVE,0,1,nil)
+		and Duel.IsExistingMatchingCard(c9910237.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c9910237.lvfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+	local g=Duel.SelectTarget(tp,c9910237.lvfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c9910237.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9910237.tgfilter,tp,LOCATION_DECK,0,1,1,nil,tc:GetLevel())
+	local g=Duel.SelectMatchingCard(tp,c9910237.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		local gc=g:GetFirst()
-		if Duel.SendtoGrave(gc,REASON_EFFECT)~=0 and tc:IsRelateToEffect(e) then
+		if Duel.SendtoGrave(gc,REASON_EFFECT)~=0 and gc:IsLocation(LOCATION_GRAVE) and tc:IsRelateToEffect(e) then
 			Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 		end
 	end

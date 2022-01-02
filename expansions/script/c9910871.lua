@@ -111,6 +111,7 @@ function c9910871.racefilter(c,rc)
 	return c:GetRace()>0
 end
 function c9910871.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c9910871.mfilter1,nil,e)
 	aux.FCheckAdditional=c9910871.fcheck
@@ -190,17 +191,16 @@ function c9910871.activate(e,tp,eg,ep,ev,re,r,rp)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat)
 		end
-		tc:RegisterFlagEffect(9910871,RESET_EVENT+RESET_TURN_SET+RESET_TOHAND+RESET_TODECK+RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910871,0))
+		if c:IsCode(9910871) then tc:RegisterFlagEffect(9910871,RESET_EVENT+RESET_TURN_SET+RESET_TOHAND+RESET_TODECK+RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910871,0)) end
 		tc:CompleteProcedure()
 		local mg=tc:GetMaterial()
 		local wg=mg:Filter(c9910871.racefilter,nil)
-		local wbc=wg:GetFirst()
 		local att=0
 		for wbc in aux.Next(wg) do
 			att=att|wbc:GetRace()
 		end
 		if att>0 then
-			local e1=Effect.CreateEffect(e:GetHandler())
+			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_ADD_RACE)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)

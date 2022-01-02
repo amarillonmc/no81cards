@@ -51,9 +51,12 @@ end
 function cm.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
+function cm.cfilter(c)
+	return #(tama.tamas_getElements(c))~=0 and c:IsAbleToDeckAsCost()
+end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_CHAOS,3}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil),el)
 	if chk==0 then 
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end
@@ -77,7 +80,7 @@ end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	local el={{TAMA_ELEMENT_CHAOS,1},{TAMA_ELEMENT_MANA,1}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil),el)
 	local ct=tama.tamas_getElementCount(tama.tamas_sumElements(mg),TAMA_ELEMENT_CHAOS)-1
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and cm.tgfilter(chkc,c,ct) end
 	if chk==0 then return tama.tamas_isCanSelectElementsForAbove(mg,el) and Duel.IsExistingTarget(cm.tgfilter,tp,0,LOCATION_MZONE,1,nil,c,ct) end
@@ -87,7 +90,7 @@ function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ct=math.ceil((atk-c:GetAttack())/300)
 
 	local el1={{TAMA_ELEMENT_CHAOS,1},{TAMA_ELEMENT_MANA,1+ct}}
-	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
+	local sg=tama.tamas_selectElementsMaterial(mg,el1,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,atk)
@@ -103,7 +106,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_MANA,2},{TAMA_ELEMENT_LIFE,1}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,c),el)
 	mg:RemoveCard(e:GetHandler())
 	if chk==0 then 
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)

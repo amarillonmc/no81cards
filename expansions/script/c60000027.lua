@@ -43,7 +43,7 @@ function c60000027.toop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc then
 		if not Duel.Equip(tp,tc,c) then return end
-		Duel.Hint(HINT_SOUND,0,aux.Stringid(60000027,0))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(60000027,0))
 		local e1=Effect.CreateEffect(c)
 		e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -62,9 +62,6 @@ function c60000027.toop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e2)
 		end
 	end
-end
-function c60000027.eqlimit(e,c)
-	return e:GetOwner()==c
 end
 function c60000027.filter(c)
 	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()

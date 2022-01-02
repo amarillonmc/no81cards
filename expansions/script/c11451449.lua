@@ -64,7 +64,7 @@ end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_DECK,0,nil,e,eg)
-	if chk==0 then return bit.band(r,REASON_EFFECT)~=0 and re and eg:IsExists(cm.filter2,1,nil,tp) and c==g:GetFirst() end
+	if chk==0 then return eg:IsExists(cm.filter2,1,nil,tp) and c==g:GetFirst() end
 	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		local g=eg:Filter(cm.filter2,nil,tp)
 		g:ForEach(Card.RegisterFlagEffect,m,RESET_CHAIN,0,1)

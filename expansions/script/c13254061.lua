@@ -1,4 +1,4 @@
---飞球造物·隐飞球
+--飞球造物·拳石球
 local m=13254061
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)

@@ -31,6 +31,23 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCondition(cm.con2)
 	c:RegisterEffect(e2)
+ --search
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,1))
+	e5:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetRange(LOCATION_GRAVE)
+	e5:SetCountLimit(1,m)
+	e5:SetCondition(cm.con1)
+	e5:SetCost(cm.cost2)
+	e5:SetTarget(cm.sptg)
+	e5:SetOperation(cm.spop)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_FREE_CHAIN)
+	e6:SetCondition(cm.con2)
+	c:RegisterEffect(e6)
 end
 function cm.addct(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -104,4 +121,52 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(g2,REASON_EFFECT)
 		end
 	end 
+end
+
+function cm.refilter(c,tp,re)
+	local flag=true
+	local value={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)}
+	if #value>0 then
+		for k,re in ipairs(value) do
+			local val=re:GetTarget()
+			if val and val(re,c,tp) then
+				flag=false
+			end
+		end 
+	end
+	return  c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP)  and flag)
+end
+function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,tp) and e:GetHandler():IsAbleToRemoveAsCost()  end
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil,tp)
+	if g:GetCount()>0  then  
+		local ck=0 
+		local tc=g:GetFirst()
+		Duel.Release(tc,REASON_COST)
+	end
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local ft2=Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)
+	if chk==0 then return ft1>0 and ft2>0
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,33401660,0x341,0x4011,1500,1500,4,RACE_FAIRY,ATTRIBUTE_DARK,POS_FACEUP,tp)
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,33401660,0x341,0x4011,1500,1500,4,RACE_FAIRY,ATTRIBUTE_DARK,POS_FACEUP,1-tp)
+		and not Duel.IsPlayerAffectedByEffect(tp,59822133) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,2,0,0)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local ft2=Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)
+	if ft1<=0 or ft2<=0 or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	if Duel.IsPlayerCanSpecialSummonMonster(tp,33401660,0x341,0x4011,1500,1500,4,RACE_FAIRY,ATTRIBUTE_DARK,POS_FACEUP,tp)
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,33401660,0x341,0x4011,1500,1500,4,RACE_FAIRY,ATTRIBUTE_DARK,POS_FACEUP,1-tp) then
+		local token=Duel.CreateToken(tp,33401660)
+		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
+		local token=Duel.CreateToken(tp,33401660)
+		Duel.SpecialSummonStep(token,0,tp,1-tp,false,false,POS_FACEUP)
+		Duel.SpecialSummonComplete()
+	end
 end

@@ -94,9 +94,12 @@ function cm.smop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Summon(tp,tc,true,nil)
 	end
 end
+function cm.cfilter(c)
+	return #(tama.tamas_getElements(c))~=0 and c:IsAbleToDeckAsCost()
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_WIND,2},{TAMA_ELEMENT_EARTH,2},{TAMA_ELEMENT_WATER,2},{TAMA_ELEMENT_FIRE,2},{TAMA_ELEMENT_ORDER,2},{TAMA_ELEMENT_CHAOS,2}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil),el)
 	if chk==0 then 
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end

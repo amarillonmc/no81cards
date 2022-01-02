@@ -1,4 +1,4 @@
---龙宫城·渊底蜃景
+--pearl of dragon palace
 local m=11451423
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -83,7 +83,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.atkcon(e)
-	if Duel.GetCurrentPhase()~=PHASE_DAMAGE_CAL then return false end
+	local ph=Duel.GetCurrentPhase()
+	if ph~=PHASE_DAMAGE_CAL and ph~=PHASE_DAMAGE then return false end
 	local ec=e:GetHandler():GetEquipTarget()
 	local a=Duel.GetAttacker()
 	local d=Duel.GetAttackTarget()

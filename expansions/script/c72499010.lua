@@ -1,0 +1,62 @@
+--妖桜こんこ
+function c72499010.initial_effect(c)
+	--activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(72499010,0))
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,72499010)
+	e1:SetCost(c72499010.cost)
+	e1:SetOperation(c72499010.operation)
+	c:RegisterEffect(e1)
+end
+function c72499010.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsDiscardable() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
+end
+function c72499010.operation(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	local ac=Duel.AnnounceCard(tp)
+	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CODE)
+	local bc=Duel.AnnounceCard(1-tp)  
+   -- if ac~=0 or bc~=0 then
+		local c=e:GetHandler()
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
+		e1:SetTarget(c72499010.distg)
+		e1:SetLabel(ac,bc)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_CHAIN_SOLVING)
+		e2:SetCondition(c72499010.discon)
+		e2:SetOperation(c72499010.disop)
+		e2:SetLabel(ac,bc)
+		e2:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e2,tp)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+		e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+		e3:SetTarget(c72499010.distg)
+		e3:SetLabel(ac,bc)
+		e3:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e3,tp)
+ --  end
+end
+function c72499010.distg(e,c)
+	local ac,bc=e:GetLabel(ac,bc)
+	return (c:IsOriginalCodeRule(ac) or c:IsOriginalCodeRule(bc))
+end
+function c72499010.discon(e,tp,eg,ep,ev,re,r,rp)
+	local ac,bc=e:GetLabel(ac,bc)
+	return (re:GetHandler():IsOriginalCodeRule(ac) or re:GetHandler():IsOriginalCodeRule(bc))
+end
+function c72499010.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
+end

@@ -1,4 +1,4 @@
---龙宫城·璃彩回廊
+--corridor of dragon palace
 local m=11451425
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -14,49 +14,56 @@ function cm.initial_effect(c)
 	e2:SetCode(m)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(1,0)
-	e2:SetCondition(cm.condition)
+	e2:SetCondition(cm.con)
 	c:RegisterEffect(e2)
-	--to grave
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_TO_GRAVE)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCondition(cm.con)
-	e3:SetOperation(cm.op)
-	c:RegisterEffect(e3)
-end
-function cm.filter(c,e,tp)
-	return c:IsSetCard(0x6978) and c:IsAbleToGrave()
-end
-function cm.filter3(c)
-	return c:IsFaceup() and bit.band(c:GetType(),0x81)==0x81 and c:IsSetCard(0x6978) and c:IsSummonType(SUMMON_TYPE_RITUAL)
-end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(m)==0
+	--copy
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TOGRAVE)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_PHASE+PHASE_END)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetHintTiming(0,TIMING_END_PHASE)
+	e4:SetCondition(cm.condition)
+	e4:SetCost(cm.cost)
+	e4:SetTarget(cm.target)
+	e4:SetOperation(cm.operation)
+	c:RegisterEffect(e4)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_MZONE,0,1,nil)
+	return e:GetHandler():GetFlagEffect(m)==0
 end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	--effect phase end
-	local e3=Effect.CreateEffect(e:GetHandler())
-	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_PHASE+PHASE_END)
-	e3:SetCountLimit(1)
-	e3:SetCondition(cm.condition3)
-	e3:SetOperation(cm.operation3)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	return tp~=Duel.GetTurnPlayer()
 end
-function cm.condition3(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil)
+function cm.filter(c,tp)
+	return c:IsSetCard(0x6978) and bit.band(c:GetType(),0x82)==0x82 and c:IsAbleToDeckAsCost() and c:CheckActivateEffect(true,true,false)~=nil
 end
-function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,m)
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(100)
+	return true
+end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		if e:GetLabel()~=100 then return false end
+		e:SetLabel(0)
+		return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil,tp)
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local hg=g:SelectSubGroup(tp,aux.dncheck,false,1,2)
-	Duel.SendtoGrave(hg,REASON_EFFECT)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+	local c=g:GetFirst():CheckActivateEffect(true,true,false)
+	e:SetLabelObject(c)
+	Duel.SendtoDeck(g,nil,2,REASON_COST)
+	e:SetProperty(c:GetProperty())
+	local target=c:GetTarget()
+	if target then target(e,tp,eg,ep,ev,re,r,rp,1) end
+	Duel.ClearOperationInfo(0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
+end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetLabelObject()
+	if not c or not e:GetHandler():IsRelateToEffect(e) then return end
+	local operation=c:GetOperation()
+	if operation then operation(e,tp,eg,ep,ev,re,r,rp) end
+	Duel.BreakEffect()
+	Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
 end

@@ -39,9 +39,12 @@ end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
+function cm.cfilter1(c)
+	return #(tama.tamas_getElements(c))~=0 and c:IsAbleToDeckAsCost()
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_MANA,2}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter1,tp,LOCATION_GRAVE,0,nil),el)
 	if chk==0 then 
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 	end

@@ -28,7 +28,7 @@ function c60002006.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c60002006.tgfil(c)
-	return c:IsCode(98818516) and c:IsAbleToGrave()
+	return c:IsCode(60000000) and c:IsAbleToGrave()
 end
 function c60002006.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -67,7 +67,7 @@ function c60002006.acop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c60002006.splimit(e,c)
-	return not c:IsAttribute(ATTRIBUTE_EARTH)
+	return not c:IsRace(RACE_PLANT)
 end
 function c60002006.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
@@ -76,7 +76,7 @@ function c60002006.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c60002006.spfil(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCode(98818516)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCode(60000000)
 end
 function c60002006.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60002006.spfil,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end

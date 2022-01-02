@@ -49,16 +49,19 @@ function cm.initial_effect(c)
 	cm[c]=elements
 	
 end
+function cm.cfilter(c)
+	return #(tama.tamas_getElements(c))~=0 and c:IsAbleToDeckAsCost()
+end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local el={{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_EARTH,1}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil),el)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local el={{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_EARTH,1}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil),el)
 	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end

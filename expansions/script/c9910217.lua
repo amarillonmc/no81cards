@@ -1,13 +1,15 @@
 --天空漫步者 各务葵
 function c9910217.initial_effect(c)
-	--hand link
+	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,9910217)
-	e1:SetValue(c9910217.matval)
+	e1:SetCondition(c9910217.spcon)
+	e1:SetTarget(c9910217.sptg)
+	e1:SetOperation(c9910217.spop)
 	c:RegisterEffect(e1)
 	--disable
 	local e2=Effect.CreateEffect(c)
@@ -22,15 +24,31 @@ function c9910217.initial_effect(c)
 	e2:SetOperation(c9910217.disop)
 	c:RegisterEffect(e2)
 end
-function c9910217.mfilter(c)
-	return c:IsLocation(LOCATION_MZONE) and c:IsRace(RACE_PSYCHO)
+function c9910217.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local race=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)
+	return Duel.GetTurnPlayer()~=tp and race&RACE_PSYCHO>0
 end
-function c9910217.exmfilter(c)
-	return c:IsLocation(LOCATION_HAND) and c:IsCode(9910217)
+function c9910217.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
-function c9910217.matval(e,lc,mg,c,tp)
-	if not lc:IsSetCard(0x955) then return false,nil end
-	return true,not mg or mg:IsExists(c9910217.mfilter,1,nil) and not mg:IsExists(c9910217.exmfilter,1,nil)
+function c9910217.linkfilter(c)
+	return c:IsLinkSummonable(nil) and c:IsSetCard(0x955)
+end
+function c9910217.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local count=0
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		local g=Duel.GetMatchingGroup(c9910217.linkfilter,tp,LOCATION_EXTRA,0,nil)
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910217,0)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local tc=g:Select(tp,1,1,nil):GetFirst()
+			Duel.LinkSummon(tp,tc,nil)
+		end
+	end
 end
 function c9910217.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -43,34 +61,25 @@ function c9910217.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9910217.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 end
 function c9910217.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910217,0))
-	local sg=g:Select(tp,1,1,nil)
-	local tc=sg:GetFirst()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+	local g=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	if #g==0 then return end
+	Duel.HintSelection(g)
+	local tc=g:GetFirst()
 	Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetCode(EFFECT_DISABLE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	tc:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetCode(EFFECT_DISABLE_EFFECT)
 	e2:SetValue(RESET_TURN_SET)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	tc:RegisterEffect(e2)
-	if tc:IsType(TYPE_TRAPMONSTER) then
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e3)
-	end
 end

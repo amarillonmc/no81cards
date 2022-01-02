@@ -49,7 +49,7 @@ function c60002002.rcop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetLP(tp,Duel.GetLP(tp)+6230130)
 end
 function c60002002.ctfil(c)
-	return c:IsAbleToRemoveAsCost() and c:IsCode(98818516)
+	return c:IsAbleToRemoveAsCost() and c:IsCode(60000000)
 end
 function c60002002.ttcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(c60002002.ctfil,tp,LOCATION_GRAVE,0,1,nil) end

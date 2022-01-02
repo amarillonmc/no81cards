@@ -2,13 +2,13 @@
 --罐子
 function c60000055.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),1,1)
 	c:EnableReviveLimit()  
 	--open
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_TO_GRAVE)
-	e1:SetCountLimit(2,60000055)
+	e1:SetCountLimit(1,60000055)
 	e1:SetOperation(c60000055.operation)
 	c:RegisterEffect(e1)
 end

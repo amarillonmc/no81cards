@@ -79,6 +79,37 @@ function tama.getTargetTable(c,str)
 	end
 	return nil
 end
+--[[Using for save or load something. After load, please use some effect to remove. Thanks to Komeiji Koishi(777).
+	Example:
+	local index=tama.save(tama.tamas_sumElements(sg))
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetReset(RESET_EVENT+RESET_CHAIN)
+	e1:SetOperation(function (e,tp,eg,ep,ev,re,r,rp)
+			return tama.removeObj(index)
+	end)
+	Duel.RegisterEffect(e1,tp)
+	e:SetLabel(index)
+]]
+local current=1
+local t={}
+function tama.save(obj)
+	local i=current
+	while t[i] do
+		i=i+1
+	end
+	current=current+1
+	t[i]=obj
+	return i
+end
+function tama.get(index)
+	return t[index]
+end
+function tama.removeObj(index)
+	if current<index then current=index end
+	t[index]=nil
+end
 --[[
 	Custom field effect example:
 	local e1=Effect.CreateEffect(c)

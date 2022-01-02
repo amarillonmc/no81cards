@@ -21,20 +21,34 @@ function c9910209.initial_effect(c)
 	e2:SetOperation(c9910209.thop)
 	c:RegisterEffect(e2)
 end
+function c9910209.lkfilter(c)
+	return c:IsRace(RACE_PSYCHO) and c:IsLinkState() and c:IsFaceup()
+end
 function c9910209.filter(c,e,tp)
 	return c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910209.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local res=Duel.IsExistingMatchingCard(c9910209.lkfilter,tp,LOCATION_MZONE,0,1,nil)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9910209.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+		and Duel.IsExistingMatchingCard(c9910209.filter,tp,LOCATION_HAND,0,1,nil,e,tp)
+		and (not res or Duel.IsPlayerCanDraw(tp,1)) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+	if res then
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
+		e:SetLabel(1)
+	else
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		e:SetLabel(0)
+	end
 end
 function c9910209.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9910209.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0
+		and e:GetLabel()==1 and Duel.IsPlayerCanDraw(tp,1) then
+		Duel.BreakEffect()
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
 function c9910209.thcon(e,tp,eg,ep,ev,re,r,rp)

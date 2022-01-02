@@ -43,7 +43,7 @@ function c29065508.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c29065508.lvtg(e,c)
-	return c:IsLevelAbove(1) and c:GetCounter(0x10ae)>0
+	return c:GetCounter(0x10ae)>0
 end
 function c29065508.lvval(e,c,rc)
 	local lv=c:GetLevel()

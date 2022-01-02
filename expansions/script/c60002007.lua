@@ -33,7 +33,7 @@ function c60002007.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST,nil)
 end
 function c60002007.spfilter(c,e,tp)
-	return c:IsSetCard(0xa903) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(60000000) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c60002007.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -57,7 +57,7 @@ function c60002007.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c60002007.splimit(e,c)
-	return not c:IsAttribute(ATTRIBUTE_EARTH)
+	return not c:IsRace(RACE_PLANT)
 end
 function c60002007.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

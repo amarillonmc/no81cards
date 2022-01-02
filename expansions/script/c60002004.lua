@@ -4,7 +4,7 @@ function c60002004.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,c60002004.matfilter,1,1)
 	--code
-	aux.EnableChangeCode(c,98818516,LOCATION_MZONE+LOCATION_GRAVE)
+	aux.EnableChangeCode(c,60000000,LOCATION_MZONE+LOCATION_GRAVE)
 	--SpecialSummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -27,7 +27,7 @@ function c60002004.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c60002004.matfilter(c)
-	return c:IsCode(98818516) and not c:IsType(TYPE_LINK)
+	return c:IsSetCard(0x623) and not c:IsType(TYPE_LINK)
 end
 function c60002004.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) end
@@ -35,7 +35,7 @@ function c60002004.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(60002004,0))
 end
 function c60002004.spfil(c,e,tp)
-	return c:IsCode(98818516) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(60000000) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c60002004.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60002004.spfil,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
@@ -58,7 +58,7 @@ function c60002004.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 end
 function c60002004.splimit(e,c)
-	return not c:IsAttribute(ATTRIBUTE_EARTH)
+	return not c:IsRace(RACE_PLANT)
 end
 function c60002004.immtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,0,1,e:GetHandler()) end

@@ -1,4 +1,4 @@
---龙宫城·渊底蜃景
+--abyss of dragon palace
 local m=11451424
 local cm=_G["c"..m]
 function cm.initial_effect(c)

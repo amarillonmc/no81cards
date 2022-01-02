@@ -43,6 +43,8 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.tdtg)
 	e4:SetOperation(cm.tdop)
 	c:RegisterEffect(e4)
+	elements={{"tama_elements",{{TAMA_ELEMENT_MANA,1}}}}
+	cm[c]=elements
 	
 end
 function cm.cfilter(c)

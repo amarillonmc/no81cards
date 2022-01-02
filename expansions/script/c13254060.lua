@@ -39,7 +39,7 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.drtg)
 	e3:SetOperation(cm.drop)
 	c:RegisterEffect(e3)
-	elements={{"theme_effect",e2}}
+	elements={{"theme_effect",e2},{"tama_elements",{{TAMA_ELEMENT_MANA,1}}}}
 	cm[c]=elements
 	
 end

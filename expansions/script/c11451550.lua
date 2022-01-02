@@ -21,6 +21,11 @@ function cm.initial_effect(c)
 end
 function cm.actarget(e,te,tp)
 	e:SetLabelObject(te)
+	--continuously updating
+	local tab={90176467}
+	for _,code in pairs(tab) do
+		if te:GetHandler():GetOriginalCode()==code then return false end
+	end
 	return e:GetHandler():GetFlagEffect(m-1)==0
 end
 function cm.hook(f,args)
@@ -28,12 +33,20 @@ function cm.hook(f,args)
 				debug.sethook(function()
 								local fun=debug.getinfo(2).name
 								if fun=="IsCodeListed" or fun=="IsMaterialListCode" then
-									for i=1,20 do
-										local _,v=debug.getlocal(2,i)
+									local k,v=debug.getlocal(2,3)
+									if type(v)~="userdata" then
+										k,v=debug.getlocal(2,2)
 										if type(v)=="number" then
-											for _,eid in pairs(args) do
-												if not cm[eid] or type(cm[eid])~="table" then cm[eid]={} end
-												table.insert(cm[eid],v)
+											local chk=true
+											for i=1,20 do
+												local a,b=debug.getlocal(3,i)
+												if b and b==v then chk=false end
+											end
+											if chk then
+												for _,eid in pairs(args) do
+													if not cm[eid] or type(cm[eid])~="table" then cm[eid]={} end
+													table.insert(cm[eid],v)
+												end
 											end
 										end
 									end
@@ -43,13 +56,24 @@ function cm.hook(f,args)
 										local _,v=debug.getlocal(2,i)
 										if v==aux.IsCodeListed or v==aux.IsMaterialListCode then res=true end
 									end
-									if res==false then return false end
+									if res==false then return end
 									for i=1,20 do
 										local _,v=debug.getlocal(2,i)
 										if type(v)=="number" then
-											for _,eid in pairs(args) do
-												if not cm[eid] or type(cm[eid])~="table" then cm[eid]={} end
-												table.insert(cm[eid],v)
+											for i=1,20 do
+												local a,b=debug.getlocal(2,i)
+												if a=="*temporary" and aux.GetValueType(b)=="Card" and (b:IsCode(v) or b:IsOriginalCodeRule(v) or b:GetOriginalCode()==v) then chk=false end
+											end
+											local chk=true
+											for i=1,20 do
+												local a,b=debug.getlocal(3,i)
+												if b and b==v then chk=false end
+											end
+											if chk then
+												for _,eid in pairs(args) do
+													if not cm[eid] or type(cm[eid])~="table" then cm[eid]={} end
+													table.insert(cm[eid],v)
+												end
 											end
 										end
 									end
@@ -110,7 +134,6 @@ end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local eid=Duel.GetCurrentChain()
 	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil,cm[eid])
-	Debug.Message(#g>0)
 	if e:GetHandler():GetFlagEffect(m)~=0 and e:GetHandler():GetFlagEffect(m-1)==0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		e:GetHandler():RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		Duel.Hint(HINT_CARD,0,m)

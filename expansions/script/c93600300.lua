@@ -2,7 +2,7 @@
 local m=93600300
 local cm=_G["c"..m]
 function cm.initial_effect(c)
---Activate
+	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -17,7 +17,6 @@ function cm.initial_effect(c)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(cm.handcon)
 	c:RegisterEffect(e2)
-	--
 end
 function cm.cfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP)
@@ -26,7 +25,7 @@ function cm.handcon(e)
 	local tp=e:GetHandlerPlayer()
 	return not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 		and Duel.IsExistingMatchingCard(cm.cfilter,tp,0,LOCATION_ONFIELD,2,nil)
-		and Duel.GetCurrentPhase()==PHASE_END
+		and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsType(TYPE_SPELL+TYPE_TRAP) and chkc~=e:GetHandler() end

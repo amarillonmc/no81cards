@@ -34,7 +34,7 @@ function c60002001.thfil(c)
 	return c:IsSetCard(0x623) and c:IsAbleToHand()
 end
 function c60002001.spfil(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCode(98818516) 
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCode(60000000) 
 end
 function c60002001.cfilter(c)
 	return c:IsFacedown() or not c:IsRace(RACE_PLANT)
@@ -84,7 +84,7 @@ function c60002001.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c60002001.splimit(e,c)
-	return not c:IsAttribute(ATTRIBUTE_EARTH)
+	return not c:IsRace(RACE_PLANT)
 end
 function c60002001.ttcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

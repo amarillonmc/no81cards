@@ -58,7 +58,7 @@ function c60002003.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c60002003.xspfil(c,e,tp)
-	return c:IsCode(98818516) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(60000000) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c60002003.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -86,7 +86,7 @@ function c60002003.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(60002003,0))
 end
 function c60002003.syrfil(c,e,tp)
-	return c:IsSynchroSummonable(e:GetHandler()) and c:IsAttribute(ATTRIBUTE_EARTH)
+	return c:IsSynchroSummonable(e:GetHandler()) and c:IsRace(RACE_PLANT)
 end
 function c60002003.sctarg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -108,7 +108,7 @@ function c60002003.lkcon(e,tp,eg,ep,ev,re,r,rp)
 		and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function c60002003.lkfil(c,e,tp)
-	return c:IsLinkSummonable(nil,e:GetHandler()) and c:IsAttribute(ATTRIBUTE_EARTH)
+	return c:IsLinkSummonable(nil,e:GetHandler()) and c:IsRace(RACE_PLANT)
 end
 function c60002003.lktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60002003.lkfil,tp,LOCATION_EXTRA,0,1,nil,e,tp) end

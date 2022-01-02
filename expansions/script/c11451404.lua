@@ -1,4 +1,4 @@
---幻旅传说·破晓
+--traveler saga dawn
 --21.04.10
 local m=11451404
 local cm=_G["c"..m]
@@ -70,7 +70,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local ct=Duel.GetMatchingGroupCount(Card.IsFacedown,p,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if Duel.Draw(p,ct+1,REASON_EFFECT)>0 and ct>0 then
+	if Duel.Draw(p,ct*2,REASON_EFFECT)>0 and ct>0 then
 		Duel.ShuffleHand(p)
 		Duel.BreakEffect()
 		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,p,LOCATION_HAND,0,nil)

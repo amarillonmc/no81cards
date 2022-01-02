@@ -17,9 +17,12 @@ function cm.initial_effect(c)
 	elements={{"tama_elements",{{TAMA_ELEMENT_MANA,2},{TAMA_ELEMENT_LIFE,1}}}}
 	cm[c]=elements
 end
+function cm.cfilter(c)
+	return #(tama.tamas_getElements(c))~=0 and c:IsAbleToDeckAsCost()
+end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local el={{TAMA_ELEMENT_MANA,2}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetFieldGroup(tp,LOCATION_GRAVE,0),el)
+	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,c),el)
 	mg:RemoveCard(e:GetHandler())
 	if chk==0 then 
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)

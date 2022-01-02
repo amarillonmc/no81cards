@@ -1,10 +1,16 @@
---nezha,invader of dragon palace
+--nezha, invader of dragon palace
 --21.12.15
 local m=11451419
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:SetUniqueOnField(1,1,m)
 	c:EnableReviveLimit()
+	--spsummon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	c:RegisterEffect(e1)
 	--special summon rule
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)

@@ -1,58 +1,106 @@
---天空漫步者-高强势回旋
+--高塔的魔导城 都灵
 function c9910243.initial_effect(c)
+	aux.AddCodeList(c,9910871)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(c9910243.condition)
-	e1:SetCost(c9910243.cost)
-	e1:SetTarget(c9910243.target)
-	e1:SetOperation(c9910243.activate)
 	c:RegisterEffect(e1)
+	--indestructable
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetTargetRange(LOCATION_MZONE+LOCATION_FZONE,0)
+	e2:SetCondition(c9910243.indcon)
+	e2:SetTarget(c9910243.indtg)
+	e2:SetValue(c9910243.indct)
+	c:RegisterEffect(e2)
+	--search
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9910243,0))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e3:SetCondition(c9910243.condition1)
+	e3:SetCost(c9910243.cost)
+	e3:SetTarget(c9910243.target1)
+	e3:SetOperation(c9910243.operation1)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e4:SetCondition(c9910243.condition2)
+	c:RegisterEffect(e4)
+	local e5=e3:Clone()
+	e5:SetDescription(aux.Stringid(9910243,1))
+	e5:SetCategory(CATEGORY_TOGRAVE)
+	e5:SetTarget(c9910243.target2)
+	e5:SetOperation(c9910243.operation2)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_FREE_CHAIN)
+	e6:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e6:SetCondition(c9910243.condition2)
+	c:RegisterEffect(e6)
 end
 function c9910243.cfilter(c)
-	return c:GetSequence()<5 and (c:IsFacedown() or not c:IsRace(RACE_PSYCHO))
+	return c:IsFaceup() and c:IsType(TYPE_FUSION)
 end
-function c9910243.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c9910243.cfilter,tp,LOCATION_MZONE,0,1,nil)
+function c9910243.indcon(e)
+	local tp=e:GetHandlerPlayer()
+	return Duel.IsExistingMatchingCard(c9910243.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
-function c9910243.costfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x955) and c:IsAbleToRemoveAsCost() and Duel.GetMZoneCount(tp,c)>0
+function c9910243.indtg(e,c)
+	return c==e:GetHandler() or (c:IsFaceup() and c:IsType(TYPE_FUSION))
 end
-function c9910243.spfilter(c,e,tp)
-	return c:IsLevelBelow(4) and c:IsAttribute(ATTRIBUTE_WIND) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c9910243.indct(e,re,r,rp)
+	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then
+		return 1
+	else return 0 end
+end
+function c9910243.condition1(e,tp,eg,ep,ev,re,r,rp)
+	return not Duel.IsExistingMatchingCard(Card.IsSummonLocation,tp,0,LOCATION_MZONE,1,nil,LOCATION_EXTRA)
+end
+function c9910243.condition2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(Card.IsSummonLocation,tp,0,LOCATION_MZONE,1,nil,LOCATION_EXTRA)
 end
 function c9910243.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910243.costfilter,tp,LOCATION_MZONE,0,1,nil)
-		and Duel.IsExistingMatchingCard(c9910243.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910243.costfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
-function c9910243.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_HAND+LOCATION_GRAVE)
-	if Duel.GetCurrentChain()>2 then
-		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
-	else
-		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+function c9910243.filter1(c)
+	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+function c9910243.filter2(c)
+	return c:IsCode(9910871) and c:IsAbleToGrave() and c:CheckActivateEffect(true,true,false)~=nil
+end
+function c9910243.target1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910243.filter1,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9910243.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910243.filter2,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function c9910243.operation1(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9910243.filter1,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c9910243.tgfilter(c,g)
-	return g:IsContains(c)
-end
-function c9910243.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910243.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
+function c9910243.operation2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9910243.filter2,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local tg=Duel.GetMatchingGroup(c9910243.tgfilter,tp,0,LOCATION_MZONE,nil,tc:GetColumnGroup())
-		if Duel.GetCurrentChain()>2 and tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910243,0)) then
-			Duel.BreakEffect()
-			Duel.SendtoGrave(tg,REASON_EFFECT)
-		end
-	end
+	if not tc or Duel.SendtoGrave(tc,REASON_EFFECT)==0 or not tc:IsLocation(LOCATION_GRAVE) then return end
+	local te=tc:GetActivateEffect()
+	local op=te:GetOperation()
+	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 end
