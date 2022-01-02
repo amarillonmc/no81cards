@@ -156,7 +156,7 @@ function cm.indtg(e,c)
 end
 
 function cm.attg(e,c)
-	return c:GetCounter(0x1015)~=0 
+	return c:GetCounter(0x1015)>=3 
 end
    
 function cm.maop(e,tp,eg,ep,ev,re,r,rp)

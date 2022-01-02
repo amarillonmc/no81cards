@@ -85,7 +85,7 @@ function cm.rccon(e,tp,eg,ep,ev,re,r,rp)
 	return cm[0]>0
 end
 function cm.rcop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Recover(tp,cm[0],REASON_EFFECT)>=2500 then
+	if Duel.Recover(tp,cm[0]*500,REASON_EFFECT)>=2500 then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end

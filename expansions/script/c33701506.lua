@@ -59,12 +59,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)~=0 then
 		local og=Duel.GetOperatedGroup()
 		local oc=og:GetFirst()
+		local fid=c:GetFieldID()
 		while oc do
-			oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
+			oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1,fid)
 			oc=og:GetNext()
 		end
 		og:KeepAlive()
-		e:SetLabel(c:GetFieldID())
+		e:SetLabel(fid)
 		e:SetLabelObject(og)
 	end
 	if Duel.GetTurnPlayer()==tp then
@@ -85,7 +86,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 end
 function cm.con(e)
-	return not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c)
+	return not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,c)
 end
 function cm.mtcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp

@@ -115,7 +115,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		while tc do
 			local te=tc:IsHasEffect(53711009,tp)
 			if te then
-				Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_REPLACE)
+				Duel.Remove(tc,POS_FACEUP,REASON_COST+REASON_REPLACE)
 			else
 				Duel.SendtoGrave(tc,REASON_COST+REASON_DISCARD)
 			end

@@ -14,7 +14,6 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetRange(LOCATION_FZONE)
 	e1:SetCondition(cm.cecondition)
-	e1:SetTarget(cm.cetarget)
 	e1:SetOperation(cm.ceoperation)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -23,7 +22,6 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1)
 	e2:SetCondition(cm.rccon)
-	e2:SetTarget(cm.rctg)
 	e2:SetOperation(cm.rcop)
 	c:RegisterEffect(e2)
 	--cannot be destroyed
@@ -79,10 +77,10 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,3))
 end
-function cm.damcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.rccon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffectLabel()
 end
-function cm.damop(e,tp,eg,ep,ev,re,r,rp)
+function cm.rcop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.Recover(Duel.GetTurnPlayer(),e:GetHandler():GetFlagEffectLabel(),REASON_EFFECT)
 end
@@ -92,15 +90,9 @@ end
 function cm.actlimit(e,re,tp)
 	return re:IsActiveType(TYPE_FIELD) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
-function cm.repop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,0,LOCATION_MZONE,1,1,nil)
-	if sg:GetCount()>0 then
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-	end
-end
 function cm.cecondition(e,tp,eg,ep,ev,re,r,rp)
-	local re1,ep1=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return ep~=tp and re1:IsActiveType(TYPE_MONSTER)
+	local re1=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+	return re1:IsActiveType(TYPE_MONSTER)
 end
 function cm.ceoperation(e,tp,eg,ep,ev,re,r,rp)
 	local re1,ep1=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)

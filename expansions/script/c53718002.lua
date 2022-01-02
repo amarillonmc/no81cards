@@ -35,6 +35,7 @@ function cm.initial_effect(c)
 end
 function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.thfilter(c)
 	return c:IsCode(m-1) and c:IsAbleToHand()
@@ -65,6 +66,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(500)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)

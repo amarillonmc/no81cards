@@ -16,11 +16,12 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCondition(cm.descon)
 	e2:SetTarget(cm.destg)
+	e2:SetOperation(cm.desrepop)
 	e2:SetValue(cm.repval)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e3:SetRange(LOCATION_FZONE)
 	e3:SetCode(EFFECT_SEND_REPLACE)
 	e3:SetCondition(cm.repcon1)
 	e3:SetTarget(cm.reptg1)
@@ -53,6 +54,7 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.repfilter(c,tp)
 	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD)
+		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(cm.repfilter,1,e:GetHandler(),tp) and eg:GetCount()==1 end
@@ -62,8 +64,14 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 		return true
 	else return false end
 end
+function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
+	local c=e:GetHandler()
+	c:SetStatus(STATUS_DESTROY_CONFIRMED,false)
+	Duel.Destroy(c,REASON_EFFECT+REASON_REPLACE)
+end
 function cm.repval(e,c)
-	return c~=e:GetHandler()
+	return cm.repfilter(c,e:GetHandlerPlayer())
 end
 function cm.repcon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,m)==0
