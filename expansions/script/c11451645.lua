@@ -64,7 +64,6 @@ function cm.atkval(e,c)
 	return Duel.GetMatchingGroupCount(cm.atkfilter,c:GetControler(),0,LOCATION_MZONE,nil)*800
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message(Duel.GetFlagEffect(tp,m)>0)
 	return rp==1-tp and Duel.GetFlagEffect(tp,m)>0
 end
 function cm.filter1(c,e,tp)

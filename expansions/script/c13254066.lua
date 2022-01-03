@@ -50,10 +50,10 @@ function cm.smop(e,tp,eg,ep,ev,re,r,rp)
 	if sg and sg:GetCount()>0 then
 		local el=tama.tamas_sumElements(sg)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
-		local g1=Duel.GetMatchingGroupCount(cm.thfilter,tp,LOCATION_DECK,0,nil,el)
+		local g1=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil,el)
 		if g1:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg1=g1:Select(tp,1,g1:GetCount(),nil)
+			local sg1=g1:Select(tp,1,1,nil)
 			local tc=sg1:GetFirst()
 			if Duel.SendtoHand(sg1,tp,REASON_EFFECT)>0 and tc:IsSummonable(true,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
 				Duel.BreakEffect()

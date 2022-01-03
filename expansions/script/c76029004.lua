@@ -92,7 +92,7 @@ function c76029004.rhop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("就算是在前线指挥作战，也有最合适的造型。")
 	local c=e:GetHandler() 
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect() then 
+	if tc:IsRelateToEffect(e) then 
 	Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end

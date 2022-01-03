@@ -138,3 +138,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
+function cm.damcon(e)
+	return e:GetHandler():GetBattleTarget()~=nil
+end

@@ -77,23 +77,23 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local obj={}
 	if index then obj=tama.get(index) end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_WATER,3},{TAMA_ELEMENT_FIRE,3}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,1))
+		Duel.SelectOption(tp,aux.Stringid(m,1))
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_WATER,2},{TAMA_ELEMENT_WIND,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,2))
+		Duel.SelectOption(tp,aux.Stringid(m,2))
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_REMOVE))
 		local g=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_ONFIELD,nil)
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_WATER,3},{TAMA_ELEMENT_EARTH,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,3))
+		Duel.SelectOption(tp,aux.Stringid(m,3))
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,4))
+		Duel.SelectOption(tp,aux.Stringid(m,4))
 		e:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_CHAOS,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,5))
+		Duel.SelectOption(tp,aux.Stringid(m,5))
 		Duel.SetChainLimit(cm.chainlm)
 	end
 end

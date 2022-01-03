@@ -18,7 +18,7 @@ function c60001002.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c60001002.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c60001002.ssfilter(c)
-	return c:IsSetCard(0xf1)  and c:IsAbleToGrave()
+	return c:IsSetCard(0xf1)  and c:IsType(TYPE_MONSTER)
 end
 function c60001002.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

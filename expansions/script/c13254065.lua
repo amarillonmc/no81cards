@@ -32,18 +32,18 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	if sg1:GetCount()<=0 then return end
 	local j=1
 	if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_ORDER)>=1 then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,1))
+		Duel.SelectOption(tp,aux.Stringid(m,1))
 		j=j+1
 	end
 	if (sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WATER)+sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WIND))>=1 then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,2))
+		Duel.SelectOption(tp,aux.Stringid(m,2))
 		for i=1,j do
 			Duel.BreakEffect()
 			Duel.Draw(tp,2,REASON_EFFECT)
 		end
 	end
 	if (sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_EARTH)+sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_ENERGY))>=1 and Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,3))
+		Duel.SelectOption(tp,aux.Stringid(m,3))
 		for i=1,j do
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local g=Duel.SelectMatchingCard(tp,Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
@@ -56,7 +56,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if (sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_FIRE)+sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_ENERGY))>=1 and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,4))
+		Duel.SelectOption(tp,aux.Stringid(m,4))
 		for i=1,j do
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
@@ -69,22 +69,24 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_LIFE)>=1 then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,5))
+		Duel.SelectOption(tp,aux.Stringid(m,5))
 		for i=1,j do
 			Duel.BreakEffect()
 			Duel.Recover(tp,1000,REASON_EFFECT)
 		end
 	end
 	if sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_CHAOS)>=1 and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,6))
+		Duel.SelectOption(tp,aux.Stringid(m,6))
 		Duel.ConfirmCards(tp,g)
 		for i=1,j do
 			local g=Duel.GetFieldGroup(tp,0,LOCATION_DECK)
 			if g:GetCount()>0 then
 				Duel.BreakEffect()
+				Duel.ConfirmCards(tp,g)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-				local sg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_DECK,1,1,nil)
+				local sg=g:Select(tp,1,1,nil)
 				Duel.SendtoHand(sg,tp,REASON_EFFECT)
+				Duel.ShuffleDeck(1-tp)
 			end
 		end
 		Duel.ShuffleDeck(1-tp)

@@ -23,7 +23,11 @@ function cm.initial_effect(c)
 end
 function cm.spfilter(c,e,tp,mg)
 	if bit.band(c:GetType(),0x81)~=0x81 or c.mat_filter or c.mat_group_check or not (c:IsAttribute(ATTRIBUTE_WIND) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) then return false end
-	return #mg>0 and #mg*3+3>c:GetLevel()
+	local ct=math.max(1,tc:GetLevel()//3)
+	return #mg>0 and mg:CheckSubGroup(cm.fselect,ct,ct,c,tp)
+end
+function cm.fselect(g,c,tp)
+	return Duel.GetMZoneCount(tp,g)>0
 end
 function cm.mfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
@@ -46,7 +50,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local ct=math.max(1,tc:GetLevel()//3)
-		local mat=mg:Select(tp,ct,ct,nil)
+		local mat=mg:SelectSubGroup(tp,cm.fselect,false,ct,ct,c,tp)
 		if not mat or #mat==0 then return end
 		tc:SetMaterial(mat)
 		Duel.SendtoGrave(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
@@ -60,7 +64,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function cm.filter(c,e,tp,ec)
-	return c:IsSetCard(0x97f) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.clfilter,tp,LOCATION_GRAVE,0,1,ec,c)
+	return c:IsSetCard(0x97f) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.clfilter,tp,LOCATION_GRAVE,0,1,ec,c) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function cm.clfilter(c,tc)
 	return aux.IsCodeListed(tc,c:GetCode())

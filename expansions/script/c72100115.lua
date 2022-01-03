@@ -1,7 +1,7 @@
 --冥之魔妖-阎魔
 function c72100115.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,c72100115.matfilter,1,1)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x121),1,1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(72100115,0))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -31,7 +31,4 @@ function c72100115.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
-end
-function c72100115.matfilter(c)
-	return c:IsLinkSetCard(0x121) and c:IsLevel(4)
 end

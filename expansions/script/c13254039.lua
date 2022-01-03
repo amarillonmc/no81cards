@@ -76,28 +76,28 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local obj={}
 	if index then obj=tama.get(index) end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_WIND,3},{TAMA_ELEMENT_FIRE,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,1))
+		Duel.SelectOption(tp,aux.Stringid(m,1))
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_DESTROY))
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_WIND,3},{TAMA_ELEMENT_WATER,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,2))
+		Duel.SelectOption(tp,aux.Stringid(m,2))
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_REMOVE))
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_GRAVE)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_WIND,3},{TAMA_ELEMENT_EARTH,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,3))
+		Duel.SelectOption(tp,aux.Stringid(m,3))
 		local ht=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 		local ht1=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_DRAW))
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ht1-ht)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,4))
+		Duel.SelectOption(tp,aux.Stringid(m,4))
 		e:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_CHAOS,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,5))
+		Duel.SelectOption(tp,aux.Stringid(m,5))
 		Duel.SetChainLimit(cm.chainlm)
 	end
 end
@@ -122,7 +122,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		local ct=2
 		if tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_CHAOS,2}},obj) then ct=4 end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local eg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,ct,nil)
+		local eg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,ct,nil)
 		if eg:GetCount()>0 then 
 			Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 		end

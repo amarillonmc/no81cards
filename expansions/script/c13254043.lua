@@ -58,15 +58,15 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local obj={}
 	if index then obj=tama.get(index) end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,1))
+		Duel.SelectOption(tp,aux.Stringid(m,1))
 	end
-	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,1}},obj) and (sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WIND)+sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WATER)+sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_EARTH)+sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_FIRE))>=1 then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,2))
+	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,1}},obj) and ((tama.tamas_getElementCount(obj,TAMA_ELEMENT_WIND)+tama.tamas_getElementCount(obj,TAMA_ELEMENT_WATER)+tama.tamas_getElementCount,(obj,TAMA_ELEMENT_EARTH)+tama.tamas_getElementCount(obj,TAMA_ELEMENT_FIRE))>=1 then
+		Duel.SelectOption(tp,aux.Stringid(m,2))
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_DRAW))
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_CHAOS,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,3))
+		Duel.SelectOption(tp,aux.Stringid(m,3))
 		Duel.SetChainLimit(cm.chainlm)
 	end
 end

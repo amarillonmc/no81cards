@@ -22,7 +22,7 @@ function c79029527.filter1(c,e,tp)
 	return c:IsType(TYPE_LINK) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and rg:GetCount()>=lv and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false)
 end
 function c79029527.filter3(c)
-	return c:IsAbleToDeck() and c:IsType(TYPE_MONSTER)
+	return c:IsAbleToDeck() and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function c79029527.filter2(c)
 	return c:IsType(TYPE_LINK) and c:IsSetCard(0x11b) 

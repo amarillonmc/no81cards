@@ -38,9 +38,9 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,90351981)
 end
 function cm.costfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and (c:IsControler(tp) or c:IsFaceup()) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetLevel(),c:GetRace())
+	return c:IsReleasableByEffect() and c:IsType(TYPE_MONSTER) and (c:IsControler(tp) or c:IsFaceup()) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetLevel(),c:GetRace(),tp)
 end
-function cm.thfilter(c,lv,rac)
+function cm.thfilter(c,lv,rac,tp)
 	return c:IsSetCard(0x11b) and not c:IsCode(m) and c:IsAbleToHand() and (rac&RACE_MACHINE==0 or Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,c,lv))
 end
 function cm.tgfilter(c,lv)
@@ -67,9 +67,9 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
 	if not tc then return end
 	local lv,rac=tc:GetLevel(),tc:GetRace()
-	if Duel.Release(tc,REASON_COST)~=0 then
+	if Duel.Release(tc,REASON_EFFECT)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local hg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,lv,rac)
+		local hg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,lv,rac,tp)
 		if #hg>0 and Duel.SendtoHand(hg,nil,REASON_EFFECT)~=0 then
 			Duel.ConfirmCards(1-tp,hg)
 			local sg=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_DECK,0,nil,lv)

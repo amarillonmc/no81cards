@@ -72,27 +72,27 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local obj={}
 	if index then obj=tama.get(index) end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_FIRE,2},{TAMA_ELEMENT_WIND,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,1))
+		Duel.SelectOption(tp,aux.Stringid(m,1))
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_DESTROY))
 		local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_FIRE,5},{TAMA_ELEMENT_WATER,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,2))
+		Duel.SelectOption(tp,aux.Stringid(m,2))
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_REMOVE))
 		local sg=Duel.GetMatchingGroup(cm.filter1,tp,0,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,nil)
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,sg:GetCount(),0,0)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_FIRE,3},{TAMA_ELEMENT_EARTH,2}},obj) then
+		Duel.SelectOption(tp,aux.Stringid(m,3))
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_ATKCHANGE))
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,3))
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,4))
+		Duel.SelectOption(tp,aux.Stringid(m,4))
 		e:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_CHAOS,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,5))
+		Duel.SelectOption(tp,aux.Stringid(m,5))
 		Duel.SetChainLimit(cm.chainlm)
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_DAMAGE))
 		Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,0)

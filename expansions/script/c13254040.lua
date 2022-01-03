@@ -73,26 +73,27 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local obj={}
 	if index then obj=tama.get(index) end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_EARTH,2},{TAMA_ELEMENT_WIND,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,1))
+		Duel.SelectOption(tp,aux.Stringid(m,1))
 		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil)
 		local g1=g:Filter(Card.IsCanTurnSet,nil)
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_POSITION))
 		Duel.SetOperationInfo(0,CATEGORY_POSITION,g1,g1:GetCount(),0,0)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_EARTH,3},{TAMA_ELEMENT_FIRE,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,2))
+		Duel.SelectOption(tp,aux.Stringid(m,2))
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_DESTROY))
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_EARTH,3},{TAMA_ELEMENT_WATER,2}},obj) then
+		Duel.SelectOption(tp,aux.Stringid(m,3))
 		local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,4))
+		Duel.SelectOption(tp,aux.Stringid(m,4))
 		e:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_CHAOS,2}},obj) then
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(m,5))
+		Duel.SelectOption(tp,aux.Stringid(m,5))
 		Duel.SetChainLimit(cm.chainlm)
 	end
 end
