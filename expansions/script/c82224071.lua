@@ -2,6 +2,7 @@ local m=82224071
 local cm=_G["c"..m]
 cm.name="连接之黑魔导师"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,46986414)
 	--link summon  
 	aux.AddLinkProcedure(c,nil,3,3,cm.lcheck)  
 	c:EnableReviveLimit() 

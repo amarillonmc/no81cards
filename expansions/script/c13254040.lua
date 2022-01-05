@@ -136,7 +136,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		local limit=5
 		if order_e then limit=6 end
 		local g=Group.CreateGroup()
-		if Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+		if Duel.SelectYesNo(tp,aux.Stringid(m,6)) then
 			local tc=sg:GetFirst()
 			while tc do
 				local dg=Group.CreateGroup()

@@ -38,15 +38,19 @@ function cm.matfilter(c)
 end
 function cm.costcon(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetFieldGroupCount(tp,0,LOCATION_GRAVE)>0
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_GRAVE)==0 then return false end
+	cm[0]=false
+	return true
 end
 function cm.costchk(e,te_or_c,tp)
 	return Duel.IsExistingMatchingCard(Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE,0,1,nil)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	if cm[0] then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
+	cm[0]=true
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp

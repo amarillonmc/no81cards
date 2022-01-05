@@ -1,4 +1,4 @@
---幻旅传说·献祭
+--traveler saga tribute
 --21.04.10
 local m=11451402
 local cm=_G["c"..m]
@@ -15,6 +15,7 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,1)
+	e2:SetCondition(cm.costcon)
 	e2:SetCost(cm.costchk)
 	e2:SetTarget(cm.costtg)
 	e2:SetOperation(cm.costop)
@@ -35,6 +36,10 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterFlagEffect(ep,m,RESET_PHASE+PHASE_END,0,1)
 	end
 end
+function cm.costcon(e)
+	cm[0]=false
+	return true
+end
 function cm.costchk(e,te,tp)
 	return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,0,1,nil)
 end
@@ -43,6 +48,7 @@ function cm.costtg(e,te,tp)
 	return Duel.GetFlagEffect(tp,m)>0 and te:GetHandler() and not te:GetHandler():IsOnField()
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	if cm[0] then return end
 	Duel.ConfirmCards(1-tp,e:GetLabelObject():GetHandler())
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
@@ -59,6 +65,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_CANNOT_DISEFFECT)
 		Duel.RegisterEffect(e2,tp)
 	end
+	cm[0]=true
 end
 function cm.efilter(e,ct)
 	return e:GetLabel()==ct

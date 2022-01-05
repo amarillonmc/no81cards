@@ -60,7 +60,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,2}},obj) then
 		Duel.SelectOption(tp,aux.Stringid(m,1))
 	end
-	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,1}},obj) and (tama.tamas_getElementCount(obj,TAMA_ELEMENT_WIND)+tama.tamas_getElementCount(obj,TAMA_ELEMENT_WATER)+tama.tamas_getElementCount,(obj,TAMA_ELEMENT_EARTH)+tama.tamas_getElementCount(obj,TAMA_ELEMENT_FIRE))>=1 then
+	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,1}},obj) and (tama.tamas_getElementCount(obj,TAMA_ELEMENT_WIND)+tama.tamas_getElementCount(obj,TAMA_ELEMENT_WATER)+tama.tamas_getElementCount(obj,TAMA_ELEMENT_EARTH)+tama.tamas_getElementCount(obj,TAMA_ELEMENT_FIRE))>=1 then
 		Duel.SelectOption(tp,aux.Stringid(m,2))
 		e:SetCategory(bit.bor(e:GetCategory(),CATEGORY_DRAW))
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
