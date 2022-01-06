@@ -21,16 +21,10 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetTargetRange(LOCATION_HAND,0)
+	e3:SetTargetRange(LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0)
 	e3:SetTarget(cm.eftg)
 	e3:SetLabelObject(e2)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetTargetRange(LOCATION_GRAVE,0)
-	c:RegisterEffect(e4)
-	local e5=e3:Clone()
-	e5:SetTargetRange(LOCATION_MZONE,0)
-	c:RegisterEffect(e5)
 	--become effect
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_FIELD)
@@ -41,43 +35,26 @@ function cm.initial_effect(c)
 	e8:SetTarget(cm.betg)
 	c:RegisterEffect(e8)
 end
-function cm.AddFlagEffectLabel(code)
-	local lab={Duel.GetFlagEffectLabel(tp,m)}
-	if not lab or #lab==0 then Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1,code) return end
-	table.insert(lab,code)
-	Duel.SetFlagEffectLabel(tp,m,table.unpack(lab))
-end
-function cm.CheckFlagEffectLabel(code)
-	local lab={Duel.GetFlagEffectLabel(tp,m)}
-	if not lab or #lab==0 then return true end
-	for _,ct in pairs(lab) do
-		if ct==code then return false end
-	end
-	return true
-end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
 	local code=c:GetOriginalCode()
-	return Duel.GetFlagEffect(tp,m)==0 and rc~=c and rc:IsLocation(c:GetLocation()) and rc:IsControler(tp) and rc:IsSetCard(0x132)-- and cm.CheckFlagEffectLabel(code)
+	local loc=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_LOCATION)
+	return Duel.GetFlagEffect(tp,m)==0 and rc~=c and loc==c:GetLocation() and rc:IsControler(tp) and rc:IsSetCard(0x132)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local c=e:GetHandler()
-	local code=c:GetOriginalCode()
-	--cm.AddFlagEffectLabel(code)
 	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tg=re:GetTarget()
 	if chk==0 then
-		e:SetProperty(re:GetProperty())
+		e:SetProperty(re:GetProperty()&EFFECT_FLAG_CARD_TARGET)
 		e:SetLabel(re:GetLabel())
 		e:SetLabelObject(re:GetLabelObject())
 		return not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)
 	end
-	e:SetCategory(re:GetCategory())
-	e:SetProperty(re:GetProperty())
+	e:SetProperty(re:GetProperty()&EFFECT_FLAG_CARD_TARGET)
 	e:SetLabel(re:GetLabel())
 	e:SetLabelObject(re:GetLabelObject())
 	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
@@ -100,7 +77,6 @@ function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 	return re==e:GetLabelObject()
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
-	re:SetCategory(0)
 	re:SetProperty(0)
 	re:SetLabel(0)
 	re:SetLabelObject(nil)

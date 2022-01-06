@@ -84,8 +84,9 @@ end
 function cm.mfilter(c)
 	return c:IsLocation(LOCATION_MZONE) and c:IsRace(RACE_CYBERSE)
 end
-function cm.matval(e,c,mg)
-	return c:IsType(TYPE_LINK) and mg:IsExists(cm.mfilter,1,nil)
+function cm.matval(e,lc,mg,c,tp)
+	if not lc or not lc:IsType(TYPE_LINK) then return false,nil end
+	return true,not mg or mg:IsExists(cm.mfilter,1,nil)
 end
 function cm.mattg(e,c)
 	return cm.Code0(c) and c:IsType(TYPE_MONSTER)

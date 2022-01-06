@@ -78,11 +78,11 @@ function cm.lpop(e,tp,eg,ep,ev,re,r,rp)
 		c:ReverseInDeck()
 	end
 end
-function cm.damcon(e)
+function cm.damcon(e,c)
 	local tp=e:GetHandlerPlayer()
 	local g=Duel.GetDecktopGroup(tp,1)
-	return g:IsContains(e:GetHandler()) and c:IsFaceup()
+	return g:IsContains(e:GetHandler()) and e:GetHandler():IsFaceup()
 end
-function cm.val(e)
+function cm.val(e,c)
 	return dam*2
 end

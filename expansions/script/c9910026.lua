@@ -79,6 +79,9 @@ function c9910026.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	ec:CreateEffectRelation(e)
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,rc,1,0,0)
 end
+function c9910026.matfilter(c,e)
+	return c:IsCanOverlay() and not c:IsImmuneToEffect(e)
+end
 function c9910026.xfilter(c,e)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
 end
@@ -102,7 +105,7 @@ function c9910026.spop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=ec:GetReasonCard()
 	if rc:IsOnField() then rc:RegisterFlagEffect(9910026,RESET_EVENT+RESETS_STANDARD,0,1) end
 	local lg=rc:GetOverlayGroup()
-	local g1=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,nil)
+	local g1=Duel.GetMatchingGroup(c9910026.matfilter,tp,0,LOCATION_ONFIELD,nil,e)
 	local g2=Duel.GetMatchingGroup(c9910026.xfilter,tp,LOCATION_MZONE,0,nil,e)
 	if g1:GetCount()>0 and g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910026,0)) then
 		Duel.BreakEffect()

@@ -85,18 +85,18 @@ end
 function c9910649.xfilter(c,e)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
 end
-function c9910649.ofilter(c)
-	return not c:IsType(TYPE_TOKEN)
+function c9910649.ofilter(c,e)
+	return c:IsCanOverlay() and not c:IsImmuneToEffect(e)
 end
 function c9910649.dsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
 	local g=Duel.GetMatchingGroup(c9910649.xfilter,tp,LOCATION_MZONE,0,nil,e)
-	if g:GetCount()==0 or Duel.SelectOption(tp,1191,aux.Stringid(9910649,1))==0 then
+	local sg=eg:Filter(c9910649.ofilter,nil,e)
+	if g:GetCount()==0 or sg:GetCount()==0 or Duel.SelectOption(tp,1191,aux.Stringid(9910649,1))==0 then
 		Duel.SendtoGrave(eg,REASON_EFFECT)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
-		local sg=eg:Filter(c9910649.ofilter,nil)
 		local og=Group.CreateGroup()
 		for sc in aux.Next(sg) do
 			og:Merge(sc:GetOverlayGroup())

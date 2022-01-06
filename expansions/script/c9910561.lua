@@ -38,8 +38,9 @@ end
 function c9910561.xmcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
-function c9910561.xmfilter(c,tp)
+function c9910561.xmfilter(c,tp,e)
 	return not c:IsType(TYPE_TOKEN) and (c:IsControler(tp) or c:IsAbleToChangeControler())
+		and not (e and c:IsImmuneToEffect(e))
 end
 function c9910561.xmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -49,7 +50,7 @@ function c9910561.xmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=aux.ExceptThisCard(e)
 	if not c then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,c9910561.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp)
+	local g=Duel.SelectMatchingCard(tp,c9910561.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp,e)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		local tc=g:GetFirst()

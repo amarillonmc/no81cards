@@ -11,8 +11,8 @@ function c9910651.initial_effect(c)
 	e1:SetOperation(c9910651.activate)
 	c:RegisterEffect(e1)
 end
-function c9910651.cfilter(c,rk)
-	return c:IsLevelBelow(rk) and c:IsFaceup() and c:IsCanOverlay()
+function c9910651.cfilter(c,rk,e)
+	return c:IsLevelBelow(rk) and c:IsFaceup() and c:IsCanOverlay() and not (e and c:IsImmuneToEffect(e))
 end
 function c9910651.filter1(c,e,tp)
 	local rk=c:GetRank()
@@ -42,7 +42,7 @@ function c9910651.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ra=tc:GetRace()
 	local att=tc:GetAttribute()
 	if tc:IsFacedown() or not tc:IsRelateToEffect(e) or tc:IsImmuneToEffect(e) then return end
-	local sg=Duel.GetMatchingGroup(c9910651.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,tc,rk)
+	local sg=Duel.GetMatchingGroup(c9910651.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,tc,rk,e)
 	if sg:GetCount()==0 then return end
 	local og=Group.CreateGroup()
 	for sc in aux.Next(sg) do

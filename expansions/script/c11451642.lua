@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 end
 function cm.spfilter(c,e,tp,mg)
 	if bit.band(c:GetType(),0x81)~=0x81 or c.mat_filter or c.mat_group_check or not (c:IsAttribute(ATTRIBUTE_WIND) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) then return false end
-	local ct=math.max(1,tc:GetLevel()//3)
+	local ct=math.max(1,c:GetLevel()//3)
 	return #mg>0 and mg:CheckSubGroup(cm.fselect,ct,ct,c,tp)
 end
 function cm.fselect(g,c,tp)

@@ -41,8 +41,9 @@ function c9910141.xmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,c9910141.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
-function c9910141.xmfilter(c,tp)
+function c9910141.xmfilter(c,tp,e)
 	return not c:IsType(TYPE_TOKEN) and (c:IsControler(tp) or c:IsAbleToChangeControler())
+		and not (e and c:IsImmuneToEffect(e))
 end
 function c9910141.xmtarget(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -52,7 +53,7 @@ end
 function c9910141.xmoperation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp)
+	local g=Duel.SelectMatchingCard(tp,c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp,e)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		local tc=g:GetFirst()
