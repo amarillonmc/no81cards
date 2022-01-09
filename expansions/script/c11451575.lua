@@ -79,10 +79,9 @@ end
 function cm.zones(e,tp,eg,ep,ev,re,r,rp)
 	local lg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local zone=0
-	for x=0,4 do
+	for i=0,4 do
 		for lc in aux.Next(lg) do
-			local x,y=cm.xylabel(lc,tp)
-			if cm.islinkdir(lc,x,0,tp) then zone=zone|(1<<x) end
+			if cm.islinkdir(lc,i,0,tp) then zone=zone|(1<<i) end
 		end
 	end
 	return zone

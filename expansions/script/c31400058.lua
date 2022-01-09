@@ -1,4 +1,4 @@
-local m=31400056
+local m=31400058
 local cm=_G["c"..m]
 cm.name="星兹剑术大师"
 function cm.initial_effect(c)

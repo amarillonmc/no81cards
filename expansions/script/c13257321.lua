@@ -88,7 +88,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 				e4:SetCode(EFFECT_DISABLE)
 				e4:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 				e4:SetTarget(cm.distg)
-				e4:SetLabel(tc:GetOriginalCode())
+				e4:SetLabelObject(tc)
 				e4:SetReset(RESET_PHASE+PHASE_END)
 				Duel.RegisterEffect(e4,tp)
 				local e5=Effect.CreateEffect(c)
@@ -96,7 +96,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 				e5:SetCode(EVENT_CHAIN_SOLVING)
 				e5:SetCondition(cm.discon)
 				e5:SetOperation(cm.disop)
-				e5:SetLabel(tc:GetOriginalCode())
+				e5:SetLabelObject(tc)
 				e5:SetReset(RESET_PHASE+PHASE_END)
 				Duel.RegisterEffect(e5,tp)
 			end
@@ -104,14 +104,13 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.distg(e,c)
-	local code=e:GetLabel()
-	local code1,code2=c:GetOriginalCodeRule()
-	return code1==code or code2==code
+	local tc=e:GetLabelObject()
+	return tc and c:IsOriginalCodeRule(tc:GetOriginalCodeRule())
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	local code=e:GetLabel()
-	local code1,code2=re:GetHandler():GetOriginalCodeRule()
-	return code1==code or code2==code
+	local rc=re:GetHandler()
+	local tc=e:GetLabelObject()
+	return rc:IsOriginalCodeRule(tc:GetOriginalCodeRule())
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
