@@ -87,7 +87,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e1,tp)
 		broken=true
 	end
-	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,1}},obj) and (sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WIND)+sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_WATER)+sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_EARTH)+sg1:GetSum(tama.tamas_getElementCount,TAMA_ELEMENT_FIRE))>=1 then
+	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,1}},obj) and (tama.tamas_getElementCount(obj,TAMA_ELEMENT_WIND)+tama.tamas_getElementCount(obj,TAMA_ELEMENT_WATER)+tama.tamas_getElementCount(obj,TAMA_ELEMENT_EARTH)+tama.tamas_getElementCount(obj,TAMA_ELEMENT_FIRE))>=1 then
 		if broken then Duel.BreakEffect() end
 		Duel.Draw(tp,1,REASON_EFFECT)
 		broken=true

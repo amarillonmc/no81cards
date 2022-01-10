@@ -101,7 +101,7 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 		for i=1,ft do
 			local tc=og:Select(tp,1,1,nil):GetFirst()
 			og:RemoveCard(tc)
-			if Duel.Equip(tp,tc,rc,false) then
+			if Duel.Equip(tp,tc,rc,false,true) then
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_EQUIP_LIMIT)
@@ -111,5 +111,6 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 				tc:RegisterEffect(e1)
 			end
 		end
+		Duel.EquipComplete()
 	end
 end

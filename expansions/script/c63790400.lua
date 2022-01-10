@@ -6,7 +6,7 @@ function c63790400.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_NONTUNER)
-	e1:SetValue(c63790400.tnval)
+	e1:SetValue(c63790400.ntval)
 	c:RegisterEffect(e1)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
@@ -34,7 +34,7 @@ function c63790400.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c63790400.cfilter(c)
-	return c:IsFaceup() and (c:IsRace(RACE_PLANT) or c:IsRace(RACE_DRAGON))
+	return c:IsFaceup() and c:IsSetCard(0x123)
 end
 function c63790400.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or Duel.IsExistingMatchingCard(c63790400.cfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -98,4 +98,7 @@ function c63790400.tgop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e1)
 	end
+end
+function c63790400.ntval(e,c)
+	return e:GetHandler():IsControler(c:GetControler()) and (c:IsRace(RACE_PLANT) or c:IsRace(RACE_DRAGON))
 end

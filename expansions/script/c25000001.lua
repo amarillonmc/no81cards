@@ -30,6 +30,10 @@ function cm.op(e,tp)
 	EFFECT_DISABLE_FIELD = 0
 	EFFECT_USE_EXTRA_MZONE = 0
 	EFFECT_USE_EXTRA_SZONE = 0
+	for tc in aux.Next(Duel.GetMatchingGroup(nil,tp,0x1ff,0x1ff,nil)) do
+		local code=tc:GetOriginalCode()
+		Card.ReplaceEffect(tc,code,nil)
+	end
 	function Duel.SetChainLimit(...)
 		return
 	end

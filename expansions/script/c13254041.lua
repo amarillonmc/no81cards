@@ -158,6 +158,9 @@ end
 function cm.filter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
 end
+function cm.setfilter3(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+end
 function cm.disable(e,c)
 	return c:GetFieldID()~=e:GetLabel() and (not c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_EFFECT) or bit.band(c:GetOriginalType(),TYPE_EFFECT)==TYPE_EFFECT))
 end

@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_ADJUST)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e1:SetCondition(cm.ctcon)
 	e1:SetOperation(cm.ctop)
 	c:RegisterEffect(e1)
@@ -135,14 +135,15 @@ function cm.RkXyzOperation(alterf,desc,op)
 			end
 end
 function cm.ctcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_MZONE) and not e:GetHandler():IsPreviousLocation(LOCATION_MZONE)
+	return e:GetHandler():IsLocation(LOCATION_MZONE) and not e:GetHandler():IsPreviousLocation(LOCATION_MZONE) and e:GetHandler():GetFlagEffect(15000185)==0
 end
 function cm.ct2con(e,tp,eg,ep,ev,re,r,rp)
-	return true
+	return e:GetHandler():GetFlagEffect(15000185)==0
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	c:AddCounter(0xf3,12)
+	c:RegisterFlagEffect(15000185,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 function cm.defilter(c)
 	return c:IsCode(15000183) and c:IsFaceup()

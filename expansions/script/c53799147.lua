@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e3) GetMZoneCount
+	c:RegisterEffect(e3)
 	local e4=e2:Clone()
 	e4:SetCode(EVENT_MSET)
 	c:RegisterEffect(e4)
@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	local e6=e2:Clone()
 	e6:SetCode(EVENT_CHANGE_POS)
-	e6:SetCondition(cm.con)
+	e6:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return eg:IsExists(Card.IsFacedown,1,nil)end)
 	c:RegisterEffect(e6)
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -42,9 +42,6 @@ function cm.initial_effect(c)
 	e9:SetCode(EVENT_CUSTOM+(m+666))
 	e9:SetOperation(cm.operation3)
 	c:RegisterEffect(e9)
-end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsFacedown,1,nil)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Group.CreateGroup()
@@ -73,7 +70,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		if ac==label then
 			c:RegisterFlagEffect(m+d+250,RESET_EVENT+RESETS_STANDARD,0,0,ac)
 			local cg=Duel.GetFieldGroup(tp,0,0xe)
-			if c:GetFlagEffect(m+d+250)==10 and #cg>0 then Duel.RaiseEvent(cg,EVENT_CUSTOM+(m+333),re,r,rp,d/500,ac) end
+			if c:GetFlagEffect(m+d+250)==10 and #cg>0 then Duel.RaiseEvent(cg,EVENT_CUSTOM+(m+333),re,r,rp,tp,ac) end
 		else
 			if c:GetFlagEffect(m+d+250)<10 then Duel.SetLP(tp,Duel.GetLP(tp)-800) end
 			c:ResetFlagEffect(m+d+250)
@@ -81,17 +78,19 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	local dg=Duel.GetFieldGroup(tp,0xe,0xe)
-	if c:GetFlagEffect(m+d)==100 and #dg>0 then Duel.RaiseEvent(dg,EVENT_CUSTOM+(m+666),re,r,rp,d/500,0) end
+	if c:GetFlagEffect(m+d)==100 and #dg>0 then Duel.RaiseEvent(dg,EVENT_CUSTOM+(m+666),re,r,rp,tp,ev) end
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ConfirmCards(tp,eg)
+	Duel.Hint(HINT_CARD,0,m)
+	Duel.ConfirmCards(ep,eg)
 	local g=eg:Filter(Card.IsCode,nil,ev)
-	if g:GetCount()>0 then Duel.SendtoGrave(g,REASON_EFFECT) else Duel.SetLP(tp,Duel.GetLP(tp)-2000) end
-	Duel.ShuffleHand(1-tp)
+	if g:GetCount()>0 then Duel.SendtoGrave(g,REASON_EFFECT) else Duel.SetLP(ep,Duel.GetLP(ep)-2000) end
+	Duel.ShuffleHand(1-ep)
 end
 function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
 	Duel.SendtoGrave(eg,REASON_EFFECT)
 	local og=Duel.GetOperatedGroup()
 	local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
-	if ct>0 then Duel.SetLP(1-tp,Duel.GetLP(1-tp)-ct*1000) end
+	if ct>0 then Duel.SetLP(1-ep,Duel.GetLP(1-ep)-ct*1000) end
 end
