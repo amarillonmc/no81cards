@@ -57,7 +57,7 @@ function cm.mat_filter(c)
 	return c:IsAttribute(ATTRIBUTE_WATER)
 end
 function cm.filter(c,tp)
-	return c:IsControler(tp) and c:IsSetCard(0x6978)
+	return c:IsControler(tp) and c:IsSetCard(0x6978) and c:IsFaceup()
 end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do

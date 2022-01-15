@@ -1,4 +1,4 @@
---查拉图斯特喵如是说
+--also sprach zarathusnya
 --21.12.25
 local m=11451652
 local cm=_G["c"..m]
@@ -27,7 +27,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
-	local t=debug.getregistry()
+	--[[local t=debug.getregistry()
 	for _,v in pairs(t) do
 		if aux.GetValueType(v)=="Effect" and v:GetHandler():IsOriginalCodeRule(ac) and v:GetType()&EFFECT_TYPE_IGNITION>0 and v:GetHandler():GetOriginalType()&TYPE_MONSTER>0 then
 			v:SetType(EFFECT_TYPE_QUICK_O)
@@ -37,5 +37,24 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			pro=pro|EFFECT_FLAG_CANNOT_INACTIVATE
 			v:SetProperty(pro,pro2)
 		end
+	end--]]
+	local g=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0xff,0xff,nil,ac)
+	local reg=Card.RegisterEffect
+	Card.RegisterEffect=function(sc,se,bool)
+							if se:GetType()&EFFECT_TYPE_IGNITION>0 and sc:GetOriginalType()&TYPE_MONSTER>0 then
+								se:SetType(EFFECT_TYPE_QUICK_O)
+								se:SetCode(EVENT_FREE_CHAIN)
+								local pro,pro2=se:GetProperty()
+								pro=pro|EFFECT_FLAG_CANNOT_DISABLE
+								pro=pro|EFFECT_FLAG_CANNOT_INACTIVATE
+								se:SetProperty(pro,pro2)
+							end
+							reg(sc,se,bool)
+						end
+	for tc in aux.Next(g) do
+		if tc.initial_effect then
+			tc:ReplaceEffect(tc:GetOriginalCode(),0)
+		end
 	end
+	Card.RegisterEffect=reg
 end

@@ -18,6 +18,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--destroy replace
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,2))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_BECOME_TARGET)
@@ -44,20 +45,20 @@ end
 function cm.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local ct=e:GetLabel()
-	if ct>=1 then
+	if ct==1 then
 		e:SetCategory(CATEGORY_HANDES)
 		Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 	end
-	if ct>=3 then
+	if ct==3 then
 		local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
-		e:SetCategory(CATEGORY_HANDES+CATEGORY_SPECIAL_SUMMON)
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_GRAVE)
 	end
 end
 function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=e:GetLabel()
-	if ct>=1 then
+	if ct==1 then
 		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,nil)
 		Duel.SendtoGrave(g,REASON_EFFECT+REASON_DISCARD)
 		local dg=Duel.GetOperatedGroup()
@@ -71,7 +72,7 @@ function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e1,tp)
 		end
 	end
-	if ct>=2 then
+	if ct==2 then
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_BATTLE_CONFIRM)
@@ -79,7 +80,7 @@ function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e2,tp)
 	end
-	if ct>=3 then
+	if ct==3 then
 		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,nil,e,tp)
 		if #g>0 then
 			local sg=g:Select(tp,1,1,nil)
@@ -99,7 +100,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x132) and c:IsFaceup()
+	return c:IsSetCard(0x132) and c:IsFaceup() and c:IsType(TYPE_MONSTER)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.tgfilter,1,nil)
