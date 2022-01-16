@@ -6,7 +6,7 @@ function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,cm.ffilter,27,true)
 	local e1=rscf.SetSpecialSummonProduce(c,LOCATION_EXTRA,cm.con,cm.op)
-	local e2=rsef.I(c,{m,0},{1,m},"tg,th,se",nil,LOCATION_MZONE,nil,nil,cm.tg2,cm.op2)
+	local e2=rsef.I(c,{m,0},{1},"tg,th,se",nil,LOCATION_MZONE,nil,nil,cm.tg2,cm.op2)
 end
 function cm.con(e,c)
 	if not c then return true end
@@ -18,7 +18,7 @@ function cm.con(e,c)
 		return Duel.GetLocationCountFromEx(p,p,rc)>0 and rc:IsSetCard(0x442)
 	end
 	local g=Duel.GetMatchingGroup(f,tp,LOCATION_GRAVE,0,nil)
-	return g:GetClassCount(Card.GetCode)>=9 and Duel.CheckReleaseGroup(tp,f2,1,nil,tp)
+	return g:GetClassCount(Card.GetCode)>=5 and Duel.CheckReleaseGroup(tp,f2,1,nil,tp)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp,c)
 	local f=function(rc,p)
@@ -51,7 +51,7 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g1=rg:Filter(Card.IsAbleToHand,nil)
 	local g2=g1:Filter(Card.IsSetCard,nil,0x442)
 	if #g1<=0 and #g2<=0 then return end
-	local op=rsof.SelectOption(tp,true,aux.Stringid(m,1),#g1>0,aux.Stringid(m,2),#g2>0,aux.Stringid(m,3))
+	local op=rshint.SelectOption(tp,true,aux.Stringid(m,1),#g1>0,aux.Stringid(m,2),#g2>0,aux.Stringid(m,3))
 	local g=nil
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	if op==2 then   

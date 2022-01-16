@@ -65,7 +65,8 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
-	return #Monster_Friend_Time>2
+	local tp=c:GetControler()
+	return #Monster_Friend_Time>2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.potg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
@@ -81,6 +82,7 @@ function cm.poop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetRange(LOCATION_MZONE)
 			e2:SetTargetRange(1,0)
 			e2:SetValue(cm.val)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			c:RegisterEffect(e2)
 		end
 		if #Monster_Friend_Time>6 then
@@ -90,6 +92,7 @@ function cm.poop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetRange(LOCATION_MZONE)
 			e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 			e3:SetValue(1)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 			c:RegisterEffect(e3)
 			local e4=e3:Clone()
 			e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
@@ -100,13 +103,14 @@ function cm.poop(e,tp,eg,ep,ev,re,r,rp)
 			e5:SetDescription(aux.Stringid(m,1))
 			e5:SetCategory(CATEGORY_TOGRAVE)
 			e5:SetType(EFFECT_TYPE_IGNITION)
-			e4:SetCode(EVENT_FREE_CHAIN)
-			e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
-			e4:SetRange(LOCATION_MZONE)
-			e4:SetCountLimit(1)
-			e4:SetTarget(cm.tgtg)
-			e4:SetOperation(cm.tgop)
-			c:RegisterEffect(e4)
+			e5:SetCode(EVENT_FREE_CHAIN)
+			e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
+			e5:SetRange(LOCATION_MZONE)
+			e5:SetCountLimit(1)
+			e5:SetTarget(cm.tgtg)
+			e5:SetOperation(cm.tgop)
+			e5:SetReset(RESET_EVENT+RESETS_STANDARD)
+			c:RegisterEffect(e5)
 		end
 	end
 end

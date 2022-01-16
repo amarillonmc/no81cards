@@ -65,7 +65,8 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
-	return #Monster_Friend_Time>2
+	local tp=c:GetControler()
+	return #Monster_Friend_Time>2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.potg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
@@ -78,18 +79,19 @@ function cm.poop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsFaceup() and c:IsRelateToEffect(e) then
 		if #Monster_Friend_Time>2 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-			local sg=Duel.SelectMatchingCard(cm.setcheck,tp,LOCATION_DECK,0,1,1,nil)
+			local sg=Duel.SelectMatchingCard(tp,cm.setcheck,tp,LOCATION_DECK,0,1,1,nil)
 			Duel.SSet(tp,sg)
 		end
 		if #Monster_Friend_Time>4 then
 			local e1=Effect.CreateEffect(c)
 			e1:SetDescription(aux.Stringid(m,1))
 			e1:SetType(EFFECT_TYPE_IGNITION)
-			e1:SetRange(LOCATION_FZONE)
+			e1:SetRange(LOCATION_MZONE)
 			e1:SetCountLimit(1)
 			e1:SetCost(cm.cpcost)
 			e1:SetTarget(cm.cptg)
 			e1:SetOperation(cm.cpop)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			c:RegisterEffect(e1)
 		end
 		if #Monster_Friend_Time>6 then
@@ -101,6 +103,7 @@ function cm.poop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCountLimit(1)
 			e1:SetTarget(cm.drtg)
 			e1:SetOperation(cm.drop)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			c:RegisterEffect(e1)
 		end
 	end
