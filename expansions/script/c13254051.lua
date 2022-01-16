@@ -8,7 +8,6 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(cm.condition)
-	e1:SetCost(cm.cost)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -31,6 +30,8 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetOperation(cm.op)
 	c:RegisterEffect(e4)
+	elements={{"tama_elements",{{TAMA_ELEMENT_MANA,1}}}}
+	cm[c]=elements
 	
 end
 function cm.cfilter(c)

@@ -73,11 +73,10 @@ function c9910026.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ec=c:GetPreviousEquipTarget()
 	local rc=ec:GetReasonCard()
 	local lg=rc:GetOverlayGroup()
-	if chk==0 then return c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and lg:IsContains(ec) and ec:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	ec:CreateEffectRelation(e)
-	Duel.SetOperationInfo(0,CATEGORY_CONTROL,rc,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,ec,1,0,0)
 end
 function c9910026.matfilter(c,e)
 	return c:IsCanOverlay() and not c:IsImmuneToEffect(e)
@@ -88,20 +87,22 @@ end
 function c9910026.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ec=c:GetPreviousEquipTarget()
-	if ec and ec:IsRelateToEffect(e) and c:IsRelateToEffect(e)
-		and Duel.SpecialSummonStep(ec,0,tp,tp,false,false,POS_FACEUP) then
-		Duel.Equip(tp,c,ec)
-		--Add Equip limit
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_EQUIP_LIMIT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(c9910026.eqlimit2)
-		e1:SetLabelObject(ec)
-		c:RegisterEffect(e1)
+	local res=false
+	if ec and ec:IsRelateToEffect(e) and Duel.SpecialSummonStep(ec,0,tp,tp,false,false,POS_FACEUP) then
+		if c:IsRelateToEffect(e) and Duel.Equip(tp,c,ec) then
+			res=true
+			--Add Equip limit
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_EQUIP_LIMIT)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(c9910026.eqlimit2)
+			e1:SetLabelObject(ec)
+			c:RegisterEffect(e1)
+		end
 	end
-	if Duel.SpecialSummonComplete()==0 then return end
+	if Duel.SpecialSummonComplete()==0 or not res then return end
 	local rc=ec:GetReasonCard()
 	if rc:IsOnField() then rc:RegisterFlagEffect(9910026,RESET_EVENT+RESETS_STANDARD,0,1) end
 	local lg=rc:GetOverlayGroup()

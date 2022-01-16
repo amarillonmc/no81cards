@@ -65,7 +65,6 @@ function c79029561.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
-c79029561.xyz_number=92
 function c79029561.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do

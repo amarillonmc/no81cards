@@ -36,8 +36,18 @@ function c79029528.initial_effect(c)
 	e3:SetTarget(c79029528.sptg)
 	e3:SetOperation(c79029528.spop)
 	c:RegisterEffect(e3) 
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c79029528.splimit)
+	c:RegisterEffect(e1)
 end
 c79029528.xyz_number=104
+function c79029528.splimit(e,se,sp,st)
+	return se:GetHandler():IsSetCard(0x95) and se:GetHandler():IsType(TYPE_SPELL)
+end
 function c79029528.condition(e,tp,eg,ep,ev,re,r,rp,chk)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and ep~=tp
 	and Duel.IsChainNegatable(ev)

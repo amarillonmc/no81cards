@@ -58,32 +58,20 @@ function c79029549.decon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029549.detg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())
+	local g=Duel.GetMatchingGroup(aux.TURE,tp,LOCATION_MZONE,LOCATION_MZONE,c)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,g,0,1-tp,g:GetSum(Card.GetAttack))
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,g,0,tp,g:GetSum(Card.GetDefense))
-end
-function c79029549.filter1(c)
-	if c:IsPreviousPosition(POS_FACEUP) then
-		return c:GetPreviousAttackOnField()
-	else return 0 end
-end
-function c79029549.filter2(c)
-	if c:IsPreviousPosition(POS_FACEUP) then
-		return c:GetPreviousDefenseOnField()
-	else return 0 end
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,g,0,tp,g:GetSum(Card.GetDefense))  
 end
 function c79029549.deop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)>0 then
-		local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,aux.ExceptThisCard(e))
-		if Duel.Destroy(g,REASON_EFFECT)~=0 then
-			local og=Duel.GetOperatedGroup()
-			local atk=og:GetSum(c79029549.filter1)
-			local def=og:GetSum(c79029549.filter2)
-			Duel.Damage(1-tp,atk,REASON_EFFECT)
-			Duel.Recover(tp,def,REASON_EFFECT)
-		end
-	end
+	local c=e:GetHandler()
+	Duel.NegateActivation(ev)
+	Duel.Destroy(eg,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(aux.TURE,tp,LOCATION_MZONE,LOCATION_MZONE,c)
+	if Duel.Destroy(g,REASON_EFFECT)~=0 then
+	Duel.Damage(1-tp,g:GetSum(Card.GetAttack),REASON_EFFECT)
+	Duel.Recover(tp,g:GetSum(Card.GetDefense),REASON_EFFECT)
+end
 end 
 function c79029549.sgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return e:GetHandler():GetBattleTarget()~=nil end
@@ -128,13 +116,13 @@ function c79029549.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)
 	and Duel.GetLocationCountFromEx(tp)>0 and Duel.IsExistingMatchingCard(c79029549.spfil,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc,tc:GetRank()+1) then
 	if Duel.SelectYesNo(tp,aux.Stringid(79029549,1)) then
+	Duel.BreakEffect()
 	local x=Duel.SelectMatchingCard(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.SendtoGrave(x,REASON_COST)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c79029549.spfil,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc,tc:GetRank()+1)
 	local sc=g:GetFirst()
 	if sc then
-		Duel.BreakEffect()
 		sc:SetMaterial(Group.FromCards(tc))
 		Duel.Overlay(sc,Group.FromCards(tc))
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)

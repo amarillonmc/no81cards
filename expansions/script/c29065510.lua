@@ -19,20 +19,19 @@ function c29065510.initial_effect(c)
 	e2:SetTarget(c29065510.sptg)
 	e2:SetOperation(c29065510.spop)
 	c:RegisterEffect(e2)
-	--atk up
+	--cannot disable summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(c29065510.atktg)
-	e3:SetValue(300)
+	e3:SetCode(EFFECT_CANNOT_DISABLE_SUMMON)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetProperty(EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetTarget(c29065510.cdstg)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
-	e4:SetCode(EFFECT_UPDATE_DEFENSE)
+	e4:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
 	c:RegisterEffect(e4)
 end
-function c29065510.atktg(e,c)
+function c29065510.cdstg(e,c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29065510.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -54,13 +53,13 @@ function c29065510.spfilter(c,e,tp)
 end
 function c29065510.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c29065510.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+		and Duel.IsExistingMatchingCard(c29065510.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c29065510.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c29065510.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		local g=Duel.SelectMatchingCard(tp,c29065510.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
 		if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)

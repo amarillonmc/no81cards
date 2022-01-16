@@ -19,7 +19,8 @@ function cm.initial_effect(c)
 		Duel.SendtoDeck(g,nil,2,REASON_COST)
 	end)
 	e2:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if chk==0 then return e:GetHandler():IsAbleToExtra() and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
+		if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0
+		and e:GetHandler():IsAbleToExtra() and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
 		Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_GRAVE+LOCATION_HAND)
 	end)
@@ -30,20 +31,9 @@ function cm.initial_effect(c)
 				if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 					local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
-					local tc=g:GetFirst()
-					if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-						local e1=Effect.CreateEffect(c)
-						e1:SetType(EFFECT_TYPE_SINGLE)
-						e1:SetCode(EFFECT_DISABLE)
-						e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-						tc:RegisterEffect(e1)
-						local e2=Effect.CreateEffect(c)
-						e2:SetType(EFFECT_TYPE_SINGLE)
-						e2:SetCode(EFFECT_DISABLE_EFFECT)
-						e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-						tc:RegisterEffect(e2)
-					end
-					Duel.SpecialSummonComplete()
+					if g:GetCount()>0 then
+					   Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+					end  
 			   end  
 			end
 		end

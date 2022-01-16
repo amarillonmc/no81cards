@@ -95,6 +95,17 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e2:SetValue(cm.dtcon)
 	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,3))
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+	e3:SetTargetRange(1,0)
+	e3:SetTarget(cm.sumlimit)
+	Duel.RegisterEffect(e3,tp)
+end
+function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp)
+	return c:IsLocation(LOCATION_EXTRA)
 end
 function cm.dtcon(e,c)
 	return c:IsControler(e:GetHandlerPlayer())
@@ -117,13 +128,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter(c)
-	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and c:IsLevelAbove(5)
+	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and c:IsLevelAbove(5) and c:IsSetCard(0x353)
+end
+function cm.cfilter1(c)
+	return c:IsLevelAbove(5) and c:IsSetCard(0x353)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==tp and eg:IsExists(cm.cfilter,1,nil)
 end
 function cm.drcon1(e,tp,eg,ep,ev,re,r,rp)
-	return ep==tp and eg:IsExists(Card.IsSetCard,1,nil,0x353)
+	return ep==tp and eg:IsExists(cm.cfilter1,1,nil)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

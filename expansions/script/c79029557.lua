@@ -61,8 +61,18 @@ function c79029557.initial_effect(c)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetOperation(c79029557.ckop)
 	c:RegisterEffect(e5)
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c79029557.splimit)
+	c:RegisterEffect(e1)
 end
 c79029557.xyz_number=107
+function c79029557.splimit(e,se,sp,st)
+	return se:GetHandler():IsSetCard(0x95) and se:GetHandler():IsType(TYPE_SPELL)
+end
 function c79029557.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()

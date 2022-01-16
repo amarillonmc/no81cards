@@ -82,7 +82,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			local g=Duel.GetFieldGroup(tp,0,LOCATION_DECK)
 			if g:GetCount()>0 then
 				Duel.BreakEffect()
-				Duel.ConfirmCards(tp,g)
+				Duel.ConfirmCards(1-tp,g)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local sg=g:Select(tp,1,1,nil)
 				Duel.SendtoHand(sg,tp,REASON_EFFECT)

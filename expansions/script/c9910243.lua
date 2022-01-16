@@ -77,7 +77,7 @@ function c9910243.filter1(c)
 	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9910243.filter2(c)
-	return c:IsCode(9910871) and c:IsAbleToGrave() and c:CheckActivateEffect(true,true,false)~=nil
+	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
 end
 function c9910243.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910243.filter1,tp,LOCATION_DECK,0,1,nil) end
@@ -99,8 +99,10 @@ function c9910243.operation2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9910243.filter2,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
-	if not tc or Duel.SendtoGrave(tc,REASON_EFFECT)==0 or not tc:IsLocation(LOCATION_GRAVE) then return end
-	local te=tc:GetActivateEffect()
-	local op=te:GetOperation()
-	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) and tc:IsCode(9910871)
+		and tc:CheckActivateEffect(true,true,false)~=nil and Duel.SelectYesNo(tp,aux.Stringid(9910243,2)) then
+		local te=tc:GetActivateEffect()
+		local op=te:GetOperation()
+		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+	end
 end

@@ -3,6 +3,7 @@ function c79029515.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,6,4)
 	c:EnableReviveLimit()  
+
 	--damage+remove+atk up
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_REMOVE+CATEGORY_DAMAGE)
@@ -40,8 +41,18 @@ function c79029515.initial_effect(c)
 	e4:SetTarget(c79029515.ovtg)
 	e4:SetOperation(c79029515.ovop)
 	c:RegisterEffect(e4)
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c79029515.splimit)
+	c:RegisterEffect(e1)
 end
 c79029515.xyz_number=103
+function c79029515.splimit(e,se,sp,st)
+	return se:GetHandler():IsSetCard(0x95) and se:GetHandler():IsType(TYPE_SPELL)
+end
 function c79029515.arcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) end

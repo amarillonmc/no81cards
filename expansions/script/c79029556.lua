@@ -41,8 +41,18 @@ function c79029556.initial_effect(c)
 	e4:SetValue(c79029556.desrepval)
 	e4:SetOperation(c79029556.desrepop)
 	c:RegisterEffect(e4)
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c79029556.splimit)
+	c:RegisterEffect(e1)
 end
 c79029556.xyz_number=102
+function c79029556.splimit(e,se,sp,st)
+	return se:GetHandler():IsSetCard(0x95) and se:GetHandler():IsType(TYPE_SPELL)
+end
 function c79029556.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)

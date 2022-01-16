@@ -1,14 +1,18 @@
---元始飞球·元始
+--元始飞球之殇
 local m=13254037
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
+	--fusion material
 	c:EnableReviveLimit()
+	aux.AddFusionProcFunRep(c,cm.mfilter,1,true)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,0,Duel.SendtoGrave,REASON_COST)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(cm.splimit)
 	c:RegisterEffect(e1)
 	--special summon rule
 	local e2=Effect.CreateEffect(c)
@@ -29,54 +33,21 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.smop)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1)
-	e4:SetCost(cm.cost)
-	e4:SetTarget(cm.remtg)
-	e4:SetOperation(cm.remop)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetCondition(cm.recon)
+	e4:SetValue(LOCATION_EXTRA)
 	c:RegisterEffect(e4)
-	--elements={"tama_sub_elements",{{TAMA_ELEMENT_WIND,1},{TAMA_ELEMENT_EARTH,1},{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_FIRE,1},{TAMA_ELEMENT_ORDER,1},{TAMA_ELEMENT_CHAOS,1}}}
-	elements={{"tama_elements",{{TAMA_ELEMENT_WIND,1},{TAMA_ELEMENT_EARTH,1},{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_FIRE,1},{TAMA_ELEMENT_ORDER,1},{TAMA_ELEMENT_CHAOS,1}}}}
+	elements={{"tama_elements",{{TAMA_ELEMENT_MANA,1}}}}
 	cm[c]=elements
 	
 end
-function cm.spfilter(c)
-	return c:IsSetCard(0x3356) and c:IsCanBeFusionMaterial() and c:IsAbleToGraveAsCost() and not c:IsCode(m) and c:IsType(TYPE_MONSTER)
+function cm.splimit(e,se,sp,st)
+	return e:GetHandler():GetLocation()~=LOCATION_EXTRA
 end
-function cm.fselect(c,tp,mg,sg)
-	sg:AddCard(c)
-	local res=false
-	if sg:GetCount()<1 then
-		res=mg:IsExists(cm.fselect,1,sg,tp,mg,sg)
-	else
-		res=Duel.GetLocationCountFromEx(tp,tp,sg)>0
-	end
-	sg:RemoveCard(c)
-	return res
-end
-function cm.sprcon(e,c)
-	if c==nil then return true end 
-	local tp=c:GetControler()
-	local mg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_ONFIELD,0,nil)
-	local sg=Group.CreateGroup()
-	return mg:IsExists(cm.fselect,1,nil,tp,mg,sg)
-end
-function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local mg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_ONFIELD,0,nil)
-	local sg=Group.CreateGroup()
-	while sg:GetCount()<1 do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=mg:FilterSelect(tp,cm.fselect,1,1,sg,tp,mg,sg)
-		sg:Merge(g)
-	end
-	local cg=sg:Filter(Card.IsFacedown,nil)
-	if cg:GetCount()>0 then
-		Duel.ConfirmCards(1-tp,cg)
-	end
-	Duel.SendtoGrave(sg,REASON_COST)
+function cm.mfilter(c)
+	return c:IsSetCard(0x3356) and not c:IsCode(m)
 end
 function cm.smfilter(c)
 	return c:IsSetCard(0x3356) and c:IsSummonable(true,nil)
@@ -94,53 +65,6 @@ function cm.smop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Summon(tp,tc,true,nil)
 	end
 end
-function cm.cfilter(c)
-	return #(tama.tamas_getElements(c))~=0 and c:IsAbleToDeckAsCost()
-end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{TAMA_ELEMENT_WIND,2},{TAMA_ELEMENT_EARTH,2},{TAMA_ELEMENT_WATER,2},{TAMA_ELEMENT_FIRE,2},{TAMA_ELEMENT_ORDER,2},{TAMA_ELEMENT_CHAOS,2}}
-	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil),el)
-	if chk==0 then 
-		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)
-	end
-	local sg=tama.tamas_selectElementsMaterial(mg,el,tp)
-	Duel.SendtoDeck(sg,nil,2,REASON_COST)
-end
-function cm.remtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA)
-end
-function cm.remop(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
-	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_DECK,nil)
-	local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,nil)
-	local sg=Group.CreateGroup()
-	local a=0
-	if g1:GetCount()>0 and ((g2:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(m,2))) then
-		Duel.ConfirmCards(tp,g1)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg1=g1:Select(tp,1,1,nil)
-		Duel.HintSelection(sg1)
-		sg:Merge(sg1)
-		a=a+1
-	end
-	if g2:GetCount()>0 and ((sg:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(m,3))) then
-		Duel.ConfirmCards(tp,g2)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg2=g2:Select(tp,1,1,nil)
-		Duel.HintSelection(sg2)
-		sg:Merge(sg2)
-		a=a+2
-	end
-	if g3:GetCount()>0 and (sg:GetCount()==0 or Duel.SelectYesNo(tp,aux.Stringid(m,4))) then
-		Duel.ConfirmCards(tp,g3)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg3=g3:Select(tp,1,1,nil)
-		sg:Merge(sg3)
-		a=a+4
-	end
-	Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
-	if bit.band(a,1) then Duel.ShuffleHand(1-tp) end
-	if bit.band(a,2) then Duel.ShuffleDeck(1-tp) end
-	if bit.band(a,4) then Duel.ShuffleExtra(1-tp) end
+function cm.recon(e)
+	return e:GetHandler():IsFaceup()
 end

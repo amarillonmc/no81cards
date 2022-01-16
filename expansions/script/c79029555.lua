@@ -51,8 +51,21 @@ function c79029555.initial_effect(c)
 	local e5=e4:Clone()
 	e5:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	c:RegisterEffect(e5)
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c79029555.splimit)
+	c:RegisterEffect(e1)
 end
 c79029555.xyz_number=105
+function c79029555.splimit(e,se,sp,st)
+	return se:GetHandler():IsSetCard(0x95) and se:GetHandler():IsType(TYPE_SPELL)
+end
+function c79029555.splimit(e,se,sp,st)
+	return se:GetHandler():IsSetCard(0x95) and se:GetHandler():IsType(TYPE_SPELL)
+end
 function c79029555.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local atk=e:GetHandler():GetBattleTarget():GetAttack()

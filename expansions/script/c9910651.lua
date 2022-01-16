@@ -64,7 +64,7 @@ function c9910651.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 		xc:SetMaterial(Group.FromCards(tc))
 		Duel.Overlay(xc,Group.FromCards(tc))
-		Duel.SpecialSummonStep(xc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(xc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)

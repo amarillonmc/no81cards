@@ -1,4 +1,4 @@
---无尽传说的续章
+--conprologue of infinite saga
 --21.04.13
 local m=11451410
 local cm=_G["c"..m]
@@ -42,7 +42,7 @@ function cm.valcheck(e,c)
 	if #g>0 then e:SetLabel(g:GetClassCount(Card.GetCode)) end
 end
 function cm.filter(c)
-	return (_G["c"..c:GetOriginalCode()] and _G["c"..c:GetOriginalCode()].traveler_saga) and c:IsAbleToDeckAsCost()
+	return c.traveler_saga and c:IsAbleToDeckAsCost()
 end
 function cm.costchk(e,te,tp)
 	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,3,nil)

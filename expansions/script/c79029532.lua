@@ -61,7 +61,6 @@ function c79029532.initial_effect(c)
 	e8:SetOperation(c79029532.atkop)
 	c:RegisterEffect(e8)
 end
-c79029532.xyz_number=96
 function c79029532.target(e,c)
 	return c:IsLocation(LOCATION_MZONE)
 end

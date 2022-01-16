@@ -106,7 +106,9 @@ end
 function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	local ct1=eg:GetCount()
+	local ct1=0
+	--for power capsule
+	if eg then ct1=eg:GetCount() end
 	local t1=ct1>0
 	local op=0
 	local m1={}

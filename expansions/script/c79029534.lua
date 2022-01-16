@@ -25,7 +25,6 @@ function c79029534.initial_effect(c)
 	e2:SetOperation(c79029534.dcop)
 	c:RegisterEffect(e2) 
 end
-c79029534.xyz_number=39
 function c79029534.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
@@ -42,23 +41,23 @@ function c79029534.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,1,1,nil):GetFirst()
 	if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT) then 
-		Duel.BreakEffect()
-		local flag=0
-		if tc:IsType(TYPE_FUSION) then flag=bit.bor(flag,TYPE_FUSION) end
-		if tc:IsType(TYPE_SYNCHRO) then flag=bit.bor(flag,TYPE_SYNCHRO) end
-		if tc:IsType(TYPE_XYZ) then flag=bit.bor(flag,TYPE_XYZ) end
-		if tc:IsType(TYPE_PENDULUM) then flag=bit.bor(flag,TYPE_PENDULUM) end
-		if tc:IsType(TYPE_LINK) then flag=bit.bor(flag,TYPE_LINK) end
-		e:SetLabel(flag)
-		local flag=e:GetLabel()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetTargetRange(0,LOCATION_MZONE)
-		e1:SetTarget(c79029534.distg)
-		e1:SetLabel(flag)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
+	Duel.BreakEffect()
+	local flag=0
+	if tc:IsType(TYPE_FUSION) then flag=bit.bor(flag,TYPE_FUSION) end
+	if tc:IsType(TYPE_SYNCHRO) then flag=bit.bor(flag,TYPE_SYNCHRO) end
+	if tc:IsType(TYPE_XYZ) then flag=bit.bor(flag,TYPE_XYZ) end
+	if tc:IsType(TYPE_PENDULUM) then flag=bit.bor(flag,TYPE_PENDULUM) end
+	if tc:IsType(TYPE_LINK) then flag=bit.bor(flag,TYPE_LINK) end
+	e:SetLabel(flag)
+	local flag=e:GetLabel()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DISABLE)
+	e1:SetTargetRange(0,LOCATION_MZONE)
+	e1:SetTarget(c79029534.distg)
+	e1:SetLabel(flag)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 	end
 end
 function c79029534.distg(e,c)
@@ -87,6 +86,13 @@ function c79029534.dcop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_EXTRA_ATTACK)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
+	--reduce
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+	e3:SetValue(aux.ChangeBattleDamage(1,HALF_DAMAGE))
+	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e3)
 end
 
 

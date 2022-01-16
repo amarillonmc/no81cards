@@ -1,7 +1,5 @@
 --SNo.39 希望皇 霍普·桃源 
 function c79029530.initial_effect(c)
---SNo.39 希望皇 霍普·桃源 
-function c79029530.initial_effect(c)
 	aux.AddXyzProcedure(c,nil,7,4,nil,nil,99)
 	c:EnableReviveLimit() 
 	--xyz only
@@ -88,4 +86,14 @@ function c79029530.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(c:GetAttack()*2)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e1)
+	--damage 0
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_NO_BATTLE_DAMAGE)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e2)
 end
+
+
+
+

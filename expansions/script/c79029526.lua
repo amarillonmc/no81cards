@@ -45,8 +45,18 @@ function c79029526.initial_effect(c)
 	e5:SetTarget(c79029526.sptg1)
 	e5:SetOperation(c79029526.spop1)
 	c:RegisterEffect(e5)
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c79029526.splimit)
+	c:RegisterEffect(e1)
 end
 c79029526.xyz_number=101
+function c79029526.splimit(e,se,sp,st)
+	return se:GetHandler():IsSetCard(0x95) and se:GetHandler():IsType(TYPE_SPELL)
+end
 function c79029526.atkval(e,c)
 	return c:GetOverlayCount()*500
 end

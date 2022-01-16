@@ -1,88 +1,68 @@
---庇护天马
+--赛博空间机甲 光体翼
 function c9910432.initial_effect(c)
-	--link summon
-	aux.AddLinkProcedure(c,nil,2)
-	c:EnableReviveLimit()
-	--immune
+	--spsummon condition
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_IMMUNE_EFFECT)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e1:SetTarget(c9910432.indtg)
-	e1:SetValue(c9910432.efilter)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c9910432.splimit)
 	c:RegisterEffect(e1)
-	--change battle target
+	--immune
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_BE_BATTLE_TARGET)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,9910432)
-	e2:SetTarget(c9910432.cbtg)
-	e2:SetOperation(c9910432.cbop)
+	e2:SetValue(1)
 	c:RegisterEffect(e2)
-	--change effect target
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,9910432)
-	e3:SetCondition(c9910432.cecon)
-	e3:SetTarget(c9910432.cetg)
-	e3:SetOperation(c9910432.ceop)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e3:SetCondition(c9910432.econ)
+	e3:SetValue(aux.tgoval)
 	c:RegisterEffect(e3)
+	local e4=e2:Clone()
+	e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
+	e4:SetValue(c9910432.atlimit)
+	c:RegisterEffect(e4)
+	--negate
+	local e5=Effect.CreateEffect(c)
+	e5:SetCategory(CATEGORY_DISABLE+CATEGORY_POSITION)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_CHAIN_SOLVING)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(c9910432.negcon)
+	e5:SetOperation(c9910432.negop)
+	c:RegisterEffect(e5)
 end
-function c9910432.indtg(e,c)
-	return e:GetHandler():GetLinkedGroup():IsContains(c)
+function c9910432.splimit(e,se,sp,st)
+	return se:GetHandler():IsSetCard(0x6950) and se:GetHandler():IsType(TYPE_SPELL+TYPE_TRAP)
 end
-function c9910432.efilter(e,te)
+function c9910432.econ(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsStatus(STATUS_SPSUMMON_TURN)
+end
+function c9910432.atlimit(e,c)
 	local tp=e:GetHandlerPlayer()
-	if not te:IsActivated() then return false end
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return not g or not g:IsExists(Card.IsLocation,1,nil,LOCATION_ONFIELD)
+	return c:IsControler(1-tp) and c:IsStatus(STATUS_SPSUMMON_TURN) and not c:IsImmuneToEffect(e)
 end
-function c9910432.cbtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local ag=Duel.GetAttacker():GetAttackableTarget()
-	local at=Duel.GetAttackTarget()
-	ag:RemoveCard(at)
-	if chk==0 then return Duel.GetAttacker():IsControler(1-tp) and at:IsControler(tp) and ag:IsContains(c) end
+function c9910432.cfilter(c)
+	return c:IsFaceup() and c:IsRace(RACE_CYBERSE) and c:IsDefensePos()
 end
-function c9910432.cbop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or Duel.GetAttacker():IsImmuneToEffect(e)
-		or not Duel.ChangeAttackTarget(c) then return false end
-	local g=Duel.GetMatchingGroup(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,nil,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910432,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		Duel.LinkSummon(tp,tc,nil)
-	end
+function c9910432.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c9910432.cfilter,tp,LOCATION_MZONE,0,1,nil)
+		and rp==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainDisablable(ev)
+		and e:GetHandler():GetFlagEffect(9910432)<=0
 end
-function c9910432.cfilter(c,tp)
-	return c:IsOnField() and c:IsControler(tp)
-end
-function c9910432.cecon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if rp~=1-tp or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return g:IsExists(c9910432.cfilter,1,nil,tp) and not g:IsContains(c)
-end
-function c9910432.cetg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.CheckChainTarget(ev,c) end
-end
-function c9910432.ceop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) or not Duel.GetAttacker():IsImmuneToEffect(e) then
-		Duel.ChangeTargetCard(ev,Group.FromCards(c))
-	end
-	local g=Duel.GetMatchingGroup(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,nil,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910432,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		Duel.LinkSummon(tp,tc,nil)
+function c9910432.negop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if Duel.SelectYesNo(tp,aux.Stringid(9910432,0)) then
+		Duel.Hint(HINT_CARD,0,9910432)
+		if Duel.NegateEffect(ev) and Duel.IsExistingMatchingCard(c9910432.cfilter,tp,LOCATION_MZONE,0,1,nil) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+			local g=Duel.SelectMatchingCard(tp,c9910432.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
+			Duel.HintSelection(g)
+			Duel.ChangePosition(g:GetFirst(),POS_FACEUP_ATTACK)
+		end
+		e:GetHandler():RegisterFlagEffect(9910432,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	end
 end

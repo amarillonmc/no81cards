@@ -12,17 +12,13 @@ function c29065500.initial_effect(c)
 	--copy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29065500,0)) 
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,29065500)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
 	e2:SetCost(c29065500.cocost)
 	e2:SetTarget(c29065500.cotg)
 	e2:SetOperation(c29065500.coop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e3)
 end
 function c29065500.cfilter(c)
 	return c:IsFacedown() or not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
@@ -35,15 +31,16 @@ function c29065500.ntcon(e,c,minc)
 end
 function c29065500.efil(c,e,tp,eg,ep,ev,re,r,rp) 
 	if not ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and not c:IsPublic() and not c:IsCode(29065500)) then return false end 
+	if Duel.GetFlagEffect(tp,c:GetCode()+100000)~=0 then return false end
 	local m=_G["c"..c:GetCode()]
 	if not m then return false end 
 	local te=m.summon_effect	if not te then return false end
 	local tg=te:GetTarget()
 	return not tg or tg and tg(e,tp,eg,ep,ev,re,r,rp,0)
- end
+end
 function c29065500.cocost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29065500.efil,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
-	local tc=Duel.SelectMatchingCard(tp,c29065500.efil,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp,eg,ep,re,r,rp):GetFirst()
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065500.efil,tp,LOCATION_HAND,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
+	local tc=Duel.SelectMatchingCard(tp,c29065500.efil,tp,LOCATION_HAND,0,1,1,nil,e,tp,eg,ep,re,r,rp):GetFirst()
 	Duel.ConfirmCards(1-tp,tc)
 	e:SetLabelObject(tc)
 end
@@ -62,5 +59,6 @@ function c29065500.coop(e,tp,eg,ep,ev,re,r,rp,chk)
 		local te=m.summon_effect
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) 
-end
+	end
+	Duel.RegisterFlagEffect(tp,tc:GetCode()+100000,RESET_PHASE+PHASE_END,0,1)
 end

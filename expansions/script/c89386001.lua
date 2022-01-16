@@ -125,9 +125,11 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) then return end
-    if Duel.GetFlagEffectLabel(tp,m)>=5 then
+    local n=Duel.GetFlagEffectLabel(tp,m)
+    if n>=5 then
         Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)
     else
+        c:SetTurnCounter(n)
         Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
     end
 end

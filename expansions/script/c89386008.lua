@@ -28,7 +28,7 @@ function cm.coinfilter(c)
     return c:IsSetCard(0xcc30) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(7) and c:IsAbleToHand()
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsPlayerCanDraw(tp) and Duel.IsExistingMatchingCard(cm.drfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+    if chk==0 then return Duel.IsPlayerCanDraw(tp,2) and Duel.IsExistingMatchingCard(cm.drfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)

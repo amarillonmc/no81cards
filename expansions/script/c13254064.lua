@@ -42,15 +42,15 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local ct,ct1=e:GetLabel()
 	local loc=0
-	if ct>=3 then loc=LOCATION_MZONE end
-	local sg=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,loc,nil,c,ct1)
+	if ct<3 then loc=LOCATION_MZONE end
+	local sg=Duel.GetMatchingGroup(cm.desfilter,tp,loc,LOCATION_MZONE,nil,c,ct1)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct,ct1=e:GetLabel()
 	local loc=0
-	if ct>=3 then loc=LOCATION_MZONE end
-	local sg=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,loc,nil,c,ct1)
+	if ct<3 then loc=LOCATION_MZONE end
+	local sg=Duel.GetMatchingGroup(cm.desfilter,tp,loc,LOCATION_MZONE,nil,c,ct1)
 	Duel.Destroy(sg,REASON_EFFECT)
 end

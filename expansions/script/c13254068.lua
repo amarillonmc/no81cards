@@ -28,6 +28,8 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.fltg)
 	e2:SetOperation(cm.flop)
 	c:RegisterEffect(e2)
+	elements={{"tama_elements",{{TAMA_ELEMENT_ORDER,2},{TAMA_ELEMENT_MANA,2},{TAMA_ELEMENT_LIFE,1}}}}
+	cm[c]=elements
 	
 end
 function cm.ffilter(c,fc,sub,mg,sg)
@@ -46,7 +48,7 @@ function cm.cfilter(c)
 	return #(tama.tamas_getElements(c))~=0 and c:IsAbleToDeckAsCost()
 end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local el={{TAMA_ELEMENT_ORDER,1},{TAMA_ELEMENT_MANA,4}}
+	local el={{TAMA_ELEMENT_ORDER,1},{TAMA_ELEMENT_MANA,3}}
 	local mg=tama.tamas_checkGroupElements(Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil),el)
 	if chk==0 then 
 		return mg:GetCount()>0 and tama.tamas_isCanSelectElementsForAbove(mg,el)

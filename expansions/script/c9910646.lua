@@ -78,7 +78,7 @@ function c9910646.xmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=e:GetLabel()-c:GetOverlayCount()
 	local loc=LOCATION_ONFIELD+LOCATION_GRAVE 
-	local g=Duel.GetMatchingGroup(c9910646.matfilter,tp,loc,loc,c,tp,e)
+	local g=Duel.GetMatchingGroup(c9910646.matfilter,tp,loc,loc,c,e)
 	if ct<=0 or ct>g:GetCount() then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local sg=g:Select(tp,ct,ct,nil)

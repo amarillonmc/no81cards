@@ -45,20 +45,18 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:Select(1-tp,1,1,nil):GetFirst()
 		Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
 		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(m,1))
 		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e1:SetCode(EFFECT_PUBLIC)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 		Duel.ShuffleHand(tp)
 	end
 end
-function cm.disfilter(c,tpe)
-	return c:IsPublic() and c:IsType(tpe)
-end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
-		and Duel.IsExistingMatchingCard(cm.disfilter,1-tp,LOCATION_HAND,0,1,nil,re:GetActiveType()&0x7)
+		and Duel.IsExistingMatchingCard(function(c,tpe)return c:IsPublic() and c:IsType(tpe)end,1-tp,LOCATION_HAND,0,1,nil,re:GetActiveType()&0x7)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -67,6 +65,7 @@ end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) then
+		if re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc:IsAbleToHand() then rc:CancelToGrave() end
 		Duel.SendtoHand(rc,tp,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,rc)
 		if rc:IsPreviousLocation(LOCATION_HAND) then Duel.ShuffleHand(1-tp) end

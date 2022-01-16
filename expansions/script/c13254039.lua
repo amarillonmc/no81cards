@@ -133,7 +133,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		local ht=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 		local ht1=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
 		if ht<ht1 then
-			Duel.Draw(tp,ht1-ht,REASON_EFFECT)
+			Duel.Draw(p,ht1-ht,REASON_EFFECT)
 		end
 		broken=true
 	end

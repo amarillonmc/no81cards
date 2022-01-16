@@ -70,7 +70,7 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,tc,tc:GetLevel())
 	if tc and c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and (not tc:IsLocation(LOCATION_MZONE) or tc:IsFaceup()) and not tc:IsType(TYPE_TOKEN) and #g>0 then
 		local fc=g:Select(tp,1,1,nil):GetFirst()
-		local code=tc:GetCode()
+		local code=tc:GetOriginalCode()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -78,6 +78,6 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(code)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		fc:RegisterEffect(e1)
-		fc:ReplaceEffect(code,RESET_EVENT+RESETS_STANDARD,1)
+		if not tc:IsType(TYPE_TRAPMONSTER) then fc:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1) end
 	end
 end

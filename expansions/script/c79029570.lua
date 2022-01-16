@@ -35,7 +35,7 @@ function c79029570.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_DISABLE_SUMMON)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_SET_AVAILABLE)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa9f1))
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xff1))
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e1)
@@ -74,7 +74,7 @@ end
 function c79029570.linkop(e,tp,eg,ep,ev,re,r,rp,c,og,lmat,min,max)
 end
 function c79029570.mattg(e,c)
-	return c:IsSetCard(0xa9f1) and not c:IsCode(79029570)
+	return c:IsSetCard(0xff1) and not c:IsCode(79029570)
 end
 function c79029570.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:GetFirst():GetSummonType()==SUMMON_TYPE_SPECIAL+1

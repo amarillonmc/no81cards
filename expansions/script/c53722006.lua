@@ -14,11 +14,8 @@ end
 function cm.cfilter(c)
 	return c:IsPreviousLocation(LOCATION_DECK+LOCATION_HAND) and c:IsType(TYPE_MONSTER)
 end
-function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3531)
-end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
-	local rec=Duel.GetMatchingGroupCount(cm.filter,tp,LOCATION_MZONE,0,nil)*100
+	local rec=Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)*200
 	if eg:IsExists(cm.cfilter,1,nil) and rec>0 then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.Recover(tp,rec,REASON_EFFECT)

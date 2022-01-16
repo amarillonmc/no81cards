@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	e3:SetValue(1)
-	c:RegisterEffect(e3)
+	--c:RegisterEffect(e3)
 	--not link
 end
 function cm.rlevel(e,c)
