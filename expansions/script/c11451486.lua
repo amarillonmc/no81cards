@@ -17,7 +17,6 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	--effect1
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
@@ -128,8 +127,13 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local g1=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,2-op,2-op,e:GetHandler(),e)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,1,0,0)
-	if op==0 then Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g1,1,0,0) end
+	if op==0 then
+		e:SetCategory(CATEGORY_TOHAND)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,1,0,0)
+	else
+		e:SetCategory(0)
+	end
+	if g1:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) then Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g1,1,0,0) end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

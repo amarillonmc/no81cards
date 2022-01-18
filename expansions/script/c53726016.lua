@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.imop)
 	c:RegisterEffect(e2)
 end
+cm.has_text_type=TYPE_DUAL
 function cm.spfilter(c,e,tp)
 	return c:IsType(TYPE_DUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

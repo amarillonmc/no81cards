@@ -43,8 +43,9 @@ function cm.initial_effect(c)
 		cm[1]=0
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_RELEASE)
-		ge1:SetOperation(cm.check)
+		ge1:SetCode(EFFECT_SEND_REPLACE)
+		ge1:SetTarget(cm.check)
+		ge1:SetValue(aux.FALSE)
 		Duel.RegisterEffect(ge1,0)
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -59,13 +60,15 @@ end
 function cm.filter(c,tp)
 	return c:IsControler(tp) and c:IsSetCard(0x6978) and c:IsFaceup()
 end
-function cm.check(e,tp,eg,ep,ev,re,r,rp)
+function cm.check(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 	for tc in aux.Next(eg) do
-		if (tc:IsPreviousLocation(LOCATION_MZONE) or (tc:GetPreviousLocation()&LOCATION_ONFIELD==0 and tc:GetOriginalType()&0x1>0)) and tc:IsSetCard(0x6978) then
+		if (tc:IsLocation(LOCATION_MZONE) or (not tc:IsOnField() and tc:GetOriginalType()&0x1>0)) and tc:IsSetCard(0x6978) and tc:IsReason(REASON_RELEASE) then
 			local p=tc:GetReasonPlayer()
 			cm[p]=cm[p]+1
 		end
 	end
+	return false
 end
 function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 	cm[0]=0

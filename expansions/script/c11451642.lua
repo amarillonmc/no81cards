@@ -24,13 +24,24 @@ end
 function cm.spfilter(c,e,tp,mg)
 	if bit.band(c:GetType(),0x81)~=0x81 or c.mat_filter or c.mat_group_check or not (c:IsAttribute(ATTRIBUTE_WIND) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) then return false end
 	local ct=math.max(1,c:GetLevel()//3)
-	return #mg>0 and mg:CheckSubGroup(cm.fselect,ct,ct,c,tp)
+	if c.mat_filter then
+		local g=mg:Filter(cm.mfilter2,nil,c)
+		if c.mat_group_check then return #g>0 and g:CheckSubGroup(cm.fselect2,ct,ct,tp,rc) end
+		return #g>0 and g:CheckSubGroup(cm.fselect,ct,ct,tp)
+	end
+	return #mg>0 and mg:CheckSubGroup(cm.fselect,ct,ct,tp)
 end
-function cm.fselect(g,c,tp)
+function cm.fselect(g,tp)
 	return Duel.GetMZoneCount(tp,g)>0
+end
+function cm.fselect2(g,tp)
+	return Duel.GetMZoneCount(tp,g)>0 and rc.mat_group_check(g)
 end
 function cm.mfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
+end
+function cm.mfilter2(c,rc)
+	return c:IsType(TYPE_MONSTER) and rc.mat_filter(c)
 end
 function cm.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
@@ -50,7 +61,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local ct=math.max(1,tc:GetLevel()//3)
-		local mat=mg:SelectSubGroup(tp,cm.fselect,false,ct,ct,c,tp)
+		local mat=mg:SelectSubGroup(tp,cm.fselect,false,ct,ct,tp)
 		if not mat or #mat==0 then return end
 		tc:SetMaterial(mat)
 		Duel.SendtoGrave(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)

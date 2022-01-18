@@ -153,7 +153,7 @@ end
   --  re:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
 --end
 function cm.chcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(e:GetHandlerPlayer())>=12000
+	return ep==1-tp and Duel.GetLP(e:GetHandlerPlayer())>=12000
 end
 function cm.chop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
@@ -162,7 +162,7 @@ function cm.chop2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	Duel.Damage(tp-1,2000,REASON_EFFECT)
+	Duel.Damage(1-tp,2000,REASON_EFFECT)
 	Duel.Recover(tp,2000,REASON_EFFECT)
 end
 function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp)

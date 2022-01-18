@@ -1,4 +1,4 @@
---幻旅传说·逃亡
+--traveler saga outrun
 --21.04.10
 local m=11451401
 local cm=_G["c"..m]
@@ -63,5 +63,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.thfilter,1,nil)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(cm.thfilter,nil)
+	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
 end

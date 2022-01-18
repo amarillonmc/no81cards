@@ -1,6 +1,6 @@
 --术结天缘 古洛夫拉菲
 function c67200433.initial_effect(c)
-	--c:EnableReviveLimit()
+	c:EnableReviveLimit()
 	aux.EnablePendulumAttribute(c,false)
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5671),5,2)  
 	 --Activate

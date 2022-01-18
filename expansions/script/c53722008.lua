@@ -16,7 +16,6 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(cm.effcon)
 	e1:SetOperation(cm.effop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -51,15 +50,13 @@ end
 --  Duel.Hint(HINT_CARD,0,m)
 --  Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 --end
-function cm.effcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
-end
 function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsSummonType(SUMMON_TYPE_XYZ) then return end
 	local mg=c:GetMaterial()
 	for tc in aux.Next(mg) do
 		local code=tc:GetOriginalCode()
-		if code>53722000 and code<53722008 and c:GetFlagEffect(code)==0 and ((not g) or (not g:IsExists(cm.tgfil,1,nil,tp))) then
+		if code>53722000 and code<53722008 and c:GetFlagEffect(code)==0 then
 			c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
 			c:RegisterFlagEffect(code,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,code-53722000))
 		end

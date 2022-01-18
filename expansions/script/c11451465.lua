@@ -193,6 +193,16 @@ end
 function cm.retfilter2(c,p,loc)
 	return c:IsPreviousControler(p) and c:IsPreviousLocation(loc)
 end
+function cm.fselect2(g,pft)
+	return g:FilterCount(Card.IsPreviousLocation,nil,LOCATION_PZONE)<=pft
+end
+function cm.returntofield(tc)
+	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
+		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)
+	else
+		Duel.ReturnToField(tc)
+	end
+end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
 	if not g:IsExists(cm.filter6,1,nil,e) then
@@ -205,26 +215,51 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
 	local sg=g:Filter(cm.filter6,nil,e)
 	g:DeleteGroup()
-	local ft,mg={},{}
+	local ft,mg,pft,pmg={},{},{},{}
 	ft[1]=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	ft[2]=Duel.GetLocationCount(1-tp,LOCATION_MZONE)
 	ft[3]=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	ft[4]=Duel.GetLocationCount(1-tp,LOCATION_SZONE)
+	pft[3],pft[4]=0,0
+	if Duel.CheckLocation(tp,LOCATION_PZONE,0) then pft[3]=pft[3]+1 end
+	if Duel.CheckLocation(tp,LOCATION_PZONE,1) then pft[3]=pft[3]+1 end
+	if Duel.CheckLocation(1-tp,LOCATION_PZONE,0) then pft[4]=pft[4]+1 end
+	if Duel.CheckLocation(1-tp,LOCATION_PZONE,1) then pft[4]=pft[4]+1 end
 	mg[1]=sg:Filter(cm.retfilter2,nil,tp,LOCATION_MZONE)
 	mg[2]=sg:Filter(cm.retfilter2,nil,1-tp,LOCATION_MZONE)
 	mg[3]=sg:Filter(cm.retfilter2,nil,tp,LOCATION_SZONE)
 	mg[4]=sg:Filter(cm.retfilter2,nil,1-tp,LOCATION_SZONE)
-	for i=1,4 do
+	pmg[3]=sg:Filter(cm.retfilter2,nil,tp,LOCATION_PZONE)
+	pmg[4]=sg:Filter(cm.retfilter2,nil,1-tp,LOCATION_PZONE)
+	for i=1,2 do
 		if #mg[i]>ft[i] then
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451461,7))
 			local tg=mg[i]:Select(tp,ft[i],ft[i],nil)
-			for tc in aux.Next(tg) do Duel.ReturnToField(tc) end
+			for tc in aux.Next(tg) do cm.returntofield(tc) end
 			sg:Sub(tg)
 		end
 	end
-	for tc in aux.Next(sg) do
+	for i=3,4 do
+		if #mg[i]>ft[i] then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451461,7))
+			local ct=math.min(#(mg[i]-pmg[i])+pft[i],ft[i])
+			local tg=mg[i]:SelectSubGroup(tp,cm.fselect2,false,ct,ct,nil,pft[i])
+			local ptg=tg:Filter(Card.IsPreviousLocation,nil,LOCATION_PZONE)
+			for tc in aux.Next(ptg) do cm.returntofield(tc) end
+			for tc in aux.Next(tg-ptg) do cm.returntofield(tc) end
+			sg:Sub(tg)
+		elseif #pmg[i]>pft[i] then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451461,7))
+			local tg=pmg[i]:Select(tp,pft[i],pft[i],nil)
+			for tc in aux.Next(tg) do cm.returntofield(tc) end
+			sg:Sub(tg)
+		end
+	end
+	local psg=sg:Filter(Card.IsPreviousLocation,nil,LOCATION_PZONE)
+	for tc in aux.Next(psg) do cm.returntofield(tc) end
+	for tc in aux.Next(sg-psg) do
 		if tc:GetPreviousLocation()&LOCATION_ONFIELD>0 then
-			Duel.ReturnToField(tc)
+			cm.returntofield(tc)
 		elseif tc:IsPreviousLocation(LOCATION_HAND) then
 			Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)
 		end

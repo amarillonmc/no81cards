@@ -59,6 +59,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e6:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e6:SetTargetRange(1,0)
 	e6:SetValue(cm.aclimit)
+	e6:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e6,tp)
 end
 function cm.filter(c,sp)

@@ -1,5 +1,5 @@
 --守护天使 急诊天马
-local m=m
+local m=40009101
 local cm=_G["c"..m]
 cm.named_with_ProtectorSpirit=1
 function cm.initial_effect(c)

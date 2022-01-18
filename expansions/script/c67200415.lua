@@ -88,16 +88,17 @@ function c67200415.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
-		local ct=g:GetFirst():GetLevel()
-		if ct>0 and Duel.GetMatchingGroupCount(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,nil,0x1,1)>0
-			and Duel.SelectYesNo(tp,aux.Stringid(67200415,4)) then
-			while ct>0 do
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-				local ttc=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,1,1,nil,0x1,1):GetFirst()
-				if not ttc then break end
-				ttc:AddCounter(0x1,1)
-				ct=ct-1
+		if Duel.Destroy(g,REASON_EFFECT)~=0 then
+			local ct=g:GetFirst():GetLevel()
+			if ct>0 and Duel.GetMatchingGroupCount(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,nil,0x1,1)>0
+				and Duel.SelectYesNo(tp,aux.Stringid(67200415,4)) then
+				while ct>0 do
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
+					local ttc=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,1,1,nil,0x1,1):GetFirst()
+					if not ttc then break end
+					ttc:AddCounter(0x1,1)
+					ct=ct-1
+				end
 			end
 		end
 	end

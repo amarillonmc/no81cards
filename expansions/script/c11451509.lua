@@ -105,6 +105,8 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.thfilter,1,nil)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(cm.thfilter,nil)
+	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)

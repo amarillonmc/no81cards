@@ -40,6 +40,9 @@ function c188811.initial_effect(c)
 	e4:SetOperation(c188811.xeqop)
 	c:RegisterEffect(e4)
 end
+function c188811.eqlimit(e,c)
+	return (c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT)) or e:GetHandler():GetEquipTarget()==c
+end
 function c188811.filter(c)
 	local ct1,ct2=c:GetUnionCount()
 	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_WATER) and ct2==0
@@ -109,7 +112,7 @@ function c188811.xeqop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local g=Duel.SelectMatchingCard(tp,c188811.unfil2,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,tp,tc)
+		local g=Duel.SelectMatchingCard(tp,c188811.unfil2,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,tp,tc)
 		local ec=g:GetFirst()
 		if ec and aux.CheckUnionEquip(ec,tc) and Duel.Equip(tp,ec,tc) then
 			aux.SetUnionState(ec)

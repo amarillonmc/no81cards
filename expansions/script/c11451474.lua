@@ -48,7 +48,7 @@ function cm.spfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
 function cm.thfilter(c)
-	return c:IsRace(RACE_INSECT)
+	return c:IsRace(RACE_INSECT) and c:GetOriginalType()&0x1==0x1
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
@@ -85,7 +85,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(1-tp) and chkc:IsType(TYPE_MONSTER) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsType,tp,0,LOCATION_GRAVE,1,nil,TYPE_MONSTER) end
+	if chk==0 then return Duel.GetMatchingGroupCount(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)>0 and Duel.IsExistingTarget(Card.IsType,tp,0,LOCATION_GRAVE,1,nil,TYPE_MONSTER) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,Card.IsType,tp,0,LOCATION_GRAVE,1,1,nil,TYPE_MONSTER)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
