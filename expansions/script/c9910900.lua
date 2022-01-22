@@ -55,7 +55,7 @@ end
 function c9910900.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ec=c:GetPreviousEquipTarget()
-	return c:IsReason(REASON_LOST_TARGET) and ec and ec:IsReason(REASON_MATERIAL+REASON_FUSION)
+	return c:IsReason(REASON_LOST_TARGET) and ec and ec:IsReason(REASON_FUSION)
 end
 function c9910900.spfilter(c,e,tp,race)
 	return aux.IsCodeListed(c,9910871) and not c:IsRace(race) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

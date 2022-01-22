@@ -137,7 +137,6 @@ function cm.op4(e,tp,eg,ep,ev,re,r,rp)
 	local tc=tg:GetFirst()
 	if tc then
 		local mg=m:Filter(Card.IsCanBeRitualMaterial,tc,tc)
-		mg:Merge(dg)
 		if tc.mat_filter then
 			mg=mg:Filter(tc.mat_filter,tc,tp)
 		else

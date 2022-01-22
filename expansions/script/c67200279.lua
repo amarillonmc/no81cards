@@ -39,19 +39,35 @@ function c67200279.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67200279.drconfil(c)
-	return c:IsSetCard(0x674) and c:IsPreviousLocation(LOCATION_ONFIELD)
+	return c:IsSetCard(0x674) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsType(TYPE_PENDULUM)
+	--or c:IsType(TYPE_SYNCHRO) or c:IsType(TYPE_FUSION) or c:IsType(TYPE_XYZ) or c:IsType(TYPE_LINK))
 end
 function c67200279.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local eeg=eg:Filter(c67200279.drconfil,nil)
-	return eeg:GetCount()>0 and eeg:FilterCount(Card.IsAbleToDeck,nil)==eeg:GetCount()
+	return eeg:GetCount()>0 and eeg:FilterCount(Card.IsAbleToHand,nil)==eeg:GetCount()
 end
 function c67200279.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local eeg=eg:Filter(c67200279.drconfil,nil)
-	if chk==0 then return eeg:IsExists(Card.IsAbleToHand,1,nil) end
+	local eeeg=eeg:GetFirst()
+	while eeeg do
+		if eeeg:IsType(TYPE_TOKEN) or eeeg:IsType(TYPE_FUSION) or eeeg:IsType(TYPE_SYNCHRO) or eeeg:IsType(TYPE_XYZ) or eeeg:IsType(TYPE_LINK) then
+			Group.RemoveCard(eeg,eeeg)
+		end
+		eeeg=eeg:GetNext()
+	end
+	if chk==0 then return eeg:IsExists(Card.IsAbleToHand,1,nil) and eeg:GetCount()>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,eeg,eeg:GetCount(),0,0)
 end
 function c67200279.drop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local eeg=eg:Filter(c67200279.drconfil,nil)
+	local eeeg=eeg:GetFirst()
+	while eeeg do
+		if eeeg:IsType(TYPE_TOKEN) or eeeg:IsType(TYPE_FUSION) or eeeg:IsType(TYPE_SYNCHRO) or eeeg:IsType(TYPE_XYZ) or eeeg:IsType(TYPE_LINK) then
+			Group.RemoveCard(eeg,eeeg)
+		end
+		eeeg=eeg:GetNext()
+	end
+	if eeg:GetCount()<1 then return end
 	Duel.SendtoHand(eeg,nil,REASON_EFFECT)
 end
