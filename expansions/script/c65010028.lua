@@ -64,9 +64,9 @@ function c65010028.ffilterfil(c,att,rac)
 	return c:IsAttribute(att) and c:IsRace(rac)
 end
 function c65010028.ffilter(c,fc,sub,mg,sg)
+	if c:IsType(TYPE_TOKEN) then return false end
 	return not sg or sg:FilterCount(aux.TRUE,c)==0
 		or sg:IsExists(c65010028.ffilterfil,1,c,c:GetFusionAttribute(),c:GetRace())
-			 or c:IsType(TYPE_TOKEN)
 end
 function c65010028.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()

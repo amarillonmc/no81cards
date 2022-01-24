@@ -4,7 +4,8 @@ local m=10121006
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	rsdio.XyzEffect(c,3)
+	aux.AddXyzProcedure(c,nil,10,3,nil,nil,99)
+	--rsdio.XyzEffect(c,4)(暂时无法正常使用)
 	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))

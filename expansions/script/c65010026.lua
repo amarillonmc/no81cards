@@ -70,9 +70,10 @@ function c65010026.penop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c65010026.ffilter(c,fc,sub,mg,sg)
+	if c:IsType(TYPE_TOKEN) then return false end
 	return not sg or sg:FilterCount(aux.TRUE,c)==0
 		or (sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())
-			and not sg:IsExists(Card.IsRace,1,c,c:GetRace())) or c:IsType(TYPE_TOKEN)
+			and not sg:IsExists(Card.IsRace,1,c,c:GetRace()))
 end
 function c65010026.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()

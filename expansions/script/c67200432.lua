@@ -43,7 +43,7 @@ function c67200432.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsChainNegatable(ev) and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE))
 end
 function c67200432.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()	
+	local c=e:GetHandler()  
 	if chk==0 then return aux.nbcon(tp,re) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsRelateToEffect(re) then
@@ -52,8 +52,10 @@ function c67200432.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c67200432.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local rc=re:GetHandler()
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		rc:CancelToGrave()   
 		Duel.Overlay(c,eg)
 	end
 end

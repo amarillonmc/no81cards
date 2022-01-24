@@ -19,9 +19,8 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCountLimit(1,15000724)
-	e2:SetCondition(cm.pcon)
 	e2:SetTarget(cm.ptg)
-	e2:SetOperation(cm.aop)
+	e2:SetOperation(cm.pop)
 	c:RegisterEffect(e2)
 	--only me
 	local e3=Effect.CreateEffect(c)
@@ -30,15 +29,6 @@ function cm.initial_effect(c)
 	e3:SetCode(15000724)
 	e3:SetRange(LOCATION_MZONE) 
 	c:RegisterEffect(e3)
-	--P
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)  
-	e4:SetRange(LOCATION_PZONE)
-	e4:SetCode(EVENT_CUSTOM+15000724)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetOperation(cm.pop)  
-	c:RegisterEffect(e4)
 	--return
 	local e5=Effect.CreateEffect(c)
 	e5:SetCategory(CATEGORY_TOHAND)
@@ -61,175 +51,59 @@ end
 function cm.sumfilter(c)
 	return c:IsType(TYPE_PENDULUM) and c:IsFaceup()
 end
-function cm.PConditionFilter(c,e,tp,lscale,rscale,eset)
-	local lv=0
-	if c.pendulum_level then
-		lv=c.pendulum_level
-	else
-		lv=c:GetLevel()
-	end
-	local bool=Auxiliary.PendulumSummonableBool(c)
-	return (c:IsLocation(LOCATION_HAND) or (c:IsFaceup() and c:IsType(TYPE_PENDULUM)))
-		and lv>lscale and lv<rscale and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,bool,bool)
-		and not c:IsForbidden()
-		and (PENDULUM_CHECKLIST&(0x1<<tp)==0 or Auxiliary.PConditionExtraFilter(c,e,tp,lscale,rscale,eset))
-end
-function cm.pcon(e,tp,eg,ep,ev,re,r,rp)
-	if not PENDULUM_CHECKLIST then
-		PENDULUM_CHECKLIST=0
-		local ge1=Effect.GlobalEffect()
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-		ge1:SetOperation(Auxiliary.PendulumReset)
-		Duel.RegisterEffect(ge1,0)
-	end
-	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_EXTRA_PENDULUM_SUMMON)}
-	local pg=Duel.GetMatchingGroup(nil,tp,LOCATION_PZONE,0,nil)
-	if pg:GetCount()~=2 then return false end
-	local cc=pg:GetFirst()
-	local lscale=cc:GetLeftScale()
-	local dc=pg:GetNext()
-	local rscale=dc:GetRightScale()
-	if lscale>rscale then
-		lscale=dc:GetRightScale()
-		rscale=cc:GetLeftScale()
-	end
-	if (lscale==rscale or lscale==rscale-1 or lscale==rscale+1) then return false end
-	local loc=0
-	local sc=Duel.GetMatchingGroup(cm.sumfilter,tp,LOCATION_EXTRA,0,nil):GetFirst()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
-	if sc and Duel.GetLocationCountFromEx(tp,tp,nil,sc)>0 then loc=loc+LOCATION_EXTRA end
-	if loc==0 then return false end
-	local g=nil
-	if og then
-		g=og:Filter(Card.IsLocation,nil,loc)
-	else
-		g=Duel.GetFieldGroup(tp,loc,0)
-	end
-	return g:IsExists(cm.PConditionFilter,1,nil,e,tp,lscale,rscale,eset) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_PZONE,0,1,e:GetHandler())
+function cm.check(e,tp)
+	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
+	if lpz==nil then return false end
+	local pcon=aux.PendCondition()
+	return pcon(e,lpz,g)
 end
 function cm.ptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_EXTRA_PENDULUM_SUMMON)}
-	local pg=Duel.GetMatchingGroup(nil,tp,LOCATION_PZONE,0,nil)
-	if pg:GetCount()~=2 then return false end
-	local cc=pg:GetFirst()
-	local lscale=cc:GetLeftScale()
-	local dc=pg:GetNext()
-	local rscale=dc:GetRightScale()
-	if lscale>rscale then
-		lscale=dc:GetRightScale()
-		rscale=cc:GetLeftScale()
-	end
-	local loc=0
-	local sc=Duel.GetMatchingGroup(cm.sumfilter,tp,LOCATION_EXTRA,0,nil):GetFirst()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
-	if sc and Duel.GetLocationCountFromEx(tp,tp,nil,sc)>0 then loc=loc+LOCATION_EXTRA end
-	local g=nil
-	if og then
-		g=og:Filter(Card.IsLocation,nil,loc)
-	else
-		g=Duel.GetFieldGroup(tp,loc,0)
-	end
-	local yg=g:Filter(cm.PConditionFilter,nil,e,tp,lscale,rscale,eset)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,yg,yg:GetCount(),tp,0)
-end
-function cm.aop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+15000724,re,r,rp,ep,ev)
+	if chk==0 then return cm.check(e,tp,nil) end
 end
 function cm.pop(e,tp,eg,ep,ev,re,r,rp,sg,og)
-	if not PENDULUM_CHECKLIST then
-		PENDULUM_CHECKLIST=0
-		local ge1=Effect.GlobalEffect()
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-		ge1:SetOperation(Auxiliary.PendulumReset)
-		Duel.RegisterEffect(ge1,0)
+	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
+	if lpz==nil then return end
+	--the summon should be done after the chain end
+	local sg=Group.CreateGroup()
+	local pspop=cm.pspop
+	pspop(e,tp,eg,ep,ev,re,r,rp,lpz,sg,nil)
+	if Duel.SpecialSummon(sg,SUMMON_TYPE_PENDULUM,tp,tp,false,false,POS_FACEUP)~=0 then
+		Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+15000725,re,r,rp,ep,ev)
 	end
-	local pg=Duel.GetMatchingGroup(nil,tp,LOCATION_PZONE,0,nil)
-	if pg:GetCount()~=2 then return end
-	local cc=pg:GetFirst()
-	local lscale=cc:GetLeftScale()
-	local dc=pg:GetNext()
-	local rscale=dc:GetRightScale()
-	if lscale>rscale then
-		lscale=dc:GetRightScale()
-		rscale=cc:GetLeftScale()
-	end
-	if (lscale==rscale or lscale==rscale-1 or lscale==rscale+1) then return end
-	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_EXTRA_PENDULUM_SUMMON)}
+end
+function cm.pspop(e,tp,eg,ep,ev,re,r,rp,lpz,sg,og)
+	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
+	local lscale=lpz:GetLeftScale()
+	local rscale=rpz:GetRightScale()
+	if lscale>rscale then lscale,rscale=rscale,lscale end
 	local tg=nil
 	local loc=0
-	local sc=Duel.GetMatchingGroup(cm.sumfilter,tp,LOCATION_EXTRA,0,nil):GetFirst()
 	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local ft2=0
-	if sc then
-		ft2=Duel.GetLocationCountFromEx(tp,tp,nil,sc)
-	end
+	local ft2=Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)
 	local ft=Duel.GetUsableMZoneCount(tp)
-	local ect=99
-	if c29724053 and Duel.IsPlayerAffectedByEffect(tp,29724053) then
-		ect=c29724053[tp]
-	end
+	local ect=c29724053 and Duel.IsPlayerAffectedByEffect(tp,29724053) and c29724053[tp]
 	if ect and ect<ft2 then ft2=ect end
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then
 		if ft1>0 then ft1=1 end
 		if ft2>0 then ft2=1 end
-			ft=1
+		ft=1
 	end
 	if ft1>0 then loc=loc|LOCATION_HAND end
 	if ft2>0 then loc=loc|LOCATION_EXTRA end
 	if og then
-		tg=og:Filter(Card.IsLocation,nil,loc):Filter(cm.PConditionFilter,nil,e,tp,lscale,rscale,eset)
+		tg=og:Filter(Card.IsLocation,nil,loc):Filter(aux.PConditionFilter,nil,e,tp,lscale,rscale,eset)
 	else
-		tg=Duel.GetMatchingGroup(cm.PConditionFilter,tp,loc,0,nil,e,tp,lscale,rscale,eset)
+		tg=Duel.GetMatchingGroup(aux.PConditionFilter,tp,loc,0,nil,e,tp,lscale,rscale,eset)
 	end
 	local ce=nil
-	local b1=PENDULUM_CHECKLIST&(0x1<<tp)==0
-	local b2=#eset>0
-	if b1 and b2 then
-		local options={1163}
-		for _,te in ipairs(eset) do
-			table.insert(options,te:GetDescription())
-		end
-		local op=Duel.SelectOption(tp,table.unpack(options))
-		if op>0 then
-			ce=eset[op]
-		end
-	elseif b2 and not b1 then
-		local options={}
-		for _,te in ipairs(eset) do
-			table.insert(options,te:GetDescription())
-		end
-		local op=Duel.SelectOption(tp,table.unpack(options))
-		ce=eset[op+1]
-	end
-	if ce then
-		tg=tg:Filter(aux.PConditionExtraFilterSpecific,nil,e,tp,lscale,rscale,ce)
-	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	Auxiliary.GCheckAdditional=Auxiliary.PendOperationCheck(ft1,ft2,ft)
+	aux.GCheckAdditional=aux.PendOperationCheck(ft1,ft2,ft)
 	local g=tg:SelectSubGroup(tp,aux.TRUE,true,1,math.min(#tg,ft))
-	Auxiliary.GCheckAdditional=nil
+	aux.GCheckAdditional=nil
 	if not g then return end
-	if ce then
-		Duel.Hint(HINT_CARD,0,ce:GetOwner():GetOriginalCode())
-		ce:Reset()
-	end
-	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
-	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
+	sg:Merge(g)
 	Duel.HintSelection(Group.FromCards(lpz))
 	Duel.HintSelection(Group.FromCards(rpz))
-	local spg=Group.CreateGroup()
-	for tc in aux.Next(g) do
-		local bool=aux.PendulumSummonableBool(tc)
-		if Duel.SpecialSummonStep(tc,SUMMON_TYPE_PENDULUM,tp,tp,bool,bool,POS_FACEUP) then spg:AddCard(tc) end
-	end
-	Duel.SpecialSummonComplete()
-	for tc in aux.Next(g) do tc:CompleteProcedure() end
-	if spg:GetCount()~=0 then
-		Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+15000725,re,r,rp,ep,ev)
-	end
 end
 function cm.dop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsAbleToHand() then Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT) end
