@@ -51,11 +51,45 @@ end
 function cm.sumfilter(c)
 	return c:IsType(TYPE_PENDULUM) and c:IsFaceup()
 end
+function cm.PConditionFilter(c,e,tp,lscale,rscale)
+	local lv=0
+	if c.pendulum_level then
+		lv=c.pendulum_level
+	else
+		lv=c:GetLevel()
+	end
+	local bool=aux.PendulumSummonableBool(c)
+	return (c:IsLocation(LOCATION_HAND) or (c:IsFaceup() and c:IsType(TYPE_PENDULUM)))
+		and lv>lscale and lv<rscale and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,bool,bool)
+		and not c:IsForbidden()
+end
 function cm.check(e,tp)
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
 	if lpz==nil then return false end
-	local pcon=aux.PendCondition()
+	local pcon=cm.PendCondition
 	return pcon(e,lpz,g)
+end
+function cm.PendCondition()
+	return  function(e,c,og)
+				if c==nil then return true end
+				local tp=c:GetControler()
+				local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
+				if rpz==nil or c==rpz then return false end
+				local lscale=c:GetLeftScale()
+				local rscale=rpz:GetRightScale()
+				if lscale>rscale then lscale,rscale=rscale,lscale end
+				local loc=0
+				if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
+				if Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)>0 then loc=loc+LOCATION_EXTRA end
+				if loc==0 then return false end
+				local g=nil
+				if og then
+					g=og:Filter(Card.IsLocation,nil,loc)
+				else
+					g=Duel.GetFieldGroup(tp,loc,0)
+				end
+				return g:IsExists(cm.PConditionFilter,1,nil,e,tp,lscale,rscale)
+			end
 end
 function cm.ptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return cm.check(e,tp,nil) end
@@ -76,6 +110,7 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp,lpz,sg,og)
 	local lscale=lpz:GetLeftScale()
 	local rscale=rpz:GetRightScale()
 	if lscale>rscale then lscale,rscale=rscale,lscale end
+	local eset={nil}
 	local tg=nil
 	local loc=0
 	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -91,9 +126,9 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp,lpz,sg,og)
 	if ft1>0 then loc=loc|LOCATION_HAND end
 	if ft2>0 then loc=loc|LOCATION_EXTRA end
 	if og then
-		tg=og:Filter(Card.IsLocation,nil,loc):Filter(aux.PConditionFilter,nil,e,tp,lscale,rscale,eset)
+		tg=og:Filter(Card.IsLocation,nil,loc):Filter(cm.PConditionFilter,nil,e,tp,lscale,rscale)
 	else
-		tg=Duel.GetMatchingGroup(aux.PConditionFilter,tp,loc,0,nil,e,tp,lscale,rscale,eset)
+		tg=Duel.GetMatchingGroup(cm.PConditionFilter,tp,loc,0,nil,e,tp,lscale,rscale)
 	end
 	local ce=nil
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
