@@ -443,7 +443,7 @@ function cm.ALCTFCost(num)
 		if bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION then
 			e:SetLabel(1)
 			local cg=Duel.GetMatchingGroup(cm.ALCTFFilter,tp,LOCATION_MZONE,0,nil)
-			return cg:CheckSubGroup(cm.ALCFSelect,num,num,e,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>1
+			return cg:CheckSubGroup(cm.ALCFSelect,num,num,e,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>1 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 		else
 			e:SetLabel(0)
 			return true
@@ -1277,4 +1277,73 @@ function cm.SetPublic(c,lab)
 	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 	c:RegisterEffect(e1)
+end
+function cm.AnouguryLink(c)
+	c:EnableReviveLimit()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetCode(EFFECT_SEND_REPLACE)
+	e1:SetTarget(cm.AnouguryReptg)
+	e1:SetValue(function(e,c)return c:GetFlagEffect(53728000)>0 end)
+	c:RegisterEffect(e1)
+end
+function cm.AnouguryReptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local g=eg:Filter(function(c,ec)return c:GetDestination()==LOCATION_GRAVE and c:GetReasonCard()==ec and ((c:IsType(TYPE_UNION) and c:CheckUnionTarget(ec) and aux.CheckUnionEquip(c,ec)) or (c:GetEquipGroup():IsExists(function(c,ec)return c:IsType(TYPE_UNION) and c:CheckUnionTarget(ec) and aux.CheckUnionEquip(c,ec)end,1,nil,c)))end,nil,c)
+	if chk==0 then return #g>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>=g:FilterCount(function(c,ec)return c:IsType(TYPE_UNION) and c:CheckUnionTarget(ec) and aux.CheckUnionEquip(c,ec)end,nil,c) end
+	for mc in aux.Next(g) do
+		local beg=mc:GetEquipGroup():Filter(function(c,ec,tp)return c:IsType(TYPE_UNION) and c:CheckUnionTarget(ec) and aux.CheckUnionEquip(c,ec)end,nil,c,tp)
+		if #beg>0 then g:Merge(beg) end
+	end
+	g=g:Filter(Card.IsType,nil,TYPE_UNION)
+	for ec in aux.Next(g) do
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_INDESTRUCTABLE)
+		e1:SetValue(1)
+		e1:SetReset(RESET_CHAIN)
+		ec:RegisterEffect(e1)
+	end
+	g:ForEach(Card.RegisterFlagEffect,53728000,RESET_EVENT+0x7e0000,0,1)
+	local mg=g:Filter(Card.IsLocation,nil,LOCATION_MZONE)
+	for tc in aux.Next(mg) do Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) end
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_SPSUMMON_NEGATED)
+	e2:SetOperation(cm.AnouguryRstop)
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetLabelObject(e2)
+	e3:SetOperation(cm.AnouguryRstop2)
+	Duel.RegisterEffect(e3,tp)
+	return true
+end
+function cm.AnouguryRstop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(function(c)return c:GetFlagEffect(53728000)>0 end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if #g==0 then return end
+	for ec in aux.Next(g) do
+		ec:ResetFlagEffect(53728000)
+		ec:ResetEffect(EFFECT_INDESTRUCTABLE,RESET_CODE)
+	end
+	Duel.Destroy(g,REASON_RULE)
+	e:Reset()
+end
+function cm.AnouguryRstop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(function(c)return c:GetFlagEffect(53728000)>0 end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if #g>0 then
+		for ec in aux.Next(g) do
+			Duel.Equip(tp,ec,c,true,true)
+			aux.SetUnionState(ec)
+			ec:ResetEffect(EFFECT_INDESTRUCTABLE,RESET_CODE)
+			ec:ResetFlagEffect(53728000)
+		end
+		Duel.EquipComplete()
+	end
+	e:GetLabelObject():Reset()
+	e:Reset()
 end

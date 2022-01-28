@@ -88,24 +88,22 @@ function c40009209.tdfilter(c)
 	return c:IsAbleToDeck()
 end
 function c40009209.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c40009209.tdfilter,tp,LOCATION_GRAVE,0,6,nil) and Duel.IsPlayerCanDraw(tp,3)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,3)
 		 end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,6,tp,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,3)
 end
 function c40009209.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	--local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,c40009209.tdfilter,tp,LOCATION_GRAVE,0,6,6,nil)
-	if #g>0 and Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0 then
-		Duel.ShuffleDeck(p)
+	if g:GetCount()>0 and Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
 		Duel.BreakEffect()
+		Duel.ShuffleDeck(tp)
 		Duel.Draw(tp,3,REASON_EFFECT)
-	end
-	if c:IsRelateToEffect(e) and c:IsFaceup() then
 		c:RegisterFlagEffect(40009209,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-	end
+		end
 end
 function c40009209.tdcon1(e,tp,eg,ep,ev,re,r,rp)
 	return (not Duel.IsPlayerAffectedByEffect(tp,40009208) or (Duel.GetCurrentChain()<1 and Duel.IsPlayerAffectedByEffect(tp,40009208))) and e:GetHandler():GetFlagEffect(40009209)~=0
@@ -113,11 +111,8 @@ end
 function c40009209.tdcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>0 and Duel.IsPlayerAffectedByEffect(tp,40009208) and e:GetHandler():GetFlagEffect(40009209)~=0
 end
-function c40009209.tdfilter(c)
-	return  c:IsAbleToDeck()
-end
 function c40009209.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c40009209.tdfilter,tp,0,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,0)
 	Duel.SetChainLimit(c40009209.chlimit)
 end
@@ -125,7 +120,7 @@ function c40009209.chlimit(e,ep,tp)
 	return tp==ep
 end
 function c40009209.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c40009209.tdfilter,tp,0,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE,nil)
 	if g:GetCount()<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local sg=g:Select(tp,1,3,nil)
