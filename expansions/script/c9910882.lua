@@ -20,7 +20,7 @@ function c9910882.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetCountLimit(1,9910883)
 	e2:SetCondition(c9910882.negcon)
-	e2:SetCost(c9910882.negcost)
+	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c9910882.negtg)
 	e2:SetOperation(c9910882.negop)
 	c:RegisterEffect(e2)
@@ -58,72 +58,20 @@ function c9910882.cfilter2(c)
 	return c:IsSummonLocation(LOCATION_EXTRA) and c:IsFaceup() and c:IsRace(RACE_BEAST)
 end
 function c9910882.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainNegatable(ev)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainNegatable(ev)
 		and Duel.IsExistingMatchingCard(c9910882.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
-function c9910882.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToRemoveAsCost()
-		and Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,nil)
-	g:AddCard(c)
-	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)~=0 then
-		local fid=c:GetFieldID()
-		local og=Duel.GetOperatedGroup()
-		local oc=og:GetFirst()
-		while oc do
-			oc:RegisterFlagEffect(9910882,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1,fid)
-			oc=og:GetNext()
-		end
-		og:KeepAlive()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-		e1:SetCountLimit(1)
-		e1:SetLabel(fid)
-		e1:SetLabelObject(og)
-		e1:SetCondition(c9910882.retcon)
-		e1:SetOperation(c9910882.retop)
-		e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
-		Duel.RegisterEffect(e1,tp)
-	end
-end
-function c9910882.retfilter(c,fid)
-	return c:GetFlagEffectLabel(9910882)==fid
-end
-function c9910882.retcon(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetTurnPlayer()~=tp then return false end
-	local g=e:GetLabelObject()
-	if not g:IsExists(c9910882.retfilter,1,nil,e:GetLabel()) then
-		g:DeleteGroup()
-		e:Reset()
-		return false
-	else return true end
-end
-function c9910882.retop(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetLabelObject()
-	local sg=g:Filter(c9910882.retfilter,nil,e:GetLabel())
-	g:DeleteGroup()
-	local tc=sg:GetFirst()
-	while tc do
-		if tc==e:GetHandler() then
-			Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
-		else
-			Duel.SendtoHand(tc,tp,REASON_EFFECT)
-		end
-		tc=sg:GetNext()
-	end
-end
 function c9910882.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return aux.nbcon(tp,re) end
+	if chk==0 then return aux.nbcon(tp,re)
+		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
 	end
 end
 function c9910882.negop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,nil,REASON_EFFECT)==0 then return end
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 	end

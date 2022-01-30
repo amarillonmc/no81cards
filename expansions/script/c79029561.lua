@@ -42,8 +42,8 @@ function c79029561.initial_effect(c)
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(12744567,1))
 	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_QUICK_O)
-	e6:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e6:SetProperty(EFFECT_FLAG_DELAY)
 	e6:SetCode(EVENT_TO_GRAVE)
 	e6:SetCondition(c79029561.spcon)
 	e6:SetTarget(c79029561.sptg)
@@ -65,6 +65,7 @@ function c79029561.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+c79029561.xyz_number=92
 function c79029561.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do

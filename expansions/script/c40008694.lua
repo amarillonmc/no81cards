@@ -124,7 +124,7 @@ function c40008694.scop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end   
 function c40008694.cfilter(c,tp)
-	return c:IsSetCard(0xf14) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x10c5) and c:IsAbleToRemoveAsCost()
 end
 function c40008694.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -157,7 +157,7 @@ function c40008694.thop(e,tp,eg,ep,ev,re,r,rp)
 		local e5=e1:Clone()
 		e5:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
 		c:RegisterEffect(e5)
-	if tc:IsSetCard(0xf14) then
+	if tc:IsSetCard(0x10c5) then
 		if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(40008694,3)) then
 			Duel.ConfirmCards(1-tp,tc)
 			Duel.BreakEffect()

@@ -1,0 +1,55 @@
+local m=53799023
+local cm=_G["c"..m]
+cm.name="世纪末的圣母百合"
+function cm.initial_effect(c)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CANNOT_ATTACK)
+	cm.copy(c,e2,e1)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(1)
+	cm.copy(c,e4,e3)
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,0))
+	e5:SetCategory(CATEGORY_TOGRAVE)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCost(cm.tgcost)
+	e5:SetTarget(cm.tgtg)
+	e5:SetOperation(cm.tgop)
+	cm.copy(c,e6,e5)
+end
+function cm.copy(c,ex,ef)
+	local ex=Effect.CreateEffect(c)
+	ex:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	ex:SetRange(LOCATION_SZONE)
+	ex:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	ex:SetTarget(function(e,c)return c:IsFaceup()end)
+	ex:SetLabelObject(ef)
+	c:RegisterEffect(ex)
+end
+function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_HAND,0,1,nil) and e:GetHandler():IsAbleToGraveAsCost() end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_HAND,0,1,1,nil)
+	g:AddCard(e:GetHandler())
+	Duel.SendtoGrave(g,REASON_COST)
+end
+function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP) end
+	local sg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,sg,sg:GetCount(),0,0)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+end
+function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local sg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
+	Duel.SendtoGrave(sg,REASON_EFFECT)
+end

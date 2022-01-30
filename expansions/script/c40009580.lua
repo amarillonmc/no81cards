@@ -1,7 +1,7 @@
 --刻神编年史-时刻人偶
 local m=40009580
 local cm=_G["c"..m]
-
+cm.named_with_Chrono=1
 function cm.initial_effect(c)
 	--Negate
 	local e1=Effect.CreateEffect(c)

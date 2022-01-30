@@ -92,7 +92,7 @@ function c40009385.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c40009385.scfilter(c,e,tp)
-	return c:IsSetCard(0xf14) and c:IsLevel(12) and c:IsType(TYPE_SYNCHRO)
+	return c:IsSetCard(0x10c5) and c:IsLevel(12) and c:IsType(TYPE_SYNCHRO)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c40009385.sctg(e,tp,eg,ep,ev,re,r,rp,chk)

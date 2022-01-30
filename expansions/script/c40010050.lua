@@ -14,87 +14,197 @@ function cm.initial_effect(c)
 	--Destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetHintTiming(0,TIMING_END_PHASE)
-	e1:SetCountLimit(1,m)
-	e1:SetCost(cm.cost)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.operation)
+	e1:SetCost(cm.atkcost)
+	e1:SetOperation(cm.atkop)
 	c:RegisterEffect(e1)  
-	--add type
+	--Destroy
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCondition(cm.tncon)
-	e2:SetOperation(cm.tnop)
-	c:RegisterEffect(e2)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RELEASE)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,m)
+	e2:SetCondition(cm.spcon2)
+	e2:SetTarget(cm.sptg2)
+	e2:SetOperation(cm.spop2)
+	c:RegisterEffect(e2) 
+	local e6=e2:Clone()
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_FREE_CHAIN)
+	e6:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e6:SetCondition(cm.spcon4)
+	c:RegisterEffect(e6)
+ 
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,1))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1,m)
+	e3:SetCondition(cm.spcon3)
+	e3:SetTarget(cm.sptg3)
+	e3:SetOperation(cm.spop3)
+	c:RegisterEffect(e3) 
+	local e7=e3:Clone()
+	e7:SetType(EFFECT_TYPE_QUICK_O)
+	e7:SetCode(EVENT_FREE_CHAIN)
+	e7:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e7:SetCondition(cm.spcon5)
+	c:RegisterEffect(e7)
+	--add type
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e4:SetCondition(cm.regcon)
+	e4:SetOperation(cm.regop)
+	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
 	e5:SetCode(EFFECT_MATERIAL_CHECK)
 	e5:SetValue(cm.valcheck)
-	e5:SetLabelObject(e2)
+	e5:SetLabelObject(e4)
 	c:RegisterEffect(e5)
+
 end
-function cm.cfilter(c,tp)
+function cm.valcheck(e,c)
+	local g=c:GetMaterial()
+	if g:IsExists(Card.IsCode,1,nil,m-2) then
+		e:GetLabelObject():SetLabel(1)
+	else
+		e:GetLabelObject():SetLabel(0)
+	end
+end
+function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and e:GetLabel()==1
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1)
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+end
+function cm.atkfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet() and cm.Revenger(c)
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,3,nil) end
+function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.atkfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_MZONE,0,3,3,nil)
-	Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+	local g=Duel.SelectMatchingCard(tp,cm.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.ChangePosition(g,POS_FACEDOWN_ATTACK)
+			local tc=g:GetFirst()
+		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCountLimit(1)
+		e1:SetReset(RESET_PHASE+RESETS_STANDARD-RESET_TURN_SET)
+		e1:SetCondition(cm.flipcon)
+		e1:SetOperation(cm.flipop)
+		e1:SetLabelObject(tc)
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_CANNOT_FLIP_SUMMON)
+		--e2:SetCondition(cm.rcon)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		Duel.RegisterEffect(e2,tp)
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		Duel.RegisterEffect(e3,tp)
 end
-function cm.spfilter2(c,e,tp)
+function cm.flipcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	return tc:IsFacedown() and Duel.GetTurnPlayer()==tc:GetControler() and tc:GetFlagEffect(m)~=0 and Duel.GetFlagEffect(tp,40010160)==0
+end
+function cm.flipop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.ChangePosition(tc,POS_FACEUP_ATTACK)
+end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
+	local tc=g:GetFirst()
+	while tc do
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_UPDATE_ATTACK)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e3:SetValue(800)
+		tc:RegisterEffect(e3)
+		tc=g:GetNext()
+	end
+end
+function cm.lfilter(c)
+	return c:IsFacedown() and c:IsAttackPos()
+end
+function cm.cfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect()
+end
+function cm.spfilter1(c,e,tp)
 	return c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(m+1)<1
+end
+function cm.spcon4(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(m+1)>0
+end
+function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local lc=Duel.GetMatchingGroupCount(cm.lfilter,tp,LOCATION_MZONE,0,nil)
+	if lc>=3 then return end
+	local rc=3 
+	local rc=rc-lc
 	if chk==0 then
-		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp)
+		return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,rc,nil)
+			and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,rc,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
+end
+function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
+	local lc=Duel.GetMatchingGroupCount(cm.lfilter,tp,LOCATION_MZONE,0,nil)
+	if lc>=3 then return end
+	local rc=3
+	local rc=rc-lc
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_MZONE,0,rc,rc,nil)
+	if g:GetCount()>0 and Duel.Release(g,REASON_EFFECT)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp)
+		local tc=sg:GetFirst()
+		if tc then
+			tc:SetMaterial(nil)
+			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+			tc:CompleteProcedure()
+		end
+	end
+end
+function cm.spcon3(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(cm.lfilter,tp,LOCATION_MZONE,0,3,nil) and  e:GetHandler():GetFlagEffect(m+1)<1
+end
+function cm.spcon5(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(cm.lfilter,tp,LOCATION_MZONE,0,3,nil) and  e:GetHandler():GetFlagEffect(m+1)>0
+end
+function cm.sptg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		return Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
 end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+function cm.spop3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter2,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp)
-	local tc=g:GetFirst()
+	local sg=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp)
+	local tc=sg:GetFirst()
 	if tc then
 		tc:SetMaterial(nil)
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		tc:CompleteProcedure()
 	end
 end
-function cm.valcheck(e,c)
-	local mg=c:GetMaterial()
-	if mg:IsExists(Card.IsCode,1,nil,40010048) then
-		e:GetLabelObject():SetLabel(1)
-	else
-		e:GetLabelObject():SetLabel(0)
-	end
-end
-function cm.tncon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and e:GetLabel()==1
-end
-function cm.tnop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e1:SetValue(1)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetValue(600)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-	c:RegisterEffect(e3)
-end
+
+

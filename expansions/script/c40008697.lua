@@ -100,7 +100,7 @@ function c40008697.eftg(e,c)
 	return e:GetHandler():GetEquipTarget()==c
 end
 function c40008697.thfilter(c)
-	return c:IsSetCard(0xf14) and not c:IsCode(40008697) and c:IsAbleToGrave()
+	return c:IsSetCard(0x10c5) and not c:IsCode(40008697) and c:IsAbleToGrave()
 end
 function c40008697.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c40008697.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -114,7 +114,7 @@ function c40008697.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40008697.cfilter(c,tp)
-	return c:IsSetCard(0xf14) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x10c5) and c:IsAbleToRemoveAsCost()
 end
 function c40008697.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -148,7 +148,7 @@ function c40008697.dbop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(c40008697.aclimit)
 	e1:SetReset(RESET_PHASE+PHASE_DAMAGE)
 	Duel.RegisterEffect(e1,tp)
-	if tc:IsSetCard(0xf14) then
+	if tc:IsSetCard(0x10c5) then
 		if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(40008697,3)) then
 			Duel.ConfirmCards(1-tp,tc)
 			Duel.BreakEffect()

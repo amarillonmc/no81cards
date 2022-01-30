@@ -46,7 +46,7 @@ function c40008678.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c40008678.thfilter(c,tp)
-	return c:IsSetCard(0xf14) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0x10c5) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 		and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,c:GetCode())
 end
 function c40008678.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -66,7 +66,7 @@ function c40008678.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetEffectCount(EFFECT_EXTRA_ATTACK)==0 end
 end
 function c40008678.afilter(c)
-	return c:IsSetCard(0xf14) 
+	return c:IsSetCard(0x10c5) 
 end
 function c40008678.thaop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,m)
+	--e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.spcon1)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -43,26 +43,27 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT)~=0
 end
 function cm.cfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect()
+	return c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect()
 end
 function cm.spfilter(c,e,tp)
 	return cm.Revenger(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local loc=LOCATION_MZONE+LOCATION_HAND 
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then loc=LOCATION_MZONE end
-		return Duel.IsExistingMatchingCard(cm.cfilter,tp,loc,0,1,e:GetHandler())
+		--local loc=LOCATION_MZONE
+	   -- if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then loc=LOCATION_MZONE end
+		return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler())
 			and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local loc=LOCATION_MZONE+LOCATION_HAND 
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then loc=LOCATION_MZONE end
+
+   -- local loc=LOCATION_MZONE
+	--if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then loc=LOCATION_MZONE end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,loc,0,1,1,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_MZONE,0,1,1,e:GetHandler())
 	if g:GetCount()>0 and Duel.Release(g,REASON_EFFECT)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)

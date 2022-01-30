@@ -108,7 +108,7 @@ function c79029526.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79029526.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,true) end
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	local rec=e:GetHandler():GetBaseAttack()
 	Duel.SetTargetPlayer(tp)
@@ -120,7 +120,7 @@ function c79029526.ovfil(c)
 end
 function c79029526.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,true,POS_FACEUP)>0 then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)>0 then
 		local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 		Duel.Recover(p,d,REASON_EFFECT)
 	if Duel.IsExistingMatchingCard(c79029526.ovfil,tp,LOCATION_EXTRA,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(79029526,4)) then

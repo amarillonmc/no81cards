@@ -28,22 +28,21 @@ function cm.initial_effect(c)
 end
 cm.toss_dice=true
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(1-tp,m,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1)
 	for tc in aux.Next(eg) do
-		local ct=Duel.GetFlagEffect(1-tp,m)
+		local ct=Duel.GetFlagEffect(0,m)
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,ct)
 	end
 	Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,ev)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
-		Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
-	end
+	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then e:SetLabel(1) else e:SetLabel(0) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local d1,d2=Duel.TossDice(tp,2)
+	local d1,d2=0,0
+	if e:GetLabel()==1 then d1,d2=Duel.TossDice(tp,2) else d1=Duel.TossDice(tp,1) end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e1:SetCode(EVENT_CUSTOM+m)

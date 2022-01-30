@@ -105,7 +105,7 @@ function c40009414.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_SYNCHRO) 
 end
 function c40009414.thfilter(c)
-	return c:IsSetCard(0xf14) and c:IsAbleToHand() and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
+	return c:IsSetCard(0x10c5) and c:IsAbleToHand() and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 function c40009414.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c40009414.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end

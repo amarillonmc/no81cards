@@ -4,7 +4,6 @@ function c40009016.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep2(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),2,63,true)
-	aux.AddFusionProcFunFunRep(c,c40009016.matfilter,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),1,63,true)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -53,9 +52,6 @@ function c40009016.initial_effect(c)
 	e5:SetOperation(c40009016.retop)
 	c:RegisterEffect(e5)
 
-end
-function c40009016.matfilter(c)
-	return c:IsFusionType(TYPE_LINK) and c:IsFusionSetCard(0xf11)
 end
 function c40009016.condition1(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=ep and Duel.GetCurrentChain()==0

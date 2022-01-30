@@ -99,7 +99,7 @@ function c40008688.eftg(e,c)
 	return e:GetHandler():GetEquipTarget()==c
 end
 function c40008688.thfilter(c)
-	return c:IsSetCard(0xf14) and not c:IsCode(40008688) and c:IsAbleToHand()
+	return c:IsSetCard(0x10c5) and not c:IsCode(40008688) and c:IsAbleToHand()
 end
 function c40008688.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
@@ -114,7 +114,7 @@ function c40008688.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40008688.cfilter(c,tp)
-	return c:IsSetCard(0xf14) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x10c5) and c:IsAbleToRemoveAsCost()
 end
 function c40008688.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -148,7 +148,7 @@ function c40008688.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOwnerPlayer(tp)
 		tc:RegisterEffect(e1)
 	end
-	if tc:IsSetCard(0xf14) then
+	if tc:IsSetCard(0x10c5) then
 		if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(40008688,3)) then
 			Duel.ConfirmCards(1-tp,tc)
 			Duel.BreakEffect()

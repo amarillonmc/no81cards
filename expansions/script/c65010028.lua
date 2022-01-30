@@ -61,7 +61,7 @@ function c65010028.penop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c65010028.ffilterfil(c,att,rac)
-	return c:IsAttribute(att) and c:IsRace(rac)
+	return c:IsFusionAttribute(att) and c:IsRace(rac)
 end
 function c65010028.ffilter(c,fc,sub,mg,sg)
 	if c:IsType(TYPE_TOKEN) then return false end

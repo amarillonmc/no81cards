@@ -31,8 +31,8 @@ function c9910362.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910362.actfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,tp) end
 	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
 end
-function c9910362.thfilter(c,mc)
-	return c:IsSetCard(0x5951) and c:IsAbleToHand() and aux.IsCodeListed(mc,c:GetCode())
+function c9910362.thfilter(c)
+	return c:IsSetCard(0x5951) and c:IsAbleToHand() and c:IsLevelAbove(2)
 end
 function c9910362.actop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910362,0))
@@ -53,7 +53,7 @@ function c9910362.actop(e,tp,eg,ep,ev,re,r,rp)
 		local cost=te:GetCost()
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 		Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
-		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910362.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,tc)
+		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910362.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 		if res and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910362,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -83,7 +83,7 @@ function c9910362.eqop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(c,REASON_EFFECT)
 		return
 	end
-	Duel.Equip(tp,c,tc)
+	if not Duel.Equip(tp,c,tc,false) then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_EQUIP_LIMIT)

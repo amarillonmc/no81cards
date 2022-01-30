@@ -1,4 +1,6 @@
 --刻神编年史-時空巨兵
+
+c40009538.named_with_Chrono=1
 function c40009538.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)

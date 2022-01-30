@@ -65,7 +65,7 @@ function c40008706.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c40008706.cfilter(c)
-	return c:IsSetCard(0xf14) 
+	return c:IsSetCard(0x10c5) 
 end
 function c40008706.thfilter(c,lv)
 	return c:IsLevelBelow(lv) and c:IsRace(RACE_DRAGON) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

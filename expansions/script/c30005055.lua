@@ -28,7 +28,7 @@ end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=c:GetReasonCard()
-	return c:IsLocation(LOCATION_REMOVED) and r==REASON_FUSION and tc:IsRace(RACE_MACHINE) 
+	return c:IsLocation(LOCATION_REMOVED) and r==REASON_FUSION and tc:IsRace(RACE_MACHINE)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -58,7 +58,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
 	if Duel.SendtoGrave(c,REASON_EFFECT+REASON_RETURN) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,3,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,5,nil)
 		if g:GetCount()>0 then
 			Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		end

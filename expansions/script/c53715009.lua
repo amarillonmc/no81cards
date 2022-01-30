@@ -5,30 +5,20 @@ if not pcall(function() require("expansions/script/c53702500") end) then require
 function cm.initial_effect(c)
 	SNNM.HTFSynchoro(c,0,m)
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_NEGATE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
 	e2:SetRange(LOCATION_PZONE)
-	e2:SetCondition(cm.condition)
-	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
 end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
-end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsDestructable() end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,c,1,0,0)
-end
+cm[0]=0
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.Destroy(c,REASON_EFFECT)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-		Duel.BreakEffect()
-		Duel.NegateActivation(ev)
+	local id=Duel.GetChainInfo(ev,CHAININFO_CHAIN_ID)
+	if id==cm[0] or not re:IsActiveType(TYPE_MONSTER) then return end
+	cm[0]=id
+	if e:GetHandler():IsDestructable(e) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		Duel.Hint(HINT_CARD,0,m)
+		if Duel.Destroy(e:GetHandler(),REASON_EFFECT)~=0 and Duel.IsChainDisablable(ev) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then Duel.NegateEffect(ev) end
+		SNNM.HTFPlacePZone(e:GetHandler(),2,LOCATION_EXTRA,1,EVENT_PHASE+PHASE_END,m)
 	end
-	SNNM.HTFPlacePZone(c,2,LOCATION_EXTRA,1,EVENT_PHASE+PHASE_END,m)
 end

@@ -124,7 +124,7 @@ function c40008674.scop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c40008674.cfilter(c,tp)
-	return c:IsSetCard(0xf14) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x10c5) and c:IsAbleToRemoveAsCost()
 end
 function c40008674.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -144,7 +144,7 @@ function c40008674.dbop(e,tp,eg,ep,ev,re,r,rp)
 		if ct==0 then return end
 		local tc=Duel.GetOperatedGroup():GetFirst()
 
-		if tc:IsSetCard(0xf14) then
+		if tc:IsSetCard(0x10c5) then
 			if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(40008674,2)) then
 				Duel.ConfirmCards(1-tp,tc)
 				Duel.BreakEffect()

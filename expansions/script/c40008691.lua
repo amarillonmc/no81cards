@@ -60,7 +60,7 @@ function c40008691.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c40008691.tdfilter(c)
-	return c:IsSetCard(0xf14) and c:IsAbleToDeck() and c:IsFaceup()
+	return c:IsSetCard(0x10c5) and c:IsAbleToDeck() and c:IsFaceup()
 end
 function c40008691.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp)
@@ -102,7 +102,7 @@ function c40008691.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c40008691.thfilter(c)
-	return c:IsSetCard(0xf14) and c:IsAbleToHand() and c:IsCode(40008691)
+	return c:IsSetCard(0x10c5) and c:IsAbleToHand() and c:IsCode(40008691)
 end
 function c40008691.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c40008691.thfilter,tp,LOCATION_GRAVE,0,1,nil) end

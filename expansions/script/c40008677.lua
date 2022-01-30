@@ -8,7 +8,7 @@ if not rsv.InfernalKnight then
 	rsik=rsv.InfernalKnight
 function rsik.costfilter(c,tp)
 	if c:IsLocation(LOCATION_HAND) then return c:IsDiscardable() end
-	return Duel.IsPlayerAffectedByEffect(tp,m) and c:IsLocation(LOCATION_DECK) and c:IsSetCard(0xf14) and c:IsAbleToGraveAsCost()
+	return Duel.IsPlayerAffectedByEffect(tp,m) and c:IsLocation(LOCATION_DECK) and c:IsSetCard(0x10c5) and c:IsAbleToGraveAsCost()
 end
 function rsik.cost(extrafun)
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -44,7 +44,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e2:SetRange(LOCATION_FZONE)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xf14))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x10c5))
 	e2:SetTargetRange(LOCATION_HAND,0)
 	e2:SetCondition(cm.actcon)
 	c:RegisterEffect(e2)
@@ -78,7 +78,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0xf14) and (c:IsAbleToHand() or c:IsAbleToGrave())
+	return c:IsSetCard(0x10c5) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function cm.activate(e,tp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
@@ -119,10 +119,10 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.eftg(e,c)
-	return c:IsSetCard(0xf14) and c:IsType(TYPE_QUICKPLAY)
+	return c:IsSetCard(0x10c5) and c:IsType(TYPE_QUICKPLAY)
 end
 function cm.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf14) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x10c5) and c:IsType(TYPE_MONSTER)
 end
 function cm.atkcon(e)
 	local c=e:GetHandler()

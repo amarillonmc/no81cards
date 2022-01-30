@@ -110,7 +110,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and not Duel.IsExistingMatchingCard(cm.scfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.spfilter(c,e,tp)
-	return cm.BLASTERdark(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,true)
+	return cm.BLASTERdark(c) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -122,7 +122,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_PZONE+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,true,POS_FACEUP)
+		Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 	end
 end
 function cm.cfilter2(c)

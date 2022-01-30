@@ -10,6 +10,7 @@ function c9910207.initial_effect(c)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,9910207)
+	e1:SetCondition(c9910207.descon)
 	e1:SetTarget(c9910207.destg)
 	e1:SetOperation(c9910207.desop)
 	c:RegisterEffect(e1)
@@ -30,10 +31,14 @@ end
 function c9910207.mfilter(c)
 	return c:IsLevelBelow(4) and c:IsLinkSetCard(0x955)
 end
+function c9910207.descon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(9910207)<=0
+end
 function c9910207.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) end
 	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) 
 		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) end
+	e:GetHandler():RegisterFlagEffect(9910207,RESET_EVENT+RESETS_STANDARD,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
@@ -47,27 +52,16 @@ function c9910207.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910207.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetHandler():GetFlagEffect(9910207)<=0
 end
 function c9910207.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToRemoveAsCost() end
-	if Duel.Remove(c,POS_FACEUP,REASON_COST+REASON_TEMPORARY)~=0 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(c)
-		e1:SetCountLimit(1)
-		e1:SetOperation(c9910207.retop)
-		Duel.RegisterEffect(e1,tp)
-	end
-end
-function c9910207.retop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ReturnToField(e:GetLabelObject())
+	c:RegisterFlagEffect(9910207,RESET_EVENT+RESETS_STANDARD,0,1)
+	Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function c9910207.spfilter(c,e,tp,ec)
-	return c:IsLinkBelow(1) and c:IsLinkAbove(1) and c:IsSetCard(0x955) and not c:IsCode(9910207)
+	return c:IsLinkBelow(1) and c:IsLinkAbove(1) and c:IsSetCard(0x955)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,ec,c)>0
 end
 function c9910207.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

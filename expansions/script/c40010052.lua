@@ -64,9 +64,13 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		return Duel.IsExistingMatchingCard(cm.cfilter2,tp,loc,0,4,nil)
 			and g:GetCount()>0 
 	end
+	Duel.SetChainLimit(cm.chlimit)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,4,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
+end
+function cm.chlimit(e,ep,tp)
+	return tp==ep
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local loc=LOCATION_MZONE 

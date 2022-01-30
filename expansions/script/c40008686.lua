@@ -25,7 +25,7 @@ function c40008686.initial_effect(c)
 	--handes
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(40008686,1))
-	e3:SetCategory(CATEGORY_HANDES+CATEGORY_LVCHANGE)
+	e3:SetCategory(CATEGORY_HANDES)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCost(rsik.cost())
@@ -46,7 +46,7 @@ function c40008686.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c40008686.spfilter(c,e,tp,ft)
-	return c:IsSetCard(0xf14) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+	return c:IsSetCard(0x10c5) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c40008686.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -68,7 +68,7 @@ function c40008686.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40008686.lvfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf14) and not c:IsLevel(2) and c:IsLevelAbove(1)
+	return c:IsFaceup() and c:IsSetCard(0x10c5) and not c:IsLevel(2) and c:IsLevelAbove(1)
 end
 
 function c40008686.target(e,tp,eg,ep,ev,re,r,rp,chk)

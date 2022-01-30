@@ -117,7 +117,7 @@ function c40008680.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40008680.cfilter(c,tp)
-	return c:IsSetCard(0xf14) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x10c5) and c:IsAbleToRemoveAsCost()
 end
 function c40008680.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

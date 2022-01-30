@@ -61,7 +61,7 @@ function c9910150.hatg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,0,0,1-tp,1)
 end
 function c9910150.haop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(ep,LOCATION_HAND,0,nil)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	if g:GetCount()==0 then return end
 	local sg=g:RandomSelect(1-tp,1)
 	Duel.SendtoGrave(sg,REASON_DISCARD+REASON_EFFECT)

@@ -1,94 +1,101 @@
---战车道豕突猛进
+--战车道的旋律
 function c9910163.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,9910163)
-	e1:SetTarget(c9910163.target)
-	e1:SetOperation(c9910163.activate)
 	c:RegisterEffect(e1)
-	--spsummon
+	--lv change
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_GRAVE)
+	e2:SetDescription(aux.Stringid(9910163,0))
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1,9910163)
-	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(c9910163.sptg)
-	e2:SetOperation(c9910163.spop)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCountLimit(2,9910163)
+	e2:SetTarget(c9910163.target)
+	e2:SetOperation(c9910163.operation)
 	c:RegisterEffect(e2)
 end
-function c9910163.filter(c,e,tp,zone)
-	return c:IsFaceup() and c:IsSetCard(0x952) and c:GetSequence()<5
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+function c9910163.filter(c)
+	return c:IsFaceup() and c:IsSetCard(0x952) and c:IsLevelAbove(1)
 end
 function c9910163.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local lg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
-	local zone=0
-	for tc in aux.Next(lg) do
-		zone=bit.bor(zone,tc:GetColumnZone(LOCATION_MZONE,tp))
-	end
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_SZONE) and c9910163.filter(chkc,e,tp,zone) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c9910163.filter,tp,LOCATION_SZONE,0,1,nil,e,tp,zone) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=Duel.SelectTarget(tp,c9910163.filter,tp,LOCATION_SZONE,0,1,1,nil,e,tp,zone)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9910163.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910163.filter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local g=Duel.SelectTarget(tp,c9910163.filter,tp,LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	local op=0
+	if tc:IsLevel(1) then op=Duel.SelectOption(tp,aux.Stringid(9910163,1))
+	else op=Duel.SelectOption(tp,aux.Stringid(9910163,1),aux.Stringid(9910163,2)) end
+	e:SetLabel(op)
 end
-function c9910163.gyfilter(c,g)
-	return g:IsContains(c)
-end
-function c9910163.activate(e,tp,eg,ep,ev,re,r,rp)
-	local sc=Duel.GetFirstTarget()
-	if not sc:IsRelateToEffect(e) then return end
-	local lg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
-	local zone=0
-	for tc in aux.Next(lg) do
-		zone=bit.bor(zone,tc:GetColumnZone(LOCATION_MZONE,tp))
-	end
-	if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP,zone)==0 then return end
-	local tg=Duel.GetMatchingGroup(c9910163.gyfilter,tp,0,LOCATION_ONFIELD,nil,sc:GetColumnGroup())
-	if tg:GetCount()>0 then
-		Duel.BreakEffect()
-		Duel.Destroy(tg,REASON_EFFECT)
-	end
-end
-function c9910163.filter1(c,e,tp)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_EARTH) and c:IsRace(RACE_MACHINE)
-		and Duel.IsExistingMatchingCard(c9910163.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,c:GetLevel())
-		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
-end
-function c9910163.filter2(c,e,tp,mc,lv)
-	return c:IsType(TYPE_XYZ) and c:IsSetCard(0x952) and c:IsRank(lv) and mc:IsCanBeXyzMaterial(c)
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
-end
-function c9910163.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910163.filter1(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c9910163.filter1,tp,LOCATION_MZONE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,c9910163.filter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-end
-function c9910163.spop(e,tp,eg,ep,ev,re,r,rp)
+function c9910163.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if not aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) then return end
-	if tc:IsFacedown() or not tc:IsRelateToEffect(e) or tc:IsControler(1-tp) or tc:IsImmuneToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9910163.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc,tc:GetLevel())
-	local sc=g:GetFirst()
-	if sc then
-		local mg=tc:GetOverlayGroup()
-		if mg:GetCount()~=0 then
-			Duel.Overlay(sc,mg)
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+		if e:GetLabel()==0 then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetCode(EFFECT_UPDATE_LEVEL)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(1)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_BE_MATERIAL)
+			e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
+			e2:SetCondition(c9910163.imcon)
+			e2:SetOperation(c9910163.imop1)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_LEAVE+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+			tc:RegisterEffect(e2)
+		else
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetCode(EFFECT_UPDATE_LEVEL)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(-1)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_BE_MATERIAL)
+			e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
+			e2:SetCondition(c9910163.imcon)
+			e2:SetOperation(c9910163.imop2)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_LEAVE+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+			tc:RegisterEffect(e2)
 		end
-		sc:SetMaterial(Group.FromCards(tc))
-		Duel.Overlay(sc,Group.FromCards(tc))
-		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
-		sc:CompleteProcedure()
 	end
+end
+function c9910163.imcon(e,tp,eg,ep,ev,re,r,rp)
+	return r==REASON_XYZ 
+end
+function c9910163.imop1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local rc=c:GetReasonCard()
+	local e1=Effect.CreateEffect(rc)
+	e1:SetDescription(aux.Stringid(9910163,3))
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetValue(c9910163.efilter)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+	rc:RegisterEffect(e1,true)
+end
+function c9910163.imop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local rc=c:GetReasonCard()
+	local e1=Effect.CreateEffect(rc)
+	e1:SetDescription(aux.Stringid(9910163,4))
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e1:SetValue(1)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+	rc:RegisterEffect(e1,true)
+end
+function c9910163.efilter(e,re)
+	return e:GetHandler()~=re:GetOwner() and re:IsActivated()
 end

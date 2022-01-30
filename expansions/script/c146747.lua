@@ -8,7 +8,6 @@ function c146747.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e0:SetCondition(c146747.regcon)
 	e0:SetOperation(c146747.regop)
 	c:RegisterEffect(e0)
 	--special summon
@@ -41,9 +40,6 @@ function c146747.initial_effect(c)
 	e3:SetCondition(c146747.damcon)
 	c:RegisterEffect(e3)
 end
-function c146747.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
-end
 function c146747.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -73,7 +69,8 @@ function c146747.spfilter1(c,e,tp)
 	return c:IsSetCard(0x12f) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
 function c146747.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c146747.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c146747.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c146747.spop1(e,tp,eg,ep,ev,re,r,rp)
