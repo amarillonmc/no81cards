@@ -48,7 +48,7 @@ end
 function cm.retcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
-	if chk==0 then return true end
+	if chk==0 then return c:IsAbleToRemoveAsCost() end
 	Duel.RegisterFlagEffect(tp,15000709,RESET_PHASE+PHASE_END,0,1,c:GetOriginalCodeRule())
 	if Duel.Remove(c,POS_FACEUP,REASON_COST+REASON_TEMPORARY)~=0 then
 		local e1=Effect.CreateEffect(c)

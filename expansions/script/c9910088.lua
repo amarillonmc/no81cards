@@ -36,7 +36,7 @@ function c9910088.disfilter(c,tp)
 	return c:IsDiscardable(REASON_EFFECT)
 		and Duel.IsExistingMatchingCard(c9910088.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,c)
 end
-function c9910088.sumfilter(c,tp)
+function c9910088.sumfilter(c)
 	return c:IsSummonable(true,nil) and c:IsRace(RACE_FAIRY)
 end
 function c9910088.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -45,7 +45,7 @@ function c9910088.operation(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-		if Duel.IsExistingMatchingCard(c9910088.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
+		if Duel.IsExistingMatchingCard(c9910088.disfilter,tp,LOCATION_HAND,0,1,nil,tp)
 			and Duel.SelectYesNo(tp,aux.Stringid(9910088,0)) then
 			Duel.BreakEffect()
 			Duel.ShuffleHand(tp)
