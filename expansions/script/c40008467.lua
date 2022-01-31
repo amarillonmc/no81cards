@@ -43,7 +43,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 function cm.mfilter(c)
-	return cm.Chrono(c) and c:IsType(TYPE_MONSTER)
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsType(TYPE_MONSTER)
 end
 function cm.fncon1(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,40008477)
@@ -58,7 +58,7 @@ function cm.spfilter1(c,e,tp)
 end
 function cm.spfilter2(c,e,tp,clv)
 	local lv=c:GetLevel()
-	return lv>0 and cm.Chrono(c) and math.abs(clv-lv)==1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return lv>0 and (cm.Chrono(c) or c:IsSetCard(0x126)) and math.abs(clv-lv)==1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and cm.spfilter1(chkc,e,tp) end

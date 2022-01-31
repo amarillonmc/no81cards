@@ -55,7 +55,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.mfilter(c)
-	return cm.Chrono(c) and c:IsType(TYPE_MONSTER)
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsType(TYPE_MONSTER)
 end
 function cm.fncon1(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,40008477)
@@ -65,7 +65,7 @@ function cm.fncon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.costfilter(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
-		and cm.Chrono(c)
+		and (cm.Chrono(c) or c:IsSetCard(0x126))
 		and c:IsAbleToRemoveAsCost()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -79,7 +79,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
 end
 function cm.spfilter(c,e,tp)
-	return cm.Chrono(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=4 then return end

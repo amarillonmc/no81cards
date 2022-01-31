@@ -108,7 +108,7 @@ function cm.fdcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsLocation(LOCATION_GRAVE) and r==REASON_FUSION 
 end
 function cm.tffilter(c,tp)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and cm.Chrono(c) and not c:IsCode(m)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and (cm.Chrono(c) or c:IsSetCard(0x126)) and not c:IsCode(m)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function cm.fdtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -116,7 +116,7 @@ function cm.fdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.IsExistingMatchingCard(cm.tffilter,tp,LOCATION_DECK,0,1,nil,tp) end
 end
 function cm.spfilter(c,e,tp)
-	return cm.Chrono(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
 end
 function cm.fdop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end

@@ -46,7 +46,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function cm.target1(e,c)
-	return cm.Chrono(c)
+	return (cm.Chrono(c) or c:IsSetCard(0x126))
 end
 function cm.indct(e,re,r,rp)
 	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then
@@ -54,7 +54,7 @@ function cm.indct(e,re,r,rp)
 	else return 0 end
 end
 function cm.tdfilter(c)
-	return cm.Chrono(c) and c:IsAbleToDeck() and c:IsFaceup()
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsAbleToDeck() and c:IsFaceup()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_REMOVED,0,nil)

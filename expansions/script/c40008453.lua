@@ -37,13 +37,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.mfilter(c)
-	return cm.Chrono(c) and c:IsType(TYPE_MONSTER)
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsType(TYPE_MONSTER)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function cm.thfilter(c)
-	return cm.Chrono(c) and c:IsAbleToHand()
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

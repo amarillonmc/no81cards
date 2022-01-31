@@ -47,7 +47,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.mfilter(c)
-	return cm.Chrono(c) and c:IsType(TYPE_MONSTER)
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsType(TYPE_MONSTER)
 end
 function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
@@ -57,10 +57,10 @@ function cm.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	return true
 end
 function cm.costfilter(c)
-	return cm.Chrono(c) and c:IsAbleToRemoveAsCost()
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsAbleToRemoveAsCost()
 end
 function cm.setfilter(c,tp)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and cm.Chrono(c) and not c:IsCode(m)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and (cm.Chrono(c) or c:IsSetCard(0x126)) and not c:IsCode(m)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

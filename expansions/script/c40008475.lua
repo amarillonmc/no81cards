@@ -109,7 +109,7 @@ function cm.fdcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsLocation(LOCATION_GRAVE) and r==REASON_FUSION 
 end
 function cm.spfilter(c,e,tp)
-	return cm.Chrono(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
 end
 function cm.fdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

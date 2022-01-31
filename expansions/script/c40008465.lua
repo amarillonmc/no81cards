@@ -109,14 +109,14 @@ function cm.fdcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsLocation(LOCATION_GRAVE) and r==REASON_FUSION 
 end
 function cm.tffilter(c)
-	return cm.Chrono(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(m)
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.fdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tffilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.spfilter(c,e,tp)
-	return cm.Chrono(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
 end
 function cm.fdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

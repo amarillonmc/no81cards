@@ -43,7 +43,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if cm.Chrono(rc) and re:IsActiveType(TYPE_MONSTER) and ep==tp then
+	if (cm.Chrono(rc) or re:GetHandler():IsSetCard(0x126)) and re:IsActiveType(TYPE_MONSTER) and ep==tp then
 		Duel.SetChainLimit(cm.chainlm)
 	end
 end
@@ -51,10 +51,10 @@ function cm.chainlm(e,rp,tp)
 	return tp==rp
 end
 function cm.tdfilter(c)
-	return cm.Chrono(c) and c:IsAbleToDeck() and c:IsFaceup()
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsAbleToDeck() and c:IsFaceup()
 end
 function cm.thfilter(c)
-	return cm.Chrono(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_REMOVED,0,nil)

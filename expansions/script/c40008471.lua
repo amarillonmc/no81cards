@@ -113,7 +113,7 @@ function cm.fdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3)
 end
 function cm.spfilter(c,e,tp)
-	return cm.Chrono(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
 end
 function cm.fdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

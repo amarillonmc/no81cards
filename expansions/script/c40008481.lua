@@ -96,10 +96,10 @@ function cm.chainlm(e,rp,tp)
 	return tp==rp
 end
 function cm.tdfilter(c)
-	return cm.Chrono(c) and c:IsAbleToDeck() and c:IsFaceup()
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsAbleToDeck() and c:IsFaceup()
 end
 function cm.spfilter(c,e,tp)
-	return cm.Chrono(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_REMOVED,0,nil)
