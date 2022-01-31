@@ -97,8 +97,14 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	--local sg=g2:Select(tp,1,ft,nil)
-	local cg=g2:SelectSubGroup(tp,aux.dncheck,false,1,ft)
-	Duel.MoveToField(cg,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	local tg=g2:SelectSubGroup(tp,aux.dncheck,false,1,ft)
+	if tg then
+		local tc=tg:GetFirst()
+		while tc do 
+			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+			tc=tg:GetNext()
+		end
+	end
 end
 function cm.indfilter(c)
 	return c:IsFaceup() and cm.Chrono(c)

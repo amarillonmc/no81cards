@@ -96,4 +96,5 @@ function cm.remop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()~=0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 	end
+	e:SetLabel(0)
 end

@@ -51,10 +51,14 @@ end
 function cm.fncon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,40008477)
 end
-function cm.spfilter1(c,e,tp)
-	local lv=c:GetLevel()
+--function cm.spfilter1(c,e,tp)
+   -- local lv=c:GetLevel()
+  --  return  c:IsFaceup() 
+	--  and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp,lv) and c:IsAbleToRemove()
+--end
+function cm.spfilter1(c)
 	return  c:IsFaceup() 
-		and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp,lv) and c:IsAbleToRemove()
+		and c:IsAbleToRemove()
 end
 function cm.spfilter2(c,e,tp,clv)
 	local lv=c:GetLevel()
@@ -62,16 +66,16 @@ function cm.spfilter2(c,e,tp,clv)
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and cm.spfilter1(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(cm.spfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingTarget(cm.spfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,cm.spfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
+	local g=Duel.SelectTarget(tp,cm.spfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	local g=Duel.GetMatchingGroup(cm.spfilter2,tp,LOCATION_DECK,0,nil,e,tp,tc:GetLevel())
-	if tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 then
+	if tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 and tc:GetLevel()>0 then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		local g=Duel.GetMatchingGroup(cm.spfilter2,tp,LOCATION_DECK,0,nil,e,tp,tc:GetLevel())
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

@@ -39,7 +39,7 @@ function s.initial_effect(c)
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	for p=0,1 do
-		if eg:IsExists(Card.IsControler,1,nil,p) then
+		if eg:IsExists(Card.IsControler,1,nil,p) and Duel.GetTurnCount(p)+Duel.GetTurnCount(1-p)>0 then
 			Duel.RegisterFlagEffect(p,id,RESET_PHASE+PHASE_END,0,1)
 		end
 	end

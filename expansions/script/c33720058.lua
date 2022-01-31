@@ -116,7 +116,7 @@ function s.RestoreCon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.RestoreTypeReg(tpe)
 	return  function(e,tp,eg,ep,ev,re,r,rp)
-				local e0=Effect.CreateEffect(c)
+				local e0=Effect.CreateEffect(e:GetHandler())
 				e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 				e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
 				e0:SetCode(EVENT_LEAVE_FIELD)
