@@ -3,10 +3,10 @@ function c188813.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,c188813.matfilter,1,1) 
-	aux.EnableUnionAttribute(c,c188813.eqlimit)
+	aux.EnableUnionAttribute(c,function(e,c)return (c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT)) or e:GetHandler():GetEquipTarget()==c end)
 	--equip
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(188811,0))
+	e1:SetDescription(aux.Stringid(188813,0))
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_IGNITION)
@@ -25,18 +25,13 @@ function c188813.initial_effect(c)
 	c:RegisterEffect(e2)	 
 	--ac
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_EQUIP)
+	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,188813)
 	e3:SetCondition(c188813.accon)
 	e3:SetTarget(c188813.actg)
 	e3:SetOperation(c188813.acop)
 	c:RegisterEffect(e3)
-end
-function c188813.eqlimit(e,c)
-	return (c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT)) or e:GetHandler():GetEquipTarget()==c
 end
 function c188813.matfilter(c)
 	return c:IsType(TYPE_UNION) and not c:IsCode(188813)
@@ -84,9 +79,6 @@ function c188813.accon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c188813.acfilter(c,tp)
 	return c:IsCode(188812) and c:GetActivateEffect():IsActivatable(tp)
-end
-function c188813.accon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsContains(e:GetHandler())
 end
 function c188813.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c188813.acfilter,tp,LOCATION_DECK,0,1,nil,tp) end
