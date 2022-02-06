@@ -46,7 +46,7 @@ function c33400453.con(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetHandler():GetEquipTarget()
 	local tc1=tc:GetBattleTarget()
 	e:SetLabelObject(tc1)   
-	return tc and tc:IsFaceup()
+	return tc1 and tc1:IsFaceup()
 end
 function c33400453.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

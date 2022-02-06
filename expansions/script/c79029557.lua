@@ -84,19 +84,21 @@ function c79029557.ttop(e,tp,eg,ep,ev,re,r,rp)
 	local loc=tc:GetPreviousLocation() 
 	local p=tc:GetPreviousControler()
 	if bit.band(loc,LOCATION_HAND)~=0 then 
-	Duel.SendtoHand(tc,p,REASON_EFFECT)
+	Duel.SendtoHand(tc,p,REASON_EFFECT+REASON_RULE)
 	elseif bit.band(loc,LOCATION_DECK)~=0 then
-	Duel.SendtoDeck(tc,p,2,REASON_EFFECT)
+	Duel.SendtoDeck(tc,p,2,REASON_EFFECT+REASON_RULE)
 	elseif bit.band(loc,LOCATION_EXTRA)~=0 then
 	if tc:IsPreviousPosition(POS_FACEUP) then 
-	Duel.SendtoExtraP(tc,p,REASON_EFFECT)
+	Duel.SendtoExtraP(tc,p,REASON_EFFECT+REASON_RULE)
 	else
-	Duel.SendtoDeck(tc,p,2,REASON_EFFECT) 
+	Duel.SendtoDeck(tc,p,2,REASON_EFFECT+REASON_RULE) 
 	end
 	elseif bit.band(loc,LOCATION_GRAVE)~=0 then
-	Duel.SendtoGrave(tc,REASON_EFFECT)
+	Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RULE)
 	elseif bit.band(loc,LOCATION_REMOVED)~=0 then
-	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_RULE)
+	else 
+	Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT+REASON_RULE)
 	end
 	tc=sg:GetNext()
 	end
