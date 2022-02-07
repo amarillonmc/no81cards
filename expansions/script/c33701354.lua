@@ -2,6 +2,7 @@
 local m=33701354
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	c:SetSPSummonOnce(m)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
