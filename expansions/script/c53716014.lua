@@ -68,8 +68,8 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local cg=rc:GetColumnGroup()
 	cg:AddCard(rc)
 	if chkc then return cm.filter(chkc,cg) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD,0,1,nil,cg) and Duel.GetFlagEffect(tp,m)==0 end
-	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
+	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD,0,1,nil,cg) and e:GetHandler():GetFlagEffect(m)==0 end
+	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,nil,cg)
 	Duel.SetTargetParam(500)
@@ -81,15 +81,25 @@ end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local d=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	local tc=Duel.GetFirstTarget()
-	if Duel.Recover(tp,d,REASON_EFFECT)~=0 and tc:IsRelateToEffect(e) then
-		local b1=((tc:IsLocation(LOCATION_MZONE) and ((bit.band(tc:GetOriginalType(),TYPE_SPELL+TYPE_TRAP)~=0 and (not tc:IsType(TYPE_SPELL+TYPE_TRAP) and tc:IsCanTurnSet()) or (tc:IsType(TYPE_SPELL+TYPE_TRAP) and tc:IsSSetable() and tc:IsCanTurnSet())) or (bit.band(tc:GetOriginalType(),TYPE_SPELL+TYPE_TRAP)==0 and tc:IsCanTurnSet()))) or (tc:IsLocation(LOCATION_SZONE) and tc:IsSSetable(true))) and not (tc:IsType(TYPE_PENDULUM) and tc:IsLocation(LOCATION_PZONE))
-		local b2=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_GRAVE,0,1,nil)
-		local op=0
-		if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))
-		elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(m,2))
-		elseif b2 then op=Duel.SelectOption(tp,aux.Stringid(m,3))+1
-		else return end
-		if op==0 then
+	local b1=((tc:IsLocation(LOCATION_MZONE) and ((bit.band(tc:GetOriginalType(),TYPE_SPELL+TYPE_TRAP)~=0 and (not tc:IsType(TYPE_SPELL+TYPE_TRAP) and tc:IsCanTurnSet()) or (tc:IsType(TYPE_SPELL+TYPE_TRAP) and tc:IsSSetable() and tc:IsCanTurnSet())) or (bit.band(tc:GetOriginalType(),TYPE_SPELL+TYPE_TRAP)==0 and tc:IsCanTurnSet()))) or (tc:IsLocation(LOCATION_SZONE) and tc:IsSSetable(true))) and not (tc:IsType(TYPE_PENDULUM) and tc:IsLocation(LOCATION_PZONE))
+	local b2=tc:IsReleasableByEffect() and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_GRAVE,0,1,nil)
+	if Duel.Recover(tp,d,REASON_EFFECT)~=0 and (b1 or b2) and tc:IsRelateToEffect(e) then
+		local off=1
+		local ops,opval={},{}
+		if b1 then
+			ops[off]=aux.Stringid(m,2)
+			opval[off]=0
+			off=off+1
+		end
+		if b2 then
+			ops[off]=aux.Stringid(m,3)
+			opval[off]=1
+			off=off+1
+		end
+		ops[off]=aux.Stringid(53718007,2)
+		opval[off]=2
+		local op=Duel.SelectOption(tp,table.unpack(ops))+1
+		if opval[op]==0 then
 			tc:CancelToGrave()
 			Duel.ChangePosition(tc,POS_FACEDOWN)
 			local loc=0
@@ -97,7 +107,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			elseif tc:IsType(TYPE_SPELL+TYPE_TRAP) then loc=LOCATION_SZONE end
 			if tc:GetOriginalType()&TYPE_MONSTER==0 and tc:IsLocation(LOCATION_MZONE) then Duel.MoveToField(tc,tp,tp,loc,POS_FACEDOWN,false) end
 			if tc:IsType(TYPE_SPELL+TYPE_TRAP) then Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0) end
-		else
+		elseif opval[op]==1 then
 			if Duel.Release(tc,REASON_EFFECT)~=0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 				local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter2),tp,LOCATION_GRAVE,0,1,1,nil)
