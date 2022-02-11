@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	--tohand
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_RELEASE)
@@ -203,9 +203,6 @@ end
 function cm.rgcheck(g)
 	return g:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)<=99
 end
-function cm.extra(c)
-	return c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)
-end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetRitualMaterial(tp)
@@ -217,7 +214,7 @@ function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		aux.RGCheckAdditional=nil
 		return res
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_SZONE)
 end
 function cm.rtop(e,tp,eg,ep,ev,re,r,rp)
 	local m=Duel.GetRitualMaterial(tp)
