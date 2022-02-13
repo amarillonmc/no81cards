@@ -41,10 +41,16 @@ function c9910921.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetCategory(CATEGORY_DAMAGE+CATEGORY_TOGRAVE)
 	end
 end
+function c9910921.tgfilter(c)
+	return not c:IsPublic() or c:IsType(TYPE_MONSTER)
+end
 function c9910921.damop(e,tp,eg,ep,ev,re,r,rp)
+	local g0=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+	local b1=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
+	local b2=g0 and g0:IsExists(c9910921.tgfilter,1,nil)
 	local g=Duel.GetMatchingGroup(Card.IsType,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil,TYPE_MONSTER)
-	if Duel.Damage(1-tp,300,REASON_EFFECT)~=0 and Duel.GetCurrentChain()>1 and #g>0
-		and Duel.SelectYesNo(tp,aux.Stringid(9910921,0)) then
+	if Duel.Damage(1-tp,300,REASON_EFFECT)~=0 and Duel.GetCurrentChain()>1 and (b1 or b2)
+		and Duel.SelectYesNo(tp,aux.Stringid(9910921,0)) and #g>0 then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
 		local sg=g:Select(1-tp,1,1,nil)

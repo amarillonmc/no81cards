@@ -1,9 +1,9 @@
---幽视的斯特利吉芙
+--洞察的欧妮塞瑞
 function c9910875.initial_effect(c)
 	aux.AddCodeList(c,9910871)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_HANDES+CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910875)
@@ -35,19 +35,20 @@ function c9910875.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function c9910875.filter(c)
-	return aux.IsCodeListed(c,9910871) and c:IsDiscardable(REASON_EFFECT)
+function c9910875.thfilter(c,e,tp)
+	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9910875.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-	if Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-		and Duel.IsExistingMatchingCard(c9910875.filter,tp,LOCATION_HAND,0,1,nil)
-		and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(9910875,0)) then
+	local g=Duel.GetMatchingGroup(c9910875.thfilter,tp,LOCATION_DECK,0,nil)
+	if Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+		and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910875,0)) then
 		Duel.BreakEffect()
-		if Duel.DiscardHand(tp,c9910875.filter,1,1,REASON_EFFECT+REASON_DISCARD,nil)~=0 then
-			Duel.Draw(tp,1,REASON_EFFECT)
-		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
 	end
 end
 function c9910875.cfilter2(c)

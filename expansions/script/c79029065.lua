@@ -1,57 +1,70 @@
---企鹅物流·行动-AT SPEED OF LIGHTING
-function c65.initial_effect(c)
+--啸岚寒域 谢拉格
+function c79029065.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCost(c65.cost)
-	e1:SetTarget(c65.tg)
-	e1:SetOperation(c65.op)
-	c:RegisterEffect(e1)	
+	c:RegisterEffect(e1)
+	--atk&def
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_UPDATE_ATTACK)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e2:SetValue(500)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER))
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e3)
+	--indes
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e3:SetTarget(c79029065.intg)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)   
+	--to hand 
+	local e4=Effect.CreateEffect(c) 
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetRange(LOCATION_FZONE)  
+	e4:SetCountLimit(1,79029065)
+	e4:SetCondition(c79029065.thcon)  
+	e4:SetCost(c79029065.thcost)
+	e4:SetTarget(c79029065.thtg)
+	e4:SetOperation(c79029065.thop)
+	c:RegisterEffect(e4) 
 end
-function c65.spfilter(c,e,tp,code)
-	return c:IsSetCard(0xf10) and c:IsType(TYPE_SPELL)
+c79029065.named_with_KarlanTrade=true 
+function c79029065.intg(e,c)
+	return c.named_with_KarlanTrade 
 end
-function c65.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c65.spfilter,tp,LOCATION_GRAVE,0,4,nil,e,tp,c) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	g=Duel.SelectTarget(tp,c65.spfilter,tp,LOCATION_GRAVE,0,4,4,c,e,tp)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+function c79029065.thcon(e,tp,eg,ep,ev,re,r,rp,chk)
+	return re:GetHandler():IsAttribute(ATTRIBUTE_WATER)
 end
-function c65.cilter(c,e,tp)
-	 return c:IsSetCard(0xf10) and c:IsCanBeSpecialSummoned(e,0,tp,true,true) 
+function c79029065.thcost(e,tp,eg,ep,ev,re,r,rp,chk) 
+	if chk==0 then return Duel.CheckLPCost(tp,1000) end 
+	Duel.PayLPCost(tp,1000) 
 end
-function c65.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-		and Duel.IsExistingMatchingCard(c65.cilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp) end
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
+function c79029065.thfil(c)
+	return c.named_with_KarlanTrade and c:IsAbleToHand()
 end
-function c65.filter(c,e)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf10) and c:IsCanBeEffectTarget(e) and c:GetClassCount()~=1
+function c79029065.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79029065.thfil,tp,LOCATION_DECK,0,1,nil) end 
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c65.op(e,tp,eg,ep,ev,re,r,rp)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if ft<=0 then return end	
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c65.filter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,ft,nil,e,tp)
-	if g:GetCount()>0 then
-		local fid=e:GetHandler():GetFieldID()
-		local tc=g:GetFirst()
-		while tc do
-			Duel.SpecialSummonStep(tc,0,tp,tp,true,true,POS_FACEUP)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1,true)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2,true)
-			tc=g:GetNext()
-		end
-		Duel.SpecialSummonComplete()
+function c79029065.thop(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(c79029065.thfil,tp,LOCATION_DECK,0,nil) 
+	if g:GetCount()>0 then 
+	local sg=g:Select(tp,1,1,nil)
+	Duel.SendtoHand(sg,tp,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,sg)
+	end 
 end
-end
+
+

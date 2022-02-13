@@ -44,17 +44,16 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 	end
 end
-function cm.filter(c)
-	return c:IsFaceup() and c.named_with_Kazimierz and c:IsCanTurnSet()
+function cm.filter(c,tp)
+	return c:IsFaceup() and c.named_with_Kazimierz and c:IsCanTurnSet() and Duel.GetMatchingGroupCount(Card.IsAbleToGrave,tp,LOCATION_MZONE,0,c)==Duel.GetMatchingGroupCount(nil,tp,LOCATION_MZONE,0,c)
 end
 function cm.filter2(c,e,tp)
 	return c.named_with_Kazimierz and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
 end
 function cm.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
@@ -65,12 +64,12 @@ function cm.posop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE) 
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,tc)
 	Duel.SendtoGrave(g,REASON_EFFECT)
-	local g=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
+	local g1=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if g:GetCount()<=0 or ft<=0 then return end 
+	if g1:GetCount()<=0 or ft<=0 then return end 
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=g:Select(tp,ft,ft,nil)
+	local sg=g1:Select(tp,ft,ft,nil)
 	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 	Duel.BreakEffect()
 	local xg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)  

@@ -1,6 +1,6 @@
 if not pcall(function() require("expansions/script/c16101100") end) then require("script/c16101100") end
 rk=rk or {}
-function rk.set(code,setcode)
+function rk.set(code,setcode,rkflag)
 	if not _G["c"..code] then _G["c"..code]={}
 		setmetatable(_G["c"..code],Card)
 		_G["c"..code].__index=_G["c"..code]
@@ -9,7 +9,55 @@ function rk.set(code,setcode)
 	if setcode and not ccodem.rksetcode then
 		ccodem.rksetcode=setcode
 	end
+	if rkflag==1 then
+		ccodem.rkcheck=true
+	end
+	if not rk.Dalogcheck then
+		rk.Dalogcheck=true
+		local e1=Effect.GlobalEffect()
+		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e1:SetCode(EVENT_CHAINING)
+		e1:SetCondition(rk.Dalogactcon)
+		e1:SetOperation(rk.Dalogactop)
+		Duel.RegisterEffect(e1,0)
+		local e2=Effect.GlobalEffect()
+		e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e2:SetCode(EVENT_SUMMON_SUCCESS)
+		e2:SetCondition(rk.Dalogscon)
+		e2:SetOperation(rk.Dalogsop)
+		Duel.RegisterEffect(e2,0)
+		local e3=e2:Clone()
+		e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(e3,0)
+	end
 	return code,ccodem
+end
+function rk.rkcardcheck(c)
+	return c.rkcheck==true 
+end
+function rk.Dalogactcon(e,tp,eg,ep,ev,re,r,rp)
+	return re:GetHandler().rkcheck==true and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function rk.Dalogactop(e,tp,eg,ep,ev,re,r,rp)
+	local og=eg:Filter(rk.rkcardcheck,nil)
+	for tc in aux.Next(og) do
+		local codefordal=tc:GetOriginalCode()
+		Duel.Hint(24,0,aux.Stringid(codefordal,9))
+		Duel.Hint(24,0,aux.Stringid(codefordal,10))
+		Duel.Hint(24,0,aux.Stringid(codefordal,11))
+	end
+end
+function rk.Dalogscon(e,tp,eg)
+	return eg:IsExists(rk.rkcardcheck,1,nil)
+end
+function rk.Dalogsop(e,tp,eg)
+	local og=eg:Filter(rk.rkcardcheck,nil)
+	for tc in aux.Next(og) do
+		local codefordal=tc:GetOriginalCode()
+		Duel.Hint(24,0,aux.Stringid(codefordal,12))
+		Duel.Hint(24,0,aux.Stringid(codefordal,13))
+		Duel.Hint(24,0,aux.Stringid(codefordal,14))
+	end
 end
 function rk.check(c,str)
 	local substr=c.rksetcode
@@ -22,36 +70,6 @@ function rk.selectcard(sel_p,tar_p,f,loc,loc1,min,max,exg,...)
 		f=aux.NecroValleyFilter(f)
 	end
 	return Duel.SelectMatchingCard(sel_p,f,tar_p,loc,loc1,min,max,exg,...)
-end
-function rk.yk(c,loc)
-	local tc=c
-	local e=Effect.CreateEffect(c)
-	e:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e:SetCode(EVENT_ADJUST)
-	e:SetProperty(EFFECT_FLAG_DELAY)
-	e:SetRange(loc)
-	e:SetCondition(rk.con1)
-	e:SetOperation(rk.op2)
-	tc:RegisterEffect(e)
-	return e
-end
-function rk.con1(e,tp)
-	local phase=Duel.GetCurrentPhase()
-	local d_val=getmetatable(e:GetHandler()).yk_filter
-	if phase>=0x08 and phase<=0x80 and d_val then
-		return d_val[1]<0x08
-	end
-	return d_val==nil or d_val[1]~=Duel.GetCurrentPhase()
-end
-function rk.op2(e,tp)
-	local phase=Duel.GetCurrentPhase()
-	local d_val=getmetatable(e:GetHandler()).yk_filter
-	if not d_val then
-		getmetatable(e:GetHandler()).yk_filter={phase} 
-	else
-		Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
-		getmetatable(e:GetHandler()).yk_filter=nil
-	end
 end
 function rk.effectg(c,code)
 	local tc=c

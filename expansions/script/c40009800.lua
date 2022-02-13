@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	rsfwh.ExtraEffect(e2)
 end
 function cm.rsfwh_ex_ritual(c)
-	return  ((c:IsSetCard(0x6f1b) or c:IsSetCard(0x8f1b)) and c:GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF )
+	return  ((c:IsSetCard(0x6f1b) or c:IsSetCard(0xcf1b)) and c:GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF )
 end
 function cm.val(e,c)
 	return c:GetOverlayCount() * 1000

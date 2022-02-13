@@ -2,7 +2,7 @@
 function c76029021.initial_effect(c)
 	--indes
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCountLimit(1,76029021)
@@ -27,7 +27,7 @@ function c76029021.initial_effect(c)
 end
 c76029021.named_with_Kazimierz=true 
 function c76029021.ctfil(c)
-	return c.named_with_Kazimierz and c:IsReleasable() and Duel.IsExistingMatchingCard(Card.IsRace,LOCATION_MZONE,0,1,c,RACE_BEASTWARRIOR+RACE_WINDBEAST)
+	return c.named_with_Kazimierz and c:IsReleasable() and Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_MZONE,0,1,c,RACE_BEASTWARRIOR+RACE_WINDBEAST)
 end
 function c76029021.incost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c76029021.ctfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
@@ -39,7 +39,7 @@ function c76029021.intg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c76029021.inop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()   
-	local g=Duel.GetMatchingGroup(Card.IsRace,LOCATION_MZONE,0,nil,RACE_BEASTWARRIOR+RACE_WINDBEAST)
+	local g=Duel.GetMatchingGroup(Card.IsRace,tp,LOCATION_MZONE,0,nil,RACE_BEASTWARRIOR+RACE_WINDBEAST)
 	if g:GetCount()>0 then 
 	local tc=g:Select(tp,1,1,nil):GetFirst()
 	--

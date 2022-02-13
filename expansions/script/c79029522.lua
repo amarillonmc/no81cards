@@ -49,7 +49,7 @@ function c79029522.ttop2(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
 end
 function c79029522.val(e,c)
-	return e:GetHandler():GetMaterial():GetSum(Card.GetBaseAttack)
+	return e:GetHandler():GetMaterial():GetSum(Card.GetAttack)
 end
 function c79029522.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end

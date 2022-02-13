@@ -77,9 +77,8 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if tg:GetCount()<=0 or not e:GetHandler():IsAbleToExtra() then return end
-	tg:AddCard(e:GetHandler())
-	Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then
+		tg:AddCard(e:GetHandler())
+		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
 end
---Effect 3 
---Effect 4 
---Effect 5   

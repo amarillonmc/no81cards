@@ -3,11 +3,10 @@ local m=64800096
 local cm=_G["c"..m]
 function cm.initial_effect(c)
   c:EnableReviveLimit()
-   aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WIND),aux.NonTuner(cm.sfilter),1,1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	  --immunity
 	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_FREE_CHAIN)
+	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCountLimit(1,m)
@@ -29,9 +28,6 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 end
-function cm.sfilter(c)
-	return  c:IsType(TYPE_SYNCHRO)
-end
 
 function cm.immcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -49,14 +45,16 @@ function cm.immop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(m,2))
-		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_IMMUNE_EFFECT)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		e1:SetValue(1)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
-		e1:SetTarget(cm.immtg2)
-		e1:SetValue(cm.efilter2)
 		tc:RegisterEffect(e1)
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		tc:RegisterEffect(e2)
 	end
 end
 function cm.immtg2(e,c)

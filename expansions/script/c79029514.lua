@@ -63,13 +63,13 @@ end
 function c79029514.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
    if chk==0 then return Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_GRAVE,0,1,nil,RACE_DRAGON) end
 	local g=Duel.GetMatchingGroup(Card.IsRace,tp,LOCATION_GRAVE,0,nil,RACE_DRAGON)
-	local dam=g:GetClassCount(Card.GetCode)*1000
+	local dam=g:GetClassCount(Card.GetCode)*300
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,dam)
 end
 function c79029514.damop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(Card.IsRace,tp,LOCATION_GRAVE,0,nil,RACE_DRAGON)
-		local dam=g:GetClassCount(Card.GetCode)*1000
+		local dam=g:GetClassCount(Card.GetCode)*300
 		Duel.Damage(1-tp,dam,REASON_EFFECT)
 end
 function c79029514.regcon(e,tp,eg,ep,ev,re,r,rp)
