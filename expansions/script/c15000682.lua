@@ -210,11 +210,11 @@ end
 function cm.sp2con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetEquipTarget()
 end
-function cm.sp2filter(c,e,tp)
+function cm.sp3filter(c,e,tp)
 	return c:IsSetCard(0x5f3c) and c:IsType(TYPE_LINK) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,true)
 end
 function cm.sp2tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.sp2filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.sp3filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
 function cm.sp2cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -227,7 +227,7 @@ function cm.sp2op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		local tc=Duel.SelectMatchingCard(tp,cm.sp2filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,cm.sp3filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
 		if tc then
 			Duel.SpecialSummon(tc,SUMMON_TYPE_LINK,tp,tp,false,true,POS_FACEUP)
 		end

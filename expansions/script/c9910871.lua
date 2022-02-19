@@ -72,7 +72,6 @@ function c9910871.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local mg1=Duel.GetFusionMaterial(tp)
 		aux.FCheckAdditional=c9910871.fcheck
 		local res=Duel.IsExistingMatchingCard(c9910871.spfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
-		if res then return true end
 		local mg2=Duel.GetMatchingGroup(c9910871.mfilter2,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
 		mg2:Merge(mg1)
 		local mg3=Duel.GetMatchingGroup(c9910871.mfilter3,tp,0,LOCATION_MZONE,nil)
@@ -81,16 +80,13 @@ function c9910871.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		mg4:Merge(mg1)
 		aux.FCheckAdditional=c9910871.fcheck2
 		aux.GCheckAdditional=c9910871.gcheck2
-		res=Duel.IsExistingMatchingCard(c9910871.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg2,nil,chkf,9910881)
-		if res then return true end
+		res=res or Duel.IsExistingMatchingCard(c9910871.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg2,nil,chkf,9910881)
 		aux.FCheckAdditional=c9910871.fcheck3
 		aux.GCheckAdditional=c9910871.gcheck3(tp)
-		res=Duel.IsExistingMatchingCard(c9910871.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,nil,chkf,9910885)
-		if res then return true end
+		res=res or Duel.IsExistingMatchingCard(c9910871.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,nil,chkf,9910885)
 		aux.FCheckAdditional=c9910871.fcheck4
 		aux.GCheckAdditional=c9910871.gcheck4
-		res=Duel.IsExistingMatchingCard(c9910871.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg4,nil,chkf,9910890)
-		if res then return true end
+		res=res or Duel.IsExistingMatchingCard(c9910871.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg4,nil,chkf,9910890)
 		aux.FCheckAdditional=c9910871.fcheck
 		aux.GCheckAdditional=nil
 		if not res then

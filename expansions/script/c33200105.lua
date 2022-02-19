@@ -65,7 +65,8 @@ function c33200105.smtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33200105.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) 
 	and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(33200105,0))
-	Duel.SelectTarget(tp,c33200105.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectTarget(tp,c33200105.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	Duel.HintSelection(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c33200105.smop(e,tp,eg,ep,ev,re,r,rp)

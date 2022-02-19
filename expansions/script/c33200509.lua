@@ -77,6 +77,8 @@ function c33200509.tzop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.BreakEffect()
 				Duel.Recover(tp,800,REASON_EFFECT)
 			end 
+		else
+			Duel.ShuffleDeck(tp)
 		end
 	else
 		Duel.ConfirmDecktop(tp,5)
@@ -101,6 +103,8 @@ function c33200509.tzop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.BreakEffect()
 				Duel.Recover(tp,800,REASON_EFFECT)
 			end 
+		else
+			Duel.ShuffleDeck(tp)
 		end
 	end
 end
