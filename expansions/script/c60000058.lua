@@ -88,18 +88,25 @@ function cm.todeckfilter(c)
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.todeckfilter,tp,LOCATION_ONFIELD,0,1,nil)
-	and Duel.IsExistingMatchingCard(cm.todeckfilter,tp,0,LOCATION_ONFIELD,1,nil) and e:GetHandler():GetFlagEffect(m)==0 end
+	and Duel.IsExistingMatchingCard(cm.todeckfilter,tp,0,LOCATION_ONFIELD,1,nil) and e:GetHandler():GetFlagEffect(m)==0
+	and e:GetHandler():IsAbleToHand() end
 	local g=Duel.GetMatchingGroup(cm.todeckfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,cm.todeckfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	local g1=Duel.SelectMatchingCard(1-tp,cm.todeckfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
-	if g:GetCount()>0 and g1:GetCount()>0 then
-		g:Merge(g1)
-		Duel.HintSelection(g)
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+		if c:IsLocation(LOCATION_HAND) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local g=Duel.SelectMatchingCard(tp,cm.todeckfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+			local g1=Duel.SelectMatchingCard(1-tp,cm.todeckfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
+			if g:GetCount()>0 and g1:GetCount()>0 then
+				g:Merge(g1)
+				Duel.HintSelection(g)
+				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			end
+		end
 	end
 end

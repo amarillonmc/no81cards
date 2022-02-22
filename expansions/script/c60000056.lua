@@ -60,7 +60,7 @@ function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) 
 		and e:GetHandler():GetFlagEffect(m)==0 end
 	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
@@ -109,8 +109,8 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and c:IsAbleToDeck()
-		and e:GetHandler():GetFlagEffect(m)==0  end
-	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+		and c:GetFlagEffect(m)==0  end
+	c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
@@ -141,4 +141,5 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return se and se:GetHandler():IsCode(m) and c:GetCode()==e:GetLabel()
+	and not c:IsLocation(LOCATION_HAND+LOCATION_GRAVE)
 end

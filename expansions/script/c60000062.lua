@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 end
 --act in hand
 function cm.handcon(e)
-	return (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) and Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)>=15
+	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)>=15 and (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
 end
 --Effect 1
 function cm.thfilter(c)
