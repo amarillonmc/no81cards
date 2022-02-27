@@ -46,7 +46,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local dg=Duel.SelectMatchingCard(tp,cm.filter1,tp,LOCATION_HAND+LOCATION_MZONE,0,1,2,nil)
+			local dg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,2,nil)
 			if dg:GetCount()>0 then Duel.Destroy(dg,REASON_EFFECT) end
 		end
 	end

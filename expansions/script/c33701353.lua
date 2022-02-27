@@ -39,22 +39,23 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,0,0,0)
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x442) and c:IsAbleToGrave()
+	return c:IsSetCard(0x442)
 end
 function cm.regop(e,tp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0):Filter(Card.IsAbleToGrave,nil)
 	local g1=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_GRAVE,0,nil,0x442)
 	if g:GetCount()>0 then
 		Duel.ConfirmCards(1-tp,g)
 		Duel.ConfirmCards(tp,g)
 		if g:GetClassCount(Card.GetCode,nil)==g:GetCount() then
-			if g1:GetCount()==0 and g:Filter(cm.tgfilter,nil):GetClassCount(Card.GetCode,nil)>=7 then
+			g=g:Filter(cm.tgfilter,nil)
+			if g1:GetCount()==0 and g:GetClassCount(Card.GetCode,nil)>=7 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-				local sg=g:SelectSubGroup(tp,cm.thfilter,true,7,7)
+				local sg=g:SelectSubGroup(tp,aux.dncheck,true,7,7)
 				Duel.SendtoGrave(sg,REASON_EFFECT)
 			elseif g1:FilterCount(Card.IsAbleToDeck,nil)>0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-				local sg=g:FilterSelect(tp,Card.IsAbleToDeck,1,math.min(7,g:GetCount()),nil)
+				local sg=g1:FilterSelect(tp,Card.IsAbleToDeck,1,math.min(7,g:GetCount()),nil)
 				Duel.DisableShuffleCheck()
 				Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
 				local g2=Duel.GetOperatedGroup()

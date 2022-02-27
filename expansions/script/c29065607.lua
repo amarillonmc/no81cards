@@ -45,7 +45,7 @@ function c29065607.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_EQUIP_LIMIT)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetLabelObject(c)
-	e1:SetValue(c29065605.eqlimit)
+	e1:SetValue(c29065607.eqlimit)
 	tc:RegisterEffect(e1)
 	tc=g:GetNext()
 	end

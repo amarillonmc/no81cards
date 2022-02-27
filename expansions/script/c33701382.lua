@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_FZONE)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.condition)
 	e2:SetOperation(cm.counter)
 	c:RegisterEffect(e2)
@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x40,3,REASON_COST) end
-	c:RemoveCounter(tp,0x40,3,REASON_COST)
+	e:GetHandler():RemoveCounter(tp,0x40,3,REASON_COST)
 end
 function cm.lcheck(g)
 	return g:IsExists(Card.IsSetCard,1,nil,0x442) 

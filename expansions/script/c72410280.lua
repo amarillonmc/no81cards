@@ -88,7 +88,7 @@ function c72410280.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c72410280.filter1(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0xa729) and c~=e:GetHandler() and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsFaceup() and c:IsSetCard(0xa729) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c72410280.spellcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsType(TYPE_SPELL) and e:GetHandler():IsType(TYPE_CONTINUOUS)
