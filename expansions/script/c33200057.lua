@@ -4,6 +4,12 @@ function c33200057.initial_effect(c)
 	--spesm
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x322),8,99,c33200057.ovfilter,aux.Stringid(33200057,1),99,c33200057.xyzop)
 	c:EnableReviveLimit()
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e0:SetCondition(c33200057.txtcon)
+	e0:SetOperation(c33200057.txtop)
+	c:RegisterEffect(e0)
 	--stg
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOGRAVE)
@@ -51,6 +57,18 @@ function c33200057.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,33200052)==0 
 	and Duel.IsExistingMatchingCard(c33200057.xyzfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.RegisterFlagEffect(tp,33200052,nil,EFFECT_FLAG_OATH,1)
+end
+function c33200057.txtfilter(c)
+	return c:IsFaceup() and c:IsCode(33200051)
+end
+function c33200057.txtcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsSummonType(SUMMON_TYPE_XYZ) and Duel.IsExistingMatchingCard(c33200057.txtfilter,tp,LOCATION_ONFIELD,0,1,nil) 
+end
+function c33200057.txtop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(24,0,aux.Stringid(33200057,3))
+	Duel.Hint(24,0,aux.Stringid(33200057,4))
+	Duel.Hint(24,0,aux.Stringid(33200057,5))
 end
 
 --e1

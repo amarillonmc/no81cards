@@ -20,17 +20,22 @@ function c9910045.initial_effect(c)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCondition(c9910045.sprcon)
 	c:RegisterEffect(e2)
-	--to extra
+	--pendulum set
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TOEXTRA+CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
-	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetCountLimit(1,9910046)
-	e3:SetCondition(c9910045.spcon)
-	e3:SetTarget(c9910045.sptg)
-	e3:SetOperation(c9910045.spop)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetOperation(c9910045.regop)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_PHASE+PHASE_END)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1)
+	e4:SetCondition(c9910045.pencon)
+	e4:SetTarget(c9910045.pentg)
+	e4:SetOperation(c9910045.penop)
+	c:RegisterEffect(e4)
 end
 function c9910045.desfilter(c)
 	return c:GetSequence()<5
@@ -66,29 +71,28 @@ function c9910045.sprcon(e,c)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
-function c9910045.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_MZONE)
-		and e:GetHandler():GetEquipCount()>0
+function c9910045.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:GetSummonLocation()==LOCATION_EXTRA then
+		c:RegisterFlagEffect(9910045,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	end
 end
-function c9910045.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_HAND,0,1,nil,TYPE_PENDULUM) end
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_HAND)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_EXTRA)
+function c9910045.pencon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(9910045)~=0
 end
-function c9910045.spfilter(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3950)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+function c9910045.penfilter(c)
+	return c:IsSetCard(0x3950) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
-function c9910045.spop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910045,2))
-	local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_HAND,0,1,1,nil,TYPE_PENDULUM)
-	if g:GetCount()>0 and Duel.SendtoExtraP(g,tp,REASON_EFFECT)~=0 then
-		local g2=Duel.GetMatchingGroup(c9910045.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp)
-		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910045,1)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=g2:Select(tp,1,1,nil)
-			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-		end
+function c9910045.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
+		and Duel.IsExistingMatchingCard(c9910045.penfilter,tp,LOCATION_DECK,0,1,nil) end
+end
+function c9910045.penop(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local g=Duel.SelectMatchingCard(tp,c9910045.penfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end

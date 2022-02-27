@@ -62,17 +62,19 @@ function c9910152.matcon(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(c9910152.matfilter2,tp,LOCATION_DECK,0,1,nil)
 end
 function c9910152.matop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,9910152)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g1=Duel.SelectMatchingCard(tp,c9910152.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	if g1:GetCount()==0 or Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g2=Duel.SelectMatchingCard(tp,c9910152.matfilter1,tp,LOCATION_MZONE,0,1,1,nil)
-	if g2:GetCount()==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g3=Duel.SelectMatchingCard(tp,c9910152.matfilter2,tp,LOCATION_DECK,0,1,1,nil)
-	if g3:GetCount()>0 then
-		Duel.Overlay(g2:GetFirst(),g3)
+	if Duel.SelectYesNo(tp,aux.Stringid(9910152,1)) then
+		Duel.Hint(HINT_CARD,0,9910152)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g1=Duel.SelectMatchingCard(tp,c9910152.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+		if g1:GetCount()==0 or Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)==0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		local g2=Duel.SelectMatchingCard(tp,c9910152.matfilter1,tp,LOCATION_MZONE,0,1,1,nil)
+		if g2:GetCount()==0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+		local g3=Duel.SelectMatchingCard(tp,c9910152.matfilter2,tp,LOCATION_DECK,0,1,1,nil)
+		if g3:GetCount()>0 then
+			Duel.Overlay(g2:GetFirst(),g3)
+		end
 	end
 end
 function c9910152.tgcon(e,tp,eg,ep,ev,re,r,rp)

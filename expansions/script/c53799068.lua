@@ -10,7 +10,6 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
-	e1:SetCost(cm.cost)
 	e1:SetOperation(cm.mtop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -21,13 +20,6 @@ function cm.initial_effect(c)
 	e2:SetValue(cm.val)
 	c:RegisterEffect(e2)
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-end
-function cm.ovfilter(c,e)
-	return c:IsCanOverlay() and (not e or not c:IsImmuneToEffect(e))
-end
 function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
@@ -35,10 +27,7 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,Card.IsCanOverlay,tp,LOCATION_EXTRA,0,1,1,nil)
 	if g:GetCount()>0 then Duel.Overlay(c,g) end
 end
-function cm.filter(c)
-	return c:GetDefense()>=0
-end
 function cm.val(e,c)
-	local g=e:GetHandler():GetOverlayGroup():Filter(cm.filter,nil)
+	local g=e:GetHandler():GetOverlayGroup():Filter(Card.IsDefenseAbove,nil,0)
 	return g:GetSum(Card.GetDefense)
 end

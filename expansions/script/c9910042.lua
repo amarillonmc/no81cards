@@ -42,10 +42,10 @@ function c9910042.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if re:IsHasCategory(CATEGORY_NEGATE)
 		and Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT):IsHasType(EFFECT_TYPE_ACTIVATE) then return false end
-	local rc=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):GetFirst()
+	local rc=re:GetHandler()
 	local ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_DESTROY)
 	if ex and tg~=nil and tc+tg:FilterCount(Card.IsOnField,nil)-tg:GetCount()>0
-		and rc and rc:IsRelateToEffect(e) and rc:IsControler(1-tp)
+		and rc and rc:IsRelateToEffect(re) and rc:IsControler(1-tp)
 		and rc:IsLocation(LOCATION_ONFIELD+LOCATION_HAND) then
 		Duel.HintSelection(Group.FromCards(rc))
 		Duel.SendtoGrave(rc,REASON_RULE)

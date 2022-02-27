@@ -39,7 +39,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(cm.setfilter,tp,LOCATION_SZONE,0,1,nil)
 		and Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE,PLAYER_NONE,0)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
-	local g=Duel.SelectTarget(tp,cm.setfilter,tp,LOCATION_SZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.setfilter,tp,LOCATION_SZONE-LOCATION_FZONE,0,1,1,nil)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

@@ -9,32 +9,26 @@ function c9910017.initial_effect(c)
 	e1:SetTarget(c9910017.target)
 	e1:SetOperation(c9910017.operation)
 	c:RegisterEffect(e1)
-	--extra attack
+	--atkup
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_EQUIP)
-	e2:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
+	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetCondition(c9910017.condition)
-	e2:SetValue(1)
+	e2:SetValue(600)
 	c:RegisterEffect(e2)
-	--Equip limit
+	--extra attack
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_EQUIP_LIMIT)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetValue(c9910017.eqlimit)
+	e3:SetType(EFFECT_TYPE_EQUIP)
+	e3:SetCode(EFFECT_EXTRA_ATTACK)
+	e3:SetCondition(c9910017.condition)
+	e3:SetValue(1)
 	c:RegisterEffect(e3)
-	--negate
+	--Equip limit
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(9910017,0))
-	e4:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetCountLimit(1)
-	e4:SetCondition(c9910017.discon)
-	e4:SetTarget(c9910017.distg)
-	e4:SetOperation(c9910017.disop)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_EQUIP_LIMIT)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetValue(c9910017.eqlimit)
 	c:RegisterEffect(e4)
 	--to hand
 	local e5=Effect.CreateEffect(c)
@@ -47,7 +41,19 @@ function c9910017.initial_effect(c)
 	e5:SetCost(aux.bfgcost)
 	e5:SetTarget(c9910017.thtg)
 	e5:SetOperation(c9910017.thop)
+	e5:SetLabel(1)
 	c:RegisterEffect(e5)
+	--to hand 2
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e6:SetCode(EVENT_TO_GRAVE)
+	e6:SetProperty(EFFECT_FLAG_DELAY)
+	e6:SetCondition(c9910017.thcon)
+	e6:SetCost(c9910017.thcost)
+	e6:SetTarget(c9910017.thtg)
+	e6:SetOperation(c9910017.thop)
+	e6:SetLabel(2)
+	c:RegisterEffect(e6)
 end
 function c9910017.eqlimit(e,c)
 	return c:IsRace(RACE_WARRIOR)
@@ -72,41 +78,28 @@ function c9910017.condition(e)
 	local p=e:GetHandler():GetControler()
 	return Duel.GetLP(p)<Duel.GetLP(1-p)
 end
-function c9910017.discon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler():GetEquipTarget()
-	if rp==tp or c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return tg and tg:IsContains(c) and Duel.IsChainNegatable(ev)
-end
-function c9910017.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-end
-function c9910017.gyfilter(c,g)
-	return g:IsContains(c)
-end
-function c9910017.disop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.NegateEffect(ev) then return end
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c9910017.gyfilter,tp,0,LOCATION_ONFIELD,nil,c:GetColumnGroup())
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910017,1)) then
-		Duel.BreakEffect()
-		Duel.Destroy(g,REASON_EFFECT)
-	end
-end
-function c9910017.thfilter(c)
-	return c:IsSetCard(0x5950) and not c:IsCode(9910017) and c:IsAbleToHand()
+function c9910017.thfilter(c,label)
+	local b1=label==1 and c:IsSetCard(0x5950) and not c:IsCode(9910017)
+	local b2=label==2 and c:IsSetCard(0x3950) and c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return (b1 or b2) and c:IsAbleToHand()
 end
 function c9910017.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910017.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910017.thfilter,tp,LOCATION_DECK,0,1,nil,e:GetLabel()) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9910017.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910017.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c9910017.thfilter,tp,LOCATION_DECK,0,1,1,nil,e:GetLabel())
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+end
+function c9910017.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and c:IsReason(REASON_DESTROY)
+end
+function c9910017.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) end
+	Duel.PayLPCost(tp,1000)
 end

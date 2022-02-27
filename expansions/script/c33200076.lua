@@ -4,6 +4,12 @@ function c33200076.initial_effect(c)
 	--spesm
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x322),8,99,c33200076.ovfilter,aux.Stringid(33200076,1),99,c33200076.xyzop)
 	c:EnableReviveLimit()
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e0:SetCondition(c33200076.txtcon)
+	e0:SetOperation(c33200076.txtop)
+	c:RegisterEffect(e0)
 	--target
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33200076,1))
@@ -43,6 +49,17 @@ function c33200076.xyzop(e,tp,chk)
 	and Duel.IsExistingMatchingCard(c33200076.xyzfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.RegisterFlagEffect(tp,33200052,nil,EFFECT_FLAG_OATH,1)
 end
+function c33200076.txtfilter(c)
+	return c:IsFaceup() and c:IsCode(33200075)
+end
+function c33200076.txtcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsSummonType(SUMMON_TYPE_XYZ) and Duel.IsExistingMatchingCard(c33200076.txtfilter,tp,LOCATION_ONFIELD,0,1,nil) 
+end
+function c33200076.txtop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(24,0,aux.Stringid(33200076,3))
+	Duel.Hint(24,0,aux.Stringid(33200076,4))
+end
 
 --e1
 function c33200076.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -65,6 +82,6 @@ function c33200076.tgop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e0) 
 	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(33200076,0))
 end
-function c33200076.efilter(e,re,tp)
-	return not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
+function c33200076.efilter(e,re)
+	return not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end

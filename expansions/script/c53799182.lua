@@ -2,7 +2,7 @@ local m=53799182
 local cm=_G["c"..m]
 cm.name="永不枯萎的思念"
 function cm.initial_effect(c)
-	bgmhandle(c,m,7,0)
+	bgmhandle(c,m,4,0)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetRange(LOCATION_FZONE)

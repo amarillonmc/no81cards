@@ -40,7 +40,7 @@ function cm.cfilter(c)
 	return c:IsType(TYPE_CONTINUOUS) and c:IsReleasable()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and not e:GetHandler():IsLocation(LOCATION_ONFIELD) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.Release(g,REASON_COST)

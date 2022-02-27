@@ -5,7 +5,7 @@ function c9910896.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--destroy
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
+	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_PZONE)
@@ -33,30 +33,34 @@ function c9910896.initial_effect(c)
 	e3:SetOperation(c9910896.raop)
 	c:RegisterEffect(e3)
 end
+function c9910896.desfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and Duel.GetFieldGroupCount(c:GetControler(),LOCATION_DECK,0)>=3
+end
 function c9910896.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsType(TYPE_SPELL+TYPE_TRAP) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsType,tp,LOCATION_ONFIELD,0,1,nil,TYPE_SPELL+TYPE_TRAP)
-		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=4 end
+	local res=e:GetHandler():GetFlagEffect(9910896)~=0
+	local loc=0
+	if res then loc=LOCATION_ONFIELD end
+	if chkc then return chkc:IsOnField() and chkc:IsType(TYPE_SPELL+TYPE_TRAP) and (res or chkc:IsControler(tp)) end
+	if chk==0 then return Duel.IsExistingTarget(c9910896.desfilter,tp,LOCATION_ONFIELD,loc,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,Card.IsType,tp,LOCATION_ONFIELD,0,1,1,nil,TYPE_SPELL+TYPE_TRAP)
+	local g=Duel.SelectTarget(tp,c9910896.desfilter,tp,LOCATION_ONFIELD,loc,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-function c9910896.thfilter(c)
-	return aux.IsCodeListed(c,9910871) and c:IsAbleToHand()
+function c9910896.filter(c)
+	return aux.IsCodeListed(c,9910871)
 end
 function c9910896.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then g:AddCard(tc) end
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=4 then g:Merge(Duel.GetDecktopGroup(tp,4)) end
+	if tc:IsRelateToEffect(e) then
+		g:AddCard(tc)
+		local p=tc:GetControler()
+		if Duel.GetFieldGroupCount(p,LOCATION_DECK,0)>=3 then g:Merge(Duel.GetDecktopGroup(p,3)) end
+	end
 	if g:GetCount()==0 or Duel.Destroy(g,REASON_EFFECT)==0 then return end
-	local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910896.thfilter),tp,LOCATION_GRAVE,0,nil)
-	if tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910896,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=tg:Select(tp,1,1,nil)
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg)
+	local og=Duel.GetOperatedGroup()
+	if og:IsExists(c9910896.filter,1,nil) then
+		e:GetHandler():RegisterFlagEffect(9910896,RESET_EVENT+RESETS_STANDARD,0,0)
 	end
 end
 function c9910896.spfilter(c,tp,mc)

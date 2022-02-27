@@ -1,53 +1,101 @@
 --暴走之折纸使
 function c9910014.initial_effect(c)
-	--fusion material
+	--fusion summon
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,c9910014.ffilter,2,true)
-	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_ONFIELD,0,Duel.Remove,POS_FACEUP,REASON_COST)
-	--spsummon condition
+	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x3950),2,true)
+	--special summon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(c9910014.splimit)
+	e1:SetValue(aux.fuslimit)
 	c:RegisterEffect(e1)
-	--effect indes
+	--special summon rule
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
-	e2:SetCountLimit(1)
-	e2:SetValue(c9910014.valcon)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
+	e2:SetRange(LOCATION_EXTRA)
+	e2:SetCondition(c9910014.sprcon)
+	e2:SetOperation(c9910014.sprop)
 	c:RegisterEffect(e2)
-	--immune
+	--mat check
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetCode(EFFECT_IMMUNE_EFFECT)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetValue(c9910014.efilter)
+	e3:SetCode(EFFECT_MATERIAL_CHECK)
+	e3:SetValue(c9910014.matcheck)
 	c:RegisterEffect(e3)
-	--Negate
+	--effect indes
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(9910014,0))
-	e4:SetCategory(CATEGORY_NEGATE)
-	e4:SetType(EFFECT_TYPE_QUICK_F)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCost(c9910014.discost)
-	e4:SetCondition(c9910014.codisable)
-	e4:SetTarget(c9910014.tgdisable)
-	e4:SetOperation(c9910014.opdisable)
+	e4:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	e4:SetCountLimit(1)
+	e4:SetCondition(c9910014.condtion)
+	e4:SetValue(c9910014.valcon)
+	e4:SetLabelObject(e3)
 	c:RegisterEffect(e4)
+	--immune
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e5:SetCode(EFFECT_IMMUNE_EFFECT)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(c9910014.condtion)
+	e5:SetValue(c9910014.efilter)
+	e5:SetLabelObject(e3)
+	c:RegisterEffect(e5)
+	--destroy
+	local e6=Effect.CreateEffect(c)
+	e6:SetCategory(CATEGORY_DESTROY)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e6:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e6:SetCode(EVENT_PHASE+PHASE_END)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCountLimit(1)
+	e6:SetTarget(c9910014.destg)
+	e6:SetOperation(c9910014.desop)
+	c:RegisterEffect(e6)
 end
-function c9910014.ffilter(c)
-	return c:IsFusionSetCard(0x3950) and c:IsType(TYPE_MONSTER)
-		and c:GetSummonLocation()==LOCATION_EXTRA
+function c9910014.sprfilter1(c,sc)
+	return c:IsSetCard(0x3950,0x5950) and c:IsAbleToRemoveAsCost()
+		and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)
 end
-function c9910014.splimit(e,se,sp,st)
-	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
+function c9910014.sprfilter2(g,tp,sc)
+	return g:IsExists(Card.IsSetCard,1,nil,0x3950) and g:IsExists(Card.IsSetCard,1,nil,0x5950)
+		and g:IsExists(Card.IsSetCard,2,nil,0x3950,0x5950) and Duel.GetLocationCountFromEx(tp,tp,g,sc)>0
+end
+function c9910014.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(c9910014.sprfilter1,tp,LOCATION_ONFIELD,0,nil,c)
+	return g:CheckSubGroup(c9910014.sprfilter2,2,2,tp,c)
+end
+function c9910014.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=Duel.GetMatchingGroup(c9910014.sprfilter1,tp,LOCATION_ONFIELD,0,nil,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local sg=g:SelectSubGroup(tp,c9910014.sprfilter2,false,2,2,tp,c)
+	c:SetMaterial(sg)
+	Duel.Remove(sg,POS_FACEUP,REASON_COST)
+end
+function c9910014.matcheck(e,c)
+	local g=c:GetMaterial()
+	local res=true
+	local tc=g:GetFirst()
+	while tc do
+		res=res and tc:IsType(TYPE_PENDULUM)
+		tc=g:GetNext()
+	end
+	if res then
+		e:SetLabel(1)
+	else
+		e:SetLabel(0)
+	end
+end
+function c9910014.condtion(e)
+	local flag=e:GetLabelObject():GetLabel()
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) and flag==1
 end
 function c9910014.valcon(e,re,r,rp)
 	return bit.band(r,REASON_EFFECT)~=0
@@ -55,34 +103,16 @@ end
 function c9910014.efilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:IsActiveType(TYPE_SPELL)
 end
-function c9910014.codisable(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler()~=e:GetHandler()
-		and e:GetHandler():GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5950)
+function c9910014.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() end
+	if chk==0 then return true end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-function c9910014.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,9910014)==0 end
-	Duel.RegisterFlagEffect(tp,9910014,RESET_CHAIN,0,1)
-end
-function c9910014.tgdisable(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(9910014)==0 end
-	c:RegisterFlagEffect(9910014,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_HAND)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
-end
-function c9910014.opdisable(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,0,nil)
-	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,1-tp,LOCATION_HAND,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg1=g1:Select(tp,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
-	local sg2=g2:Select(1-tp,1,1,nil)
-	sg1:Merge(sg2)
-	Duel.HintSelection(sg1)
-	if Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)~=2 then return end
-	if not c:IsFaceup() or not c:IsRelateToEffect(e)
-		or Duel.GetCurrentChain()~=ev+1 or c:IsStatus(STATUS_BATTLE_DESTROYED) then return end
-	Duel.NegateActivation(ev)
+function c9910014.desop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.Destroy(tc,REASON_EFFECT)
+	end
 end

@@ -1,4 +1,5 @@
 if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53716001
 local cm=_G["c"..m]
 cm.name="断片折光 幻想匿国"
@@ -17,7 +18,6 @@ function cm.initial_effect(c)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,m)
 	e1:SetCost(cm.cost)
-	e1:SetTarget(cm.tg)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
 	local e5=Effect.CreateEffect(c)
@@ -43,73 +43,39 @@ function cm.initial_effect(c)
 	e7:SetOperation(cm.spop)
 	c:RegisterEffect(e7)
 end
-function cm.costfilter(c)
-	return c:IsType(TYPE_CONTINUOUS) and c:IsReleasable()
-end
-function cm.costfilter2(c)
-	return bit.band(c:GetType(),0x20002)==0x20002 and c:IsSetCard(0x353b) and c:IsReleasable()
+function cm.fselect(g,ft,res)
+	local sel=g:IsExists(function(c)return c:IsLocation(LOCATION_SZONE) and c:GetSequence()~=5 and c:IsFaceup()end,1,nil) or ft>0
+	return sel and ((res and #g~=2 and (g:IsExists(function(c)return bit.band(c:GetType(),0x20002)==0x20002 and c:IsSetCard(0x353b)end,1,nil) or #g==3)) or (not res and #g==3))
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.GetTurnPlayer()==1-tp and Duel.GetCurrentPhase()==PHASE_END and Duel.IsExistingMatchingCard(cm.costfilter2,tp,LOCATION_ONFIELD,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_ONFIELD,0,3,nil)
-	if chk==0 then return b1 or b2 end
+	local costg=Duel.GetMatchingGroup(function(c)return c:IsType(TYPE_CONTINUOUS) and c:IsReleasable()end,tp,LOCATION_ONFIELD,0,nil)
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	local res=Duel.GetTurnPlayer()==1-tp and Duel.GetCurrentPhase()==PHASE_END
+	if chk==0 then return costg:CheckSubGroup(cm.fselect,1,3,ft,res) and not e:GetHandler():IsForbidden() end
 	Duel.ConfirmCards(1-tp,e:GetHandler())
-	local opt=0
-	if b1 and b2 then opt=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))
-	elseif b1 and not b2 then opt=0
-	elseif not b1 and b2 then opt=1 end
-	if opt==0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local g=Duel.SelectMatchingCard(tp,cm.costfilter2,tp,LOCATION_ONFIELD,0,1,1,nil)
-		local cg=g:Filter(Card.IsFacedown,nil)
-		if #cg>0 then Duel.ConfirmCards(1-tp,cg) end 
-		local tc=g:GetFirst()
-		if tc:IsLocation(LOCATION_SZONE) and tc:IsFacedown() and tc:GetSequence()<5 then
-			local list={}
-			table.insert(list,tc:GetSequence())
-			table.insert(list,5)
-			e:SetLabel(table.unpack(list))
-		else e:SetLabel(5) end
-		Duel.Release(g,REASON_EFFECT)
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local g=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_ONFIELD,0,3,3,nil)
-		local cg=g:Filter(Card.IsFacedown,nil)
-		if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
-		local list={}
-		for tc in aux.Next(g) do
-			if tc:IsLocation(LOCATION_SZONE) and tc:IsFacedown() and tc:GetSequence()<5 then table.insert(list,tc:GetSequence()) end
-		end
-		if #list>0 then
-			table.insert(list,5)
-			e:SetLabel(table.unpack(list))
-		else e:SetLabel(5) end
-		Duel.Release(g,REASON_EFFECT)
-	end
-end
-function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
-end
-function cm.offilter(c,list)
-	return c:GetSequence()<5 and bit.band(table.unpack(list),c:GetSequence())==0
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=costg:SelectSubGroup(tp,cm.fselect,false,1,3,ft,res)
+	local cg=g:Filter(Card.IsFacedown,nil)
+	if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
+	local list={}
+	for tc in aux.Next(g) do if tc:IsLocation(LOCATION_SZONE) and tc:IsFacedown() and tc:GetSequence()~=5 then table.insert(list,tc:GetSequence()) end end
+	if #list>0 then
+		table.insert(list,5)
+		e:SetLabel(table.unpack(list))
+	else e:SetLabel(5) end
+	Duel.Release(g,REASON_EFFECT)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local list={e:GetLabel()}
-	local zg=Duel.GetMatchingGroup(cm.offilter,tp,LOCATION_SZONE,0,nil,list)
-	if #zg>0 then
-		for tc in aux.Next(zg) do
-			table.insert(list,tc:GetSequence()) 
-		end
-	end
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and #list<6 then
-		local filter=0
-		for i=1,#list do
-			filter=filter|1<<(list[i]+8)
-		end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-		local flag=Duel.SelectDisableField(tp,1,LOCATION_SZONE,0,filter)
-		rsop.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true,2^(math.log(flag,2)-8))
+	local chkl=0
+	for cl=0,4 do if Duel.CheckLocation(tp,LOCATION_SZONE,cl) and not SNNM.IsInTable(cl,list) then chkl=1 end end
+	if not c:IsRelateToEffect(e) or chkl==0 then return end
+	local filter=0
+	for i=1,#list do filter=filter|1<<(list[i]+8) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+	local flag=Duel.SelectDisableField(tp,1,LOCATION_SZONE,0,filter)
+	if flag and rsop.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true,2^(math.log(flag,2)-8)) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)

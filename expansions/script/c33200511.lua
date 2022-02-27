@@ -7,7 +7,7 @@ function c33200511.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_DESTROYED)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,33200511)
 	e1:SetCondition(c33200511.spcon)
@@ -16,7 +16,7 @@ function c33200511.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(33200511,1))
-	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -83,7 +83,7 @@ function c33200511.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function c33200511.tztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tm=Duel.GetFlagEffect(tp,33200503)
-	if chk==0 then return Duel.GetFlagEffect(tp,e:GetHandler():GetOriginalCode())<tm+1 and Duel.IsExistingMatchingCard(c33200511.exfilter,tp,0,LOCATION_HAND,1,nil) end
+	if chk==0 then return Duel.GetFlagEffect(tp,e:GetHandler():GetOriginalCode())<tm+1 and Duel.IsExistingMatchingCard(c33200511.exfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.RegisterFlagEffect(tp,e:GetHandler():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
 	e:GetHandler():RegisterFlagEffect(33200500,RESET_EVENT+RESET_CHAIN,0,1)
 end
@@ -93,21 +93,20 @@ function c33200511.tzop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetHandler():IsType(TYPE_MONSTER) then opt=0 end
 	if re:GetHandler():IsType(TYPE_SPELL) then opt=1 end
 	if re:GetHandler():IsType(TYPE_TRAP) then opt=2 end
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND,nil)
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0,nil)
 	if g:GetCount()==0 then return end
-	if not Duel.IsPlayerAffectedByEffect(tp,33200505) then
+	if not Duel.IsPlayerAffectedByEffect(tp,33200525) then
 		local sg=g:Filter(c33200511.exfilter,nil):RandomSelect(1-tp,1)
 		local sgc=sg:GetFirst()
 		Duel.ConfirmCards(tp,sgc)
-		Duel.ShuffleHand(1-tp)
+		Duel.ShuffleHand(tp)
 		if (opt==0 and sgc:IsType(TYPE_MONSTER)) or (opt==1 and sgc:IsType(TYPE_SPELL)) or (opt==2 and sgc:IsType(TYPE_TRAP)) then
 			if Duel.NegateActivation(ev) then Duel.Recover(tp,800,REASON_EFFECT) end
 		end
 	else
-		Duel.ConfirmCards(tp,g)
-		local sg=Duel.SelectMatchingCard(tp,c33200511.exfilter,tp,0,LOCATION_HAND,1,1,nil)
+		local sg=Duel.SelectMatchingCard(tp,c33200511.exfilter,tp,LOCATION_HAND,0,1,1,nil)
 		local sgc=sg:GetFirst()
-		Duel.ShuffleHand(1-tp)
+		Duel.ShuffleHand(tp)
 		if (opt==0 and sgc:IsType(TYPE_MONSTER)) or (opt==1 and sgc:IsType(TYPE_SPELL)) or (opt==2 and sgc:IsType(TYPE_TRAP)) then
 			if Duel.NegateActivation(ev) then Duel.Recover(tp,800,REASON_EFFECT) end
 		end

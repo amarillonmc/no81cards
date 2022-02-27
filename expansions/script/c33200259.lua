@@ -1,12 +1,15 @@
---机略纵横 邓士载
+--阴平奇袭 邓士载
 function c33200259.initial_effect(c)
-	c:SetUniqueOnField(1,1,33200259)
+	--synchro summon
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	c:EnableReviveLimit() 
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOKEN)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(3,33200250+EFFECT_COUNT_CODE_OATH)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,33200259)
 	e1:SetCondition(c33200259.con)
 	e1:SetOperation(c33200259.gop)
 	c:RegisterEffect(e1)	
@@ -14,8 +17,8 @@ function c33200259.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,33200260)
 	e2:SetCost(c33200259.smcost)
 	e2:SetTarget(c33200259.smtg)
 	e2:SetOperation(c33200259.smop)
@@ -23,7 +26,7 @@ function c33200259.initial_effect(c)
 	--atk up
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetRange(LOCATION_SZONE)
+	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetCode(EFFECT_UPDATE_ATTACK)
 	e3:SetTarget(aux.TargetBoolFunction(Card.IsCode,33200250))
@@ -31,7 +34,7 @@ function c33200259.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c33200259.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLocationCount(tp,LOCATION_SZONE)>1
+	return Duel.GetLocationCount(tp,LOCATION_SZONE)>1 and e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c33200259.gop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<1 then return end

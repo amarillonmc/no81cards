@@ -1269,14 +1269,81 @@ function cm.SRoverDrawOp(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
 	Duel.RegisterEffect(e2,tp)
 end
-function cm.SetPublic(c,lab)
+function cm.SeadowRoverSyn(c)
+	c:EnableReviveLimit()
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(c:GetOriginalCode(),0))
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
+	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e2:SetRange(LOCATION_EXTRA)
+	e2:SetValue(SUMMON_TYPE_SYNCHRO)
+	e2:SetCondition(cm.SRoverSPcon)
+	e2:SetOperation(cm.SRoverSPop)
+	c:RegisterEffect(e2)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(c:GetOriginalCode(),2))
+	e4:SetCategory(CATEGORY_DRAW)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetCode(EVENT_LEAVE_FIELD)
+	e4:SetCondition(cm.SRoverDrawCon2)
+	e4:SetTarget(cm.SRoverDrawtg2)
+	e4:SetOperation(cm.SRoverDrawOp2)
+	c:RegisterEffect(e4)
+end
+function cm.SRovercfilter(c,tp)
+	return c:IsSetCard(0x3534) and c:IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(cm.SRovercfilter1,tp,LOCATION_HAND,0,1,c) and c:IsPublic() and c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_TUNER)
+end
+function cm.SRovercfilter1(c)
+	return c:IsSetCard(0x3534) and c:IsType(TYPE_TUNER) and c:IsAbleToDeckAsCost() and c:IsPublic()
+end
+function cm.SRoverSPcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.IsExistingMatchingCard(cm.SRovercfilter,tp,LOCATION_HAND,0,1,c,tp) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+end
+function cm.SRoverSPop(e,tp,eg,ep,ev,re,r,rp,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g1=Duel.SelectMatchingCard(tp,cm.SRovercfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g2=Duel.SelectMatchingCard(tp,cm.SRovercfilter1,tp,LOCATION_HAND,0,1,1,g1:GetFirst())
+	g1:Merge(g2)
+	Duel.SendtoDeck(g1,nil,2,REASON_COST)
+end
+function cm.SRoverDrawCon2(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsReason(REASON_DESTROY)
+end
+function cm.SRoverDrawtg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.SRoverDrawOp2(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
+end
+function cm.SetPublic(c,lab,rst,rstct)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(53702500,lab))
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_PUBLIC)
 	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+	e1:SetReset(rst,rstct)
 	c:RegisterEffect(e1)
+end
+function cm.SetPublicGroup(c,g,rst,rstct)
+	for pubc in aux.Next(g) do
+		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(53702500,3))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetReset(rst,rstct)
+		pubc:RegisterEffect(e1)
+	end
 end
 function cm.AnouguryLink(c)
 	c:EnableReviveLimit()
@@ -1320,6 +1387,12 @@ function cm.AnouguryReptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e3:SetLabelObject(e2)
 	e3:SetOperation(cm.AnouguryRstop2)
 	Duel.RegisterEffect(e3,tp)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_CUSTOM+53728000)
+	e4:SetLabelObject(e3)
+	e4:SetOperation(cm.AnouguryRstop3)
+	Duel.RegisterEffect(e4,tp)
 	return true
 end
 function cm.AnouguryRstop(e,tp,eg,ep,ev,re,r,rp)
@@ -1330,6 +1403,7 @@ function cm.AnouguryRstop(e,tp,eg,ep,ev,re,r,rp)
 		ec:ResetEffect(EFFECT_INDESTRUCTABLE,RESET_CODE)
 	end
 	Duel.Destroy(g,REASON_RULE)
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+53728000,re,r,rp,ep,ev)
 	e:Reset()
 end
 function cm.AnouguryRstop2(e,tp,eg,ep,ev,re,r,rp)
@@ -1346,4 +1420,177 @@ function cm.AnouguryRstop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 	e:GetLabelObject():Reset()
 	e:Reset()
+end
+function cm.AnouguryRstop3(e,tp,eg,ep,ev,re,r,rp)
+	e:GetLabelObject():Reset()
+	e:Reset()
+end
+function cm.MRSYakuSP(c,num,typ)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(c:GetOriginalCode(),0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCost(cm.MRSYakuSPcost(num,typ))
+	e1:SetTarget(cm.MRSYakuSPtg)
+	e1:SetOperation(cm.MRSYakuSPop)
+	c:RegisterEffect(e1)
+	local e1_1=Effect.CreateEffect(c)
+	e1_1:SetDescription(aux.Stringid(c:GetOriginalCode(),0))
+	e1_1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1_1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e1_1:SetCode(EVENT_CUSTOM+53711005)
+	e1_1:SetRange(LOCATION_HAND)
+	e1_1:SetCost(cm.MRSYakuSPcost(num,typ))
+	e1_1:SetTarget(cm.MRSYakuSPtg)
+	e1_1:SetOperation(cm.MRSYakuSPop)
+	c:RegisterEffect(e1_1)
+end
+function cm.MRSYakuspfilter1(c,e,tp,typ)
+	if c:IsLocation(LOCATION_HAND) then
+		return c:IsType(typ) and c:IsDiscardable()
+	else
+		return e:GetHandler():IsOriginalSetCard(0x3538) and e:GetHandler():IsLevel(4) and c:IsAbleToRemove() and c:IsHasEffect(53711009,tp)
+	end
+end
+function cm.MRSYakuspfilter2(c,e,tp)
+	return c:IsSetCard(0x3538) and c:IsType(TYPE_SPELL)
+end
+function cm.MRSYakutimefilter(c,tp)
+	return c:IsHasEffect(53711099,tp) and c:GetFlagEffect(53711065)<2
+end
+function cm.MRSYakufselect(g,ct)
+	local g2=g:Filter(Card.IsLocation,nil,LOCATION_DECK)
+	return aux.dncheck(g2) and #g2<=ct
+end
+function cm.MRSYakuSPcost(num,typ)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp,chk)
+		local c=e:GetHandler()
+		local ltime=0
+		local timeg=Duel.GetMatchingGroup(cm.MRSYakutimefilter,tp,LOCATION_MZONE,0,c,tp)
+		if #timeg>0 then
+			local ttct=0
+			for timec in aux.Next(timeg) do
+				local timect=timec:GetFlagEffect(53711065)
+				ttct=ttct+timect
+			end
+			ltime=2*#timeg-ttct
+		end
+		local g=Duel.GetMatchingGroup(cm.MRSYakuspfilter1,tp,LOCATION_HAND+LOCATION_GRAVE,0,c,e,tp,typ)
+		local gdg=Duel.GetMatchingGroup(cm.MRSYakuspfilter2,tp,LOCATION_DECK,0,c,e,tp)
+		local ct=gdg:GetClassCount(Card.GetCode)
+		if ct>ltime then ct=ltime end
+		if chk==0 then return #g+ct>num-1 end
+		g:Merge(gdg)
+		if ltime>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(c:GetOriginalCode(),3))
+			local sg=g:SelectSubGroup(tp,cm.MRSYakufselect,false,num,num,ct)
+			local dg=sg:Filter(Card.IsLocation,nil,LOCATION_DECK)
+			if #dg>0 then
+				if #timeg>1 then
+					for i=1,#dg do
+						Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(c:GetOriginalCode(),5))
+						local usedg=timeg:FilterSelect(tp,cm.MRSYakutimefilter,1,1,nil)
+						Duel.HintSelection(usedg)
+						local usedc=usedg:GetFirst()
+						local trg=usedc:GetFlagEffect(53711065)
+						usedc:RegisterFlagEffect(53711065,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(53711015,trg+3))
+					end
+				else
+					for i=1,#dg do
+						local trg=timeg:GetFirst():GetFlagEffect(53711065)
+						timeg:GetFirst():RegisterFlagEffect(53711065,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(53711015,trg+3))
+					end
+				end
+			end
+			local tc=sg:GetFirst()
+			while tc do
+				local te=tc:IsHasEffect(53711009,tp)
+				if te then
+					Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_REPLACE)
+				else
+					Duel.SendtoGrave(tc,REASON_COST+REASON_DISCARD)
+				end
+				tc=sg:GetNext()
+			end
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+			local sg=Duel.SelectMatchingCard(tp,cm.MRSYakuspfilter1,tp,LOCATION_HAND+LOCATION_GRAVE,0,num,num,c,e,tp,typ)
+			local tc=sg:GetFirst()
+			while tc do
+				local te=tc:IsHasEffect(53711009,tp)
+				if te then
+					Duel.Remove(tc,POS_FACEUP,REASON_COST+REASON_REPLACE)
+				else
+					Duel.SendtoGrave(tc,REASON_COST+REASON_DISCARD)
+				end
+				tc=sg:GetNext()
+			end
+		end
+	end
+end
+function cm.MRSYakuSPtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+function cm.MRSYakuSPop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function cm.IsInTable(value, tbl)
+	for k,v in ipairs(tbl) do
+		if v == value then
+		return true
+		end
+	end
+	return false
+end
+function cm.OnStageText(c,typ)
+	if typ==act then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+		e1:SetCode(EVENT_CHAINING)
+		e1:SetOperation(cm.Stageactop)
+		c:RegisterEffect(e1)
+	elseif typ==nors then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+		e2:SetCode(EVENT_SUMMON_SUCCESS)
+		e2:SetOperation(cm.Stagesop)
+		c:RegisterEffect(e2)
+	elseif typ==spes then
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+		e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+		e3:SetOperation(cm.Stagesop)
+		c:RegisterEffect(e3)
+	end
+end
+function cm.Stageactop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(24,0,aux.Stringid(e:GetHandler():GetOriginalCode(),11))
+	Duel.Hint(24,0,aux.Stringid(e:GetHandler():GetOriginalCode(),12))
+end
+function cm.Stagesop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(24,0,aux.Stringid(e:GetHandler():GetOriginalCode(),13))
+	Duel.Hint(24,0,aux.Stringid(e:GetHandler():GetOriginalCode(),14))
+	Duel.Hint(24,0,aux.Stringid(e:GetHandler():GetOriginalCode(),15))
+end
+function cm.SetDirectlyf(c)
+	return c:IsFaceup() and ((c:IsLocation(LOCATION_MZONE) and ((bit.band(c:GetOriginalType(),TYPE_SPELL+TYPE_TRAP)~=0 and (not c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsCanTurnSet()) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and c:IsCanTurnSet())) or (bit.band(c:GetOriginalType(),TYPE_SPELL+TYPE_TRAP)==0 and c:IsCanTurnSet()))) or (c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true))) and not (c:IsType(TYPE_PENDULUM) and c:IsLocation(LOCATION_PZONE))
+end
+function cm.SetDirectly(g,e,p)
+	for tc in aux.Next(g) do
+		tc:CancelToGrave()
+		Duel.ChangePosition(tc,POS_FACEDOWN)
+		local loc=0
+		if tc:IsType(TYPE_FIELD) then loc=LOCATION_FZONE
+		elseif tc:IsType(TYPE_SPELL+TYPE_TRAP) then loc=LOCATION_SZONE end
+		if tc:GetOriginalType()&TYPE_MONSTER==0 and tc:IsLocation(LOCATION_MZONE) then Duel.MoveToField(tc,p,p,loc,POS_FACEDOWN,false) end
+		if tc:IsType(TYPE_SPELL+TYPE_TRAP) then Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,p,p,0) end
+	end
 end
