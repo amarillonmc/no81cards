@@ -42,7 +42,7 @@ function c33200660.cfilter(c,seq2)
 end
 function c33200660.discon(e,tp,eg,ep,ev,re,r,rp)
 	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
-	return rp==1-tp and (re:IsActiveType(TYPE_TRAP) or re:IsActiveType(TYPE_SPELL)) and loc==LOCATION_SZONE
+	return rp==1-tp and (re:IsActiveType(TYPE_TRAP) or re:IsActiveType(TYPE_SPELL)) and loc&LOCATION_SZONE==LOCATION_SZONE and seq<=4
 		and Duel.IsExistingMatchingCard(c33200660.cfilter,tp,LOCATION_MZONE,0,1,nil,seq)
 end
 function c33200660.disop(e,tp,eg,ep,ev,re,r,rp)

@@ -83,6 +83,7 @@ function c33200651.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function c33200651.desop(e,tp,eg,ep,ev,re,r,rp)
+	local datk=e:GetHandler():GetAttack()
 	if e:GetHandler():IsOnField() and e:GetHandler():IsFaceup() then
 		local g=Duel.GetMatchingGroup(c33200651.desfilter,tp,0,LOCATION_MZONE,nil,datk)
 		Duel.Destroy(g,REASON_EFFECT)
