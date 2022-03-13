@@ -118,8 +118,8 @@ function cm.con1(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 end
-	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+	if chk==0 then return e:GetHandler():GetFlagEffect(60000062)==0 end
+	e:GetHandler():RegisterFlagEffect(60000062,RESET_CHAIN,0,1)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

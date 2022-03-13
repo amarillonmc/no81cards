@@ -12,7 +12,7 @@ function c9910647.initial_effect(c)
 	c:RegisterEffect(e1)
 	--spsummon2
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES+CATEGORY_HANDES)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -41,39 +41,38 @@ function c9910647.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c9910647.spfilter(c,e,tp)
-	return c:IsCode(9910647) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c9910647.thfilter(c)
-	return (c:IsCode(9910647) or aux.IsCodeListed(c,9910647) and c:IsType(TYPE_MONSTER)) and c:IsAbleToHand()
+function c9910647.filter(c)
+	return not c:IsPublic()
 end
 function c9910647.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c9910647.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)
-			or Duel.IsPlayerCanDraw(tp,1)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910647.filter,tp,LOCATION_HAND,0,1,nil)
+		and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
+end
+function c9910647.spfilter(c,e,tp)
+	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910647.spop2(e,tp,eg,ep,ev,re,r,rp)
-	local sel=1
-	local g=Duel.GetMatchingGroup(Card.IsCanBeSpecialSummoned,1-tp,LOCATION_HAND,0,nil,e,0,1-tp,false,false)
-	Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(9910647,0))
-	if g:GetCount()>0 and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 then
-		sel=Duel.SelectOption(1-tp,1213,1214)
-	else
-		sel=Duel.SelectOption(1-tp,1214)+1
-	end
-	if sel==0 then
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(1-tp,1,1,nil)
-		if Duel.SpecialSummon(sg,0,1-tp,1-tp,false,false,POS_FACEUP)~=0
-			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g1=Duel.SelectMatchingCard(tp,c9910647.filter,tp,LOCATION_HAND,0,1,1,nil)
+	if g1:GetCount()==0 then return end
+	Duel.ConfirmCards(1-tp,g1)
+	local tc1=g1:GetFirst()
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g2=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,1)
+	Duel.ConfirmCards(tp,g2)
+	local tc2=g2:GetFirst()
+	if bit.band(tc1:GetType(),0x7)==bit.band(tc2:GetType(),0x7) then
+		local g=Duel.GetMatchingGroup(c9910647.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
+		if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(9910647,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local pg=Duel.SelectMatchingCard(tp,c9910647.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-			if pg:GetCount()>0 then
-				Duel.SpecialSummon(pg,0,tp,tp,false,false,POS_FACEUP)
-			end
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 		end
 	else
-		Duel.Draw(tp,1,REASON_EFFECT)
+		g1:Merge(g2)
+		Duel.SendtoGrave(g1,REASON_EFFECT)
 	end
+	Duel.ShuffleHand(tp)
+	Duel.ShuffleHand(1-tp)
 end

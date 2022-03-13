@@ -2,6 +2,7 @@
 c29065510.named_with_Arknight=1
 function c29065510.initial_effect(c)
 	c:EnableCounterPermit(0x10ae)
+	c:SetCounterLimit(0x10ae,9)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_COUNTER)
@@ -10,15 +11,17 @@ function c29065510.initial_effect(c)
 	e1:SetTarget(c29065510.target)
 	e1:SetOperation(c29065510.activate)
 	c:RegisterEffect(e1)
-	--special summon
+	--Add Counter
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCost(c29065510.spcost)
-	e2:SetTarget(c29065510.sptg)
-	e2:SetOperation(c29065510.spop)
+	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetOperation(c29065510.counter)
 	c:RegisterEffect(e2)
+	local e5=e2:Clone()
+	e2:SetCode(EVENT_REMOVE)
+	c:RegisterEffect(e5)
 	--cannot disable summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -31,47 +34,25 @@ function c29065510.initial_effect(c)
 	e4:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
 	c:RegisterEffect(e4)
 end
-function c29065510.cdstg(e,c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+function c29065510.cfilter(c)
+	return c:IsPreviousLocation(LOCATION_ONFIELD) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER)
+end
+function c29065510.counter(e,tp,eg,ep,ev,re,r,rp)
+	local ct=eg:FilterCount(c29065510.cfilter,nil)
+	if ct>0 then
+		e:GetHandler():AddCounter(0x10ae,ct)
+	end
 end
 function c29065510.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsCanAddCounter(tp,0x10ae,1,c) end
+	if chk==0 then return Duel.IsCanAddCounter(tp,0x10ae,3,c) end
 end
 function c29065510.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		c:AddCounter(0x10ae,1)
+		c:AddCounter(0x10ae,3)
 	end
 end
-function c29065510.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_COST)
-end
-function c29065510.spfilter(c,e,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c29065510.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c29065510.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
-end
-function c29065510.spop(e,tp,eg,ep,ev,re,r,rp,chk)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c29065510.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
-		if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-			e1:SetTargetRange(1,0)
-			e1:SetLabel(g:GetFirst():GetOriginalCode())
-			e1:SetTarget(c29065510.splimit)
-			e1:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e1,tp)
-	end
-end
-function c29065510.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return se and se:GetHandler():IsCode(29065510) and c:GetOriginalCode()==e:GetLabel()
+function c29065510.cdstg(e,c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end

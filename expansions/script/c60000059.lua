@@ -118,10 +118,10 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cg=e:GetHandler():GetColumnGroup()
 	if chk==0 then return cg:CheckSubGroup(cm.fselect,1,1) 
 	and e:GetHandler():IsAbleToHand()
-	and e:GetHandler():GetFlagEffect(m)==0 end
+	and e:GetHandler():GetFlagEffect(60000060)==0 end
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,cg)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1) 
+	e:GetHandler():RegisterFlagEffect(60000060,RESET_CHAIN,0,1) 
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

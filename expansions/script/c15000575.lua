@@ -46,7 +46,7 @@ end
 function cm.attactop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker()
 	local sc=Duel.GetAttackTarget()
-	if sc==nil then return end
+	if not sc then return end
 	if sc:GetColumnGroup():IsContains(tc) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -87,7 +87,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		if e:GetLabel()==1 then Duel.RegisterFlagEffect(tp,15248873,RESET_CHAIN,0,1) end
 		local b2=te:IsActivatable(tp,true,true)
 		Duel.ResetFlagEffect(tp,15248873)
-		if b2  then
+		if b2 then
 			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 			if fc then
 				Duel.SendtoGrave(fc,REASON_RULE)
@@ -99,6 +99,11 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			local cost=te:GetCost()
 			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 			Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+			Duel.BreakEffect()
+			local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,nil)
+			if g:GetCount()~=0 then
+				Duel.SendtoHand(g,nil,REASON_EFFECT+REASON_RULE)
+			end
 		end
 	end
 end

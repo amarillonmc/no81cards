@@ -2,8 +2,26 @@
 c29065501.named_with_Arknight=1
 function c29065501.initial_effect(c)
 	aux.AddCodeList(c,29065500)
-	c:EnableCounterPermit(0x10ae)
-	--to hand 
+	--pendulum summon
+	aux.EnablePendulumAttribute(c)
+	--pendulum set
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(29065501,0))
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_PZONE)
+	e3:SetCountLimit(1,09065501)
+	e3:SetTarget(c29065501.pctg)
+	e3:SetOperation(c29065501.pcop)
+	c:RegisterEffect(e3)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_HAND+LOCATION_EXTRA)
+	e1:SetCountLimit(1,19065501+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(c29065501.spcon)
+	e1:SetOperation(c29065501.spop)
+	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29065501,0))
 	e2:SetCategory(CATEGORY_SEARCH)
@@ -18,55 +36,37 @@ function c29065501.initial_effect(c)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 	c29065501.summon_effect=e2
-	--counter   
-	local e4=Effect.CreateEffect(c)   
-	e4:SetDescription(aux.Stringid(29065501,3))  
-	e4:SetCategory(CATEGORY_COUNTER)	
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)	
-	e4:SetProperty((EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL))   
-	e4:SetCode(EVENT_LEAVE_FIELD)  
-	e4:SetCondition(c29065501.coucon)   
-	e4:SetTarget(c29065501.coutg)   
-	e4:SetOperation(c29065501.couop)  
-	c:RegisterEffect(e4)	
-	--set
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(29065501,2))
-	e5:SetType(EFFECT_TYPE_IGNITION)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1)
-	e5:SetCondition(c29065501.condition)
-	e5:SetTarget(c29065501.stg)
-	e5:SetOperation(c29065501.sop)
-	c:RegisterEffect(e5)
 end
-function c29065501.coucon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) 
-end 
-function c29065501.coufilter(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
-end 
-function c29065501.coutg(e,tp,eg,ep,ev,re,r,rp,chk)
- if chk==0 then return Duel.IsExistingMatchingCard(c29065501.coufilter,tp,LOCATION_ONFIELD,0,1,nil) end 
+function c29065501.spfilter(c)
+	return c:IsFaceup() and c:IsCode(29065500)
 end
- function c29065501.couop(e,tp,eg,ep,ev,re,r,rp) 
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP) 
-	local tc=Duel.SelectMatchingCard(tp,c29065501.coufilter,tp,LOCATION_ONFIELD,0,1,1,nil):GetFirst()   
-	local n=1 
-	tc:AddCounter(0x10ae,n)
+function c29065501.pcfilter(c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM) and not c:IsCode(29065501) and not c:IsForbidden()
+end
+function c29065501.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
+		and Duel.IsExistingMatchingCard(c29065501.pcfilter,tp,LOCATION_DECK,0,1,nil) end
+end
+function c29065501.pcop(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local g=Duel.SelectMatchingCard(tp,c29065501.pcfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+	end
+end
+function c29065501.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c29065501.spfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c29065501.xthfilter(c)
-	return aux.IsCodeListed(c,29065500) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) or c:IsCode(29065533)) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c29065501.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29065501.xthfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c29065501.athfilter(c,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:GetType()==0x20002
-end
-function c29065501.cfilter(c)
-	return c:IsFaceup() and c:IsCode(29065500)
 end
 function c29065501.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -74,26 +74,5 @@ function c29065501.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,g)
-	end
-end
-function c29065501.stfilter(c,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:GetType()==0x20002 and not c:IsForbidden() and c:CheckUniqueOnField(tp)
-end
-function c29065501.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c29065501.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
-end
-function c29065501.stg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29065501.stfilter,tp,LOCATION_DECK,0,1,1,nil,tp) end
-end
-function c29065501.sop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tc=Duel.SelectMatchingCard(tp,c29065501.stfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
-	if tc then
-		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
-		if fc then
-			Duel.SendtoGrave(fc,REASON_RULE)
-			Duel.BreakEffect()
-		end
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	end
 end

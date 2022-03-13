@@ -7,7 +7,7 @@ function c9910704.initial_effect(c)
 	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910704,0))
-	e1:SetCategory(CATEGORY_HANDES+CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CUSTOM+9910704)
@@ -57,22 +57,19 @@ function c9910704.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
+function c9910704.filter(c)
+	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
 function c9910704.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910704.filter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9910704.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	if Duel.Draw(p,d,REASON_EFFECT)~=0 then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoGrave(g,REASON_EFFECT+REASON_DISCARD)
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9910704.filter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function c9910704.setcon(e,tp,eg,ep,ev,re,r,rp)

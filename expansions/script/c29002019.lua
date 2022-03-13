@@ -27,7 +27,7 @@ end
 function c29002019.ovfilter(c)
 local tp=c:GetControler()
 	local x=Duel.GetActivityCount(tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SPSUMMON)
-	return c:IsFaceup() and x>=12 and c:IsType(TYPE_XYZ) and not c:IsCode(29002019)
+	return c:IsFaceup() and x>=12 and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and not c:IsCode(29002019)
 end
 function c29002019.effcon(e)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

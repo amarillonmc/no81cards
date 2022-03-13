@@ -1,0 +1,55 @@
+--巧壳将 奥路法
+function c67200560.initial_effect(c)
+	--link summon
+	c:EnableReviveLimit()
+	c:SetSPSummonOnce(67200560)
+	aux.AddLinkProcedure(c,c67200560.mfilter,1,1) 
+	--move
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DAMAGE+CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e3:SetCode(EVENT_MOVE)
+	e3:SetCountLimit(1,67200560)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(c67200560.ctcon1)
+	e3:SetTarget(c67200560.cttg1)
+	e3:SetOperation(c67200560.ctop1)
+	c:RegisterEffect(e3)
+end
+function c67200560.mfilter(c)
+	return c:IsLinkSetCard(0x676) and c:IsLinkType(TYPE_PENDULUM)
+end
+--
+function c67200560.cfilter(c,tp)
+	return c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0x676) and c:IsType(TYPE_MONSTER) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsControler(tp)
+end
+function c67200560.ctcon1(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c67200560.cfilter,1,e:GetHandler(),tp)
+end
+function c67200560.damfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x676)
+end
+function c67200560.spfilter(c,e,tp)
+	return c:IsSetCard(0x676) and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c67200560.cttg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c67200560.damfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.SetTargetPlayer(1-tp)
+	local ct=Duel.GetMatchingGroupCount(c67200560.damfilter,tp,LOCATION_MZONE,0,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,ct*300)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+end
+function c67200560.ctop1(e,tp,eg,ep,ev,re,r,rp)
+	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	local ct=Duel.GetMatchingGroupCount(c67200560.damfilter,tp,LOCATION_MZONE,0,nil)
+	Duel.Damage(p,ct*300,REASON_EFFECT)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c67200560.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(67200560,2)) then 
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,c67200560.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		if g:GetCount()>0 then
+			Duel.BreakEffect()
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		end
+	end
+end

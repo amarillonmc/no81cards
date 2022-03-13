@@ -88,10 +88,10 @@ function cm.todeckfilter(c)
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.todeckfilter,tp,LOCATION_ONFIELD,0,1,nil)
-	and Duel.IsExistingMatchingCard(cm.todeckfilter,tp,0,LOCATION_ONFIELD,1,nil) and e:GetHandler():GetFlagEffect(m)==0
+	and Duel.IsExistingMatchingCard(cm.todeckfilter,tp,0,LOCATION_ONFIELD,1,nil) and e:GetHandler():GetFlagEffect(60000059)==0
 	and e:GetHandler():IsAbleToHand() end
 	local g=Duel.GetMatchingGroup(cm.todeckfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+	e:GetHandler():RegisterFlagEffect(60000059,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)

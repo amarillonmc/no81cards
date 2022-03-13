@@ -1,4 +1,4 @@
---械装守护邪龙 卡达巴洛
+--暗械防御机关
 local m=30000655
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 --SpecialSummon
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -65,7 +65,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 --to hand
 	local e7=Effect.CreateEffect(c)
-	e7:SetCategory(CATEGORY_TOHAND)
+	e7:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
 	e7:SetType(EFFECT_TYPE_IGNITION)
 	e7:SetRange(LOCATION_GRAVE)
 	e7:SetCountLimit(1,m)
@@ -168,7 +168,7 @@ function cm.thfilter(c,mc)
 	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToHand() and c~=mc
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_REMOVED,0,1,nil,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e:GetHandler()) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)

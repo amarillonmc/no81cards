@@ -108,12 +108,14 @@ function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetRange(LOCATION_MZONE)  
 				e1:SetCode(EFFECT_SET_ATTACK)
 				e1:SetValue(cm.atkval)  
+				e1:SetLabelObject(tc)
 				token:RegisterEffect(e1)
 				local e2=Effect.CreateEffect(c)
 				e2:SetType(EFFECT_TYPE_SINGLE)  
 				e2:SetRange(LOCATION_MZONE)  
 				e2:SetCode(EFFECT_SET_DEFENSE)
 				e2:SetValue(cm.defval)  
+				e2:SetLabelObject(tc)
 				token:RegisterEffect(e2)
 				--ChangePosition
 				local e3=Effect.CreateEffect(c)
@@ -138,14 +140,12 @@ function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.atkval(e,c)
-	local tc=Duel.GetFirstMatchingCard(cm.desfilter,e:GetHandler():GetControler(),0,LOCATION_MZONE,nil,e:GetHandler())
-	if tc==nil then return 0 end
+	local tc=e:GetLabelObject()
 	if tc:IsFacedown() then return 0 end
 	return tc:GetAttack()
 end
 function cm.defval(e,c)
-	local tc=Duel.GetFirstMatchingCard(cm.desfilter,e:GetHandler():GetControler(),0,LOCATION_MZONE,nil,e:GetHandler())
-	if tc==nil then return 0 end
+	local tc=e:GetLabelObject()
 	if tc:IsFacedown() then return 0 end
 	return tc:GetDefense()
 end

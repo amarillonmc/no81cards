@@ -109,8 +109,8 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and c:IsAbleToDeck()
-		and c:GetFlagEffect(m)==0  end
-	c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
+		and c:GetFlagEffect(60000057)==0  end
+	c:RegisterFlagEffect(60000057,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)

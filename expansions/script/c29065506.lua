@@ -7,23 +7,23 @@ function cm.initial_effect(c)
 	aux.AddLinkProcedure(c,nil,2,2,cm.lcheck)
 	c:EnableReviveLimit()
 	--tohand
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	--e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.thcon)
-	e1:SetTarget(cm.thtg)
-	e1:SetOperation(cm.thop)
-	c:RegisterEffect(e1)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetDescription(aux.Stringid(m,0))
+	--e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	--e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	--e1:SetProperty(EFFECT_FLAG_DELAY)
+	--e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	--e1:SetCountLimit(1,m+100)
+	--e1:SetCondition(cm.thcon)
+	--e1:SetTarget(cm.thtg)
+	--e1:SetOperation(cm.thop)
+	--c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,m)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCost(cm.spcost)
 	e2:SetTarget(cm.tga)
@@ -67,24 +67,34 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	local ac=Duel.AnnounceNumber(tp,table.unpack(t))
 	Duel.PayLPCost(tp,ac,true)
-	e:SetLabel(ac)
+	e:SetLabel(ac/600)
 end
 function cm.cfilter(c)
-	return (c:IsSetCard(0x87af) or _G["c"..c:GetCode()].named_with_Arknight) and c:IsType(TYPE_MONSTER)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand()
 end
 function cm.tga(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
-		and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
+		and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_DECK,0,1,nil)end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function cm.opa(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
 	local ac=e:GetLabel()
-	Duel.ConfirmDecktop(tp,ac/600)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local g=Duel.GetDecktopGroup(tp,ac/600)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=g:FilterSelect(tp,cm.cfilter,1,1,nil,e,tp)
-	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-	Duel.ShuffleDeck(tp)
+	Duel.ConfirmDecktop(tp,ac)
+	local g=Duel.GetDecktopGroup(tp,ac)
+	local sg=g:Filter(cm.cfilter,nil)
+	if sg:GetCount()>0 then
+		Duel.DisableShuffleCheck()
+		local hg=sg:SelectSubGroup(tp,aux.dncheck,false,1,g:GetCount())
+		if hg:GetFirst():IsAbleToHand() then
+			Duel.SendtoHand(hg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,hg)
+			Duel.ShuffleHand(tp)
+		else
+			Duel.SendtoGrave(hg,REASON_RULE)
+		end
+		Duel.ShuffleDeck(tp)
+	else
+		Duel.ShuffleDeck(tp)
+	end
 end

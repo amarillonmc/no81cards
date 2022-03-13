@@ -34,7 +34,7 @@ function c29065523.spcon(e,c)
 end
 function c29065523.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local n=2 
+	local n=1 
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
@@ -45,7 +45,7 @@ function c29065523.refilter(c)
 end
 function c29065523.ctop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then  
-	local n=2 
+	local n=1 
 	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
 	n=n+1
 	end
