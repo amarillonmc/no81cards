@@ -29,24 +29,19 @@ function c64800116.tgfilter(c)
 	return c:IsSetCard(0x341a) and c:IsAbleToGrave()
 end
 function c64800116.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c64800116.tgfilter,tp,LOCATION_HAND,0,1,nil)
-		and Duel.IsExistingMatchingCard(c64800116.tgfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,nil,tp,LOCATION_DECK+LOCATION_HAND)
+	if chk==0 then return Duel.IsExistingMatchingCard(c64800116.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
+end
+function c64800116.fselect(g)
+	return g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)<=1
+		and g:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=1
 end
 function c64800116.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Group.CreateGroup()
-	local g2=Group.CreateGroup()
-	if Duel.IsExistingMatchingCard(c64800116.tgfilter,tp,LOCATION_HAND,0,1,nil) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		g1=Duel.SelectMatchingCard(tp,c64800116.tgfilter,tp,LOCATION_HAND,0,1,1,nil)
-	end
-	if Duel.IsExistingMatchingCard(c64800116.tgfilter,tp,LOCATION_DECK,0,1,nil) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		g2=Duel.SelectMatchingCard(tp,c64800116.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-	end
-	g1:Merge(g2)
-	if g1:GetCount()>0 then
-		Duel.SendtoGrave(g1,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(c64800116.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local sg=g:SelectSubGroup(tp,c64800116.fselect,false,1,2)
+	if sg:GetCount()>0 then
+		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end
 end
 
@@ -55,7 +50,7 @@ function c64800116.spcfilter(c,tp)
 	return c:GetControler()==tp and c:IsSetCard(0x341a) 
 end
 function c64800116.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c64800116.spcfilter,1,e:GetHandler(),tp)
+	return eg:IsExists(c64800116.spcfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function c64800116.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
