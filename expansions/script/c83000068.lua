@@ -31,11 +31,10 @@ function c83000068.initial_effect(c)
 	e4:SetTarget(c83000068.thtg)
 	e4:SetOperation(c83000068.thop)
 	c:RegisterEffect(e4)
-	local e12=Effect.CreateEffect(c)
-	e12:SetType(EFFECT_TYPE_EQUIP)
-	e12:SetCode(EFFECT_UPDATE_ATTACK)
-	e12:SetValue(1000)
-	c:RegisterEffect(e12)
+	Duel.AddCustomActivityCounter(83000068,ACTIVITY_SPSUMMON,c83000068.counterfilter)
+end
+function c83000068.counterfilter(c)
+	return not c:IsSummonLocation(LOCATION_EXTRA)
 end
 function c83000068.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local res=e:GetLabel()==100 or Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -62,7 +61,7 @@ function c83000068.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c83000068.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
+	if chk==0 then return Duel.GetCustomActivityCount(83000068,tp,ACTIVITY_SPSUMMON)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -103,11 +102,18 @@ function c83000068.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_EQUIP_LIMIT)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetLabelObject(tc)
 	e1:SetValue(c83000068.eqlimit)
 	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_EQUIP)
+	e2:SetCode(EFFECT_UPDATE_ATTACK)
+	e2:SetValue(1000)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e2)
 end
 function c83000068.eqlimit(e,c)
-	return c:IsFaceup() and c:IsAttackAbove(2400)
+	return c==e:GetLabelObject()
 end
 -----------
 function c83000068.thfilter2(c)
@@ -115,7 +121,7 @@ function c83000068.thfilter2(c)
 end
 function c83000068.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsPreviousLocation(LOCATION_FZONE) and c:IsPreviousPosition(POS_FACEUP)
+	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c83000068.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c83000068.thfilter2,tp,LOCATION_DECK,0,1,nil) end

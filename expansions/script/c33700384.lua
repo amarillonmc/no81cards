@@ -41,5 +41,7 @@ function c33700384.aclimit(e,re,tp)
 	return not re:GetHandler():IsImmuneToEffect(e)
 end
 function c33700384.actcon(e)
-	return Duel.GetAttacker():IsControler(e:GetHandlerPlayer()) and not Duel.GetAttackTarget()
+	local tp=e:GetHandlerPlayer()
+	local a=Duel.GetAttacker()
+	return a and a:IsControler(tp) and not Duel.GetAttackTarget()
 end

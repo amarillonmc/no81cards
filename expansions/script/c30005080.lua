@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--Effect 2  
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_LEAVE_GRAVE)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e2:SetRange(LOCATION_SZONE)
@@ -128,4 +128,3 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 end
- 

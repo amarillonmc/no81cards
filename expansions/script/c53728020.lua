@@ -44,7 +44,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if fg:FilterCount(Card.IsLocation,nil,LOCATION_DECK)==#fg or (#g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0))) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local sg=g:Select(tp,1,1,nil)
-		Duel.SendtoGrave(g,REASON_COST)
+		Duel.SendtoGrave(sg,REASON_COST)
 		e:SetLabel(1)
 	else e:SetLabel(0) end
 end

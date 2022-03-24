@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,cm.matfilter,2,2)
+	aux.AddLinkProcedure(c,cm.matfilter,1,1)
 	--cannot be link material
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 end
 --link summon
 function cm.matfilter(c)
-	return c:IsLinkType(TYPE_PENDULUM) and  c:IsLevelAbove(5)
+	return c:IsLinkType(TYPE_PENDULUM) and  c:IsLevelAbove(7)
 end
 function cm.repfilter(c,tp)
 	return c:GetOwner()==tp and c:GetDestination()==LOCATION_GRAVE and not c:IsLocation(LOCATION_EXTRA) and c:GetOriginalType()&TYPE_PENDULUM~=0

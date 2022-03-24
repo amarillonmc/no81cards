@@ -36,7 +36,7 @@ end
 
 
 function c72404133.costfilter(c,e,tp)
-	return c:IsFaceup() and c:IsRace(RACE_PLANT) 
+	return (c:IsFaceup() or c:GetLocation()==LOCATION_HAND) and c:IsRace(RACE_PLANT) 
 		and Duel.GetMZoneCount(tp,c,tp)>1
 end
 function c72404133.cost1(e,tp,eg,ep,ev,re,r,rp,chk)

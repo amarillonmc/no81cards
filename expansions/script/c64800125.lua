@@ -19,7 +19,7 @@ function c64800125.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c64800125.tgfilter(c,lv)
-	return c:IsAbleToGrave() and not c:IsLevel(lv) 
+	return c:IsAbleToGrave() and c:IsSetCard(0x341a) and not c:IsLevel(lv) 
 end
 function c64800125.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) or Duel.IsExistingMatchingCard(c64800125.tgfilter,tp,LOCATION_DECK,0,1,nil,e:GetHandler():GetLevel()) end

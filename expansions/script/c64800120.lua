@@ -21,7 +21,6 @@ function c64800120.initial_effect(c)
 	e1:SetHintTiming(0,TIMING_END_PHASE)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,64800120)
-	e1:SetCost(c64800120.spcost)
 	e1:SetTarget(c64800120.sptg)
 	e1:SetOperation(c64800120.spop)
 	c:RegisterEffect(e1)
@@ -57,18 +56,14 @@ end
 function c64800120.cfilter(c)
 	return (c:IsSetCard(0x341a) or c:IsLevelBelow(4)) and c:IsDiscardable()
 end
-function c64800120.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c64800120.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,c64800120.cfilter,1,1,REASON_COST+REASON_DISCARD,e:GetHandler())
-end
 function c64800120.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c64800120.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c64800120.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	local c=e:GetHandler()  
+	if Duel.DiscardHand(tp,c64800120.cfilter,1,1,REASON_EFFECT+REASON_DISCARD,e:GetHandler()) and c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

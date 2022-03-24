@@ -35,8 +35,8 @@ function cm.filter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMatchingGroupCount(nil,tp,LOCATION_DECK,0,nil)>0
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function cm.adcheck(c)
 	return c:IsSetCard(0x442) and c:IsAbleToHand()
@@ -45,7 +45,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local p=tp
 	local num=Duel.GetMatchingGroupCount(nil,tp,LOCATION_DECK,0,nil)
 	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(p,cm.filter,p,LOCATION_GRAVE+LOCATION_HAND,0,1,num,nil)
+	local g=Duel.SelectMatchingCard(p,aux.NecroValleyFilter(cm.filter),p,LOCATION_GRAVE+LOCATION_HAND,0,1,num,nil)
 	if g:GetCount()>0 then
 		local ct=Duel.SendtoDeck(g,nil,1,REASON_EFFECT)
 		Duel.BreakEffect()
@@ -73,6 +73,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
 		and Duel.IsExistingMatchingCard(cm.disfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
 	local sg=Duel.SelectMatchingCard(tp,cm.disfilter,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.SendtoGrave(sg,REASON_DISCARD+REASON_COST)

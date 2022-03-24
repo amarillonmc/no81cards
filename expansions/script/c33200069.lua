@@ -42,6 +42,7 @@ function c33200069.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(33200069,0))
 end
 function c33200069.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
@@ -64,6 +65,7 @@ function c33200069.smtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c33200069.smfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(33200069,1))
 end
 function c33200069.smop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

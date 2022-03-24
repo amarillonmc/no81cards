@@ -131,18 +131,18 @@ local opt=e:GetLabel()
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetCountLimit(1)
 		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetOperation(c53503015.drop)
+		e1:SetOperation(c63790308.drop)
 		Duel.RegisterEffect(e1,tp)
 	elseif opt==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c53503015.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c63790308.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 		if #g>0 then
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 		end
 	end
 end
-function c53503015.drop(e,tp,eg,ep,ev,re,r,rp)
+function c63790308.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,53503015)
 	if Duel.Draw(tp,2,REASON_EFFECT)==2 then
 		Duel.ShuffleHand(tp)
@@ -162,7 +162,7 @@ end
 function c63790308.hupop(e,tp,eg,ep,ev,re,r,rp)
 if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c69167267.spfilter1),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c63790308.spfilter1),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 		Duel.BreakEffect()
