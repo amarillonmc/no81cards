@@ -1,5 +1,6 @@
 --陷敌入阵
 function c9330014.initial_effect(c)
+	aux.AddCodeList(c,9330001)
 	--act in hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

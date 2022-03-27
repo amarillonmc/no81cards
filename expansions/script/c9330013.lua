@@ -1,5 +1,6 @@
 --陷阵营·反击！
 function c9330013.initial_effect(c)
+	aux.AddCodeList(c,9330001)
 	--act in hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -68,8 +69,7 @@ function c9330013.disop(e,tp,eg,ep,ev,re,r,rp)
 			  local xyz=xyzg:Select(tp,1,1,nil):GetFirst()
 			  rc:CancelToGrave()
 			  c:CancelToGrave()
-			  Duel.Overlay(xyz,eg)
-			  Duel.Overlay(xyz,c)
+			  Duel.Overlay(xyz,Group.FromCards(rc,c))
 			  else
 			  Duel.Destroy(eg,REASON_EFFECT)
 			end

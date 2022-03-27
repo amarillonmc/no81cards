@@ -38,25 +38,25 @@ function cm.initial_effect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge3:SetCode(EVENT_CHAIN_SOLVED)
 		ge3:SetOperation(cm.reset)
-		Duel.RegisterEffect(ge2,0)
+		Duel.RegisterEffect(ge3,0)
 	end
 end
 function cm.checkop1(e,tp,eg,ep,ev,re,r,rp)
-	if re:IsActiveType(TYPE_MONSTER) then
-		cm.chain_solving=true
-		Duel.RegisterFlagEffect(1-rp,m,RESET_PHASE+PHASE_END,0,1)
-	end
+	if re:IsActiveType(TYPE_MONSTER) then cm.chain_solving=true end
 end
 function cm.checkop2(e,tp,eg,ep,ev,re,r,rp)
-	if cm.chain_solving then Duel.RegisterFlagEffect(1-rp,m+500,RESET_PHASE+PHASE_END,0,1) end
+	if cm.chain_solving then cm.chain_solving=false end
 end
 function cm.reset(e,tp,eg,ep,ev,re,r,rp)
-	if cm.chain_solving then cm.chain_solving=false end
+	if cm.chain_solving then
+		cm.chain_solving=false
+		Duel.RegisterFlagEffect(1-rp,m,RESET_PHASE+PHASE_END,0,1)
+	end
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.GetFlagEffect(tp,m)>Duel.GetFlagEffect(tp,m+500)/2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return Duel.GetFlagEffect(tp,m)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE

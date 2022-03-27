@@ -18,7 +18,8 @@ function c79029169.initial_effect(c)
 	e2:SetOperation(c79029169.ngop)
 	c:RegisterEffect(e2)
 end
-function c79029169.ngcon(e,tp,eg,ep,ev,re,r,rp)
+function c79029169.ngcon(e,tp,eg,ep,ev,re,r,rp) 
+	if Duel.GetCurrentChain()<3 then return false end
 	for i=1,ev do
 		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 		if (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(i) then

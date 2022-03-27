@@ -1,6 +1,6 @@
 --陷阵营防
 function c9330010.initial_effect(c)
-	aux.AddCodeList(c,9330001)
+	aux.AddCodeList(c,9330001,9330010)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -24,7 +24,6 @@ function c9330010.initial_effect(c)
 	e2:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(0,LOCATION_MZONE)
-	e2:SetCondition(c9330010.condition)
 	e2:SetValue(c9330010.etarget)
 	c:RegisterEffect(e2)
 	--indestructable
@@ -33,7 +32,6 @@ function c9330010.initial_effect(c)
 	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_ONFIELD,0)
-	e3:SetCondition(c9330010.condition)
 	e3:SetTarget(c9330010.etarget)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
@@ -87,9 +85,6 @@ function c9330010.activate(e,tp,eg,ep,ev,re,r,rp)
 				Duel.XyzSummon(tp,xyz,g,2,99)
 			end
 	end
-end
-function c9330010.condition(e)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF
 end
 function c9330010.etarget(e,c)
 	return c:IsFaceup() and c:IsSetCard(0xaf93) and not c:IsCode(9330010)

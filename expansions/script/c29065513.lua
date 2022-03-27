@@ -1,117 +1,89 @@
---倒影君主-阿米娅·青色怒火
-local m=29065513
-local cm=_G["c"..m]
-function cm.initial_effect(c)
-	aux.AddCodeList(c,29065500,29065507,29065508)
-	--code
-	aux.EnableChangeCode(c,29065500,LOCATION_MZONE+LOCATION_GRAVE)
+--方舟骑士-阿米娅·青色怒火
+function c29065513.initial_effect(c)
+	--fusion material
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,nil,9,2,nil,nil,2)
-	--lv change
+	aux.AddFusionProcCodeFun(c,29065500,aux.FilterBoolFunction(Card.IsRace,RACE_WYRM),1,true,true)
+	--cannot special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_XYZ_LEVEL)
-	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(cm.lvtg)
-	e1:SetValue(cm.lvval)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c29065513.splimit)
 	c:RegisterEffect(e1)
-	--direct attack
+	--atk def 
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_DIRECT_ATTACK)
-	e2:SetCondition(cm.dircon)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_UPDATE_ATTACK)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetValue(c29065513.atkval)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetCondition(cm.dircon)
-	e3:SetTarget(cm.check)
-	e3:SetValue(800)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e3)
-	local e3_1=e3:Clone()
-	e3_1:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e3_1)
 	--negate
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,0))
+	e4:SetDescription(aux.Stringid(29065513,1))
 	e4:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_CHAINING)
-	e4:SetCountLimit(1)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_NO_TURN_RESET)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(cm.discon)
-	e4:SetTarget(cm.distg)
-	e4:SetOperation(cm.disop)
+	e4:SetCountLimit(1)
+	e4:SetCondition(c29065513.discon)
+	e4:SetTarget(c29065513.distg)
+	e4:SetOperation(c29065513.disop)
 	c:RegisterEffect(e4)
-	--disable spsummon
+	--direct attack
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(m,1))
-	e5:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCode(EVENT_SUMMON)
-	e5:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
-	e5:SetCountLimit(1)
-	e5:SetCondition(cm.dscon)
-	e5:SetTarget(cm.dstg)
-	e5:SetOperation(cm.dsop)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_DIRECT_ATTACK)
+	e5:SetCondition(c29065513.datcon)
 	c:RegisterEffect(e5)
-	local e6=e5:Clone()
-	e6:SetCode(EVENT_SPSUMMON)
-	c:RegisterEffect(e6)
+	--actlimit
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e5:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetTargetRange(0,1)
+	e5:SetValue(1)
+	e5:SetCondition(c29065513.actcon)
+	c:RegisterEffect(e5)
 end
-function cm.lvtg(e,c)
-	return c:IsRank(8)
+function c29065513.splimit(e,se,sp,st)
+	return se:GetHandler():IsCode(29065533) 
 end
-function cm.lvval(e,c,rc)
-	local lv=c:GetLevel()
-	if rc==e:GetHandler() then return 9
-	else return lv end
+function c29065513.atkval(e) 
+	if e:GetHandler():GetFlagEffectLabel(29065513)~=0 then 
+	return 800 
+	else 
+	return 400 
+	end
 end
-function cm.dircon(e)
+function c29065513.discon(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+end
+function c29065513.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local tp=e:GetHandlerPlayer()
-	local g=c:GetOverlayGroup()
-	return g:GetCount()>0 and g:IsExists(Card.IsCode,1,nil,29065507)
-end
-function cm.check(e,c)
-	return  (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
-end
-function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=c:GetOverlayGroup()
-	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and g:GetCount()>0 and g:IsExists(Card.IsCode,1,nil,29065508)
-end
-function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 end
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_OATH,0,0,aux.Stringid(m,2))
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	end
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(29065513,3))
 end
-function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+function c29065513.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
-function cm.dscon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=c:GetOverlayGroup()
-	return ep==1-tp and Duel.GetCurrentChain()==0 and g:GetCount()>0 and g:IsExists(Card.IsCode,1,nil,29065508)
+function c29065513.datcon(e)
+	return e:GetHandler():GetFlagEffectLabel(29065513)~=0 
 end
-function cm.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 end
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_OATH,0,0,aux.Stringid(m,2))
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
+function c29065513.actcon(e)
+	return (Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()) and e:GetHandler():GetFlagEffectLabel(29065513)~=0 
 end
-function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateSummon(eg)
-	Duel.Destroy(eg,REASON_EFFECT)
-end
+
+
+

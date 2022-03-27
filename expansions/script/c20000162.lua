@@ -3,50 +3,30 @@ local m=20000162
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/c20000150") end) then require("script/c20000150") end
 function cm.initial_effect(c)
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,m)
-	e1:SetCost(cm.cos1)
-	e1:SetTarget(cm.tg1)
-	e1:SetOperation(cm.op1)
-	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
-	e2:SetCountLimit(1)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCondition(fu_cim.Remove_Material_condition)
-	e2:SetCost(fu_cim.Remove_Material_cost)
-	e2:SetTarget(cm.tg2)
-	e2:SetOperation(cm.op2)
-	c:RegisterEffect(e2)
-	fu_cim.Hint(c,m)
+	aux.AddCodeList(c,20000166)
+	local e1,e2=fu_cim.Hint(c,m,cm.con1)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
+	e3:SetCountLimit(1)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCondition(fu_cim.Remove_Material_condition)
+	e3:SetCost(fu_cim.Remove_Material_cost)
+	e3:SetTarget(cm.tg2)
+	e3:SetOperation(cm.op2)
+	c:RegisterEffect(e3)
 end
 --e1
-function cm.cos1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
-	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
+function cm.conf1(c)
+	return c:IsFaceup() and c:IsLevel(3)
 end
-function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-end
-function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	end
-	fu_cim.SpecialSummon_limit(e,tp)
+function cm.con1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(cm.conf1,tp,LOCATION_MZONE,0,1,nil)
 end
 --e2
 function cm.tgf2(c,e,tp,mc)
-	return not c:IsCode(e:GetHandler():GetCode()) and c:IsType(TYPE_XYZ) and c:IsSetCard(0xcfd1) and c:IsRank(11) and mc:IsCanBeXyzMaterial(c)
+	return not c:IsCode(e:GetHandler():GetCode()) and c:IsType(TYPE_XYZ) and c:IsSetCard(0xcfd1) and c:IsRank(6) and mc:IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -76,7 +56,7 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
 					e1:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
 					e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-					e1:SetValue(1)
+					e1:SetValue(cm.op2val)
 					sc:RegisterEffect(e1,true)
 				end
 				Duel.SpecialSummonComplete()
@@ -84,4 +64,8 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+end
+function cm.op2val(e,c)
+	if not c then return false end
+	return not c:IsCode(20000166)
 end

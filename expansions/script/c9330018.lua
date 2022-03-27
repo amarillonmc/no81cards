@@ -37,6 +37,7 @@ function c9330018.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e4:SetCountLimit(1,9330018)
 	e4:SetCondition(c9330018.accon2)
 	e4:SetTarget(c9330018.actg2)
@@ -79,42 +80,44 @@ end
 function c9330018.filter(c,tp)
 	return c:IsSetCard(0xaf93) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
-function c9330018.thfilter(c,tp)
+function c9330018.thfilter(c)
 	return c:IsSetCard(0xaf93) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9330018.actg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local p=e:GetHandlerPlayer()
 	if chk==0 then 
-			return Duel.IsExistingMatchingCard(c9330018.filter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,nil,tp)
-			or Duel.IsExistingMatchingCard(Card.IsFaceup,0,LOCATION_FZONE,0,1,nil) 
-			and Duel.IsExistingMatchingCard(c9330018.thfilter,tp,LOCATION_DECK,0,1,nil,tp) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(9330018,0))
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+			return Duel.IsExistingMatchingCard(c9330018.filter,p,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,nil,p)
+			or (Duel.IsExistingMatchingCard(Card.IsFaceup,p,LOCATION_FZONE,0,1,nil) 
+			and Duel.IsExistingMatchingCard(c9330018.thfilter,p,LOCATION_DECK,0,1,nil)) end
+	Duel.Hint(HINT_OPSELECTED,1-p,aux.Stringid(9330018,0))
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,p,LOCATION_DECK)
 end
 function c9330018.acop2(e,tp,eg,ep,ev,re,r,rp)
-	b=Duel.IsExistingMatchingCard(Card.IsFaceup,0,LOCATION_FZONE,0,1,nil)
-	if b and Duel.IsExistingMatchingCard(c9330018.thfilter,tp,LOCATION_DECK,0,1,nil,tp) and (not Duel.IsExistingMatchingCard(c9330018.filter,tp,LOCATION_DECK,0,1,nil) or Duel.SelectYesNo(tp,aux.Stringid(9330018,2))) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c9330018.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
+	local p=e:GetHandlerPlayer()
+	b=Duel.IsExistingMatchingCard(Card.IsFaceup,p,LOCATION_FZONE,0,1,nil)
+	if b and Duel.IsExistingMatchingCard(c9330018.thfilter,p,LOCATION_DECK,0,1,nil) and (not Duel.IsExistingMatchingCard(c9330018.filter,p,LOCATION_DECK,0,1,nil) or Duel.SelectYesNo(p,aux.Stringid(9330018,2))) then
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(p,c9330018.thfilter,p,LOCATION_DECK,0,1,1,nil)
 		local tc=g:GetFirst()
 		if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
-			Duel.ConfirmCards(1-tp,tc)
+			Duel.ConfirmCards(1-p,tc)
 		end
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9330018.filter),tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+		local tc=Duel.SelectMatchingCard(p,aux.NecroValleyFilter(c9330018.filter),p,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,p):GetFirst()
 		if tc then
-			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+			local fc=Duel.GetFieldCard(p,LOCATION_FZONE,0)
 			if fc then
 				Duel.SendtoGrave(fc,REASON_RULE)
 				Duel.BreakEffect()
 			end
-			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+			Duel.MoveToField(tc,p,p,LOCATION_FZONE,POS_FACEUP,true)
 			local te=tc:GetActivateEffect()
-			te:UseCountLimit(tp,1,true)
+			te:UseCountLimit(p,1,true)
 			local tep=tc:GetControler()
 			local cost=te:GetCost()
 			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-			Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+			Duel.RaiseEvent(tc,4179255,te,0,p,p,Duel.GetCurrentChain())
 		end
 	end
 end

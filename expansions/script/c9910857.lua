@@ -89,13 +89,11 @@ function c9910857.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function c9910857.setfilter(c)
-	return c:IsSetCard(0xa951) and c:IsFaceup() and c:IsSSetable()
-		and (c:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP)
+	return c:IsSetCard(0xa951) and c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function c9910857.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c9910857.setfilter(chkc) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingTarget(c9910857.setfilter,tp,LOCATION_REMOVED,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c9910857.setfilter,tp,LOCATION_REMOVED,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local sg=Duel.SelectTarget(tp,c9910857.setfilter,tp,LOCATION_REMOVED,0,1,1,nil)
 end

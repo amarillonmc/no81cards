@@ -3,27 +3,18 @@ local m=20000165
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/c20000150") end) then require("script/c20000150") end
 function cm.initial_effect(c)
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.con1)
-	e1:SetTarget(cm.tg1)
-	e1:SetOperation(cm.op1)
-	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
-	e2:SetCountLimit(1)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCondition(fu_cim.Remove_Material_condition)
-	e2:SetCost(fu_cim.Remove_Material_cost)
-	e2:SetTarget(cm.tg2)
-	e2:SetOperation(cm.op2)
-	c:RegisterEffect(e2)
-	fu_cim.Hint(c,m)
+	local e1,e2=fu_cim.Hint(c,m,cm.con1)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
+	e3:SetCountLimit(1)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCondition(fu_cim.Remove_Material_condition)
+	e3:SetCost(fu_cim.Remove_Material_cost)
+	e3:SetTarget(cm.tg2)
+	e3:SetOperation(cm.op2)
+	c:RegisterEffect(e3)
 end
 --e1
 function cm.conf1(c)
@@ -31,17 +22,6 @@ function cm.conf1(c)
 end
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.conf1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-end
-function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		fu_cim.SpecialSummon_limit(e,tp)
-	end
 end
 --e2
 function cm.tgf2(c)

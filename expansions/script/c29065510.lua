@@ -45,12 +45,12 @@ function c29065510.counter(e,tp,eg,ep,ev,re,r,rp)
 end
 function c29065510.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsCanAddCounter(tp,0x10ae,3,c) end
+	if chk==0 then return Duel.IsCanAddCounter(tp,0x10ae,1,c) end
 end
 function c29065510.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		c:AddCounter(0x10ae,3)
+		c:AddCounter(0x10ae,1)
 	end
 end
 function c29065510.cdstg(e,c)

@@ -37,9 +37,6 @@ function c29065501.initial_effect(c)
 	c:RegisterEffect(e3)
 	c29065501.summon_effect=e2
 end
-function c29065501.spfilter(c)
-	return c:IsFaceup() and c:IsCode(29065500)
-end
 function c29065501.pcfilter(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM) and not c:IsCode(29065501) and not c:IsForbidden()
 end
@@ -57,22 +54,33 @@ function c29065501.pcop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c29065501.spcon(e,c)
 	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c29065501.spfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and Duel.IsCanRemoveCounter(c:GetControler(),1,1,0x10ae,2,REASON_COST)
+end
+function c29065501.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	Duel.RemoveCounter(tp,1,1,0x10ae,2,REASON_RULE)
 end
 function c29065501.xthfilter(c)
-	return ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) or c:IsCode(29065533)) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return aux.IsCodeListed(c,29065500) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+end
+function c29065501.xthfilter1(c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c29065501.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29065501.xthfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then
+		if not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,29065500) then
+			return Duel.IsExistingMatchingCard(c29065501.xthfilter,tp,LOCATION_DECK,0,1,nil) end
+		return Duel.IsExistingMatchingCard(c29065501.xthfilter1,tp,LOCATION_DECK,0,1,nil)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c29065501.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g=nil
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c29065501.xthfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,29065500) then
+		g=Duel.SelectMatchingCard(tp,c29065501.xthfilter,tp,LOCATION_DECK,0,1,1,nil)
+	else g=Duel.SelectMatchingCard(tp,c29065501.xthfilter1,tp,LOCATION_DECK,0,1,1,nil) end
 	if g:GetCount()>0 then
-	Duel.SendtoHand(g,nil,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,g)
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end

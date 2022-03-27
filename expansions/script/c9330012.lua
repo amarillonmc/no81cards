@@ -74,7 +74,7 @@ function c9330012.activate1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9330012.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not (se:IsActiveType(TYPE_TRAP) or c:IsLocation(LOCATION_EXTRA))
+	return not (se:IsActiveType(TYPE_TRAP) or c:IsSetCard(0xaf93))
 end
 function c9330012.filter(c,e,tp)
 	return c:IsSetCard(0xaf93)

@@ -23,21 +23,21 @@ function c77029100.initial_effect(c)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 	--to hand 
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(77029100,0))
-	e4:SetCategory(CATEGORY_TOHAND)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_SUMMON_SUCCESS)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
-	e4:SetCountLimit(1,27029100)
-	e4:SetCondition(c77029100.thcon)
-	e4:SetTarget(c77029100.thtg)
-	e4:SetOperation(c77029100.thop)
-	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e5)
+	--local e4=Effect.CreateEffect(c)
+	--e4:SetDescription(aux.Stringid(77029100,0))
+	--e4:SetCategory(CATEGORY_TOHAND)
+	--e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	--e4:SetCode(EVENT_SUMMON_SUCCESS)
+	--e4:SetProperty(EFFECT_FLAG_DELAY)
+	--e4:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	--e4:SetCountLimit(1,27029100)
+	--e4:SetCondition(c77029100.thcon)
+   -- e4:SetTarget(c77029100.thtg)
+   -- e4:SetOperation(c77029100.thop)
+   -- c:RegisterEffect(e4)
+  --  local e5=e4:Clone()
+   -- e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+   -- c:RegisterEffect(e5)
 end
 function c77029100.spfilter(c,ft)
 	return c:IsFaceup() and c:IsSetCard(0xa991,0x115) and c:IsAbleToHandAsCost()
@@ -51,7 +51,7 @@ function c77029100.hspcon(e,c)
 end
 function c77029100.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,c77029100.spfilter,tp,LOCATION_ONFIELD,0,1,1,nil,ft)
 	Duel.SendtoHand(g,nil,REASON_COST)
 	local e1=Effect.CreateEffect(c)
@@ -82,27 +82,27 @@ function c77029100.efilter(e,ct)
 	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
 	return p==tp and te:IsActiveType(TYPE_MONSTER) and te:GetOwner():IsSetCard(0xa991,0x115) 
 end
-function c77029100.cfilter1(c)
-	return c:IsFaceup() and c:IsSetCard(0x1115) and not c:IsCode(77029100)
-end
-function c77029100.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c77029100.cfilter1,1,nil)
-end
-function c77029100.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToHand() and Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end 
-	Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil) 
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,0,LOCATION_GRAVE+LOCATION_REMOVED)
-end
-function c77029100.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then 
-	local g=Group.FromCards(c,tc) 
-	Duel.SendtoHand(g,nil,REASON_EFFECT) 
-	Duel.ConfirmCards(1-tp,g)
-	end
-end
+--function c77029100.cfilter1(c)
+	--return c:IsFaceup() and c:IsSetCard(0x1115) and not c:IsCode(77029100)
+--end
+--function c77029100.thcon(e,tp,eg,ep,ev,re,r,rp)
+   -- return eg:IsExists(c77029100.cfilter1,1,nil)
+--end
+--function c77029100.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	--local c=e:GetHandler()
+	--if chk==0 then return c:IsAbleToHand() and Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end 
+   -- Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil) 
+   -- Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,0,LOCATION_GRAVE+LOCATION_REMOVED)
+--end
+--function c77029100.thop(e,tp,eg,ep,ev,re,r,rp)
+	--local c=e:GetHandler()
+	--local tc=Duel.GetFirstTarget()
+	--if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then 
+	--local g=Group.FromCards(c,tc) 
+   -- Duel.SendtoHand(g,nil,REASON_EFFECT) 
+	--Duel.ConfirmCards(1-tp,g)
+   -- end
+--end
 
 
 

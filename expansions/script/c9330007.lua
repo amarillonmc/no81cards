@@ -3,7 +3,7 @@ function c9330007.initial_effect(c)
 	aux.AddCodeList(c,9330001)
 	c:EnableReviveLimit()
 	--change name
-	aux.EnableChangeCode(c,9330001,LOCATION_MZONE+LOCATION_GRAVE)
+	aux.EnableChangeCode(c,9330001,LOCATION_ONFIELD+LOCATION_GRAVE)
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

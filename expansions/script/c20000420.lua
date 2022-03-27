@@ -32,16 +32,16 @@ function cm.initial_effect(c)
 end
 --e1
 function cm.drtgf(c)
-	return c:IsSetCard(0xfd4) and c:IsDiscardable()
+	return c:IsAbleToDeck() and c:IsSetCard(0x3fd4)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(cm.drtgf,tp,LOCATION_HAND,0,1,nil) end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,cm.drtgf,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
 	Duel.ConfirmCards(1-tp,tc)
 	local x=0
 	if Card.IsCode(tc,20000400) then x=1 end

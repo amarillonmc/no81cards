@@ -77,13 +77,13 @@ function c9330001.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9330001.spop(e,tp,eg,ep,ev,re,r,rp)
-local g=Duel.GetMatchingGroup(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 local rc=re:GetHandler()
 local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		if rc:IsSetCard(0xaf93) 
-		   and Duel.IsExistingMatchingCard(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+		   and #g>0
 		   and Duel.SelectYesNo(tp,aux.Stringid(9330001,1)) then
 		   Duel.BreakEffect()
 		   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)

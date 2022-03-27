@@ -61,15 +61,19 @@ function c79029558.spfilter(c,e,tp)
 end
 function c79029558.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c79029558.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,2,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_EXTRA+LOCATION_GRAVE)
+		and Duel.IsExistingMatchingCard(c79029558.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA+LOCATION_GRAVE)
 end
 function c79029558.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	if ft>2 then ft=2 end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c79029558.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,2,nil,e,tp)
-	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) 
+	local g=Duel.SelectMatchingCard(tp,c79029558.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,ft,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
  end  
 function c79029558.atkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3b)

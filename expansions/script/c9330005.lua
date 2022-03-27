@@ -7,7 +7,7 @@ function c9330005.initial_effect(c)
 	aux.AddFusionProcCodeFun(c,9330001,c9330005.mfilter,1,true,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,0,Duel.SendtoGrave,REASON_COST+REASON_MATERIAL)
 	--change name
-	aux.EnableChangeCode(c,9330001,LOCATION_MZONE+LOCATION_GRAVE)
+	aux.EnableChangeCode(c,9330001,LOCATION_ONFIELD+LOCATION_GRAVE)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -84,7 +84,7 @@ function c9330005.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local sg=g:Select(tp,1,3,nil)
-	if Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)>0 then
+	if Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
 		local sg2=Duel.GetOperatedGroup()
 		if sg2:IsExists(c9330005.tdfilter,1,nil,tp) then Duel.ShuffleDeck(tp) end
 		if sg2:IsExists(c9330005.tdfilter,1,nil,1-tp) then Duel.ShuffleDeck(1-tp) end

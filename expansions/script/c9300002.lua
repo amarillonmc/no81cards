@@ -1,5 +1,6 @@
 --无限魔力宝石
 function c9300002.initial_effect(c)
+	aux.AddCodeList(c,9300002)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)

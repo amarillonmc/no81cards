@@ -1,9 +1,10 @@
 local m=53707020
 local cm=_G["c"..m]
 cm.name="幽林清响"
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
+	SNNM.Peacecho(c)
 	SNNM.AllGlobalCheck(c)
-	Duel.EnableGlobalFlag(GLOBALFLAG_DECK_REVERSE_CHECK)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -25,14 +26,6 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.rectg)
 	e3:SetOperation(cm.recop)
 	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_DRAW)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e4:SetCode(EVENT_DRAW)
-	e4:SetTarget(cm.rvdtg)
-	e4:SetOperation(cm.rvdop)
-	c:RegisterEffect(e4)
 end
 function cm.efilter(e,ct)
 	local p=e:GetHandlerPlayer()
@@ -52,14 +45,4 @@ function cm.recop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Recover(p,d,REASON_EFFECT)
-end
-function cm.rvdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsPreviousPosition(POS_FACEUP) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function cm.rvdop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)~=0 then
-		Duel.Draw(tp,1,REASON_EFFECT)
-	end
 end

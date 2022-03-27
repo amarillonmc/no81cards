@@ -1,6 +1,6 @@
 --与陷阵营的交锋
 function c9330017.initial_effect(c)
-	aux.AddCodeList(c,9330001)
+	aux.AddCodeList(c,9330001,9330017)
 	--act in set turn
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -24,7 +24,6 @@ function c9330017.initial_effect(c)
 	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetCondition(c9330017.condition)
 	e2:SetTarget(c9330017.etarget)
 	e2:SetValue(c9330017.imfilter)
 	c:RegisterEffect(e2)
@@ -34,7 +33,6 @@ function c9330017.initial_effect(c)
 	e3:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(0,LOCATION_MZONE)
-	e3:SetCondition(c9330017.condition)
 	e3:SetTarget(c9330017.attg)
 	e3:SetValue(c9330017.atlimit)
 	c:RegisterEffect(e3)
@@ -57,7 +55,7 @@ function c9330017.actcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9330017.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and
-		Duel.IsPlayerCanSpecialSummonMonster(tp,9330017,0xaf93,0x21,2200,600,6,RACE_WARRIOR,ATTRIBUTE_WATER) end
+		Duel.IsPlayerCanSpecialSummonMonster(tp,9330017,0xaf93,0x21,2200,700,6,RACE_WARRIOR,ATTRIBUTE_WATER) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9330017.filter(c)
@@ -81,7 +79,7 @@ function c9330017.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,9330017,0xaf93,0x21,2200,600,6,RACE_WARRIOR,ATTRIBUTE_WATER) then return end
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,9330017,0xaf93,0x21,2200,700,6,RACE_WARRIOR,ATTRIBUTE_WATER) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	if Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP_ATTACK)~=0
 		and Duel.IsExistingMatchingCard(c9330017.filter,tp,LOCATION_ONFIELD,0,1,nil)
@@ -121,9 +119,6 @@ function c9330017.activate(e,tp,eg,ep,ev,re,r,rp)
 				tc:CompleteProcedure()
 		end
 	end
-end
-function c9330017.condition(e)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF
 end
 function c9330017.etarget(e,c)
 	return c:IsFaceup() and c:IsSetCard(0xaf93) and c:IsType(TYPE_MONSTER)

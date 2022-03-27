@@ -1,6 +1,6 @@
 --陷阵营军
 function c9330009.initial_effect(c)
-	aux.AddCodeList(c,9330001)
+	aux.AddCodeList(c,9330001,9330009)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9330009,0))
@@ -30,7 +30,6 @@ function c9330009.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_ATTACK_ALL)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(c9330009.condition)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
 	--set/to hand
@@ -91,12 +90,8 @@ function c9330009.activate(e,tp,eg,ep,ev,re,r,rp)
 			end
 	end
 end
-function c9330009.condition(e)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF
-end
 function c9330009.atkcon(e)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF
-			and not Duel.IsExistingMatchingCard(c9330009.filter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
+	return not Duel.IsExistingMatchingCard(c9330009.filter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
 end
 function c9330009.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
@@ -122,7 +117,6 @@ function c9330009.setop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
 
 
 

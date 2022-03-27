@@ -5,7 +5,7 @@ function c9330004.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddXyzProcedure(c,nil,6,2,nil,nil,99)
 	--change name
-	aux.EnableChangeCode(c,9330001,LOCATION_MZONE+LOCATION_GRAVE)
+	aux.EnableChangeCode(c,9330001,LOCATION_ONFIELD+LOCATION_GRAVE)
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -34,7 +34,7 @@ function c9330004.initial_effect(c)
 	--Negate
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(9330004,0))
-	e4:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e4:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -55,8 +55,7 @@ end
 function c9330004.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
-	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
-		   and c:GetOverlayGroup():IsExists(c9330004.cfilter,1,nil)
+	return Duel.IsChainNegatable(ev) and c:GetOverlayGroup():IsExists(c9330004.cfilter,1,nil)
 end
 function c9330004.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

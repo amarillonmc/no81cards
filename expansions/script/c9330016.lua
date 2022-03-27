@@ -1,6 +1,6 @@
 --陷阵营的战前仪式
 function c9330016.initial_effect(c)
-	aux.AddCodeList(c,9330001)
+	aux.AddCodeList(c,9330001,9330016)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -40,14 +40,6 @@ function c9330016.initial_effect(c)
 	e4:SetTargetRange(1,1)
 	e4:SetValue(c9330016.aclimit)
 	c:RegisterEffect(e4)
-	--cannot remove
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_CANNOT_REMOVE)
-	e5:SetRange(LOCATION_ONFIELD)
-	e5:SetTargetRange(LOCATION_GRAVE,LOCATION_GRAVE)
-	e5:SetTarget(c9330016.aclimit2)
-	c:RegisterEffect(e5)
 	--set/to hand
 	local e6=Effect.CreateEffect(c)
 	e6:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -131,9 +123,6 @@ end
 function c9330016.aclimit(e,re,tp)
 	local loc=re:GetActivateLocation()
 	return loc==LOCATION_GRAVE and re:IsActiveType(TYPE_MONSTER)
-end
-function c9330016.aclimit2(e,c)
-	return c:IsLocation(LOCATION_GRAVE) and c:IsType(TYPE_MONSTER)
 end
 function c9330016.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

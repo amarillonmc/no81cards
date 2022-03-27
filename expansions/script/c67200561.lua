@@ -5,7 +5,7 @@ function c67200561.initial_effect(c)
 	--destory
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(67200561,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -45,15 +45,24 @@ function c67200561.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c67200561.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsPlayerCanDraw(tp,1) end
+	local ct=Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_MZONE,0,nil,TYPE_LINK)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsPlayerCanDraw(tp,ct+1) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c67200561.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
+		local ec=eg:GetFirst()
+		if Duel.Draw(tp,ec:GetLink()+1,REASON_EFFECT)==0 then return end
+		Duel.ShuffleHand(tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,ec:GetLink(),ec:GetLink(),nil)
+		if ec:GetLink()>0 then
+			if g:GetCount()>0 then
+				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			end
+		end
 	end
 end
 --

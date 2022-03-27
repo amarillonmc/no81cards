@@ -4,7 +4,7 @@ local cm=SNNM
 function cm.AllGlobalCheck(c)
 	if not cm.global_check then
 		cm.global_check=true
-		local x=c:GetOriginalCode()
+		local x=c:GetOriginalCodeRule()
 		if x>=53707000 and x<=53707099 then
 			local alle1=Effect.CreateEffect(c)
 			alle1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -31,6 +31,11 @@ function cm.AllGlobalCheck(c)
 				Duel.DisableShuffleCheck()
 				Duel.SendtoGrave(g,reason)
 			end
+			--cm[2]=Card.ReverseInDeck
+			--Card.ReverseInDeck=function(card)
+				--card:RegisterFlagEffect(53707050,RESET_EVENT+0x53c0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(53702500,2))
+				--return cm[2](card)
+			--end
 		end
 		if x>=53713000 and x<=53713099 then
 			local alle3=Effect.CreateEffect(c)
@@ -48,16 +53,64 @@ function cm.AllGlobalCheck(c)
 		end
 	end
 end
+function cm.UpRegi(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,53707080)>0 then return end
+	Duel.RegisterFlagEffect(tp,53707080,0,0,0)
+	if not Duel.SelectYesNo(tp,aux.Stringid(53702500,6)) then return end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetOperation(cm.UpCheck)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.UpCheck(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_DECK,0,nil)
+	if #g>0 then Duel.ConfirmCards(tp,g) else Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702500,7)) end
+end
+function cm.UpConfirm()
+	local UCg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_DECK,0,nil)
+	if #UCg>0 then Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(53702500,2)) end
+	if #UCg==1 then UCg:Select(tp,1,1,nil) elseif #UCg>1 then Duel.ConfirmCards(tp,UCg) end
+end
 function cm.Peacecho(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DECK_REVERSE_CHECK)
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
-	e4:SetCode(EVENT_DRAW)
-	e4:SetTarget(cm.PeacechoDrawTarget)
-	e4:SetOperation(cm.PeacechoDrawOperation)
-	c:RegisterEffect(e4)
+	if c:GetOriginalType()&TYPE_MONSTER~=0 then
+		local e4=Effect.CreateEffect(c)
+		e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
+		e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+		e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+		e4:SetCode(EVENT_DRAW)
+		e4:SetTarget(cm.PeacechoDrawTarget)
+		e4:SetOperation(cm.PeacechoDrawOperation)
+		c:RegisterEffect(e4)
+	end
+	if c:GetOriginalType()&0x20004~=0 then
+		local e5=Effect.CreateEffect(c)
+		e5:SetCategory(CATEGORY_DRAW)
+		e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+		e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+		e5:SetCode(EVENT_DRAW)
+		e5:SetTarget(cm.PeacechoDrawTarget2)
+		e5:SetOperation(cm.PeacechoDrawOperation2)
+		c:RegisterEffect(e5)
+	end
+	if c:GetOriginalType()&TYPE_FIELD~=0 then
+		local e6=Effect.CreateEffect(c)
+		e6:SetCategory(CATEGORY_DRAW)
+		e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+		e6:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+		e6:SetCode(EVENT_DRAW)
+		e6:SetTarget(cm.PeacechoDrawTarget3)
+		e6:SetOperation(cm.PeacechoDrawOperation3)
+		c:RegisterEffect(e6)
+	end
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e9:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+	e9:SetRange(LOCATION_HAND+LOCATION_DECK)
+	e9:SetOperation(cm.UpRegi)
+	c:RegisterEffect(e9)
 end
 function cm.PeacechoRepFilter(c)
 	return c:GetDestination()==LOCATION_GRAVE and c:IsOriginalSetCard(0x3537) and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:GetOriginalType()&TYPE_PENDULUM==0
@@ -106,7 +159,6 @@ function cm.PeacechoToDeckTarget2(e,tp,eg,ep,ev,re,r,rp,chk)
 		tc:RegisterFlagEffect(53707099,RESET_CHAIN,0,1)
 		Duel.MoveSequence(tc,1)
 		tc:ReverseInDeck()
-		tc:RegisterFlagEffect(53707050,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(53702500,2))
 	end
 	Duel.ResetFlagEffect(p,53707000)
 	return true
@@ -121,7 +173,6 @@ function cm.PeacechoTDOperation(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.PeacechoTDFilter,nil)
 	for tc in aux.Next(g) do
 		tc:ReverseInDeck()
-		tc:RegisterFlagEffect(53707050,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(53702500,2))
 		tc:ResetFlagEffect(53707000)
 	end
 	e:Reset()
@@ -131,13 +182,39 @@ function cm.PeacechoDrawTarget(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsPreviousPosition(POS_FACEUP) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.PeacechoDrawOperation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-			Duel.Draw(tp,1,REASON_EFFECT)
-		end
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then Duel.Draw(tp,1,REASON_EFFECT) end
+end
+function cm.PeacechoDrawTarget2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsPreviousPosition(POS_FACEUP) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsPlayerCanDraw(tp,1) and not e:GetHandler():IsForbidden() end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.PeacechoDrawOperation2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)~=0 then Duel.Draw(tp,1,REASON_EFFECT) end
+end
+function cm.PeacechoDrawTarget3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsPreviousPosition(POS_FACEUP) and Duel.IsPlayerCanDraw(tp,1) and not e:GetHandler():IsForbidden() end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.PeacechoDrawOperation3(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+	if fc then
+		Duel.SendtoGrave(fc,REASON_RULE)
+		Duel.BreakEffect()
+	end
+	if Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true) then
+		local te=c:GetActivateEffect()
+		local tep=c:GetControler()
+		local cost=te:GetCost()
+		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+		Duel.RaiseEvent(c,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
 --
@@ -897,7 +974,7 @@ function cm.OSCheck(e,tp,eg,ep,ev,re,r,rp)
 		local rac=Duel.GetFlagEffectLabel(p,53703000)
 		Duel.ResetFlagEffect(p,53703000)
 		local race=nil
-		if rac==nil then race=tc:GetRace() else race=rac+tc:GetRace() end
+		if rac==nil then race=tc:GetRace() else race=rac|tc:GetRace() end
 		Duel.RegisterFlagEffect(p,53703000,RESET_PHASE+PHASE_END,0,1,race)
 	end
 end
@@ -1011,16 +1088,16 @@ end
 function cm.OSDiskActivate2(e,tp,eg,ep,ev,re,r,rp)
 	local ct={}
 	for i=3,1,-1 do
-		if Duel.IsPlayerCanDiscardDeckAsCost(1-tp,i) then
+		if Duel.IsPlayerCanDiscardDeck(1-tp,i) then
 			table.insert(ct,i)
 		end
 	end
 	if #ct==1 then
-		Duel.DiscardDeck(1-tp,ct[1],REASON_COST)
+		Duel.DiscardDeck(1-tp,ct[1],REASON_EFFECT)
 	else
 		Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(e:GetHandler():GetOriginalCode(),4))
 		local ac=Duel.AnnounceNumber(1-tp,table.unpack(ct))
-		Duel.DiscardDeck(1-tp,ac,REASON_COST)
+		Duel.DiscardDeck(1-tp,ac,REASON_EFFECT)
 	end
 end
 function cm.OSKaijuCondition2(e,tp,eg,ep,ev,re,r,rp)
@@ -1592,5 +1669,110 @@ function cm.SetDirectly(g,e,p)
 		elseif tc:IsType(TYPE_SPELL+TYPE_TRAP) then loc=LOCATION_SZONE end
 		if tc:GetOriginalType()&TYPE_MONSTER==0 and tc:IsLocation(LOCATION_MZONE) then Duel.MoveToField(tc,p,p,loc,POS_FACEDOWN,false) end
 		if tc:IsType(TYPE_SPELL+TYPE_TRAP) then Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,p,p,0) end
+	end
+end
+function cm.CardnameBreak(c)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_ACTIVATE_COST)
+	e3:SetRange(0xff)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetTargetRange(0,1)
+	e3:SetOperation(cm.Breakcount)
+	c:RegisterEffect(e3)
+end
+function cm.Breakcount(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON) then c53799250.sp=true end
+	if not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE) then c53799250.ac=true end
+end
+function cm.HartrazLink(c,marker)
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(1163)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC_G)
+	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetCondition(cm.Hartrazlkcon)
+	e0:SetOperation(cm.Hartrazlkop(marker))
+	e0:SetValue(SUMMON_TYPE_LINK)
+	c:RegisterEffect(e0)
+end
+function cm.Hartrazlkfilter(c,lc,tp)
+	return c:IsFaceup() and c:IsLinkRace(RACE_PYRO) and c:IsCanBeLinkMaterial(lc)
+end
+function cm.Hartrazlvfilter(c)
+	if c:IsType(TYPE_LINK) and c:GetLink()>1 then return 1+0x10000*c:GetLink() else return 1 end
+end
+function cm.Hartrazlcheck(tp,sg,lc,minc,ct)
+	return ct>=minc and sg:CheckWithSumEqual(cm.Hartrazlvfilter,lc:GetLink(),ct,ct)
+end
+function cm.Hartrazlkcheck(c,tp,sg,mg,lc,ct,minc,maxc)
+	sg:AddCard(c)
+	ct=ct+1
+	local res=cm.Hartrazlcheck(tp,sg,lc,minc,ct) or (ct<maxc and mg:IsExists(cm.Hartrazlkcheck,1,sg,tp,sg,mg,lc,ct,minc,maxc))
+	sg:RemoveCard(c)
+	ct=ct-1
+	return res
+end
+function cm.Hartrazlkcon(e,c,og)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local mg=Duel.GetMatchingGroup(cm.Hartrazlkfilter,tp,LOCATION_MZONE,0,nil,c,tp)
+	local sg=Group.CreateGroup()
+	for i,pe in ipairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_MUST_BE_LMATERIAL)}) do
+		local pc=pe:GetHandler()
+		if not mg:IsContains(pc) then return false end
+		sg:AddCard(pc)
+	end
+	local ct=sg:GetCount()
+	local minc=1
+	local maxc=1
+	if ct>maxc then return false end
+	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and cm.Hartrazlcheck(tp,sg,c,minc,ct) or mg:IsExists(cm.Hartrazlkcheck,1,nil,tp,sg,mg,c,ct,minc,maxc)
+end
+function cm.Hartrazlkop(marker)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
+		local mg=Duel.GetMatchingGroup(cm.Hartrazlkfilter,tp,LOCATION_MZONE,0,nil,c,tp)
+		local sg2=Group.CreateGroup()
+		for i,pe in ipairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_MUST_BE_LMATERIAL)}) do sg2:AddCard(pe:GetHandler()) end
+		local ct=sg2:GetCount()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
+		sg2:Select(tp,ct,ct,nil)
+		local minc=1
+		local maxc=1
+		for i=ct,maxc-1 do
+			local cg=mg:Filter(cm.Hartrazlkcheck,sg2,tp,sg2,mg,c,i,minc,maxc)
+			if cg:GetCount()==0 then break end
+			local minct=1
+			if cm.Hartrazlcheck(tp,sg2,c,minc,i) then
+				if not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then break end
+				minct=0
+			end
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
+			local g=cg:Select(tp,minct,1,nil)
+			if g:GetCount()==0 then break end
+			sg2:Merge(g)
+		end
+		c:SetMaterial(sg2)
+		Duel.SendtoGrave(sg2,REASON_MATERIAL+REASON_LINK)
+		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_TYPE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+		e1:SetValue(TYPE_SPELL)
+		c:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetRange(LOCATION_SZONE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetCode(EFFECT_LINK_SPELL_KOISHI)
+		e2:SetValue(marker)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+		c:RegisterEffect(e2)
+		c:CompleteProcedure()
+		Debug.Message(c:GetLinkMarker())
 	end
 end

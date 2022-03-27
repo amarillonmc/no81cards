@@ -1,111 +1,59 @@
 --机艺核芯
 local m=20000421
 local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/c20000400") end) then require("script/c20000400") end
 function cm.initial_effect(c)
 --active
-	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CONTINUOUS_TARGET)
-	e0:SetType(EFFECT_TYPE_ACTIVATE)
-	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetTarget(cm.tg)
-	e0:SetOperation(cm.op)
-	c:RegisterEffect(e0)
---target lost
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_SZONE)
-	e1:SetCode(EVENT_LEAVE_FIELD)
-	e1:SetCondition(cm.tlcon)
-	e1:SetOperation(cm.tlop)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetOperation(cm.op1)
 	c:RegisterEffect(e1)
---effect 1
+--attack redirect
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCondition(cm.limcon)
-	e2:SetOperation(cm.limop)
-	c:RegisterEffect(e1)
-	local e3=e2:Clone()
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCode(EFFECT_PATRICIAN_OF_DARKNESS)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCondition(cm.con2)
+	e2:SetTargetRange(0,1)
+	c:RegisterEffect(e2)
+--return hand
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_PHASE+PHASE_END)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetCountLimit(1)
+	e3:SetTarget(cm.tg3)
+	e3:SetOperation(cm.op3)
 	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetCode(EVENT_CHAIN_END)
-	e4:SetOperation(cm.limop2)
-	c:RegisterEffect(e4)
---effect 2
-	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_TOHAND)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e5:SetCode(EVENT_PHASE+PHASE_END)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1)
-	e5:SetCondition(cm.rhcon)
-	e5:SetTarget(cm.rhtg)
-	e5:SetOperation(cm.rhop)
-	c:RegisterEffect(e5)
-end
---e0
-function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
-	cm[0]=0
-end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if  c:IsRelateToEffect(e) then
-		if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-			c:SetCardTarget(tc)
-		else
-			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
-		end
-	end
 end
 --e1
-function cm.tlcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=c:GetFirstCardTarget()
-	return tc and eg:IsContains(tc)
+function cm.opf1(c,e,tp)
+	return c:IsSetCard(0xfd4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function cm.tlop(e,tp,eg,ep,ev,re,r,rp)
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+function cm.op1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.IsExistingMatchingCard(cm.opf1,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		local sc=Duel.SelectMatchingCard(tp,cm.opf1,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 --e2
-function cm.limcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(m)~=0 and eg:IsExists(Card.IsSetCard,1,nil,0xfd4)
-end
-function cm.limop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentChain()==0 then
-		Duel.SetChainLimitTillChainEnd(cm.chainlm)
-	elseif Duel.GetCurrentChain()==1 then
-		e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-	end
-end
-function cm.limop2(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():GetFlagEffect(m)~=0 and e:GetHandler():GetFlagEffect(m+1)~=0 then
-		Duel.SetChainLimitTillChainEnd(cm.chainlm)
-	end
-	e:GetHandler():ResetFlagEffect(m+1)
-end
-function cm.chainlm(e,rp,tp)
-	return tp==rp
+function cm.con2(e)
+	local tp=e:GetOwnerPlayer()
+	return Duel.IsExistingMatchingCard(fu_hd.Infinity,tp,LOCATION_MZONE,0,1,nil)
 end
 --e5
-function cm.rhcon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.GetTurnPlayer()==tp
-end
-function cm.rhtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand() end
+function cm.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToHand() and not Duel.GetTurnPlayer()==tp end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
-function cm.rhop(e,tp,eg,ep,ev,re,r,rp)
+function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and c:IsOnField() then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,c)
 	end

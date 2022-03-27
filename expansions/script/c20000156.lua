@@ -19,7 +19,7 @@ function cm.Give(c)
 	c:RegisterEffect(e1)
 end
 function cm.tgf12(c)
-	return c:IsSetCard(0xcfd1) and c:IsType(TYPE_XYZ) and c:IsCanOverlay() and c:IsRank(11)
+	return c:IsSetCard(0xcfd1) and c:IsType(TYPE_XYZ) and c:IsCanOverlay() and c:IsRank(6)
 end
 function cm.tgf1(c,e,tp)
 	return c:IsSetCard(0xcfd1) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_MONSTER_REBORN,tp,false,false)

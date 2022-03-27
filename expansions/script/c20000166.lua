@@ -4,10 +4,15 @@ local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/c20000150") end) then require("script/c20000150") end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddXyzProcedureLevelFree(c,cm.xyzf,nil,3,99)
+	fu_cim.Xyz_Procedure(c,12)
+	local e0=Effect.CreateEffect(c)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(aux.xyzlimit)
+	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,2))
-	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,m)
@@ -29,18 +34,37 @@ function cm.initial_effect(c)
 	e3:SetCondition(fu_cim.Remove_Material_condition)
 	e3:SetValue(cm.val3)
 	c:RegisterEffect(e3)
+--[[
+	--get effect
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EFFECT_OVERLAY_REMOVE_REPLACE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(cm.r1con)
+	e1:SetTarget(cm.reg1tg)
+	c:RegisterEffect(e1)
+	--get
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_MOVE)
+	e2:SetRange(0xff)
+	e2:SetTarget(cm.tetg)
+	e2:SetOperation(cm.teop)
+	c:RegisterEffect(e2)
+	if cm.check==nil then
+		cm.check=true
+		cm[0]=0
+	end
+--]]
 	fu_cim.Hint(c,m)
 end
-function cm.xyzf(c,xyzc)
-	return c:IsXyzType(TYPE_XYZ) and c:IsRank(11)
+function cm.xyzf(g)
+	return g:GetSum(Card.GetRank)==12
 end
 --e1
 function cm.cos1(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
 	if chk==0 then return true end
-end
-function cm.cfilter(c)
-	return c:IsFacedown() and c:IsAbleToRemoveAsCost(POS_FACEDOWN)
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(fu_cim.Remove_Material_cost_filter,tp,LOCATION_MZONE,0,nil,tp)
@@ -55,24 +79,15 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local count=tc:RemoveOverlayCard(tp,1,max,REASON_COST)
 	e:SetLabel(count)
 	Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(m,2))
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,0)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local count=e:GetLabel()
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if g:GetCount()==0 or count==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	g=g:Select(tp,1,count,nil)
-	count=Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-	if count>0 then
-		g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_GRAVE,0,nil)
-		if g:GetCount()>0 and c:IsType(TYPE_XYZ) and c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-			g=g:Select(tp,1,count,nil)
-			Duel.BreakEffect()
-			Duel.Overlay(c,g)
-		end
+	local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_GRAVE,0,nil)
+	if count>0 and g:GetCount()>0 and c:IsType(TYPE_XYZ) and c:IsRelateToEffect(e) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+		g=g:Select(tp,1,count,nil)
+		Duel.Overlay(c,g)
 	end
 end
 --e2
@@ -99,3 +114,38 @@ function cm.val3(e,re,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	return not g:IsContains(e:GetHandler())
 end
+--[[
+function cm.r1con(e,tp,eg,ep,ev,re,r,rp)
+	return true
+end
+function cm.reg1tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	cm[0]=e:GetHandler()
+	return false
+end
+function cm.detfilter(c)
+	return c:IsPreviousLocation(LOCATION_OVERLAY) and not c:IsReason(REASON_LOST_TARGET)
+end
+function cm.tetg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return cm[0]~=0 and eg:IsExists(cm.detfilter,1,nil) end
+	local xc=cm[0]
+	e:SetLabelObject(xc)
+Debug.Message(xc)
+end
+function cm.teop(e,tp,eg,ep,ev,re,r,rp)
+	--atk
+	local xc=e:GetLabelObject()
+Debug.Message(xc)
+	if (cm.detfilter(e:GetHandler()) and eg:IsContains(e:GetHandler())) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetCode(EFFECT_IMMUNE_EFFECT)
+		e1:SetValue(cm.val3)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		xc:RegisterEffect(e1)
+		xc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+	end
+	cm[0]=0
+end
+--]]
