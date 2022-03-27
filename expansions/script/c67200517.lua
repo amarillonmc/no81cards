@@ -47,14 +47,14 @@ function c67200517.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c67200517.cfilter,1,nil,tp,rp)
 end
 function c67200517.ctcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c67200517.cfilter,1,nil,tp,rp) and Duel.IsPlayerAffectedByEffect(tp,67200590)
+	return eg:IsExists(c67200517.cfilter,1,nil,tp,rp) and Duel.IsPlayerAffectedByEffect(tp,67200531)
 end
 function c67200517.ctfilter(c)
 	return c:IsAbleToHand()
 end
 function c67200517.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c67200527.ctfilter,tp,0,LOCATION_DECK,1,nil) and Duel.IsPlayerCanSpecialSummonMonster(tp,67200517,0x3675,TYPE_TUNER,2400,0,6,RACE_MACHINE,ATTRIBUTE_WIND) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c67200517.ctfilter,tp,0,LOCATION_DECK,1,nil) and Duel.IsPlayerCanSpecialSummonMonster(tp,67200517,0x3675,TYPE_TUNER,2400,0,6,RACE_MACHINE,ATTRIBUTE_WIND) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c67200517.ctop(e,tp,eg,ep,ev,re,r,rp)
