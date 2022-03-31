@@ -30,12 +30,14 @@ function cm.IsLinkZoneOver(count)
 	for i=0,4 do
 		if (Duel.GetLinkedZone(0)&((2^i)<<0))~=0 then
 			flag=flag+1
-		elseif (Duel.GetLinkedZone(1)&((2^i)<<0))~=0 then
+		end
+		if (Duel.GetLinkedZone(1)&((2^i)<<0))~=0 then
 			flag=flag+1
 		end
 	end
 	return flag>=count
 end
+
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return cm.IsLinkZoneOver(3)
 end

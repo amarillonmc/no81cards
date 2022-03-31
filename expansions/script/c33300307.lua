@@ -32,8 +32,8 @@ end
 function cm.tg(e,c)
 	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0x562)
 end
-function cm.spcheck(e,tp,c)
-	return c:IsSetCard(0x562) and c:IsType(TYPE_MONSTER)
+function cm.spcheck(c,e,tp)
+	return c:IsSetCard(0x562) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spcheck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end

@@ -41,7 +41,7 @@ function cm.dptcheck(g)
 end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,LOCATION_MZONE,0,nil)
-	return mg:CheckSubGroup(cm.dptcheck,2,99)
+	return mg:CheckSubGroup(cm.dptcheck,2,99) and e:GetHandler():IsSSetable()
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

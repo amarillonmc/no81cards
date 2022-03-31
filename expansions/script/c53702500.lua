@@ -31,6 +31,39 @@ function cm.AllGlobalCheck(c)
 				Duel.DisableShuffleCheck()
 				Duel.SendtoGrave(g,reason)
 			end
+			cm[2]=Card.RemoveOverlayCard
+			Card.RemoveOverlayCard=function(card,player,min,max,reason)
+				local g=card:GetOverlayGroup()
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
+				g=g:Select(player,min,max,reason)
+				Duel.SendtoGrave(g,reason)
+				local ct=Duel.GetOperatedGroup():GetCount()
+				if ct>0 then return 1 else return 0 end
+			end
+			cm[3]=Duel.RemoveOverlayCard
+			Duel.RemoveOverlayCard=function(player,ints,into,min,max,reason)
+				if ints==1 then ints=LOCATION_ONFIELD end
+				if into==1 then into=LOCATION_ONFIELD end
+				local g=Duel.GetMatchingGroup(function(c)return c:CheckRemoveOverlayCard(player,min,reason)end,player,ints,into,nil)
+				local sg=Group.CreateGroup()
+				for tc in aux.Next(g) do sg:Merge(tc:GetOverlayGroup()) end
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
+				sg=sg:Select(player,min,max,reason)
+				Duel.SendtoGrave(sg,reason)
+				local ct=Duel.GetOperatedGroup():GetCount()
+				if ct>0 then return 1 else return 0 end
+			end
+			cm[4]=Duel.SendtoGrave
+			Duel.SendtoGrave=function(target,reason)
+				local tg=Group.__add(target,target)
+				local g=tg:Filter(function(c)return c:IsLocation(LOCATION_OVERLAY) and c:IsOriginalSetCard(0x3537) and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:GetOriginalType()&TYPE_PENDULUM+TYPE_LINK==0 and c:IsAbleToDeck()end,nil)
+				for tc in aux.Next(g) do
+					Duel.Hint(HINT_CARD,0,tc:GetOriginalCodeRule())
+					Duel.SendtoDeck(tc,nil,1,reason)
+					tc:ReverseInDeck()
+				end
+				cm[4](Group.__sub(tg,g),reason)
+			end
 			--cm[2]=Card.ReverseInDeck
 			--Card.ReverseInDeck=function(card)
 				--card:RegisterFlagEffect(53707050,RESET_EVENT+0x53c0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(53702500,2))
@@ -113,7 +146,7 @@ function cm.Peacecho(c)
 	c:RegisterEffect(e9)
 end
 function cm.PeacechoRepFilter(c)
-	return c:GetDestination()==LOCATION_GRAVE and c:IsOriginalSetCard(0x3537) and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:GetOriginalType()&TYPE_PENDULUM==0
+	return c:GetDestination()==LOCATION_GRAVE and c:IsOriginalSetCard(0x3537) and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:GetOriginalType()&TYPE_PENDULUM+TYPE_LINK==0 and c:IsAbleToDeck()
 end
 function cm.PeacechoToDeckTarget1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -1754,8 +1787,21 @@ function cm.Hartrazlkop(marker)
 			if g:GetCount()==0 then break end
 			sg2:Merge(g)
 		end
-		c:SetMaterial(sg2)
 		Duel.SendtoGrave(sg2,REASON_MATERIAL+REASON_LINK)
+		sg2:KeepAlive()
+		local self=Group.FromCards(c)
+		self:KeepAlive()
+		cm[100]=sg2
+		cm[101]=e
+		cm[102]=self
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e3:SetCode(EVENT_MOVE)
+		e3:SetProperty(EFFECT_FLAG_DELAY)
+		e3:SetCondition(cm.adjustcon2)
+		e3:SetOperation(cm.adjustop2)
+		Duel.RegisterEffect(e3,tp)
+		c:SetMaterial(sg2)
 		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -1773,6 +1819,20 @@ function cm.Hartrazlkop(marker)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		c:RegisterEffect(e2)
 		c:CompleteProcedure()
-		Debug.Message(c:GetLinkMarker())
+		c:RegisterFlagEffect(53729000,0,0,0)
+		Duel.RaiseEvent(e:GetHandler(),EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
+	end
+end
+function cm.adjustcon2(e,tp,eg,ep,ev,re,r,rp)
+	return cm[102]:GetFirst():GetFlagEffect(53729000)>0
+end
+function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message(#cm[100])
+	local sc=cm[102]:GetFirst()
+	Debug.Message(sc:GetCode())
+	if sc:IsCanBeSpecialSummoned(e,0,tp,false,false) then return end
+	Duel.RaiseEvent(cm[100],EVENT_BE_MATERIAL,cm[101],REASON_SYNCHRO,tp,tp,0)
+	for tc in aux.Next(cm[100]) do
+		Duel.RaiseSingleEvent(tc,EVENT_BE_MATERIAL,cm[101],REASON_SYNCHRO,tp,tp,0)
 	end
 end

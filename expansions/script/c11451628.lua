@@ -189,12 +189,26 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 		if #bg==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local bc=bg:Select(tp,1,1,nil):GetFirst()
-		sg:AddCard(c)
 		sg:AddCard(bc)
-		c:SetMaterial(g)
+		sg:AddCard(c)
 		bc:SetMaterial(g)
+		c:SetMaterial(g)
 		Duel.SendtoGrave(g,REASON_MATERIAL+REASON_SYNCHRO)
-		g:DeleteGroup()
+		g:KeepAlive()
+		cm[0]=g
+		cm[1]=e
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_SPSUMMON)
+		e1:SetCountLimit(1)
+		e1:SetOperation(cm.adjustop2)
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(cm[0],EVENT_BE_MATERIAL,cm[1],REASON_SYNCHRO,tp,tp,0)
+	for tc in aux.Next(cm[0]) do
+		Duel.RaiseSingleEvent(tc,EVENT_BE_MATERIAL,cm[1],REASON_SYNCHRO,tp,tp,0)
 	end
 end
 function cm.sycon(e,tp,eg,ep,ev,re,r,rp)
@@ -226,7 +240,7 @@ function cm.syop(e,tp,eg,ep,ev,re,r,rp)
 			local e2=Effect.CreateEffect(e:GetHandler())
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-			e2:SetCode(EVENT_SPSUMMON)
+			e2:SetCode(EVENT_MOVE)
 			e2:SetCountLimit(1)
 			e2:SetLabelObject(e1)
 			e2:SetOperation(cm.adjustop)

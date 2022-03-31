@@ -76,7 +76,7 @@ function cm.adfilter(c,tc,ec)
 	e1:SetValue(POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
-	local res=c:IsSummonable(true,nil,1)
+	local res=c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)
 	e1:Reset()
 	return res
 end
@@ -91,10 +91,21 @@ function cm.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	sg=g:Select(tp,1,1,nil)
 	Duel.Overlay(c,sg)
 end
+function cm.smfilter(c)
+	return c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)
+end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-	local tc=Duel.SelectMatchingCard(tp,Card.IsSummonable,tp,LOCATION_HAND,0,1,1,nil,true,nil,1):GetFirst()
-	if tc then Duel.Summon(tp,tc,true,nil,1) end
+	local tc=Duel.SelectMatchingCard(tp,cm.smfilter,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
+	if tc then
+		local s1=tc:IsSummonable(true,nil,1)
+		local s2=tc:IsMSetable(true,nil,1)
+		if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
+			Duel.Summon(tp,tc,true,nil,1)
+		else
+			Duel.MSet(tp,tc,true,nil,1)
+		end
+	end
 end
 function cm.tcfilter(c)
 	return c:IsHasEffect(m)

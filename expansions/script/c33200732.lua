@@ -53,7 +53,7 @@ function c33200732.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=Duel.SelectMatchingCard(tp,c33200732.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	if sg:GetCount()>0 and Duel.Remove(sg,POS_FACEUP,REASON_EFFECT) and g:GetCount()>0 then
-		Duel.Destroy(g,REASON_EFFECT)
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end
 function c33200732.retcon(e,tp,eg,ep,ev,re,r,rp)

@@ -58,7 +58,7 @@ function cm.LinkOperation(f,minc,maxc,gf)
 			end
 end
 function cm.lcheck(c)
-	return c:IsSetCard(0x562) or c:GetOriginalCode()==33300308
+	return c:IsLinkSetCard(0x562) or (c:GetOriginalCode()==33300308 and not c:IsDisabled())
 end
 function cm.extracheck(c)
 	return c:IsFaceup() and c:GetOriginalCode()==33300308
@@ -83,14 +83,15 @@ function cm.ltg(...)
 	aux.GetLinkMaterials=f
 	return res
 end
-function cm.GetLinkMaterials(tp,f,lc)
-	local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc)
+function cm.GetLinkMaterials(tp,f,lc,e)
+	local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc,e)
 	local mg2=Duel.GetMatchingGroup(Auxiliary.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
 	local mg3=Duel.GetMatchingGroup(cm.extracheck,tp,LOCATION_SZONE,0,nil)
 	if mg2:GetCount()>0 then mg:Merge(mg2) end
 	if mg3:GetCount()>0 then mg:Merge(mg3) end
 	return mg
 end
+
 function cm.ctcheck(c,tp)
 	return c:IsControler(1-tp)
 end
@@ -125,12 +126,14 @@ function cm.IsLinkZoneOver(count)
 	for i=0,4 do
 		if (Duel.GetLinkedZone(0)&((2^i)<<0))~=0 then
 			flag=flag+1
-		elseif (Duel.GetLinkedZone(1)&((2^i)<<0))~=0 then
+		end
+		if (Duel.GetLinkedZone(1)&((2^i)<<0))~=0 then
 			flag=flag+1
 		end
 	end
 	return flag>=count
-end 
+end
+
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x562) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
@@ -143,6 +146,7 @@ function cm.filter(c)
 	return c:IsFaceup() and (c:GetAttack()>0 or aux.NegateMonsterFilter(c))
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
@@ -153,34 +157,35 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetValue(1)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1,true)
 			Duel.SpecialSummonComplete()
 			if cm.IsLinkZoneOver(3)and Duel.IsExistingMatchingCard(cm.filter,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 				local sg=Duel.SelectMatchingCard(tp,cm.filter,tp,0,LOCATION_MZONE,1,1,nil)
-				local tc=sg:GetFirst()
-				Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+				local tc1=sg:GetFirst()
+				Duel.NegateRelatedChain(tc1,RESET_TURN_SET)
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				e1:SetCode(EFFECT_DISABLE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-				tc:RegisterEffect(e1)
+				tc1:RegisterEffect(e1)
 				local e2=Effect.CreateEffect(c)
 				e2:SetType(EFFECT_TYPE_SINGLE)
 				e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				e2:SetCode(EFFECT_DISABLE_EFFECT)
 				e2:SetValue(RESET_TURN_SET)
 				e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-				tc:RegisterEffect(e2)
+				tc1:RegisterEffect(e2)
 				local e3=Effect.CreateEffect(c)
 				e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				e3:SetType(EFFECT_TYPE_SINGLE)
 				e3:SetCode(EFFECT_SET_ATTACK_FINAL)
 				e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 				e3:SetValue(0)
-				tc:RegisterEffect(e3)
+				tc1:RegisterEffect(e3)
 			end
 		end
 	end

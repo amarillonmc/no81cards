@@ -58,7 +58,7 @@ function cm.LinkOperation(f,minc,maxc,gf)
 			end
 end
 function cm.lcheck(c)
-	return (c:IsLevelBelow(4) and c:IsSetCard(0x562)) or c:GetOriginalCode()==33300308
+	return c:IsLinkSetCard(0x562) or (c:GetOriginalCode()==33300308 and not c:IsDisabled())
 end
 function cm.extracheck(c)
 	return c:IsFaceup() and c:GetOriginalCode()==33300308
@@ -69,25 +69,26 @@ end
 function cm.lcon(...)
 	local f=aux.GetLinkMaterials
 	aux.GetLinkMaterials=cm.GetLinkMaterials
-	local res=Auxiliary.LinkCondition(nil,1,1,cm.gf)(...)
+	local res=Auxiliary.LinkCondition(nil,2,2,cm.gf)(...)
 	aux.GetLinkMaterials=f
 	return res
 end
 function cm.ltg(...)
 	local f=aux.GetLinkMaterials
 	aux.GetLinkMaterials=cm.GetLinkMaterials
-	local res=Auxiliary.LinkTarget(nil,1,1,cm.gf)(...)
+	local res=Auxiliary.LinkTarget(nil,2,2,cm.gf)(...)
 	aux.GetLinkMaterials=f
 	return res
 end
-function cm.GetLinkMaterials(tp,f,lc)
-	local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc)
+function cm.GetLinkMaterials(tp,f,lc,e)
+	local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc,e)
 	local mg2=Duel.GetMatchingGroup(Auxiliary.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
 	local mg3=Duel.GetMatchingGroup(cm.extracheck,tp,LOCATION_SZONE,0,nil)
 	if mg2:GetCount()>0 then mg:Merge(mg2) end
 	if mg3:GetCount()>0 then mg:Merge(mg3) end
 	return mg
 end
+
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.spcheck,tp,LOCATION_GRAVE,0,1,nil,e,tp) and e:GetHandler():IsAbleToGrave() end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)

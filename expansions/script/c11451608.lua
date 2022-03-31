@@ -46,7 +46,7 @@ end
 function cm.filter1(c)
 	return c:IsSetCard(0x10) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
-function cm.filter2(c,mg)
+function cm.filter2(c,mg,tp)
 	return (c:IsSynchroSummonable(nil,mg) or c:IsLinkSummonable(mg)) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
 function cm.filter3(c)
@@ -56,7 +56,7 @@ function cm.sltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
 	local c=e:GetHandler()
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_GRAVE,0,2,nil) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,mg) and e:GetHandler():GetFlagEffect(m)==0 end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_GRAVE,0,2,nil) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,mg,tp) and e:GetHandler():GetFlagEffect(m)==0 end
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,cm.filter1,tp,LOCATION_GRAVE,0,2,2,nil)

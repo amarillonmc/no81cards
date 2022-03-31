@@ -6,7 +6,7 @@ function c33200730.initial_effect(c)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33200730,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -40,7 +40,7 @@ function c33200730.spfilter(c)
 	return c:IsSetCard(0xc32a) and c:IsFaceup() and c:IsAbleToRemove()
 end
 function c33200730.thfilter(c)
-	return c:IsSetCard(0xc32a) and c:IsAbleToHand()
+	return c:IsAbleToHand()
 end
 function c33200730.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
@@ -68,9 +68,8 @@ function c33200730.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e1,tp)
 		if Duel.IsExistingMatchingCard(c33200730.thfilter,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(33200730,2)) then
 			local sg=Duel.SelectMatchingCard(tp,c33200730.thfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
-			local thtc=sg:GetFirst()
-			Duel.HintSelection(thtc)
-			Duel.SendtoHand(thtc,nil,REASON_EFFECT)
+			Duel.HintSelection(sg)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		end
 	end
 end

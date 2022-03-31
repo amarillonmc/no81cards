@@ -20,7 +20,7 @@ function c33200724.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c33200724.filter(c,e,tp)
-	return c:IsSetCard(0xc32a) and not c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsSetCard(0xc32a) and not c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c33200724.filter2(c)
 	return c:IsFaceup() and c:IsCanAddCounter(0x32a,2)
@@ -35,7 +35,7 @@ function c33200724.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c33200724.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE) and Duel.IsExistingMatchingCard(c33200724.filter2,tp,LOCATION_ONFIELD,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(33200724,2)) then
+		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) and Duel.IsExistingMatchingCard(c33200724.filter2,tp,LOCATION_ONFIELD,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(33200724,2)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 			local sg=Duel.SelectMatchingCard(tp,c33200724.filter2,tp,LOCATION_ONFIELD,0,1,1,nil)
 			if sg:GetCount()>0 then 

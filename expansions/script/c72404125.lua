@@ -3,7 +3,7 @@ function c72404125.initial_effect(c)
 	--spsummon itself
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(72404125,0))
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,72404125)
