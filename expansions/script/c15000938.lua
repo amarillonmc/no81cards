@@ -36,7 +36,7 @@ function cm.mfilter(c)
 	return c:IsAttackAbove(2000) and c:IsLinkType(TYPE_TOKEN)
 end
 function cm.tgfilter(c)
-	return c:IsAbleToGraveAsCost() and c:IsSetCard(0x3f3f)
+	return c:IsAbleToGraveAsCost() and c:IsSetCard(0x3f3f) and c:IsType(TYPE_MONSTER)
 end
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -49,7 +49,6 @@ end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
-	Duel.Hint(HINT_CARD,1-tp,15000938)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g1=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_HAND,0,1,1,nil)
 	if Duel.SendtoGrave(g1,REASON_COST)~=0 then

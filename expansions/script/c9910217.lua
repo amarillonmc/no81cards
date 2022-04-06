@@ -57,8 +57,10 @@ function c9910217.discon(e,tp,eg,ep,ev,re,r,rp)
 	return g and g:IsContains(c)
 end
 function c9910217.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
-	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToDeckAsCost() end
+	Duel.HintSelection(Group.FromCards(c))
+	Duel.SendtoDeck(c,nil,2,REASON_COST)
 end
 function c9910217.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
