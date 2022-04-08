@@ -48,7 +48,10 @@ end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,1-tp,LOCATION_ONFIELD)
-	Duel.SetChainLimit(aux.FALSE)
+	Duel.SetChainLimit(cm.chlimit)
+end
+function cm.chlimit(e,ep,tp)
+	return tp==ep
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
