@@ -1,18 +1,21 @@
---远古造物 阿兰达鱼
+--远古造物 海口鱼
 require("expansions/script/c9910700")
 function c9910715.initial_effect(c)
 	--special summon
 	Ygzw.AddSpProcedure(c,1)
 	c:EnableReviveLimit()
-	--destroy replace
+	--to hand / to grave
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EFFECT_DESTROY_REPLACE)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,9910715)
-	e1:SetTarget(c9910715.reptg)
-	e1:SetValue(c9910715.repval)
-	e1:SetOperation(c9910715.repop)
+	e1:SetCost(c9910715.thcost)
+	e1:SetTarget(c9910715.thtg)
+	e1:SetOperation(c9910715.thop)
 	c:RegisterEffect(e1)
 	--set
 	local e2=Effect.CreateEffect(c)
@@ -25,20 +28,27 @@ function c9910715.initial_effect(c)
 	e2:SetOperation(c9910715.setop)
 	c:RegisterEffect(e2)
 end
-function c9910715.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0xc950) and c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
+function c9910715.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
-function c9910715.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsDiscardable() and not c:IsStatus(STATUS_DESTROY_CONFIRMED)
-		and eg:IsExists(c9910715.repfilter,1,nil,tp) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+function c9910715.thfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xc950) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
-function c9910715.repval(e,c)
-	return c9910715.repfilter(c,e:GetHandlerPlayer())
+function c9910715.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910715.thfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910715.thfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,c9910715.thfilter,tp,LOCATION_MZONE,0,1,1,nil)
 end
-function c9910715.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT+REASON_DISCARD)
+function c9910715.thop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
+	if tc:IsAbleToHand() and (not tc:IsAbleToGrave() or Duel.SelectOption(tp,1104,1191)==0) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	else
+		Duel.SendtoGrave(tc,REASON_EFFECT)
+	end
 end
 function c9910715.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)

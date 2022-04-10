@@ -23,30 +23,36 @@ function c9910659.initial_effect(c)
 	e2:SetOperation(c9910659.rmop)
 	c:RegisterEffect(e2)
 end
-function c9910659.spfilter(c)
-	return c:IsType(TYPE_XYZ) and c:IsFaceup() and c:IsAbleToRemove()
+function c9910659.thfilter(c)
+	return c:IsCode(9910658,9910665) and c:IsAbleToHand()
+end
+function c9910659.spfilter(c,tp,res)
+	res=res and c:IsType(TYPE_XYZ) and c:IsFaceup() and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT)
+	return c:IsAbleToRemove() or res
 end
 function c9910659.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910659.spfilter(chkc) end
+	local sg=Duel.GetMatchingGroup(c9910659.thfilter,tp,LOCATION_DECK,0,nil)
+	local res=sg:GetCount()>0
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9910659.spfilter(chkc,tp,res) end
 	local c=e:GetHandler()
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c9910659.spfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,c9910659.spfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+		and Duel.IsExistingTarget(c9910659.spfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,res) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,c9910659.spfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp,res)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-end
-function c9910659.thfilter(c)
-	return c:IsCode(9910651,9910658) and c:IsAbleToHand()
 end
 function c9910659.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local tc=Duel.GetFirstTarget()
-		local ct=tc:GetOverlayCount()
-		if tc:IsRelateToEffect(e) and Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
+	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
+	local sg=Duel.GetMatchingGroup(c9910659.thfilter,tp,LOCATION_DECK,0,nil)
+	local res=#sg>0 and tc:IsType(TYPE_XYZ) and tc:IsFaceup() and tc:CheckRemoveOverlayCard(tp,1,REASON_EFFECT)
+	if tc:IsAbleToRemove()
+		and (not res or Duel.SelectOption(tp,aux.Stringid(9910659,0),aux.Stringid(9910659,1))==0) then
+		Duel.BreakEffect()
+		if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
 			tc:RegisterFlagEffect(9910659,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -57,16 +63,15 @@ function c9910659.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCondition(c9910659.retcon)
 			e1:SetOperation(c9910659.retop)
 			Duel.RegisterEffect(e1,tp)
-			local sg=Duel.GetMatchingGroup(c9910659.thfilter,tp,LOCATION_DECK,0,nil)
-			if tc:IsLocation(LOCATION_REMOVED) and ct and ct>0  and sg:GetCount()>0
-				and Duel.SelectYesNo(tp,aux.Stringid(9910659,0)) then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-				sg=sg:Select(tp,1,1,nil)
-				Duel.BreakEffect()
-				Duel.SendtoHand(sg,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,sg)
-			end
 		end
+	elseif res then
+		Duel.BreakEffect()
+		if tc:RemoveOverlayCard(tp,1,1,REASON_EFFECT) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			sg=sg:Select(tp,1,1,nil)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
+		 end
 	end
 end
 function c9910659.retcon(e,tp,eg,ep,ev,re,r,rp)

@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetRange(LOCATION_ONFIELD)
+	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetCondition(cm.condition)
 	e2:SetCost(cm.cost)
@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAINING)
-	e4:SetRange(LOCATION_ONFIELD)
+	e4:SetRange(LOCATION_SZONE)
 	e4:SetCondition(cm.chcon)
 	e4:SetOperation(cm.chop)
 	c:RegisterEffect(e4)
@@ -45,19 +45,34 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function cm.filter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x97d) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetOriginalCodeRule(),0x97d,0x21,2200,2200,6,RACE_SPELLCASTER,ATTRIBUTE_DARK)
+function cm.mfilter(c)
+	return c:IsSetCard(0x97d) and not c:IsType(TYPE_TOKEN)
+end
+function cm.xyzfilter(c,mg,tp)
+	return c:IsXyzSummonable(mg) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_SZONE,0,1,e:GetHandler(),e,tp) and Duel.GetMZoneCount(tp,e:GetHandler())>0 end
-	local ct=Duel.GetMZoneCount(tp,e:GetHandler())
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
-	local gct=Duel.GetMatchingGroupCount(cm.filter,tp,LOCATION_SZONE,0,nil,e,tp)
-	if ct>gct then
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,gct,tp,LOCATION_SZONE)
-	else
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,ct,tp,LOCATION_SZONE)
+	if chk==0 then
+		local g=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
+		for tc in aux.Next(g) do
+			tc:AddMonsterAttribute(TYPE_NORMAL,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,1200,2200)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_TYPE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			e1:SetValue(TYPE_NORMAL+TYPE_MONSTER)
+			e1:SetReset(RESET_EVENT+0x5fe0000)
+			tc:RegisterEffect(e1,true)
+			cm[tc]=e1
+		end
+		local res=Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g,tp)
+		for tc in aux.Next(g) do
+			tc:AddMonsterAttribute(0,0,0,0,0,0)
+			cm[tc]:Reset()
+		end
+		return res
 	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -73,21 +88,45 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if ct<=0 then return end
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_SZONE,0,nil,e,tp)
-	local gc=g:GetCount()
-	if gc==0 then return end
-	if gc>ct then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		g=g:Select(tp,ct,ct,nil)
-	end
+	local g=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 	for tc in aux.Next(g) do
-		tc:AddMonsterAttribute(TYPE_EFFECT)
-		Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP)
+		tc:AddMonsterAttribute(TYPE_NORMAL,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,1200,2200)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_TYPE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetValue(TYPE_NORMAL+TYPE_MONSTER)
+		e1:SetReset(RESET_EVENT+0x5fe0000)
+		tc:RegisterEffect(e1,true)
+		cm[tc]=e1
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e2:SetCode(EVENT_MOVE)
+		e2:SetCountLimit(1)
+		e2:SetLabelObject(tc)
+		e2:SetOperation(cm.adjustop)
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e2,tp)
 	end
-	Duel.SpecialSummonComplete()
+	local xyzg=Duel.GetMatchingGroup(cm.xyzfilter,tp,LOCATION_EXTRA,0,nil,g,tp)
+	if #xyzg>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local xyz=xyzg:Select(tp,1,1,nil):GetFirst()
+		Duel.XyzSummon(tp,xyz,g,1,#g)
+	else
+		for tc in aux.Next(g) do
+			tc:AddMonsterAttribute(0,0,0,0,0,0)
+			cm[tc]:Reset()
+		end
+	end
+end
+function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	tc:AddMonsterAttribute(0,0,0,0,0,0)
+	local te=cm[tc]
+	if te and aux.GetValueType(te)=="Effect" then te:Reset() end
+	e:Reset()
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 	return re==e:GetLabelObject()

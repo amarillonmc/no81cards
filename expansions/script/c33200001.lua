@@ -27,7 +27,7 @@ function c33200001.spcon(e,c)
 end
 --e2
 function c33200001.drfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsReleasable()
 end
 
 function c33200001.filter(c)
@@ -35,10 +35,10 @@ function c33200001.filter(c)
 end
 
 function c33200001.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c33200001.drfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c33200001.drfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(c33200001.drfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,c33200001.drfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	Duel.Release(g,REASON_COST)
 end
 
 function c33200001.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

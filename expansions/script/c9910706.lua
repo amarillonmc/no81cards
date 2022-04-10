@@ -1,4 +1,4 @@
---远古造物 戴华三琼
+--远古造物 中华先光海葵
 require("expansions/script/c9910700")
 function c9910706.initial_effect(c)
 	--special summon
@@ -45,14 +45,13 @@ function c9910706.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c9910706.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,c9910706.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end
 function c9910706.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) then return end
 	if tc:IsAbleToGrave() and (not tc:IsAbleToRemove() or Duel.SelectOption(tp,1191,1192)==0) then
 		Duel.SendtoGrave(tc,REASON_EFFECT)
-		else
+	else
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
 end

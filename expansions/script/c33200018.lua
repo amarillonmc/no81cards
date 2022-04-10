@@ -1,5 +1,7 @@
 --业炎的魔神 Amy
 function c33200018.initial_effect(c)
+	--pendulum summon
+	aux.EnablePendulumAttribute(c)
 	--fusion procedure
 	c:EnableReviveLimit()
 	aux.AddFusionProcMix(c,true,true,c33200018.ffilter1,c33200018.ffilter2,c33200018.ffilter2)
@@ -12,7 +14,7 @@ function c33200018.initial_effect(c)
 	e0:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e0:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e0:SetRange(LOCATION_PZONE)
-	e0:SetCountLimit(1,33200020)
+	e0:SetCountLimit(1,33200019)
 	e0:SetTarget(c33200018.sptg)
 	e0:SetOperation(c33200018.spop)
 	c:RegisterEffect(e0)
@@ -20,7 +22,7 @@ function c33200018.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetOperation(c33200018.imop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -30,7 +32,7 @@ function c33200018.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e2:SetCountLimit(1,33200018)
+	e2:SetCountLimit(1)
 	e2:SetCondition(c33200018.setcon)
 	e2:SetTarget(c33200018.settg)
 	e2:SetOperation(c33200018.setop)
@@ -102,7 +104,7 @@ function c33200018.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c33200018.filter,tp,0,LOCATION_ONFIELD,1,nil) 
 	and Duel.GetLocationCount(tp,LOCATION_SZONE,tp)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c33200018.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,c33200018.filter,tp,0,LOCATION_ONFIELD,1,1,nil)
 end
 function c33200018.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -164,7 +166,7 @@ end
 --e4
 function c33200018.tpcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_FUSION) and c:IsFaceup()
+	return c:IsSummonType(SUMMON_TYPE_FUSION) and c:IsFaceup() and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function c33200018.tptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end

@@ -57,9 +57,10 @@ function c9910215.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(sg,REASON_EFFECT)
 		end
 	end
-	if lab==2 then
+	if lab==2 and Duel.GetFlagEffect(tp,9910215)<3 then
 		Duel.Hint(HINT_CARD,0,9910215)
 		Duel.Draw(tp,1,REASON_EFFECT)
+		Duel.RegisterFlagEffect(tp,9910215,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c9910215.damcon(e,tp,eg,ep,ev,re,r,rp)

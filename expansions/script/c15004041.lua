@@ -48,13 +48,13 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 				local sg=ag:SelectWithSumGreater(tp,Card.GetLevel,g:GetFirst():GetLevel())
 				Duel.Release(sg,REASON_EFFECT)
+				Duel.SpecialSummonComplete()
 			end
 			if op==1 then
 				Duel.NegateSummon(g)
 				Duel.RaiseEvent(g,EVENT_SPSUMMON_NEGATED,e,0,tp,0,0)
 				Duel.Destroy(g,REASON_EFFECT)
 			end
-			Duel.SpecialSummonComplete()
 		end
 	end
 end

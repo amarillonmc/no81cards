@@ -19,19 +19,19 @@ function c10150028.initial_effect(c)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
-	e2:SetCondition(c10150028.discon)
-	e2:SetTarget(c10150028.distg)
-	e2:SetOperation(c10150028.disop)
+	e2:SetCondition(c10150028.discon2)
+	e2:SetTarget(c10150028.distg2)
+	e2:SetOperation(c10150028.disop2)
 	c:RegisterEffect(e2)   
 end
-function c10150028.discon(e,tp,eg,ep,ev,re,r,rp)
+function c10150028.discon2(e,tp,eg,ep,ev,re,r,rp)
 	return tp==Duel.GetTurnPlayer()
 end
-function c10150028.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c10150028.distg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,2)
 end
-function c10150028.disop(e,tp,eg,ep,ev,re,r,rp)
+function c10150028.disop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.DiscardDeck(tp,2,REASON_EFFECT)
 end
 function c10150028.discost(e,tp,eg,ep,ev,re,r,rp,chk)

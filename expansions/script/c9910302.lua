@@ -1,4 +1,4 @@
---满开神树勇者 樱花
+--满开神树勇者 山樱
 function c9910302.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
@@ -37,7 +37,6 @@ function c9910302.initial_effect(c)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCountLimit(1)
 	e3:SetCondition(c9910302.tecon)
-	e3:SetCost(c9910302.cost)
 	e3:SetTarget(c9910302.tetg)
 	e3:SetOperation(c9910302.teop)
 	c:RegisterEffect(e3)

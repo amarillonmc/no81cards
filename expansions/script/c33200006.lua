@@ -2,72 +2,99 @@
 function c33200006.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x321),c33200006.ffilter2,true)
-	--to deck
+	aux.AddFusionProcMix(c,true,true,c33200006.ffilter1,c33200006.ffilter2)
+	--token set
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TODECK)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,33200006)
-	e1:SetCondition(c33200006.tdcon)
-	e1:SetTarget(c33200006.tdtg)
-	e1:SetOperation(c33200006.tdop)
-	c:RegisterEffect(e1)	
-	--th
-	local e2=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33200006,0))
-	e2:SetCategory(CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e2:SetCode(EVENT_LEAVE_FIELD)
-	e2:SetCondition(c33200006.spcon)
-	e2:SetTarget(c33200006.target)
-	e2:SetOperation(c33200006.thop)
-	c:RegisterEffect(e2)
+	e1:SetCategory(CATEGORY_TOKEN)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCondition(c33200006.damcon)
+	e1:SetTarget(c33200006.tktg)
+	e1:SetOperation(c33200006.tkop)
+	c:RegisterEffect(e1) 
+	--destroy
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(33200006,1))
+	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCost(c33200006.descost)
+	e3:SetTarget(c33200006.destg)
+	e3:SetOperation(c33200006.desop)
+	c:RegisterEffect(e3)
 end
+
 --fusion
+function c33200006.ffilter1(c)
+	return c:IsSetCard(0x321)
+end
 function c33200006.ffilter2(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_FIRE)
 end
 
 --e1
-function c33200006.tdcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
+function c33200006.damcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
-function c33200006.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+function c33200006.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 end
-function c33200006.tdop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
-	if sg:GetCount()>0 then
-		Duel.HintSelection(sg)
-		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
-	end
+function c33200006.tkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	local token=Duel.CreateToken(tp,33200009)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CHANGE_TYPE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+	e1:SetValue(TYPE_CONTINUOUS+TYPE_SPELL)
+	token:RegisterEffect(e1)
+	Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 end
+
 --e2
 function c33200006.thfilter(c)
-	return c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsAbleToHand()
+	return c:IsSetCard(0x321) and c:IsAbleToHand()
 end
-function c33200006.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_ONFIELD)
+function c33200006.tgfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsReleasable()
 end
-function c33200006.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c33200006.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function c33200006.descost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c33200008.tgfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,c33200008.tgfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	Duel.Release(g,REASON_COST)
 end
-function c33200006.thop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local g=Duel.GetMatchingGroup(c33200006.thfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(33200006,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg)
+function c33200006.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsFaceup() end
+	if chk==0 then return Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+end
+function c33200006.desop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		if Duel.Destroy(tc,REASON_EFFECT) then 
+			Duel.BreakEffect()
+			if Duel.IsExistingMatchingCard(c33200006.thfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(33200006,2)) then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+				local g=Duel.SelectTarget(tp,c33200006.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)   
+				if g:GetCount()>0 then
+					local thc=g:GetFirst()
+					Duel.SendtoHand(thc,nil,REASON_EFFECT)
+					Duel.ConfirmCards(1-tp,thc)
+				end
+			end
+		end
 	end
 end

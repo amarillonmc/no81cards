@@ -1,0 +1,42 @@
+local m=53729039
+local cm=_G["c"..m]
+cm.name="心化君魔 冬贝司"
+cm.upside_code=m-25
+cm.downside_code=m
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
+function cm.initial_effect(c)
+	c:EnableReviveLimit()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1:SetTarget(function(e,c)return c:IsType(TYPE_FUSION) and not c:IsAttribute(ATTRIBUTE_LIGHT)end)
+	e1:SetValue(cm.immval)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EFFECT_SEND_REPLACE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetTarget(cm.rtg)
+	e2:SetValue(function(e,c)return true end)
+	c:RegisterEffect(e2)
+end
+function cm.immval(e,re)
+	local g=Duel.GetMatchingGroup(function(c)return c:IsFaceup() and c:IsType(TYPE_FUSION)end,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
+	local t={}
+	for tc in aux.Next(g) do table.insert(t,aux.MZoneSequence(tc:GetSequence())) end
+	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
+	return re:IsActivated() and re:GetOwnerPlayer()~=e:GetHandlerPlayer() and ((re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and loc==LOCATION_SZONE and SNNM.IsInTable(4-seq,t)) or (re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and SNNM.IsInTable(4-aux.MZoneSequence(seq),t)))
+end
+function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsLocation(LOCATION_ONFIELD) and c:GetOriginalCode()==m end
+	if c:IsFacedown() then Duel.ConfirmCards(1-tp,c) end
+	local tcode=c.upside_code
+	Duel.Hint(HINT_CARD,0,m)	
+	c:SetEntityCode(tcode,true)
+	c:ReplaceEffect(tcode,0,0)
+	Duel.Hint(HINT_CARD,0,tcode)
+	Duel.RaiseEvent(e:GetHandler(),EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
+end

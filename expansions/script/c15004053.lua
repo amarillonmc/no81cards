@@ -2,6 +2,7 @@ local m=15004053
 local cm=_G["c"..m]
 cm.name="茵的异再神"
 function cm.initial_effect(c)
+	c:EnableReviveLimit()
 	aux.AddCodeList(c,15004041)
 	--attack
 	local e1=Effect.CreateEffect(c)

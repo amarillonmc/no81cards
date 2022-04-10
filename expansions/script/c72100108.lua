@@ -10,7 +10,7 @@ function c72100108.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCondition(c72100108.spcon)
 	e1:SetOperation(c72100108.spop)
@@ -33,18 +33,17 @@ function c72100108.spfilter(c)
 end
 function c72100108.spcon(e,c)
 	if c==nil then return true end
-	if c:IsHasEffect(EFFECT_NECRO_VALLEY) then return false end
 	local tp=c:GetControler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
 	local g=Duel.GetMatchingGroup(c72100108.spfilter,tp,LOCATION_HAND,0,nil)
-	if not c:IsAbleToGraveAsCost() or Duel.IsPlayerAffectedByEffect(tp,EFFECT_NECRO_VALLEY) then
+	if not c:IsAbleToGraveAsCost() then
 		g:RemoveCard(c)
 	end
 	return g:CheckWithSumGreater(Card.GetLevel,10)
 end
 function c72100108.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(c72100108.spfilter,c:GetControler(),LOCATION_HAND,0,nil)
-	if not c:IsAbleToGraveAsCost() or Duel.IsPlayerAffectedByEffect(tp,EFFECT_NECRO_VALLEY) then
+	if not c:IsAbleToGraveAsCost() then
 		g:RemoveCard(c)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)

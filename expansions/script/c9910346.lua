@@ -58,10 +58,10 @@ function c9910346.cfilter2(c)
 	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO)
 end
 function c9910346.eqfilter(c)
-	return c:IsRace(RACE_PLANT) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_PLANT) and not c:IsForbidden()
+	return c:IsRace(RACE_PLANT) and c:IsAttribute(ATTRIBUTE_LIGHT) and not c:IsForbidden()
 end
 function c9910346.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910346.cfilter(chkc) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910346.cfilter2(chkc) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsExistingTarget(c9910346.cfilter2,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.IsExistingMatchingCard(c9910346.eqfilter,tp,LOCATION_DECK,0,1,nil) end

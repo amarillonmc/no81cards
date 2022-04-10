@@ -75,7 +75,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.splimit(e,c)
-	return not c:IsSetCard(0xf3d)
+	return not (c:IsRace(RACE_BEAST) or c:IsRace(RACE_ROCK))
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end

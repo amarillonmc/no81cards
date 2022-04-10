@@ -1718,7 +1718,7 @@ function cm.Breakcount(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON) then c53799250.sp=true end
 	if not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE) then c53799250.ac=true end
 end
-function cm.HartrazLink(c,marker)
+function cm.DesertedHartrazLink(c,marker)
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(1163)
 	e0:SetType(EFFECT_TYPE_FIELD)
@@ -1835,4 +1835,89 @@ function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(cm[100]) do
 		Duel.RaiseSingleEvent(tc,EVENT_BE_MATERIAL,cm[101],REASON_SYNCHRO,tp,tp,0)
 	end
+end
+function cm.ORsideLink(c,f,min,max,gf,code)
+	c:EnableReviveLimit()
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(1166)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetRange(LOCATION_EXTRA)
+	if max==nil then max=c:GetLink() end
+	e1:SetCondition(cm.LinkCondition(f,min,max,gf,code))
+	e1:SetTarget(aux.LinkTarget(f,min,max,gf))
+	e1:SetOperation(aux.LinkOperation(f,min,max,gf))
+	e1:SetValue(SUMMON_TYPE_LINK)
+	c:RegisterEffect(e1)
+end
+function cm.LinkCondition(f,minc,maxc,gf,code)
+	return  function(e,c,og,lmat,min,max)
+				if c==nil then return true end
+				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
+				if c:GetOriginalCode()~=code then return false end
+				local minc=minc
+				local maxc=maxc
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+					if minc>maxc then return false end
+				end
+				local tp=c:GetControler()
+				local mg=nil
+				if og then
+					mg=og:Filter(aux.LConditionFilter,nil,f,c)
+				else
+					mg=aux.GetLinkMaterials(tp,f,c)
+				end
+				if lmat~=nil then
+					if not aux.LConditionFilter(lmat,f,c) then return false end
+					mg:AddCard(lmat)
+				end
+				local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				if fg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
+				Duel.SetSelectedCard(fg)
+				return mg:CheckSubGroup(aux.LCheckGoal,minc,maxc,tp,c,gf,lmat)
+			end
+end
+function cm.HartrazCheck(c)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_SPSUMMON_COST)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SINGLE_RANGE)
+	e0:SetRange(0xff)
+	e0:SetCost(cm.Hztfcost)
+	e0:SetOperation(cm.Hztfop)
+	c:RegisterEffect(e0)
+end
+function cm.Hztfcost(e,c,tp,st)
+	if bit.band(st,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK then
+		e:SetLabel(1)
+		local cg=Duel.GetMatchingGroup(cm.ALCTFFilter,tp,LOCATION_MZONE,0,nil)
+		return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+	else
+		e:SetLabel(0)
+		return true
+	end
+end
+function cm.Hztfop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetLabel()==0 then return true end
+	e:SetLabel(0)
+end
+function cm.LinkMonstertoSpell(c,marker)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CHANGE_TYPE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+	e1:SetValue(TYPE_SPELL)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetCode(EFFECT_LINK_SPELL_KOISHI)
+	e2:SetValue(marker)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+	c:RegisterEffect(e2)
 end
