@@ -40,7 +40,7 @@ function c64800123.spfilter2(c,e,tp,lv)
 end
 function c64800123.spfilter(c,e,tp)
 	local lv=c:GetLevel()
-	return lv<5 and c:IsSetCard(0x341a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and Duel.IsExistingMatchingCard(c64800123.filter2,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,c,e,tp,lv)
+	return lv<5 and c:IsSetCard(0x341a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and Duel.IsExistingMatchingCard(c64800123.spfilter2,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,c,e,tp,lv)
 end
 function c64800123.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (Duel.GetMZoneCount(tp,e:GetHandler())>1
