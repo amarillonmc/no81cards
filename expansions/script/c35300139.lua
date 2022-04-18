@@ -24,10 +24,31 @@ function cm.initial_effect(c)
 	local e4=e2:Clone()
 	e4:SetCode(EVENT_REMOVE)
 	c:RegisterEffect(e4)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetOperation(cm.regop)
+	c:RegisterEffect(e1)
 end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTarget(cm.splimit0)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.splimit0(e,c,sump,sumtype,sumpos,targetp,se)
+	return not c:IsType(TYPE_SYNCHRO) and c:IsLocation(LOCATION_EXTRA)
+end
+
 function cm.ttcon(e,c)
 	if c==nil then return true end
-	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0 or		 Duel.IsExistingMatchingCard(cm.filter1,c:GetControler(),LOCATION_MZONE,0,1,nil)
+	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0 or   Duel.IsExistingMatchingCard(cm.filter1,c:GetControler(),LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.filter1(c)
 	return c:IsFaceup() and c:IsRace(RACE_WARRIOR)

@@ -38,7 +38,7 @@ function c9910661.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	if Duel.CheckRemoveOverlayCard(tp,1,0,2,REASON_EFFECT) and Duel.IsPlayerCanDraw(tp,1)
-		and Duel.SelectYesNo(tp,aux.Stringid(9910659,0)) and Duel.RemoveOverlayCard(tp,1,0,2,2,REASON_EFFECT) then
+		and Duel.SelectYesNo(tp,aux.Stringid(9910661,0)) and Duel.RemoveOverlayCard(tp,1,0,2,2,REASON_EFFECT) then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end

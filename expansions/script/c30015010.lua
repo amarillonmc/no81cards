@@ -162,7 +162,7 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()==0 and g1:GetCount()>0 then
 		g=g1
 	end
-	if c:GetFlagEffect(m+1)==3 and g:GetCount()>0 then
+	if c:GetFlagEffect(m+1)>=3 and g:GetCount()>0 then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.ConfirmCards(tp,g)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

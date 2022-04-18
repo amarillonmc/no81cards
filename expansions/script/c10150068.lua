@@ -13,7 +13,7 @@ function c10150068.initial_effect(c)
 	c:RegisterEffect(e1)	
 end
 function c10150068.cfilter(c)
-	return c:IsRace(RACE_DRAGON) and c:IsFaceup() and (c:IsLevelBelow(7) or c:IsRankAbove(7))
+	return c:IsRace(RACE_DRAGON) and c:IsFaceup() and (c:IsLevelAbove(7) or c:IsRankAbove(7))
 end
 function c10150068.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c10150068.cfilter,tp,LOCATION_MZONE,0,1,nil)

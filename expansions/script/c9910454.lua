@@ -74,10 +74,12 @@ end
 function c9910454.filter(c,e,tp)
 	return c:IsSetCard(0x9950) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and c:GetLevel()>0 and Duel.IsCanRemoveCounter(tp,1,1,0x1950,c:GetLevel(),REASON_COST)
+		and (c:IsLocation(LOCATION_DECK) and Duel.GetMZoneCount(tp)>0
+		or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
 end
 function c9910454.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c9910454.filter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,e,tp)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:GetCount()>0 end
+	if chk==0 then return g:GetCount()>0 end
 	local lvt={}
 	local tc=g:GetFirst()
 	while tc do
@@ -97,12 +99,12 @@ function c9910454.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
 end
 function c9910454.sfilter(c,lv,e,tp)
-	return c:IsSetCard(0x9950) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and c:IsLevel(lv)
+	return c:IsSetCard(0x9950) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevel(lv)
+		and (c:IsLocation(LOCATION_DECK) and Duel.GetMZoneCount(tp)>0
+		or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
 end
 function c9910454.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local lv=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9910454.sfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,lv,e,tp)

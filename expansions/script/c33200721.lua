@@ -64,8 +64,8 @@ function c33200721.thfilter(c)
 	return c:IsSetCard(0xc32a) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
 end
 function c33200721.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x32a,2,REASON_COST) end
-	Duel.RemoveCounter(tp,1,1,0x32a,2,REASON_COST)
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x32a,2,REASON_COST) end
+	e:GetHandler():RemoveCounter(tp,0x32a,2,REASON_COST)
 end
 function c33200721.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33200721.thfilter,tp,LOCATION_DECK,0,1,nil) end

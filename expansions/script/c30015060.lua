@@ -1,5 +1,4 @@
 --终墟覆始
---终墟覆始
 if not pcall(function() require("expansions/script/c16199990") end) then require("script/c16199990") end
 local m,cm=rk.set(30015060,"Overuins")
 function cm.initial_effect(c)
@@ -70,12 +69,17 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetCategory(CATEGORY_TOHAND)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
 	end
-	if #mg>=6 then
-		e:GetHandler():RegisterFlagEffect(m+2,RESET_PHASE+PHASE_END,0,0)
+	local flag=false
+	if #mg>=6 then 
+		flag=true 
+	end
+	if flag==true then
+		Duel.SetTargetParam(6)
 	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local flag=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	if e:GetLabel()==0 then
 		local mg=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_REMOVED,0,nil)
 		if mg:GetCount()~=0 then
@@ -89,21 +93,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	else
 		local mg=Duel.GetMatchingGroup(cm.thfilter1,tp,LOCATION_REMOVED,0,nil)
 		if mg:GetCount()~=0 then
-			if c:GetFlagEffect(m+2)>0 and mg:GetCount()~=0 then   
-				local sg1=mg:RandomSelect(tp,1)
-				local tc1=sg1:GetFirst() 
-				if tc1 then
-					Duel.SendtoHand(tc1,nil,REASON_EFFECT)
-					Duel.ConfirmCards(1-tp,tc1)
-					Card.ResetFlagEffect(c,m+2)
-					if tc1:IsLocation(LOCATION_HAND) then
-						local sg=mg:RandomSelect(tp,1)
-						local tc=sg:GetFirst() 
-						if tc then
-							Duel.SendtoHand(tc,nil,REASON_EFFECT)
-							Duel.ConfirmCards(1-tp,tc)
-						end 
-					end
+			if flag>0 then   
+				local sg1=mg:RandomSelect(tp,2)
+				if sg1:GetCount()~=0 then
+					Duel.SendtoHand(sg1,nil,REASON_EFFECT)
+					Duel.ConfirmCards(1-tp,sg1)
 				end
 			else
 				if mg:GetCount()~=0 then 
@@ -119,11 +113,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,1-tp,POS_FACEDOWN) 
 			and Duel.SelectYesNo(1-tp,aux.Stringid(30015500,1)) 
 			and Duel.IsPlayerCanRemove(1-tp) then
-			local g=Duel.GetFieldGroup(1-tp,0,LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE)
+			local g=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0)
 			if #g>0 then
 				Duel.Hint(HINT_CARD,0,m)
 				Duel.ConfirmCards(1-tp,g)
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+				Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
 				local sg=g:FilterSelect(1-tp,aux.NecroValleyFilter(cm.downremovefilter),1,3,nil,1-tp,POS_FACEDOWN)
 				Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
 				Duel.ShuffleDeck(tp)

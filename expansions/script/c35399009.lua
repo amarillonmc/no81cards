@@ -55,9 +55,9 @@ function c35399009.op1(e,tp,eg,ep,ev,re,r,rp)
 		e1_1:SetValue(c35399009.efilter1_1)
 		if Duel.GetTurnPlayer()==tp
 			and Duel.GetCurrentPhase()==PHASE_END then
-			e1_1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_SELF_TURN,2)
+			e1_1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)
 		else
-			e1_1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_SELF_TURN)
+			e1_1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_SELF_TURN)
 		end
 		c:RegisterEffect(e1_1)
 	end
