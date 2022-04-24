@@ -87,7 +87,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		 ct3=Duel.SendtoGrave(g,REASON_EFFECT) 
 	end
 	local ct4=ct2+ct3
-	Duel.Recover(tp,ct4*100,REASON_EFFECT)
+	Duel.Damage(tp,500*ct4,REASON_EFFECT)
 	Duel.Damage(1-tp,500*ct4,REASON_EFFECT)
 end
 
