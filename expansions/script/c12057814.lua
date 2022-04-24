@@ -34,23 +34,9 @@ function c12057814.initial_effect(c)
 	e2:SetTarget(c12057814.settg)
 	e2:SetOperation(c12057814.setop)
 	c:RegisterEffect(e2)
-	--token
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(12057814,0))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_REMOVE)
-	e3:SetCountLimit(1,32057814)
-	e3:SetTarget(c12057814.sptg)
-	e3:SetOperation(c12057814.spop)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EVENT_TO_GRAVE)
-	c:RegisterEffect(e4)
 end
 function c12057814.setfilter(c,tp)
-	return c:IsFaceup() and c:IsControler(tp) and c:IsRace(RACE_WYRM) and c:IsType(TYPE_SYNCHRO) 
+	return c:IsFaceup() and c:IsControler(tp) and c:IsRace(RACE_WYRM) and c:IsType(TYPE_SYNCHRO+TYPE_XYZ+TYPE_FUSION+TYPE_PENDULUM+TYPE_LINK) 
 end
 function c12057814.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c12057814.setfilter,1,nil,tp)
@@ -63,19 +49,6 @@ function c12057814.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 	   Duel.SSet(tp,c) 
-	end
-end
-function c12057814.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,20001444,0x16b,TYPES_TOKEN_MONSTER,0,0,2,RACE_WYRM,ATTRIBUTE_WATER) end
-	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
-end
-function c12057814.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,20001444,0x16b,TYPES_TOKEN_MONSTER,0,0,2,RACE_WYRM,ATTRIBUTE_WATER) then
-		local token=Duel.CreateToken(tp,12057815)
-		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function c12057814.radfilter(c)

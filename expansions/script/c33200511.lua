@@ -1,6 +1,7 @@
 --逆转辩护士 成步堂龙一
 function c33200511.initial_effect(c)
 	aux.AddCodeList(c,33200500)
+	aux.AddCodeList(c,33200511)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33200511,0))
@@ -56,7 +57,7 @@ end
 
 --e2
 function c33200511.thfilter(c)
-	return aux.IsCodeListed(c,33200511) and c:IsAbleToHand() and not c:IsCode(33200508)
+	return aux.IsCodeListed(c,33200511) and c:IsAbleToHand()
 end
 function c33200511.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33200511.thfilter,tp,LOCATION_DECK,0,1,nil) end

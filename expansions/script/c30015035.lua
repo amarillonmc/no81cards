@@ -71,23 +71,24 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end
 --Effect 2
-function cm.downremovefilter(c,tp)
-	return c:IsAbleToRemove(1-tp,POS_FACEDOWN)
+function cm.downremovefilter(c,ep)
+	return c:IsAbleToRemove(1-ep,POS_FACEDOWN)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,1-tp,POS_FACEDOWN) 
-		and Duel.SelectYesNo(1-tp,aux.Stringid(30015500,1)) 
-		and Duel.IsPlayerCanRemove(1-tp) then
-		local g=Duel.GetFieldGroup(1-tp,0,LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE)
+	local player=e:GetHandlerPlayer()
+	if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,player,LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,1-player,POS_FACEDOWN) 
+		and Duel.SelectYesNo(1-player,aux.Stringid(30015500,1)) 
+		and Duel.IsPlayerCanRemove(1-player) then
+		local g=Duel.GetFieldGroup(1-player,0,LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE)
 		if #g>0 then
 			Duel.Hint(HINT_CARD,0,m)
-			Duel.ConfirmCards(1-tp,g)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local sg=g:FilterSelect(1-tp,aux.NecroValleyFilter(cm.downremovefilter),1,3,nil,1-tp,POS_FACEDOWN)
+			Duel.ConfirmCards(1-player,g)
+			Duel.Hint(HINT_SELECTMSG,1-player,HINTMSG_REMOVE)
+			local sg=g:FilterSelect(1-player,aux.NecroValleyFilter(cm.downremovefilter),1,3,nil,player,POS_FACEDOWN)
 			Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
-			Duel.ShuffleDeck(tp)
-			Duel.ShuffleExtra(tp)
+			Duel.ShuffleDeck(player)
+			Duel.ShuffleExtra(player)
 		end
 	end
 end

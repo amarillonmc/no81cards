@@ -117,14 +117,6 @@ function c33200514.eqop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_CARD,tp,33200503)
 			Duel.RegisterFlagEffect(tp,33200503,RESET_PHASE+PHASE_END,0,2)
 		end
-		if tc:GetOriginalCode()==33200505 and Duel.IsExistingMatchingCard(c33200505.thfilter,tp,LOCATION_DECK,0,1,nil) then
-			Duel.Hint(HINT_CARD,tp,33200505)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g=Duel.SelectMatchingCard(tp,c33200505.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-			if g:GetCount()>0 then
-				Duel.SendtoHand(g,nil,REASON_EFFECT)
-			end
-		end 
 		if tc:GetOriginalCode()==33200511 and Duel.IsExistingMatchingCard(c33200511.thfilter,tp,LOCATION_DECK,0,1,nil) then 
 			Duel.Hint(HINT_CARD,tp,33200511)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

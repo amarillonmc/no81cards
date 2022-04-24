@@ -48,10 +48,10 @@ function c12057816.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c12057816.fmfil1(c)
-	return c:IsFusionSetCard(0x145,0x16b)
+	return c:IsFusionType(TYPE_SYNCHRO+TYPE_FUSION+TYPE_XYZ)
 end
 function c12057816.fmfil2(c)
-	return c:IsAttackAbove(2800) and c:GetSummonLocation()==LOCATION_EXTRA and c:IsRace(RACE_WYRM)
+	return c:IsDefenseAbove(3000)  
 end
 function c12057816.splimit(e,se,sp,st) 
 	local sc=se:GetHandler()
@@ -137,6 +137,7 @@ function c12057816.xspop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c12057816.xspfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
+	g:GetFirst():CompleteProcedure()
 	end
 end
 

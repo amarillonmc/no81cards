@@ -44,9 +44,6 @@ function c12057807.initial_effect(c)
 	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	c:RegisterEffect(e4)
 	--damage val
 	local e5=e3:Clone()
 	e5:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
@@ -75,13 +72,13 @@ end
 function c12057807.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetLabelObject(),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,3000)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,1500)
 end
 function c12057807.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local bc=e:GetLabelObject()
 	if bc:IsRelateToBattle() and bc:IsControler(1-tp) then
 	Duel.SendtoDeck(bc,nil,2,REASON_EFFECT+REASON_RULE)
-	Duel.Damage(1-tp,3000,REASON_EFFECT) 
+	Duel.Damage(1-tp,1500,REASON_EFFECT) 
 	end
 end
 

@@ -6,7 +6,7 @@ cm.downside_code=m+25
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.HartrazCheck(c)
-	SNNM.ORsideLink(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x5533),1,1,nil,53729006)
+	SNNM.ORsideLink(c,function(c)return c:IsLevelBelow(4) and c:IsLinkRace(RACE_PYRO)end,1,1,nil,53729006)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e0:SetCode(EVENT_SPSUMMON_SUCCESS)

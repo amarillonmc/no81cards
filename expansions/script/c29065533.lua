@@ -1,115 +1,67 @@
 --方舟骑士升变
 function c29065533.initial_effect(c)
+	aux.AddCodeList(c,29065500)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCode(EVENT_FREE_CHAIN) 
 	e1:SetCountLimit(1,29065533+EFFECT_COUNT_CODE_OATH)
-	e1:SetTarget(c29065533.target)
-	e1:SetOperation(c29065533.activate)
+	e1:SetTarget(c29065533.actg) 
+	e1:SetOperation(c29065533.acop) 
 	c:RegisterEffect(e1)
 end
-function c29065533.filter0(c)
-	return c:IsOnField() and c:IsAbleToRemove()
+function c29065533.rmfil(c) 
+	return c:IsCode(29065500,29065508) and c:IsAbleToRemove()  
 end
-function c29065533.filter1(c,e)
-	return c:IsOnField() and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
+function c29065533.gck(g) 
+	return g:GetClassCount(Card.GetCode)==g:GetCount() 
+end 
+function c29065533.spfil(c,e,tp) 
+	return c:IsCanBeSpecialSummoned(e,0,tp,true,false) and c:GetOriginalCode()==29065513 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 
+end 
+function c29065533.actg(e,tp,eg,ep,ev,re,r,rp,chk) 
+	local g=Duel.GetMatchingGroup(c29065533.rmfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,nil) 
+	if chk==0 then return g:CheckSubGroup(c29065533.gck,2,2) and Duel.IsExistingMatchingCard(c29065533.spfil,tp,LOCATION_EXTRA,0,1,nil,e,tp) end 
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,tp,LOCATION_MZONE+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA) 
 end
-function c29065533.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c))
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
-end
-function c29065533.filter3(c)
-	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove()
-end
-function c29065533.fcheck(tp,sg,fc)
-	return sg:IsExists(Card.IsFusionCode,1,nil,29065500)
-end
-function c29065533.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp):Filter(c29065533.filter0,nil)
-		local mg2=Duel.GetMatchingGroup(c29065533.filter3,tp,LOCATION_GRAVE,0,nil)
-		mg1:Merge(mg2)
-		aux.FCheckAdditional=c29065533.fcheck
-		local res=Duel.IsExistingMatchingCard(c29065533.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
-		if not res then
-			local ce=Duel.GetChainMaterial(tp)
-			if ce~=nil then
-				local fgroup=ce:GetTarget()
-				local mg3=fgroup(ce,e,tp)
-				local mf=ce:GetValue()
-				res=Duel.IsExistingMatchingCard(c29065533.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,mf,chkf)
-			end
-		end
-		aux.FCheckAdditional=nil
-		return res
-	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_ONFIELD+LOCATION_GRAVE)
-end
-function c29065533.activate(e,tp,eg,ep,ev,re,r,rp)
-	local chkf=tp
-	local mg1=Duel.GetFusionMaterial(tp):Filter(c29065533.filter1,nil,e)
-	local mg2=Duel.GetMatchingGroup(c29065533.filter3,tp,LOCATION_GRAVE,0,nil)
-	mg1:Merge(mg2)
-	aux.FCheckAdditional=c29065533.fcheck
-	local sg1=Duel.GetMatchingGroup(c29065533.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
-	local mg3=nil
-	local sg2=nil
-	local ce=Duel.GetChainMaterial(tp)
-	if ce~=nil then
-		local fgroup=ce:GetTarget()
-		mg3=fgroup(ce,e,tp)
-		local mf=ce:GetValue()
-		sg2=Duel.GetMatchingGroup(c29065533.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg3,mf,chkf)
-	end
-	if sg1:GetCount()>0 or (sg2~=nil and sg2:GetCount()>0) then
-		local sg=sg1:Clone()
-		if sg2 then sg:Merge(sg2) end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tg=sg:Select(tp,1,1,nil)
-		local tc=tg:GetFirst()
-		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
-			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
-			tc:SetMaterial(mat1)
-			Duel.Remove(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
-			Duel.BreakEffect()
-			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
-		else
-			local mat2=Duel.SelectFusionMaterial(tp,tc,mg3,nil,chkf)
-			local fop=ce:GetOperation()
-			fop(ce,e,tp,tc,mat2)
-		end
-		tc:CompleteProcedure()
-		tc:RegisterFlagEffect(29065533,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_BATTLE)
-		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e1:SetCondition(c29065533.descon)
-		e1:SetOperation(c29065533.desop)
-		e1:SetReset(RESET_PHASE+PHASE_END,2)
-		e1:SetCountLimit(1)
-		e1:SetLabelObject(tc)
-		Duel.RegisterEffect(e1,tp)
-	end
-		aux.FCheckAdditional=nil
-end
+function c29065533.acop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler() 
+	local g=Duel.GetMatchingGroup(c29065533.rmfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,nil) 
+	local sg=Duel.GetMatchingGroup(c29065533.spfil,tp,LOCATION_EXTRA,0,nil,e,tp) 
+	if g:CheckSubGroup(c29065533.gck,2,2) and sg:GetCount()>0 then 
+	local rg=g:SelectSubGroup(tp,c29065533.gck,false,2,2)  
+	Duel.Remove(rg,POS_FACEUP,REASON_EFFECT) 
+	local tc=sg:Select(tp,1,1,nil):GetFirst() 
+	Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
+		tc:RegisterFlagEffect(29065533,RESET_EVENT+RESETS_STANDARD,0,1)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_PHASE+PHASE_BATTLE)
+		e2:SetCountLimit(1)
+		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e2:SetLabel(Duel.GetTurnCount()+1)
+		e2:SetLabelObject(tc)
+		e2:SetCondition(c29065533.descon)
+		e2:SetOperation(c29065533.desop)
+		Duel.RegisterEffect(e2,tp)
+	end 
+end 
 function c29065533.descon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	return Duel.GetTurnCount()~=e:GetLabel() and tc:GetFlagEffect(29065533)~=0
+	if tc:GetFlagEffect(29065533)~=0 then
+		return Duel.GetTurnCount()==e:GetLabel()
+	else
+		e:Reset()
+		return false
+	end
 end
 function c29065533.desop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,29065533)
 	local tc=e:GetLabelObject()
 	Duel.SendtoGrave(tc,REASON_EFFECT) 
 	Duel.SetLP(tp,Duel.GetLP(tp)/2)
-	e:SetReset()
 end
-
-
 
 
 

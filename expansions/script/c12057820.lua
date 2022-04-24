@@ -31,17 +31,6 @@ function c12057820.initial_effect(c)
 	e3:SetTarget(c12057820.sptg)
 	e3:SetOperation(c12057820.spop)
 	c:RegisterEffect(e3)
-	--negate
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_DISABLE+CATEGORY_REMOVE)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,32057820)
-	e4:SetCondition(c12057820.discon)
-	e4:SetTarget(c12057820.distg)
-	e4:SetOperation(c12057820.disop)
-	c:RegisterEffect(e4)
 end
 function c12057820.tnval(e,c)
 	return e:GetHandler():IsControler(c:GetControler())
@@ -103,27 +92,6 @@ function c12057820.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c12057820.splimit(e,c)
 	return not c:IsType(TYPE_SYNCHRO) and not c:IsType(TYPE_FUSION) and c:IsLocation(LOCATION_EXTRA)
-end
-function c12057820.discon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
-	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return tg and tg:IsExists(Card.IsOnField,1,nil) and Duel.IsChainDisablable(ev)
-end
-function c12057820.rmfil(c)
-	return c:IsAbleToRemove() and c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
-function c12057820.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c12057820.rmfil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0) 
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_ONFIELD)
-end
-function c12057820.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and Duel.IsExistingMatchingCard(c12057820.rmfil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then  
-	Duel.BreakEffect()
-	local g=Duel.SelectMatchingCard(tp,c12057820.rmfil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil) 
-	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	end
 end
 
 

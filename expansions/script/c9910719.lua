@@ -16,13 +16,13 @@ function c9910719.initial_effect(c)
 	e1:SetTarget(c9910719.negtg)
 	e1:SetOperation(c9910719.negop)
 	c:RegisterEffect(e1)
-	--set
+	--skip
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCost(c9910719.setcost)
-	e2:SetTarget(c9910719.settg)
-	e2:SetOperation(c9910719.setop)
+	e2:SetDescription(aux.Stringid(9910719,1))
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetCondition(c9910719.descon)
+	e2:SetOperation(c9910719.desop)
 	c:RegisterEffect(e2)
 end
 function c9910719.negcon(e,tp,eg,ep,ev,re,r,rp)
@@ -67,4 +67,26 @@ function c9910719.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,Ygzw.SetFilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then Ygzw.Set(tc,e,tp) end
+end
+function c9910719.descon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and e:GetHandler():IsPreviousControler(tp)
+end
+function c9910719.desop(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SKIP_BP)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+	if Duel.GetTurnPlayer()~=tp and ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then
+		e1:SetLabel(Duel.GetTurnCount())
+		e1:SetCondition(c9910719.skipcon)
+		e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_OPPO_TURN,2)
+	else
+		e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_OPPO_TURN,1)
+	end
+	Duel.RegisterEffect(e1,tp)
+end
+function c9910719.skipcon(e)
+	return Duel.GetTurnCount()~=e:GetLabel()
 end

@@ -42,25 +42,34 @@ function cm.initial_effect(c)
 	e2:SetLabelObject(e1)
 	c:RegisterEffect(e2)
 	--Effect 3 
+	local e20=Effect.CreateEffect(c)
+	e20:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e20:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e20:SetCode(EVENT_LEAVE_FIELD_P)
+	e20:SetOperation(cm.regop3)
+	c:RegisterEffect(e20)
 	local e21=Effect.CreateEffect(c)
+	e21:SetDescription(aux.Stringid(30015500,2))
 	e21:SetCategory(CATEGORY_REMOVE)
 	e21:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e21:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
 	e21:SetCode(EVENT_LEAVE_FIELD)
+	e21:SetLabelObject(e20)
 	e21:SetCondition(cm.spcon)
 	e21:SetTarget(cm.sptg)
 	e21:SetOperation(cm.spop)
 	c:RegisterEffect(e21)
 	local e22=Effect.CreateEffect(c)
+	e22:SetDescription(aux.Stringid(30015500,3))
 	e22:SetCategory(CATEGORY_REMOVE)
 	e22:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e22:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
 	e22:SetCode(EVENT_LEAVE_FIELD)
+	e22:SetLabelObject(e20)
 	e22:SetCondition(cm.spcon1)
 	e22:SetTarget(cm.sptg1)
 	e22:SetOperation(cm.spop1)
 	c:RegisterEffect(e22)
-	--duel sunmmon success code
 end
 --summon proc
 function cm.otconfilter(c)
@@ -114,7 +123,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetValue(cm.efilter)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 	c:RegisterEffect(e1)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -144,7 +153,7 @@ function cm.efilter(e,te)
 	local c=e:GetHandler()
 	local ec=te:GetHandler()
 	if ec:IsHasCardTarget(c) then return true end
-	return not (te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te)) and te:GetOwner()~=e:GetOwner()
+	return not (te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(ec)) and te:GetOwner()~=e:GetOwner()
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -162,9 +171,17 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --Effect 3 
+function cm.regop3(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if rp==1-tp then
+		e:SetLabel(1)
+	else
+		e:SetLabel(0)
+	end
+end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return rp==1-tp and c:IsPreviousControler(tp) and c:IsSummonType(SUMMON_TYPE_ADVANCE)
+	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and e:GetLabelObject():GetLabel()==1
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -202,7 +219,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() then
 		if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,POS_FACEDOWN) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil,tp,POS_FACEDOWN)
+			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,3,nil,tp,POS_FACEDOWN)
 			if g:GetCount()>0 then
 				Duel.HintSelection(g)
 				Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
@@ -212,7 +229,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return rp==tp and c:IsPreviousControler(tp) and c:IsSummonType(SUMMON_TYPE_ADVANCE)
+	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and e:GetLabelObject():GetLabel()~=1
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -228,7 +245,7 @@ function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	   if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0  then
 		   if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,POS_FACEDOWN) then
 			   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			   local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil,tp,POS_FACEDOWN)
+			   local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,3,nil,tp,POS_FACEDOWN)
 			   if g:GetCount()>0 then
 				   Duel.HintSelection(g)
 				   Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)

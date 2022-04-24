@@ -66,15 +66,16 @@ end
 function c33200528.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tm=Duel.GetFlagEffect(tp,33200503)
 	if chk==0 then return Duel.GetFlagEffect(tp,e:GetHandler():GetOriginalCode())<tm+1 and Duel.IsExistingMatchingCard(c33200528.exfilter,tp,0,LOCATION_HAND,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
-	e:SetLabel(Duel.AnnounceType(tp))
 	Duel.RegisterFlagEffect(tp,e:GetHandler():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
 	e:GetHandler():RegisterFlagEffect(33200500,RESET_EVENT+RESET_CHAIN,0,1)
+	e:GetHandler():RegisterFlagEffect(33200599,RESET_EVENT+RESET_CHAIN,0,1)
 end
 function c33200528.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND,nil)
 	if g:GetCount()==0 or not c:IsFaceup() or not c:IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
+	e:SetLabel(Duel.AnnounceType(tp))
 	if not Duel.IsPlayerAffectedByEffect(tp,33200505) then
 		local sg=g:Filter(c33200501.exfilter,nil):RandomSelect(1-tp,1)
 		local sgc=sg:GetFirst()

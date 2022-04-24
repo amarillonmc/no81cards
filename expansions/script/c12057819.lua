@@ -113,37 +113,22 @@ function c12057819.negfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and aux.NegateAnyFilter(c) and c:IsFaceup()
 end
 function c12057819.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c12057819.negfilter,tp,0,LOCATION_ONFIELD,1,nil) end 
-	local g=Duel.GetMatchingGroup(c12057819.negfilter,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
-end
-function c12057819.rmfil(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
+	if chk==0 then return true end 
 end
 function c12057819.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(c12057819.negfilter,tp,0,LOCATION_ONFIELD,nil)
-	if g:GetCount()<=0 then return end
-	local tc=g:GetFirst()
-	while tc do 
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e2)
-	tc=g:GetNext()
-	end
-	if Duel.IsExistingMatchingCard(c12057819.rmfil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(12057819,2)) then 
-	local dg=Duel.SelectMatchingCard(tp,c12057819.rmfil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil) 
-	Duel.Remove(dg,POS_FACEUP,REASON_EFFECT)
-	end
+	--cannot trigger
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CANNOT_TRIGGER)
+	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(0,LOCATION_SZONE)
+	e3:SetTarget(c12057819.distg)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e3,tp)
 end
-
+function c12057819.distg(e,c)
+	return c:IsFacedown()
+end
 

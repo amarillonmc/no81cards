@@ -1,6 +1,5 @@
 --法律的执行者
 function c33200508.initial_effect(c)
-	aux.AddCodeList(c,33200501)
 	aux.AddCodeList(c,33200500)
 	--tohand
 	local e1=Effect.CreateEffect(c)
@@ -25,19 +24,16 @@ end
 
 --e1
 function c33200508.filter(c)
-	return (aux.IsCodeListed(c,33200501) or c:IsCode(33200501) or aux.IsCodeListed(c,33200511) or c:IsCode(33200511)) and c:IsAbleToHand()
+	return aux.IsCodeListed(c,33200500) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() 
 end
 function c33200508.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(c33200508.filter,tp,LOCATION_DECK,0,nil)
-	if g:GetCount()>0 then
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(33200508,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)
 		if Duel.SendtoHand(sg,nil,REASON_EFFECT) then
 			Duel.ConfirmCards(1-tp,sg)
-			if Duel.SelectYesNo(tp,aux.Stringid(33200508,0)) then
-				Duel.Destroy(e:GetHandler(),REASON_EFFECT)
-			end
 		end
 	end
 end

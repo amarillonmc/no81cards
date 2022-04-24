@@ -6,6 +6,7 @@ function cm.initial_effect(c)
 	local e30=Effect.CreateEffect(c)
 	e30:SetType(EFFECT_TYPE_ACTIVATE)
 	e30:SetCode(EVENT_FREE_CHAIN)
+	e30:SetCondition(cm.actcon)
 	c:RegisterEffect(e30)
 	--Effect 1
 	local e2=Effect.CreateEffect(c)
@@ -36,25 +37,30 @@ function cm.initial_effect(c)
 	e21:SetOperation(cm.spop)
 	c:RegisterEffect(e21) 
 end
---Effect 1
-function cm.cfilter(c,tp)
-	return c:GetOwner()==1-tp
+--activate
+function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+		or Duel.IsExistingMatchingCard(cm.overfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
-function cm.ovfilter(c)
-	return c:IsFaceup() and rk.check(c,"Overuins")
+--Effect 1
+function cm.cfilter(c)
+	return not rk.check(c,"Overuins")
+end
+function cm.overfilter(c)
+	return c:IsFaceup() and rk.check(c,"Overuins") and c:IsType(TYPE_MONSTER)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp) and Duel.IsExistingMatchingCard(cm.ovfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	return eg:IsExists(cm.cfilter,1,nil) 
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(cm.cfilter,nil,tp)
+	local g=eg:Filter(cm.cfilter,nil)
 	local tc=g:GetFirst()
 	while tc do
-		if tc:GetOwner()==1-tp and tc:IsAbleToRemove(tp,POS_FACEDOWN) then
+		if  tc:IsAbleToRemove(tp,POS_FACEDOWN) then
 			local rg=tc:GetOverlayGroup()
 			local rc=rg:GetFirst()
 			while rc do
-				if rc:GetOwner()==1-tp and rc:IsAbleToRemove(tp,POS_FACEDOWN) then
+				if rc:IsAbleToRemove(tp,POS_FACEDOWN) then
 					Duel.Remove(rc,POS_FACEDOWN,REASON_EFFECT)
 				end
 				rc=rg:GetNext()
@@ -71,9 +77,10 @@ end
 function cm.rstcon(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(cm.dtodeckfilter,tp,LOCATION_REMOVED,0,nil)
 	local mg1=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_REMOVED,nil)
-	return #mg>0 or #mg1>0 and Duel.IsExistingMatchingCard(cm.ovfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	return #mg>0 or #mg1>0 
 end
 function cm.rstop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local mg=Duel.GetMatchingGroup(cm.dtodeckfilter,tp,LOCATION_REMOVED,0,nil)
 	local mg1=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_REMOVED,nil)
 	if #mg1>0 and #mg>0 then  mg:Merge(mg1) end
@@ -82,10 +89,18 @@ function cm.rstop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.SendtoDeck(mg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		local og=Duel.GetOperatedGroup()
+		local over=Duel.GetMatchingGroup(cm.overfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 		if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then
 			local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-			Duel.Damage(1-tp,ct*300,REASON_EFFECT)
-			Duel.Recover(tp,ct*300,REASON_EFFECT)
+			Duel.Damage(1-tp,ct*100,REASON_EFFECT)
+			Duel.Recover(tp,ct*100,REASON_EFFECT)		
+		end
+		if #over==0 then
+			if c:IsAbleToRemove(tp,POS_FACEDOWN) then
+				Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)  
+			else
+				Duel.SendtoGrave(c,REASON_RULE)
+			end  
 		end
 	end
 end
@@ -112,7 +127,6 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		sg:AddCard(rc)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,#sg,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,PLAYER_ALL,LOCATION_ONFIELD)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -125,16 +139,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)
 	elseif c:IsRelateToEffect(e) then
 		Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)   
-	end
-	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() 
-		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
-		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.HintSelection(g)
-			Duel.SendtoGrave(g,REASON_EFFECT)
-		end
 	end
 end
 

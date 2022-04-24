@@ -15,13 +15,13 @@ function cm.initial_effect(c)
 	--spsummon (self)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_RELEASE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(TIMING_END_PHASE,TIMING_END_PHASE)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e2:SetCountLimit(1,m)
-	e2:SetCost(cm.cost)
+	--e2:SetCost(cm.cost)
 	e2:SetCondition(cm.condition1)
 	e2:SetTarget(cm.target1)
 	e2:SetOperation(cm.operation1)
@@ -70,22 +70,25 @@ end
 function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)~=0
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsRace,1,nil,RACE_SPELLCASTER) end
-	local sg=Duel.SelectReleaseGroup(tp,Card.IsRace,1,1,nil,RACE_SPELLCASTER)
-	Duel.Release(sg,REASON_COST)
-end
+--function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+--	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsRace,1,nil,RACE_SPELLCASTER) end
+--	local sg=Duel.SelectReleaseGroup(tp,Card.IsRace,1,1,nil,RACE_SPELLCASTER)
+--	Duel.Release(sg,REASON_COST)
+--end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.CheckReleaseGroup(tp,Card.IsRace,1,nil,RACE_SPELLCASTER) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,0,0)
 end
 function cm.thfilter(c)
 	return cm.Potion(c) and c:IsAbleToHand()
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and
+	if not c:IsRelateToEffect(e) then return false end
+	local sg=Duel.SelectReleaseGroup(tp,Card.IsRace,1,1,nil,RACE_SPELLCASTER)
+	if sg:GetCount()~=0 and Duel.Release(sg,REASON_EFFECT)>0 and
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE,0,nil)
 		if sg:GetCount()>0 then
@@ -102,7 +105,7 @@ function cm.resetcount(e,tp,eg,ep,ev,re,r,rp)
 	cm[1]=0
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return cm.Potion(re:GetHandler())
+	return cm.Potion(re:GetHandler()) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.regop1(e,tp,eg,ep,ev,re,r,rp)
 	cm[re:GetOwnerPlayer()]=cm[re:GetOwnerPlayer()]+1

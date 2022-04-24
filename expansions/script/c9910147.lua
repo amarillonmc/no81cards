@@ -36,6 +36,7 @@ function c9910147.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if xg:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) and rg:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE)
 		then loc=loc+LOCATION_GRAVE end
 	if chk==0 then return c:IsType(TYPE_XYZ) and loc>0 end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
 end
 function c9910147.rmop(e,tp,eg,ep,ev,re,r,rp)
@@ -74,4 +75,3 @@ function c9910147.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Overlay(c,xc)
 	Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)
 end
-

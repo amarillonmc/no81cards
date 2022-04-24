@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e2:SetHintTiming(TIMING_END_PHASE,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e2:SetCountLimit(1,m+1)
-	e2:SetCost(cm.cost)
+	--e2:SetCost(cm.cost)
 	e2:SetCondition(cm.condition1)
 	e2:SetTarget(cm.target1)
 	e2:SetOperation(cm.operation1)
@@ -70,19 +70,22 @@ end
 function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)~=0
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetReleaseGroup(tp)
-	if chk==0 then return g:GetCount()>0 end
-	Duel.Release(g,REASON_COST)
-end
+--function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+--  local g=Duel.GetReleaseGroup(tp)
+--  if chk==0 then return g:GetCount()>0 end
+--  Duel.Release(g,REASON_COST)
+--end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return Duel.CheckReleaseGroup(tp,nil,1,nil)
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,0,0)
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c) then
+	local g=Duel.GetReleaseGroup(tp)
+	if g:GetCount()==0 or not c:IsRelateToEffect(e) then return end
+	if Duel.Release(g,REASON_EFFECT)~=0 and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 		local g=Duel.SelectMatchingCard(tp,aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c)
@@ -110,7 +113,7 @@ function cm.resetcount(e,tp,eg,ep,ev,re,r,rp)
 	cm[1]=0
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return cm.Potion(re:GetHandler())
+	return cm.Potion(re:GetHandler()) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.regop1(e,tp,eg,ep,ev,re,r,rp)
 	cm[re:GetOwnerPlayer()]=cm[re:GetOwnerPlayer()]+1

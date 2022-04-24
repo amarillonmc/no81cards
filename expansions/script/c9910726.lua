@@ -13,13 +13,10 @@ function c9910726.initial_effect(c)
 	e1:SetTarget(c9910726.tgtg)
 	e1:SetOperation(c9910726.tgop)
 	c:RegisterEffect(e1)
-	--set
+	--pierce
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCost(c9910726.setcost)
-	e2:SetTarget(c9910726.settg)
-	e2:SetOperation(c9910726.setop)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_PIERCE)
 	c:RegisterEffect(e2)
 end
 function c9910726.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -68,20 +65,4 @@ function c9910726.tgop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Remove(sg2,POS_FACEUP,REASON_EFFECT)
 		end
 	end
-end
-function c9910726.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local id=Duel.GetTurnCount()
-	if chk==0 then return c:GetTurnID()<id and not c:IsReason(REASON_RETURN)
-		and c:IsAbleToRemoveAsCost() end
-	Duel.Remove(c,POS_FACEUP,REASON_COST)
-end
-function c9910726.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Ygzw.SetFilter2,tp,LOCATION_DECK,0,1,nil,e,tp) end
-end
-function c9910726.setop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,Ygzw.SetFilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	local tc=g:GetFirst()
-	if tc then Ygzw.Set(tc,e,tp) end
 end

@@ -84,6 +84,13 @@ function cm.AllGlobalCheck(c)
 			alle4:SetOperation(cm.OSCheck)
 			Duel.RegisterEffect(alle4,0)
 		end
+		if x>=53727004 and x<=53727007 then
+			local alle6=Effect.CreateEffect(c)
+			alle6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			alle6:SetCode(EVENT_CHAINING)
+			alle6:SetOperation(cm.CyberNSwitch)
+			Duel.RegisterEffect(alle6,0)
+		end
 	end
 end
 function cm.UpRegi(e,tp,eg,ep,ev,re,r,rp)
@@ -455,7 +462,7 @@ function cm.ALCYakuActivate(code,atk,def,rac,att)
 		local list={e:GetLabel()}
 		local ct=1
 		if #list>1 then
-			Debug.Message("注：宣言的数字对应确认的卡的顺序（顺序与消息记录相同）")
+			Duel.Hint(24,tp,aux.Stringid(53702600,2))
 			ct=Duel.AnnounceLevel(tp,1,#list)
 		end
 		c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
@@ -1920,4 +1927,109 @@ function cm.LinkMonstertoSpell(c,marker)
 	e2:SetValue(marker)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 	c:RegisterEffect(e2)
+end
+function cm.CyberNSwitch(c)
+	if Duel.GetFlagEffect(0,53727000)>0 then return end
+	Duel.RegisterFlagEffect(0,53727000,0,0,0)
+	Duel.Hint(HINT_OPSELECTED,0,aux.Stringid(53702500,8))
+	Duel.Hint(HINT_OPSELECTED,1,aux.Stringid(53702500,8))
+	Duel.SelectYesNo(0,aux.Stringid(53702600,1))
+	Duel.SelectYesNo(1,aux.Stringid(53702600,1))
+	if Duel.GetFlagEffect(0,53727097)==0 and not Duel.SelectYesNo(0,aux.Stringid(53702500,13)) then Duel.RegisterFlagEffect(0,53727097,0,0,0) end
+	if Duel.GetFlagEffect(1,53727097)==0 and not Duel.SelectYesNo(1,aux.Stringid(53702500,13)) then Duel.RegisterFlagEffect(1,53727097,0,0,0) end
+	if Duel.GetFlagEffect(0,53727097)>0 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_FREE_CHAIN)
+		e1:SetOperation(cm.CyberNCheck)
+		Duel.RegisterEffect(e1,0)
+	end
+	if Duel.GetFlagEffect(0,53727097)>0 then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_FREE_CHAIN)
+		e2:SetOperation(cm.CyberNCheck)
+		Duel.RegisterEffect(e2,1)
+	end
+end
+function cm.CyberNCheck(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(53702500,9))
+	local sel=Duel.SelectOption(tp,aux.Stringid(53727004,6),aux.Stringid(53727005,6),aux.Stringid(53727006,6),aux.Stringid(53727007,6))
+	if sel==0 then
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702601,Duel.GetFlagEffect(0,53727004)+1))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702602,Duel.GetFlagEffect(0,53727037)+3))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702603,Duel.GetFlagEffect(0,53727070)+6))
+	elseif sel==1 then
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702604,Duel.GetFlagEffect(0,53727005)+1))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702605,Duel.GetFlagEffect(0,53727038)+3))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702606,Duel.GetFlagEffect(0,53727071)+5))
+	elseif sel==2 then
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702607,Duel.GetFlagEffect(0,53727006)+1))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702608,Duel.GetFlagEffect(0,53727039)+3))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702609,Duel.GetFlagEffect(0,53727072)+5))
+	else
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702610,Duel.GetFlagEffect(0,53727007)+1))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702611,Duel.GetFlagEffect(0,53727040)+3))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(53702612,Duel.GetFlagEffect(0,53727073)+5))
+	end
+end
+function cm.CyberNRecord(c)
+	if Duel.GetFlagEffect(0,53727099)>0 then return end
+	Duel.RegisterFlagEffect(0,53727099,0,0,0)
+	Duel.Hint(HINT_OPSELECTED,0,aux.Stringid(53702500,10))
+	Duel.Hint(HINT_OPSELECTED,1,aux.Stringid(53702500,10))
+	Duel.SelectYesNo(0,aux.Stringid(53702600,0))
+	Duel.SelectYesNo(1,aux.Stringid(53702600,0))
+	local check0,check1=false,false
+	if Duel.GetFlagEffect(0,53727097)==0 and not Duel.SelectYesNo(0,aux.Stringid(53702500,13)) then Duel.RegisterFlagEffect(0,53727097,0,0,0) end
+	if Duel.GetFlagEffect(1,53727097)==0 and not Duel.SelectYesNo(1,aux.Stringid(53702500,13)) then Duel.RegisterFlagEffect(1,53727097,0,0,0) end
+	if Duel.SelectYesNo(0,aux.Stringid(53702500,12)) then check0=true end
+	if Duel.SelectYesNo(1,aux.Stringid(53702500,12)) then check1=true end
+	if not check0 or not check1 then check0,check1=false,false end
+	if Duel.GetFlagEffect(0,53727097)>0 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_FREE_CHAIN)
+		if check0 then e1:SetOperation(cm.CyberNCode1) else e1:SetOperation(cm.CyberNCode2) end
+		Duel.RegisterEffect(e1,0)
+	end
+	if Duel.GetFlagEffect(1,53727097)>0 then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_FREE_CHAIN)
+		if check1 then e2:SetOperation(cm.CyberNCode1) else e2:SetOperation(cm.CyberNCode2) end
+		Duel.RegisterEffect(e2,1)
+	end
+end
+function cm.CyberNCode1(e,tp,eg,ep,ev,re,r,rp)
+	local t={}
+	local max=Duel.GetFlagEffect(0,53727001)
+	for i=1,max do
+		if Duel.GetFlagEffect(0,53777000+i)>0 then
+			local cd=Duel.GetFlagEffectLabel(0,53777000+i)
+			if not cm.IsInTable(cd,t) and cd~=114 then table.insert(t,cd) end
+		else break end
+	end
+	local g=Group.CreateGroup()
+	for i=1,#t do
+		local cre=Duel.CreateToken(1-tp,t[i])
+		g:AddCard(cre)
+	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(53702500,14))
+	Duel.ConfirmCards(tp,g)
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(53702500,15))
+end
+function cm.CyberNCode2(e,tp,eg,ep,ev,re,r,rp)
+	local t={}
+	local max=Duel.GetFlagEffect(0,53727001)
+	for i=1,max do
+		if Duel.GetFlagEffect(0,53777000+i)>0 then
+			local cd=Duel.GetFlagEffectLabel(0,53777000+i)
+			if not cm.IsInTable(cd,t) and cd~=114 then table.insert(t,cd) end
+		else break end
+	end
+	local g=Group.CreateGroup()
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(53702500,14))
+	for i=1,#t do Duel.Hint(HINT_CARD,tp,t[i]) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(53702500,15))
 end

@@ -1,6 +1,5 @@
 --逆转辩护士 信乐盾之
 function c33200509.initial_effect(c)
-	aux.AddCodeList(c,33200501)
 	aux.AddCodeList(c,33200500)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -49,6 +48,7 @@ function c33200509.tztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,e:GetHandler():GetOriginalCode())<tm+1 and Duel.IsExistingMatchingCard(c33200509.exfilter,tp,0,LOCATION_HAND,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
 	Duel.RegisterFlagEffect(tp,e:GetHandler():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
 	e:GetHandler():RegisterFlagEffect(33200500,RESET_EVENT+RESET_CHAIN,0,1)
+	e:GetHandler():RegisterFlagEffect(33200599,RESET_EVENT+RESET_CHAIN,0,1)
 end
 function c33200509.tzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

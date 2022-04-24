@@ -85,7 +85,7 @@ function c9910440.disop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if tc:IsLocation(LOCATION_MZONE) and tc~=c and c:IsFaceup() and c:IsRelateToEffect(e)
 			and (ec==nil or ec:GetFlagEffect(9910440)==0) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-			and Duel.SelectYesNo(tp,aux.Stringid(9910440,0)) then
+			and tc:IsAbleToChangeControler() and Duel.SelectYesNo(tp,aux.Stringid(9910440,0)) then
 			if not Duel.Equip(tp,tc,c) then return end
 			tc:RegisterFlagEffect(9910440,RESET_EVENT+RESETS_STANDARD,0,0)
 			e:SetLabelObject(tc)

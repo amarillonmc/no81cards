@@ -30,11 +30,7 @@ function c33200506.spfilter(c,e,tp,check)
 		and (check or c:IsCode(33200501))
 end
 function c33200506.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then 
-		local chk1=Duel.IsExistingMatchingCard(c33200506.filter,tp,LOCATION_MZONE,0,1,nil)
-		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and Duel.IsExistingMatchingCard(c33200506.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,chk1)
-	end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c33200506.activate(e,tp,eg,ep,ev,re,r,rp)

@@ -44,6 +44,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e21) 
 end
 --Effect 1
+function cm.thfilter1(c)
+	return c:IsFacedown() and c:IsAbleToHand()
+end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp and Duel.GetDrawCount(tp)>0 and Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_REMOVED,0,1,nil)
 end
@@ -63,8 +66,33 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_PHASE+PHASE_DRAW)
 		e1:SetValue(0)
 		Duel.RegisterEffect(e1,tp)
-	end 
-end   
+		local mg=Duel.GetMatchingGroup(cm.thfilter1,tp,LOCATION_REMOVED,0,nil)
+		if mg:GetCount()~=0 then 
+			local sg=mg:RandomSelect(tp,1)
+			local tc=sg:GetFirst() 
+			if tc then
+				Duel.SendtoHand(tc,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,sg)
+				if not tc:IsLocation(LOCATION_HAND) then
+					local count=mg:GetCount()
+					while count>0 do
+						local sg1=mg:RandomSelect(tp,1)
+						local tc1=sg1:GetFirst() 
+						if tc1 then
+							Duel.SendtoHand(tc1,nil,REASON_EFFECT)
+							Duel.ConfirmCards(1-tp,sg1)
+							if tc1:IsLocation(LOCATION_HAND) then
+								count=0
+							else
+								count=count-1
+							end
+						end
+					end 
+				end 
+			end  
+		end
+	end
+end
 function cm.drmfilter(c)
 	return c:IsFacedown() and c:IsAbleToHand()
 end
@@ -78,7 +106,7 @@ function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(cm.drmfilter,tp,LOCATION_REMOVED,0,1,nil)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(cm.drmfilter,tp,LOCATION_REMOVED,0,1,nil) then
+	if Duel.IsExistingMatchingCard(cm.drmfilter,tp,LOCATION_REMOVED,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		local mg=Duel.GetMatchingGroup(cm.drmfilter,tp,LOCATION_REMOVED,0,nil)
 		if mg:GetCount()~=0 then
 			Duel.Hint(HINT_CARD,0,m)
@@ -99,7 +127,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,3,nil,tp,POS_FACEDOWN)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,5,nil,tp,POS_FACEDOWN)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)

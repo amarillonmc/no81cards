@@ -28,7 +28,7 @@ function c29065536.initial_effect(c)
 	c29065536.summon_effect=e2
 end
 function c29065536.cfilter(c)
-	return c:IsCode(29065521,29065523,29065536,15000129,29065537) and c:IsType(TYPE_MONSTER)
+	return c:IsCode(29065521,29065523,29065536,15000129) and c:IsType(TYPE_MONSTER)
 end
 function c29065536.hspcon(e,c)
 	if c==nil then return true end

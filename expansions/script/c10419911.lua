@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RELEASE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(TIMING_END_PHASE,TIMING_END_PHASE)
@@ -59,10 +59,15 @@ end
 function cm.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
+--function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+--	local g=Duel.GetReleaseGroup(tp)
+--	if chk==0 then return g:GetCount()>0 end
+--	Duel.Release(g,REASON_COST)
+--end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetReleaseGroup(tp)
-	if chk==0 then return g:GetCount()>0 end
-	Duel.Release(g,REASON_COST)
+	local c=e:GetHandler()
+	if chk==0 then return not c:IsPublic() and c:GetFlagEffect(m)==0 end
+	c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
 end
 function cm.ntfilter(c)
 	return c:IsFaceup() and cm.Potion(c)
@@ -71,13 +76,17 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.ntfilter,tp,LOCATION_GRAVE,0,1,nil)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)and Duel.CheckReleaseGroup(tp,nil,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	local g=Duel.GetReleaseGroup(tp)
+	if g:GetCount()==0 or not c:IsRelateToEffect(e) then return end
+	if Duel.Release(g,REASON_EFFECT)~=0 then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 function cm.cfilter(c,tp)
 	return cm.Kabal(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()

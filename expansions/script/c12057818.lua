@@ -34,21 +34,6 @@ function c12057818.initial_effect(c)
 	e2:SetTarget(c12057818.sptg)  
 	e2:SetOperation(c12057818.spop)
 	c:RegisterEffect(e2)
-	--remove 
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(12057818,0))
-	e3:SetCategory(CATEGORY_REMOVE)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_TO_GRAVE)
-	e3:SetCountLimit(1,32057818)
-	e3:SetCondition(c12057818.rmcon)
-	e3:SetTarget(c12057818.rmtg)
-	e3:SetOperation(c12057818.rmop)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EVENT_REMOVE)
-	c:RegisterEffect(e4)
 end
 function c12057818.radtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end 
@@ -100,30 +85,7 @@ function c12057818.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	end
 end
-function c12057818.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsReason(REASON_EFFECT) and rp==1-tp and c:IsPreviousControler(tp)
-		and c:IsPreviousLocation(LOCATION_ONFIELD)
-end
-function c12057818.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_EXTRA,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,1-tp,LOCATION_HAND+LOCATION_EXTRA)
-end
-function c12057818.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_EXTRA,0,1,nil) then 
-	local g1=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
-	Duel.ConfirmCards(tp,g1)
-	local sg1=g1:Filter(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN):RandomSelect(tp,1)
-	local g2=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
-	Duel.ConfirmCards(tp,g2)
-	local sg2=g1:Filter(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN):RandomSelect(tp,1)  
-	sg1:Merge(sg2) 
-	Duel.Remove(sg1,POS_FACEDOWN,REASON_EFFECT)
-	Duel.ShuffleHand(1-tp)
-	Duel.ShuffleExtra(1-tp)  
-	end 
-end
+
 
 
 

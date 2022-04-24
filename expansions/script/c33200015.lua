@@ -18,23 +18,11 @@ function c33200015.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,33200016)
 	e2:SetCost(c33200015.DRcost)
 	e2:SetTarget(c33200015.igtg)
 	e2:SetOperation(c33200015.igop)
 	c:RegisterEffect(e2)	
-	--tohand
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_TOHAND)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,33200016)
-	e4:SetCondition(c33200015.thcon)
-	e4:SetTarget(c33200015.thtg)
-	e4:SetOperation(c33200015.thop)
-	c:RegisterEffect(e4)
 end
 
 --e1.
@@ -139,30 +127,4 @@ function c33200015.efilter(e,te)
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	return not g or not g:IsContains(e:GetHandler())
-end
-
---e4
-function c33200015.thfilter(c)
-	return c:IsSetCard(0x321) and c:IsAbleToHand()
-end
-function c33200015.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ac=Duel.GetAttacker()
-	local tc=Duel.GetAttackTarget()
-	if not ac:IsControler(tp) then ac,tc=tc,ac end
-	return ac and ac:IsControler(tp) and ac:IsFaceup() and ac:IsSetCard(0x321) and ac:IsType(TYPE_FUSION)
-end
-function c33200015.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) end
-	if chk==0 then return Duel.IsExistingTarget(c33200015.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,c33200015.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
-end
-function c33200015.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
-	end
 end

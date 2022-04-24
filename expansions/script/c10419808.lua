@@ -58,7 +58,7 @@ function cm.cfilter(c,tp)
 	return cm.Kabal(c) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and  c:GetReasonPlayer()==1-tp
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler()) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)==0
+	return eg:IsExists(cm.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler()) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function cm.spfilter(c,e,tp)
 	return cm.Kabal(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) and c:IsLevelBelow(Duel.GetTurnCount())
@@ -114,12 +114,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 		Duel.ShuffleHand(tp)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
-		if #sg>0 then
-			Duel.BreakEffect()
-			Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		end
+		Duel.BreakEffect()
+		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 	end
 	cm.ActivateReflect1(e,tp,eg,ep,ev,re,r,rp)
 	cm.ActivateReflect2(e,tp,eg,ep,ev,re,r,rp)

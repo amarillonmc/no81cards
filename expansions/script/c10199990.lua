@@ -4906,3 +4906,6 @@ rsof.Escape_Old_Functions()
 --directly enable will cause bugs,  but i am lazy to find what cards i have used this function
 --rssf.EnableSpecialProcedure()
 rsof.Get_Cate_Hint_Op_List()
+if not rsof.SelectHint then
+	rsof.SelectHint=rshint.Select
+end

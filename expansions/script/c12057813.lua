@@ -30,16 +30,6 @@ function c12057813.initial_effect(c)
 	local e3=e2:Clone() 
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-	--destroy replace
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EFFECT_DESTROY_REPLACE)
-	e4:SetRange(LOCATION_GRAVE+LOCATION_HAND)
-	e4:SetCountLimit(1,22057813)
-	e4:SetTarget(c12057813.reptg)
-	e4:SetValue(c12057813.repval)
-	e4:SetOperation(c12057813.repop)
-	c:RegisterEffect(e4)
 end
 function c12057813.spcon(e,c)
 	if c==nil then return true end
@@ -76,22 +66,20 @@ function c12057813.spop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetValue(1)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e3,true)
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+		e3:SetValue(1)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e3,true)
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+		e3:SetValue(1)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e3,true)
 	end
 	Duel.SpecialSummonComplete()
-end
-function c12057813.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x145,0x16b)
-		and c:IsOnField() and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
-end
-function c12057813.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemove() and eg:IsExists(c12057813.repfilter,1,nil,tp) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
-end
-function c12057813.repval(e,c)
-	return c12057813.repfilter(c,e:GetHandlerPlayer())
-end
-function c12057813.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
 end
 
 

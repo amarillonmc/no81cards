@@ -12,18 +12,6 @@ function c12057821.initial_effect(c)
 	e1:SetTarget(c12057821.distg)
 	e1:SetOperation(c12057821.disop)
 	c:RegisterEffect(e1) 
-	--to hand   
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9798352,2))
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_DESTROYED)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,22057821)
-	e2:SetCondition(c12057821.thcon)
-	e2:SetTarget(c12057821.thtg)
-	e2:SetOperation(c12057821.thop)
-	c:RegisterEffect(e2) 
 	--atk up
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
@@ -45,36 +33,6 @@ function c12057821.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c12057821.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateActivation(ev) 
-end
-function c12057821.ckfil(c,e,tp) 
-	return c:IsSetCard(0x145,0x16b) and c:GetPreviousControler()==tp and c:GetReasonPlayer()~=tp 
-end 
-function c12057821.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c12057821.ckfil,1,nil,e,tp)
-end
-function c12057821.thfilter(c)
-	return c:IsFaceup() and c:GetType()==TYPE_TRAP and c:IsSSetable()
-end
-function c12057821.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand() and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
-end
-function c12057821.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler() 
-	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) then 
-	Duel.BreakEffect() 
-	local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst() 
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetValue(0)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	tc:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
-	tc:RegisterEffect(e2)
-	end
 end
 function c12057821.ctfil(c) 
 	return c:IsSetCard(0x145,0x16b) and c:IsAbleToRemoveAsCost()

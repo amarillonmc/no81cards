@@ -1,13 +1,14 @@
 --逆转检事 御剑怜侍
 function c33200501.initial_effect(c)
 	aux.AddCodeList(c,33200500)
+	aux.AddCodeList(c,33200501)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33200501,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_DESTROYED)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_CAL)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,33200501)
 	e1:SetCondition(c33200501.spcon)
@@ -55,7 +56,7 @@ end
 
 --e2
 function c33200501.thfilter(c)
-	return aux.IsCodeListed(c,33200501) and c:IsAbleToHand() and not c:IsCode(33200508)
+	return aux.IsCodeListed(c,33200501) and c:IsAbleToHand()
 end
 function c33200501.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33200501.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -83,15 +84,16 @@ end
 function c33200501.tztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tm=Duel.GetFlagEffect(tp,33200503)
 	if chk==0 then return Duel.GetFlagEffect(tp,e:GetHandler():GetOriginalCode())<tm+1 and Duel.IsExistingMatchingCard(c33200501.exfilter,tp,0,LOCATION_HAND,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
-	e:SetLabel(Duel.AnnounceType(tp))
 	Duel.RegisterFlagEffect(tp,e:GetHandler():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
 	e:GetHandler():RegisterFlagEffect(33200500,RESET_EVENT+RESET_CHAIN,0,1)
+	e:GetHandler():RegisterFlagEffect(33200599,RESET_EVENT+RESET_CHAIN,0,1)
 end
 function c33200501.tzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND,nil)
 	if g:GetCount()==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
+	e:SetLabel(Duel.AnnounceType(tp))
 	if not Duel.IsPlayerAffectedByEffect(tp,33200505) then
 		local sg=g:Filter(c33200501.exfilter,nil):RandomSelect(1-tp,1)
 		local sgc=sg:GetFirst()

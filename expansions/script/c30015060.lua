@@ -19,31 +19,50 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.handcon)
 	c:RegisterEffect(e2)
 	--Effect 2
+	local e20=Effect.CreateEffect(c)
+	e20:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e20:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e20:SetCode(EVENT_LEAVE_FIELD_P)
+	e20:SetOperation(cm.regop3)
+	c:RegisterEffect(e20)
 	local e21=Effect.CreateEffect(c)
-	e21:SetCategory(CATEGORY_REMOVE)
+	e21:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW)
 	e21:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e21:SetProperty(EFFECT_FLAG_DELAY)
 	e21:SetCode(EVENT_LEAVE_FIELD)
+	e21:SetLabelObject(e20)
 	e21:SetCondition(cm.impcon)
 	e21:SetTarget(cm.imptg)
 	e21:SetOperation(cm.impop)
 	c:RegisterEffect(e21)
 	local e22=Effect.CreateEffect(c)
-	e22:SetCategory(CATEGORY_REMOVE)
+	e22:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW)
 	e22:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e22:SetProperty(EFFECT_FLAG_DELAY)
 	e22:SetCode(EVENT_TO_GRAVE)
+	e22:SetLabelObject(e20)
 	e22:SetCondition(cm.impcon1)
 	e22:SetTarget(cm.imptg1)
 	e22:SetOperation(cm.impop1)
 	c:RegisterEffect(e22)
+	local e23=Effect.CreateEffect(c)
+	e23:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW)
+	e23:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e23:SetProperty(EFFECT_FLAG_DELAY)
+	e23:SetCode(EVENT_RELEASE)
+	e23:SetLabelObject(e20)
+	e23:SetTarget(cm.imptg1)
+	e23:SetOperation(cm.impop1)
+	c:RegisterEffect(e23)
 end
 --Effect 1
 function cm.handcon(e)
-	local mg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
-	return #mg>0
+	local tp=e:GetHandlerPlayer()
+	return Duel.IsExistingMatchingCard(cm.overfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
-
+function cm.overfilter(c)
+	return c:IsFaceup() and rk.check(c,"Overuins") and c:IsType(TYPE_MONSTER)
+end
 function cm.thfilter(c)
 	return c:IsFacedown() and rk.check(c,"Overuins") and c:IsAbleToHand()
 end
@@ -130,9 +149,17 @@ function cm.downremovefilter(c,tp)
 	return c:IsAbleToRemove(1-tp,POS_FACEDOWN)
 end
 --Effect 2  
+function cm.regop3(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if rp==1-tp then
+		e:SetLabel(1)
+	else
+		e:SetLabel(0)
+	end
+end
 function cm.impcon(e,tp,eg,ep,ev,re,r,rp) --rp==1-tp and
 	local c=e:GetHandler()
-	return rp==1-tp and c:IsPreviousControler(tp) 
+	return e:GetLabelObject():GetLabel()==1
 end
 function cm.imptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -218,7 +245,7 @@ end
 
 function cm.impcon1(e,tp,eg,ep,ev,re,r,rp) --rp==1-tp and
 	local c=e:GetHandler()
-	return rp~=1-tp and c:IsPreviousControler(tp) 
+	return not c:IsPreviousLocation(LOCATION_DECK) and e:GetLabelObject():GetLabel()~=1
 end
 function cm.imptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

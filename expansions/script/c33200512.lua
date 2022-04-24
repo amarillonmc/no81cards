@@ -50,18 +50,16 @@ function c33200512.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c33200512.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=e:GetHandler():GetOverlayGroup()
-	if chk==0 then return g:FilterCount(Card.IsAbleToHand,nil)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
+	if chk==0 then return g:FilterCount(Card.IsAbleToGrave,nil)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,0)
 end
 function c33200512.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetHandler():GetOverlayGroup():Filter(Card.IsAbleToHand,nil)
+	local g=e:GetHandler():GetOverlayGroup():Filter(Card.IsAbleToGrave,nil)
 	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local sg=g:Select(tp,1,1,nil)
 		if sg:GetCount()>0 then
-			if Duel.SendtoHand(sg,nil,REASON_EFFECT) then 
-				Duel.ConfirmCards(1-tp,sg)
-				Duel.ShuffleHand(tp)
+			if Duel.SendtoGrave(sg,nil,REASON_EFFECT) then 
 				if Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(33200512,0)) then
 					local desg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
 					local tc=desg:GetFirst()

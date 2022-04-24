@@ -1,4 +1,4 @@
---无界星结
+--溯界星舞
 function c9910651.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -19,7 +19,7 @@ function c9910651.filter1(c,e,tp)
 	local ra=c:GetRace()
 	local att=c:GetAttribute()
 	local sg=Duel.GetMatchingGroup(c9910651.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,c,rk)
-	return rk>0 and c:IsFaceup() and c:GetOverlayCount()<=2 and sg:GetCount()>0
+	return rk>4 and c:IsFaceup() and sg:GetCount()>0
 		and Duel.IsExistingMatchingCard(c9910651.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,rk,ra,att,sg)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end

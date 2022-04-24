@@ -46,7 +46,7 @@ function cm.cfilter(c,tp)
 	return cm.Kabal(c) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and  c:GetReasonPlayer()==1-tp
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler()) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)==0
+	return eg:IsExists(cm.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler()) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function cm.spfilter(c,e,tp)
 	return cm.Kabal(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) and c:IsLevelBelow(Duel.GetTurnCount())

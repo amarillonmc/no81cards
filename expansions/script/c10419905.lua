@@ -12,6 +12,19 @@ function cm.Potion(c)
 end
 
 function cm.initial_effect(c)
+	--special summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(m,3))
+	e0:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e0:SetType(EFFECT_TYPE_QUICK_O)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetHintTiming(TIMING_MAIN_END,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e0:SetRange(LOCATION_HAND)
+	e0:SetCountLimit(1,m)
+	e0:SetCondition(cm.spcon)
+	e0:SetTarget(cm.sptg)
+	e0:SetOperation(cm.spop)
+	c:RegisterEffect(e0)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -21,12 +34,12 @@ function cm.initial_effect(c)
 	e1:SetTargetRange(1,0)
 	c:RegisterEffect(e1)
 	--summon
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_SUMMON_PROC)
-	e2:SetCondition(cm.ntcon)
-	c:RegisterEffect(e2)
+	--local e2=Effect.CreateEffect(c)
+	--e2:SetDescription(aux.Stringid(m,2))
+	--e2:SetType(EFFECT_TYPE_SINGLE)
+	--e2:SetCode(EFFECT_SUMMON_PROC)
+	--e2:SetCondition(cm.ntcon)
+	--c:RegisterEffect(e2)
 	--to hand instead of send to grave
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -44,6 +57,25 @@ function cm.ntcon(e,c,minc)
 	return minc==0 and c:IsLevelAbove(5)
 		and Duel.IsExistingMatchingCard(cm.ntfilter,tp,LOCATION_GRAVE,0,1,nil)
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+end
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	if not (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) then return false end
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+		or Duel.IsExistingMatchingCard(cm.ntfilter,tp,LOCATION_GRAVE,0,1,nil)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local g=Duel.GetReleaseGroup(tp)
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and g:GetCount()==0 then
+		Duel.BreakEffect()
+		Duel.Release(g,REASON_EFFECT)
+	end
 end
 function cm.rthcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
