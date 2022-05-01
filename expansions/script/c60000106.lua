@@ -42,19 +42,23 @@ function c60000106.initial_effect(c)
 end
 function c60000106.sprfilter(c,tp,g,sc)
 	local lv=c:GetLevel()
-	return c:IsFaceup() and (lv==9  or (c:IsSetCard(0xa6a1) or c:IsSetCard(0xa6a2) or (c:IsType(TYPE_MONSTER) and c:IsSetCard(0x56a9)))) and (Duel.GetLocationCountFromEx(tp,tp,c)>0 or Duel.GetMZoneCount(tp,c)>0)
-end
+	return c:IsFaceup() and (lv==9  or (c:IsSetCard(0xa6a1) or c:IsSetCard(0xa6a2) or (c:IsType(TYPE_MONSTER) and c:IsSetCard(0x56a9)))) 
+end 
+function c60000106.spgckfil(g,e,tp) 
+	return Duel.GetLocationCountFromEx(tp,tp,g,nil)
+end  
 function c60000106.sprcon(e,c)
 	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(c60000106.sprfilter,tp,LOCATION_ONFIELD,0,5,nil)
+	local tp=c:GetControler() 
+	local g=Duel.GetMatchingGroup(c60000106.sprfilter,tp,LOCATION_ONFIELD,0,nil)
+	return g:CheckSubGroup(c60000106.spgckfil,5,5,e,tp)
 end
-function c60000106.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+function c60000106.sprop(e,tp,eg,ep,ev,re,r,rp,c) 
 	local g=Duel.GetMatchingGroup(c60000106.sprfilter,tp,LOCATION_ONFIELD,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g1=g:Select(tp,5,5,nil)
-	e:GetHandler():SetMaterial(g1)
-	Duel.Overlay(e:GetHandler(),g1)
+	local g1=g:SelectSubGroup(tp,c60000106.spgckfil,false,5,5,e,tp)
+	c:SetMaterial(g1) 
+	Duel.Overlay(c,g1)
 end
 function c60000106.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

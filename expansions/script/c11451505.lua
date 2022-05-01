@@ -50,7 +50,9 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
+	local ft=0
+	if not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -90,6 +92,12 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then Duel.NegateActivation(ev) end
+	end
+	if re:GetHandler():GetOriginalCode()==11451510 then
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then Duel.NegateActivation(ev) end
+			op(e,tp,eg,ep,ev,re,r,rp)
+		end
 	end
 	re:SetOperation(repop)
 	if not re:IsHasCategory(CATEGORY_NEGATE) then re:SetCategory(re:GetCategory()+CATEGORY_NEGATE) end

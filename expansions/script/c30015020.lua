@@ -156,7 +156,7 @@ function cm.togop(e,tp,eg,ep,ev,re,r,rp)
 					local g3=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,mg:GetCount()-3,nil)
 					if g3:GetCount()>0 then
 						Duel.HintSelection(g3)
-						Duel.SendtoGrave(g3,REASON_EFFECT)
+						Duel.SendtoGrave(g3,REASON_RULE)
 					end
 				end
 			end
@@ -244,3 +244,4 @@ function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	   end
 	end
 end
+

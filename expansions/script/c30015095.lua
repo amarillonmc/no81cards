@@ -6,7 +6,8 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCategory(CATEGORY_REMOVE)
-	e1:SetCode(EVENT_TO_HAND)
+	e1:SetCode(EVENT_TO_HAND)  
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH) 
 	e1:SetTarget(cm.ddtg)
 	e1:SetOperation(cm.ddop)
 	c:RegisterEffect(e1)
@@ -49,7 +50,7 @@ function cm.initial_effect(c)
 end
 --Activate
 function cm.ddfilter(c,tp)
-	return  c:IsAbleToRemove(tp,POS_FACEDOWN)
+	return  c:IsAbleToRemove(tp,POS_FACEDOWN) and c:IsLocation(LOCATION_HAND)
 end
 function cm.down(c)
 	return  c:IsFacedown() and c:IsLocation(LOCATION_REMOVED)

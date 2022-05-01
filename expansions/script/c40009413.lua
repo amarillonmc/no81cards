@@ -30,7 +30,7 @@ function c40009413.initial_effect(c)
 	e2:SetOperation(c40009413.spop)
 	c:RegisterEffect(e2)  
 end
-c40009413.xyz_number=98
+aux.xyz_number[40009413]=98
 function c40009413.cfilter(c)
 	return c:IsSetCard(0x95) and c:IsType(TYPE_SPELL) and c:IsDiscardable()
 end

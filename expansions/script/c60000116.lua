@@ -40,8 +40,9 @@ function c60000116.acop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	Duel.SendtoDeck(tc,tp,2,REASON_EFFECT)
-	Duel.ShuffleDeck(tp)
-	if Duel.GetDecktopGroup(tp,1):GetFirst():IsCode(tc:GetCode()) then
+	Duel.ShuffleDeck(tp) 
+	local code=tc:GetCode()
+	if code and Duel.GetDecktopGroup(tp,1):GetFirst():IsCode(code) then
 	Duel.Draw(tp,1,REASON_EFFECT)
 	--negate
 	local e2=Effect.CreateEffect(c)

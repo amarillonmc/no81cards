@@ -49,6 +49,9 @@ end
 function cm.filter(c)
 	return (c:IsType(TYPE_EFFECT) and c:IsDisabled()) or c:IsType(TYPE_NORMAL) or c:IsType(TYPE_TOKEN) or c:IsSetCard(0x9344)
 end
+function cm.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x9344)
+end
 
 function cm.atkval(e,c)
 	return Duel.GetMatchingGroupCount(cm.filter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)*500
@@ -89,7 +92,7 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 	if #g>0 then
 		local ss=Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)	
+		Duel.ConfirmCards(1-tp,g)   
 	end
 	if e:GetLabel()==1 and Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_GRAVE,0,1,nil)and Duel.SelectYesNo(tp,aux.Stringid(m,1))
 	then 

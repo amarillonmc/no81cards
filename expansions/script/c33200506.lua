@@ -52,7 +52,7 @@ function c33200506.activate(e,tp,eg,ep,ev,re,r,rp)
 		local g2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c33200506.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,chk1)
 		if g1:GetCount()>0 and g2:GetCount()>0 then
 			Duel.SendtoDeck(g1,nil,2,REASON_EFFECT)
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
 end

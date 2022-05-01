@@ -42,13 +42,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	--
 	local e5=Effect.CreateEffect(c)
-    e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-    e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-    e5:SetCode(EVENT_SPSUMMON_SUCCESS)
-    e5:SetCondition(cm.regcon)
-    e5:SetOperation(cm.matop)
-    c:RegisterEffect(e5)
-    --to grave
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e5:SetCondition(cm.regcon)
+	e5:SetOperation(cm.matop)
+	c:RegisterEffect(e5)
+	--to grave
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return re and re:GetHandler():IsSetCard(0x95) and re:GetHandler():IsType(TYPE_SPELL)
@@ -70,7 +70,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
 end
-cm.xyz_number=23
+aux.xyz_number[m]=23
 function cm.aclimit(e,re,tp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:GetHandler():IsType(TYPE_MONSTER)
 end
@@ -128,5 +128,5 @@ function cm.aclimit3(e,re,tp)
 	return re:IsActiveType(TYPE_TRAP)
 end
 function cm.matop(e,tp,eg,ep,ev,re,r,rp)
-    e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 end

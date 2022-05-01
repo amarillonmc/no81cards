@@ -45,7 +45,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e2)
 		c:RegisterFlagEffect(m+10000,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	end
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TEMP_REMOVE-RESET_TURN_SET+RESET_PHASE+PHASE_END,0,2)
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp~=tp and Duel.IsChainNegatable(ev) and e:GetHandler():GetFlagEffect(m+10000)>0

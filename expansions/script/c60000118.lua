@@ -1,5 +1,6 @@
 --休比·多拉 相位移动
-function c60000118.initial_effect(c)
+function c60000118.initial_effect(c)  
+	c:EnableReviveLimit() 
 	--SpecialSummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -37,7 +38,7 @@ function c60000118.rlfil(c)
 	return c:IsReleasable() and c:IsSetCard(0x56a9) and Duel.GetMZoneCount(tp,c)>0
 end
 function c60000118.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(Card.IsReleasable,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetRitualMaterial(tp) 
 	local b1=g:CheckWithSumEqual(Card.GetLevel,8,1,99)
 	local b2=not Duel.IsExistingMatchingCard(c60000118.ckfil,tp,LOCATION_MZONE,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)~=0 and Duel.IsExistingMatchingCard(c60000118.rlfil,tp,LOCATION_DECK,0,1,nil) 
 	if chk==0 then return b1 or b2 end 
@@ -48,15 +49,33 @@ function c60000118.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	else 
 	e:SetLabel(1)
 	end
-end
+end 
+function c60000118.ckfil(c,e,tp) 
+	return c:GetSummonPlayer()==1-tp  
+end  
 function c60000118.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,false) end 
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,false) and eg:IsExists(c60000118.ckfil,1,nil,e,tp) end 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c60000118.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	local op=e:GetLabel() 
+	local g=Duel.GetRitualMaterial(tp) 
+	if c:IsRelateToEffect(e) then 
+	if op==0 then 
+	if g:CheckWithSumEqual(Card.GetLevel,8,1,99) then 
+	local rg=g:SelectWithSumEqual(tp,Card.GetLevel,8,1,99)
+	c:SetMaterial(rg)   
+	Duel.ReleaseRitualMaterial(rg)  
+	Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)
+	else
+	if Duel.IsExistingMatchingCard(c60000118.rlfil,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
+	local rg=Duel.SelectMatchingCard(tp,c60000118.rlfil,tp,LOCATION_DECK,0,1,1,nil) 
+	c:SetMaterial(rg)   
+	Duel.ReleaseRitualMaterial(rg)  
+	Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)
+	end 
+	end 
 	end
 end
 function c60000118.discon(e,tp,eg,ep,ev,re,r,rp)

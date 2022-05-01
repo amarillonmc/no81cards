@@ -48,6 +48,7 @@ function cm.costchk(e,te,tp)
 	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,3,nil)
 end
 function cm.actarget(e,te,tp)
+	e:SetLabelObject(te)
 	return te:GetHandler()==e:GetHandler()
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
@@ -58,6 +59,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	c:SetMaterial(g)
 	Duel.SendtoDeck(g,nil,2,REASON_COST+REASON_MATERIAL)
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	e:GetHandler():CreateEffectRelation(te)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCode(11451406) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

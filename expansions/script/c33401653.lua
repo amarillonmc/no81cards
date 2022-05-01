@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_GRAVE)
-	e5:SetCountLimit(1,m)
+	e5:SetCountLimit(1,m+10000)
 	e5:SetCondition(cm.con1)
 	e5:SetCost(cm.cost2)
 	e5:SetTarget(cm.sptg)
@@ -65,15 +65,15 @@ end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp) 
 	return  Duel.IsPlayerAffectedByEffect(tp,33401655)
 end
-function cm.refilter(c)
+function cm.refilter1(c)
 	return ((c:IsType(TYPE_EFFECT) and c:IsDisabled()) or c:IsType(TYPE_NORMAL) or c:IsType(TYPE_TOKEN)) and c:IsReleasable()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,2,REASON_COST) or  Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_MZONE,0,1,nil)  end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x34f,2,REASON_COST) or  Duel.IsExistingMatchingCard(cm.refilter1,tp,LOCATION_MZONE,0,1,nil)  end
 	local b1=Duel.IsCanRemoveCounter(tp,1,0,0x34f,2,REASON_COST)
-	local b2=Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_MZONE,0,1,nil) 
+	local b2=Duel.IsExistingMatchingCard(cm.refilter1,tp,LOCATION_MZONE,0,1,nil) 
 	if b2 and (not b1 or Duel.SelectYesNo(tp,aux.Stringid(m,2))) then
-	  local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_MZONE,0,1,1,nil)
+	  local g=Duel.SelectMatchingCard(tp,cm.refilter1,tp,LOCATION_MZONE,0,1,1,nil)
 	  Duel.Release(g,REASON_COST)
 	  e:SetLabel(1)
 	else
@@ -93,7 +93,7 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	if #g2>0 then
 	Duel.HintSelection(g2)
-	 if Duel.Destroy(g2,REASON_EFFECT)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then 
+	 if Duel.Destroy(g2,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(tp,aux.disfilter1,tp,LOCATION_ONFIELD,0,1,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then 
 		local tg=Duel.SelectMatchingCard(tp,aux.disfilter1,tp,LOCATION_ONFIELD,0,1,1,nil)
 		local tc=tg:GetFirst()
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)

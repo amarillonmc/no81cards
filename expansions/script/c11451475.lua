@@ -34,10 +34,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.actarget(e,te,tp)
+	e:SetLabelObject(te)
 	return te:GetHandler()==e:GetHandler()
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	e:GetHandler():CreateEffectRelation(te)
 end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -70,7 +72,9 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local max=g:GetClassCount(Card.GetAttribute)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	local sg=g:SelectSubGroup(tp,aux.dabcheck,false,1,math.min(max,ft))
+	aux.GCheckAdditional=aux.dabcheck
+	local sg=g:SelectSubGroup(tp,aux.TRUE,false,1,math.min(max,ft))
+	aux.GCheckAdditional=nil
 	if not sg or #sg==0 then return end
 	for tc in aux.Next(sg) do
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)

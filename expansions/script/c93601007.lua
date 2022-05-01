@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 end
-cm.xyz_number=98
+aux.xyz_number[m]=98
 function cm.confilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x107f)
 end
@@ -44,15 +44,15 @@ function cm.filter(c)
    return c:IsSetCard(0x48) and c:IsRace(RACE_WARRIOR)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
+	local c=e:GetHandler()
 	return c:GetOverlayGroup():IsExists(cm.filter,1,nil)
 end
 function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-    e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function cm.spfilter(c,e,tp)
-    return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(1-tp) and cm.spfilter(chkc,e,tp) end

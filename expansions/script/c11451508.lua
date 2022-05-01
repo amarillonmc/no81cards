@@ -41,7 +41,6 @@ function cm.setfilter(c)
 	return c:GetType()&0x100004==0x100004 and c:IsSSetable()
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end
 	return re:IsHasCategory(CATEGORY_SEARCH) or re:IsHasCategory(CATEGORY_TOHAND) or re:IsHasCategory(CATEGORY_DRAW)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -49,7 +48,9 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
+	local ft=0
+	if not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -96,6 +97,16 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			local sg=g:RandomSelect(1-tp,1)
 			Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
+		end
+	end
+	if re:GetHandler():GetOriginalCode()==11451510 then
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+			if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+				local sg=g:RandomSelect(1-tp,1)
+				Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
+			end
+			op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	re:SetOperation(repop)

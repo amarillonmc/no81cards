@@ -19,24 +19,33 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_REMAIN_FIELD)
 	c:RegisterEffect(e3)
 end
+function cm.refilter(c,tp,re)
+	 local flag=true
+	local value={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)}
+	if #value>0 then
+		for k,re in ipairs(value) do
+			local val=re:GetTarget()
+			if val and val(re,c,tp) then
+				flag=false
+			end
+		end 
+	end
+	return  c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP)  and flag)
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
+	if Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler(),tp) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,99,e:GetHandler())
-	local ss=Duel.Release(g,REASON_COST)
+	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,99,e:GetHandler(),tp)
+	local ss=Duel.SendtoGrave(g,REASON_COST+REASON_RELEASE)
 	e:SetLabel(ss)
 	end
-end
-function cm.filter(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x34f,2)
 end
 function cm.chlimit(e,ep,tp)
 	return tp==ep
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and cm.filter(chkc) end
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,0,1,nil) end
+  if chk==0 then return true end
 	if e:GetLabel()~=0 then
 	Duel.SetChainLimit(cm.chlimit)
 	end

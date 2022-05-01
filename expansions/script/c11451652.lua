@@ -52,8 +52,14 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 							reg(sc,se,bool)
 						end
 	for tc in aux.Next(g) do
-		if tc.initial_effect then
+		if tc.initial_effect and tc:GetOriginalType()&TYPE_NORMAL==0 then
 			tc:ReplaceEffect(tc:GetOriginalCode(),0)
+		elseif tc.initial_effect then
+			local ini=cm.initial_effect
+			cm.initial_effect=function() end
+			tc:ReplaceEffect(m,0)
+			cm.initial_effect=ini
+			tc.initial_effect(tc)
 		end
 	end
 	Card.RegisterEffect=reg
