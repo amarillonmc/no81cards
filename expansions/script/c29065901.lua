@@ -40,30 +40,30 @@ function cm.replace(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xaa) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function cm.check(c)
-	return c:GetFlagEffect(m)==0 
+	return c:GetFlagEffect(m)==0 and c:IsSetCard(0xaa) and c:IsType(TYPE_PENDULUM)
 end
 function cm.con(e,tp)
-	return Duel.IsExistingMatchingCard(cm.check,tp,LOCATION_PZONE,0,1,nil) and Duel.IsPlayerAffectedByEffect(e:GetHandlerPlayer(),m)
+	return Duel.IsExistingMatchingCard(cm.check,tp,0x7f,0x7f,1,nil)
 end
 function cm.splimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xaa)
 end
 function cm.op(e,tp)
-	local rg=Duel.GetMatchingGroup(cm.check,tp,LOCATION_PZONE,0,nil)
+	local rg=Duel.GetMatchingGroup(cm.check,tp,0x7f,0,nil)
 	for tc in aux.Next(rg) do
 		table_effect={}
 		clffunc=Card.RegisterEffect
 		Card.RegisterEffect=function(card,effect,flag)
-			if effect and effect:GetCode()~=EFFECT_CANNOT_SPECIAL_SUMMON then
+			if effect and (effect:GetCode()~=EFFECT_CANNOT_SPECIAL_SUMMON or effect:GetRange()&LOCATION_PZONE==0) then
 				local eff=effect:Clone()
 				table.insert(table_effect,eff)
 			end
 			return clffunc(card,effect,flag)
 		end
-		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0,0)
+		tc:RegisterFlagEffect(m,0,0,0,0)
 		Duel.CreateToken(tp,tc:GetOriginalCode())
 		Card.RegisterEffect=clffunc
-		local cid2=tc:ReplaceEffect(m+1,RESET_EVENT+RESETS_STANDARD,1)
+		local cid2=tc:ReplaceEffect(m+1,0,1)
 		for key,eff in ipairs(table_effect) do
 			Card.RegisterEffect(tc,eff,true)
 		end

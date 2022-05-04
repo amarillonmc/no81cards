@@ -93,7 +93,9 @@ function cm.erop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
 	if #tg>0 then
-		local ct=Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)
+		Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)
+		local og=Duel.GetOperatedGroup()
+		local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_HAND+LOCATION_EXTRA)
 		if ct>0 then
 			local rg=Duel.GetDecktopGroup(tp,ct)
 			Duel.DisableShuffleCheck()

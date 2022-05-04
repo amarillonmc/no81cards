@@ -44,6 +44,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local zone=e:GetHandler():GetLinkedZone(tp)&0x1f
 	if zone==0 or not Duel.CheckLocation(tp,LOCATION_MZONE,math.log(zone,2)) then return end
+	if tp==1 then zone=((zone&0xffff)<<16)|((zone>>16)&0xffff) end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_DISABLE_FIELD)
