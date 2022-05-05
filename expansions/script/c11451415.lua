@@ -50,7 +50,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(cm.sfilter2,tp,LOCATION_DECK,0,1,nil)
+	local b1=true--Duel.IsExistingMatchingCard(cm.sfilter2,tp,LOCATION_DECK,0,1,nil)
 	local b2=(Duel.GetCurrentPhase()~=PHASE_END)
 	if chk==0 then return true end
 	local op=1

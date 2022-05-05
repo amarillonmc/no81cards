@@ -67,12 +67,12 @@ function cm.mvtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.mvfilter1,tp,LOCATION_MZONE,0,1,nil,tp) end
 end
 function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(22198672,2))
 	local g1=Duel.SelectMatchingCard(tp,cm.mvfilter1,tp,LOCATION_MZONE,0,1,1,nil,tp)
 	local tc1=g1:GetFirst()
 	if not tc1 then return end
 	Duel.HintSelection(g1)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(22198672,2))
 	local g2=Duel.SelectMatchingCard(tp,cm.mvfilter2,tp,LOCATION_MZONE,0,1,1,tc1)
 	Duel.HintSelection(g2)
 	local tc2=g2:GetFirst()
