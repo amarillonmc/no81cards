@@ -53,8 +53,7 @@ function c9910661.matfilter2(c,e)
 end
 function c9910661.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):Filter(Card.IsCanOverlay,nil)
-	if chk==0 then return #g>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>2
-		and Duel.IsExistingMatchingCard(c9910661.matfilter1,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return #g>0 and Duel.IsExistingMatchingCard(c9910661.matfilter1,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,3)
 end
 function c9910661.drop(e,tp,eg,ep,ev,re,r,rp)

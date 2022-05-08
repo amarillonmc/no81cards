@@ -31,37 +31,47 @@ function c35399026.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c35399026.con1(e,tp,eg,ep,ev,re,r,rp)
-	return rp~=tp and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0,nil)<Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE,nil)
-end
-function c35399026.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local mg=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_HAND,0,nil)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,e:GetHandler(),mg) end
+	return rp~=tp and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
+end 
+function c35399026.spfil(c,e,tp) 
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLevelBelow(4) or c==e:GetHandler()) 
+end 
+function c35399026.gckfil(g,e,tp) 
+	return g:IsContains(e:GetHandler()) and Duel.IsExistingMatchingCard(c35399026.espfil,tp,LOCATION_EXTRA,0,1,nil,e,tp,g) 
+end 
+function c35399026.espfil(c,e,tp,g) 
+	return c:IsType(TYPE_SYNCHRO) and c:IsSynchroSummonable(nil,g)
+end 
+function c35399026.tg1(e,tp,eg,ep,ev,re,r,rp,chk)  
+	local mg=Duel.GetMatchingGroup(c35399026.spfil,tp,LOCATION_HAND,0,nil,e,tp) 
+	if chk==0 then return mg:CheckSubGroup(c35399026.gckfil,2,2,e,tp) and not Duel.IsPlayerAffectedByEffect(tp,59822133) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA) 
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,0,0,1-tp,1)
 end
 function c35399026.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local mg=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_HAND,0,nil)
-	local sg=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,c,mg)
-	if sg:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local lg=sg:Select(tp,1,1,nil)
-		Duel.SynchroSummon(tp,lg:GetFirst(),c,mg)   
-	Duel.BreakEffect() 
+	if not c:IsRelateToEffect(e) then return end 
+	local mg=Duel.GetMatchingGroup(c35399026.spfil,tp,LOCATION_HAND,0,nil,e,tp) 
+	if not mg:CheckSubGroup(c35399026.gckfil,2,2,e,tp) then return end 
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end 
 	Duel.Draw(1-tp,1,REASON_EFFECT)
-	end 
+	local sg=mg:SelectSubGroup(tp,c35399026.gckfil,false,2,2,e,tp) 
+	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)  
+	Duel.BreakEffect()
+	local cg=Duel.SelectMatchingCard(tp,c35399026.espfil,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,sg) 
+	Duel.SynchroSummon(tp,cg:GetFirst(),nil,sg) 
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c35399026.splimit)
+	e1:SetTargetRange(1,0) 
+	e1:SetLabelObject(cg:GetFirst())
+	e1:SetTarget(c35399026.splimit) 
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-end
-function c35399026.splimit(e,c)
-	return c:IsLocation(LOCATION_EXTRA)
+end 
+function c35399026.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return c:IsLocation(LOCATION_EXTRA) and e:GetLabelObject()~=c  
 end
 function c35399026.spcon(e,c)
 	if c==nil then return true end
@@ -70,11 +80,12 @@ function c35399026.spcon(e,c)
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c35399026.con3(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_SYNCHRO
+	return r==REASON_SYNCHRO 
 end
 function c35399026.op3(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local rc=c:GetReasonCard()
+	local c=e:GetHandler() 
+	Duel.Hint(HINT_CARD,0,35399026)
+	local rc=c:GetReasonCard() 
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(35399026,2))
 	e1:SetCategory(CATEGORY_NEGATE)
@@ -87,7 +98,7 @@ function c35399026.op3(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTarget(c35399026.distg)
 	e1:SetOperation(c35399026.disop) 
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e1,true) 
+	rc:RegisterEffect(e1,true) 
 end
 function c35399026.efilter3_1(e,te)
 	return te:IsActiveType(TYPE_MONSTER) and te:GetHandler():IsType(TYPE_XYZ+TYPE_LINK)

@@ -116,6 +116,15 @@ function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local e11=Effect.CreateEffect(c)
+	e11:SetDescription(aux.Stringid(m,1))
+	e11:SetType(EFFECT_TYPE_SINGLE)
+	e11:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE)
+	e11:SetRange(LOCATION_MZONE)
+	e11:SetCode(EFFECT_IMMUNE_EFFECT)
+	e11:SetValue(cm.efilter)
+	e11:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e1)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
@@ -142,6 +151,13 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabel()==1 then
 		e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	end
+end
+function cm.efilter(e,te)
+	if not te:IsActiveType(TYPE_SPELL+TYPE_TRAP) then return false end
+	local c=e:GetHandler()
+	local ec=te:GetHandler()
+	if ec:IsHasCardTarget(c) then return true end
+	return not (te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te))
 end
 function cm.costfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove(tp,POS_FACEDOWN)
@@ -265,4 +281,5 @@ end
 function cm.thfilter(c)
 	return c:IsFacedown() and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
+
 

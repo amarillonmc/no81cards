@@ -52,7 +52,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetHandler():GetFirstCardTarget()
-	return tc and tc==re:GetHandler() and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
+	return tc and tc==re:GetHandler() --and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)

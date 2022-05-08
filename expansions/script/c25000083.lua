@@ -14,7 +14,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetCategory(CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetType(EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.atkcon)
@@ -52,9 +52,8 @@ function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return bc and aux.nzatk(bc) and bc:IsControler(1-tp)
 end
 function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(m)==0 end
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
+	local bc=e:GetHandler():GetBattleTarget()
+	if chk==0 then return bc:GetAttack()>0 end
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -69,16 +68,18 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return rp~=tp and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)&LOCATION_ONFIELD~=0
+	return rp~=tp and re:GetActivateLocation()==LOCATION_ONFIELD and re:IsActiveType(TYPE_MONSTER)
 end
 function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsDestructable() end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	if chk==0 then return Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsRelateToEffect(re) then Duel.Destroy(eg,REASON_EFFECT) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
+	if #g>0 then Duel.Destroy(g,REASON_EFFECT) end
 end

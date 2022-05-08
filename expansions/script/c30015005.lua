@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	--Effect 2
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_ACTIVATING)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetCondition(cm.con)
@@ -76,7 +76,7 @@ function cm.atkval(e,c)
 end
 --Effect 2
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.drmfilter,tp,LOCATION_REMOVED,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_NORMAL)
+	return Duel.IsExistingMatchingCard(cm.drmfilter,tp,LOCATION_REMOVED,0,1,nil) 
 end
 function cm.drmfilter(c)
 	return c:IsFacedown() and c:IsAbleToHand()
@@ -105,7 +105,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
 				end
 			else
-				if tc:IsAbleToRemove(tp,POS_FACEDOWN) then
+				if tc:IsAbleToRemove(tp,POS_FACEDOWN) and not tc:IsSummonable(true,nil)  then
 					Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
 				end
 			end
@@ -123,7 +123,7 @@ function cm.regop3(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_NORMAL) and e:GetLabelObject():GetLabel()==1
+	return  e:GetLabelObject():GetLabel()==1
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -167,7 +167,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_NORMAL) and e:GetLabelObject():GetLabel()~=1
+	return  e:GetLabelObject():GetLabel()~=1
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

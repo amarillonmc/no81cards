@@ -103,7 +103,7 @@ function c12057832.eqlimit(e,c)
 	return e:GetLabelObject()==c
 end
 function c12057832.ckfil(c,e,tp)  
-	return c:GetReasonPlayer()==1-tp and c:IsReason(REASON_EFFECT)
+	return c:GetReasonPlayer()==1-tp and c:IsReason(REASON_EFFECT) and c:IsPreviousControler(tp) 
 end 
 function c12057832.spfil(c,e,tp) 
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsRace(RACE_DRAGON+RACE_WARRIOR) and c:IsLevelBelow(4) 

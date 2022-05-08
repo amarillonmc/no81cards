@@ -1,6 +1,6 @@
 SNNM=SNNM or {}
 local cm=SNNM
---
+--53702700 alleffectreset
 function cm.AllGlobalCheck(c)
 	if not cm.global_check then
 		cm.global_check=true
@@ -377,6 +377,333 @@ function cm.FanippetTrapSPOperation(lpc,code,atk,def,rac,att)
 	end
 end
 --
+function cm.ALCYakuNew(c,code,cf,loc,t)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_DRAW_PHASE+TIMING_END_PHASE)
+	e1:SetTarget(cm.NALCTtg(code,loc,t))
+	e1:SetOperation(cm.NALCTac(code,cf,t))
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e2:SetCode(EVENT_ADJUST)
+	e2:SetRange(0x7f)
+	e2:SetOperation(cm.ALCReload)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetCondition(cm.ALCYakuActCondition)
+	c:RegisterEffect(e3)
+end
+function cm.ALCReload(e,tp)
+	aux.AddFusionProcCode2=_tmp
+	aux.AddFusionProcCode2FunRep=_tmp_1
+	aux.AddFusionProcCode3=_tmp_2
+	aux.AddFusionProcCode4=_tmp_3
+	aux.AddFusionProcCodeFun=_tmp_4
+	aux.AddFusionProcCodeFunRep=_tmp_5
+	aux.AddFusionProcCodeRep=_tmp_6
+	aux.AddFusionProcCodeRep2=_tmp_7
+	aux.AddFusionProcFun2=_tmp_8
+	aux.AddFusionProcFunFun=_tmp_9
+	aux.AddFusionProcFunFunRep=_tmp_0
+	aux.AddFusionProcFunRep=_tmp_1_0
+	aux.AddFusionProcFunRep2=_tmp_1_1
+	aux.AddFusionProcMix=_tmp_1_2
+	aux.AddFusionProcMixRep=_tmp_1_3
+	aux.AddFusionProcShaddoll=_tmp_1_4
+end
+_tmp=aux.AddFusionProcCode2
+_tmp_1=aux.AddFusionProcCode2FunRep
+_tmp_2=aux.AddFusionProcCode3
+_tmp_3=aux.AddFusionProcCode4
+_tmp_4=aux.AddFusionProcCodeFun
+_tmp_5=aux.AddFusionProcCodeFunRep
+_tmp_6=aux.AddFusionProcCodeRep
+_tmp_7=aux.AddFusionProcCodeRep2
+_tmp_8=aux.AddFusionProcFun2
+_tmp_9=aux.AddFusionProcFunFun
+_tmp_0=aux.AddFusionProcFunFunRep
+_tmp_1_0=aux.AddFusionProcFunRep
+_tmp_1_1=aux.AddFusionProcFunRep2
+_tmp_1_2=aux.AddFusionProcMix
+_tmp_1_3=aux.AddFusionProcMixRep
+_tmp_1_4=aux.AddFusionProcShaddoll
+function aux.AddFusionProcCode2(c,code1,code2,sub,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=2
+	end
+	return _tmp(c,code1,code2,sub,insf)
+end
+function aux.AddFusionProcCode2FunRep(c,code1,code2,f,min,max,sub,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=2+min
+	end
+	return _tmp_1(c,code1,code2,f,min,max,sub,insf)
+end
+function aux.AddFusionProcCode3(c,code1,code2,code3,sub,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=3
+	end
+	return _tmp_2(c,code1,code2,code3,sub,insf)
+end
+function aux.AddFusionProcCode4(c,code1,code2,code3,code4,sub,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=4
+	end
+	return _tmp_3(c,code1,code2,code3,code4,sub,insf)
+end
+function aux.AddFusionProcCodeFun(c,code1,f,cc,sub,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=1+cc
+	end
+	return _tmp_4(c,code1,f,cc,sub,insf)
+end
+function aux.AddFusionProcCodeFunRep(c,code1,f,min,max,sub,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=min+1
+	end
+	return _tmp_5(c,code1,f,min,max,sub,insf)
+end
+function aux.AddFusionProcCodeRep(c,code1,cc,sub,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=cc
+	end
+	return _tmp_6(c,code1,cc,sub,insf)
+end
+function aux.AddFusionProcCodeRep2(c,code1,min,max,sub,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=min
+	end
+	return _tmp_7(c,code1,min,max,sub,insf)
+end
+function aux.AddFusionProcFun2(c,f,f1,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=2
+	end
+	return _tmp_8(c,f,f1,insf)
+end
+function aux.AddFusionProcFunFun(c,f1,f2,cc,sub,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=cc+1
+	end
+	return _tmp_9(c,f1,f2,cc,sub,insf)
+end
+function aux.AddFusionProcFunFunRep(c,f1,f2,min,max,sub,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=min+1
+	end
+	return _tmp_0(c,f1,f2,min,max,sub,insf)
+end
+function aux.AddFusionProcFunRep2(c,f,min,max,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=min
+	end
+	return _tmp_1_1(c,f,min,max,insf)
+end
+function aux.AddFusionProcFunRep(c,f,cc,insf)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=cc
+	end
+	return _tmp_1_0(c,f,cc,insf)
+end
+function aux.AddFusionProcMix(c,sub,insf,...)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	local val={...}
+	local sum=#val 
+	if not c.fst then
+		ccodem.fst=sum
+	end
+	return _tmp_1_2(c,sub,insf,...)
+end
+function aux.AddFusionProcMixRep(c,sub,insf,f1,min,max,...)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=min
+	end
+	return _tmp_1_3(c,sub,insf,f1,min,max,...)
+end
+function aux.AddFusionProcShaddoll(c,att)
+	local code=c:GetOriginalCode()
+	if not _G["c"..code] then _G["c"..code]={}
+		setmetatable(_G["c"..code],Card)
+		_G["c"..code].__index=_G["c"..code]
+	end
+	local ccodem=_G["c"..code]
+	if not c.fst then
+		ccodem.fst=2
+	end
+	return _tmp_1_4(c,att)
+end
+function cm.NALCTtg(code,loc,t)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp,chk)
+		if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x1535,TYPES_NORMAL_TRAP_MONSTER,table.unpack(t)) and Duel.GetFieldGroupCount(tp,0,loc)>0 end
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	end
+end
+function cm.NALCTac(code,cf,t)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+		local c=e:GetHandler()
+		if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x1535,TYPES_NORMAL_TRAP_MONSTER,table.unpack(t)) then return end
+		local g=cf(c,tp)
+		if #g==0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(53702600,2))
+		local conc=g:Select(tp,1,1,nil):GetFirst()
+		if conc:IsFacedown() then Duel.ConfirmCards(tp,conc) end
+		Duel.HintSelection(Group.FromCards(conc))
+		if conc:IsLocation(LOCATION_HAND) then Duel.ShuffleHand(1-tp) end
+		if conc:IsLocation(LOCATION_DECK) then Duel.ShuffleDeck(1-tp) end
+		local cd=conc:GetCode()
+		c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
+		if Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)~=0 then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetCode(EFFECT_CHANGE_CODE)
+			e1:SetValue(cd)
+			e1:SetReset(RESET_EVENT+0x7e0000)
+			c:RegisterEffect(e1)
+			local chkf=tp
+			local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+			local mtf=function(c,e,tp)return bit.band(c:GetOriginalType(),TYPE_TRAP)~=0 and c:IsType(TYPE_MONSTER) and c:CheckUniqueOnField(tp) and not c:IsForbidden() and not c:IsImmuneToEffect(e)end
+			local fuf=function(c,e,tp,m,f,chkf,ft)
+						  return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf) and (not c.fst or ft>=c.fst)
+					  end
+			local zck=function(g,c,chkf,ft)return c:CheckFusionMaterial(g,nil,chkf) and ft>=#g end
+			local mg1=Duel.GetFusionMaterial(tp):Filter(Card.IsOnField,nil):Filter(mtf,nil,e,tp)
+			if #mg1==0 then return end
+			local sg1=Duel.GetMatchingGroup(fuf,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf,ft)
+			local mg2=nil
+			local sg2=nil
+			local ce=Duel.GetChainMaterial(tp)
+			if ce~=nil then
+				local fgroup=ce:GetTarget()
+				mg2=fgroup(ce,e,tp)
+				local mf=ce:GetValue()
+				sg2=Duel.GetMatchingGroup(fuf,tp,LOCATION_EXTRA,0,nil,e,tp,mg2,mf,chkf,114)
+			end
+			if (#sg1>0 or (sg2~=nil and sg2:GetCount()>0)) and Duel.SelectYesNo(tp,aux.Stringid(code,0)) then
+				Duel.BreakEffect()
+				local sg=sg1:Clone()
+				if sg2 then sg:Merge(sg2) end
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+				local tg=sg:Select(tp,1,1,nil)
+				local tc=tg:GetFirst()
+				if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
+					if tc.fst then
+						Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(53702600,3))
+						local mat1=mg1:SelectSubGroup(tp,zck,false,tc.fst,#mg1,tc,chkf,ft)
+						--local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
+						tc:SetMaterial(mat1)
+						for mvc in aux.Next(mat1) do Duel.MoveToField(mvc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) end
+					end
+					Duel.BreakEffect()
+					Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
+				else
+					local mat2=Duel.SelectFusionMaterial(tp,tc,mg2,nil,chkf)
+					local fop=ce:GetOperation()
+					fop(ce,e,tp,tc,mat2)
+				end
+				tc:CompleteProcedure()
+			end
+		end
+	end
+end
 function cm.ALCYaku(c,code,num,loc,atk,def,rac,att)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -925,7 +1252,7 @@ function cm.HTFTDOperation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-function cm.HTFPlacePZone(c,lv,loc,lab,event,code)
+function cm.HTFPlacePZone(c,lv,loc,lab,event,code,tp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(event)
@@ -1363,19 +1690,20 @@ function cm.SeadowRover(c)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_TO_DECK)
-		e2:SetCondition(cm.SRoverDrawCon)
 		e2:SetOperation(cm.SRoverDrawOp)
 		c:RegisterEffect(e2)
 	end
 end
-function cm.SRoverDrawCon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPreviousLocation(LOCATION_HAND) and c:IsPreviousPosition(POS_FACEUP)
-end
 function cm.SRoverDrawOp(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetDrawCount(tp)
-	if ct>3 then return end
 	local c=e:GetHandler()
+	if not c:IsPreviousLocation(LOCATION_HAND) or not c:IsPreviousPosition(POS_FACEUP) then return end
+	local ct=Duel.GetDrawCount(tp)
+	if Duel.GetTurnCount()==1 then
+		ct=1
+		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_DRAW_COUNT)}
+		for _,te in pairs(eset) do if te:GetValue()>dt then dt=te:GetValue() end end
+	end
+	if ct>3 then return end
 	Duel.Hint(HINT_CARD,0,c:GetOriginalCode())
 	local e2=Effect.CreateEffect(c)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -1852,11 +2180,71 @@ function cm.ORsideLink(c,f,min,max,gf,code)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetRange(LOCATION_EXTRA)
 	if max==nil then max=c:GetLink() end
-	e1:SetCondition(cm.LinkCondition(f,min,max,gf,code))
+	e1:SetCondition(aux.LinkCondition(f,min,max,gf,code))
 	e1:SetTarget(aux.LinkTarget(f,min,max,gf))
 	e1:SetOperation(aux.LinkOperation(f,min,max,gf))
 	e1:SetValue(SUMMON_TYPE_LINK)
 	c:RegisterEffect(e1)
+end
+function cm.LConditionFilter(c,f,lc)
+	return (c:IsFaceup() or not c:IsOnField()) and c:IsCanBeLinkMaterial(lc) and (not f or f(c))
+end
+function cm.LExtraFilter(c,f,lc,tp)
+	if c:IsLocation(LOCATION_ONFIELD) and not c:IsFaceup() then return false end
+	if not c:IsCanBeLinkMaterial(lc) or f and not f(c) then return false end
+	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
+	for _,te in pairs(le) do
+		local tf=te:GetValue()
+		local related,valid=tf(te,lc,nil,c,tp)
+		if related then return true end
+	end
+	return false
+end
+function cm.GetLinkCount(c)
+	if c:IsType(TYPE_LINK) and c:GetLink()>1 then
+		return 1+0x10000*c:GetLink()
+	else return 1 end
+end
+function cm.GetLinkMaterials(tp,f,lc)
+	local mg=Duel.GetMatchingGroup(cm.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc)
+	local mg2=Duel.GetMatchingGroup(cm.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
+	if mg2:GetCount()>0 then mg:Merge(mg2) end
+	return mg
+end
+function cm.LCheckOtherMaterial(c,mg,lc,tp)
+	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
+	local res1=false
+	local res2=true
+	for _,te in pairs(le) do
+		local f=te:GetValue()
+		local related,valid=f(te,lc,mg,c,tp)
+		if related then res2=false end
+		if related and valid then res1=true end
+	end
+	return res1 or res2
+end
+function cm.LUncompatibilityFilter(c,sg,lc,tp)
+	local mg=sg:Filter(aux.TRUE,c)
+	return not cm.LCheckOtherMaterial(c,mg,lc,tp)
+end
+function cm.LCheckGoal(sg,tp,lc,gf,lmat)
+	return sg:CheckWithSumEqual(cm.GetLinkCount,lc:GetLink(),#sg,#sg)
+		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg))
+		and not sg:IsExists(cm.LUncompatibilityFilter,1,nil,sg,lc,tp)
+		and (not lmat or sg:IsContains(lmat))
+end
+function cm.LExtraMaterialCount(mg,lc,tp)
+	for tc in aux.Next(mg) do
+		local le={tc:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
+		for _,te in pairs(le) do
+			local sg=mg:Filter(aux.TRUE,tc)
+			local f=te:GetValue()
+			local related,valid=f(te,lc,sg,tc,tp)
+			if related and valid then
+				te:UseCountLimit(tp)
+			end
+		end
+	end
 end
 function cm.LinkCondition(f,minc,maxc,gf,code)
 	return  function(e,c,og,lmat,min,max)
@@ -1886,6 +2274,61 @@ function cm.LinkCondition(f,minc,maxc,gf,code)
 				Duel.SetSelectedCard(fg)
 				return mg:CheckSubGroup(aux.LCheckGoal,minc,maxc,tp,c,gf,lmat)
 			end
+end
+function cm.LinkTarget(f,minc,maxc,gf)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,lmat,min,max)
+				local minc=minc
+				local maxc=maxc
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+					if minc>maxc then return false end
+				end
+				local mg=nil
+				if og then
+					mg=og:Filter(cm.LConditionFilter,nil,f,c)
+				else
+					mg=cm.GetLinkMaterials(tp,f,c)
+				end
+				if lmat~=nil then
+					if not cm.LConditionFilter(lmat,f,c) then return false end
+					mg:AddCard(lmat)
+				end
+				local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				Duel.SetSelectedCard(fg)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
+				local cancel=Duel.IsSummonCancelable()
+				local sg=mg:SelectSubGroup(tp,cm.LCheckGoal,cancel,minc,maxc,tp,c,gf,lmat)
+				if sg then
+					sg:KeepAlive()
+					e:SetLabelObject(sg)
+					return true
+				else return false end
+			end
+end
+function cm.LinkOperation(f,minc,maxc,gf)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,lmat,min,max)
+				local g=e:GetLabelObject()
+				c:SetMaterial(g)
+				cm.LExtraMaterialCount(g,c,tp)
+				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
+				g:DeleteGroup()
+			end
+end
+function cm.EnableExtraDeckSummonCountLimit()
+	if cm.ExtraDeckSummonCountLimit~=nil then return end
+	cm.ExtraDeckSummonCountLimit={}
+	cm.ExtraDeckSummonCountLimit[0]=1
+	cm.ExtraDeckSummonCountLimit[1]=1
+	local ge1=Effect.GlobalEffect()
+	ge1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	ge1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+	ge1:SetOperation(cm.ExtraDeckSummonCountLimitReset)
+	Duel.RegisterEffect(ge1,0)
+end
+function cm.ExtraDeckSummonCountLimitReset()
+	cm.ExtraDeckSummonCountLimit[0]=1
+	cm.ExtraDeckSummonCountLimit[1]=1
 end
 function cm.HartrazCheck(c)
 	local e0=Effect.CreateEffect(c)
@@ -2032,4 +2475,90 @@ function cm.CyberNCode2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(53702500,14))
 	for i=1,#t do Duel.Hint(HINT_CARD,tp,t[i]) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(53702500,15))
+end
+function cm.AllEffectReset(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetRange(0xff)
+	e1:SetOperation(cm.AllEffectRstop)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL+53702700)
+	c:RegisterEffect(e1)
+end
+function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(0,53702700)>0 then return end
+	Duel.RegisterFlagEffect(0,53702700,0,0,0)
+	local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,nil)
+	local reg=Card.RegisterEffect
+	local rstg=Duel.GetMatchingGroup(function(c)return _G["c"..c:GetOriginalCode()].Snnm_Ef_Rst end,0,0xff,0xff,nil)
+	local rstt={}
+	for rstc in aux.Next(rstg) do if not cm.IsInTable(rstc:GetOriginalCode(),rstt) then table.insert(rstt,rstc:GetOriginalCode()) end end
+	local code=e:GetHandler():GetOriginalCode()
+	Card.RegisterEffect=function(sc,se,bool)
+		if cm.IsInTable(25000008,rstt) then
+		if se:GetCode()==EVENT_BATTLE_DESTROYED then
+			local ex=se:Clone()
+			ex:SetCode(EVENT_CUSTOM+25000008)
+			sc:RegisterEffect(ex)
+		end
+		if se:GetCode()==EVENT_DESTROYED then
+			local ex=se:Clone()
+			ex:SetCode(EVENT_CUSTOM+25000008)
+			sc:RegisterEffect(ex)
+		end
+		end
+		if cm.IsInTable(25000061,rstt) then
+		if se:GetType()&EFFECT_TYPE_QUICK_O+EFFECT_TYPE_QUICK_F+EFFECT_TYPE_IGNITION+EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_TRIGGER_O~=0 then sc:RegisterFlagEffect(25000061,0,0,0) end
+		end
+		if cm.IsInTable(25000103,rstt) then
+		local pro=se:GetProperty()
+		if pro&EFFECT_FLAG_UNCOPYABLE==0 then
+			if se:GetType()&(EFFECT_TYPE_IGNITION+EFFECT_TYPE_QUICK_F+EFFECT_TYPE_QUICK_O+EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_ACTIVATE)==0 then
+				local con=se:GetCondition()
+				if con then
+					se:SetCondition(function(e,...)
+						if Duel.GetFlagEffect(0,25000103+e:GetHandler():GetOriginalCodeRule())>0 and not e:GetHandler():IsLocation(LOCATION_ONFIELD) then return false end
+						return con(e,...)
+					end)
+				else
+					se:SetCondition(function(e,...)
+						if Duel.GetFlagEffect(0,25000103+e:GetHandler():GetOriginalCodeRule())>0 and not e:GetHandler():IsLocation(LOCATION_ONFIELD) then return false end
+						return true
+					end)
+				end
+			end
+		end
+		end
+		if cm.IsInTable(53799017,rstt) then
+		if se:GetType()==EFFECT_TYPE_ACTIVATE then
+			local tg=se:GetTarget()
+			if tg then
+				se:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+					if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,chkc) end
+					if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,chk) end
+					tg(e,tp,eg,ep,ev,re,r,rp,chk)
+					if Duel.GetFlagEffect(tp,53799017)>0 then Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK) end
+				end)
+			else
+				se:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
+					if chk==0 then return true end
+					if Duel.GetFlagEffect(tp,53799017)>0 then Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK) end
+				end)
+			end
+		end
+		end
+		reg(sc,se,bool)
+	end
+	for tc in aux.Next(g) do
+		if tc.initial_effect then
+			local ini=cm.initial_effect
+			cm.initial_effect=function() end
+			tc:ReplaceEffect(m,0)
+			cm.initial_effect=ini
+			tc.initial_effect(tc)
+		end
+	end
+	Card.RegisterEffect=reg
+	e:Reset()
 end

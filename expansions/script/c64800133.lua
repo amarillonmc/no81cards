@@ -11,12 +11,10 @@ function c64800133.initial_effect(c)
 	--control
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_CONTROL)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
+	e2:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCountLimit(1,64800133)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCost(c64800133.ccost)
 	e3:SetTarget(c64800133.ctg)
 	e3:SetOperation(c64800133.cop)
@@ -25,7 +23,7 @@ end
 
 --e1
 function c64800133.atkfilter(c)
-	return not c:IsAttack(0)
+	return not c:IsAttack(0) and not c:IsCode(64800133)
 end
 function c64800133.op(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) then return end

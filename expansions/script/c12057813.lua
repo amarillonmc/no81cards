@@ -33,7 +33,7 @@ function c12057813.initial_effect(c)
 end
 function c12057813.spcon(e,c)
 	if c==nil then return true end
-	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_HAND,0)<=2
+	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_HAND,0)<=2 
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c12057813.filter(c,e,tp)

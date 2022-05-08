@@ -98,7 +98,7 @@ function cm.sucop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetAttacker():GetControler()~=tp and Duel.GetAttackTarget()==nil
+	return Duel.GetAttacker():GetControler()~=tp
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

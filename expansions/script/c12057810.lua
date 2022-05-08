@@ -48,7 +48,7 @@ function c12057810.spop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end
 function c12057810.xthtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_MZONE,0,1,nil) end 
+	if chk==0 then return Duel.GetTurnPlayer()==1-tp and Duel.IsExistingTarget(nil,tp,LOCATION_MZONE,0,1,nil) end 
 	Duel.SelectTarget(tp,nil,tp,LOCATION_MZONE,0,1,1,nil) 
 end
 function c12057810.xthop(e,tp,eg,ep,ev,re,r,rp)
@@ -63,7 +63,7 @@ function c12057810.xthop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e3:SetValue(1)
 	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e3)
+	tc:RegisterEffect(e3)
 	end 
 end
 

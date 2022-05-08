@@ -21,7 +21,7 @@ function c40009407.initial_effect(c)
 	e2:SetCondition(c40009407.indcon)
 	c:RegisterEffect(e2) 
 end
-c40009407.xyz_number=12
+aux.xyz_number[40009407]=12
 function c40009407.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)

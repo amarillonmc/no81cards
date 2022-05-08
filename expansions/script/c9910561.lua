@@ -1,5 +1,8 @@
 --甜心机仆 临别的礼物
+Duel.LoadScript("c9910550.lua")
 function c9910561.initial_effect(c)
+	--flag
+	Txjp.AddTgFlag(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,2,2,nil,nil,99)
 	c:EnableReviveLimit()

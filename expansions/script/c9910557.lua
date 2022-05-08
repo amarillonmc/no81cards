@@ -1,5 +1,8 @@
 --甜心机仆的残波
+Duel.LoadScript("c9910550.lua")
 function c9910557.initial_effect(c)
+	--flag
+	Txjp.AddTgFlag(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TODECK+CATEGORY_REMOVE)

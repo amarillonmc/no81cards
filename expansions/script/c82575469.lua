@@ -62,7 +62,7 @@ function c82575469.initial_effect(c)
 	e7:SetOperation(c82575469.disop)
 	c:RegisterEffect(e7)
 end
-c82575469.xyz_number=32
+aux.xyz_number[82575469]=32
 function c82575469.tgrfilter(c)
 	return c:IsFaceup() and c:IsRankAbove(1) and c:IsAbleToGraveAsCost() and c:IsType(TYPE_XYZ) and c:IsAttribute(ATTRIBUTE_WATER) 
 end

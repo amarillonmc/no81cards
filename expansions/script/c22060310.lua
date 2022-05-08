@@ -34,7 +34,7 @@ function c22060310.initial_effect(c)
 	e2:SetOperation(c22060310.atkop)
 	c:RegisterEffect(e2)
 end
-c22060310.xyz_number=107
+aux.xyz_number[22060310]=107
 function c22060310.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x107b) and c:IsType(TYPE_XYZ) and c:IsRank(8)
 end

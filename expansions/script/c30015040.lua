@@ -115,19 +115,35 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 			if tc then
 				Duel.SendtoHand(tc,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,tc)
+				if not tc:IsLocation(LOCATION_HAND) then
+					local count=mg:GetCount()
+					while count>0 do
+						local sg1=mg:RandomSelect(tp,1)
+						local tc1=sg1:GetFirst() 
+						if tc1 then
+							Duel.SendtoHand(tc1,nil,REASON_EFFECT)
+							Duel.ConfirmCards(1-tp,sg1)
+							if tc1:IsLocation(LOCATION_HAND) then
+								count=0
+							else
+								count=count-1
+							end
+						end
+					end 
+				end
 			end   
 		end
 	end
 end
 --Effect 2
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil,tp,POS_FACEDOWN) end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,nil,tp,POS_FACEDOWN)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,tp,POS_FACEDOWN) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,tp,POS_FACEDOWN)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,5,nil,tp,POS_FACEDOWN)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToRemove),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,5,nil,tp,POS_FACEDOWN)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)

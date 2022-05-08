@@ -41,7 +41,7 @@ end
 function c12057812.setop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
 	e1:SetCondition(c12057812.xstcon)
 	e1:SetOperation(c12057812.xstop)
@@ -52,6 +52,7 @@ function c12057812.xstcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c12057812.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) 
 end 
 function c12057812.xstop(e,tp,eg,ep,ev,re,r,rp) 
+	Duel.Hint(HINT_CARD,0,12057812)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,c12057812.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	if g:GetCount()>0 then

@@ -17,7 +17,7 @@ function c40009406.initial_effect(c)
 	e1:SetOperation(c40009406.atkop)
 	c:RegisterEffect(e1)   
 end
-c40009406.xyz_number=17
+aux.xyz_number[40009406]=17
 function c40009406.ovfilter(c)
 	return c:IsFaceup() and c:IsCode(69610924)
 end

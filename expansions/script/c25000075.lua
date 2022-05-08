@@ -65,8 +65,8 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(p,e:GetHandler():GetAttack(),REASON_EFFECT)
 end
 function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x9af9,10,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,0x9af9,10,REASON_COST)
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x9af9,12,REASON_COST) end
+	e:GetHandler():RemoveCounter(tp,0x9af9,12,REASON_COST)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_HAND+LOCATION_ONFIELD,1,nil) end

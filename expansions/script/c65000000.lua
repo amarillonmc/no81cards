@@ -38,12 +38,12 @@ function c65000000.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
+	e3:SetCode(EFFECT_SET_ATTACK)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetValue(c65000000.val)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
-	e4:SetCode(EFFECT_UPDATE_DEFENSE)
+	e4:SetCode(EFFECT_SET_DEFENSE)
 	c:RegisterEffect(e4)
 end
 
@@ -104,5 +104,5 @@ function c65000000.spzop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c65000000.val(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsFacedown,e:GetHandlerPlayer(),LOCATION_REMOVED,0,nil)*300
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,c:GetControler(),LOCATION_REMOVED,0,nil)*300
 end

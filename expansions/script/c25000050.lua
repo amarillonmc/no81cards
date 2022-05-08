@@ -24,6 +24,18 @@ function c25000050.initial_effect(c)
 	e4:SetTargetRange(0,LOCATION_MZONE)
 	e4:SetCode(EFFECT_DISABLE)
 	c:RegisterEffect(e4) 
+	--half atk
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_SET_ATTACK_FINAL)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(0,LOCATION_MZONE)
+	e3:SetValue(c25000050.atkval)
+	c:RegisterEffect(e3)
+	local e5=e3:Clone()
+	e5:SetCode(EFFECT_SET_DEFENSE_FINAL)
+	e5:SetValue(c25000050.defval)
+	c:RegisterEffect(e5)
 	--disable spsummon
 	local e6=Effect.CreateEffect(c)
 	e6:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_REMOVE)
@@ -39,6 +51,9 @@ function c25000050.initial_effect(c)
 	local e7=e6:Clone()
 	e7:SetCode(EVENT_SPSUMMON)
 	c:RegisterEffect(e7)
+	local e8=e6:Clone()
+	e8:SetCode(EVENT_FLIP_SUMMON)
+	c:RegisterEffect(e8)
 end
 function c25000050.sprcon(e,c)
 	if c==nil then return true end
@@ -83,4 +98,10 @@ end
 function c25000050.dsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
 	Duel.Remove(eg,POS_FACEDOWN,REASON_EFFECT)
+end
+function c25000050.atkval(e,c)
+	return math.ceil(c:GetAttack()/2)
+end
+function c25000050.defval(e,c)
+	return math.ceil(c:GetDefense()/2)
 end

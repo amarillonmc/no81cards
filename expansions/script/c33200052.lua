@@ -16,7 +16,7 @@ function c33200052.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c33200052.filter1(c,e,tp)
-	return c:IsFaceup() and (c:IsSetCard(0x322) or c:IsSetCard(0x324) or c:IsSetCard(0x881))
+	return c:IsFaceup() and (c:IsSetCard(0x322) or c:IsSetCard(0x324) or c:IsSetCard(0x881) or c:IsSetCard(0x332a) or c:IsSetCard(0x532a))
 		and Duel.IsExistingMatchingCard(c33200052.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.GetLocationCountFromEx(tp,tp,c,TYPE_XYZ)>0
 end

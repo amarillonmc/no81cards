@@ -59,11 +59,15 @@ function c9910391.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EVENT_BECOME_TARGET)
 		e1:SetRange(LOCATION_SZONE)
 		e1:SetCountLimit(1)
+		e1:SetCondition(c9910391.thcon)
 		e1:SetTarget(c9910391.thtg)
 		e1:SetOperation(c9910391.thop)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e1)
 	end
+end
+function c9910391.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsContains(e:GetHandler())
 end
 function c9910391.thfilter1(c)
 	return c:IsAbleToHand()

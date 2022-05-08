@@ -2,7 +2,7 @@
 function c12057840.initial_effect(c) 
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,c12057840.ffilter,2,true)  
+	aux.AddFusionProcFunRep(c,c12057840.ffilter,2,true) 
 	--attribute
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -18,11 +18,6 @@ function c12057840.initial_effect(c)
 	e0:SetValue(RACE_WARRIOR)
 	e0:SetRange(0xff)
 	c:RegisterEffect(e0) 
-	--cannot direct attack
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
-	c:RegisterEffect(e1)
 	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -42,6 +37,7 @@ function c12057840.initial_effect(c)
 	c:RegisterEffect(e2) 
 	--SpecialSummon
 	local e3=Effect.CreateEffect(c)  
+	e3:SetDescription(aux.Stringid(12057840,3))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_QUICK_O) 
 	e3:SetCode(EVENT_FREE_CHAIN)  
@@ -51,19 +47,16 @@ function c12057840.initial_effect(c)
 	e3:SetTarget(c12057840.sptg) 
 	e3:SetOperation(c12057840.spop) 
 	c:RegisterEffect(e3) 
-	--SpecialSummon
-	local e4=Effect.CreateEffect(c) 
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON) 
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
-	e4:SetCode(EVENT_TO_GRAVE) 
-	e4:SetProperty(EFFECT_FLAG_DELAY) 
-	e4:SetCountLimit(1,22057840) 
-	e4:SetTarget(c12057840.xsptg) 
-	e4:SetOperation(c12057840.xspop) 
-	c:RegisterEffect(e4) 
-	local e5=e4:Clone()  
-	e5:SetCode(EVENT_REMOVE) 
-	c:RegisterEffect(e5) 
+	--Set 
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(12057840,1))
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_PHASE+PHASE_BATTLE)
+	e4:SetCountLimit(1,22057840)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetTarget(c12057840.sttg)
+	e4:SetOperation(c12057840.stop)
+	c:RegisterEffect(e4)
 end
 function c12057840.ffilter(c)
 	return c:IsPosition(POS_FACEDOWN_DEFENSE) and c:IsOnField() 
@@ -105,22 +98,57 @@ function c12057840.spop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 	end 
 end 
-function c12057840.xspfil(c,e,tp) 
-	return c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false,POS_FACEDOWN_DEFENSE) and c:IsType(TYPE_FUSION) and c:IsSetCard(0xac1,0xac2) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and not c:IsCode(12057840) 
+function c12057840.stfil(c) 
+	return c:IsSSetable(true) and Duel.GetLocationCount(c:GetOwner(),LOCATION_SZONE)>0  
 end 
-function c12057840.xsptg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) and e:GetHandler():IsReason(REASON_EFFECT) and e:GetHandler():GetReasonPlayer()==1-tp and Duel.IsExistingMatchingCard(c12057840.xspfil,tp,LOCATION_EXTRA,0,1,nil,e,tp) end 
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA) 
+function c12057840.sttg(e,tp,eg,ep,ev,re,r,rp,chk) 
+	if chk==0 then return Duel.GetTurnPlayer()==tp and Duel.IsExistingMatchingCard(c12057840.stfil,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end 
 end 
-function c12057840.xspop(e,tp,eg,ep,ev,re,r,rp) 
+function c12057840.stop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(c12057840.xspfil,tp,LOCATION_EXTRA,0,nil,e,tp)
+	local g=Duel.GetMatchingGroup(c12057840.stfil,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil)
 	if g:GetCount()>0 then 
-	local sg=g:Select(tp,1,1,nil) 
-	Duel.SpecialSummon(sg,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEDOWN_DEFENSE)  
-	Duel.ConfirmCards(1-tp,sg)
+	local tc=g:Select(tp,1,1,nil):GetFirst() 
+	Duel.SSet(tp,tc,tc:GetOwner()) 
+	local e1=Effect.CreateEffect(c) 
+	e1:SetDescription(aux.Stringid(12057840,2)) 
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CANNOT_TRIGGER) 
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e1) 
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetValue(1)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(EFFECT_CANNOT_REMOVE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(1,1)
+	e3:SetTarget(c12057840.rmlimit) 
+	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetCode(EFFECT_UNRELEASABLE_SUM)
+	e4:SetValue(1)
+	e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+	tc:RegisterEffect(e5)
 	end 
 end 
-
+function c12057840.rmlimit(e,c,tp,r)
+	return c==e:GetHandler() and r==REASON_EFFECT
+end 
 
 

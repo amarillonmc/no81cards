@@ -94,7 +94,6 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Duel.BreakEffect()
-	if x==0 then Duel.Draw(tp,1,REASON_EFFECT) end
 	if x==1 then
 		if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD) and Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()

@@ -6,6 +6,7 @@ function c60001002.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMING_END_PHASE)
+	e1:SetCountLimit(1,60001002)
 	e1:SetCondition(c60001002.condition)
 	e1:SetTarget(c60001002.target)
 	e1:SetOperation(c60001002.activate)
@@ -18,7 +19,7 @@ function c60001002.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c60001002.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c60001002.ssfilter(c)
-	return c:IsSetCard(0xf1)  and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0xf1) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c60001002.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

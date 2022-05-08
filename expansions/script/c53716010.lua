@@ -44,7 +44,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cg=g:Filter(Card.IsFacedown,nil)
 	if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
 	local list={}
-	for tc in aux.Next(g) do if tc:IsLocation(LOCATION_SZONE) and tc:IsFacedown() and tc:GetSequence()~=5 then table.insert(list,tc:GetSequence()) end end
+	for tc in aux.Next(g) do if tc:IsLocation(LOCATION_SZONE) and tc:GetSequence()~=5 then table.insert(list,tc:GetSequence()) end end
 	if #list>0 then
 		table.insert(list,5)
 		e:SetLabel(table.unpack(list))

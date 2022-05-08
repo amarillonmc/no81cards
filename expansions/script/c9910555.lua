@@ -1,5 +1,8 @@
 --甜心机仆的欢笑
+Duel.LoadScript("c9910550.lua")
 function c9910555.initial_effect(c)
+	--flag
+	Txjp.AddTgFlag(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -10,15 +13,12 @@ function c9910555.initial_effect(c)
 	e1:SetTarget(c9910555.target)
 	e1:SetOperation(c9910555.activate)
 	c:RegisterEffect(e1)
-	--draw
+	--act limit
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_REMOVE)
-	e2:SetCountLimit(1,9910556)
-	e2:SetTarget(c9910555.drtg)
-	e2:SetOperation(c9910555.drop)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_MOVE)
+	e2:SetCondition(c9910555.actcon)
+	e2:SetOperation(c9910555.actop)
 	c:RegisterEffect(e2)
 end
 function c9910555.spfilter(c,e,tp)
@@ -61,19 +61,23 @@ function c9910555.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end
 function c9910555.splimit(e,c)
-	return not c:IsSetCard(0x3951)
+	return not c:IsRace(RACE_CYBERSE)
 end
-function c9910555.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_CYBERSE) and c:IsDiscardable()
+function c9910555.actcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsLocation(LOCATION_GRAVE) and c:IsPreviousLocation(LOCATION_REMOVED) and c:IsReason(REASON_RETURN)
 end
-function c9910555.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910555.tgfilter,tp,LOCATION_HAND,0,1,nil)
-		and Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+function c9910555.actop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+	e1:SetValue(c9910555.actlimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
-function c9910555.drop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.DiscardHand(tp,c9910555.tgfilter,1,1,REASON_EFFECT+REASON_DISCARD)~=0 then
-		Duel.Draw(tp,1,REASON_EFFECT)
-	end
+function c9910555.actlimit(e,re,tp)
+	local rc=re:GetHandler()
+	return rc:IsLocation(LOCATION_HAND) and re:IsActiveType(TYPE_MONSTER)
 end

@@ -50,7 +50,7 @@ function c40009412.initial_effect(c)
 	e5:SetValue(c40009412.atkval2)
 	c:RegisterEffect(e5)
 end
-c40009412.xyz_number=48
+aux.xyz_number[40009412]=48
 function c40009412.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)

@@ -53,10 +53,10 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,2,nil) end
+		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,2,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)

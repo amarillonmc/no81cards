@@ -50,6 +50,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	--to grave
 end
+aux.xyz_number[m]=23
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return re and re:GetHandler():IsSetCard(0x95) and re:GetHandler():IsType(TYPE_SPELL)
 end
@@ -70,7 +71,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
 end
-aux.xyz_number[m]=23
+cm.xyz_number=23
 function cm.aclimit(e,re,tp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:GetHandler():IsType(TYPE_MONSTER)
 end

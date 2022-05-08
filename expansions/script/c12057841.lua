@@ -21,18 +21,24 @@ function c12057841.initial_effect(c)
 	e2:SetValue(c12057841.repval)
 	e2:SetOperation(c12057841.repop)
 	c:RegisterEffect(e2) 
+	if not c12057841.global_check then
+		c12057841.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SSET)
+		ge1:SetOperation(c12057841.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 	Duel.AddCustomActivityCounter(12057841,ACTIVITY_SPSUMMON,c12057841.counterfilter)
-	Duel.AddCustomActivityCounter(12057841,ACTIVITY_CHAIN,c12057841.chainfilter)
 end
 function c12057841.counterfilter(c)
 	return not c:IsLocation(LOCATION_EXTRA) 
 end 
-function c12057841.chainfilter(re,tp,cid)
-	local rc=re:GetHandler()
-	return bit.band(re:GetActivateLocation(),LOCATION_GRAVE+LOCATION_REMOVED)==0  
+function c12057841.checkop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RegisterFlagEffect(rp,12057841,RESET_PHASE+PHASE_END,0,1)
 end
 function c12057841.accost(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.GetCustomActivityCount(12057841,tp,ACTIVITY_SPSUMMON)==0 and Duel.GetCustomActivityCount(12057841,tp,ACTIVITY_CHAIN)==0 end
+	if chk==0 then return Duel.GetCustomActivityCount(12057841,tp,ACTIVITY_SPSUMMON)==0 and Duel.GetFlagEffect(tp,12057841)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
@@ -41,23 +47,19 @@ function c12057841.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(c12057841.splimit)
 	Duel.RegisterEffect(e1,tp) 
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCode(EFFECT_CANNOT_ACTIVATE) 
-	e2:SetTargetRange(1,0)
-	e2:SetValue(c12057841.actlimit)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp) 
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SSET)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	Duel.RegisterEffect(e1,tp)
 end 
 function c12057841.splimit(e,c)
 	return c:IsLocation(LOCATION_EXTRA) 
 end 
-function c12057841.actlimit(e,re,tp)
-	return bit.band(re:GetActivateLocation(),LOCATION_GRAVE+LOCATION_REMOVED)~=0 
-end
 function c12057841.srfil(c,e,tp)  
-	return (c:IsAbleToGrave() or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and c:IsLevelBelow(4) and c:IsDefenseBelow(1900) and c:IsRace(RACE_DRAGON+RACE_MACHINE)  
+	return (c:IsAbleToGrave() or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and ((c:IsLevelBelow(4) and c:IsRace(RACE_DRAGON)) or (c:IsDefenseBelow(1900) and c:IsRace(RACE_MACHINE)))  
 end 
 function c12057841.actg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(c12057841.srfil,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end 

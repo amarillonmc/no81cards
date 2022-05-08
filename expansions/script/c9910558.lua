@@ -1,38 +1,20 @@
 --甜心机仆 秋叶的礼物
+Duel.LoadScript("c9910550.lua")
 function c9910558.initial_effect(c)
 	--special summon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,9910550+EFFECT_COUNT_CODE_OATH)
-	e1:SetCondition(c9910558.spcon)
-	e1:SetOperation(c9910558.spop)
-	c:RegisterEffect(e1)
+	Txjp.AddSpProcedure(c,9910558)
+	--flag
+	Txjp.AddTgFlag(c)
 	--change effect
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetCountLimit(1,9910558)
 	e2:SetCondition(c9910558.chcon)
 	e2:SetCost(c9910558.chcost)
-	e2:SetTarget(c9910558.chtg)
 	e2:SetOperation(c9910558.chop)
 	c:RegisterEffect(e2)
-end
-function c9910558.spcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil)
-end
-function c9910558.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910558,0))
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST+REASON_RETURN)
 end
 function c9910558.chcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
@@ -50,40 +32,49 @@ function c9910558.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	g:AddCard(c)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
-function c9910558.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
+function c9910558.thfilter(c)
+	return c:IsSetCard(0x3951) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c9910558.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,c9910558.repop)
-	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,0,nil)
-	if g1:GetCount()>0 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(9910558,1)) then
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_HAND,0,nil)
+	local g2=Duel.GetMatchingGroup(c9910558.thfilter,tp,LOCATION_DECK,0,nil)
+	if g1:GetCount()>0 and g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910558,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg1=g1:Select(tp,1,1,nil)
 		if Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)==0 then return end
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
-		e1:SetCondition(c9910558.thcon)
-		e1:SetOperation(c9910558.thop)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg2=g2:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg2,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg2)
 	end
 end
 function c9910558.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.DiscardDeck(1-tp,3,REASON_EFFECT)
-end
-function c9910558.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)>0
-end
-function c9910558.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,9910558)
-	local tc=Duel.GetFieldCard(tp,LOCATION_GRAVE,Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)-1)
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e1:SetCountLimit(1)
+	e1:SetLabel(Duel.GetTurnCount())
+	e1:SetCondition(c9910558.discon)
+	e1:SetOperation(c9910558.disop)
+	if Duel.GetCurrentPhase()<=PHASE_STANDBY then
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
+	else
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY)
 	end
+	Duel.RegisterEffect(e1,tp)
+end
+function c9910558.discon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()~=e:GetLabel()
+end
+function c9910558.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,9910558)
+	local g1=Duel.GetDecktopGroup(tp,3)
+	local g2=Duel.GetDecktopGroup(1-tp,3)
+	g1:Merge(g2)
+	Duel.DisableShuffleCheck()
+	Duel.SendtoGrave(g1,REASON_EFFECT)
 end

@@ -10,19 +10,14 @@ function c9910104.initial_effect(c)
 	e1:SetTarget(c9910104.sptg)
 	e1:SetOperation(c9910104.spop)
 	c:RegisterEffect(e1)
-	--pos
+	--Gains Effect
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910104,0))
-	e2:SetCategory(CATEGORY_POSITION)
-	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_BE_MATERIAL)
+	e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
 	e2:SetCountLimit(1,9910157)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetLabelObject(c)
-	e2:SetCost(c9910104.poscost)
-	e2:SetTarget(c9910104.postg)
-	e2:SetOperation(c9910104.posop)
+	e2:SetCondition(c9910104.efcon)
+	e2:SetOperation(c9910104.efop)
 	c:RegisterEffect(e2)
 end
 function c9910104.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -60,21 +55,39 @@ function c9910104.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
 end
+function c9910104.efcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return r==REASON_XYZ and c:GetReasonCard():IsRace(RACE_MACHINE)
+end
+function c9910104.efop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local rc=c:GetReasonCard()
+	local e1=Effect.CreateEffect(rc)
+	e1:SetDescription(aux.Stringid(9910104,0))
+	e1:SetCategory(CATEGORY_POSITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCountLimit(1)
+	e1:SetCost(c9910104.poscost)
+	e1:SetTarget(c9910104.postg)
+	e1:SetOperation(c9910104.posop)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	rc:RegisterEffect(e1,true)
+	if not rc:IsType(TYPE_EFFECT) then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_ADD_TYPE)
+		e2:SetValue(TYPE_EFFECT)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		rc:RegisterEffect(e2,true)
+	end
+end
 function c9910104.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	local c=e:GetLabelObject()
-	local g=e:GetHandler():GetOverlayGroup()
-	if not g:IsContains(c) then return false end
-	g:RemoveCard(c)
-	if g:GetCount()==0 or (g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910104,1))) then
-		Duel.SendtoGrave(c,REASON_COST)
-	elseif Duel.SelectYesNo(tp,aux.Stringid(9910104,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
-		local tg=g:Select(tp,1,1,nil)
-		if tg:GetCount()>0 then
-			Duel.SendtoGrave(tg,REASON_COST)
-		end
-	else e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9910104.posfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()

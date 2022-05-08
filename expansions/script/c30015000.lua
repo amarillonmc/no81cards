@@ -109,7 +109,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
 		end   
-		if tc:IsLocation(LOCATION_HAND) then
+		if tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA) then
 			if rk.check(tc,"Overuins") then
 				if tc:IsSSetable() then
 					Duel.SSet(tp,tc)
@@ -118,6 +118,10 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 				end
 			else
 				Duel.ShuffleHand(tp)
+			end
+			if tc:IsExtraDeckMonster()
+				and tc:IsLocation(LOCATION_EXTRA)  then
+				Duel.SendtoGrave(sg,REASON_EFFECT)
 			end
 		end
 	end

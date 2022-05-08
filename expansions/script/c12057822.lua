@@ -21,16 +21,6 @@ function c12057822.initial_effect(c)
 	e1:SetTarget(c12057822.aktg)  
 	e1:SetOperation(c12057822.akop)
 	c:RegisterEffect(e1)
-	--actlimit
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(0,1)
-	e2:SetValue(1)
-	e2:SetCondition(c12057822.actcon)
-	c:RegisterEffect(e2)	
 	--extra attack
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -40,7 +30,7 @@ function c12057822.initial_effect(c)
 	--to grave 
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(12057822,1))
-	e4:SetCategory(CATEGORY_TOGRAVE)
+	e4:SetCategory(CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetCountLimit(1,22057822)
@@ -57,9 +47,6 @@ end
 function c12057822.effcon(e)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
-function c12057822.actcon(e)
-	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler() 
-end
 function c12057822.aktg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,1,nil) end 
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,1-tp,LOCATION_MZONE)
@@ -72,7 +59,7 @@ function c12057822.akop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	local g=Duel.GetMatchingGroup(aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,nil) 
 	if g:GetCount()>0 then 
-	local sg=g:Select(tp,1,2,nil)
+	local sg=g:Select(tp,1,1,nil)
 		local tc=sg:GetFirst() 
 		while tc do 
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
@@ -121,16 +108,15 @@ function c12057822.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 end
 function c12057822.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end 
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_ONFIELD)
-	Duel.SetChainLimit(c12057822.chainlm)
 end 
 function c12057822.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler()) 
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler()) 
 	if g:GetCount()>0 then 
 	local dg=g:Select(tp,1,1,nil) 
-	Duel.SendtoGrave(dg,REASON_EFFECT)
+	Duel.Destroy(dg,REASON_EFFECT)
 	end 
 end 
 

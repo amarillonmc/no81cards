@@ -2,14 +2,8 @@ local m=25000076
 local cm=_G["c"..m]
 cm.name="WD-M01 逆A"
 function cm.initial_effect(c)
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_SYNCHRO),aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),2)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),1)
 	c:EnableReviveLimit()
-	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(function(e,se,sp,st)return aux.synlimit(e,se,sp,st) or not e:GetHandler():IsLocation(LOCATION_EXTRA)end)
-	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -28,6 +22,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1)
 	e3:SetCondition(cm.spcon)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
@@ -45,7 +40,7 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e5:SetCountLimit(1,m)
+	e5:SetCountLimit(1)
 	e5:SetTarget(cm.tgtg)
 	e5:SetOperation(cm.tgop)
 	c:RegisterEffect(e5)
@@ -72,11 +67,13 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsPreviousLocation(LOCATION_GRAVE) then c:RegisterFlagEffect(m+10000,RESET_EVENT+RESETS_STANDARD,1,0) end
+	if c:IsPreviousLocation(LOCATION_GRAVE) then
+		c:RegisterFlagEffect(m+100000000,RESET_EVENT+RESETS_STANDARD,1,0)
+	end
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
-	if chk==0 then return #g>0 and e:GetHandler():GetFlagEffect(m+10000)>0 and Duel.GetFlagEffect(tp,m)==0 end
+	if chk==0 then return #g>0 and e:GetHandler():GetFlagEffect(m+100000000)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,#g,0,0)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)

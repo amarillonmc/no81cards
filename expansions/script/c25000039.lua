@@ -1,59 +1,59 @@
---永远的王牌
-function c25000039.initial_effect(c)
-	--Activate
+local m=25000039
+local cm=_G["c"..m]
+cm.name="永远的王牌"
+function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,25000039)
-	e1:SetTarget(c25000039.target)
-	e1:SetOperation(c25000039.activate)
+	e1:SetCountLimit(1,m)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
-	--to hand 
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,25000039
-	e2:SetCost(c25000039.thcost)
-	e2:SetTarget(c25000039.thtg)
-	e2:SetOperation(c25000039.thop)
+	e2:SetCountLimit(1,m+10000)
+	e2:SetCost(cm.thcost)
+	e2:SetTarget(cm.thtg)
+	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 end
-function c25000039.filter0(c)
+function cm.filter0(c)
 	return c:IsFaceup() and c:IsCanBeFusionMaterial()
 end
-function c25000039.filter1(c,e)
+function cm.filter1(c,e)
 	return c:IsFaceup() and c:IsCanBeFusionMaterial() and not c:IsImmuneToEffect(e)
 end
-function c25000039.filter2(c,e,tp,m,f,chkf)
+function cm.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
-function c25000039.filter3(c,e)
+function cm.filter3(c,e)
 	return c:IsOnField() and not c:IsImmuneToEffect(e)
 end
-function c25000039.fcheck(tp,sg,fc)
-	return sg:GetClassCount(Card.GetRace)==sg:GetCount()
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
-function c25000039.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp):Filter(Card.IsOnField,nil)
-		local mg2=Duel.GetMatchingGroup(c25000039.filter0,tp,0,LOCATION_MZONE,nil)
+		local mg2=Duel.GetMatchingGroup(cm.filter0,tp,0,LOCATION_MZONE,nil)
 		mg1:Merge(mg2)
-		aux.FGoalCheckAdditional=c25000039.fcheck
-		local res=Duel.IsExistingMatchingCard(c25000039.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
+		local res=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
 			if ce~=nil then
 				local fgroup=ce:GetTarget()
 				local mg3=fgroup(ce,e,tp)
 				local mf=ce:GetValue()
-				res=Duel.IsExistingMatchingCard(c25000039.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,mf,chkf)
+				res=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,mf,chkf)
 			end
 		end
-		aux.FGoalCheckAdditional=nil
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
@@ -61,13 +61,12 @@ function c25000039.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetChainLimit(aux.FALSE)
 	end
 end
-function c25000039.activate(e,tp,eg,ep,ev,re,r,rp)
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
-	local mg1=Duel.GetFusionMaterial(tp):Filter(c25000039.filter3,nil,e)
-	local mg2=Duel.GetMatchingGroup(c25000039.filter1,tp,0,LOCATION_MZONE,nil,e)
+	local mg1=Duel.GetFusionMaterial(tp):Filter(cm.filter3,nil,e)
+	local mg2=Duel.GetMatchingGroup(cm.filter1,tp,0,LOCATION_MZONE,nil,e)
 	mg1:Merge(mg2)
-	aux.FGoalCheckAdditional=c25000039.fcheck
-	local sg1=Duel.GetMatchingGroup(c25000039.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
+	local sg1=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 	local mg3=nil
 	local sg2=nil
 	local ce=Duel.GetChainMaterial(tp)
@@ -75,7 +74,7 @@ function c25000039.activate(e,tp,eg,ep,ev,re,r,rp)
 		local fgroup=ce:GetTarget()
 		mg3=fgroup(ce,e,tp)
 		local mf=ce:GetValue()
-		sg2=Duel.GetMatchingGroup(c25000039.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg3,mf,chkf)
+		sg2=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg3,mf,chkf)
 	end
 	if sg1:GetCount()>0 or (sg2~=nil and sg2:GetCount()>0) then
 		local sg=sg1:Clone()
@@ -96,31 +95,25 @@ function c25000039.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 		tc:CompleteProcedure()
 	end
-	aux.FGoalCheckAdditional=nil
 end
-function c25000039.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_MZONE,0,1,nil) end
-	local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
-	if tc:IsType(TYPE_FUSION) then 
-	e:SetLabel(1)
-	end
-	local g=Group.FromCards(e:GetHandler(),tc)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
+	local g,sg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,LOCATION_MZONE,0,1,nil),Group.CreateGroup()
+	if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		sg=g:Select(tp,1,1,nil)
+		e:SetLabel(1)
+	else e:SetLabel(0) end
+	Duel.Remove(Group.FromCards(e:GetHandler(),sg),POS_FACEUP,REASON_COST)
 end
-function c25000039.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,1-tp,LOCATION_MZONE)
 end
-function c25000039.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g,sg=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil),Group.CreateGroup()
 	if g:GetCount()<=0 then return end
-	local op=e:GetLabel()
-	if op==1 then 
-	sg=g:Select(tp,1,1,nil)
-	else
-	sg=g:Select(1-tp,1,1,nil)
-	end
-	Duel.SendtoHand(sg,nil,REASON_EFFECT+REASON_RULE)
+	if e:GetLabel()==1 then sg=g:Select(tp,1,1,nil) else sg=g:Select(1-tp,1,1,nil) end
+	Duel.HintSelection(sg)
+	Duel.SendtoHand(sg,nil,REASON_RULE)
 end
-

@@ -113,36 +113,44 @@ function cm.effectfilter(e,ct)
 end
 function cm.revengefilter(c,tp)
 	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)  
-		and (c:GetPreviousTypeOnField()&TYPE_SPELL~=0 or c:GetPreviousTypeOnField()&TYPE_TRAP~=0)
+		and (c:GetPreviousTypeOnField()&TYPE_SPELL~=0 or c:GetPreviousTypeOnField()&TYPE_TRAP~=0 
+		or rk.check(c,"Overuins"))
 		and c:GetReasonPlayer()==1-tp
 end
 function cm.revengecon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.revengefilter,1,nil,tp) and #eg==1
+	return eg:IsExists(cm.revengefilter,1,nil,tp) 
 end
 function cm.revengeop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=eg:GetFirst()
-	local sg=Group.CreateGroup()
-	local rc=tc:GetReasonCard()
-	local re=tc:GetReasonEffect()
-	if not rc and re then
-		local sc=re:GetHandler()
-		if not rc then
-			sg:AddCard(sc)
+	while tc do
+		local sg=Group.CreateGroup()
+		local rc=tc:GetReasonCard()
+		local re=tc:GetReasonEffect()
+		if not rc and re then
+			local sc=re:GetHandler()
+			if not rc then
+				sg:AddCard(sc)
+			end
+		end 
+		if rc then 
+			sg:AddCard(rc)
+		end 
+		if sg:GetCount()~=0 then
+			local bc=sg:GetFirst()
+			if bc:IsAbleToRemove(tp,POS_FACEDOWN) and bc:GetOwner()==1-tp 
+				and bc:IsRelateToEffect(re) 
+				and not bc:IsType(TYPE_TOKEN) then
+				Duel.Hint(HINT_CARD,0,m)  
+				Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,1))
+				Duel.Remove(bc,POS_FACEDOWN,REASON_EFFECT)
+				if bc:IsLocation(LOCATION_REMOVED) and bc:IsFacedown() 
+					and Duel.IsPlayerCanDraw(tp,1)  then
+					Duel.Draw(tp,1,REASON_EFFECT)
+				end  
+			end
 		end
-	end 
-	if rc then 
-		sg:AddCard(rc)
-	end 
-	if sg:GetCount()~=0 then
-		local bc=sg:GetFirst()
-		if bc:IsAbleToRemove(tp,POS_FACEDOWN) and bc:GetOwner()==1-tp 
-			and bc:IsRelateToEffect(re) 
-			and not bc:IsType(TYPE_TOKEN) then
-			Duel.Hint(HINT_CARD,0,m)  
-			Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,1))
-			Duel.Remove(bc,POS_FACEDOWN,REASON_EFFECT)   
-		end
+		tc=eg:GetNext()
 	end
 end
 --Effect 2  

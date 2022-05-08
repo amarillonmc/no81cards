@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	ea:SetOperation(cm.rmop)
 	c:RegisterEffect(ea)
 end
-cm.xyz_number=89
+aux.xyz_number[m]=89
 function cm.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)

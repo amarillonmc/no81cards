@@ -26,6 +26,7 @@ function c60001038.initial_effect(c)
 	e4:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_ACTIVATE)
 	e4:SetCode(EVENT_CHAINING)
+	e4:SetCountLimit(1,60001038)
 	e4:SetCondition(c60001038.condition2)
 	e4:SetCost(c60001038.cost2)
 	e4:SetTarget(c60001038.target2)
@@ -78,7 +79,7 @@ function c60001038.condition2(e,tp,eg,ep,ev,re,r,rp)
 end
 function c60001038.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
+	Duel.PayLPCost(tp,114514)
 end
 function c60001038.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

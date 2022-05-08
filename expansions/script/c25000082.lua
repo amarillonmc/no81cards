@@ -9,14 +9,18 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return rp~=tp end)
+	e1:SetCondition(
+		function(e,tp,eg,ep,ev,re,r,rp)
+			return rp~=tp
+		end
+	)
 	e1:SetTarget(cm.imtg)
 	e1:SetOperation(cm.imop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetType(EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.atkcon)
@@ -47,7 +51,11 @@ function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetValue(function(e,re)return re==e:GetLabelObject()end)
+		e1:SetValue(
+			function(e,re)
+				return re==e:GetLabelObject()
+			end
+		)
 		e1:SetLabelObject(re)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		c:RegisterEffect(e1)
@@ -75,17 +83,23 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	local c=e:GetHandler()
+	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	local cards=Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+	local max=c:GetOverlayCount()
+	if max>cards then
+		max=cards
+	end
+	e:SetLabel(c:RemoveOverlayCard(tp,1,max,REASON_COST))
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetLabel(),1,0,0)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local num=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,num,num,nil)
 	if #g>0 then Duel.Destroy(g,REASON_EFFECT) end
 end

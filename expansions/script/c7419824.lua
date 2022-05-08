@@ -44,6 +44,10 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e4:SetValue(aux.tgoval)
+	c:RegisterEffect(e4)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
@@ -60,19 +64,23 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not c:IsPublic() and c:GetFlagEffect(m)==0 end
 	c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
 end
+function cm.chainlm(e,ep,tp)
+	return tp==ep
+end
 function cm.filter(c)
-	return cm.Qingyu(c) and c:IsFaceup() and c:IsAbleToHand()
+	return cm.Qingyu(c) and c:IsFaceup() and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc) end
 	local c=e:GetHandler()
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,2,nil) end
+		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,2,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetChainLimit(cm.chainlm)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
