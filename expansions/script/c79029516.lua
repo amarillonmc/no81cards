@@ -41,7 +41,7 @@ function c79029516.initial_effect(c)
 	e4:SetOperation(c79029516.spop)
 	c:RegisterEffect(e4)
 end
-c79029516.xyz_number=53
+aux.xyz_number[79029516]=53
 function c79029516.ovfilter(c)
 	return c:IsFaceup() and c:IsCode(23998625)
 end

@@ -56,5 +56,5 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	SNNM.HTFPlacePZone(c,4,LOCATION_GRAVE,0,EVENT_FREE_CHAIN,m)
+	SNNM.HTFPlacePZone(c,4,LOCATION_GRAVE,0,EVENT_FREE_CHAIN,m,tp)
 end

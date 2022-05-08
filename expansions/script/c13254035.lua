@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.cfilter(c,tp)
-	return tama.tamas_isExistElement(c,TAMA_ELEMENT_ORDER) and c:IsAbleToGraveAsCost() and (c:IsLocation(LOCATION_HAND) and Duel.IsPlayerCanDraw(tp,2))
+	return tama.tamas_isExistElement(c,TAMA_ELEMENT_ORDER) and c:IsAbleToGraveAsCost() and (not c:IsLocation(LOCATION_HAND) or (Duel.IsPlayerCanDraw(tp,2)))
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,tp) end

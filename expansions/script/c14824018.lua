@@ -1,0 +1,36 @@
+--了不起的杰弗里斯
+function c14824018.initial_effect(c)
+	--search
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(14824018,0))
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e1:SetTarget(c14824018.shtg)
+	e1:SetOperation(c14824018.shop)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+	c:RegisterEffect(e2)
+	local e3=e1:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e3)
+end
+function c14824018.shtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+	if chk==0 then return g:GetClassCount(Card.GetCode)==g:GetCount() end
+	Duel.ConfirmCards(tp,g)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	local ac=Duel.AnnounceCard(tp)
+	Duel.SetTargetParam(ac)
+	Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,0)
+end
+function c14824018.shop(e,tp,eg,ep,ev,re,r,rp)
+	local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
+	local token=Duel.CreateToken(tp,ac)
+	Duel.SendtoHand(token,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,token)
+end

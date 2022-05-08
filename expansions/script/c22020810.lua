@@ -51,25 +51,6 @@ function c22020810.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(c22020810.eqlimit)
 	tc:RegisterEffect(e1)
-	--atk/def
-	if atk>0 then
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_EQUIP)
-		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_OWNER_RELATE)
-		e2:SetCode(EFFECT_UPDATE_ATTACK)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e2:SetValue(atk)
-		tc:RegisterEffect(e2)
-	end
-	if def>0 then
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_EQUIP)
-		e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_OWNER_RELATE)
-		e3:SetCode(EFFECT_UPDATE_DEFENSE)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e3:SetValue(def)
-		tc:RegisterEffect(e3)
-	end
 end
 function c22020810.eqlimit(e,c)
 	return e:GetOwner()==c

@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,m)
 	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(cm.tg2)
 	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
 	Color_Song.AddCount(c)
@@ -57,14 +58,13 @@ end
 function cm.tgf2(c)
 	return c:IsAbleToDeck() and c.isColorSong
 end
-function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.tgf1),tp,LOCATION_GRAVE,0,1,nil)
 		and Duel.IsExistingMatchingCard(cm.tgf2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
 end
-function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-	Color_Song.Record_Op(e,tp,eg,ep,ev,re,r,rp)
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local max=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0):FilterCount(aux.NecroValleyFilter(cm.tgf1),nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,cm.tgf2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,max,nil)
@@ -73,7 +73,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 		local count=Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.tgf1),tp,LOCATION_GRAVE,0,count,count,nil)
-		if g2:GetCount()>0 then
+		if g2:GetCount()==count then
 			Duel.SendtoHand(g2,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g2)
 		end

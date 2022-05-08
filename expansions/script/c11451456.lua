@@ -61,7 +61,8 @@ function cm.debcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.debug(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil)
-	Debug.Message("场上的表侧表示怪兽合计等级:"..g:GetSum(Card.GetLevel))
+	--Debug.Message("场上的表侧表示怪兽合计等级:"..g:GetSum(Card.GetLevel))
+	assert(false,"场上的表侧表示怪兽合计等级:"..g:GetSum(Card.GetLevel))
 end
 function cm.mzfilter(c)
 	return c:IsLinkRace(RACE_PSYCHO) and c:IsLinkAttribute(ATTRIBUTE_LIGHT) and c:GetLevel()>=3 and c:GetLevel()<=10

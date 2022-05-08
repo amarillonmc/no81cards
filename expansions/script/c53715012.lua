@@ -48,5 +48,5 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoExtraP(pg1,tp,REASON_EFFECT)
 		end
 	end
-	SNNM.HTFPlacePZone(c,2,LOCATION_GRAVE,0,EVENT_FREE_CHAIN,m)
+	SNNM.HTFPlacePZone(c,2,LOCATION_GRAVE,0,EVENT_FREE_CHAIN,m,tp)
 end

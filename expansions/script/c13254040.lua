@@ -122,7 +122,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			local tc=sg:GetFirst()
 			while tc do
 				tc:CancelToGrave()
-				tc:GetNext()
+				tc=sg:GetNext()
 			end
 			Duel.ChangePosition(sg,POS_FACEDOWN)
 			Duel.RaiseEvent(sg,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)

@@ -53,7 +53,7 @@ function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_MZONE,x,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,x,1-tp,LOCATION_MZONE)
 end
-function cm.op1(e,tp,eg,ep,ev,re,r,rp)
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local x=Duel.GetFieldGroup(tp,LOCATION_MZONE,0):FilterCount(cm.tgf1,nil)
 	if not Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_MZONE,x,nil) then return end

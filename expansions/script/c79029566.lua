@@ -5,6 +5,13 @@ function c79029566.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunFunRep(c,c79029566.matfilter1,c79029566.matfilter2,1,99,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,LOCATION_MZONE,Duel.SendtoGrave,REASON_COST)
+	--spsummon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c79029566.xsplimit)
+	c:RegisterEffect(e1)
 	--negate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(79029566,0))
@@ -38,12 +45,8 @@ function c79029566.initial_effect(c)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
 end
-function c79029566.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	while tc do
-		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),79029566,RESET_PHASE+PHASE_END,0,1)
-		tc=eg:GetNext()
-	end
+function c79029566.xsplimit(e,se,sp,st)
+	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
 function c79029566.matfilter1(c)
 	return c:GetSequence()>4

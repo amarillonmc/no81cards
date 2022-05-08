@@ -14,7 +14,7 @@ function c10700459.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e4:SetCondition(c10700459.atcon)
+	e4:SetCondition(c10700459.atcon2)
 	e4:SetValue(1)
 	c:RegisterEffect(e4)
 	--search
@@ -43,8 +43,14 @@ end
 function c10700459.cfilter(c,atk)
 	return c:IsFaceup() and c:GetAttack()>atk
 end
+function c10700459.cfilter2(c,atk)
+	return c:IsFaceup() and c:GetAttack()<atk
+end
 function c10700459.atcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c10700459.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e:GetHandler():GetAttack())
+end
+function c10700459.atcon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c10700459.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e:GetHandler():GetAttack())
 end
 function c10700459.spfilter(c,e,tp)
 	return c:GetAttack()==1700 and c:GetDefense()==1000 and c:IsRace(RACE_BEASTWARRIOR) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -55,7 +61,7 @@ function c10700459.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
 end
 function c10700459.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not e:GetHandler():IsRelateToEffect(e) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c10700459.spfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then

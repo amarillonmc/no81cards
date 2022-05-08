@@ -24,7 +24,6 @@ function c22020740.initial_effect(c)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(c22020740.condition)
 	e1:SetValue(c22020740.atkval)
 	c:RegisterEffect(e1)
 	--immune
@@ -63,6 +62,10 @@ function c22020740.initial_effect(c)
 	e7:SetOperation(c22020740.rpop)
 	c:RegisterEffect(e7)
 end
+function c22020740.condition(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
+	return Duel.GetLP(tp)<Duel.GetLP(1-tp)
+end
 function c22020740.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -75,11 +78,11 @@ function c22020740.atop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("诚字大旗不灭......挥刀，前进。挥刀......！前进......！我便是！新选组！")
 	Duel.RegisterEffect(e1,tp)
 end
-function c22020740.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)<Duel.GetLP(1-tp)
-end
 function c22020740.atkval(e,c)
-	return math.abs(Duel.GetLP(0)-Duel.GetLP(1))
+	local lps=Duel.GetLP(c:GetControler())
+	local lpo=Duel.GetLP(1-c:GetControler())
+	if lps>=lpo then return 0
+	else return lpo-lps end
 end
 function c22020740.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()

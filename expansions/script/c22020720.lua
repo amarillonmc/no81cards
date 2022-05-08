@@ -9,7 +9,6 @@ function c22020720.initial_effect(c)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(c22020720.condition)
 	e1:SetValue(c22020720.atkval)
 	c:RegisterEffect(e1)
 	--destroy
@@ -39,11 +38,11 @@ function c22020720.initial_effect(c)
 	e3:SetOperation(c22020720.desop)
 	c:RegisterEffect(e3)
 end
-function c22020720.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)<Duel.GetLP(1-tp)
-end
 function c22020720.atkval(e,c)
-	return math.abs(Duel.GetLP(0)-Duel.GetLP(1))
+	local lps=Duel.GetLP(c:GetControler())
+	local lpo=Duel.GetLP(1-c:GetControler())
+	if lps>=lpo then return 0
+	else return lpo-lps end
 end
 function c22020720.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp

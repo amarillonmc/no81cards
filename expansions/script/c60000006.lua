@@ -15,6 +15,7 @@ function c60000006.initial_effect(c)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	c:RegisterEffect(e2)
 end
+aux.xyz_number[60000006]=1
 function c60000006.ovfilter(c)
 	return c:IsFaceup()
 	and c:IsType(TYPE_LINK)

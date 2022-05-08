@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 end
 --e1
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>5 and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>5 end
 	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,1-tp,6)
 	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,6)
 end

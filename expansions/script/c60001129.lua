@@ -46,8 +46,12 @@ function Color_Song.AddCount(c)
 	end
 end
 function Color_Song.AddCount_Op(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,m-1)>=4 then extraCount[1+tp]=extraCount[1+tp]+1 end
-	if Duel.GetFlagEffect(1-tp,m-1)>=4 then extraCount[tp]=extraCount[tp]+1 end
+	if Duel.GetFlagEffect(tp,m-1)>=4 then Color_Song.AddC(tp) end
+	if Duel.GetFlagEffect(1-tp,m-1)>=4 then Color_Song.AddC(1-tp) end
+end
+function Color_Song.AddC(tp)
+	if not Color_Song.AddCount_check then return end
+	extraCount[1+tp]=extraCount[1+tp]+1
 end
 --适用---------------------------------------------------------
 function Color_Song.UseEffect(e,tp)
@@ -318,7 +322,7 @@ end
 --Memory
 function Color_Song.Memory_Op(e,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local tc=Duel.SelectMatchingCard(tp,Card.IsControlerCanBeChanged,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
 	if tc then
 		Duel.GetControl(tc,tp,PHASE_END,2)
 	end
@@ -362,6 +366,7 @@ function Color_Song.Hunter_drcon1(e,tp,eg,ep,ev,re,r,rp)
 end
 function Color_Song.Hunter_drop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,1,REASON_EFFECT)
+	Duel.Draw(1-tp,1,REASON_EFFECT)
 end
 function Color_Song.Hunter_regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Color_Song.Hunter_drFilter,1,nil,1-tp)
@@ -377,6 +382,7 @@ function Color_Song.Hunter_drop2(e,tp,eg,ep,ev,re,r,rp)
 	local n=Duel.GetFlagEffect(tp,m-3)
 	Duel.ResetFlagEffect(tp,m-3)
 	Duel.Draw(tp,n,REASON_EFFECT)
+	Duel.Draw(1-tp,n,REASON_EFFECT)
 end
 function Color_Song.Hunter_Op(e,tp)
 	local c=e:GetHandler()
@@ -431,6 +437,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.con1)
 	e1:SetTarget(cm.tg1)
 	e1:SetOperation(cm.op1)
@@ -440,6 +447,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,m)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(cm.tg2)
 	e2:SetOperation(cm.op2)

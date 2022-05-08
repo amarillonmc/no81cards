@@ -75,7 +75,7 @@ function cm.rfilter1(c,code)
 	return code==0 or c:IsCode(code)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.rfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_MZONE) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.rfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
 	local code=0
 	local g1=Duel.GetMatchingGroup(cm.rfilter,tp,LOCATION_MZONE,0,e:GetHandler())
 	local g2=Duel.GetMatchingGroup(cm.rfilter,tp,LOCATION_HAND,0,nil)

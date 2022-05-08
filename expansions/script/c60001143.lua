@@ -94,7 +94,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:Select(tp,1,1,nil)
 		if Duel.SendtoGrave(sg,REASON_EFFECT)>0 then
 			Duel.BreakEffect()
-			extraCount[1+tp]=extraCount[1+tp]+1
+			Color_Song.AddC(tp)
 		end
 	end
 	Color_Song.UseEffect(e,tp)
@@ -110,8 +110,9 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetCurrentChain()
 	if ct<2 then return end
 	if not Duel.IsPlayerCanDraw(tp,1) or not Duel.IsPlayerCanDraw(1-tp,1) then return false end
-	local te,p,loc=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
-	return te and te:GetHandler().isColorSong and loc==LOCATION_ONFIELD and p==tp and rp==1-tp
+	local te,p=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+	local tc=te:GetHandler()
+	return te and tc.isColorSong and tc:IsLocation(LOCATION_ONFIELD) and p==tp and rp==1-tp
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()

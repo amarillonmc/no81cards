@@ -40,7 +40,7 @@ function cm.initial_effect(c)
 		ge0:SetCondition(cm.spcon)
 		ge0:SetTarget(cm.sptg)
 		ge0:SetOperation(cm.spop)
-		Duel.RegisterEffect(ge0,0)
+		--Duel.RegisterEffect(ge0,0)
 	end
 end
 function cm.effcon(e,tp,eg,ep,ev,re,r,rp)
@@ -48,6 +48,16 @@ function cm.effcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+	local e0=Effect.CreateEffect(e:GetHandler())
+	e0:SetDescription(aux.Stringid(m,0))
+	e0:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e0:SetProperty(EFFECT_FLAG_DELAY)
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e0:SetCode(EVENT_LEAVE_GRAVE)
+	e0:SetCondition(cm.spcon)
+	e0:SetTarget(cm.sptg)
+	e0:SetOperation(cm.spop)
+	Duel.RegisterEffect(e0,tp)
 end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()
@@ -91,5 +101,20 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 			sc:CompleteProcedure()
 		end
+	end
+end
+function cm.xyzfilter(c)
+	return c:IsXyzSummonable(nil) and c:IsSetCard(0x172)
+end
+function cm.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(cm.xyzfilter,tp,LOCATION_EXTRA,0,nil)
+	if #g>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tg=g:Select(tp,1,1,nil)
+		Duel.XyzSummon(tp,tg:GetFirst(),nil)
 	end
 end

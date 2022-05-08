@@ -41,18 +41,22 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SSet(tp,tc)
 	if Duel.IsExistingMatchingCard(cm.ckfilter,tp,0,LOCATION_ONFIELD,1,nil) then
-	local e1=Effect.CreateEffect(e:GetHandler())
+			 if tc:IsType(TYPE_TRAP) then 
+				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e1)
+			end
+			if tc:IsType(TYPE_QUICKPLAY) then 
 				local e2=Effect.CreateEffect(e:GetHandler())
 				e2:SetType(EFFECT_TYPE_SINGLE)
 				e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 				e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e2)
+			end
 	end
 end
 

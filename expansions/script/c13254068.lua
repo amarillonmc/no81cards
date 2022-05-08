@@ -39,7 +39,7 @@ function cm.ffilter(c,fc,sub,mg,sg)
 		g=sg:Clone()
 		g:AddCard(c)
 	end
-	return tama.tamas_isExistElements(c,el) and (not sg or tama.tamas_isCanSelectElementsForAbove(g,el)
+	return tama.tamas_isExistElements(c,el) and (not sg or tama.tamas_isCanSelectElementsForAbove(g,el))
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)

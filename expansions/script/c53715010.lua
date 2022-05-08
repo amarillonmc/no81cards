@@ -19,6 +19,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsDestructable(e) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_CARD,0,m)
 		if Duel.Destroy(e:GetHandler(),REASON_EFFECT)~=0 and Duel.IsChainDisablable(ev) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then Duel.NegateEffect(ev) end
-		SNNM.HTFPlacePZone(e:GetHandler(),2,LOCATION_EXTRA,1,EVENT_PHASE+PHASE_END,m)
+		SNNM.HTFPlacePZone(e:GetHandler(),2,LOCATION_EXTRA,1,EVENT_PHASE+PHASE_END,m,tp)
 	end
 end
