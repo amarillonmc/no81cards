@@ -167,7 +167,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetRange(LOCATION_ONFIELD)
 		e3:SetCode(EFFECT_IMMUNE_EFFECT)
 		e3:SetCondition(cm.econ)
-		e3:SetValue(cm.efilter)
+		e3:SetValue(cm.eval)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
 	end

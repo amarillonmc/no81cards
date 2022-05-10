@@ -7,8 +7,8 @@ function c22020780.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_SPSUMMON)
 	e1:SetCountLimit(1,22020780+EFFECT_COUNT_CODE_OATH)
-	e1:SetCost(c22020780.cost)
 	e1:SetCondition(c22020780.condition)
+	e1:SetCost(c22020780.cost)
 	e1:SetTarget(c22020780.target)
 	e1:SetOperation(c22020780.activate)
 	c:RegisterEffect(e1)
@@ -25,17 +25,19 @@ function c22020780.filter(c)
 	return c:IsCode(22020770) and c:IsFaceup()
 end
 function c22020780.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22020780.filter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	end
 end
-function c22020780.operation(e,tp,eg,ep,ev,re,r,rp)
+function c22020780.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.NegateSummon(eg)
-	Duel.SelectOption(tp,aux.Stringid(22020780,1))
 	Duel.Destroy(eg,REASON_EFFECT)
-	local g=Duel.SelectMatchingCard(tp,c22020780.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.GetMatchingGroup(c22020780.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if g:GetCount()>0 then
-		Duel.BreakEffect()
+		Duel.SelectOption(tp,aux.Stringid(22020780,1))
 		Duel.SelectOption(tp,aux.Stringid(22020780,2))
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

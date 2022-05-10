@@ -67,14 +67,14 @@ function cm.filter(c,sp)
 end
 function cm.drcon1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil,1-tp)
-		and (not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS))
+		and (not re or (not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS)))
 end
 function cm.drop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.DiscardDeck(tp,1,REASON_EFFECT)
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil,1-tp)
-		and re:IsHasType(EFFECT_TYPE_ACTIONS) and not re:IsHasType(EFFECT_TYPE_CONTINUOUS)
+		and re and re:IsHasType(EFFECT_TYPE_ACTIONS) and not re:IsHasType(EFFECT_TYPE_CONTINUOUS)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)

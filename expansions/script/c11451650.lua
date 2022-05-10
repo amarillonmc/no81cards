@@ -128,7 +128,7 @@ end
 function cm.stcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local flag=c:GetFlagEffectLabel(m+1)
-	return re:GetHandler()~=c and tp==c:GetOwner() --and (not flag or flag<3)
+	return re:GetHandler()~=c and tp==c:GetOwner() and (not flag or flag<3)
 end
 function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

@@ -69,6 +69,7 @@ function c67200320.target(event)
 			local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
 			Duel.GetCurrentChain=_GetCurrentChain
 			Duel.SendtoHand(g,nil,REASON_COST)
+			Duel.ConfirmCards(1-tp,g)
 			e:SetProperty(te:GetProperty())
 			local tg=te:GetTarget()
 			if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end

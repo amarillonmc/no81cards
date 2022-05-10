@@ -146,7 +146,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 				local sg=g1:Select(tp,1,ct1,nil)
 				Duel.DisableShuffleCheck()
-				Duel.SSet(tp,sg:GetFirst())
+				Duel.SSet(tp,sg)
 			end
 		end
 		broken=true

@@ -124,7 +124,7 @@ function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_GRAVE,0,nil)
-	local g1=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,tama.tamas_sumElements(g),e,tp)
+	local g1=Duel.GetMatchingGroup(cm.spfilter1,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,tama.tamas_sumElements(g),e,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tg=g1:Select(tp,1,1,nil)
 	local tc=tg:GetFirst()

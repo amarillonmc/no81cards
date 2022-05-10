@@ -3,7 +3,7 @@ local m=64800134
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(nil),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--decrease atk/def
 	local e2=Effect.CreateEffect(c)

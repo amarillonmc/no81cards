@@ -51,12 +51,25 @@ function cm.remcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetReset(RESET_PHASE+PHASE_END)
+		if Duel.GetCurrentPhase()==PHASE_END then
+			e1:SetReset(RESET_PHASE+PHASE_END,2)
+			e1:SetValue(Duel.GetTurnCount())
+			rc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
+		else
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			e1:SetValue(0)
+			rc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		end
 		e1:SetLabelObject(rc)
 		e1:SetCountLimit(1)
+		e1:SetCondition(cm.retcon)
 		e1:SetOperation(cm.retop)
 		Duel.RegisterEffect(e1,tp)
 	end
+end
+function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetTurnCount()==e:GetValue() then return false end
+	return e:GetLabelObject():GetFlagEffect(m)~=0
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())

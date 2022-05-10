@@ -25,7 +25,6 @@ function c22020820.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_EQUIP)
 	e3:SetCode(EFFECT_UPDATE_ATTACK)
 	e3:SetValue(2000)
-	e3:SetCondition(aux.IsUnionState)
 	c:RegisterEffect(e3)
 	--attack all
 	local e4=Effect.CreateEffect(c)
