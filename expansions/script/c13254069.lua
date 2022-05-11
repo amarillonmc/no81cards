@@ -109,7 +109,7 @@ function cm.tdfilter(c)
 end
 function cm.spfilter1(c,el,e,tp)
 	return tama.tamas_isExistElement(c,TAMA_ELEMENT_LIFE)
-		and c:IsCanBeSpecialSummoned(e,0,tp,true,true) and (((not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)) and tama.tamas_isAllElementsNotAbove(tama.tamas_getElements(c),el)
+		and c:IsCanBeSpecialSummoned(e,0,tp,true,true) and c:IsType(TYPE_MONSTER) and (((not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)) and tama.tamas_isAllElementsNotAbove(tama.tamas_getElements(c),el)
 end
 --[[
 function cm.spfilter1(c,el,e,tp)
