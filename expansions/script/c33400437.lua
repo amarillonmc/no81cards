@@ -72,7 +72,7 @@ function cm.cfilter2(c)
 	return c:IsFaceup() and c:IsSetCard(0x6343)  and c:IsType(TYPE_SPELL+TYPE_EQUIP)
 end
 function cm.atkval2(e,c) 
-	return Duel.GetMatchingGroupCount(cm.cfilter2,tp,LOCATION_ONFIELD,0,nil)
+	return Duel.GetMatchingGroupCount(cm.cfilter2,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,nil)
 end
 
 function cm.con3(e,tp,eg,ep,ev,re,r,rp)

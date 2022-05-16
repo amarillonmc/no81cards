@@ -43,8 +43,30 @@ function cm.initial_effect(c)
 	e7:SetOperation(cm.spop)
 	c:RegisterEffect(e7)
 end
-function cm.fselect(g,ft,res)
+function cm.bannedfselect(g,ft,res)
 	local sel=g:IsExists(function(c)return c:IsLocation(LOCATION_SZONE) and c:GetSequence()~=5 and c:IsFaceup()end,1,nil) or ft>0
+	return sel and ((res and #g~=2 and (g:IsExists(function(c)return bit.band(c:GetType(),0x20002)==0x20002 and c:IsSetCard(0x353b)end,1,nil) or #g==3)) or (not res and #g==3))
+end
+function cm.bannedcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local costg=Duel.GetMatchingGroup(function(c)return c:IsType(TYPE_CONTINUOUS) and c:IsReleasable()end,tp,LOCATION_ONFIELD,0,nil)
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	local res=Duel.GetTurnPlayer()==1-tp and Duel.GetCurrentPhase()==PHASE_END
+	if chk==0 then return costg:CheckSubGroup(cm.bannedfselect,1,3,ft,res) and not e:GetHandler():IsForbidden() end
+	Duel.ConfirmCards(1-tp,e:GetHandler())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=costg:SelectSubGroup(tp,cm.bannedfselect,false,1,3,ft,res)
+	local cg=g:Filter(Card.IsFacedown,nil)
+	if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
+	local list={}
+	for tc in aux.Next(g) do if tc:IsLocation(LOCATION_SZONE) and tc:IsFacedown() and tc:GetSequence()~=5 then table.insert(list,tc:GetSequence()) end end
+	if #list>0 then
+		table.insert(list,5)
+		e:SetLabel(table.unpack(list))
+	else e:SetLabel(5) end
+	Duel.Release(g,REASON_EFFECT)
+end
+function cm.fselect(g,ft,res)
+	local sel=ft>0
 	return sel and ((res and #g~=2 and (g:IsExists(function(c)return bit.band(c:GetType(),0x20002)==0x20002 and c:IsSetCard(0x353b)end,1,nil) or #g==3)) or (not res and #g==3))
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)

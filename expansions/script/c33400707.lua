@@ -171,7 +171,8 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.setfilter(c)
-	return c:IsFaceup() and c:IsCanTurnSet()
+	return c:IsFaceup() and (c:IsType(TYPE_MONSTER) and c:IsCanTurnSet())
+	and (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable())
 end
 function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	 if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end

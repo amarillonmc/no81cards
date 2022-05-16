@@ -38,10 +38,11 @@ end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
  if not Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) then return end 
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
+	local tg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
+	local tc=tg:GetFirst()
 	Duel.SSet(tp,tc)
 	if Duel.IsExistingMatchingCard(cm.ckfilter,tp,0,LOCATION_ONFIELD,1,nil) then
-			 if tc:IsType(TYPE_TRAP) then 
+			 if  tc:IsType(TYPE_TRAP) then 
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)

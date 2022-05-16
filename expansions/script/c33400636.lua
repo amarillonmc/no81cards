@@ -44,6 +44,7 @@ function cm.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCountLimit(2,m)
 	e4:SetRange(LOCATION_MZONE)
+	e4:SetCondition(cm.con)
 	e4:SetCost(cm.discost)
 	e4:SetTarget(cm.target)
 	e4:SetOperation(cm.activate)
@@ -55,6 +56,7 @@ function cm.initial_effect(c)
 	e5:SetProperty(EFFECT_FLAG_DELAY)
 	e5:SetCountLimit(2,m)
 	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(cm.con)
 	e5:SetCost(cm.discost)
 	e5:SetTarget(cm.target)
 	e5:SetOperation(cm.activate)
@@ -66,6 +68,7 @@ function cm.initial_effect(c)
 	e6:SetProperty(EFFECT_FLAG_DELAY)
 	e6:SetCountLimit(2,m)
 	e6:SetRange(LOCATION_MZONE)
+	e6:SetCondition(cm.con)
 	e6:SetCost(cm.discost)
 	e6:SetTarget(cm.target)
 	e6:SetOperation(cm.activate)
@@ -117,6 +120,9 @@ function cm.aclimit(e,re,tp)
 	return re:GetActivateLocation()==LOCATION_REMOVED
 end
 
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return not eg:IsContains(e:GetHandler())
+end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=0
 	if e:GetHandler():GetFlagEffect(33401301)>0 then ft=1 end
@@ -125,14 +131,15 @@ function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 	end
 end
-function cm.filter(c)
-	return  c:IsAbleToRemove()
+function cm.filter(c,mc)
+	return  c:IsAbleToRemove() 
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return eg:IsExists(cm.filter,1,nil) end
+	if chk==0 then return eg:IsExists(cm.filter,1,nil,e:GetHandler()) end
 	local g=eg:Filter(cm.filter,nil)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE)
 end
 function cm.efilter(c,e)
 	return  c:IsRelateToEffect(e)

@@ -53,10 +53,10 @@ function c33400411.ovfilter(c)
 	return c:IsFaceup() 
 end
 function c33400411.refilter1(c)
-	return c:IsXyzType(TYPE_XYZ) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5342) 
+	return c:IsXyzType(TYPE_XYZ) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5342) and c:IsSetCard(0x341) and c:IsAbleToRemoveAsCost()
 end
 function c33400411.refilter2(c)
-	return c:IsXyzType(TYPE_XYZ) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x341)
+	return c:IsXyzType(TYPE_XYZ) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x341) and c:IsAbleToRemoveAsCost()
 end
 function c33400411.check(g)
 	return   g:IsExists(Card.IsSetCard,1,nil,0x5342) 
@@ -64,8 +64,7 @@ end
 function c33400411.xyzop(e,tp,chk,c)
 	local g1nm=Duel.GetMatchingGroupCount(c33400411.refilter1,tp,LOCATION_GRAVE,0,nil)
 	local g2nm=Duel.GetMatchingGroupCount(c33400411.refilter2,tp,LOCATION_GRAVE,0,nil)
-	local cnm=g2nm-g1nm
-	if chk==0 then return cnm>=3 or (g1nm>=1 and g2nm>=3) end
+	if chk==0 then return g1nm>=1 and g2nm>=3 end
 	local g=Duel.GetMatchingGroup(c33400411.refilter2,tp,LOCATION_GRAVE,0,nil)
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g1=g:SelectSubGroup(tp,c33400411.check,false,3,99)	 

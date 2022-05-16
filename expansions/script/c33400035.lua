@@ -66,13 +66,13 @@ function c33400035.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x341) 
 end
 function c33400035.refilter1(c)
-	return c:IsXyzType(TYPE_XYZ) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3341) 
+	return c:IsXyzType(TYPE_XYZ) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3341)  and c:IsAbleToRemoveAsCost()
 end
 function c33400035.refilter2(c)
-	return c:IsXyzType(TYPE_XYZ) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6342) 
+	return c:IsXyzType(TYPE_XYZ) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6342)  and c:IsAbleToRemoveAsCost()
 end
 function c33400035.refilter3(c)
-	return c:IsXyzType(TYPE_XYZ) and c:IsType(TYPE_MONSTER) 
+	return c:IsXyzType(TYPE_XYZ) and c:IsType(TYPE_MONSTER)  and c:IsAbleToRemoveAsCost()
 end
 function c33400035.check(g)
 	return   g:IsExists(Card.IsSetCard,1,nil,0x3341) and g:IsExists(Card.IsSetCard,1,nil,0x6342)
@@ -81,9 +81,7 @@ function c33400035.xyzop(e,tp,chk,c)
 	local g1nm=Duel.GetMatchingGroupCount(c33400035.refilter1,tp,LOCATION_GRAVE,0,nil)
 	local g2nm=Duel.GetMatchingGroupCount(c33400035.refilter2,tp,LOCATION_GRAVE,0,nil)
 	local g3nm=Duel.GetMatchingGroupCount(c33400035.refilter3,tp,LOCATION_GRAVE,0,nil)
-	local cnm=g1nm+g2nm
-	local cnm2=g3nm-cnm
-	if chk==0 then return cnm>=3 or (g1nm==1 and g2nm==1 and  cnm2>=1) end
+	if chk==0 then return g1nm>=1 and g2nm>=1 and  g3nm>=3 end
 	local g=Duel.GetMatchingGroup(c33400035.refilter3,tp,LOCATION_GRAVE,0,nil)
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g1=g:SelectSubGroup(tp,c33400035.check,false,3,99)	 
@@ -151,7 +149,7 @@ end
 function c33400035.matg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c33400035.cfilter1,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectTarget(tp,c33400035.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,c33400035.cfilter1,tp,LOCATION_GRAVE,0,1,1,nil)
 end
 function c33400035.maop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -203,13 +201,13 @@ function c33400035.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 	token:CancelToGrave()   
 	if Duel.Equip(tp,token,ec,false) then 
 			--immune
-			local e4=Effect.CreateEffect(ec)
+			local e4=Effect.CreateEffect(token)
 			e4:SetType(EFFECT_TYPE_EQUIP)
 			e4:SetCode(EFFECT_IMMUNE_EFFECT)
 			e4:SetValue(c33400035.efilter1)
 			token:RegisterEffect(e4)
 			--indes
-			local e5=Effect.CreateEffect(ec)
+			local e5=Effect.CreateEffect(token)
 			e5:SetType(EFFECT_TYPE_EQUIP)
 			e5:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
 			e5:SetValue(c33400035.valcon)
