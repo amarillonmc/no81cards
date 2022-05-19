@@ -138,7 +138,9 @@ function cm.lcheck(g)
 	return g:IsExists(Card.IsRace,1,nil,RACE_BEASTWARRIOR)
 end
 function cm.tgfilter(c,e,tp)
-	local zone=1<<aux.GetColumn(c,tp)
+	local line=aux.GetColumn(c,tp)
+	if line==nil then return end
+	local zone=1<<line
 	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp,zone)
 end
 function cm.spfilter(c,e,tp,zone)
@@ -163,7 +165,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
 		e3:SetRange(LOCATION_ONFIELD)
 		e3:SetCode(EFFECT_IMMUNE_EFFECT)
 		e3:SetCondition(cm.econ)

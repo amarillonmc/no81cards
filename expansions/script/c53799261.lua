@@ -133,17 +133,20 @@ end
 function cm.posac(g,e,tp)
 	local ac,og=0,Group.CreateGroup()
 	for tc in aux.Next(g) do
-		if tc:IsFaceup() and tc:IsCanTurnSet() then
+		if tc:IsFaceup() and tc:IsCanTurnSet() and not tc:IsLocation(LOCATION_PZONE) then
 			if tc:IsLocation(LOCATION_MZONE) then
-				local pos1=Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+				Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+				local pos1=Duel.GetOperatedGroup():GetCount()
 				ac=ac+pos1
 			else
-				local pos2=Duel.ChangePosition(tc,POS_FACEDOWN)
+				Duel.ChangePosition(tc,POS_FACEDOWN)
+				local pos2=Duel.GetOperatedGroup():GetCount()
 				Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 				ac=ac+pos2
 			end
 		else
-			local tg=Duel.SendtoGrave(tc,REASON_EFFECT)
+			Duel.SendtoGrave(tc,REASON_EFFECT)
+			local tg=Duel.GetOperatedGroup():GetCount()
 			ac=ac+tg
 		end
 		if ac>0 then og:AddCard(tc) end

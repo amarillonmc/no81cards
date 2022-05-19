@@ -84,18 +84,20 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if g1:GetCount()>0 and g1:IsExists(cm.rfilter1,1,nil,code) and ((g2:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(m,2))) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local sg1=g1:FilterSelect(tp,cm.rfilter1,1,1,nil,code)
+		if code==0 then code=sg1:GetFirst():GetCode() end
 		Duel.HintSelection(sg1)
 		sg:Merge(sg1)
 	end
 	if g2:GetCount()>0 and g2:IsExists(cm.rfilter1,1,nil,code) and ((sg:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(m,3))) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local sg2=g2:FilterSelect(tp,cm.rfilter1,1,1,nil,code)
+		if code==0 then code=sg1:GetFirst():GetCode() end
 		Duel.HintSelection(sg2)
 		sg:Merge(sg2)
 	end
 	if g3:GetCount()>0 and g3:IsExists(cm.rfilter1,1,nil,code) and (sg:GetCount()==0 or Duel.SelectYesNo(tp,aux.Stringid(m,4))) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg3=g2:FilterSelect(tp,cm.rfilter1,1,1,nil,code)
+		local sg3=g3:FilterSelect(tp,cm.rfilter1,1,1,nil,code)
 		Duel.HintSelection(sg3)
 		sg:Merge(sg3)
 	end
