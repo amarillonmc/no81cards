@@ -1,6 +1,7 @@
 --飞球的延续
 local m=13254066
 local cm=_G["c"..m]
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -23,7 +24,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.fselect(g,tp)
-	return g:IsExists(cm.tdfilter,1,nil) and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tama.tamas_sumElements(g))
+	return g:IsExists(cm.tdfilter,1,nil) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,tama.tamas_sumElements(g))
 end
 function cm.tdfilter(c)
 	return #tama.tamas_getElements(c)>0 and c:IsAbleToDeck()
