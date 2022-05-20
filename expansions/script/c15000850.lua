@@ -31,6 +31,7 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetHintTiming(0,TIMING_MAIN_END)
 	e3:SetCountLimit(1,15000850)
+	e3:SetCondition(cm.spcon)
 	e3:SetCost(cm.spcost)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
@@ -65,6 +66,9 @@ function cm.eqspfilter(c,sc,e,tp)
 end
 function cm.fieldfilter(c)
 	return not (c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:IsSetCard(0x9f3c))
+end
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
@@ -110,6 +114,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 					e2:SetCode(EFFECT_DISABLE_EFFECT)
 					sc:RegisterEffect(e2)
 					Duel.SpecialSummonComplete()
+					sc:CompleteProcedure()
 					Duel.Equip(tp,tc,sc)
 				end
 			end
