@@ -93,12 +93,14 @@ function c25000400.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c25000400.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT,LOCATION_DECK)>0 then
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.DisableShuffleCheck()
+		Duel.Destroy(eg,REASON_EFFECT,LOCATION_DECK)
 		local tdg=Duel.GetOperatedGroup()
 		local tdc=tdg:GetFirst()
-		if not tdc:IsAbleToDeck() then return false end
-		tdc:CancelToGrave()
-		Duel.SendtoDeck(tdc,tp,2,REASON_EFFECT) 
+		if tdc:IsLocation(LOCATION_EXTRA) then Duel.Remove(tdc,POS_FACEDOWN,0) end
+		Duel.SendtoDeck(tdc,tp,2,REASON_EFFECT)
+		if tdc:IsLocation(LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 	end
 end
 
