@@ -186,9 +186,74 @@ function cm.regop3(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.impcon(e,tp,eg,ep,ev,re,r,rp) --rp==1-tp and
 	local c=e:GetHandler()
-	return e:GetLabelObject():GetLabel()==1
+	return c:IsPreviousLocation(LOCATION_ONFIELD) or e:GetLabelObject():GetLabel()==1 
 end
 function cm.imptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return true end
+	local sg=Group.FromCards(c)
+	if e:GetLabelObject():GetLabel()==1 then
+		local rc=c:GetReasonCard()
+		local re=c:GetReasonEffect()
+		if not rc and re then
+			local sc=re:GetHandler()
+			if not rc then
+				sg:AddCard(sc)
+			end
+		end 
+		if rc then 
+			sg:AddCard(rc)
+		end
+	else
+		e:GetLabelObject():SetLabel(0)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,#sg,0,0)
+end
+function cm.impop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local sc=Duel.GetFirstTarget()
+	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
+	if  c:IsRelateToEffect(e) then
+		if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0  then
+			if e:GetLabelObject():GetLabel()==1 then
+				Duel.RegisterFlagEffect(tp,30015000,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
+				Duel.RegisterFlagEffect(tp,30015500,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1) 
+				Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,3))
+				Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,3))
+			else
+				Duel.RegisterFlagEffect(tp,30015000,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
+			end
+			local n=Duel.GetFlagEffect(tp,30015000)
+			local n1=Duel.GetFlagEffect(tp,30015500)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetCode(EFFECT_DRAW_COUNT)
+			e1:SetTargetRange(1,0)
+			e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
+			e1:SetValue(n+n1+1)
+			Duel.RegisterEffect(e1,tp)
+		end   
+	end
+	if sc and sc:IsRelateToEffect(e) 
+		and sc:GetOwner()==1-tp 
+		and not sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
+		and sc:IsAbleToRemove(tp,POS_FACEDOWN) then
+			Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)
+	end 
+end
+----neg----
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local de,dp=Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON,CHAININFO_DISABLE_PLAYER)
+	return rp==tp and de and dp==1-tp and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+		and e:GetHandler()==re:GetHandler() and e:GetHandler():GetReasonEffect()==de
+end
+function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c==re:GetHandler() and c:GetReasonEffect()==nil
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	local sg=Group.FromCards(c)
@@ -203,69 +268,36 @@ function cm.imptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if rc then 
 		sg:AddCard(rc)
 	end
-	if sg:GetCount()>=2 then
-		c:RegisterFlagEffect(m+1,RESET_PHASE+PHASE_END,0,0)
-	end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,1,0,0)
 end
-function cm.impop(e,tp,eg,ep,ev,re,r,rp)
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local sc=Duel.GetFirstTarget()
 	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
 	if  c:IsRelateToEffect(e) then
-		Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)   
-	end
-	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() then
-		Duel.RegisterFlagEffect(tp,30015000,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
-		local n=Duel.GetFlagEffect(tp,30015000)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetCode(EFFECT_DRAW_COUNT)
-		e1:SetTargetRange(1,0)
-		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
-		e1:SetValue(n+1)
-		Duel.RegisterEffect(e1,tp)
-	end
-	if c:GetFlagEffect(m+1)>0 and c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
-		e1:SetOperation(cm.ruinsop)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-		Card.ResetFlagEffect(c,m+1)
-	end
-end
-function cm.drmfilter(c)
-	return c:IsFacedown() and c:IsAbleToHand()
-end
-function cm.drmfilter1(c)
-	return c:IsFacedown() and c:IsAbleToGrave()
-end
-function cm.ruinsop(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(cm.drmfilter1,tp,LOCATION_REMOVED,0,nil)
-	if mg:GetCount()~=0 then
-		Duel.Hint(HINT_CARD,0,m)
-		local sg=mg:RandomSelect(tp,1)
-		local tc=sg:GetFirst() 
-		if tc then
-			Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
+		if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0  then
+			Duel.RegisterFlagEffect(tp,30015000,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
+			Duel.RegisterFlagEffect(tp,30015500,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1) 
+			Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,3))
+			Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,3))
+			local n=Duel.GetFlagEffect(tp,30015000)
+			local n1=Duel.GetFlagEffect(tp,30015500)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetCode(EFFECT_DRAW_COUNT)
+			e1:SetTargetRange(1,0)
+			e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
+			e1:SetValue(n+n1+1)
+			Duel.RegisterEffect(e1,tp)
 		end   
-		if rk.check(tc,"Overuins") 
-			and tc:IsLocation(LOCATION_GRAVE)  then
-			if tc:IsType(TYPE_SPELL+TYPE_TRAP) then
-				if tc:IsSSetable()  then
-					Duel.SSet(tp,tc)
-				else
-					Duel.SendtoHand(tc,nil,REASON_EFFECT)
-					Duel.ConfirmCards(1-tp,tc)
-				end
-			else
-				Duel.SendtoHand(tc,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,tc)
-			end
-		end
 	end
+	if sc and sc:IsRelateToEffect(e) 
+		and sc:GetOwner()==1-tp 
+		and not sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
+		and sc:IsAbleToRemove(tp,POS_FACEDOWN) then
+		Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)
+	end 
 end
+----neg----

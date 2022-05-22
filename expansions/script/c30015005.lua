@@ -61,7 +61,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 end 
 --Effect 1
 function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsFacedown,c:GetControler(),LOCATION_REMOVED,LOCATION_REMOVED,nil)*300
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,c:GetControler(),LOCATION_REMOVED,LOCATION_REMOVED,nil)*100
 end
 --Effect 2
 function cm.con(e,tp,eg,ep,ev,re,r,rp)

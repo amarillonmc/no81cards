@@ -108,7 +108,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		end   
 		if tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA) then
 			if rk.check(tc,"Overuins") then
-				if tc:IsSSetable() and c:IsType(TYPE_SPELL+TYPE_TRAP) then
+				if tc:IsSSetable() and tc:IsType(TYPE_SPELL+TYPE_TRAP) then
 					Duel.SSet(tp,tc)
 				else
 					Duel.ShuffleHand(tp)
