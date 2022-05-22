@@ -36,7 +36,8 @@ function cm.filter(c)
 		or c:GetType()==TYPE_SPELL+TYPE_QUICKPLAY
 		or c:GetType()==TYPE_SPELL
 		or c:GetType()==TYPE_TRAP)
-		c:IsAbleToGraveAsCost() and c:CheckActivateEffect(false,true,false)~=nil
+		and c:IsAbleToGraveAsCost() 
+		and c:CheckActivateEffect(false,true,false)~=nil
 end
 function cm.cfilter(c)
 	return c:GetSequence()<5 and not c:IsLocation(LOCATION_FZONE)
@@ -51,9 +52,8 @@ function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()==0 then return false end
 		e:SetLabel(0)
-		return  c:IsAbleToGraveAsCost()
-			and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,c)
-		and #g1>=5) end
+		return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,c) and c:IsAbleToGraveAsCost() and #g1==5 
+	end
 	e:SetLabel(0)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND,0,1,1,c)
@@ -71,7 +71,7 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_SZONE,0,nil)
-	if not #g>=5 then return end
+	if  g:GetCount()<5 then return end
 	e:SetLabelObject(te:GetLabelObject())
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
@@ -79,7 +79,7 @@ end
 --Effect 2
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_SZONE,0,nil)
-	return #g>=5
+	return #g==5
 end
 function cm.rlfilter(c,tp)
 	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
@@ -107,3 +107,4 @@ end
 --Effect 3 
 --Effect 4 
 --Effect 5   
+
