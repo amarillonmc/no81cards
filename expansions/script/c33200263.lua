@@ -41,7 +41,9 @@ function c33200263.thfilter(c)
 	return c:IsSetCard(0x326) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c33200263.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c33200263.thfilter,tp,LOCATION_DECK,0,3,nil) end
+	if chk==0 then 
+		local g=Duel.GetMatchingGroup(c33200263.thfilter,tp,LOCATION_DECK,0,nil)
+		return g:GetClassCount(Card.GetCode)>2 and Duel.IsExistingMatchingCard(c33200263.thfilter,tp,LOCATION_DECK,0,3,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c33200263.thop(e,tp,eg,ep,ev,re,r,rp)
