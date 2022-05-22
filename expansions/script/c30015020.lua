@@ -35,9 +35,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e13=Effect.CreateEffect(c)
 	e13:SetCategory(CATEGORY_TOGRAVE+CATEGORY_GRAVE_ACTION+CATEGORY_REMOVE)
-	e13:SetType(EFFECT_TYPE_QUICK_O)
-	e13:SetCode(EVENT_FREE_CHAIN)
+	e13:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e13:SetRange(LOCATION_MZONE)
+	e13:SetCode(EVENT_PHASE+PHASE_END)
 	e13:SetCountLimit(1)
 	e13:SetCondition(cm.togcon1)
 	e13:SetTarget(cm.togtg)
@@ -61,21 +61,10 @@ function cm.initial_effect(c)
 	e21:SetTarget(cm.sptg)
 	e21:SetOperation(cm.spop)
 	c:RegisterEffect(e21)
-	local e22=Effect.CreateEffect(c)
-	e22:SetDescription(aux.Stringid(30015500,3))
-	e22:SetCategory(CATEGORY_REMOVE+CATEGORY_RECOVER)
-	e22:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e22:SetProperty(EFFECT_FLAG_DELAY)
-	e22:SetCode(EVENT_LEAVE_FIELD)
-	e22:SetLabelObject(e20)
-	e22:SetCondition(cm.spcon1)
-	e22:SetTarget(cm.sptg1)
-	e22:SetOperation(cm.spop1)
-	c:RegisterEffect(e22)
 end
 --summon proc
 function cm.otconfilter(c)
-	return c:IsAbleToRemoveAsCost(POS_FACEDOWN) and not c:IsType(TYPE_TOKEN)
+	return c:IsAbleToRemoveAsCost(POS_FACEDOWN) 
 end
 function cm.otcon(e,c,minc)
 	if c==nil then return true end
@@ -101,7 +90,7 @@ function cm.otop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 --Effect 1
 function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsFacedown,c:GetControler(),LOCATION_REMOVED,LOCATION_REMOVED,nil)*700
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,c:GetControler(),LOCATION_REMOVED,LOCATION_REMOVED,nil)*200
 end
 --Effect 2
 function cm.togcon(e,tp,eg,ep,ev,re,r,rp)
@@ -117,7 +106,8 @@ end
 function cm.togtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,LOCATION_GRAVE,0,nil,tp)
 	local g1=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_GRAVE,nil,tp)
-	if chk==0 then return g:GetCount()+g1:GetCount()>=4 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return g:GetCount()+g1:GetCount()>=4 
+		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,PLAYER_ALL,LOCATION_ONFIELD)
@@ -126,7 +116,8 @@ function cm.togop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,LOCATION_GRAVE,0,nil,tp)
 	local g1=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_GRAVE,nil,tp)
 	local g2=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if g:GetCount()+g1:GetCount()>=4 and #g2~=0 then
+	local attk=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
+	if g:GetCount()+g1:GetCount()>=4 and #g2~=0  then
 		local a=g1:GetCount()
 		local b=g:GetCount()
 		if #g1~=0 then
@@ -144,6 +135,19 @@ function cm.togop(e,tp,eg,ep,ev,re,r,rp)
 					if g3:GetCount()>0 then
 						Duel.HintSelection(g3)
 						Duel.SendtoGrave(g3,REASON_RULE)
+						local up=Duel.GetOperatedGroup()
+						if #up~=0 and #attk~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+							local tc=attk:GetFirst()
+							while tc do
+								local e1=Effect.CreateEffect(e:GetHandler())
+								e1:SetType(EFFECT_TYPE_SINGLE)
+								e1:SetCode(EFFECT_UPDATE_ATTACK)
+								e1:SetValue(up:GetCount()*300)
+								e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+								tc:RegisterEffect(e1)
+								tc=attk:GetNext()
+							end
+						end
 					end
 				end
 			end
@@ -157,6 +161,19 @@ function cm.togop(e,tp,eg,ep,ev,re,r,rp)
 					if g3:GetCount()>0 then
 						Duel.HintSelection(g3)
 						Duel.SendtoGrave(g3,REASON_RULE)
+						local up=Duel.GetOperatedGroup()
+						if #up~=0 and #attk~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+							local tc=attk:GetFirst()
+							while tc do
+								local e1=Effect.CreateEffect(e:GetHandler())
+								e1:SetType(EFFECT_TYPE_SINGLE)
+								e1:SetCode(EFFECT_UPDATE_ATTACK)
+								e1:SetValue(up:GetCount()*300)
+								e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+								tc:RegisterEffect(e1)
+								tc=attk:GetNext()
+							end
+						end
 					end
 				end
 			end
@@ -174,24 +191,27 @@ function cm.regop3(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and e:GetLabelObject():GetLabel()==1
+	return c:IsSummonType(SUMMON_TYPE_ADVANCE)
+		and (c:IsPreviousLocation(LOCATION_ONFIELD) or e:GetLabelObject():GetLabel()==1) 
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	local sg=Group.FromCards(c)
-	local rc=c:GetReasonCard()
-	local re=c:GetReasonEffect()
-	if not rc and re then
-		local sc=re:GetHandler()
-		if not rc then
-			Duel.SetTargetCard(sc)
-			sg:AddCard(sc)
+	if e:GetLabelObject():GetLabel()==1 then
+		local rc=c:GetReasonCard()
+		local re1=c:GetReasonEffect()
+		if not rc and re1 then
+			local sc=re1:GetHandler()
+			if not rc then
+				sg:AddCard(sc)
+			end
+		end 
+		if rc then 
+			sg:AddCard(rc)
 		end
-	end 
-	if rc then 
-		Duel.SetTargetCard(rc)
-		sg:AddCard(rc)
+	else
+		e:GetLabelObject():SetLabel(0)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,#sg,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
@@ -200,48 +220,28 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=Duel.GetFirstTarget()
 	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
-	if sc:IsRelateToEffect(e) and c:IsRelateToEffect(e) and sc:GetOwner()==1-tp then
-		local rg=Group.FromCards(sc,c)
-		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
-	elseif sc:IsRelateToEffect(e) and sc:GetOwner()==1-tp then
+	if sc and sc:IsRelateToEffect(e) 
+		and sc:GetOwner()==1-tp 
+		and not sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
+		and sc:IsAbleToRemove(tp,POS_FACEDOWN) then
 		Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)
-	elseif c:IsRelateToEffect(e) then
-		Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)   
 	end
-	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil,tp,POS_FACEDOWN) then
-		local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil,tp,POS_FACEDOWN)
-		if g:GetCount()==0 then return end
-		Duel.ConfirmCards(tp,g) 
-		local sg=g:FilterSelect(tp,Card.IsAbleToRemove,1,1,nil,tp,POS_FACEDOWN)
-		local tc=sg:GetFirst()
-		Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
-		Duel.ShuffleHand(1-tp)
-	end
-end
-function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and e:GetLabelObject():GetLabel()~=1
-end
-function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,c,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
-end
-function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
 	if  c:IsRelateToEffect(e) then
-	   if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0 
-		   and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil,tp,POS_FACEDOWN) then
-		   local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil,tp,POS_FACEDOWN)
-		   if g:GetCount()==0 then return end
-		   Duel.ConfirmCards(tp,g)  
-		   local sg=g:FilterSelect(tp,Card.IsAbleToRemove,1,1,nil,tp,POS_FACEDOWN)
-		   local tc=sg:GetFirst()
-		   Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
-		   Duel.ShuffleHand(1-tp)
+	   if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0 then
+		   if e:GetLabelObject():GetLabel()==1 then
+			   Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,2))
+			   Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,2))
+		   end
+		   if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil,tp,POS_FACEDOWN) then
+			   local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil,tp,POS_FACEDOWN)
+			   if g:GetCount()==0 then return end
+			   Duel.ConfirmCards(tp,g) 
+			   local sg=g:FilterSelect(tp,Card.IsAbleToRemove,1,1,nil,tp,POS_FACEDOWN)
+			   local tc=sg:GetFirst()
+			   Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
+			   Duel.ShuffleHand(1-tp)
+		   end 
 	   end
 	end
-end
-
+end 
+   

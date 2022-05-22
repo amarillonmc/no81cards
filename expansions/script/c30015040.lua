@@ -48,7 +48,7 @@ function cm.thfilter1(c)
 	return c:IsFacedown() and c:IsAbleToHand()
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and Duel.GetDrawCount(tp)>0 and Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_REMOVED,0,1,nil)
+	return Duel.GetTurnPlayer()==tp and Duel.GetDrawCount(tp)>0 and Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_REMOVED,0,2,nil)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local dt=Duel.GetDrawCount(tp)
@@ -67,10 +67,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(0)
 		Duel.RegisterEffect(e1,tp)
 		local mg=Duel.GetMatchingGroup(cm.thfilter1,tp,LOCATION_REMOVED,0,nil)
-		if mg:GetCount()~=0 then 
-			local sg=mg:RandomSelect(tp,1)
+		if mg:GetCount()>=2 then 
+			local sg=mg:RandomSelect(tp,2)
 			local tc=sg:GetFirst() 
-			if tc then
+			while tc do
 				Duel.SendtoHand(tc,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,sg)
 				if not tc:IsLocation(LOCATION_HAND) then
@@ -88,7 +88,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 							end
 						end
 					end 
-				end 
+				end
+				tc=sg:GetNext() 
 			end  
 		end
 	end

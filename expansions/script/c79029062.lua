@@ -72,8 +72,7 @@ end
 cm.named_with_KarlanTrade=true 
 --Effect 1
 function cm.spfilter3(c)
-	return c:IsPreviousLocation(LOCATION_MZONE) 
-	and (c:GetPreviousAttributeOnField()&ATTRIBUTE_WATER)>0
+	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.spfilter3,1,nil)
@@ -106,13 +105,12 @@ end
 function cm.ctfil(c)
 	return c:IsType(TYPE_MONSTER)
 	and c:IsAttribute(ATTRIBUTE_WATER)
-	and c:IsAbleToGraveAsCost()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.ctfil,tp,LOCATION_EXTRA,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,cm.ctfil,tp,LOCATION_EXTRA,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST) 
+	Duel.ConfirmCards(1-tp,g) 
 	local tc=g:GetFirst()
 	local flag=0
 	if tc:IsType(TYPE_SYNCHRO) then flag=bit.bor(flag,TYPE_SYNCHRO) end

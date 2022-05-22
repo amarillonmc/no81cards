@@ -25,7 +25,7 @@ function cm.fselect(g,tp,c,scale)
 	return g:CheckWithSumGreater(cm.GetScale,scale) and Duel.GetLocationCountFromEx(tp,tp,g,c) and ((c:IsType(TYPE_FUSION) and aux.dncheck(g)) or (c:IsType(TYPE_SYNCHRO) and g:IsExists(Card.IsType,1,nil,TYPE_TUNER)) or (c:IsType(TYPE_XYZ) and g:GetClassCount(Card.GetLevel)==1))
 end
 function cm.filter(c,e,tp,g,f)
-	return c:IsType(TYPE_PENDULUM) and c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and g:CheckSubGroup(cm.fselect,1,99,tp,c,f(c))
+	return c:IsType(TYPE_PENDULUM) and c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and g:CheckSubGroup(cm.fselect,2,99,tp,c,f(c))
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -40,7 +40,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,mg,cm.GetScale):GetFirst()
 	if tc then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local mat=mg:SelectSubGroup(tp,cm.fselect,false,1,99,tp,tc,tc:GetLeftScale()+tc:GetRightScale())
+		local mat=mg:SelectSubGroup(tp,cm.fselect,false,2,99,tp,tc,tc:GetLeftScale()+tc:GetRightScale())
 		if not mat or mat:GetCount()==0 then return end
 		Duel.Release(mat,REASON_EFFECT)
 		Duel.BreakEffect()

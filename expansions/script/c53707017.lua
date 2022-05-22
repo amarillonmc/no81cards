@@ -25,9 +25,12 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1)
 	e2:SetTarget(cm.reptg)
-	e2:SetValue(function(e,c)return cm.repfilter2(c,e:GetHandlerPlayer())end)
+	e2:SetValue(cm.repval)
 	e2:SetOperation(cm.repop)
 	c:RegisterEffect(e2)
+	local g=Group.CreateGroup()
+	g:KeepAlive()
+	e2:SetLabelObject(g)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeckAsCost(tp,5) end
@@ -49,28 +52,34 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
 	end
 end
-function cm.repfilter2(c,tp)
-	return c:IsFaceup() and c:IsRace(RACE_PLANT) and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
-end
 function cm.repfilter(c,tp)
-	return cm.repfilter2(c,tp) and c:GetFlagEffect(m)==0
+	return c:IsFaceup() and c:IsRace(RACE_PLANT) and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE) and c:GetFlagEffect(m)==0
 end
 function cm.tgfilter(c)
 	return c:IsSetCard(0x3537) and c:IsFacedown() and c:IsAbleToGrave() and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=eg:Filter(cm.repfilter,nil,tp)
-	local ct=#g
-	if chk==0 then return ct>0 and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,ct,nil) end
-	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
-		e:SetLabel(ct)
-		g:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-		return true
-	else return false end
+	if chk==0 then return #g>0 end
+	local rg=e:GetLabelObject()
+	rg:Clear()
+	for tc in aux.Next(g) do
+		Duel.HintSelection(Group.FromCards(tc))
+		if Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+			rg:AddCard(tc)
+		end
+	end
+	if #rg>0 then return true end
+	return false
+end
+function cm.repval(e,c)
+	local rg=e:GetLabelObject()
+	return rg:IsContains(c)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=e:GetLabel()
+	local rg=e:GetLabelObject()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,ct,ct,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,#rg,#rg,nil)
 	Duel.SendtoGrave(g,REASON_EFFECT)
 end

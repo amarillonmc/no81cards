@@ -91,7 +91,7 @@ function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_EFFECT)~=0 and c:IsLocation(LOCATION_EXTRA) then
 		Duel.Destroy(tc,REASON_EFFECT)
-		if tc:IsPreviousControler(tp) and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
+		if tc:IsPreviousControler(tp) and tc.named_with_KarlanTrade and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end 
 	end

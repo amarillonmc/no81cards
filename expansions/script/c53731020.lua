@@ -1,6 +1,6 @@
 local m=53731020
 local cm=_G["c"..m]
-cm.name=""
+cm.name="钢铁狂喑烧蚀魔"
 function cm.initial_effect(c)
 	aux.EnablePendulumAttribute(c,false)
 	local e1=Effect.CreateEffect(c)
@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -23,23 +24,22 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_MZONE,0,1,nil)  end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and chkc:IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_MZONE,0,1,1,nil)
-	if #g>0 then
-		Duel.HintSelection(g)
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-	end
+	local tc=Duel.GetFirstTarget()
+	if tc and tc:IsRelateToEffect(e) then Duel.SendtoHand(tc,nil,REASON_EFFECT) end
 	local c=e:GetHandler()
 	local hg=Duel.GetMatchingGroup(function(c)return c:IsLevelAbove(1) and c:IsType(TYPE_NORMAL)end,tp,LOCATION_HAND,0,nil)
 	cm.lvop(hg,c,3)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_TO_HAND)
+	e2:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 	e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) cm.lvop(eg:Filter(function(c)return c:IsLevelAbove(1) and c:IsType(TYPE_NORMAL)end,nil),c,3) end)
 	Duel.RegisterEffect(e2,tp)
 end
@@ -49,7 +49,7 @@ function cm.lvop(g,c,ct)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_LEVEL)
 		e1:SetValue(ct)
-		e1:SetReset(RESET_EVENT+0xfe0000)
+		e1:SetReset(RESET_EVENT+0xfe0000+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 		lvc:RegisterEffect(e1)
 	end
 end

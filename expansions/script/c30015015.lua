@@ -49,7 +49,6 @@ function cm.initial_effect(c)
 	e20:SetOperation(cm.regop3)
 	c:RegisterEffect(e20)
 	local e21=Effect.CreateEffect(c)
-	e21:SetDescription(aux.Stringid(30015500,2))
 	e21:SetCategory(CATEGORY_REMOVE)
 	e21:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e21:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
@@ -59,17 +58,6 @@ function cm.initial_effect(c)
 	e21:SetTarget(cm.sptg)
 	e21:SetOperation(cm.spop)
 	c:RegisterEffect(e21)
-	local e22=Effect.CreateEffect(c)
-	e22:SetDescription(aux.Stringid(30015500,3))
-	e22:SetCategory(CATEGORY_REMOVE)
-	e22:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e22:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e22:SetCode(EVENT_LEAVE_FIELD)
-	e22:SetLabelObject(e20)
-	e22:SetCondition(cm.spcon1)
-	e22:SetTarget(cm.sptg1)
-	e22:SetOperation(cm.spop1)
-	c:RegisterEffect(e22)
 end
 --summon proc
 function cm.otconfilter(c)
@@ -99,7 +87,7 @@ function cm.otop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 --Effect 1
 function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsFacedown,c:GetControler(),LOCATION_REMOVED,LOCATION_REMOVED,nil)*1000
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,c:GetControler(),LOCATION_REMOVED,LOCATION_REMOVED,nil)*300
 end
 --Effect 2
 function cm.valcheck(e,c)
@@ -123,7 +111,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetValue(cm.efilter)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e1)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -164,10 +152,18 @@ function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 		and bc:IsAbleToRemove(tp,POS_FACEDOWN)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local e=e:GetHandler()
 	local bc=e:GetLabelObject()
 	if bc:IsRelateToBattle() and bc:IsControler(1-tp) and bc:IsAbleToRemove(tp,POS_FACEDOWN) then
 		Duel.Hint(HINT_CARD,0,m)
-		Duel.Remove(bc,POS_FACEDOWN,REASON_EFFECT)   
+		if Duel.Remove(bc,POS_FACEDOWN,REASON_EFFECT)~=0 then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetValue(300)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+			c:RegisterEffect(e1)   
+		end
 	end
 end
 --Effect 3 
@@ -181,24 +177,27 @@ function cm.regop3(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and e:GetLabelObject():GetLabel()==1
+	return c:IsSummonType(SUMMON_TYPE_ADVANCE)
+		and (c:IsPreviousLocation(LOCATION_ONFIELD) or e:GetLabelObject():GetLabel()==1) 
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	local sg=Group.FromCards(c)
-	local rc=c:GetReasonCard()
-	local re=c:GetReasonEffect()
-	if not rc and re then
-		local sc=re:GetHandler()
-		if not rc then
-			Duel.SetTargetCard(sc)
-			sg:AddCard(sc)
+	if e:GetLabelObject():GetLabel()==1 then
+		local rc=c:GetReasonCard()
+		local re1=c:GetReasonEffect()
+		if not rc and re1 then
+			local sc=re1:GetHandler()
+			if not rc then
+				sg:AddCard(sc)
+			end
+		end 
+		if rc then 
+			sg:AddCard(rc)
 		end
-	end 
-	if rc then 
-		Duel.SetTargetCard(rc)
-		sg:AddCard(rc)
+	else
+		e:GetLabelObject():SetLabel(0)
 	end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler(),tp,POS_FACEDOWN)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
@@ -208,41 +207,18 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=Duel.GetFirstTarget()
 	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
-	if sc:IsRelateToEffect(e) and c:IsRelateToEffect(e) and sc:GetOwner()==1-tp then
-		local rg=Group.FromCards(sc,c)
-		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
-	elseif sc:IsRelateToEffect(e) and sc:GetOwner()==1-tp then
+	if sc and sc:IsRelateToEffect(e) 
+		and sc:GetOwner()==1-tp 
+		and not sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
+		and sc:IsAbleToRemove(tp,POS_FACEDOWN) then
 		Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)
-	elseif c:IsRelateToEffect(e) then
-		Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)   
 	end
-	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() then
-		if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,POS_FACEDOWN) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,3,nil,tp,POS_FACEDOWN)
-			if g:GetCount()>0 then
-				Duel.HintSelection(g)
-				Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
-			end
-		end
-	end
-end
-function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and e:GetLabelObject():GetLabel()~=1
-end
-function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler(),tp,POS_FACEDOWN)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,c,1,0,0)
-end
-function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
 	if  c:IsRelateToEffect(e) then
-	   if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0  then
+	   if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0 then
+		   if e:GetLabelObject():GetLabel()==1 then
+			   Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,2))
+			   Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,2))
+		   end
 		   if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,POS_FACEDOWN) then
 			   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			   local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,3,nil,tp,POS_FACEDOWN)
@@ -253,5 +229,4 @@ function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 		   end
 	   end
 	end
-end
-
+end 

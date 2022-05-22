@@ -2,7 +2,7 @@
 function c9910085.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCondition(c9910085.condition)
@@ -33,41 +33,52 @@ function c9910085.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-		local cat=e:GetCategory()
-		if bit.band(re:GetHandler():GetOriginalType(),TYPE_MONSTER)~=0 then
-			e:SetCategory(bit.bor(cat,CATEGORY_SPECIAL_SUMMON))
-		else
-			e:SetCategory(bit.band(cat,bit.bnot(CATEGORY_SPECIAL_SUMMON)))
-		end
+	end
+	local cate=CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_REMOVE 
+	if bit.band(re:GetHandler():GetOriginalType(),TYPE_MONSTER)~=0 then
+		e:SetCategory(cate+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
+	else
+		e:SetCategory(cate)
 	end
 end
 function c9910085.activate(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if not Duel.NegateActivation(ev) then return end
-	if rc:IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)~=0 and not rc:IsLocation(LOCATION_HAND+LOCATION_DECK)
-		and not rc:IsHasEffect(EFFECT_NECRO_VALLEY) then
-		if e:GetLabel()==1 and rc:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and (not rc:IsLocation(LOCATION_EXTRA) or Duel.GetLocationCountFromEx(tp,tp,nil,rc)>0)
-			and rc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
-			and Duel.SelectYesNo(tp,aux.Stringid(9910085,0)) then
-			Duel.BreakEffect()
+	if not Duel.NegateActivation(ev) 
+		or not rc:IsRelateToEffect(re) or Duel.Destroy(eg,REASON_EFFECT)==0 then return end
+	local b1=not rc:IsLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED) and rc:IsAbleToRemove(tp,POS_FACEDOWN)
+	local b2=not (rc:IsLocation(LOCATION_HAND+LOCATION_DECK) or rc:IsLocation(LOCATION_REMOVED) and rc:IsFacedown())
+		and aux.NecroValleyFilter()(rc) and e:GetLabel()==1
+	local b3=rc:IsType(TYPE_MONSTER) and rc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
+		and (not rc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		or rc:IsLocation(LOCATION_EXTRA) and rc:IsFaceup() and Duel.GetLocationCountFromEx(tp,tp,nil,rc)>0)
+	local b4=(rc:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and rc:IsSSetable()
+	local off=1
+	local ops={}
+	local opval={}
+	if b1 then
+		ops[off]=aux.Stringid(9910085,0)
+		opval[off-1]=1
+		off=off+1
+	end
+	if b2 and (b3 or b4) then
+		ops[off]=aux.Stringid(9910085,1)
+		opval[off-1]=2
+		off=off+1
+	end
+	ops[off]=aux.Stringid(9910085,2)
+	opval[off-1]=3
+	off=off+1
+	local op=Duel.SelectOption(tp,table.unpack(ops))
+	if opval[op]==1 then
+		Duel.BreakEffect()
+		Duel.Remove(rc,POS_FACEDOWN,REASON_EFFECT)
+	elseif opval[op]==2 then
+		Duel.BreakEffect()
+		if b3 then
 			Duel.SpecialSummon(rc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 			Duel.ConfirmCards(1-tp,rc)
-		elseif e:GetLabel()==1 and (rc:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
-			and rc:IsSSetable() and Duel.SelectYesNo(tp,aux.Stringid(9910085,1)) then
-			Duel.BreakEffect()
+		else
 			Duel.SSet(tp,rc)
-		elseif rc:IsType(TYPE_MONSTER) and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
-			and (not rc:IsLocation(LOCATION_EXTRA) or Duel.GetLocationCountFromEx(1-tp,tp,nil,rc)>0)
-			and rc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE,1-tp)
-			and Duel.SelectYesNo(tp,aux.Stringid(9910085,2)) then
-			Duel.BreakEffect()
-			Duel.SpecialSummon(rc,0,tp,1-tp,false,false,POS_FACEDOWN_DEFENSE)
-			Duel.ConfirmCards(1-tp,rc)
-		elseif (rc:IsType(TYPE_FIELD) or Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0)
-			and rc:IsSSetable() and Duel.SelectYesNo(tp,aux.Stringid(9910085,3)) then
-			Duel.BreakEffect()
-			Duel.SSet(tp,rc,1-tp)
 		end
 	end
 end

@@ -1,69 +1,63 @@
 --方舟之骑士·斯卡蒂
+c29010010.named_with_Arknight=1
 function c29010010.initial_effect(c)
-	--special summon
+	--to hand
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(29010010,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetDescription(aux.Stringid(29010010,1))
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetTarget(c29010010.sptg)
-	e1:SetOperation(c29010010.spop)
-	c:RegisterEffect(e1)
-	--set
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCondition(aux.exccon)
-	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(c29010010.settg)
-	e2:SetOperation(c29010010.setop)
-	c:RegisterEffect(e2)   
+	e1:SetCountLimit(1,29010010)
+	e1:SetCondition(c29010010.thcon)
+	e1:SetTarget(c29010010.thtg)
+	e1:SetOperation(c29010010.thop)
+	c:RegisterEffect(e1) 
+	--sp 
+	local e2=Effect.CreateEffect(c) 
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS) 
+	e2:SetCode(EVENT_TO_GRAVE) 
+	e2:SetCondition(c29010010.spcon) 
+	e2:SetOperation(c29010010.spop) 
+	c:RegisterEffect(e2)
 end
-function c29010010.filter(c,e,tp)
-	return c:IsSetCard(0x77af) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c29010010.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
-function c29010010.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c29010010.filter,tp,LOCATION_HAND,0,1,nil,e,tp) and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+function c29010010.thfilter(c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_FISH) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
-function c29010010.thfil(c)
-	return c:IsSetCard(0x77af) and not c:IsCode(29010010) and (c:IsType(TYPE_MONSTER) or c:IsType(TYPE_SPELL)) and c:IsAbleToHand() 
+function c29010010.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29010010.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
 end
-function c29010010.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c29010010.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,22702055) and Duel.IsExistingMatchingCard(c29010010.thfil,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(29010010,0)) then 
+function c29010010.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	sg=Duel.SelectMatchingCard(tp,c29010010.thfil,tp,LOCATION_DECK,0,1,1,nil)
-	Duel.SendtoHand(sg,tp,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,sg)
-	end
-	end
-end
-function c29010010.setfilter(c)
-	return c:IsSetCard(0x77af) and c:IsType(TYPE_TRAP) and c:IsSSetable()
-end
-function c29010010.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(c29010010.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
-	local tc=Duel.SelectTarget(tp,c29010010.setfilter,tp,LOCATION_DECK,0,1,1,nil)
-end
-function c29010010.setop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
-		Duel.SSet(tp,g:GetFirst())
+	local g=Duel.SelectMatchingCard(tp,c29010010.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+		Duel.ShuffleHand(tp)
 	end
 end
-
-
-
-
+function c29010010.spcon(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler() 
+	return c:IsReason(REASON_DESTROY) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,29010010)==0 
+end 
+function c29010010.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler() 
+	if Duel.SelectYesNo(tp,aux.Stringid(29010010,0)) then 
+	Duel.RegisterFlagEffect(tp,29010010,RESET_PHASE+PHASE_END,0,1)
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) 
+	local e1=Effect.CreateEffect(c) 
+	e1:SetType(EFFECT_TYPE_SINGLE) 
+	e1:SetCode(EFFECT_UPDATE_ATTACK) 
+	e1:SetRange(LOCATION_MZONE) 
+	e1:SetValue(1000) 
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
+	c:RegisterEffect(e1) 
+	end 
+end 
 
 
 

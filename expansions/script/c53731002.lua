@@ -64,6 +64,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_TO_HAND)
+	e2:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 	e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) cm.lvop(eg:Filter(function(c)return c:IsLevelAbove(1) and c:IsType(TYPE_NORMAL)end,nil),c,3) end)
 	Duel.RegisterEffect(e2,tp)
 	if not c:IsRelateToEffect(e) or not tc:IsRelateToEffect(e) then return end
@@ -80,7 +81,7 @@ function cm.lvop(g,c,ct)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_LEVEL)
 		e1:SetValue(ct)
-		e1:SetReset(RESET_EVENT+0xfe0000)
+		e1:SetReset(RESET_EVENT+0xfe0000+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 		lvc:RegisterEffect(e1)
 	end
 end

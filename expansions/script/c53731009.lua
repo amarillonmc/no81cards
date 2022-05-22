@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 end
 function cm.RitualCheckEqual(g,c,lv)
 	local res=false
-	for i=1,24 do if g:CheckWithSumEqual(Card.GetRitualLevel,lv*i,#g,#g,c) then res=true end end
+	for i=1,9 do if g:CheckWithSumEqual(Card.GetRitualLevel,lv*i,#g,#g,c) then res=true end end
 	return res
 end
 function cm.RitualCheck(g,tp,c,lv,greater_or_equal)
@@ -56,7 +56,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local mat=mg:SelectSubGroup(tp,cm.RitualCheck,false,1,99,tp,tc,tc:GetLevel(),"Equal")
 		aux.GCheckAdditional=nil
 		if not mat or mat:GetCount()==0 then return end
-		local lvsum=mat:GetSum(Card.GetRitualLevel,tc)
+		local lvsum=mat:GetSum(cm.TacitearRitLevel,Group.FromCards(tc))
 		local mul=math.floor(lvsum/tc:GetLevel())
 		tc:SetMaterial(mat)
 		Duel.ReleaseRitualMaterial(mat)
@@ -64,6 +64,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		tc:CompleteProcedure()
 		if not tc:IsLocation(LOCATION_MZONE) or tc:IsFacedown() then return end
+		if mul==1 then
+		local e0=Effect.CreateEffect(e:GetHandler())
+		e0:SetDescription(aux.Stringid(m,4))
+		e0:SetType(EFFECT_TYPE_SINGLE)
+		e0:SetCode(EFFECT_CANNOT_TRIGGER)
+		e0:SetRange(LOCATION_MZONE)
+		e0:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e0)
+		end
 		if mul>=2 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(m,0))
@@ -98,6 +108,18 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e3)
 		end
+	end
+end
+function cm.TacitearRitLevel(c,g)
+	local x=math.max(65535,c:GetLevel())
+	for tc in aux.Next(g) do
+		local lv=c:GetRitualLevel(tc)&0xffff
+		if x>lv then x=lv end
+	end
+	if x>MAX_PARAMETER then
+		return MAX_PARAMETER
+	else
+		return x
 	end
 end
 function cm.repfilter(c)

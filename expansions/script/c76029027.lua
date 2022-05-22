@@ -80,13 +80,13 @@ function c76029027.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(Card.IsFacedown,tp,0,LOCATION_MZONE,nil)
 	if sg:GetCount()>0 then
 		Duel.ChangePosition(sg,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_DEFENSE,POS_FACEUP_DEFENSE)
-	end
 	if Duel.IsExistingMatchingCard(nil,tp,LOCATION_REMOVED,0,3,nil) and Duel.SelectYesNo(tp,aux.Stringid(76029027,0)) then 
 	local xg=Duel.GetMatchingGroup(nil,tp,LOCATION_REMOVED,0,nil):RandomSelect(tp,3)
 	local g=xg:Select(tp,0,3,nil)
 	local g=xg:Select(1-tp,0,3,nil)
 	local x=xg:FilterCount(c76029027.cstfil,nil)
-	Duel.Draw(tp,x,REASON_EFFECT)
+	Duel.Draw(tp,x,REASON_EFFECT) 
+	end
 	end
 end
 function c76029027.ckfil(c,tp)

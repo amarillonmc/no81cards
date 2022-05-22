@@ -1,0 +1,48 @@
+--人理之基 清姬·水浴转身
+function c22021080.initial_effect(c)
+	c:EnableReviveLimit()
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c22021080.splimit)
+	c:RegisterEffect(e1)
+	--pierce
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_PIERCE)
+	c:RegisterEffect(e2)
+	--disable and atk down
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_DISABLE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(0,LOCATION_MZONE)
+	e3:SetCondition(c22021080.adcon)
+	e3:SetTarget(c22021080.adtg)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_DISABLE_EFFECT)
+	c:RegisterEffect(e4)
+	local e5=e3:Clone()
+	e5:SetCode(EFFECT_SET_ATTACK_FINAL)
+	e5:SetValue(0)
+	c:RegisterEffect(e5)
+	local e6=e3:Clone()
+	e6:SetCode(EFFECT_SET_DEFENSE_FINAL)
+	e6:SetValue(0)
+	c:RegisterEffect(e6)
+end
+function c22021080.splimit(e,se,sp,st)
+	local sc=se:GetHandler()
+	return sc and sc:IsCode(22020110)
+end
+function c22021080.adcon(e)
+	local c=e:GetHandler()
+	return Duel.GetAttacker()==c and c:GetBattleTarget()
+		and (Duel.GetCurrentPhase()==PHASE_DAMAGE or Duel.GetCurrentPhase()==PHASE_DAMAGE_CAL)
+end
+function c22021080.adtg(e,c)
+	return c==e:GetHandler():GetBattleTarget()
+end

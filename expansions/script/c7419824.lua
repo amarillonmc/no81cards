@@ -68,7 +68,7 @@ function cm.chainlm(e,ep,tp)
 	return tp==ep
 end
 function cm.filter(c)
-	return cm.Qingyu(c) and c:IsFaceup() and c:IsAbleToHand() and not c:IsCode(m)
+	return cm.Qingyu(c) and c:IsFaceup() and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc) end

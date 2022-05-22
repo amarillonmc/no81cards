@@ -41,12 +41,13 @@ function c33200623.initial_effect(c)
 	e3:SetTarget(c33200623.attg)
 	e3:SetOperation(c33200623.atop)
 	c:RegisterEffect(e3)
-	--double damage
+	--disable
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_BATTLE_DESTROYING)
+	e4:SetCondition(aux.bdocon)
 	e4:SetCondition(c33200623.effcon6)
-	e4:SetValue(aux.ChangeBattleDamage(1,DOUBLE_DAMAGE))
+	e4:SetOperation(c33200623.disop)
 	c:RegisterEffect(e4)
 	--immune
 	local e5=Effect.CreateEffect(c)
@@ -103,8 +104,9 @@ function c33200623.effcon4(e)
 end
 
 function c33200623.effcon6(e)
+	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c33200623.confilter,e:GetHandlerPlayer(),LOCATION_GRAVE+LOCATION_ONFIELD,0,nil)
-	return g:GetClassCount(Card.GetCode)>=6 and e:GetHandler():GetBattleTarget()~=nil
+	return g:GetClassCount(Card.GetCode)>=6 and c:IsRelateToBattle() and c:IsStatus(STATUS_OPPO_BATTLE)
 end
 
 function c33200623.effcon8(e)
@@ -131,6 +133,41 @@ function c33200623.atop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.CalculateDamage(c,tc)
 		end
 	end
+end
+
+--e4
+function c33200623.disop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetHandler():GetBattleTarget()
+	if tc then
+		local c=e:GetHandler()
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+		e1:SetTarget(c33200623.distg)
+		e1:SetLabelObject(tc)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_CHAIN_SOLVING)
+		e2:SetCondition(c33200623.disecon)
+		e2:SetOperation(c33200623.diseop)
+		e2:SetLabelObject(tc)
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e2,tp)
+	end
+end
+function c33200623.distg(e,c)
+	local tc=e:GetLabelObject()
+	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
+end
+function c33200623.disecon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsOriginalCodeRule(tc:GetOriginalCodeRule())
+end
+function c33200623.diseop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
 end
 
 --e5

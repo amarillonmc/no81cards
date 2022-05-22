@@ -113,7 +113,7 @@ function cm.ritfselect(g,tp,m1)
 	return res and #g<5 and aux.dncheck(g)
 end
 function cm.ritfilter(c,e,tp)
-	return c:IsRace(RACE_FIEND) and c:IsLevelAbove(3) and c:GetType()&0x81==0x81 and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true,POS_FACEUP)
+	return c:IsRace(RACE_FIEND) and c:IsLevelAbove(6) and c:GetType()&0x81==0x81 and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true,POS_FACEUP)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=Duel.GetRitualMaterial(tp)

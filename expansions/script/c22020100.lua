@@ -31,9 +31,9 @@ function c22020100.initial_effect(c)
 end
 c22020100.effect_with_altria=true
 function c22020100.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.CheckLPCost(tp,1000) end
+	Duel.PayLPCost(tp,1000)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c22020100.filter1(c,e,tp)
 	return c:IsFaceup() and c:IsSetCard(0xff1) and Duel.IsExistingMatchingCard(c22020100.filter2,tp,LOCATION_DECK,0,1,nil,c:GetCode(),e,tp)

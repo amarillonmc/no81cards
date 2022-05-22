@@ -71,7 +71,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_CHANGE_CODE)
 		e2:SetValue(c:GetCode())
 		tc:RegisterEffect(e2)
-		tc:ReplaceEffect(c:GetCode(),RESET_EVENT+RESETS_STANDARD)
+		tc:CopyEffect(c:GetCode(),RESET_EVENT+RESETS_STANDARD)
 	end
 	Duel.SpecialSummonComplete()
 end

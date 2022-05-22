@@ -1,5 +1,6 @@
 --荒败之城 盐风
 function c29010022.initial_effect(c)
+	aux.AddCodeList(c,29010023)
 	--activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)

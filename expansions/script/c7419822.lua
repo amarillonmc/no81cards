@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.spcon)
+	e1:SetCondition(cm.condition)
 	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
@@ -41,7 +41,7 @@ end
 function cm.cfilter(c)
 	return cm.Qingyu(c) and c:IsFaceup()
 end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)

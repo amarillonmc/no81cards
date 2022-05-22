@@ -8,33 +8,45 @@ function cm.initial_effect(c)
 	e30:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e30)
 	--Effect 1  
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCode(30015035)
-	e2:SetRange(LOCATION_FZONE)
-	e2:SetTargetRange(1,0)
-	c:RegisterEffect(e2)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetType(EFFECT_TYPE_FIELD)
+	--e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	--e1:SetCode(30015035)
+	--e1:SetRange(LOCATION_FZONE)
+	--e1:SetTargetRange(1,0)
+	--c:RegisterEffect(e1)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e1:SetRange(LOCATION_FZONE)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetTargetRange(LOCATION_ONFIELD,0)
+	e1:SetTarget(cm.immtg)
+	e1:SetValue(aux.tgoval)
+	c:RegisterEffect(e1)
+	local e9=e1:Clone()
+	e9:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e9:SetValue(aux.indoval)
+	c:RegisterEffect(e9)
 	--Effect 2 
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
-	e2:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
-	e2:SetRange(LOCATION_FZONE)
-	e2:SetOperation(cm.op)
-	c:RegisterEffect(e2)
-	local e3=e2:Clone()
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,1))
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+	e4:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
+	e4:SetRange(LOCATION_FZONE)
+	e4:SetOperation(cm.op)
+	c:RegisterEffect(e4)
+	local e3=e4:Clone()
 	e3:SetCode(EFFECT_EXTRA_SET_COUNT)
 	c:RegisterEffect(e3)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetRange(LOCATION_FZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(cm.reccon)
-	e2:SetOperation(cm.recop)
-	c:RegisterEffect(e2)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e7:SetCode(EVENT_SUMMON_SUCCESS)
+	e7:SetRange(LOCATION_FZONE)
+	e7:SetCondition(cm.reccon)
+	e7:SetOperation(cm.recop)
+	c:RegisterEffect(e7)
 	--Effect 3 
 	local e21=Effect.CreateEffect(c)
 	e21:SetCategory(CATEGORY_REMOVE)
@@ -47,32 +59,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e21) 
 end
 --Effect 1
-function cm.drawcon(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
-	return Duel.GetTurnPlayer()==tp and #mg>0
-end
-function cm.drmfilter(c)
-	return c:IsFacedown() and c:IsAbleToHand()
-end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and Duel.IsExistingMatchingCard(cm.drmfilter,tp,LOCATION_REMOVED,0,1,nil)
-end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(cm.drmfilter,tp,LOCATION_REMOVED,0,nil)
-	local n=Duel.GetFlagEffect(tp,30015000)
-	if mg:GetCount()~=0 then
-		Duel.Hint(HINT_CARD,0,m)
-		local sg=mg:RandomSelect(tp,n)
-		local tc=sg:GetFirst() 
-		if tc then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
-		end
-	end 
+function cm.immtg(e,c)
+	return rk.check(c,"Overuins") and c~=e:GetHandler()
 end
 --Effect 2
-function cm.downremovefilter(c,ep)
-	return c:IsAbleToRemove(1-ep,POS_FACEDOWN)
+function cm.downremovefilter(c,player)
+	return c:IsAbleToRemove(1-player,POS_FACEDOWN)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -92,15 +84,14 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.cfilter(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSummonType(SUMMON_TYPE_ADVANCE) 
-	and rk.check(c,"Overuins")
+function cm.cfilter(c)
+	return  c:IsSummonType(SUMMON_TYPE_ADVANCE) 
 end
 function cm.sumfilter(c)
 	return c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
 end
 function cm.reccon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp)
+	return eg:IsExists(cm.cfilter,1,nil) and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.recop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -118,7 +109,8 @@ function cm.recop(e,tp,eg,ep,ev,re,r,rp)
 			else
 				Duel.MSet(tp,tc,true,nil)
 			end
-		end
+			e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		end		
 	end
 end
 --Effect 3 

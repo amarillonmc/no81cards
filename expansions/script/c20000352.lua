@@ -1,10 +1,13 @@
 --奉神天使 米迦勒
-local m=20000352
-local cm=_G["c"..m]
+local cm,m,o=GetID()
 if not pcall(function() require("expansions/script/c20000350") end) then require("script/c20000350") end
 function cm.initial_effect(c)
-	local e1=fs.sum(c,m,function(c)return c:IsLocation(LOCATION_ONFIELD)and aux.NegateAnyFilter(c)end,
-	function(e,tp,eg,ep,ev,re,r,rp,g,fc)
+	local e = {fu_god.Summon(c,m,cm.filter,cm.op)}
+end
+function cm.filter(c)
+	return c:IsLocation(LOCATION_ONFIELD) and aux.NegateAnyFilter(c)
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp,g,fc)
 		Duel.NegateRelatedChain(fc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -27,5 +30,4 @@ function cm.initial_effect(c)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 			fc:RegisterEffect(e3)
 		end
-	end)
 end

@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(3)
 	e2:SetCondition(cm.con)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
@@ -37,17 +37,6 @@ function cm.initial_effect(c)
 	e21:SetTarget(cm.sptg)
 	e21:SetOperation(cm.spop)
 	c:RegisterEffect(e21)
-	local e22=Effect.CreateEffect(c)
-	e22:SetDescription(aux.Stringid(30015500,3))
-	e22:SetCategory(CATEGORY_REMOVE+CATEGORY_TODECK)
-	e22:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e22:SetProperty(EFFECT_FLAG_DELAY)
-	e22:SetCode(EVENT_LEAVE_FIELD)
-	e22:SetLabelObject(e20)
-	e22:SetCondition(cm.spcon1)
-	e22:SetTarget(cm.sptg1)
-	e22:SetOperation(cm.spop1)
-	c:RegisterEffect(e22)
 	if not cm.global_check then
 		cm.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -92,20 +81,22 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,tc)
 		end   
 		if tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA) then
-			if tc:IsType(TYPE_MONSTER) and tc:IsLocation(LOCATION_HAND) then
-				if tc:IsSummonable(true,nil) 
-					and (not tc:IsMSetable(true,nil)
-					or Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) then
-					Duel.Summon(tp,tc,true,nil)
-				else
-					Duel.MSet(tp,tc,true,nil)
-				end
-				if not tc:IsSummonableCard() 
+			if tc:IsType(TYPE_MONSTER)  then
+				if not (tc:IsSummonable(true,nil)
+					and tc:IsMSetable(true,nil))
 					and tc:IsAbleToRemove(tp,POS_FACEDOWN) then
 					Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
+				else
+					if tc:IsSummonable(true,nil) 
+						and (not tc:IsMSetable(true,nil)
+						or Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) then
+						Duel.Summon(tp,tc,true,nil)   
+					else
+						Duel.MSet(tp,tc,true,nil)
+					end   
 				end
 			else
-				if tc:IsAbleToRemove(tp,POS_FACEDOWN) and not tc:IsSummonable(true,nil)  then
+				if tc:IsAbleToRemove(tp,POS_FACEDOWN) then
 					Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
 				end
 			end
@@ -123,70 +114,56 @@ function cm.regop3(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return  e:GetLabelObject():GetLabel()==1
+	return  c:IsPreviousLocation(LOCATION_ONFIELD) or e:GetLabelObject():GetLabel()==1 
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
-	local sg=Group.CreateGroup()
-	local rc=c:GetReasonCard()
-	local re=c:GetReasonEffect()
-	if not rc and re then
-		local sc=re:GetHandler()
-		if not rc then
-			Duel.SetTargetCard(sc)
-			sg:AddCard(sc)
+	local sg=Group.FromCards(c)
+	if e:GetLabelObject():GetLabel()==1 then
+		local rc=c:GetReasonCard()
+		local re1=c:GetReasonEffect()
+		if not rc and re1 then
+			local sc=re1:GetHandler()
+			if not rc then
+				sg:AddCard(sc)
+			end
+		end 
+		if rc then 
+			sg:AddCard(rc)
 		end
-	end 
-	if rc then 
-		Duel.SetTargetCard(rc)
-		sg:AddCard(rc)
+	else
+		e:GetLabelObject():SetLabel(0)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,#sg,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,PLAYER_ALL,LOCATION_REMOVED)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=Duel.GetFirstTarget()
 	local ct=Duel.GetFlagEffect(tp,m)
 	if c:IsLocation(LOCATION_HAND) or not c:IsAbleToHand() then return end
-	if sc:IsRelateToEffect(e) and sc:GetOwner()==1-tp then
+	if sc and sc:IsRelateToEffect(e) 
+		and sc:GetOwner()==1-tp 
+		and not sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
+		and sc:IsAbleToRemove(tp,POS_FACEDOWN) then
 		Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)
 	end
-	if c:IsRelateToEffect(e) then
-		Duel.SendtoHand(c,nil,REASON_EFFECT)   
-	end
-	if c:IsLocation(LOCATION_HAND) and ct>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,ct,nil)
-		if g:GetCount()>0 then
-			Duel.HintSelection(g)
-			Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		end
-	end
-end
-function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return  e:GetLabelObject():GetLabel()~=1
-end
-function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,c,1,0,0)
-end
-function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=Duel.GetFlagEffect(tp,m) 
-	if c:IsLocation(LOCATION_HAND) or not c:IsAbleToHand() then return end
-	if c:IsRelateToEffect(e)  then
-	   if Duel.SendtoHand(c,nil,REASON_EFFECT)~=0 and ct>0 
-		   and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) then
-		   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		   local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,ct,nil)
-		   if g:GetCount()>0 then
-			   Duel.HintSelection(g)
-			   Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	if  c:IsRelateToEffect(e) then
+	   if Duel.SendtoHand(c,nil,REASON_EFFECT)~=0 and c:IsLocation(LOCATION_HAND) then
+		   if e:GetLabelObject():GetLabel()==1 then
+			   Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,2))
+			   Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,2))
+		   end
+		   if ct>0 
+			   and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) then
+			   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			   local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,ct,nil)
+			   if g:GetCount()>0 then
+				   Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			   end
 		   end
 	   end
 	end
-end
+end 

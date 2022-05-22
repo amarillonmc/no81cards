@@ -3,13 +3,6 @@ function c22020040.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,4,2)
 	c:EnableReviveLimit()
-	--summon success
-	local e100=Effect.CreateEffect(c)
-	e100:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e100:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e100:SetOperation(c22020040.sumsuc)
-	e100:SetCountLimit(1,22020040+EFFECT_COUNT_CODE_DUEL)
-	c:RegisterEffect(e100)
 	--attack cost
 	local e103=Effect.CreateEffect(c)
 	e103:SetType(EFFECT_TYPE_SINGLE)
@@ -33,22 +26,9 @@ function c22020040.initial_effect(c)
 	e2:SetOperation(c22020040.rdop)
 	c:RegisterEffect(e2)
 end
-function c22020040.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	Debug.Message("击垮他们！")
-	Duel.RegisterEffect(e1,tp)
-end
-function c22020040.atop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	Debug.Message("卑王铁槌！")
-	Duel.RegisterEffect(e1,tp)
-end
 function c22020040.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-	Debug.Message("消失吧")
 end
 function c22020040.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -8,6 +8,10 @@ function c29010012.initial_effect(c)
 	e1:SetTarget(c29010012.target)
 	e1:SetOperation(c29010012.activate)
 	c:RegisterEffect(e1)
+	local e3=e1:Clone()
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCost(c29010012.gravecost)
+	c:RegisterEffect(e3)
 	--act in hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -23,31 +27,24 @@ function c29010012.handcon(e)
 		and Duel.IsExistingMatchingCard(c29010012.filter,tp,0,LOCATION_MZONE,1,nil)
 end
 function c29010012.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local loc=LOCATION_MZONE 
 	local res=Duel.GetMatchingGroup(c29010012.filter,tp,LOCATION_MZONE,0,nil):GetClassCount(Card.GetOriginalCode)>=3
-	if res then loc=LOCATION_ONFIELD end
-	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,loc,nil)
+	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_MZONE,nil)
 	if chk==0 then return g:GetCount()>0 end
-	if res then
-		Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,1-tp,LOCATION_MZONE)
-	else
-		Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
-	end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,1-tp,LOCATION_MZONE)
 end
 function c29010012.activate(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	local loc=LOCATION_MZONE 
-	local res=Duel.GetMatchingGroup(c29010012.filter,tp,LOCATION_MZONE,0,nil):GetClassCount(Card.GetOriginalCode)>=3
-	if res then loc=LOCATION_ONFIELD end
-	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,loc,nil)
+	local res=Duel.GetMatchingGroup(c29010012.filter,tp,LOCATION_MZONE,0,nil):GetClassCount(Card.GetOriginalCode)>=3 
+	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_MZONE,nil)
 	if g:GetCount()==0 then return end
-	if res and Duel.SelectYesNo(tp,aux.Stringid(29010012,0)) then
+	if res and Duel.SelectYesNo(tp,aux.Stringid(29010012,0)) then 
+	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil) 
 		local tc=g:GetFirst()
 		while tc do
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetCode(EFFECT_DISABLE)
-			e1:SetTargetRange(0,LOCATION_MZONE)
+			e1:SetTargetRange(0,LOCATION_ONFIELD)
 			e1:SetTarget(c29010012.distg)
 			e1:SetLabelObject(tc)
 			e1:SetReset(RESET_PHASE+PHASE_END)
@@ -61,6 +58,11 @@ function c29010012.activate(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e2,tp)  
 			tc=g:GetNext()
+				if Duel.GetFlagEffect(tp,29010012)==1 then
+				c:CancelToGrave()
+				Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+				Duel.ResetFlagEffect(tp,29010012)
+				end
 		end
 	else
 		local tc=g:Select(tp,1,1,nil):GetFirst()
@@ -76,11 +78,16 @@ function c29010012.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(RESET_TURN_SET)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2)
+			 if Duel.GetFlagEffect(tp,29010012)==1 then
+			 c:CancelToGrave()
+			 Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			 Duel.ResetFlagEffect(tp,29010012)
+			 end
 	end
 end
 function c29010012.distg(e,c)
 	local tc=e:GetLabelObject()
-	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
+	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) 
 end
 function c29010012.discon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
@@ -89,4 +96,10 @@ function c29010012.discon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c29010012.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
+end
+function c29010012.gravecost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerAffectedByEffect(tp,29010026) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetFlagEffect(tp,29010026)==0 end
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	Duel.RegisterFlagEffect(tp,29010026,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,29010012,RESET_PHASE+PHASE_END,0,1)
 end
