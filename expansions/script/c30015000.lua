@@ -156,20 +156,18 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	local sg=Group.FromCards(c)
-	if e:GetLabelObject():GetLabel()==1 then
-		local rc=c:GetReasonCard()
-		local re1=c:GetReasonEffect()
-		if not rc and re1 then
-			local sc=re1:GetHandler()
-			if not rc then
-				sg:AddCard(sc)
-			end
-		end 
-		if rc then 
-			sg:AddCard(rc)
+	local rc=c:GetReasonCard()
+	local re=c:GetReasonEffect()
+	if not rc and re then
+		local sc=re:GetHandler()
+		if not rc then
+			Duel.SetTargetCard(sc)
+			sg:AddCard(sc)
 		end
-	else
-		e:GetLabelObject():SetLabel(0)
+	end 
+	if rc then 
+		Duel.SetTargetCard(rc)
+		sg:AddCard(rc)
 	end
 	local a=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,#sg,0,0)
@@ -181,6 +179,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
 	if sc and sc:IsRelateToEffect(e) 
 		and sc:GetOwner()==1-tp 
+		and e:GetLabelObject():GetLabel()==1
 		and not sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
 		and sc:IsAbleToRemove(tp,POS_FACEDOWN) then
 		Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)

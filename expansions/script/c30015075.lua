@@ -71,6 +71,33 @@ end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
+	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_NEGATED)
+	e1:SetLabelObject(e)
+	e1:SetOperation(cm.negcheck)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+end
+--negate--
+function cm.negcheck(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local de,dp=Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON,CHAININFO_DISABLE_PLAYER)
+	if rp==tp and de and dp==1-tp and re==te then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_END)
+		e1:SetOperation(cm.negevent)
+		e1:SetLabelObject(te)
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function cm.negevent(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	Duel.RaiseEvent(te:GetHandler(),EVENT_CUSTOM+m,te,0,tp,tp,0)
+	e:Reset()
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -105,6 +132,15 @@ end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
+	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_NEGATED)
+	e1:SetLabelObject(e)
+	e1:SetOperation(cm.negcheck)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -149,35 +185,30 @@ function cm.imptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	local sg=Group.FromCards(c)
-	if e:GetLabelObject():GetLabel()==1 then
-		local rc=c:GetReasonCard()
-		local re=c:GetReasonEffect()
-		if not rc and re then
-			local sc=re:GetHandler()
-			if not rc then
-				sg:AddCard(sc)
-			end
-		end 
-		if rc then 
-			sg:AddCard(rc)
+	local rc=c:GetReasonCard()
+	local re=c:GetReasonEffect()
+	if not rc and re then
+		local sc=re:GetHandler()
+		if not rc then
+			sg:AddCard(sc)
 		end
-	else
-		e:GetLabelObject():SetLabel(0)
+	end 
+	if rc then 
+		sg:AddCard(rc)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,#sg,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,1,0,0)
 end
 function cm.impop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local sc=Duel.GetFirstTarget()
 	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
 	if  c:IsRelateToEffect(e) then
 		if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0  then
 			if e:GetLabelObject():GetLabel()==1 then
 				Duel.RegisterFlagEffect(tp,30015000,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
 				Duel.RegisterFlagEffect(tp,30015500,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1) 
-				Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,3))
-				Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,3))
+				Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,2))
+				Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,2))
 			else
 				Duel.RegisterFlagEffect(tp,30015000,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
 			end
@@ -193,12 +224,6 @@ function cm.impop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e1,tp)
 		end   
 	end
-	if sc and sc:IsRelateToEffect(e) 
-		and sc:GetOwner()==1-tp 
-		and not sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
-		and sc:IsAbleToRemove(tp,POS_FACEDOWN) then
-			Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)
-	end 
 end
 ----neg----
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
@@ -230,14 +255,13 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local sc=Duel.GetFirstTarget()
 	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
 	if  c:IsRelateToEffect(e) then
 		if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0  then
 			Duel.RegisterFlagEffect(tp,30015000,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
 			Duel.RegisterFlagEffect(tp,30015500,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1) 
-			Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,3))
-			Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,3))
+			Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,2))
+			Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,2))
 			local n=Duel.GetFlagEffect(tp,30015000)
 			local n1=Duel.GetFlagEffect(tp,30015500)
 			local e1=Effect.CreateEffect(e:GetHandler())
@@ -250,11 +274,5 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e1,tp)
 		end   
 	end
-	if sc and sc:IsRelateToEffect(e) 
-		and sc:GetOwner()==1-tp 
-		and not sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
-		and sc:IsAbleToRemove(tp,POS_FACEDOWN) then
-		Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)
-	end 
 end
 ----neg----

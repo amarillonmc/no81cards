@@ -159,35 +159,30 @@ function cm.imptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	local sg=Group.FromCards(c)
-	if e:GetLabelObject():GetLabel()==1 then
-		local rc=c:GetReasonCard()
-		local re=c:GetReasonEffect()
-		if not rc and re then
-			local sc=re:GetHandler()
-			if not rc then
-				sg:AddCard(sc)
-			end
-		end 
-		if rc then 
-			sg:AddCard(rc)
+	local rc=c:GetReasonCard()
+	local re=c:GetReasonEffect()
+	if not rc and re then
+		local sc=re:GetHandler()
+		if not rc then
+			sg:AddCard(sc)
 		end
-	else
-		e:GetLabelObject():SetLabel(0)
+	end 
+	if rc then 
+		sg:AddCard(rc)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,#sg,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,1,0,0)
 end
 function cm.impop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local sc=Duel.GetFirstTarget()
 	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
 	if  c:IsRelateToEffect(e) then
 		if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0  then
 			if e:GetLabelObject():GetLabel()==1 then
 				Duel.RegisterFlagEffect(tp,30015000,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
 				Duel.RegisterFlagEffect(tp,30015500,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1) 
-				Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,3))
-				Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,3))
+				Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(30015500,2))
+				Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(30015500,2))
 			else
 				Duel.RegisterFlagEffect(tp,30015000,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
 			end
@@ -203,12 +198,6 @@ function cm.impop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e1,tp)
 		end   
 	end
-	if sc and sc:IsRelateToEffect(e) 
-		and sc:GetOwner()==1-tp 
-		and not sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
-		and sc:IsAbleToRemove(tp,POS_FACEDOWN) then
-			Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)
-	end 
 end
 ----neg----
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
@@ -240,7 +229,6 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local sc=Duel.GetFirstTarget()
 	if c:IsLocation(LOCATION_REMOVED) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
 	if  c:IsRelateToEffect(e) then
 		if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)~=0  then
@@ -260,11 +248,5 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e1,tp)
 		end   
 	end
-	if sc and sc:IsRelateToEffect(e) 
-		and sc:GetOwner()==1-tp 
-		and not sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
-		and sc:IsAbleToRemove(tp,POS_FACEDOWN) then
-		Duel.Remove(sc,POS_FACEDOWN,REASON_EFFECT)
-	end 
 end
 ----neg----

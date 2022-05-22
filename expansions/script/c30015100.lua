@@ -255,22 +255,21 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	local sg=Group.FromCards(c)
-	if e:GetLabelObject():GetLabel()==1 then
-		local rc=c:GetReasonCard()
-		local re1=c:GetReasonEffect()
-		if not rc and re1 then
-			local sc=re1:GetHandler()
-			if not rc then
-				sg:AddCard(sc)
-			end
-		end 
-		if rc then 
-			sg:AddCard(rc)
+	local rc=c:GetReasonCard()
+	local re=c:GetReasonEffect()
+	if not rc and re then
+		local sc=re:GetHandler()
+		if not rc then
+			Duel.SetTargetCard(sc)
+			sg:AddCard(sc)
 		end
-	else
-		e:GetLabelObject():SetLabel(0)
+	end 
+	if rc then 
+		Duel.SetTargetCard(rc)
+		sg:AddCard(rc)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,#sg,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
