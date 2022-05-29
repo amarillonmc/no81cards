@@ -9,7 +9,7 @@ end
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCost(cm.cost)
@@ -40,7 +40,7 @@ function cm.dfilter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local b1=Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.IsExistingTarget(cm.filter2,tp,LOCATION_DECK,0,1,nil,e,tp)
+	local b2=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil,e,tp)
 	if chk==0 then return b1 or b2 end
 	local op=0
 	if b1 and b2 then

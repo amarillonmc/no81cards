@@ -1,5 +1,6 @@
 --幻透翼同调龙/爆裂体
 function c40008621.initial_effect(c)
+	aux.AddCodeList(c,80280737)
 	c:EnableReviveLimit()
 	--Cannot special summon
 	local e1=Effect.CreateEffect(c)
