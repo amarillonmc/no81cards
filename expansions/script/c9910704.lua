@@ -39,7 +39,7 @@ function c9910704.initial_effect(c)
 	end
 end
 function c9910704.regcon(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentPhase()==PHASE_DRAW then return false end
+	if Duel.GetCurrentPhase()==PHASE_DRAW or Duel.GetCurrentPhase()==0 then return false end
 	local v=0
 	if eg:IsExists(Card.IsControler,1,nil,0) then v=v+1 end
 	if eg:IsExists(Card.IsControler,1,nil,1) then v=v+2 end

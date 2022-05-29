@@ -1,6 +1,7 @@
 local m=53727004
 local cm=_G["c"..m]
 cm.name="空间撕裂"
+cm.cybern_numc=true
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	aux.AddCodeList(c,53727003)
@@ -88,8 +89,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.distg1(e,c)
-	local tc=e:GetLabelObject()
-	if c:IsType(TYPE_SPELL+TYPE_TRAP) then return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) else return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0) end
+	if c:IsType(TYPE_SPELL+TYPE_TRAP) then return c:IsOriginalCodeRule(e:GetLabelObject():GetOriginalCodeRule()) else return c:IsOriginalCodeRule(e:GetLabelObject():GetOriginalCodeRule()) and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0) end
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler():IsOriginalCodeRule(e:GetLabelObject():GetOriginalCodeRule())

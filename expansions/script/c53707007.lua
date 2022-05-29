@@ -1,9 +1,10 @@
 local m=53707007
 local cm=_G["c"..m]
 cm.name="清响 遗往镜"
+cm.main_peacecho=true
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
-	SNNM.Peacecho(c)
+	SNNM.Peacecho(c,TYPE_MONSTER)
 	SNNM.AllGlobalCheck(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -33,6 +34,7 @@ function cm.spcfilter(c)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.spcfilter,tp,LOCATION_DECK,0,1,nil) end
+	SNNM.UpConfirm()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.spcfilter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.ConfirmCards(1-tp,g)

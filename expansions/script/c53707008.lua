@@ -1,9 +1,10 @@
 local m=53707008
 local cm=_G["c"..m]
 cm.name="清响 妍叙梦"
+cm.main_peacecho=true
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
-	SNNM.Peacecho(c)
+	SNNM.Peacecho(c,TYPE_MONSTER)
 	SNNM.AllGlobalCheck(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -57,6 +58,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	SNNM.UpConfirm()
 	if e:GetLabel()==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g1=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)

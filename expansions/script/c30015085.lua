@@ -89,11 +89,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local p1=e:GetHandlerPlayer()
 	local g=Duel.GetMatchingGroup(cm.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 		local c=g:GetCount()
 		if #g>=3 then c=2 end 
-		local sg=g:Select(p,1,c,nil)
+		local sg=g:Select(p1,1,c,nil)
 		Duel.HintSelection(sg)
 		Duel.Destroy(sg,REASON_EFFECT)
 	end 

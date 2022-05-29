@@ -2,24 +2,24 @@ SNNM=SNNM or {}
 local cm=SNNM
 --53702700 alleffectreset
 function cm.AllGlobalCheck(c)
-	if not cm.global_check then
-		cm.global_check=true
+	if not cm.snnm_global_check then
+		cm.snnm_global_check=true
 		local x=c:GetOriginalCodeRule()
-		if x>=53707000 and x<=53707099 then
+		if c.main_peacecho then
 			local alle1=Effect.CreateEffect(c)
 			alle1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			alle1:SetCode(EFFECT_SEND_REPLACE)
 			alle1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 			alle1:SetTarget(cm.PeacechoToDeckTarget1)
 			alle1:SetValue(function(e,c) return false end)
-			Duel.RegisterEffect(alle1,0)
+			--Duel.RegisterEffect(alle1,0)
 			local alle2=Effect.CreateEffect(c)
 			alle2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			alle2:SetCode(EFFECT_SEND_REPLACE)
 			alle2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 			alle2:SetTarget(cm.PeacechoToDeckTarget2)
 			alle2:SetValue(function(e,c) return c:GetFlagEffect(53707099)>0 end)
-			Duel.RegisterEffect(alle2,0)
+			--Duel.RegisterEffect(alle2,0)
 			cm[0]=Duel.GetDecktopGroup
 			Duel.GetDecktopGroup=function(tp,ct)
 				Duel.RegisterFlagEffect(tp,53707000,RESET_CHAIN,0,0)
@@ -38,7 +38,8 @@ function cm.AllGlobalCheck(c)
 				g=g:Select(player,min,max,reason)
 				Duel.SendtoGrave(g,reason)
 				local ct=Duel.GetOperatedGroup():GetCount()
-				if ct>0 then return 1 else return 0 end
+				--if ct>0 then return 1 else return 0 end
+				return ct
 			end
 			cm[3]=Duel.RemoveOverlayCard
 			Duel.RemoveOverlayCard=function(player,ints,into,min,max,reason)
@@ -51,18 +52,21 @@ function cm.AllGlobalCheck(c)
 				sg=sg:Select(player,min,max,reason)
 				Duel.SendtoGrave(sg,reason)
 				local ct=Duel.GetOperatedGroup():GetCount()
-				if ct>0 then return 1 else return 0 end
+				--if ct>0 then return 1 else return 0 end
+				return ct
 			end
 			cm[4]=Duel.SendtoGrave
 			Duel.SendtoGrave=function(target,reason)
-				local tg=Group.__add(target,target)
-				local g=tg:Filter(function(c)return c:IsLocation(LOCATION_OVERLAY) and c:IsOriginalSetCard(0x3537) and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:GetOriginalType()&TYPE_PENDULUM+TYPE_LINK==0 and c:IsAbleToDeck()end,nil)
-				for tc in aux.Next(g) do
-					Duel.Hint(HINT_CARD,0,tc:GetOriginalCodeRule())
-					Duel.SendtoDeck(tc,nil,1,reason)
-					tc:ReverseInDeck()
-				end
-				cm[4](Group.__sub(tg,g),reason)
+				if reason&REASON_RULE==0 then
+					local tg=Group.__add(target,target)
+					local g=tg:Filter(function(c)return c:IsLocation(LOCATION_OVERLAY) and c.main_peacecho and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:IsAbleToDeck()end,nil)
+					for tc in aux.Next(g) do
+						Duel.Hint(HINT_CARD,0,tc:GetOriginalCodeRule())
+						Duel.SendtoDeck(tc,nil,1,reason)
+						tc:ReverseInDeck()
+					end
+					return cm[4](Group.__sub(tg,g),reason)
+				else return cm[4](target,reason) end
 			end
 			--cm[2]=Card.ReverseInDeck
 			--Card.ReverseInDeck=function(card)
@@ -70,21 +74,21 @@ function cm.AllGlobalCheck(c)
 				--return cm[2](card)
 			--end
 		end
-		if x>=53713000 and x<=53713099 then
+		if c.alc_yaku then
 			local alle3=Effect.CreateEffect(c)
 			alle3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			alle3:SetCode(EVENT_SSET)
 			alle3:SetOperation(cm.ALCYakuCheck)
 			Duel.RegisterEffect(alle3,0)
 		end
-		if x>=53703000 and x<=53703099 then
+		if c.organic_saucer then
 			local alle4=Effect.CreateEffect(c)
 			alle4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			alle4:SetCode(EVENT_SPSUMMON_SUCCESS)
 			alle4:SetOperation(cm.OSCheck)
 			Duel.RegisterEffect(alle4,0)
 		end
-		if x>=53727004 and x<=53727007 then
+		if c.cybern_numc then
 			local alle6=Effect.CreateEffect(c)
 			alle6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			alle6:SetCode(EVENT_CHAINING)
@@ -113,9 +117,20 @@ function cm.UpConfirm()
 	if #UCg>0 then Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(53702500,2)) end
 	if #UCg==1 then UCg:Select(tp,1,1,nil) elseif #UCg>1 then Duel.ConfirmCards(tp,UCg) end
 end
-function cm.Peacecho(c)
+function cm.Peacecho(c,typ)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DECK_REVERSE_CHECK)
-	if c:GetOriginalType()&TYPE_MONSTER~=0 then
+	local e1=Effect.CreateEffect(c)
+	e1:SetCode(EFFECT_SEND_REPLACE)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(0xff)
+	e1:SetTarget(cm.RePeacechotg1)
+	e1:SetOperation(cm.RePeacechoop)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetTarget(cm.RePeacechotg2)
+	c:RegisterEffect(e2)
+	if typ==TYPE_MONSTER then
 		local e4=Effect.CreateEffect(c)
 		e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
 		e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -125,7 +140,7 @@ function cm.Peacecho(c)
 		e4:SetOperation(cm.PeacechoDrawOperation)
 		c:RegisterEffect(e4)
 	end
-	if c:GetOriginalType()&0x20004~=0 then
+	if typ==TYPE_CONTINUOUS then
 		local e5=Effect.CreateEffect(c)
 		e5:SetCategory(CATEGORY_DRAW)
 		e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -135,7 +150,7 @@ function cm.Peacecho(c)
 		e5:SetOperation(cm.PeacechoDrawOperation2)
 		c:RegisterEffect(e5)
 	end
-	if c:GetOriginalType()&TYPE_FIELD~=0 then
+	if typ==TYPE_FIELD then
 		local e6=Effect.CreateEffect(c)
 		e6:SetCategory(CATEGORY_DRAW)
 		e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -151,6 +166,36 @@ function cm.Peacecho(c)
 	e9:SetRange(LOCATION_HAND+LOCATION_DECK)
 	e9:SetOperation(cm.UpRegi)
 	c:RegisterEffect(e9)
+end
+function cm.RePeacechotg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return not c:IsLocation(LOCATION_DECK) and c:GetDestination()==LOCATION_GRAVE and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:IsAbleToDeck() end
+	return true
+end
+function cm.RePeacechotg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsLocation(LOCATION_DECK) and c:GetDestination()==LOCATION_GRAVE and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetMinGroup(Card.GetSequence):GetFirst()~=c end
+	return true
+end
+function cm.RePeacechoop(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if c:IsFacedown() then Duel.ConfirmCards(1-tp,c) end
+	Duel.Hint(HINT_CARD,0,c:GetOriginalCode())
+	if c:IsLocation(LOCATION_DECK) then
+		if Duel.GetFlagEffect(tp,53707000)==0 then Duel.ShuffleDeck(tp) end
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e3:SetCode(EVENT_CHAIN_SOLVED)
+		e3:SetOperation(cm.RePeacechorst)
+		e3:SetLabelObject(e)
+		Duel.RegisterEffect(e3,tp)
+		Duel.MoveSequence(c,1)
+	else Duel.SendtoDeck(c,nil,1,REASON_RULE) end
+	c:ReverseInDeck()
+end
+function cm.RePeacechorst(e,tp,eg,ep,ev,re,r,rp,chk)
+	Duel.ResetFlagEffect(tp,53707000)
+	e:Reset()
 end
 function cm.PeacechoRepFilter(c)
 	return c:GetDestination()==LOCATION_GRAVE and c:IsOriginalSetCard(0x3537) and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:GetOriginalType()&TYPE_PENDULUM+TYPE_LINK==0 and c:IsAbleToDeck()
@@ -328,7 +373,7 @@ function cm.GraveActCostTarget(e,te,tp)
 	return te:GetHandler()==e:GetHandler() and te:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.GraveActCostOp(e,tp,eg,ep,ev,re,r,rp)
-	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 end
 function cm.FanippetTrapSPCondition(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp or ep==1-tp or re:GetHandler():IsCode(53716006)
@@ -339,7 +384,18 @@ function cm.FanippetTrapSPCost(code)
 		local c=e:GetHandler()
 		if chk==0 then return Duel.GetFlagEffect(tp,code)==0 and not c:IsLocation(LOCATION_ONFIELD) end
 		Duel.RegisterFlagEffect(tp,code,RESET_CHAIN,0,1)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e3:SetCode(EVENT_CHAIN_SOLVING)
+		e3:SetOperation(cm.Fanippetready)
+		e3:SetLabelObject(e)
+		Duel.RegisterEffect(e3,tp)
 	end
+end
+function cm.ready(e,tp)
+	e:GetLabelObject():GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
+	e:GetLabelObject():Reset()
+	e:Reset()
 end
 function cm.FanippetTrapSPTarget(code,atk,def,rac,att)
 	return
@@ -349,7 +405,7 @@ function cm.FanippetTrapSPTarget(code,atk,def,rac,att)
 		if not c:IsPreviousLocation(LOCATION_HAND) then
 			e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 			Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-		end
+		else e:SetCategory(0) end
 		e:SetLabel(c:GetPreviousLocation())
 	end
 end
@@ -2528,6 +2584,11 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 					end)
 				end
 			end
+		end
+		end
+		if cm.IsInTable(53796002,rstt) then
+		if se:GetRange()==LOCATION_PZONE and se:GetProperty()&EFFECT_FLAG_UNCOPYABLE==0 then
+			_G["c"..sc:GetOriginalCode()].pend_effect=se
 		end
 		end
 		if cm.IsInTable(53799017,rstt) then

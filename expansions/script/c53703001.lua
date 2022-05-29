@@ -1,6 +1,7 @@
 local m=53703001
 local cm=_G["c"..m]
 cm.name="圆盘生物 希尔巴布尔美"
+cm.organic_saucer=true
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.OrganicSaucer(c,1,m)

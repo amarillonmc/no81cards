@@ -1,4 +1,5 @@
 --归墟仲裁·沌涡
+--归墟仲裁·沌涡
 if not pcall(function() require("expansions/script/c16199990") end) then require("script/c16199990") end
 local m,cm=rk.set(30015100,"Overuins")
 function cm.initial_effect(c)
@@ -59,17 +60,6 @@ function cm.initial_effect(c)
 	e21:SetTarget(cm.sptg)
 	e21:SetOperation(cm.spop)
 	c:RegisterEffect(e21)
-	local e22=Effect.CreateEffect(c)
-	e22:SetDescription(aux.Stringid(30015500,3))
-	e22:SetCategory(CATEGORY_REMOVE+CATEGORY_TOHAND+CATEGORY_SUMMON)
-	e22:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e22:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e22:SetCode(EVENT_LEAVE_FIELD)
-	e22:SetLabelObject(e20)
-	e22:SetCondition(cm.spcon1)
-	e22:SetTarget(cm.sptg1)
-	e22:SetOperation(cm.spop1)
-	c:RegisterEffect(e22)
 end
 --summon proc
 function cm.otconfilter(c)
@@ -317,12 +307,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	   end
 	end
 end
+end
 function cm.thfilter(c)
 	return c:IsFacedown() and (c:IsSummonable(true,nil) or c:IsMSetable(true,nil)) and c:IsAbleToHand()
 end
 function cm.sum(c)
 	return c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
-end
-function cm.val(e,re,ev,r,rp,rc)
-	return bit.band(r,REASON_EFFECT)~=0
 end

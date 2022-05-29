@@ -1,6 +1,7 @@
 local m=53713001
 local cm=_G["c"..m]
 cm.name="爱丽丝役 TRS"
+cm.alc_yaku=true
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.ALCYakuNew(c,m,cm.confirm,LOCATION_HAND,{1900,300,4,RACE_WARRIOR,ATTRIBUTE_DARK})

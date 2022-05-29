@@ -1,6 +1,7 @@
 local m=53703008
 local cm=_G["c"..m]
 cm.name="圆盘生物 布莱克特琳娜"
+cm.organic_saucer=true
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.AllGlobalCheck(c)
@@ -86,8 +87,8 @@ function cm.ntrfilter(c)
 	return c:IsFaceup() and c:GetCounter(0x153a)>2 and c:IsControlerCanBeChanged()
 end
 function cm.ntrtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
 	local g=Duel.GetMatchingGroup(cm.ntrfilter,tp,0,LOCATION_MZONE,nil)
+	if chk==0 then return #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
 end

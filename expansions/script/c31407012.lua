@@ -73,7 +73,7 @@ function cm.stfilter2(c)
 	return not c:IsAttribute(ATTRIBUTE_DARK) 
 end
 function cm.stfilter(c,tc) 
-	return c:IsLocation(LOCATION_GRAVE) and c:IsAbleToRemove() and c:IsSynchroType(TYPE_TUNER) and c:IsCanBeSynchroMaterial(tc,nil,LOCATION_GRAVE)
+	return c:IsLocation(LOCATION_GRAVE) and c:IsAbleToRemove() and c:IsSynchroType(TYPE_TUNER) and c:IsCanBeSynchroMaterial(tc,c,LOCATION_GRAVE)
 end
 function cm.stfilterg(g,tp,tc,lv,smat)
 	if smat then

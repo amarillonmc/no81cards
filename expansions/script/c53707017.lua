@@ -1,9 +1,10 @@
 local m=53707017
 local cm=_G["c"..m]
 cm.name="幽谷清响"
+cm.main_peacecho=true
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
-	SNNM.Peacecho(c)
+	SNNM.Peacecho(c,TYPE_FIELD)
 	SNNM.AllGlobalCheck(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)

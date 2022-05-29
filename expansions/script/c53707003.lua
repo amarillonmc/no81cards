@@ -1,9 +1,10 @@
 local m=53707003
 local cm=_G["c"..m]
 cm.name="清响 念星觉"
+cm.main_peacecho=true
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
-	SNNM.Peacecho(c)
+	SNNM.Peacecho(c,TYPE_MONSTER)
 	SNNM.AllGlobalCheck(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -35,7 +36,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
 	if chk==0 then return true end
 end
---妈 的 ，我 脑 抽 忘 了 嵌 套 过 滤 器 了
+--妈 的 ，脑 抽 忘 了 嵌 套 过 滤 器 了
 function cm.rmfilter(c)
 	return c:IsRace(RACE_PLANT) and c:IsAbleToRemoveAsCost(POS_FACEDOWN)
 end
@@ -61,6 +62,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		return #tg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	end
 	local tempg,ct=tg:GetMaxGroup(Card.GetLevel)
+	SNNM.UpConfirm()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg=g:SelectSubGroup(tp,cm.fselect,false,1,ct,e,tp,tg)
 	Duel.ConfirmCards(1-tp,rg)

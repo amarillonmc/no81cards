@@ -1,6 +1,7 @@
 local m=53727006
 local cm=_G["c"..m]
 cm.name="漏洞修复"
+cm.cybern_numc=true
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	aux.AddCodeList(c,53727003)
