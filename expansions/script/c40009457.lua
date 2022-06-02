@@ -16,6 +16,7 @@ function cm.act(e,tp)
 	local ct,og,tc = rsop.SelectToHand(tp,cm.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil,{})
 	if tc and tc:IsLocation(LOCATION_HAND) and #g>0 and Duel.SendtoDeck(g,nil,0,REASON_EFFECT)>0 then
 		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK)
-		if ct>0 then Duel.SortDecktop(tp,tp,ct) end
+		--if ct>0 then Duel.SortDecktop(tp,tp,ct) end
 	end
+		if ct>0 then Duel.SortDecktop(tp,tp,ct) end
 end
