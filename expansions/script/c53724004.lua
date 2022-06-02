@@ -53,8 +53,8 @@ function cm.ltg(...)
 	aux.GetLinkMaterials=f
 	return res
 end
-function cm.GetLinkMaterials(tp,f,lc)
-	local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc)
+function cm.GetLinkMaterials(tp,f,lc,e)
+	local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc,e)
 	local mg2=Duel.GetMatchingGroup(Auxiliary.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
 	local mg3=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_SZONE,0,nil)
 	if mg2:GetCount()>0 then mg:Merge(mg2) end

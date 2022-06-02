@@ -145,6 +145,7 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	local seq2=seq
 	if re:IsActiveType(TYPE_MONSTER) then seq=aux.MZoneSequence(seq) end
 	if ((seq1==4-seq and rp==1-tp) or (seq1==seq and rp==tp)) or (rp==tp and math.abs(c:GetSequence()-seq)<=1 and loc==LOCATION_MZONE and seq2<5) then 
+	  local ph=PHASE_END
 	  if  Duel.GetCurrentPhase()==PHASE_DRAW then ph=PHASE_STANDBY end
 	  if  Duel.GetCurrentPhase()==PHASE_STANDBY then ph=PHASE_MAIN1 end
 	  if  Duel.GetCurrentPhase()==PHASE_MAIN1 then ph=PHASE_BATTLE end

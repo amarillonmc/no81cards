@@ -37,6 +37,10 @@ function cm.initial_effect(c)
 	e1:SetLabelObject(ex)
 	e2:SetLabelObject(ex)
 end
+function cm.matval(e,lc,mg,c,tp)
+	if e:GetHandler()~=lc then return false,nil end
+	return true,true
+end
 function cm.valcheck(e,c)
 	e:SetLabel(0)
 	if c:GetMaterial():IsExists(Card.IsLinkType,1,nil,TYPE_FUSION) then e:SetLabel(1) end
@@ -55,8 +59,8 @@ function cm.ltg(...)
 	aux.GetLinkMaterials=f
 	return res
 end
-function cm.GetLinkMaterials(tp,f,lc)
-	local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc)
+function cm.GetLinkMaterials(tp,f,lc,e)
+	local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc,e)
 	local mg2=Duel.GetMatchingGroup(Auxiliary.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
 	local mg3=Duel.GetMatchingGroup(function(c)return aux.IsCodeListed(c,53727003) and c:IsFacedown()end,tp,LOCATION_ONFIELD,0,nil)
 	if mg2:GetCount()>0 then mg:Merge(mg2) end

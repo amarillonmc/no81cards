@@ -48,7 +48,7 @@ end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,0,nil)
-	if chk==0 then return g:GetCount()>0 end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),tp,0)
 end
 function cm.desfilter(c)

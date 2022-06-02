@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	--spsummon
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(m,0))
-	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e6:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e6:SetType(EFFECT_TYPE_IGNITION)
 	e6:SetRange(LOCATION_FZONE)
 	e6:SetCountLimit(1)
