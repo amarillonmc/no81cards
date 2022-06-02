@@ -75,6 +75,7 @@ function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return rc:IsCanBeEffectTarget(e) end
 	Duel.SetTargetCard(rc)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,eg,1,0,0)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	local rc,c=rscf.GetTargetCard(),rscf.GetFaceUpSelf(e)
@@ -82,5 +83,11 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	local atk,def = rc:GetAttack(),rc:GetDefense()
 	if not c:IsAttackAbove(atk) or not c:IsDefenseAbove(def) then return end
 	local e1,e2=rscf.QuickBuff(c,"atk+,def+",{-atk,-def})
-	Duel.NegateActivation(ev)
+	if Duel.NegateActivation(ev) then
+		Duel.Release(eg,REASON_EFFECT)
+	end
+
+
+
+
 end
