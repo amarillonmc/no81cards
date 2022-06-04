@@ -1,5 +1,7 @@
 --D.A.L-夜刀神十香-ALTER
-function c33400320.initial_effect(c)
+local m=33400320
+local cm=_G["c"..m]
+function cm.initial_effect(c)
 	 c:EnableReviveLimit()
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
@@ -16,45 +18,46 @@ function c33400320.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetHintTiming(TIMING_DAMAGE_STEP)
-	e1:SetCountLimit(1,33400320)
-	e1:SetCondition(c33400320.atkcon)
-	e1:SetCost(c33400320.atkcost1)
-	e1:SetTarget(c33400320.atktg)
-	e1:SetOperation(c33400320.atkop1)
+	e1:SetCountLimit(1,m)
+	e1:SetCondition(cm.atkcon)
+	e1:SetCost(cm.atkcost1)
+	e1:SetTarget(cm.atktg)
+	e1:SetOperation(cm.atkop1)
 	c:RegisterEffect(e1)
 	  --Equip Okatana
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetOperation(c33400320.Eqop1)
+	e4:SetOperation(cm.Eqop1)
 	c:RegisterEffect(e4)
 	 --
 	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,5))	
 	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_REMOVE)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_BATTLE_DESTROYING)
 	e5:SetCondition(aux.bdcon)
-	e5:SetOperation(c33400320.desop)
+	e5:SetOperation(cm.desop)
 	c:RegisterEffect(e5)
 end
-function c33400320.atkcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
-function c33400320.atkcost1(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.atkcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
-function c33400320.atkfilter(c)
+function cm.atkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x341)
 end
-function c33400320.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c33400320.atkfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c33400320.atkfilter,tp,LOCATION_MZONE,0,1,nil) end
+function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.atkfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(cm.atkfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,c33400320.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SelectTarget(tp,cm.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
 end
-function c33400320.atkop1(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.atkop1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -70,22 +73,22 @@ function c33400320.atkop1(e,tp,eg,ep,ev,re,r,rp,chk)
 			e2:SetRange(LOCATION_MZONE)
 			e2:SetCode(EFFECT_IMMUNE_EFFECT)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			e2:SetValue(c33400320.efilter4)
+			e2:SetValue(cm.efilter4)
 			tc:RegisterEffect(e2)
 	   end
 	end
 end
-function c33400320.efilter4(e,te)
+function cm.efilter4(e,te)
 	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 
-function c33400320.Eqop1(e,tp,eg,ep,ev,re,r,rp)
+function cm.Eqop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsLocation(LOCATION_MZONE) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
-		c33400320.TojiEquip(c,e,tp,eg,ep,ev,re,r,rp)
+		cm.TojiEquip(c,e,tp,eg,ep,ev,re,r,rp)
 	end
 end
-function c33400320.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
+function cm.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 	local token=Duel.CreateToken(tp,33400321)
 	Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	token:CancelToGrave()
@@ -108,7 +111,7 @@ function c33400320.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 			local e4=Effect.CreateEffect(ec)
 			e4:SetType(EFFECT_TYPE_EQUIP)
 			e4:SetCode(EFFECT_IMMUNE_EFFECT)
-			e4:SetValue(c33400320.efilter1)
+			e4:SetValue(cm.efilter1)
 			token:RegisterEffect(e4)
 			--indes
 			local e5=Effect.CreateEffect(ec)
@@ -116,7 +119,7 @@ function c33400320.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 			e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 			e5:SetRange(LOCATION_SZONE)
 			e5:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
-			e5:SetValue(c33400320.valcon)
+			e5:SetValue(cm.valcon)
 			e5:SetCountLimit(1)
 			token:RegisterEffect(e5)
 			--atkup
@@ -127,20 +130,20 @@ function c33400320.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 			e3:SetRange(LOCATION_SZONE)
 			e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 			e3:SetCountLimit(1)
-			e3:SetOperation(c33400320.atkop)
+			e3:SetOperation(cm.atkop)
 			token:RegisterEffect(e3)
 		   
 	return true
 	else Duel.SendtoGrave(token,REASON_RULE) return false
 	end
 end
-function c33400320.efilter1(e,re)
+function cm.efilter1(e,re)
 	return e:GetHandlerPlayer()~=re:GetOwnerPlayer()
 end
-function c33400320.valcon(e,re,r,rp)
+function cm.valcon(e,re,r,rp)
 	return bit.band(r,REASON_EFFECT)~=0
 end
-function c33400320.atkop(e,tp,eg,ep,ev,re,r,rp)
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ec=c:GetEquipTarget()
 	if ec and c:IsRelateToEffect(e) then
@@ -152,10 +155,10 @@ function c33400320.atkop(e,tp,eg,ep,ev,re,r,rp)
 		ec:RegisterEffect(e1)
 	end
 end
-function c33400320.refilter(c)
+function cm.refilter(c)
 	return  c:IsAbleToRemove() 
 end
-function c33400320.desop(e,tp,eg,ep,ev,re,r,rp)  
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)  
 local c=e:GetHandler()
 	 local g1=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	 local e1=Effect.CreateEffect(c)
@@ -167,14 +170,14 @@ local c=e:GetHandler()
 	 if c:IsChainAttackable() then
 			Duel.ChainAttack()
 		end
-	if Duel.SelectYesNo(tp,aux.Stringid(33400320,1)) then
+	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		 local tc=g1:Select(tp,1,1,nil)
 		 Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
 	end
-	if Duel.GetTurnPlayer()~=tp and Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE+LOCATION_HAND,0,1,nil)and  Duel.IsExistingMatchingCard(c33400320.refilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(33400320,2)) then 
+	if Duel.GetTurnPlayer()~=tp and Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE+LOCATION_HAND,0,1,nil)and  Duel.IsExistingMatchingCard(cm.refilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then 
 	local g3=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
-	local g4=Duel.GetMatchingGroup(c33400320.refilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
+	local g4=Duel.GetMatchingGroup(cm.refilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
 	local t3=g3:GetCount()
 	local t4=g4:GetCount()
 	local t5

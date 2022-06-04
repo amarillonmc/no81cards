@@ -5,6 +5,7 @@ function c33400303.initial_effect(c)
 	aux.AddLinkProcedure(c,c33400303.matfilter,1,1)
 	--copy effect
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(33400303,5))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EVENT_FREE_CHAIN)

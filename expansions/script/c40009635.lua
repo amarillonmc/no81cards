@@ -41,6 +41,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local b1=Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil)
 	local b2=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil,e,tp)
+	--local b2=true
 	if chk==0 then return b1 or b2 end
 	local op=0
 	if b1 and b2 then
