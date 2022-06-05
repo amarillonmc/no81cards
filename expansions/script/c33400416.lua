@@ -3,7 +3,7 @@ local m=33400416
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	 --xyz summon
-	aux.AddXyzProcedure(c,cm.xyzfilter,4,2)
+	aux.AddXyzProcedureLevelFree(c,cm.xyzfilter,nil,2,2)
 	c:EnableReviveLimit()
  --tograve
 	local e1=Effect.CreateEffect(c)
@@ -35,7 +35,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.xyzfilter(c)
-	return c:IsSetCard(0x341) 
+	return (c:IsLevel(4) and  c:IsSetCard(0x5342)) or (c:IsType(TYPE_RITUAL) and c:IsSetCard(0x341))
 end
 
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)

@@ -3,7 +3,6 @@ xpcall(function() require("expansions/script/c71400001") end,function() require(
 function c71400030.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,yume.YumeLMGFilterFunction(c))
-	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
 	--indes
@@ -13,6 +12,7 @@ function c71400030.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e1:SetValue(1)
+	e1:SetCondition(yume.nonRustCon)
 	c:RegisterEffect(e1)
 	local e1a=e1:Clone()
 	e1a:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
@@ -42,7 +42,7 @@ function c71400030.cfilter2(c,g)
 	return g:IsContains(c)
 end
 function c71400030.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()==0 and eg:IsExists(c71400030.filter2,1,nil)
+	return Duel.GetCurrentChain()==0 and eg:IsExists(c71400030.filter2,1,nil) and not yume.IsRust(tp)
 end
 function c71400030.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

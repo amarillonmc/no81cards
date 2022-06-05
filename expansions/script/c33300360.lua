@@ -47,7 +47,7 @@ function cm.sumcon(e,c)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.rfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 end
 function cm.sumop(e,tp,eg,ep,ev,re,r,rp,c)
-	local sg=Duel.SelectMatchingCard(tp,cm.rfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,2,2,nil)
+	local sg=Duel.SelectMatchingCard(tp,cm.rfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	if sg:GetCount()>0 then
 		Duel.ChangePosition(sg,POS_FACEDOWN_DEFENSE)
 	end

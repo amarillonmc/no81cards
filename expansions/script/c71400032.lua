@@ -44,11 +44,8 @@ function c71400032.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c71400032.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsFaceup() and c:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsRelateToEffect(e)
-		and tc:IsType(TYPE_EFFECT) and not tc:IsImmuneToEffect(e) then
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
 		c:SetCardTarget(tc)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -70,13 +67,13 @@ function c71400032.op2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71400032.filter2(c)
-	return c:IsFaceup() and c:IsRace(RACE_PLANT)
+	return c:IsRace(RACE_PLANT) and aux.NegateMonsterFilter(c)
 end
 function c71400032.filter2a(c)
 	return c:IsSetCard(0xd714) and c:IsAbleToHand()
 end
 function c71400032.filter2b(c)
-	return c:IsSetCard(0x716) and c:IsType(TYPE_LINK) and c:IsFaceup()
+	return c:IsSetCard(0x714) and c:IsType(TYPE_LINK) and c:IsFaceup()
 end
 function c71400032.rcon(e)
 	local c=e:GetHandler()

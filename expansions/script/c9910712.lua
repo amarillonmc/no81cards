@@ -3,6 +3,8 @@ function c9910712.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xc950),2,2)
+	--flag
+	Ygzw.AddTgFlag(c)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910712,0))

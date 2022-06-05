@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_TO_HAND)
 	e3:SetRange(LOCATION_SZONE)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetOperation(cm.pcop)
 	c:RegisterEffect(e3)
 	--search
@@ -27,6 +28,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCountLimit(1,m)
+	e4:SetCondition(cm.sccon)
 	e4:SetTarget(cm.sctg)
 	e4:SetOperation(cm.scop)
 	c:RegisterEffect(e4)
@@ -56,7 +58,7 @@ function cm.filter(c)
 	return not c:IsReason(REASON_DRAW)
 end
 function cm.filter2(c)
-	return c:IsCode(11451461) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE))
+	return (c:IsCode(11451461) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)))
 end
 function cm.filter3(c)
 	return c:IsSetCard(0x97a) and c:IsAbleToHand()
@@ -82,8 +84,11 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 	end
 end
+function cm.sccon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,1,nil)
+end
 function cm.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) and Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.scop(e,tp,eg,ep,ev,re,r,rp)

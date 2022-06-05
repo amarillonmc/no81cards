@@ -128,6 +128,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local tg=hg:FilterSelect(tp,Card.IsLevel,1,1,nil,rct*2)
 				Duel.SendtoHand(tg,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,tg)
 			end
 		end
 	end
@@ -154,6 +155,9 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,2,REASON_EFFECT)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local g=eg:FilterSelect(tp,cm.thfilter,1,1,nil,e)
-		if #g>0 then Duel.SendtoHand(g,nil,REASON_EFFECT) end
+		if #g>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
+		end
 	end
 end

@@ -92,5 +92,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SendtoHand(c,nil,REASON_EFFECT)
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END+RESET_SELF_TURN,0,2)
+	Duel.ConfirmCards(1-tp,c)
+	if Duel.GetTurnPlayer()==tp then
+		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END+RESET_SELF_TURN,0,2)
+	else
+		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END+RESET_SELF_TURN,0,1)
+	end
 end

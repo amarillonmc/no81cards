@@ -1,4 +1,4 @@
---妄想咒阈 退相干诠释
+--paranomain decoherent histories
 --21.08.04
 local m=11451200
 local cm=_G["c"..m]

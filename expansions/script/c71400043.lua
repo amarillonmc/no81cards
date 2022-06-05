@@ -4,7 +4,6 @@ function c71400043.initial_effect(c)
 	c:SetSPSummonOnce(71400043)
 	--link summon
 	aux.AddLinkProcedure(c,c71400043.matfilter,1,1,yume.YumeCheck(c))
-	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
 	--tohand
@@ -30,6 +29,7 @@ function c71400043.initial_effect(c)
 	e2:SetOperation(c71400043.op2)
 	e2:SetTarget(c71400043.tg2)
 	c:RegisterEffect(e2)
+	--[[
 	--banish
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(71400043,2))
@@ -42,7 +42,6 @@ function c71400043.initial_effect(c)
 	e3:SetCost(c71400043.cost3)
 	e3:SetTarget(c71400043.tg3)
 	c:RegisterEffect(e3)
-	--[[
 	--tohand
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(71400043,2))
@@ -59,7 +58,7 @@ function c71400043.matfilter(c)
 	return c:IsSetCard(0x714) and not c:IsLinkType(TYPE_LINK)
 end
 function c71400043.con1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and not yume.IsRust(tp)
 end
 function c71400043.filter1(c)
 	return c:IsSetCard(0xd714) and c:IsAbleToHand()
@@ -77,7 +76,7 @@ function c71400043.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71400043.con2(e,tp,eg,ep,ev,re,r,rp)
-	return not (Duel.GetFlagEffect(tp,71400038)>0 or e:GetHandler():IsStatus(STATUS_SPSUMMON_TURN))
+	return not e:GetHandler():IsStatus(STATUS_SPSUMMON_TURN)
 end
 function c71400043.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -92,8 +91,9 @@ function c71400043.op2(e,tp,eg,ep,ev,re,r,rp)
 	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 	local id=0
 	if fc and fc:IsFaceup() then id=fc:GetCode() end
-	yume.ActivateYumeField(tp,id,2,LOCATION_GRAVE+LOCATION_DECK)
+	yume.ActivateYumeField(e,tp,id,2,LOCATION_GRAVE+LOCATION_DECK)
 end
+--[[
 function c71400043.con3(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,71400038)>0
 end
@@ -113,7 +113,6 @@ function c71400043.op3(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c71400043.filter3,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
 	Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
 end
---[[
 function c71400043.filter3a(c)
 	return c:IsSetCard(0x5714) and c:IsAbleToDeck() and not c:IsPublic()
 end

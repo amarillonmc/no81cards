@@ -1,4 +1,4 @@
---幻异梦物-魔女
+--幻异梦像-魔女
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400019.initial_effect(c)
 	--Activate

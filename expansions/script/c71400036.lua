@@ -1,4 +1,4 @@
---幻异梦物-狼
+--幻异梦像-狼
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400036.initial_effect(c)
 	--summon limit

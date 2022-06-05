@@ -4,6 +4,8 @@ function c9910728.initial_effect(c)
 	--special summon
 	Ygzw.AddSpProcedure(c,3)
 	c:EnableReviveLimit()
+	--flag
+	Ygzw.AddTgFlag(c)
 	--to grave
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_LEAVE_GRAVE)

@@ -1,6 +1,8 @@
 --远古造物 三峡夷陵虫
 require("expansions/script/c9910700")
 function c9910702.initial_effect(c)
+	--flag
+	Ygzw.AddTgFlag(c)
 	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DRAW)

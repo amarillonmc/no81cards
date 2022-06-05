@@ -39,12 +39,12 @@ end
 function cm.repfilter(c,tp)
 	return c:IsControler(tp) and c:IsType(TYPE_PENDULUM) and ((c:GetLeaveFieldDest()==0 and c:IsLocation(LOCATION_ONFIELD) and c:GetDestination()==LOCATION_GRAVE) or (c:GetLeaveFieldDest()==0 and c:GetDestination()==LOCATION_EXTRA) or c:GetLeaveFieldDest()==LOCATION_EXTRA) and not c:IsLocation(LOCATION_PZONE)
 end
-function cm.seqfilter(c)
+function cm.seqfilter(c,tp)
 	return c:GetSequence()==0 or c:GetSequence()==4
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local tg=Duel.GetMatchingGroup(cm.seqfilter,tp,LOCATION_SZONE,0,nil)
+	local tg=Duel.GetMatchingGroup(cm.seqfilter,tp,LOCATION_SZONE,0,nil,tp)
 	local num=0
 	if Duel.CheckLocation(tp,LOCATION_PZONE,0) then num=num+1 end
 	if Duel.CheckLocation(tp,LOCATION_PZONE,1) then num=num+1 end

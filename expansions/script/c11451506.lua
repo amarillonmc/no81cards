@@ -6,7 +6,6 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -15,7 +14,6 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_CHAINING)
-	e2:SetCondition(cm.condition)
 	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.activate)
@@ -34,9 +32,6 @@ function cm.initial_effect(c)
 	e4:SetCondition(cm.chcon)
 	e4:SetOperation(cm.chop)
 	c:RegisterEffect(e4)
-end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
@@ -111,6 +106,17 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 			Duel.HintSelection(g)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
+		end
+	end
+	if re:GetHandler():GetOriginalCode()==11451510 then
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			if Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+				local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+				Duel.HintSelection(g)
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
+			end
+			op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	re:SetOperation(repop)

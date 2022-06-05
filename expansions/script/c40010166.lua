@@ -6,6 +6,10 @@ function cm.linkjoker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_linkjoker
 end
+function cm.Reverse(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Reverse
+end
 function cm.initial_effect(c)
 	--remove
 	local e1=Effect.CreateEffect(c)
@@ -186,7 +190,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsLocation(LOCATION_GRAVE) and r==REASON_LINK and c:GetReasonCard().named_with_linkjoker
 end
 function cm.spfilter(c,e,tp)
-	return cm.linkjoker(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return cm.linkjoker(c)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

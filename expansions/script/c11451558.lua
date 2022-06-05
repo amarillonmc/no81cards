@@ -185,5 +185,8 @@ function cm.exop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	if #g==0 then return end
 	local ag=g:RandomSelect(tp,e:GetLabel())
-	if Duel.SendtoHand(ag,tp,REASON_EFFECT)>0 then Duel.ShuffleHand(1-tp) end
+	if Duel.SendtoHand(ag,tp,REASON_EFFECT)>0 then
+		Duel.ConfirmCards(1-tp,ag)
+		Duel.ShuffleHand(1-tp)
+	end
 end

@@ -12,9 +12,13 @@ function c22021390.initial_effect(c)
 	c:RegisterEffect(e1)
 	--act in hand
 	local e2=Effect.CreateEffect(c)
+	e2:SetCondition(c22021390.condition)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	c:RegisterEffect(e2)
+end
+function c22021390.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
 end
 function c22021390.cfilter(c,tp)
 	return c:IsSummonPlayer(tp) and c:IsPreviousLocation(LOCATION_DECK+LOCATION_EXTRA)
@@ -25,9 +29,7 @@ end
 function c22021390.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SelectOption(tp,aux.Stringid(22021390,0))
-	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
-		Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
-	end
+	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 function c22021390.desfilter(c)
 	return c:IsType(TYPE_MONSTER)

@@ -180,7 +180,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local mg1=mg:Filter(Card.IsLocation,nil,LOCATION_MZONE)
 		local mg2=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_SZONE,0,nil,e)
 		mg2:Merge(mg1)
-		res=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg2,nil,chkf)
+		local res=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg2,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
 			if ce~=nil then

@@ -44,6 +44,7 @@ end
 function c71400014.op1(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(71400014,3)) then return end
 	Duel.Hint(HINT_CARD,0,71400014)
+	local c=e:GetHandler()
 	c:RegisterFlagEffect(71400014,RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(71400014,0))
 	Duel.Hint(HINT_SELECTMSG,rp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(rp,nil,rp,LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(re))
@@ -54,7 +55,6 @@ function c71400014.op1(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Recover(rp,1000,REASON_EFFECT)
 		end
 	end
-	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -78,7 +78,7 @@ function c71400014.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,1000)
 end
 function c71400014.filter2(c)
-	return c:IsXyzSummonable(nil) and c:IsSetCard(0x715)
+	return c:IsXyzSummonable(nil) and c:IsSetCard(0x714)
 end
 function c71400014.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71400014.filter2,tp,LOCATION_EXTRA,0,1,nil) end
@@ -86,7 +86,6 @@ function c71400014.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71400014.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(c71400014.filter2,tp,LOCATION_EXTRA,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -114,7 +113,7 @@ function c71400014.regop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function c71400014.filter3a(c)
-	return c:IsSetCard(0x715) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x714) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
 end
 function c71400014.filter3b(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x714) and (c:IsFaceup() or not c:IsLocation(LOCATION_MZONE))
@@ -127,10 +126,9 @@ function c71400014.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c71400014.op3(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,c71400014.filter3b,tp,LOCATION_HAND+LOCATION_MZONE,0,2,2,nil)
-	if g:GetCount()==2 and Duel.Destroy(g,REASON_EFFECT)~=0 then
+	if g:GetCount()==2 and Duel.Destroy(g,REASON_EFFECT)==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=Duel.SelectMatchingCard(tp,c71400014.filter3a,tp,LOCATION_DECK,0,1,1,nil)
 		if sg:GetCount()>0 then

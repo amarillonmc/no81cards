@@ -17,25 +17,27 @@ function c71400027.initial_effect(c)
 	e2:SetDescription(aux.Stringid(71400027,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PREDRAW)
+	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(c71400027.tg1)
-	e2:SetOperation(c71400027.op1)
-	e2:SetCondition(yume.YumeCon)
+	e2:SetTarget(c71400027.tg2)
+	e2:SetOperation(c71400027.op2)
+	e2:SetCondition(c71400027.con2)
 	c:RegisterEffect(e2)
 end
 function c71400027.con1(e,tp,eg,ep,ev,re,r,rp)
 	return yume.IsYumeFieldOnField(tp) and rp==1-tp and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER)
-		and Duel.IsChainNegatable(ev)
 end
 function c71400027.filter1(c)
-	return not (c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x714))
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x714)
 end
 function c71400027.op1(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	Duel.SetLP(tp,Duel.GetLP(tp)-math.ceil(tc:GetBaseAttack()/2))
-	if not Duel.IsExistingMatchingCard(c71400027.filter1,tp,LOCATION_MZONE,0,1,nil then
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	if g:FilterCount(c71400027.filter1,nil)==g:GetCount() and Duel.IsChainDisablable(ev) then
 		Duel.BreakEffect()
-		if Duel.NegateEffect(ev) and rc:IsRelateToEffect(re) and not rc:IsStatus(STATUS_BATTLE_DESTROYED) then
+		Duel.NegateEffect(ev)
+		if rc:IsRelateToEffect(re) and not rc:IsStatus(STATUS_BATTLE_DESTROYED) then
 			Duel.GetControl(tc,tp)
 		end
 	end
@@ -43,12 +45,16 @@ end
 function c71400027.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local rc=re:GetHandler()
-	if not Duel.IsExistingMatchingCard(c71400027.filter1,tp,LOCATION_MZONE,0,1,nil then
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	if g:FilterCount(c71400027.filter1,nil)==g:GetCount() then
 		Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 		if rc:IsRelateToEffect(re) and not rc:IsStatus(STATUS_BATTLE_DESTROYED) then
 			Duel.SetOperationInfo(0,CATEGORY_CONTROL,eg,1,0,0)
 		end
 	end
+end
+function c71400027.con2(e,tp,eg,ep,ev,re,r,rp)
+	return yume.IsYumeFieldOnField(tp) and Duel.IsExistingMatchingCard(c71400027.filter1,tp,LOCATION_MZONE,0,1,nil)
 end
 function c71400027.filter2(c)
 	return c:IsFaceup() and c:IsAbleToChangeControler()

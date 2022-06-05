@@ -1,9 +1,8 @@
---异梦迷宫的狐面武士-师傅
+--异梦迷宫的狐侍-师傅
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400012.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,yume.YumeCheck(c,true),aux.NonTuner(yume.YumeCheck(c)),1)
-	c:EnableReviveLimit()
+	aux.AddSynchroProcedure(c,yume.YumeCheck(c,true),aux.NonTuner(nil),1)
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
 	--immune

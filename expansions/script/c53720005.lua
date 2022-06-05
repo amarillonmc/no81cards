@@ -34,8 +34,8 @@ end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
-function cm.filter1(c)
-	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_FIEND)
+function cm.filter1(c,e,tp)
+	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsRace(RACE_FIEND) and (c:IsLocation(LOCATION_MZONE) or c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
 function cm.filter2(c)
 	return c:IsSetCard(0x353e) and c:IsLevelAbove(8) and c:IsAbleToHand()
@@ -52,9 +52,12 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
 		Duel.BreakEffect()
+		local ng=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,e,tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=Duel.SelectMatchingCard(tp,cm.filter1,tp,LOCATION_HAND+LOCATION_MZONE,0,1,2,nil)
-		if dg:GetCount()>0 then Duel.Destroy(dg,REASON_EFFECT) end
+		local dg=ng:SelectSubGroup(tp,function(g,ft)return ft>=g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)end,false,1,2,Duel.GetLocationCount(tp,LOCATION_MZONE))
+		if #dg==0 then return end
+		for dc in aux.Next(dg) do if dc:IsLocation(LOCATION_HAND) then Duel.SpecialSummon(dc,0,tp,tp,false,false,POS_FACEUP) end end
+		Duel.Destroy(dg,REASON_EFFECT)
 	end
 end
 function cm.descfilter(c)

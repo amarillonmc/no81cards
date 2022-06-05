@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_BE_BATTLE_TARGET)
 	e2:SetRange(LOCATION_SZONE)
@@ -99,8 +100,13 @@ end
 function cm.spfilter(c,e,tp)
 	return c:GetAttack()==1700 and c:GetDefense()==1000 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,e,tp)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,e,tp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=g:Select(tp,1,1,nil)
@@ -120,11 +126,13 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=e:GetHandler():GetCardTarget()
 	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,g) and c:IsCanTurnSet() end
-	g:KeepAlive()
-	e:SetLabelObject(g)
-	Duel.ChangePosition(c,POS_FACEDOWN)
-	Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
-	return true
+	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
+		g:KeepAlive()
+		e:SetLabelObject(g)
+		Duel.ChangePosition(c,POS_FACEDOWN)
+		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+		return true
+	else return false end
 end
 function cm.repval(e,c)
 	local g=e:GetLabelObject()

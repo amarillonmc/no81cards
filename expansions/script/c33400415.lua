@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_BE_MATERIAL)
 	e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
-	e2:SetCountLimit(1,m+10000)
+	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.efcon)
 	e2:SetOperation(cm.efop)
 	c:RegisterEffect(e2)
@@ -54,7 +54,7 @@ end
 
 function cm.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return r==REASON_XYZ and c:GetReasonCard():IsSetCard(0x341)
+	return r==REASON_XYZ and c:GetReasonCard():IsSetCard(0xc343)
 end
 function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -102,5 +102,5 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.splimit(e,c)
-	return not c:IsSetCard(0x341)
+	return not c:IsSetCard(0xc343)
 end

@@ -1,4 +1,4 @@
---妄想咒阈 麦克斯韦妖
+--paranomain maxwell's demon
 --21.06.24
 local m=11451100
 local cm=_G["c"..m]
@@ -43,8 +43,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		g:RemoveCard(minc)
 	end
 	if sel then
-		local _,exatk=g2goal:GetMaxGroup(cm.atkfun,tp)
-		local rg=g2goal:Filter(cm.filter2,nil,tp,exatk)
+		local rg,exatk=g2goal:GetMaxGroup(cm.atkfun,tp)
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
 		local sg=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,#rg,#rg,nil,tp,exatk)
 		g2goal=Group.__sub(g2goal,rg)+sg

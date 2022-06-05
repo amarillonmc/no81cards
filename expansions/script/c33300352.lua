@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x563) and c:IsAbleToGrave() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x563) and c:IsAbleToGrave()-- and c:IsType(TYPE_MONSTER)
 end
 function cm.postg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

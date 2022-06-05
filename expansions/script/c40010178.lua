@@ -25,13 +25,13 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EFFECT_DESTROY_REPLACE)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,29280590+1)
+	e2:SetCountLimit(1,m+1)
 	e2:SetTarget(cm.reptg)
 	e2:SetValue(cm.repval)
 	c:RegisterEffect(e2)  
 end
 function cm.filter(c,e,tp)
-	return (cm.linkjoker(c) or cm.Reverse(c)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return cm.linkjoker(c)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

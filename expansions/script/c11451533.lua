@@ -130,8 +130,11 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetDecktopGroup(tp,1):GetFirst()
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and tc and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 then
-		Duel.DisableShuffleCheck()
-		Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
+	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 then
+		Duel.ConfirmCards(1-tp,c)
+		if tc then
+			Duel.DisableShuffleCheck()
+			Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
+		end
 	end
 end

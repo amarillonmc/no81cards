@@ -57,11 +57,14 @@ end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return c:IsCode(m) and bit.band(sumtype,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK
 end
+function cm.rmcfilter(c)
+	return not c:IsType(TYPE_LINK)
+end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and Duel.IsExistingMatchingCard(cm.rmcfilter,c:GetControler(),0,LOCATION_EXTRA,1,nil)
 end
 function cm.filter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_ATTACK)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_ATTACK) and not c:IsType(TYPE_LINK)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)

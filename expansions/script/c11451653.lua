@@ -29,12 +29,6 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.operation)
 	c:RegisterEffect(e4)
 end
-function cm.filter(c,e,tp)
-	return c:IsSetCard(0x6978) and c:IsAbleToGrave()
-end
-function cm.filter3(c)
-	return c:IsFaceup() and bit.band(c:GetType(),0x81)==0x81 and c:IsSetCard(0x6978) and c:IsSummonType(SUMMON_TYPE_RITUAL)
-end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)==0
 end

@@ -43,7 +43,7 @@ function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Group.CreateGroup()
 	for tc in aux.Next(eg) do
 		local te=tc:GetReasonEffect()
-		if te and te:GetHandler():IsSetCard(0x97f) and tc:IsReason(REASON_EFFECT) then return end
+		if te and te:GetOwner():IsOriginalSetCard(0x97f) and tc:IsReason(REASON_EFFECT) then return end
 		if tc:GetReasonPlayer()==0 and tc:GetOwner()==0 then
 			g1:AddCard(tc)
 		elseif tc:GetReasonPlayer()==1 and tc:GetOwner()==1 then
@@ -59,7 +59,8 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local op=0
-	local tg=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0):GetMinGroup(Card.GetSequence):Filter(Card.IsCanOverlay,nil)
+	--local tg=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0):GetMinGroup(Card.GetSequence):Filter(Card.IsCanOverlay,nil)
+	local tg=eg:Filter(Card.IsLocation,nil,LOCATION_GRAVE):Filter(Card.IsCanOverlay,nil)
 	local b1=e:GetHandler():IsType(TYPE_XYZ) and #tg>0 and Duel.IsPlayerCanDiscardDeck(tp,1)
 	local b2=e:GetHandler():GetOverlayGroup():IsExists(cm.thfilter,1,nil,e,1-tp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,4))
@@ -72,6 +73,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	if op==1 then
 		e:SetCategory(CATEGORY_DECKDES)
+		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,tg,#tg,0,0)
 		Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,1)
 	elseif op==2 then
 		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
@@ -86,7 +88,8 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if e:GetLabel()==1 then
-		local tg=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0):GetMinGroup(Card.GetSequence):Filter(cm.matfilter,nil,e)
+		--local tg=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0):GetMinGroup(Card.GetSequence):Filter(cm.matfilter,nil,e)
+		local tg=eg:Filter(Card.IsLocation,nil,LOCATION_GRAVE):Filter(cm.matfilter,nil,e)
 		if #tg==0 or not c:IsRelateToEffect(e) then return end
 		Duel.Overlay(c,tg)
 		Duel.DiscardDeck(tp,1,REASON_EFFECT)

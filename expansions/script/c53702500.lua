@@ -313,25 +313,7 @@ function cm.Faceupdeckcheck(g,tp)
 	end
 end
 --
-function cm.FanippetTrap(c,lpc,code,atk,def,rac,att)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(53702500,0))
-	e1:SetCode(EVENT_CUSTOM+code)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(cm.FanippetTrapSPCondition)
-	e1:SetCost(cm.FanippetTrapSPCost(code))
-	e1:SetTarget(cm.FanippetTrapSPTarget(code,atk,def,rac,att))
-	e1:SetOperation(cm.FanippetTrapSPOperation(lpc,code,atk,def,rac,att))
-	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetRange(LOCATION_GRAVE)
-	c:RegisterEffect(e2)
-	local e21=e1:Clone()
-	e21:SetCode(EVENT_FREE_CHAIN)
-	e21:SetProperty(0)
-	e21:SetCondition(function(e)return false end)
-	c:RegisterEffect(e21)
+function cm.FanippetTrap(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
@@ -341,7 +323,7 @@ function cm.FanippetTrap(c,lpc,code,atk,def,rac,att)
 	e4:SetCode(EFFECT_ACTIVATE_COST)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetTargetRange(1,0)
+	e4:SetTargetRange(1,1)
 	e4:SetCost(cm.GraveActCostchk)
 	e4:SetTarget(cm.GraveActCostTarget)
 	e4:SetOperation(cm.GraveActCostOp)
@@ -392,16 +374,16 @@ function cm.FanippetTrapSPCost(code)
 		Duel.RegisterEffect(e3,tp)
 	end
 end
-function cm.ready(e,tp)
+function cm.Fanippetready(e,tp)
 	e:GetLabelObject():GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
 	e:GetLabelObject():Reset()
 	e:Reset()
 end
-function cm.FanippetTrapSPTarget(code,atk,def,rac,att)
+function cm.FanippetTrapSPTarget(code,dt)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp,chk)
 		local c=e:GetHandler()
-		if chk==0 then return c:IsLocation(LOCATION_HAND) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,atk,def,4,rac,att)) end
+		if chk==0 then return c:IsLocation(LOCATION_HAND) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,table.unpack(dt))) end
 		if not c:IsPreviousLocation(LOCATION_HAND) then
 			e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 			Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
@@ -409,12 +391,12 @@ function cm.FanippetTrapSPTarget(code,atk,def,rac,att)
 		e:SetLabel(c:GetPreviousLocation())
 	end
 end
-function cm.FanippetTrapSPOperation(lpc,code,atk,def,rac,att)
+function cm.FanippetTrapSPOperation(lpc,code,dt)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or e:GetLabel()==LOCATION_HAND then return end
 		local c=e:GetHandler()
-		if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,atk,def,4,rac,att) then
+		if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,table.unpack(dt)) then
 			c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
 			if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
 				Duel.SetLP(tp,Duel.GetLP(tp)-lpc)
@@ -2236,14 +2218,15 @@ function cm.ORsideLink(c,f,min,max,gf,code)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetRange(LOCATION_EXTRA)
 	if max==nil then max=c:GetLink() end
-	e1:SetCondition(aux.LinkCondition(f,min,max,gf,code))
-	e1:SetTarget(aux.LinkTarget(f,min,max,gf))
-	e1:SetOperation(aux.LinkOperation(f,min,max,gf))
+	e1:SetCondition(cm.LinkCondition(f,min,max,gf,code))
+	e1:SetTarget(cm.LinkTarget(f,min,max,gf))
+	e1:SetOperation(cm.LinkOperation(f,min,max,gf))
 	e1:SetValue(SUMMON_TYPE_LINK)
 	c:RegisterEffect(e1)
 end
-function cm.LConditionFilter(c,f,lc)
-	return (c:IsFaceup() or not c:IsOnField()) and c:IsCanBeLinkMaterial(lc) and (not f or f(c))
+function cm.LConditionFilter(c,f,lc,e)
+	return (c:IsFaceup() or not c:IsOnField() or e:IsHasProperty(EFFECT_FLAG_SET_AVAILABLE))
+		and c:IsCanBeLinkMaterial(lc) and (not f or f(c))
 end
 function cm.LExtraFilter(c,f,lc,tp)
 	if c:IsLocation(LOCATION_ONFIELD) and not c:IsFaceup() then return false end
@@ -2261,8 +2244,8 @@ function cm.GetLinkCount(c)
 		return 1+0x10000*c:GetLink()
 	else return 1 end
 end
-function cm.GetLinkMaterials(tp,f,lc)
-	local mg=Duel.GetMatchingGroup(cm.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc)
+function cm.GetLinkMaterials(tp,f,lc,e)
+	local mg=Duel.GetMatchingGroup(cm.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc,e)
 	local mg2=Duel.GetMatchingGroup(cm.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
 	if mg2:GetCount()>0 then mg:Merge(mg2) end
 	return mg
@@ -2317,12 +2300,12 @@ function cm.LinkCondition(f,minc,maxc,gf,code)
 				local tp=c:GetControler()
 				local mg=nil
 				if og then
-					mg=og:Filter(aux.LConditionFilter,nil,f,c)
+					mg=og:Filter(aux.LConditionFilter,nil,f,c,e)
 				else
-					mg=aux.GetLinkMaterials(tp,f,c)
+					mg=aux.GetLinkMaterials(tp,f,c,e)
 				end
 				if lmat~=nil then
-					if not aux.LConditionFilter(lmat,f,c) then return false end
+					if not aux.LConditionFilter(lmat,f,c,e) then return false end
 					mg:AddCard(lmat)
 				end
 				local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
@@ -2342,12 +2325,12 @@ function cm.LinkTarget(f,minc,maxc,gf)
 				end
 				local mg=nil
 				if og then
-					mg=og:Filter(cm.LConditionFilter,nil,f,c)
+					mg=og:Filter(cm.LConditionFilter,nil,f,c,e)
 				else
-					mg=cm.GetLinkMaterials(tp,f,c)
+					mg=cm.GetLinkMaterials(tp,f,c,e)
 				end
 				if lmat~=nil then
-					if not cm.LConditionFilter(lmat,f,c) then return false end
+					if not cm.LConditionFilter(lmat,f,c,e) then return false end
 					mg:AddCard(lmat)
 				end
 				local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
@@ -2589,6 +2572,45 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 		if cm.IsInTable(53796002,rstt) then
 		if se:GetRange()==LOCATION_PZONE and se:GetProperty()&EFFECT_FLAG_UNCOPYABLE==0 then
 			_G["c"..sc:GetOriginalCode()].pend_effect=se
+		end
+		end
+		if cm.IsInTable(53796005,rstt) then
+		local cd,et=se:GetCode(),se:GetType()
+		if (cd==EVENT_SUMMON_SUCCESS or cd==EVENT_FLIP_SUMMON_SUCCESS or cd==EVENT_SPSUMMON_SUCCESS) and et&EFFECT_TYPE_SINGLE and et&(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_TRIGGER_O)~=0 then
+			local ex1=Effect.CreateEffect(sc)
+			ex1:SetType(EFFECT_TYPE_FIELD)
+			ex1:SetCode(EFFECT_ACTIVATE_COST)
+			ex1:SetRange(0xff)
+			ex1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_PLAYER_TARGET)
+			ex1:SetTargetRange(1,1)
+			ex1:SetLabelObject(se)
+			ex1:SetTarget(function(e,te,tp)return te==e:GetLabelObject()end)
+			ex1:SetCost(function(e,te,tp)return Duel.GetFlagEffect(0,53796005)==0 end)
+			sc:RegisterEffect(ex1)
+			local x=true
+			if sc:IsHasEffect(53796005) then
+			for _,i in ipairs{sc:IsHasEffect(53796005)} do
+				if i:GetOperation()==se:GetOperation() then x=false end
+			end
+			end
+			if x then
+			Debug.Message(114)
+			local ex2=se:Clone()
+			ex2:SetCode(EVENT_LEAVE_FIELD)
+			sc:RegisterEffect(ex2)
+			local ex3=ex1:Clone()
+			ex3:SetLabelObject(ex2)
+			ex3:SetTarget(function(e,te,tp)return te==e:GetLabelObject()end)
+			ex3:SetCost(function(e,te,tp)return Duel.GetFlagEffect(0,53796005)>0 end)
+			sc:RegisterEffect(ex3)
+			local ex4=Effect.CreateEffect(sc)
+			ex4:SetType(EFFECT_TYPE_SINGLE)
+			ex4:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			ex4:SetCode(53796005)
+			ex4:SetRange(0xff)
+			ex4:SetOperation(se:GetOperation())
+			sc:RegisterEffect(ex4)
+			end
 		end
 		end
 		if cm.IsInTable(53799017,rstt) then

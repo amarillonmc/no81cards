@@ -31,30 +31,10 @@ function cm.initial_effect(c)
 	e7:SetOperation(cm.operation)
 	c:RegisterEffect(e7)
 end
-function cm.fselect(g,ft)
-	return g:IsExists(function(c)return c:IsLocation(LOCATION_SZONE) and c:GetSequence()~=5 and c:IsFaceup()end,1,nil) or ft>0
-end
-function cm.bannedcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local costg=Duel.GetMatchingGroup(function(c)return c:IsType(TYPE_CONTINUOUS) and c:IsReleasable()end,tp,LOCATION_ONFIELD,0,nil)
-	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return costg:CheckSubGroup(cm.fselect,3,3,ft) and not e:GetHandler():IsForbidden() end
-	Duel.ConfirmCards(1-tp,e:GetHandler())
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=costg:SelectSubGroup(tp,cm.fselect,false,3,3,ft)
-	local cg=g:Filter(Card.IsFacedown,nil)
-	if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
-	local list={}
-	for tc in aux.Next(g) do if tc:IsLocation(LOCATION_SZONE) and tc:IsFacedown() and tc:GetSequence()~=5 then table.insert(list,tc:GetSequence()) end end
-	if #list>0 then
-		table.insert(list,5)
-		e:SetLabel(table.unpack(list))
-	else e:SetLabel(5) end
-	Duel.Release(g,REASON_EFFECT)
-end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cost=Duel.GetMatchingGroup(function(c)return c:IsType(TYPE_CONTINUOUS) and c:IsReleasable()end,tp,LOCATION_ONFIELD,0,nil)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return #cost>2 and ft>0 and not e:GetHandler():IsForbidden() end
+	if chk==0 then return #cost>2 and ft>0 and not e:GetHandler():IsForbidden() and e:GetHandler():CheckUniqueOnField(tp) end
 	Duel.ConfirmCards(1-tp,e:GetHandler())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=cost:Select(tp,3,3,nil)
@@ -66,7 +46,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		table.insert(list,5)
 		e:SetLabel(table.unpack(list))
 	else e:SetLabel(5) end
-	Duel.Release(g,REASON_EFFECT)
+	Duel.Release(g,REASON_COST)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local list={e:GetLabel()}

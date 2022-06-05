@@ -6,6 +6,10 @@ function cm.linkjoker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_linkjoker
 end
+function cm.Reverse(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Reverse
+end
 function cm.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)

@@ -2,6 +2,11 @@
 local m=40010160
 local cm=_G["c"..m]
 cm.named_with_linkjoker=1
+function cm.linkjoker(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_linkjoker
+end
+
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,cm.matfilter,2)
@@ -26,6 +31,9 @@ function cm.initial_effect(c)
 	e2:SetCost(cm.discost)
 	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2) 
+end
+function cm.matfilter(c)
+	return cm.linkjoker(c)
 end
 function cm.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end

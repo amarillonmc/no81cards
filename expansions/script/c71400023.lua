@@ -41,7 +41,7 @@ function c71400023.filter1(c,tp)
 end
 function c71400023.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=yume.ActivateYumeField(tp)
+	local tc=yume.ActivateYumeField(e,tp)
 	if tc then
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(71400023,2))

@@ -3,7 +3,6 @@ xpcall(function() require("expansions/script/c71400001") end,function() require(
 function c71400022.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,yume.YumeLMGFilterFunction(c))
-	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
 	--spsummon
@@ -52,7 +51,8 @@ function c71400022.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71400022.con2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsReason(REASON_DESTROY) and rp==1-tp
+	return c:IsReason(REASON_DESTROY)
+		and (c:IsReason(REASON_BATTLE) and Duel.GetAttacker()~=c or c:IsReason(REASON_EFFECT))
 end
 function c71400022.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -62,5 +62,5 @@ function c71400022.op2(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e1,1-tp)
+	Duel.RegisterEffect(e1,rp)
 end

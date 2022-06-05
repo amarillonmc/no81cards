@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	return g and #g>0
 end
@@ -91,6 +91,12 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then Duel.Draw(tp,1,REASON_EFFECT) end
+	end
+	if re:GetHandler():GetOriginalCode()==11451510 then
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then Duel.Draw(tp,1,REASON_EFFECT) end
+			op(e,tp,eg,ep,ev,re,r,rp)
+		end
 	end
 	re:SetOperation(repop)
 	if not re:IsHasCategory(CATEGORY_DRAW) then re:SetCategory(re:GetCategory()+CATEGORY_DRAW) end

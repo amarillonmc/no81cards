@@ -9,8 +9,8 @@ function cm.initial_effect(c)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
-	--e0:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e0:SetCode(EFFECT_SPSUMMON_COST)
+	e0:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	--e0:SetCode(EFFECT_SPSUMMON_COST)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCondition(cm.spcon)
 	c:RegisterEffect(e0)
@@ -77,7 +77,7 @@ end
 function cm.spcon(e,c)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local num=g:GetSum(Card.GetLevel)
-	return cm.isprime(num)
+	return not cm.isprime(num)
 end
 function cm.filter(c)
 	return c:IsFaceup() and c:GetLevel()>0

@@ -2,8 +2,7 @@
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400046.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,yume.YumeCheck(c,true),aux.NonTuner(yume.YumeCheck(c)),1)
-	c:EnableReviveLimit()
+	aux.AddSynchroProcedure(c,yume.YumeCheck(c,true),aux.NonTuner(nil),1)
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
 	--to deck
@@ -64,10 +63,10 @@ function c71400046.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71400046.val(e,c)
-	return Duel.GetMatchingGroupCount(c71400046.filter2,c:GetControler(),LOCATION_GRAVE+LOCATION_MZONE,0,nil)*300
+	return Duel.GetMatchingGroupCount(c71400046.filter2,c:GetControler(),LOCATION_GRAVE+LOCATION_MZONE,0,nil)*200
 end
 function c71400046.filter2(c)
-	return c:IsSetCard(0x717) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+	return c:IsSetCard(0x714) and (c:IsType(TYPE_TUNER) or c:IsType(TYPE_SYNCHRO)) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
 end
 function c71400046.con3(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler())

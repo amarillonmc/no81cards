@@ -5,9 +5,9 @@ function cm.initial_effect(c)
 	--atk up
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_MOVE)
+	e1:SetCode(EVENT_LEAVE_GRAVE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(cm.atkcon)
+	--e1:SetCondition(cm.atkcon)
 	e1:SetOperation(cm.atkop)
 	c:RegisterEffect(e1)
 	--effect1 gain
@@ -65,7 +65,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e8)
 end
 function cm.filter(c,tp)
-	return c:IsPreviousLocation(LOCATION_GRAVE) and c:GetPreviousControler()==tp and not c:IsLocation(LOCATION_GRAVE)
+	return c:IsPreviousLocation(LOCATION_GRAVE) and not c:IsLocation(LOCATION_GRAVE)
 end
 function cm.tg(e,c)
 	return c:IsFaceup()

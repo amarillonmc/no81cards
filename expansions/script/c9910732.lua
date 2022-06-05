@@ -4,15 +4,15 @@ function c9910732.initial_effect(c)
 	--special summon
 	Ygzw.AddSpProcedure(c,1)
 	c:EnableReviveLimit()
-	--destroy / search
+	--flag
+	Ygzw.AddTgFlag(c)
+	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,9910732)
-	e1:SetTarget(c9910732.destg)
-	e1:SetOperation(c9910732.desop)
+	e1:SetCost(c9910732.cost)
+	e1:SetOperation(c9910732.operation)
 	c:RegisterEffect(e1)
 	--set
 	local e2=Effect.CreateEffect(c)
@@ -25,55 +25,24 @@ function c9910732.initial_effect(c)
 	e2:SetOperation(c9910732.setop)
 	c:RegisterEffect(e2)
 end
-function c9910732.filter(c)
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+function c9910732.cfilter(c,e,tp)
+	return c:IsSetCard(0xc950) and c:IsAbleToGraveAsCost()
+		and Duel.IsExistingMatchingCard(c9910732.filter,tp,LOCATION_DECK,0,1,c,e,tp)
 end
-function c9910732.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then
-		local sel=0
-		if Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) then sel=sel+1 end
-		if Duel.IsExistingMatchingCard(c9910732.filter,tp,LOCATION_DECK,0,1,nil) then sel=sel+2 end
-		e:SetLabel(sel)
-		return sel~=0
-	end
-	local sel=e:GetLabel()
-	if sel==3 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910732,0))
-		sel=Duel.SelectOption(tp,aux.Stringid(9910732,1),aux.Stringid(9910732,2))+1
-	elseif sel==1 then
-		Duel.SelectOption(tp,aux.Stringid(9910732,1))
-	else
-		Duel.SelectOption(tp,aux.Stringid(9910732,2))
-	end
-	e:SetLabel(sel)
-	if sel==1 then
-		e:SetCategory(CATEGORY_DESTROY)
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,LOCATION_MZONE)
-	else
-		e:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	end
+function c9910732.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910732.cfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9910732.cfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	Duel.SendtoGrave(g,REASON_COST)
 end
-function c9910732.desop(e,tp,eg,ep,ev,re,r,rp)
-	local sel=e:GetLabel()
-	local g1=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local g2=Duel.GetMatchingGroup(c9910732.filter,tp,LOCATION_DECK,0,nil)
-	if sel==1 then
-		if g1:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local sg1=g1:Select(tp,1,1,nil)
-			Duel.HintSelection(sg1)
-			Duel.Destroy(sg1,REASON_EFFECT)
-		end
-	else
-		if g2:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg2=g2:Select(tp,1,1,nil)
-			Duel.SendtoHand(sg2,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sg2)
-		end
-	end
+function c9910732.filter(c,e,tp)
+	return c:IsSetCard(0xc950) and c:IsLevelAbove(5) and Ygzw.SetFilter(c,e,tp)
+end
+function c9910732.operation(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,c9910732.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	local tc=g:GetFirst()
+	if tc then Ygzw.Set(tc,e,tp) end
 end
 function c9910732.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)

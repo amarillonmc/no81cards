@@ -1,4 +1,4 @@
---蚀异梦物-机械
+--蚀异梦像-机械
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400052.initial_effect(c)
 	--summon limit

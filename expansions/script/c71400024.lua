@@ -1,102 +1,80 @@
---异梦书中的女儿节人偶
+--幽禁异梦的狐侍与魔女
+xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400024.initial_effect(c)
-	--xyz summon
-	aux.AddXyzProcedure(c,yume.YumeCheck(c),4,2)
-	c:EnableReviveLimit()
+	--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,c71400024.lcheck(c))
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
-	--inactivatable
+	--banish
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_INACTIVATE)
+	e1:SetDescription(aux.Stringid(71400024,0))
+	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetValue(c71400024.filter1)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCountLimit(1,71400024)
+	e1:SetTarget(c71400024.tg1)
+	e1:SetOperation(c71400024.op1)
 	c:RegisterEffect(e1)
-	local e1a=Effect.CreateEffect(c)
-	e1a:SetType(EFFECT_TYPE_FIELD)
-	e1a:SetCode(EFFECT_CANNOT_DISEFFECT)
-	e1a:SetRange(LOCATION_MZONE)
-	e1a:SetValue(c71400024.filter1)
-	c:RegisterEffect(e1a)
-	--pos
+	--special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(71400024,0))
-	e2:SetCategory(CATEGORY_POSITION)
-	e2:SetCountLimit(1)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e2:SetCost(c71400024.cost2)
-	e2:SetRange(LOCATION_MZONE)
+	e2:SetDescription(aux.Stringid(71400024,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetCountLimit(1,71500024)
+	e2:SetCondition(c71400024.con2)
 	e2:SetTarget(c71400024.tg2)
 	e2:SetOperation(c71400024.op2)
 	c:RegisterEffect(e2)
-	--skip
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(71400024,1))
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetOperation(c71400024.op3)
-	e3:SetCondition(c71400024.con3)
-	c:RegisterEffect(e3)
 end
-function c71400024.filter1(e,ct)
-	local p=e:GetHandler():GetControler()
-	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return p==tp and te:GetHandler():IsSetCard(0x715)
+function c71400024.lcheck(c)
+	return function(g) return yume.IsYumeFieldOnField(c:GetControler()) and g:IsExists(c71400024.lcfilter,1,nil) end
 end
-function c71400024.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+function c71400024.lcfilter(c)
+	return c:GetBaseAttack()>2500 and c:GetOriginalAttribute()==ATTRIBUTE_DARK and c:IsLinkSetCard(0x714)
 end
-function c71400024.filter2(c)
-	return c:IsPosition(POS_FACEUP_ATTACK) and c:IsCanChangePosition()
+function c71400024.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
-function c71400024.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400024.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler()) end
-	local g=Duel.GetMatchingGroup(c71400024.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
+function c71400024.op1(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,aux.ExceptThisCard(e))
+	if g:GetCount()>0 then
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	end
+end
+function c71400024.con2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return (c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT)) and c:IsPreviousLocation(LOCATION_MZONE)
+end
+function c71400024.filter2(c,e,tp)
+	return c:GetBaseAttack()>2500 and c:GetOriginalAttribute()==ATTRIBUTE_DARK and c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(71400024)
+end
+function c71400024.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c71400024.filter2(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c71400024.filter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	local ct=Duel.GetLocationCount(1-tp,LOCATION_MZONE)
+	if ct>2 then ct=2 end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,c71400024.filter2,tp,LOCATION_GRAVE,0,1,ct,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,g:GetCount(),0,0)
 end
 function c71400024.op2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c71400024.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,c)
-	Duel.ChangePosition(g,POS_FACEUP_DEFENSE,0,POS_FACEUP_DEFENSE,0)
-	local tc=g:GetFirst()
-	while tc do
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_SET_BASE_DEFENSE)
-		e1:SetValue(0)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e2)
-		tc=g:GetNext()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
+	if sg:GetCount()>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	if sg:GetCount()>ft then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		sg=sg:Select(tp,ft,ft,nil)
 	end
-end
-function c71400024.con3(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_ONFIELD)
-end
-function c71400024.op3(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SKIP_BP)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	if Duel.GetTurnPlayer()==tp and ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then
-		e1:SetLabel(Duel.GetTurnCount())
-		e1:SetCondition(c71400024.skipcon)
-		e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN,2)
-	else
-		e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN,1)
-	end
-	Duel.RegisterEffect(e1,tp)
-end
-function c71400024.skipcon(e)
-	return Duel.GetTurnCount()~=e:GetLabel()
+	local ct=Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 end

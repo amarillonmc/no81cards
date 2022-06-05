@@ -130,6 +130,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=g:FilterSelect(tp,Card.IsLevel,1,1,nil,lv)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	elseif tc:IsRelateToEffect(e) and tc:IsFaceup() and not tc:IsImmuneToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
 		local lv=Duel.AnnounceNumber(tp,1,2,3,4)

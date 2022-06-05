@@ -37,9 +37,9 @@ function c71400035.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler() 
 	if chk==0 then
 		if c:IsLocation(LOCATION_ONFIELD) and c:IsFacedown() then
-			return yume.YumeFieldCheck(tp) and Duel.IsExistingMatchingCard(c71400035.filter1,tp,LOCATION_DECK,0,1,nil)
+			return yume.YumeFieldCheck(tp,0,0,LOCATION_DECK+LOCATION_REMOVED) and Duel.IsExistingMatchingCard(c71400035.filter1,tp,LOCATION_DECK,0,1,nil)
 		else
-		return yume.YumeFieldCheck(tp)
+		return yume.YumeFieldCheck(tp,0,0,LOCATION_DECK+LOCATION_REMOVED)
 		end
 	end
 	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
@@ -52,8 +52,8 @@ function c71400035.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71400035.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	yume.ActivateYumeField(tp)
-	if Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0) then
+	yume.ActivateYumeField(e,tp,0,0,LOCATION_DECK+LOCATION_REMOVED)
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0) and c:IsLocation(LOCATION_SZONE) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_DISABLE)
@@ -116,8 +116,15 @@ function c71400035.op1a(e,tp,eg,ep,ev,re,r,rp)
 	local tseq=e:GetLabel()
 	local ec=re:GetHandler()
 	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
-	seq=aux.MZoneSequence(seq)
-	if ((rp==tp and seq==tseq) or (rp==1-tp and seq==4-tseq)) and (not ec:IsSetCard(0x714) and (ec:IsLocation(loc) or loc&LOCATION_ONFIELD==0) or not (ec:IsPreviousSetCard(0x714) or ec:IsLocation(loc)) and loc&LOCATION_ONFIELD~=0) then
+	if loc&LOCATION_MZONE~=0 then
+		seq=aux.MZoneSequence(seq)
+	elseif loc&LOCATION_SZONE~=0 then
+		if seq>4 then return end
+		seq=aux.SZoneSequence(seq)
+	else
+		return
+	end
+	if ((rp==tp and seq==tseq) or (rp==1-tp and seq==4-tseq)) and (not ec:IsSetCard(0x714) and ec:IsLocation(loc) or not (ec:IsPreviousSetCard(0x714) or ec:IsLocation(loc))) then
 		Duel.NegateEffect(ev)
 	end
 end

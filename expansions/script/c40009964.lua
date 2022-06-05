@@ -11,124 +11,148 @@ end
 function cm.initial_effect(c)
 	c:SetUniqueOnField(1,0,m)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(cm.BeastDeity),8,3,cm.ovfilter,aux.Stringid(m,0),99,cm.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),7,3,cm.ovfilter,aux.Stringid(m,2),3,cm.xyzop)
 	c:EnableReviveLimit()
-	if not cm.global_check then
-		cm.global_check=true
-		cm[0]=0
-		cm[1]=0
-		local ge1=Effect.GlobalEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_BATTLED)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
-		local ge4=Effect.CreateEffect(c)
-		ge4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge4:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-		ge4:SetOperation(cm.clearop)
-		Duel.RegisterEffect(ge4,0)
-	end
-	--atk up
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(TIMING_DAMAGE_STEP)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCost(cm.atkcost)
-	e2:SetCondition(cm.atkcon)
-	e2:SetOperation(cm.atkop)
-	c:RegisterEffect(e2)
-	--indes
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e3:SetCondition(cm.indcon)
-	e3:SetValue(1)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	--chain attack
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_DAMAGE_STEP_END)
+	e1:SetCondition(cm.atkcon)
+	e1:SetCost(cm.atkcost)
+	e1:SetOperation(cm.atkop)
+	e1:SetRange(LOCATION_MZONE)
+	c:RegisterEffect(e1)
+	--Destroy
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,1))
+	--e4:SetCategory(CATEGORY_TOGRAVE)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_DAMAGE_STEP_END)
+	e4:SetCondition(cm.tgcon)
+	e4:SetCountLimit(1)
+	e4:SetCost(cm.tgcost)
+	e4:SetTarget(cm.tgtg)
+	e4:SetOperation(cm.tgop)
+	e4:SetRange(LOCATION_MZONE)
 	c:RegisterEffect(e4)
-	--atkup
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCode(EFFECT_UPDATE_ATTACK)
-	e5:SetCondition(cm.indcon)
-	e5:SetValue(600)
-	c:RegisterEffect(e5)
-end
-function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetAttacker()~=nil and cm.BeastDeity(Duel.GetAttacker()) then
-		local pl=Duel.GetAttacker():GetControler()
-		if pl then
-			cm[pl]=cm[pl]+1
-		end
-	end
-	if Duel.GetAttackTarget()~=nil and cm.BeastDeity(Duel.GetAttackTarget()) then
-		local pl=Duel.GetAttackTarget():GetControler()
-		if pl then
-			cm[pl]=cm[pl]+1
-		end
-	end
-end
-function cm.clearop(e,tp,eg,ep,ev,re,r,rp)
-	cm[0]=0
-	cm[1]=0
+
+
 end
 function cm.ovfilter(c)
-	return c:IsFaceup() and cm.BeastDeity(c) and not c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and c:IsCode(40009966)
 end
 function cm.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 and cm[tp]>0 end
+	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and aux.dscon() and Duel.GetTurnPlayer()==tp and (e:GetHandler():GetBattledGroupCount()>0 or e:GetHandler():GetAttackedCount()>0)
+	local at=Duel.GetAttacker()
+	return at:IsControler(tp) and at:IsChainAttackable() and at~=e:GetHandler()
 end
-function cm.cfilter(c)
-	return cm.BeastDeity(c) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
+function cm.atkfilter(c)
+	return c:IsFaceup() and c:IsCanTurnSet() 
 end
 function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local g1=c:GetOverlayGroup()
-	local g2=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)
-	local g=Group.CreateGroup()
-	g:Merge(g1)
-	g:Merge(g2)
-	if chk==0 then return g:GetCount()>1 end
-	local g=g:Select(tp,2,2,nil)
-	local g2=g:Filter(Card.IsLocation,nil,LOCATION_MZONE)
-	if g2:GetCount()>0 then
-		Duel.ChangePosition(g2,POS_FACEDOWN_DEFENSE)
-	end
-	if g2:GetCount()==2 then return false end
-	g:Sub(g2)
-	Duel.SendtoGrave(g,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.atkfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local g=Duel.SelectMatchingCard(tp,cm.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.ChangePosition(g,POS_FACEDOWN_ATTACK)
+			local tc=g:GetFirst()
+		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCountLimit(1)
+		e1:SetReset(RESET_PHASE+RESETS_STANDARD-RESET_TURN_SET)
+		e1:SetCondition(cm.flipcon)
+		e1:SetOperation(cm.flipop)
+		e1:SetLabelObject(tc)
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_CANNOT_FLIP_SUMMON)
+		--e2:SetCondition(cm.rcon)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		Duel.RegisterEffect(e2,tp)
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		Duel.RegisterEffect(e3,tp)
+end
+function cm.flipcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	return tc:IsFacedown() and Duel.GetTurnPlayer()==tc:GetControler() and tc:GetFlagEffect(m)~=0 and Duel.GetFlagEffect(tp,40010160)==0
+end
+function cm.flipop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.ChangePosition(tc,POS_FACEUP_ATTACK)
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) and c:GetFlagEffect(m)==0 then
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_EXTRA_ATTACK)
-		e1:SetValue(1)
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e1:SetValue(c:GetAttack()*2)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-		e2:SetValue(c:GetAttack()*2)
-		c:RegisterEffect(e2)
 	end
 end
-function cm.indcon(e)
-	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,40009966)
+function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return aux.dsercon(e) and Duel.GetAttacker()==e:GetHandler()
 end
+function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
+function cm.tgfilter(c)
+	return  c:IsPosition(POS_FACEDOWN_ATTACK) and c:IsAbleToGrave()
+end
+function cm.filter(c)
+	return c:IsType(TYPE_MONSTER) and cm.BeastDeity(c)
+end
+function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then 
+		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<2 then return false end
+		local g=Duel.GetDecktopGroup(tp,2)
+		return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_MZONE,0,1,nil) and g:FilterCount(Card.IsAbleToHand,nil)>0 end
+	Duel.SetTargetPlayer(tp)
+end
+function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	Duel.ConfirmDecktop(p,2)
+	local g=Duel.GetDecktopGroup(p,2)
+	if g:GetCount()>0 then
+		local sg=g:Filter(cm.filter,nil)
+		if sg:GetCount()>0 then
+			Duel.DisableShuffleCheck()
+			Duel.Overlay(c,sg)
+			Duel.RaiseEvent(sg,EVENT_CUSTOM+40009964,e,REASON_REVEAL,0,tp,0)
+			g:Sub(sg)
+		end
+		local sg2=g:Filter(Card.IsAbleToHand,nil)
+		if sg2:GetCount()>0 then
+			Duel.DisableShuffleCheck()
+			Duel.SendtoHand(sg2,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-p,sg2)
+			Duel.ShuffleHand(p)
+		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local cg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,1,3,nil)
+		--local pg=cg:GetCount()
+		if cg and cg:GetCount()>0 then
+			Duel.BreakEffect()
+			Duel.HintSelection(cg)
+			local ct=Duel.SendtoGrave(cg,REASON_EFFECT)
+			if ct>2 then
+				Duel.ChainAttack()
+			end
+		end
+	end
+end
+
+

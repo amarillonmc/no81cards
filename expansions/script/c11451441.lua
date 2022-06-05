@@ -52,7 +52,10 @@ end
 function cm.rcop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
-	if sg:GetCount()>0 then Duel.SendtoHand(sg,nil,REASON_EFFECT) end
+	if sg:GetCount()>0 then
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

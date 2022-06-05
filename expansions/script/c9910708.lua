@@ -4,6 +4,8 @@ function c9910708.initial_effect(c)
 	--special summon
 	Ygzw.AddSpProcedure(c,2)
 	c:EnableReviveLimit()
+	--flag
+	Ygzw.AddTgFlag(c)
 	--activate limit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

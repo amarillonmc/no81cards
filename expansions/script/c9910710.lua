@@ -4,6 +4,8 @@ function c9910710.initial_effect(c)
 	--special summon
 	Ygzw.AddSpProcedure(c,1)
 	c:EnableReviveLimit()
+	--flag
+	Ygzw.AddTgFlag(c)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)

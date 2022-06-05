@@ -10,23 +10,33 @@ function Ygzw.AddSpProcedure(c,ct)
 	e1:SetOperation(Ygzw.SpOperation(ct))
 	c:RegisterEffect(e1)
 end
-function Ygzw.SpFilter(c)
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and c:IsPreviousLocation(LOCATION_ONFIELD)
-		and c:IsAbleToRemoveAsCost()
+function Ygzw.SpFilter(c,loc,tp)
+	local b1=c:IsLocation(LOCATION_GRAVE) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsAbleToRemoveAsCost()
+	local b2=c:IsLocation(LOCATION_DECK) and Duel.IsPlayerAffectedByEffect(tp,9910743) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and (b1 or b2)
 end
 function Ygzw.SpCondition(ct)
 	return  function(e,c)
 				if c==nil then return true end
 				local tp=c:GetControler()
-				return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-					and Duel.IsExistingMatchingCard(Ygzw.SpFilter,tp,LOCATION_GRAVE,0,ct,nil)
+				local g1=Duel.GetMatchingGroup(Ygzw.SpFilter,tp,LOCATION_GRAVE,0,nil,LOCATION_GRAVE,tp)
+				local g2=Duel.GetMatchingGroup(Ygzw.SpFilter,tp,LOCATION_DECK,0,nil,LOCATION_DECK,tp)
+				return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (#g1>=ct or (#g1>=ct-1 and #g2>0))
 			end
 end
 function Ygzw.SpOperation(ct)
 	return  function(e,tp,eg,ep,ev,re,r,rp,c)
+				local g1=Duel.GetMatchingGroup(Ygzw.SpFilter,tp,LOCATION_GRAVE,0,nil,LOCATION_GRAVE,tp)
+				local g2=Duel.GetMatchingGroup(Ygzw.SpFilter,tp,LOCATION_DECK,0,nil,LOCATION_DECK,tp)
+				if #g2>0 and (#g1<ct or Duel.SelectYesNo(tp,aux.Stringid(9910700,0))) then
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+					local sg2=g2:Select(tp,1,1,nil)
+					Duel.SendtoGrave(sg2,REASON_COST)
+					ct=ct-1
+				end
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-				local g=Duel.SelectMatchingCard(tp,Ygzw.SpFilter,tp,LOCATION_GRAVE,0,ct,ct,nil)
-				Duel.Remove(g,POS_FACEUP,REASON_COST)
+				local sg1=g1:Select(tp,ct,ct,nil)
+				Duel.Remove(sg1,POS_FACEUP,REASON_COST)
 			end
 end
 function Ygzw.SetFilter(c,e,tp)
@@ -77,4 +87,19 @@ function Ygzw.Set2(g,e,tp)
 	end
 	Duel.RaiseEvent(og,EVENT_SSET,e,REASON_EFFECT,op,op,0)
 	return og
+end
+function Ygzw.AddTgFlag(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_TO_GRAVE)
+	e1:SetOperation(Ygzw.TgOperation())
+	c:RegisterEffect(e1)
+end
+function Ygzw.TgOperation()
+	return  function(e,tp,eg,ep,ev,re,r,rp)
+				local c=e:GetHandler()
+				if c:IsPreviousLocation(LOCATION_ONFIELD) then
+					c:RegisterFlagEffect(9910700,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910700,1))
+				end
+			end
 end

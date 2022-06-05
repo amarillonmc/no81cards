@@ -6,7 +6,7 @@ cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--pendulum summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_LINK),2,99,cm.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_LINK),2,nil,cm.lcheck)
 	--skill
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DESTROY)
@@ -47,7 +47,7 @@ end
 function cm.desfilter(c)
 	return not c:IsLocation(LOCATION_SZONE) or c:GetSequence()<5
 end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFlagEffect(tp,m)<=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)

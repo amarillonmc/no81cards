@@ -75,5 +75,7 @@ function cm.daop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
-	if tc then Duel.SSet(tp,tc) end
+	if tc and Duel.SSet(tp,tc)>0 then
+		Duel.ConfirmCards(1-tp,tc)
+	end
 end

@@ -4,6 +4,8 @@ function c9910724.initial_effect(c)
 	--special summon
 	Ygzw.AddSpProcedure(c,1)
 	c:EnableReviveLimit()
+	--flag
+	Ygzw.AddTgFlag(c)
 	--disable
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_TOGRAVE+CATEGORY_TOHAND)

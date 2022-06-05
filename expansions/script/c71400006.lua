@@ -47,7 +47,8 @@ end
 function c71400006.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE) then
+	if not tc:IsRelateToEffect(e) then return end
+	if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
@@ -64,6 +65,8 @@ function c71400006.operation1(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(g)
 			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		end
+	else
+		Duel.SpecialSummonComplete()
 	end
 end
 function c71400006.con2(e,tp,eg,ep,ev,re,r,rp)

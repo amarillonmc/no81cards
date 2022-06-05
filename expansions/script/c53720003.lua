@@ -40,8 +40,8 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local sg=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,2,2,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,sg,2,0,0)
 end
-function cm.filter(c)
-	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_FIEND)
+function cm.filter1(c,e,tp)
+	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsRace(RACE_FIEND) and (c:IsLocation(LOCATION_MZONE) or c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -49,9 +49,12 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
 	if sg:GetCount()==2 and Duel.SendtoHand(sg,nil,REASON_EFFECT)==2 and c:IsRelateToEffect(e) then
 		Duel.BreakEffect()
+		local ng=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,e,tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,2,nil)
-		if dg:GetCount()>0 then Duel.Destroy(dg,REASON_EFFECT) end
+		local dg=ng:SelectSubGroup(tp,function(g,ft)return ft>=g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)end,false,1,2,Duel.GetLocationCount(tp,LOCATION_MZONE))
+		if #dg==0 then return end
+		for dc in aux.Next(dg) do if dc:IsLocation(LOCATION_HAND) then Duel.SpecialSummon(dc,0,tp,tp,false,false,POS_FACEUP) end end
+		Duel.Destroy(dg,REASON_EFFECT)
 	end
 end
 function cm.cfilter(c,tp)

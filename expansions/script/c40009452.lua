@@ -24,7 +24,7 @@ function c40009452.miltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
 end
 function c40009452.spfilter(c,e,tp)
-	return c:IsRace(RACE_DINOSAUR) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,false)
+	return c:IsRace(RACE_DINOSAUR) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true)
 end
 function c40009452.milfilter(c)
 	return c:IsRace(RACE_DINOSAUR)
@@ -41,7 +41,7 @@ function c40009452.milop(e,tp,eg,ep,ev,re,r,rp)
 			local tc=tg:GetFirst()
 			Duel.SendtoGrave(ct,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL+REASON_RELEASE)
 			Duel.BreakEffect()
-			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)
+			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,true,true,POS_FACEUP)
 			tc:RegisterFlagEffect(40009452,RESET_EVENT+RESETS_STANDARD,0,1)
 			local atk=ct:GetSum(Card.GetAttack)
 			local def=ct:GetSum(Card.GetDefense)

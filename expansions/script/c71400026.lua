@@ -1,4 +1,4 @@
---幻异梦物-黑电话
+--幻异梦像-黑电话
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400026.initial_effect(c)
 	--Activate
@@ -61,15 +61,14 @@ function c71400026.filter2(c)
 	return c:IsSetCard(0xe714) and not c:IsCode(71400026) and c:IsAbleToHand()
 end
 function c71400026.filter2a(c)
-	return c:IsCode(71400011) and c:GetOriginalType()&0x7&TYPE_MONSTER~=0
+	return c:IsCode(71400011)
 end
 function c71400026.filter2b(c)
 	return c:IsSetCard(0xb714) and c:IsType(TYPE_FIELD) and c:IsAbleToHand()
 end
 function c71400026.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400026.filter2,tp,LOCATION_DECK,0,1,nil) end
 	local g=Duel.GetMatchingGroup(c71400026.filter2a,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400026.filter2,tp,LOCATION_DECK,0,1,nil) and (not g:GetCount()>0 or g:IsExists(Card.IsAbleToExtra,1,nil) and Duel.IsExistingMatchingCard(c71400026.filter2b,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil))
-	end
 	if g:GetCount()>0 then
 		local fg=g:Filter(Card.IsAbleToExtra,nil)
 		local fct=fg:GetCount()

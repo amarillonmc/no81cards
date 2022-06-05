@@ -6,6 +6,10 @@ function cm.linkjoker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_linkjoker
 end
+function cm.Reverse(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Reverse
+end
 function cm.initial_effect(c)
 	--atk
 	local e1=Effect.CreateEffect(c)
@@ -36,7 +40,7 @@ function cm.atkcon(e)
 	return Duel.IsExistingMatchingCard(cm.filter,e:GetHandler():GetControler(),LOCATION_MZONE,0,1,e:GetHandler())
 end
 function cm.cfilter(c,tp)
-	return c:IsControler(tp) and cm.linkjoker(c) and c:IsType(TYPE_LINK) and c:IsSummonType(SUMMON_TYPE_LINK) 
+	return c:IsControler(tp) and (cm.linkjoker(c) or cm.Reverse(c)) and c:IsType(TYPE_LINK) and c:IsSummonType(SUMMON_TYPE_LINK) 
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp) 

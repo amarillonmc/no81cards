@@ -52,11 +52,11 @@ function cm.pigeon(e,tp,eg,ep,ev,re,r,rp)
 	for i=1,#list do
 		Duel.Hint(HINT_CARD,0,list[i])
 		if Duel.TossCoin(tp,1)==1 then
-			Debug.Message("wd卡，炸了")
+			assert(false,"wd卡，炸了")
 			local g=Duel.GetMatchingGroup(cm.pigeonfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,list[i])
 			dg:Merge(g)
 		else
-			Debug.Message("算了，先放")
+			assert(false,"算了，先放")
 		end
 	end
 	Duel.Destroy(dg,REASON_EFFECT)

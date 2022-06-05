@@ -1,4 +1,4 @@
---幻异梦物-猫
+--幻异梦像-猫
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400044.initial_effect(c)
 	--summon limit

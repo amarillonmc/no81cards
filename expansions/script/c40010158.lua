@@ -6,6 +6,10 @@ function cm.linkjoker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_linkjoker
 end
+function cm.Reverse(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Reverse
+end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,cm.matfilter,2,2)	

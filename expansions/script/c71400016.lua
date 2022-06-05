@@ -20,9 +20,9 @@ function c71400016.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCategory(CATEGORY_DRAW)
 	e2:SetDescription(aux.Stringid(71400016,1))
-	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_FZONE)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1)
 	e2:SetCondition(c71400016.con2)
 	e2:SetTarget(c71400016.tg2)
@@ -44,7 +44,6 @@ function c71400016.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71400016.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
 	local g=Duel.SelectMatchingCard(tp,c71400016.filter1,tp,LOCATION_HAND,0,1,1,nil)
 	local tc=g:GetFirst()
@@ -97,7 +96,8 @@ function c71400016.recop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function c71400016.con2(e,tp,eg,ep,ev,re,r,rp)
-	return tp==Duel.GetTurnPlayer()
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	return tp==Duel.GetTurnPlayer() and ep==1-tp and (LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)&loc~=0
 end
 function c71400016.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -106,7 +106,6 @@ function c71400016.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c71400016.op2(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
 end

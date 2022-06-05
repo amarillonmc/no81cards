@@ -33,7 +33,6 @@ function c71400017.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_DECK)
 end
 function c71400017.op1(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(c71400017.filter1,tp,LOCATION_DECK,0,nil)
 		if g:GetCount()<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -61,7 +60,6 @@ function c71400017.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,5,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c71400017.op2(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(c71400017.filter2r,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
 	if g:GetClassCount(Card.GetCode)<5 then return end
 	local rg=Group.CreateGroup()

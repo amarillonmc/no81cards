@@ -1,9 +1,8 @@
---异梦书中的边际鲜活工作者
+--异梦通路的边际鲜活工作者
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400008.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,yume.YumeCheck(c),4,3)
-	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
 	--Marginal Vivid Worker
@@ -45,7 +44,10 @@ function c71400008.op1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
+		if Duel.Destroy(g,REASON_EFFECT)>0 then
+			Duel.BreakEffect()
+			Duel.SetLP(tp,Duel.GetLP(tp)-1200)
+		end
 	end
 end
 function c71400008.con2(e,tp,eg,ep,ev,re,r,rp)
@@ -54,10 +56,10 @@ function c71400008.con2(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71400008.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),tp,0)
 end
 function c71400008.op2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.Destroy(g,REASON_EFFECT)
 end

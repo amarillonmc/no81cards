@@ -4,6 +4,8 @@ function c9910734.initial_effect(c)
 	--special summon
 	Ygzw.AddSpProcedure(c,2)
 	c:EnableReviveLimit()
+	--flag
+	Ygzw.AddTgFlag(c)
 	--destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910734,0))

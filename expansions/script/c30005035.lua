@@ -3,7 +3,7 @@ local m=30005035
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2)
+	aux.AddLinkProcedure(c,nil,2,2,cm.lcheck)
 	c:EnableReviveLimit()
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
@@ -15,19 +15,21 @@ function cm.initial_effect(c)
 	e0:SetCost(cm.spcost)
 	c:RegisterEffect(e0)
 	--ritual oblation
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_MINIATURE_GARDEN_GIRL)
-	e1:SetValue(1)
-	e1:SetTarget(function(e,c)
-		return c:IsAttribute(ATTRIBUTE_DARK)
-	end)
-	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_EXTRA_RITUAL_MATERIAL)
-	e2:SetValue(1)
-	c:RegisterEffect(e2)
+	local e13=Effect.CreateEffect(c)
+	e13:SetType(EFFECT_TYPE_FIELD)
+	e13:SetCode(EFFECT_RITUAL_LEVEL)
+	e13:SetRange(LOCATION_MZONE)
+	e13:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+	e13:SetTarget(aux.TargetBoolFunction(Card.IsLevelAbove,1))
+	e13:SetValue(cm.rlevel)
+	c:RegisterEffect(e13)
+	local e23=Effect.CreateEffect(c)
+	e23:SetType(EFFECT_TYPE_FIELD)
+	e23:SetCode(EFFECT_EXTRA_RITUAL_MATERIAL)
+	e23:SetRange(LOCATION_MZONE)
+	e23:SetTargetRange(LOCATION_GRAVE,0)
+	e23:SetValue(1)
+	c:RegisterEffect(e23)
 	--ritual summon hand
 	local e3=aux.AddRitualProcGreater2(c,cm.filter3,nil,nil,cm.matfilter3,true)
 	e3:SetDescription(aux.Stringid(m,0))
@@ -56,11 +58,10 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
---duel sunmmon success code
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	return tc:IsSummonType(TYPE_RITUAL) --tc:IsType(TYPE_RITUAL)
+function cm.lcheck(g,lc)
+	return g:IsExists(Card.IsLinkType,1,nil,TYPE_RITUAL)
 end
+--duel sunmmon success code
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	if not tc:IsSummonType(SUMMON_TYPE_RITUAL) then return end
@@ -72,6 +73,14 @@ end
 --spsummon condition
 function cm.spcost(e,c,tp,st)
 	return Duel.GetFlagEffect(tp,m)>=1
+end
+--ritual oblation
+function cm.rlevel(e,c)
+	if bit.band(c:GetType(),TYPE_RITUAL+TYPE_MONSTER)==TYPE_RITUAL+TYPE_MONSTER 
+		and c:IsAttribute(ATTRIBUTE_DARK) then
+		local clv=c:GetLevel()
+		return clv
+	end
 end
 --ritual summon hand
 function cm.filter3(c,e,tp,chk)
@@ -162,3 +171,5 @@ function cm.op4(e,tp,eg,ep,ev,re,r,rp)
 	aux.RCheckAdditional=nil
 	aux.RGCheckAdditional=nil
 end
+
+

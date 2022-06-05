@@ -27,8 +27,8 @@ end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
-function cm.filter(c)
-	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_FIEND)
+function cm.filter1(c,e,tp)
+	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsRace(RACE_FIEND) and (c:IsLocation(LOCATION_MZONE) or c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
 function cm.spfilter(c,e,tp)
 	return c:IsRace(RACE_FIEND) and c:IsLevelAbove(5) and not c:IsSetCard(0x353e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
@@ -43,12 +43,14 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp)
-		if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local dg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,2,nil)
-			if dg:GetCount()>0 then Duel.Destroy(dg,REASON_EFFECT) end
-		end
+		if #g==0 or Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+		Duel.BreakEffect()
+		local ng=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,e,tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg=ng:SelectSubGroup(tp,function(g,ft)return ft>=g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)end,false,1,2,Duel.GetLocationCount(tp,LOCATION_MZONE))
+		if #dg==0 then return end
+		for dc in aux.Next(dg) do if dc:IsLocation(LOCATION_HAND) then Duel.SpecialSummon(dc,0,tp,tp,false,false,POS_FACEUP) end end
+		Duel.Destroy(dg,REASON_EFFECT)
 	end
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)

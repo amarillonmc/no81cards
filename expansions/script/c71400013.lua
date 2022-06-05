@@ -41,7 +41,7 @@ function c71400013.filter2(c)
 end
 function c71400013.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=yume.ActivateYumeField(tp,nil,1)
+	local tc=yume.ActivateYumeField(e,tp,nil,1)
 	local dg=Duel.GetMatchingGroup(c71400013.filter1a,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if tc and dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400013,3)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

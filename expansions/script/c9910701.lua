@@ -1,5 +1,8 @@
 --远古造物 狄更逊水母
+require("expansions/script/c9910700")
 function c9910701.initial_effect(c)
+	--flag
+	Ygzw.AddTgFlag(c)
 	--to deck top
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DECKDES)

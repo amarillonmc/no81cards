@@ -2,8 +2,7 @@
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400045.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,yume.YumeCheck(c,true),aux.NonTuner(yume.YumeCheck(c)),1)
-	c:EnableReviveLimit()
+	aux.AddSynchroProcedure(c,yume.YumeCheck(c,true),aux.NonTuner(nil),1)
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
 	--spsummon
@@ -54,8 +53,8 @@ function c71400045.filter1(c,e,tp)
 end
 function c71400045.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c71400045.filter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+		and Duel.IsExistingMatchingCard(c71400045.filter1,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
 end
 function c71400045.op1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
@@ -65,6 +64,7 @@ function c71400045.op1(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
+--[[
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -73,15 +73,16 @@ function c71400045.op1(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTarget(c71400045.splimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+--]]
 end
 function c71400045.splimit(e,c)
 	return c:IsLocation(LOCATION_EXTRA) and not (c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x714))
 end
 function c71400045.val(e,c)
-	return Duel.GetMatchingGroupCount(c71400045.filter2,c:GetControler(),LOCATION_GRAVE+LOCATION_MZONE,0,nil)*300
+	return Duel.GetMatchingGroupCount(c71400045.filter2,c:GetControler(),LOCATION_GRAVE+LOCATION_MZONE,0,nil)*100
 end
 function c71400045.filter2(c)
-	return c:IsSetCard(0x717) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+	return c:IsSetCard(0x714) and (c:IsType(TYPE_TUNER) or c:IsType(TYPE_SYNCHRO)) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
 end
 function c71400045.chainfilter(re,tp,cid)
 	return not (re:GetHandler():IsCode(71400047) and re:IsHasType(EFFECT_TYPE_ACTIVATE))

@@ -88,12 +88,12 @@ end
 function cm.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDestructable() and e:GetHandler():GetFlagEffect(m)==0 end
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
-	local a,b=0,1
+	local a,b=0,0
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
 		if tgp~=tp then
 			a=a+1
-			if Duel.IsChainNegatable(i) and te:GetHandler():IsDestructable() and te:GetHandler():IsRelateToEffect(te) then b=0 end
+			if Duel.IsChainNegatable(i) and te:GetHandler():IsDestructable() and te:GetHandler():IsRelateToEffect(te) then b=1 end
 		end
 	end
 	if Duel.IsPlayerAffectedByEffect(tp,11451482) then
@@ -109,7 +109,7 @@ function cm.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.ResetFlagEffect(tp,11451481)
 		end
 	end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,b,0,0)
+	if b==1 then Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,2,0,0) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,nil,1,0,0)
 end
 function cm.ngop(e,tp,eg,ep,ev,re,r,rp)

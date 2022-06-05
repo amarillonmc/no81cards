@@ -36,7 +36,6 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end
 	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -128,6 +127,15 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 		local rc=re:GetHandler()
 		if rc:IsRelateToEffect(re) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)
+		end
+	end
+	if re:GetHandler():GetOriginalCode()==11451510 then
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			local rc=re:GetHandler()
+			if rc:IsRelateToEffect(re) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+				Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)
+			end
+			op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	re:SetOperation(repop)

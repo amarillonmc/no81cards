@@ -32,7 +32,7 @@ function c71400001.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,500)
 end
 function c71400001.activate1(e,tp,eg,ep,ev,re,r,rp)
-	yume.ActivateYumeField(tp,nil,1)
+	yume.ActivateYumeField(e,tp,nil,1)
 end
 function c71400001.activate2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -75,6 +75,8 @@ function yume.AddYumeSummonLimit(c,ssm)
 		local el3=el2:Clone()
 		el3:SetCode(EFFECT_CANNOT_SUMMON)
 		c:RegisterEffect(el3)
+	else
+		c:EnableReviveLimit()
 	end
 end
 function yume.GetValueType(v)
@@ -132,21 +134,22 @@ function yume.YumeCon(e,tp)
 	if not tp then tp=e:GetHandlerPlayer() end
 	return yume.IsYumeFieldOnField(tp)
 end
---Yume Condition for weapons
-function yume.YumeWeaponCon(e,tp,eg,ep,ev,re,r,rp)
-	if not yume.IsYumeFieldOnField(tp) then return false end
-	local ph=Duel.GetCurrentPhase()
-	if Duel.GetTurnPlayer()==tp then
-		return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
-	else
-		return (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
-	end
-end
 function yume.nonYumeCon(e,tp,eg,ep,ev,re,r,rp)
 	if not tp then tp=e:GetHandlerPlayer() end
 	return not yume.IsYumeFieldOnField(tp)
 end
---ft=field type, 0-All Yume 1-Visionary Yume 2-Erosive Yume
+function yume.RustCon(e,tp)
+	if not tp then tp=e:GetHandlerPlayer() end
+	return yume.IsRust(tp)
+end
+function yume.nonRustCon(e,tp)
+	if not tp then tp=e:GetHandlerPlayer() end
+	return not yume.IsRust(tp)
+end
+function yume.IsRust(tp)
+	return Duel.GetFlagEffect(tp,71400038)>0
+end
+--ft=field type, 0-All Yume 1-Visionary Yume 2-Structured Yume
 --loc=location
 function yume.AddYumeFieldGlobal(c,id,ft)
 	ft=ft or 0
@@ -242,7 +245,7 @@ function yume.YumeFieldCheckTarget(id,ft,loc)
 		if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
 	end
 end
-function yume.ActivateYumeField(tp,id,ft,loc)
+function yume.ActivateYumeField(e,tp,id,ft,loc)
 	ft=ft or 0
 	id=id or 0
 	loc=loc or LOCATION_DECK
@@ -287,7 +290,7 @@ function yume.ActivateFieldOp(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local id=yume.temp_card_field[c].id
 	local ft=yume.temp_card_field[c].ft
-	yume.ActivateYumeField(tp,id,ft,LOCATION_DECK+LOCATION_HAND)
+	yume.ActivateYumeField(e,tp,id,ft,LOCATION_DECK+LOCATION_HAND)
 end
 --uniquify the same name
 function yume.UniquifyCardName(g)

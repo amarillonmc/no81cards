@@ -140,6 +140,7 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		if Duel.SendtoHand(c,nil,REASON_EFFECT)==0 then return end
+		Duel.ConfirmCards(1-tp,c)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)

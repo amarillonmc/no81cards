@@ -7,13 +7,14 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_SUMMON)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
 	--destroy replace
 	local e3=Effect.CreateEffect(c)
@@ -25,8 +26,11 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.repop)
 	c:RegisterEffect(e3)
 end
+function cm.filter(c,tp)
+	return c:IsSummonPlayer(1-tp)
+end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()==0 and tp~=ep
+	return eg:IsExists(cm.filter,1,nil,tp)
 end
 function cm.lvplus(c)
 	if c:GetLevel()>=1 then return c:GetLevel() elseif c:GetRank()>=1 then return c:GetRank() elseif c:GetLink()>=1 then return c:GetLink() else return 0 end
@@ -42,7 +46,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,eg)
 	local tc=g:GetFirst()
 	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		eg:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_OATH,1)
+		eg:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD,0,1)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)

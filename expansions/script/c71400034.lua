@@ -42,14 +42,13 @@ function c71400034.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c71400034.filter1(c)
-	return c:IsSetCard(0x716) and c:IsLinkSummonable(nil)
+	return c:IsSetCard(0x714) and c:IsLinkSummonable(nil)
 end
 function c71400034.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71400034.filter1,tp,LOCATION_EXTRA,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c71400034.op1(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c71400034.filter1,tp,LOCATION_EXTRA,0,1,1,nil)
 	local tc=g:GetFirst()
@@ -69,7 +68,7 @@ function c71400034.con2(e,tp,eg,ep,ev,re,r,rp)
 		or (re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not re:IsHasType(EFFECT_TYPE_ACTIVATE)))
 end
 function c71400034.filter2(c)
-	return c:IsSetCard(0x716) and c:IsType(TYPE_LINK) and c:IsFaceup()
+	return c:IsSetCard(0x714) and c:IsType(TYPE_LINK) and c:IsFaceup()
 end
 function c71400034.filter2b(c,tp)
 	return c:IsAbleToRemove(tp) and not c71400034.filter2(c)
@@ -79,8 +78,7 @@ function c71400034.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
 end
 function c71400034.op2(e,tp,eg,ep,ev,re,r,rp)
-	if not (e:GetHandler():IsRelateToEffect(e) and re:GetHandler():IsRelateToEffect(re)) then return end
-	if Duel.SendtoDeck(eg,nil,2,REASON_EFFECT)==1 then
+	if re:GetHandler():IsRelateToEffect(re) and Duel.SendtoDeck(eg,nil,2,REASON_EFFECT)==1 then
 		local g=Duel.GetMatchingGroup(c71400034.filter2b,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
 		if Duel.IsExistingMatchingCard(c71400034.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400034,2)) then
 			Duel.BreakEffect()

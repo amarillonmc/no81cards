@@ -25,6 +25,7 @@ end
 function c71400020.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler(),tp,POS_FACEDOWN)
 	if chk==0 then return yume.YumeFieldCheckTarget(0,1,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND) and g:GetCount()>0 end
+	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
@@ -33,7 +34,7 @@ function c71400020.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71400020.op1(e,tp,eg,ep,ev,re,r,rp)
 	local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e),tp,POS_FACEDOWN)
-	if Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)>0 and yume.ActivateYumeField(tp,0,1,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND) then
+	if Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)>0 and yume.ActivateYumeField(e,tp,0,1,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND) then
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if ft<=0 then return end
 		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end

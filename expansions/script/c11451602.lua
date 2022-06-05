@@ -14,7 +14,6 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--tohand
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
@@ -25,29 +24,29 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:GetOriginalType()&TYPE_MONSTER>0 and c:IsFaceup() and not c:IsSetCard(0xd7)
-end
-function cm.filter1(c,tp)
-	return c:IsSetCard(0xd6) and Duel.IsPlayerCanSpecialSummon(tp,0,POS_FACEUP,1-tp,c)
+	return c:IsSetCard(0xd6) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND+LOCATION_DECK))
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0xd6) and c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)
+	return c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0xd6) and c:IsAbleToHand()
+	return c:IsSetCard(0xd7) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g1=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,0,nil)
-	local g2=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
-	if chk==0 then return #g1>0 and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and g1:IsExists(cm.filter1,1,nil,tp) and #g2>0 end
+	local g1=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,aux.ExceptThisCard(e))
+	if chk==0 then return #g1>0 end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,#g1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_HAND)
+end
+function cm.fselect(g)
+	return g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)<=1 and g:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=1 and g:FilterCount(Card.IsLocation,nil,LOCATION_ONFIELD)<=1
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,aux.ExceptThisCard(e))
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g1=g:SelectSubGroup(tp,cm.fselect,false,1,3)
 	if Duel.Destroy(g1,REASON_EFFECT)>0 then
 		local sg=Duel.GetOperatedGroup():Filter(cm.spfilter,nil,e,tp)
-		if #sg>0 then
+		if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			local ct=Duel.GetLocationCount(1-tp,LOCATION_MZONE)
 			if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
 			if #sg>ct then
@@ -66,15 +65,19 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsAbleToGraveAsCost,1,1,REASON_COST)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,nil,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectReleaseGroup(tp,nil,1,1,nil)
+	Duel.Release(g,REASON_COST)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsRelateToEffect(e) then
-		Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+		Duel.ConfirmCards(tp,c)
 	end
 end

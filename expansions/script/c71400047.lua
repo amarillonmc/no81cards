@@ -1,4 +1,4 @@
---幻异梦物-信号灯
+--幻异梦像-信号灯
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400047.initial_effect(c)
 	--Activate

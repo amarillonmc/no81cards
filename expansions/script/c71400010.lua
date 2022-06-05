@@ -3,7 +3,6 @@ xpcall(function() require("expansions/script/c71400001") end,function() require(
 function c71400010.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,yume.YumeCheck(c),4,2)
-	c:EnableReviveLimit()
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
 	--control
@@ -31,14 +30,7 @@ function c71400010.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c71400010.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.GetCurrentPhase()~=PHASE_MAIN2 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_BP)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetTargetRange(1,0)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c71400010.filter1(c)

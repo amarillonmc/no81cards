@@ -45,6 +45,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)
 		if Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 and tc:IsRelateToEffect(e) then
+			Duel.ConfirmCards(1-tp,sg)
 			Duel.Destroy(tc,REASON_EFFECT)
 		end
 	end

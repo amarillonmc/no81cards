@@ -1,4 +1,4 @@
---梦之公寓的圆盘人
+--异梦公寓的圆盘人
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400004.initial_effect(c)
 	--summon limit
