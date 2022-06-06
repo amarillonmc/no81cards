@@ -1,5 +1,5 @@
 --混沌的魔救勘察者
-local m=10888903
+local m=10788903
 local cm=_G["c"..m]
 
 function cm.initial_effect(c)
@@ -17,16 +17,16 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.spop2)
 	c:RegisterEffect(e1)
 	--special summon or tohand
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,m+1)
-	e1:SetCost(cm.spcost)
-	e1:SetTarget(cm.sptg)
-	e1:SetOperation(cm.spop)
-	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,m+1)
+	e2:SetCost(cm.spcost)
+	e2:SetTarget(cm.sptg)
+	e2:SetOperation(cm.spop)
+	c:RegisterEffect(e2)
 end
 
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
