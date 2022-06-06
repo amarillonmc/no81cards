@@ -62,11 +62,14 @@ function cm.initial_effect(c)
 	e7:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e7:SetType(EFFECT_TYPE_QUICK_O)
 	e7:SetCode(EVENT_FREE_CHAIN)
-	e7:SetRange(LOCATION_REMOVED+LOCATION_GRAVE)
+	e7:SetRange(LOCATION_REMOVED)
 	e7:SetCost(cm.spco1)
-	e7:SetTarget(cm.sptg1)
+	--e7:SetTarget(cm.sptg1)
 	e7:SetOperation(cm.spop1)
 	c:RegisterEffect(e7)
+	local e11=e7:Clone()
+	e11:SetRange(LOCATION_GRAVE)
+	c:RegisterEffect(e11)
 	--remove
 	local e8=Effect.CreateEffect(c)
 	e8:SetDescription(aux.Stringid(m,3))
@@ -158,9 +161,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.cosfilter(c,tp)
-	return c:GetOwner()==1-tp and 
-	c:IsType(TYPE_MONSTER) 
-	and c:IsReleasable()
+	return c:GetOwner()==1-tp and c:IsType(TYPE_MONSTER) and c:IsReleasable()
 	and (c:IsSummonType(SUMMON_TYPE_SPECIAL) or c:IsSummonType(SUMMON_TYPE_NORMAL)) 
 end
 
@@ -179,7 +180,8 @@ end
 
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and 
+	c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,tp,0)
 	Duel.SetChainLimit(cm.chlimit)
 end
@@ -219,12 +221,18 @@ end
 
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE-RESET_REMOVE,0,1,Duel.GetTurnCount())
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,Duel.GetTurnCount())
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
-	e1:SetLabel(Duel.GetTurnCount())
+	if Duel.GetTurnPlayer()==c:GetOwner() and Duel.GetCurrentPhase()==PHASE_END then
+		e1:SetLabel(Duel.GetTurnCount()+2)
+	elseif Duel.GetTurnPlayer()==c:GetOwner() then
+		e1:SetLabel(Duel.GetTurnCount())
+	else
+		e1:SetLabel(Duel.GetTurnCount()+1)
+	end
 	e1:SetLabelObject(c)
 	e1:SetCondition(cm.spspcon)
 	e1:SetOperation(cm.spspop)
@@ -235,7 +243,7 @@ end
 
 function cm.spspcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
-	return Duel.GetTurnCount()~=e:GetLabel() and Duel.GetTurnPlayer()==tp and c:GetFlagEffectLabel(m)==e:GetLabel()
+	return Duel.GetTurnCount()==e:GetLabel() and Duel.GetTurnPlayer()==tp
 end
 
 function cm.spspop(e,tp,eg,ep,ev,re,r,rp)

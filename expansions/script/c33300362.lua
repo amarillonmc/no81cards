@@ -26,16 +26,16 @@ function c33300362.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsCanTurnSet()
+	return c:IsCanChangePosition()
 end
 function cm.filter2(c)
 	return c:IsSetCard(0x563) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and cm.filter(chkc) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
@@ -47,8 +47,18 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+	if tc:IsRelateToEffect(e) then
+		if tc:IsPosition(POS_FACEDOWN_DEFENSE)  then
+			Duel.ChangePosition(tc,POS_FACEUP_DEFENSE)
+		elseif tc:IsPosition(POS_FACEUP_DEFENSE) then
+			Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+		elseif tc:IsPosition(POS_FACEUP_ATTACK) then
+			if Duel.SelectOption(tp,aux.Stringid(23912837,2),aux.Stringid(23912837,3))==0 then
+				Duel.ChangePosition(tc,POS_FACEUP_DEFENSE)
+			else
+				Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+			end   
+		end
 	end
 end
 
