@@ -3,7 +3,7 @@
 local m=40010344
 local cm=_G["c"..m]
 cm.named_with_DragWizard=1
-function cm.Crimsonmoon(c)
+function cm.DragWizard(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_DragWizard
 end

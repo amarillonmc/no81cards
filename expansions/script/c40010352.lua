@@ -2,11 +2,12 @@
 local m=40010352
 local cm=_G["c"..m]
 cm.named_with_DragWizard=1
-function cm.Crimsonmoon(c)
+function cm.DragWizard(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_DragWizard
 end
 function cm.initial_effect(c)
+	aux.AddRitualProcGreaterCode(c,40010332)
 	--Effect 1
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
@@ -52,7 +53,7 @@ function cm.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_e
 	return res
 end
 function cm.spfilter3(c,e,tp,mg)
-	return cm.Crimsonmoon(c) and bit.band(c:GetType(),0x81)==0x81 and c:IsAbleToGrave()
+	return cm.DragWizard(c) and bit.band(c:GetType(),0x81)==0x81 and c:IsAbleToGrave()
 		and Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_GRAVE,0,1,nil,cm.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
 end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)

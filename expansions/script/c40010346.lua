@@ -2,7 +2,7 @@
 local m=40010346
 local cm=_G["c"..m]
 cm.named_with_DragWizard=1
-function cm.Crimsonmoon(c)
+function cm.DragWizard(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_DragWizard
 end
@@ -71,7 +71,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
 end
 function cm.thfilter(c)
-	return cm.Crimsonmoon(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return cm.DragWizard(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=4 then return end

@@ -2,7 +2,7 @@
 local m=40010348
 local cm=_G["c"..m]
 cm.named_with_DragWizard=1
-function cm.Crimsonmoon(c)
+function cm.DragWizard(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_DragWizard
 end
@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 end
 --Effect 1
 function cm.cfilter(c)
-	return c:IsFaceup() and cm.Crimsonmoon(c) and bit.band(c:GetType(),0x81)==0x81
+	return c:IsFaceup() and cm.DragWizard(c) and bit.band(c:GetType(),0x81)==0x81
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)

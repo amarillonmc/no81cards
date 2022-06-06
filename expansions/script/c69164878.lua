@@ -36,7 +36,7 @@ function c69164878.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterFlagEffect(tp,69164879,RESET_PHASE+PHASE_END,0,1)
 	end
 end
-group.r
+
 ----------------effect gain---------------
 
 function c69164878.filter(c)
@@ -206,9 +206,9 @@ function c69164878.costfilter(c,e,tp)
 	return c:IsAbleToRemoveAsCost() and (c:IsControler(tp) or (Duel.GetFlagEffect(tp,69164879)~=0 and c:IsControler(1-tp) and c:IsFaceup() and Duel.GetFlagEffect(tp,69164878)==0))
 end
 function c69164878.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c69164878.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c69164878.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c69164878.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c69164878.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,e,tp)
 	if g:GetFirst():GetControler()~=tp then
 		Duel.Hint(HINT_CARD,0,69164878)
 		Duel.RegisterFlagEffect(tp,69164878,RESET_PHASE+PHASE_END,0,1)

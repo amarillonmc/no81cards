@@ -2,7 +2,7 @@
 local m=40010358
 local cm=_G["c"..m]
 cm.named_with_DragWizard=1
-function cm.Crimsonmoon(c)
+function cm.DragWizard(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_DragWizard
 end
@@ -42,7 +42,7 @@ end
 --Effect 1
 --Effect 2
 function cm.confilter(c)
-	return  c:IsType(TYPE_MONSTER) and c:IsFaceup() and cm.Crimsonmoon(c)
+	return  c:IsType(TYPE_MONSTER) and c:IsFaceup() and cm.DragWizard(c)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.confilter,tp,LOCATION_MZONE,0,3,nil)

@@ -25,6 +25,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--Remove counter replace
 	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_RCOUNTER_REPLACE+0x1019)
 	e3:SetRange(LOCATION_MZONE)
@@ -38,27 +39,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	if not GIGANTIC_JET then
 		GIGANTIC_JET=true
-		local _DGetCounter=Duel.GetCounter
 		local _CGetCounter=Card.GetCounter
-		function Duel.GetCounter(p,s,o,typ)
-			local ct=_DGetCounter(p,s,o,typ)
-			local s1,o1=s,o
-			if s==1 then s1=0xff end
-			if o==1 then o1=0xff end
-			local g=Duel.GetMatchingGroup(Card.IsHasEffect,p,s1,o1,nil,m)
-			if #g>0 then
-				for tc in aux.Next(g) do
-					local og=tc:GetOverlayGroup()
-					if og and #og>0 then ct=ct+og:FilterCount(cm.filter,nil) end
-				end
-			end
-			return ct
-		end
 		function Card.GetCounter(c,typ)
 			local ct=_CGetCounter(c,typ)
+			if typ~=0x1019 then return ct end
 			if c:IsHasEffect(m) then
 				local og=c:GetOverlayGroup()
-				if og and #og>0 then ct=ct+og:FilterCount(cm.filter,nil) end
+				if og and og:FilterCount(cm.filter,nil)>ct then ct=og:FilterCount(cm.filter,nil) end
 			end
 			return ct
 		end

@@ -5,7 +5,7 @@ cm.named_with_Cardinal=1
 function cm.initial_effect(c)
 		--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedureLevelFree(c,cm.mfilter,nil,2,99)
+	aux.AddXyzProcedureLevelFree(c,cm.mfilter,nil,3,99)
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

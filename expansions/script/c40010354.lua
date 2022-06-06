@@ -2,7 +2,7 @@
 local m=40010354
 local cm=_G["c"..m]
 cm.named_with_DragWizard=1
-function cm.Crimsonmoon(c)
+function cm.DragWizard(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_DragWizard
 end
@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 end
 --Effect 1
 function cm.filter(c,e,tp)
-	return cm.Crimsonmoon(c)
+	return cm.DragWizard(c)
 end
 function cm.mfilter(c)
 	return c:GetLevel()>0  and c:IsReleasableByEffect()

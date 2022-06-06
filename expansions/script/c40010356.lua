@@ -2,7 +2,7 @@
 local m=40010356
 local cm=_G["c"..m]
 cm.named_with_DragWizard=1
-function cm.Crimsonmoon(c)
+function cm.DragWizard(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_DragWizard
 end
@@ -35,7 +35,7 @@ function cm.fselect(g)
 	return g:IsExists(cm.moon,1,nil)
 end
 function cm.moon(c)
-	return  c:IsType(TYPE_MONSTER) and cm.Crimsonmoon(c)
+	return  c:IsType(TYPE_MONSTER) and cm.DragWizard(c)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
@@ -47,15 +47,18 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if  g:CheckSubGroup(cm.fselect,3,3) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:FilterSelect(tp,cm.moon,1,1,nil)
-		g:RemoveCard(sg)
+		g:RemoveCard(sg:GetFirst())
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg1=g:Select(tp,2,2,nil)
 		if #sg>0 and #sg1>0 then
 			sg:Merge(sg1)
 			Duel.ConfirmCards(1-tp,sg)
+			Duel.ShuffleDeck(tp)
 			Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
 			local tg=sg:Select(1-tp,1,1,nil)
-			Duel.SendtoHand(tg,nil,REASON_EFFECT)
-			sg:RemoveCard(tg)
+			local tc=tg:GetFirst()
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			sg:RemoveCard(tc)
 			Duel.SendtoGrave(sg,REASON_EFFECT)
 		end
 	end
