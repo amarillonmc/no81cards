@@ -37,6 +37,9 @@ function cm.filter1(c,e)
 	return c:IsLocation(LOCATION_MZONE) and c:IsFacedown() and not c:IsImmuneToEffect(e)
 end
 function cm.spfilter(c,e,tp,m,f,chkf)
+	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE) and c:CheckFusionMaterial(m,nil,chkf) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+end
+function cm.spfilter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -50,7 +53,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 				local fgroup=ce:GetTarget()
 				local mg4=fgroup(ce,e,tp)
 				local mf=ce:GetValue()
-				res=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg4,mf,chkf)
+				res=Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg4,mf,chkf)
 			end
 		end
 		return res
@@ -68,7 +71,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		local fgroup=ce:GetTarget()
 		mg4=fgroup(ce,e,tp)
 		local mf=ce:GetValue()
-		sg3=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp,mg4,mf,chkf)
+		sg3=Duel.GetMatchingGroup(cm.spfilter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg4,mf,chkf)
 	end
 	if #sg1>0 or (sg3~=nil and #sg3>0) then
 		local sg=sg1:Clone()

@@ -59,7 +59,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			if rflag then Duel.BreakEffect() end
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end
-		if ct>=3 then
+		if ct==3 then
 			local lab=e:GetLabel()
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD)

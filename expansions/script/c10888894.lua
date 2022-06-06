@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 end
 
 function cm.tgtfilter(c)
-	return c:IsCode(10788912) and c:IsAbleToHand()
+	return c:IsCode(10888912) and c:IsAbleToHand()
 end
 
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -67,7 +67,7 @@ function cm.tgrtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 
 function cm.tgrop(e,tp,eg,ep,ev,re,r,rp,chk)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local g=Duel.SelectMatchingCard(tp,cm.tgtgrfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then

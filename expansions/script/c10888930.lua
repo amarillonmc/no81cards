@@ -17,7 +17,6 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,m)
-	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
@@ -34,7 +33,7 @@ end
 
 function cm.actcon(e)
 	return not Duel.IsExistingMatchingCard(Card.IsType,e:GetHandlerPlayer(),LOCATION_GRAVE,0,1,nil,TYPE_TRAP)
-	or Duel.IsExistingMatchingCard(Card.IsCode,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil,10788912)
+	or Duel.IsExistingMatchingCard(Card.IsCode,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil,10888912)
 end
 
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -62,10 +61,6 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetOwner():IsRelateToChain(ev) then
 		e:GetOwner():CancelToGrave(false)
 	end
-end
-
-function cm.costsplimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x773) and not c:IsLocation(LOCATION_EXTRA)
 end
 
 function cm.spfilter(c,e,tp)

@@ -25,6 +25,9 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.setg)
 	e2:SetOperation(cm.seop)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetCode(EVENT_REMOVE)
+	c:RegisterEffect(e3)
 end
 
 function cm.tgtfilter(c)
@@ -50,7 +53,7 @@ function cm.tgs1filter(c)
 end
 
 function cm.tgs2filter(c)
-	return c:IsCode(10788912) and c:IsAbleToHand()
+	return c:IsCode(10888912) and c:IsAbleToHand()
 end
 
 function cm.secon(e,tp,eg,ep,ev,re,r,rp)

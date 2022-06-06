@@ -31,12 +31,44 @@ function cm.initial_effect(c)
 	e3:SetCondition(cm.rcon)
 	e3:SetOperation(cm.rop)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(m)
+	e4:SetRange(LOCATION_MZONE)
+	c:RegisterEffect(e4)
+	if not GIGANTIC_JET then
+		GIGANTIC_JET=true
+		local _DGetCounter=Duel.GetCounter
+		local _CGetCounter=Card.GetCounter
+		function Duel.GetCounter(p,s,o,typ)
+			local ct=_DGetCounter(p,s,o,typ)
+			local s1,o1=s,o
+			if s==1 then s1=0xff end
+			if o==1 then o1=0xff end
+			local g=Duel.GetMatchingGroup(Card.IsHasEffect,p,s1,o1,nil,m)
+			if #g>0 then
+				for tc in aux.Next(g) do
+					local og=tc:GetOverlayGroup()
+					if og and #og>0 then ct=ct+og:FilterCount(cm.filter,nil) end
+				end
+			end
+			return ct
+		end
+		function Card.GetCounter(c,typ)
+			local ct=_CGetCounter(c,typ)
+			if c:IsHasEffect(m) then
+				local og=c:GetOverlayGroup()
+				if og and #og>0 then ct=ct+og:FilterCount(cm.filter,nil) end
+			end
+			return ct
+		end
+	end
 end
 function cm.mfilter(c,xyzc)
 	return c:IsXyzLevel(xyzc,2) or c:IsSetCard(0x18)
 end
 function cm.filter(c)
-	return not c:IsLevel(2)
+	return c:IsType(TYPE_MONSTER) and not c:IsLevel(2)
 end
 function cm.adcon(e)
 	return e:GetHandler():GetOverlayGroup():IsExists(cm.filter,1,nil)

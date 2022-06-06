@@ -79,7 +79,7 @@ function cm.ctcon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_FZONE,LOCATION_FZONE,1,nil,10788912) then
+	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_FZONE,LOCATION_FZONE,1,nil,10888912) then
 		e:GetHandler():AddCounter(0x13,4)
 	else
 		e:GetHandler():AddCounter(0x13,2)
