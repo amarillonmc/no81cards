@@ -89,7 +89,7 @@ function cm.fselect(g,ng,goal,tp)
 	aux.GCheckAdditional=nil
 	return tc
 end
-function cm.fselect2(g,g1,lv,tp)
+function cm.fselect3(g,g1,lv,tp)
 	return g:GetSum(cm.lvplus)==lv and Duel.GetMZoneCount(tp,g+g1)>0
 end
 function cm.hspcheck(g,ng,goal,tp)
@@ -104,13 +104,13 @@ function cm.hspgcheck(g,c,mg,f,min,max,ext_params)
 end
 function cm.hspcheck2(g,g1,lv,tp)
 	Duel.SetSelectedCard(g)
-	return g:CheckSubGroup(cm.fselect2,1,#g,g1,lv,tp)
+	return g:CheckSubGroup(cm.fselect3,1,#g,g1,lv,tp)
 end
 function cm.hspgcheck2(g,c,mg,f,min,max,ext_params)
 	local g1,lv,tp=table.unpack(ext_params)
 	if g:GetSum(cm.lvplus)<=lv then return true end
 	Duel.SetSelectedCard(g)
-	return g:CheckSubGroup(cm.fselect2,1,#g,g1,lv,tp)
+	return g:CheckSubGroup(cm.fselect3,1,#g,g1,lv,tp)
 end
 function cm.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -293,7 +293,7 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 		if #mg[i]>ft[i] then
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451461,7))
 			local ct=math.min(#(mg[i]-pmg[i])+pft[i],ft[i])
-			local tg=mg[i]:SelectSubGroup(tp,cm.fselect2,false,ct,ct,nil,pft[i])
+			local tg=mg[i]:SelectSubGroup(tp,cm.fselect2,false,ct,ct,pft[i])
 			local ptg=tg:Filter(Card.IsPreviousLocation,nil,LOCATION_PZONE)
 			for tc in aux.Next(ptg) do cm.returntofield(tc) end
 			for tc in aux.Next(tg-ptg) do cm.returntofield(tc) end

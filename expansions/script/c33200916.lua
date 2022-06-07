@@ -20,9 +20,9 @@ function c33200916.initial_effect(c)
 	e2:SetHintTiming(0,TIMING_END_PHASE)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,33210916)
-	e2:SetCost(c33200916.spcost)
-	e2:SetTarget(c33200916.sptg)
-	e2:SetOperation(c33200916.spop)
+	e2:SetCost(c33200916.spcost1)
+	e2:SetTarget(c33200916.sptg1)
+	e2:SetOperation(c33200916.spop1)
 	c:RegisterEffect(e2)
 	--remove
 	local e3=Effect.CreateEffect(c)
@@ -70,18 +70,18 @@ end
 function c33200916.tgfilter(c)
 	return (c:IsSetCard(0x332a) or c:IsSetCard(0x881)) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
 end
-function c33200916.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c33200916.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33200916.tgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,c33200916.tgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.Release(g,REASON_COST)
 end
-function c33200916.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c33200916.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function c33200916.spop(e,tp,eg,ep,ev,re,r,rp)
+function c33200916.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)

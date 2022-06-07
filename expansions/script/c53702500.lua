@@ -2594,7 +2594,6 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			end
 			if x then
-			Debug.Message(114)
 			local ex2=se:Clone()
 			ex2:SetCode(EVENT_LEAVE_FIELD)
 			sc:RegisterEffect(ex2)

@@ -265,7 +265,7 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 		if #mg[i]>ft[i] then
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451461,7))
 			local ct=math.min(#(mg[i]-pmg[i])+pft[i],ft[i])
-			local tg=mg[i]:SelectSubGroup(tp,cm.fselect2,false,ct,ct,nil,pft[i])
+			local tg=mg[i]:SelectSubGroup(tp,cm.fselect2,false,ct,ct,pft[i])
 			local ptg=tg:Filter(Card.IsPreviousLocation,nil,LOCATION_PZONE)
 			for tc in aux.Next(ptg) do cm.returntofield(tc) end
 			for tc in aux.Next(tg-ptg) do cm.returntofield(tc) end
