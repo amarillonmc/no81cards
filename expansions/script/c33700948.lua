@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
-	e1:SetRange(LOCATION_FZONE)
+	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(cm.tgcon)
 	e1:SetTarget(cm.tgtg)
 	e1:SetOperation(cm.tgop)
@@ -22,6 +22,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e2:SetCondition(cm.rmcon)
 	e2:SetCost(cm.rmcost)
 	e2:SetTarget(cm.rmtg)
 	e2:SetOperation(cm.rmop)
@@ -135,6 +136,9 @@ function cm.efilter1(e,te)
 end
 function cm.efilter2(e,te)
 	return te:IsActiveType(TYPE_TRAP)
+end
+function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	return bit.band(e:GetHandler():GetFlagEffectLabel(m),TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)==TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP
 end
 function cm.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end

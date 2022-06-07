@@ -37,7 +37,7 @@ function c71400033.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c71400033.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)>0 and e:GetLabel==1 then
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)>0 and e:GetLabel()==1 then
 		Duel.BreakEffect()
 		Duel.SetLP(tp,Duel.GetLP(tp)-1500)
 		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)

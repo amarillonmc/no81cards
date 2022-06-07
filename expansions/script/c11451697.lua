@@ -40,14 +40,63 @@ function cm.initial_effect(c)
 	if not GIGANTIC_JET then
 		GIGANTIC_JET=true
 		local _CGetCounter=Card.GetCounter
+		local _CRemoveCounter=Card.RemoveCounter
+		local _DIsCanRemoveCounter=Duel.IsCanRemoveCounter
+		local _DRemoveCounter=Duel.RemoveCounter
 		function Card.GetCounter(c,typ)
 			local ct=_CGetCounter(c,typ)
 			if typ~=0x1019 then return ct end
 			if c:IsHasEffect(m) then
 				local og=c:GetOverlayGroup()
-				if og and og:FilterCount(cm.filter,nil)>ct then ct=og:FilterCount(cm.filter,nil) end
+				if og and #og>0 then ct=ct+og:FilterCount(cm.filter,nil) end
 			end
 			return ct
+		end
+		function Card.RemoveCounter(c,p,typ,ct,r)
+			if c:IsHasEffect(m) and typ==0x1019 and ct==c:GetCounter(typ) then
+				local og=c:GetOverlayGroup():Filter(cm.filter,nil)
+				local ct0=_CGetCounter(c,typ)
+				if og and #og>0 and c:CheckRemoveOverlayCard(p,#og,r) then c:RemoveOverlayCard(p,#og,#og,r) end
+				if ct0>0 then _CRemoveCounter(c,p,typ,ct0,r) end
+				return true
+			end
+			return _CRemoveCounter(c,p,typ,ct,r)
+		end
+		function Duel.IsCanRemoveCounter(p,s,o,typ,ct,r)
+			if typ~=0x1019 then return _DIsCanRemoveCounter(p,s,o,typ,ct,r) end
+			local s1,o1=s,o
+			if s==1 then s1=0xff end
+			if o==1 then o1=0xff end
+			local g=Duel.GetMatchingGroup(Card.IsHasEffect,p,s1,o1,nil,m)
+			for tc in aux.Next(g) do
+				local og=tc:GetOverlayGroup():Filter(cm.filter,nil)
+				if og and #og>0 and tc:CheckRemoveOverlayCard(p,#og,r) then ct=ct-#og end
+			end
+			if ct<=0 then return true end
+			return _DIsCanRemoveCounter(p,s,o,typ,ct,r)
+		end
+		function Duel.RemoveCounter(p,s,o,typ,ct,r)
+			if typ~=0x1019 then return _DRemoveCounter(p,s,o,typ,ct,r) end
+			local ct0=Duel.GetCounter(p,s,o,typ)
+			local s1,o1=s,o
+			if s==1 then s1=0xff end
+			if o==1 then o1=0xff end
+			local g=Duel.GetMatchingGroup(Card.IsHasEffect,p,s1,o1,nil,m)
+			local rg=Group.CreateGroup()
+			for tc in aux.Next(g) do
+				local og=tc:GetOverlayGroup():Filter(cm.filter,nil)
+				if og and #og>0 and tc:CheckRemoveOverlayCard(p,#og,r) then rg:Merge(og) end
+			end
+			if rg and #rg>0 and (ct>ct0 or Duel.SelectYesNo(p,aux.Stringid(m,2))) then
+				Duel.Hint(HINT_SELECTMSG,ep,HINTMSG_REMOVEXYZ)
+				local tg=rg:Select(ep,math.max(1,ct-ct0),ct,nil)
+				if #tg>0 then
+					local ct1=Duel.SendtoGrave(tg,r)
+					ct=ct-ct1
+				end
+			end
+			if ct<=0 then return true end
+			return _DRemoveCounter(p,s,o,typ,ct,r)
 		end
 	end
 end
@@ -91,9 +140,17 @@ function cm.splimit(e,c)
 end
 function cm.rcon(e,tp,eg,ep,ev,re,r,rp)
 	local og=e:GetHandler():GetOverlayGroup()
-	return ep==e:GetOwnerPlayer() and og and og:FilterCount(cm.filter,nil)>=ev
+	local code=re:GetOwner():GetOriginalCode()
+	--continuously updating
+	local tab={11451697,79703905,90557975,99913710}
+	for _,code0 in pairs(tab) do
+		if code==code0 then return false end
+	end
+	return ep==e:GetOwnerPlayer() and og and og:FilterCount(cm.filter,nil)>=ev and e:GetHandler():CheckRemoveOverlayCard(ep,ev,r)
 end
 function cm.rop(e,tp,eg,ep,ev,re,r,rp)
 	local og=e:GetHandler():GetOverlayGroup():Filter(cm.filter,nil)
-	e:GetHandler():RemoveOverlayCard(ep,ev,ev,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,ep,HINTMSG_REMOVEXYZ)
+	local tg=og:Select(ep,ev,ev,nil)
+	if #tg>0 then Duel.SendtoGrave(tg,r) end
 end
