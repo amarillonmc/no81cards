@@ -54,7 +54,8 @@ function c33200433.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Draw(tp,1,REASON_EFFECT)
 		local tc=Duel.GetOperatedGroup():GetFirst()
 		Duel.ConfirmCards(1-tp,tc)
-		if tc:IsType(TYPE_SPELL) then Duel.SendtoGrave(tc,REASON_EFFECT) end 
+		if tc:IsType(TYPE_SPELL) then Duel.SendtoGrave(tc,REASON_EFFECT) end
+		Duel.ShuffleHand(tp)
 	end 
 end
 
