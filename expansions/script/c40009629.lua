@@ -81,7 +81,8 @@ end
 function cm.dfilter(c)
 	return c:IsFaceup() and c:IsCode(40010230)
 end
-function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.actcon(e,c)
+	local tp=e:GetHandlerPlayer()
 	return Duel.GetFlagEffect(tp,40009560)>0 or Duel.IsExistingMatchingCard(cm.dfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 

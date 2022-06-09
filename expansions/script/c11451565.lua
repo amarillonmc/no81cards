@@ -73,7 +73,7 @@ function cm.acfilter(c,tp)
 	return c:IsPreviousControler(tp) and c:GetEquipTarget()
 end
 function cm.accon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.acfilter,1,nil,tp)
+	return eg:IsExists(cm.acfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function cm.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end

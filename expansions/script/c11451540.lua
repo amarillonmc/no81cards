@@ -73,7 +73,7 @@ function cm.otop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	e:SetLabel(#eg)
-	return true
+	return not eg:IsContains(e:GetHandler())
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

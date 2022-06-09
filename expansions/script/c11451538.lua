@@ -97,7 +97,7 @@ function cm.filter(c)
 	return c:IsSummonType(SUMMON_TYPE_ADVANCE)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter,1,nil) and aux.bpcon()
+	return eg:IsExists(cm.filter,1,nil) and aux.bpcon() and not eg:IsContains(e:GetHandler())
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

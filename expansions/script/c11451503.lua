@@ -53,7 +53,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_FZONE)
+	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_FZONE) and not eg:IsContains(e:GetHandler())
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsSSetable() end

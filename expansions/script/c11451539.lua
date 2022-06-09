@@ -122,7 +122,7 @@ function cm.cfilter(c)
 	return (c:IsType(TYPE_MONSTER) and not c:IsPreviousLocation(LOCATION_SZONE)) or c:IsPreviousLocation(LOCATION_MZONE)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil)
+	return eg:IsExists(cm.cfilter,1,nil) and not eg:IsContains(e:GetHandler())
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

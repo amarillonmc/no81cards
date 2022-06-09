@@ -87,7 +87,7 @@ function cm.thfilter(c,tp)
 	return c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_OVERLAY)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.thfilter,1,1,nil,tp)
+	return eg:IsExists(cm.thfilter,1,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)

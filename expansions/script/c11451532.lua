@@ -114,7 +114,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter,1,nil)
+	return eg:IsExists(cm.filter,1,nil) and not eg:IsContains(e:GetHandler())
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

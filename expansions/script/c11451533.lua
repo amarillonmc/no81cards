@@ -103,7 +103,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE)
+	return eg:IsExists(cm.filter,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE) and not eg:IsContains(e:GetHandler())
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) end
