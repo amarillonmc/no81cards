@@ -36,8 +36,18 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetFlagEffect(tp,m)
 	if chk==0 then return re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsDestructable() and (ct<1 or Duel.IsPlayerCanDraw(tp,1)) end
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
-	e:SetLabel(e:GetHandler():GetSequence())
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetHandler():IsCode(m) then
+		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	end
+	local loc,seq,p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE,CHAININFO_TRIGGERING_CONTROLER)
+	local col=0
+	if loc&LOCATION_MZONE~=0 then
+		col=aux.MZoneSequence(seq)
+	elseif loc&LOCATION_SZONE~=0 and seq<=4 then
+		col=aux.SZoneSequence(seq)
+	end
+	if p==1-tp then col=4-col end
+	e:SetLabel(col)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	if ct>=1 then
 		e:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW)
