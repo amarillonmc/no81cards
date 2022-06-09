@@ -53,12 +53,12 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
-function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.dmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,0)
 end
-function cm.damop(e,tp,eg,ep,ev,re,r,rp)
+function cm.dmop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,math.floor(Duel.GetLP(p)/2),REASON_EFFECT)
 end
