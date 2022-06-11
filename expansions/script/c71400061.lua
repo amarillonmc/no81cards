@@ -86,7 +86,7 @@ function c71400061.tg3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c71400061.op3(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	local lnk=c:GetReasonCard():GetLink()
+	local lnk=e:GetHandler():GetReasonCard():GetLink()
 	if tc:IsRelateToEffect(e) then
 		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE)
 			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
