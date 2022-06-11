@@ -76,7 +76,7 @@ function c71400061.filter3b(c,e,tp,lnk)
 end
 function c71400061.tg3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local lnk=c:GetReasonCard():GetLink()
+	local lnk=e:GetHandler():GetReasonCard():GetLink()
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c71400061.filter3a(chkc,ft) end
 	if chk==0 then return Duel.IsExistingTarget(c71400061.filter3a,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,ft) and Duel.IsExistingMatchingCard(c71400061.filter3b,tp,LOCATION_GRAVE,0,1,nil,e,tp,lnk) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -86,7 +86,7 @@ function c71400061.tg3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c71400061.op3(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	local lnk=c:GetReasonCard():GetLink()
+	local lnk=e:GetHandler():GetReasonCard():GetLink()
 	if tc:IsRelateToEffect(e) then
 		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE)
 			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
