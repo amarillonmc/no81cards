@@ -55,8 +55,8 @@ function c71400066.limit(c)
 			end
 end
 function c71400066.op1(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.CheckLPCost(tc:GetControler(),1000) then
-		Duel.PayLPCost(tc:GetControler(),1000)
+	if Duel.CheckLPCost(tp,1000) then
+		Duel.PayLPCost(tp,1000)
 	else
 		return
 	end
@@ -88,8 +88,8 @@ function c71400066.tg1a(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 end
 function c71400066.op1a(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.CheckLPCost(tc:GetControler(),1000) then
-		Duel.PayLPCost(tc:GetControler(),1000)
+	if Duel.CheckLPCost(tp,1000) then
+		Duel.PayLPCost(tp,1000)
 	else
 		return
 	end

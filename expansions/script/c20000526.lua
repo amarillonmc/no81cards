@@ -19,7 +19,7 @@ function cm.tgf1(c)
 	return c:IsAbleToRemove() and not c:IsPublic()
 end
 function cm.tgf2(c)
-	return (c:IsSetCard(0x3fd5) or c:IsSetCard(0xfd6)) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsCode(m) and c:IsAbleToHand() 
+	return (c:IsSetCard(0x3fd5) or c:IsSetCard(0xfd6)) and not c:IsCode(m) and c:IsAbleToHand() 
 end
 function cm.tgf3(g)
 	return aux.dncheck(g) and g:IsExists(Card.IsSetCard,1,nil,0xfd6) and g:IsExists(Card.IsSetCard,1,nil,0x3fd5)
