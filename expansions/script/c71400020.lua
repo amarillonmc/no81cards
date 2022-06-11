@@ -14,11 +14,11 @@ function c71400020.initial_effect(c)
 	e1:SetCountLimit(1,71400020+EFFECT_COUNT_CODE_DUEL+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(e1)
 end
-function c71400020.filter1(c,e,tp)
+function c71400020.filter1sp(c,e,tp)
 	return c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c71400020.con1(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c71400020.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,0x714)
 	local ct=g:GetClassCount(Card.GetCode)
 	return ct>12
 end
@@ -38,9 +38,9 @@ function c71400020.op1(e,tp,eg,ep,ev,re,r,rp)
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if ft<=0 then return end
 		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
-		if Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c71400020.filter3),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(71400020,1)) then
+		if Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c71400020.filter1sp),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(71400020,1)) then
 			Duel.BreakEffect()
-			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71400020.filter3),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,ft,ft,nil,e,tp)
+			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71400020.filter1sp),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,ft,ft,nil,e,tp)
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
@@ -56,7 +56,7 @@ end
 function c71400020.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_HAND,0,1,nil,tp,POS_FACEDOWN)
 end
-function c71400020.flipop(e,tp,eg,ep,ev,re,r,rp)
+function c71400020.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_HAND,0,nil,tp,POS_FACEDOWN)
 	if Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)>0 then
 		local ct=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)
