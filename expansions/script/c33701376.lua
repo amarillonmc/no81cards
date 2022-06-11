@@ -18,8 +18,8 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
-	e2:SetTarget(cm.dmtg)
-	e2:SetOperation(cm.dmop)
+	e2:SetTarget(cm.damtg)
+	e2:SetOperation(cm.damop)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
@@ -53,12 +53,12 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
-function cm.dmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,0)
 end
-function cm.dmop(e,tp,eg,ep,ev,re,r,rp)
+function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,math.floor(Duel.GetLP(p)/2),REASON_EFFECT)
 end
