@@ -2,7 +2,7 @@
 xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400048.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroMixProcedure(c,aux.Tuner(yume.YumeCheck(c)),nil,nil,c71400048.mfilter,1,99,c71400048.gfilter)
+	aux.AddSynchroMixProcedure(c,aux.Tuner(yume.YumeCheck,c),nil,nil,c71400048.mfilter,1,99,c71400048.gfilter(c))
 	--summon limit
 	yume.AddYumeSummonLimit(c,1)
 	--atkup
@@ -42,8 +42,10 @@ end
 function c71400048.mfilter(c,sc)
 	return c:IsSetCard(0x714) and c:IsNotTuner(sc) or c:IsType(TYPE_TUNER)
 end
-function c71400048.gfilter(g,syncard,c1)
-	return g:IsExists(Card.IsNotTuner,1,c1,syncard)
+function c71400048.gfilter(c)
+	return  function(g,syncard)
+				return g:IsExists(Card.IsNotTuner,1,nil,c)
+			end
 end
 function c71400048.val(e,c)
 	return Duel.GetMatchingGroupCount(c71400048.filter1,c:GetControler(),LOCATION_GRAVE+LOCATION_MZONE,0,nil)*500
@@ -64,7 +66,7 @@ function c71400048.op2(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_CANNOT_ATTACK)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e2:SetTarget(c71400048.ftarget)
-	e2:SetLabel(tc:GetFieldID())
+	e2:SetLabel(c:GetFieldID())
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 end
