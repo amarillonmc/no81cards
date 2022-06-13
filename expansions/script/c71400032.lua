@@ -33,7 +33,7 @@ function c71400032.tg1(e,c)
 end
 function c71400032.con2(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return Duel.IsExistingMatchingCard(c71400032.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,4,nil) and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
+	return Duel.IsExistingMatchingCard(c71400032.filter2con,tp,LOCATION_MZONE,LOCATION_MZONE,4,nil) and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
 end
 function c71400032.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c71400032.filter2(chkc) end
@@ -45,7 +45,7 @@ end
 function c71400032.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		c:SetCardTarget(tc)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -68,6 +68,9 @@ function c71400032.op2(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71400032.filter2(c)
 	return c:IsRace(RACE_PLANT) and aux.NegateMonsterFilter(c)
+end
+function c71400032.filter2con(c)
+	return c:IsFaceup() and c:IsRace(RACE_PLANT)
 end
 function c71400032.filter2a(c)
 	return c:IsSetCard(0xd714) and c:IsAbleToHand()
