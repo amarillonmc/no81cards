@@ -61,8 +61,8 @@ function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()
 	Card.SetMaterial(c,sg)
 	local cg=sg:Filter(Card.IsFacedown,nil)
-	if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
 	Duel.SendtoDeck(sg,nil,2,REASON_COST+REASON_MATERIAL)
+	if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
 end
 function cm.filter3(c,tp)
 	return c:IsFacedown() and c:IsPreviousControler(tp) and c:IsLocation(LOCATION_REMOVED) and c:IsAbleToDeck()
