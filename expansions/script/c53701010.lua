@@ -87,7 +87,9 @@ function c53701010.efilter(e,re,rp)
 	return not g:IsContains(e:GetHandler())
 end
 function c53701010.costchk(e,te_or_c,tp)
-	return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return false end
+	local tc=Duel.GetDecktopGroup(tp,1):GetFirst()
+	return tc:IsAbleToGrave() and tc:IsDestructable()
 end
 function c53701010.costop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,1)

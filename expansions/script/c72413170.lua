@@ -44,6 +44,7 @@ function c72413170.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c72413170.condition(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandler():GetOwner()
 	return tp~=Duel.GetTurnPlayer()
 end
 function c72413170.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

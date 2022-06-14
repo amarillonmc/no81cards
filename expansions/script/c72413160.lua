@@ -34,14 +34,15 @@ function c72413160.initial_effect(c)
 	end
 end
 --
-function c72413160.defilter(c,tp)
+function c72413160.defilter(c,e)
+	local tp=e:GetHandler():GetOwner()
 	return c:IsReason(REASON_BATTLE) and c:IsLocation(LOCATION_GRAVE) and c:GetPreviousControler()==tp
 end
 function c72413160.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c72413160.defilter,1,nil,tp)
+	return eg:IsExists(c72413160.defilter,1,nil,e)
 end
 function c72413160.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()	 
+	local c=e:GetHandler()   
 	Duel.RegisterFlagEffect(c:GetControler(),72413161,RESET_PHASE+PHASE_END,0,1)
 end
 --

@@ -38,6 +38,7 @@ function c72413150.initial_effect(c)
 end
 --
 function c72413150.regcon(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandler():GetOwner()
 	return ep==tp and bit.band(r,REASON_BATTLE)~=0
 end
 function c72413150.regop(e,tp,eg,ep,ev,re,r,rp)

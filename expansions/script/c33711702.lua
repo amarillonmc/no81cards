@@ -49,22 +49,22 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_DECK,0,ac/800,ac/800,nil)
 	Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
 end
-function cm.remfilter(c)
-	return c:GetFlagEffect(m)<1
+function cm.remfilter(c,tp)
+	return c:GetFlagEffect(m)<1 and c:IsControler(tp)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	local sg=eg:Filter(cm.remfilter,nil)
+	local sg=eg:Filter(cm.remfilter,nil,tp)
 	return sg:GetCount()>0
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	local num=Duel.Remove(eg:Filter(cm.remfilter,nil),POS_FACEDOWN,REASON_RULE)
+	local num=Duel.Remove(eg:Filter(cm.remfilter,nil,tp),POS_FACEDOWN,REASON_RULE)
 	if num<1 then return end
 	local tg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	local sg=tg:Filter(Card.IsAbleToHand,nil)
 	if sg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=sg:RandomSelect(tp,1)
+		local tg=sg:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOHAND,0,0)
 		Duel.SendtoHand(tc,tp,REASON_EFFECT)
