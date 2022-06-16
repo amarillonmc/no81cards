@@ -45,11 +45,17 @@ function c114824019.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterFlagEffect(tp,114824019,RESET_CHAIN,0,1)
 end
 function c114824019.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSummonable(false,nil) or e:GetHandler():IsMSetable(true,nil) end
+	if chk==0 then return e:GetHandler():IsSummonable(false,nil) or e:GetHandler():IsMSetable(false,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 end
 function c114824019.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	Duel.Summon(tp,c,false,nil)
+	local s1=c:IsSummonable(false,nil)
+	local s2=c:IsMSetable(false,nil)
+	if (s1 and s2 and Duel.SelectPosition(tp,c,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
+		Duel.Summon(tp,c,false,nil)
+	else
+		Duel.MSet(tp,c,false,nil)
+	end
 end
