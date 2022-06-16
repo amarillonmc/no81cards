@@ -88,8 +88,8 @@ function cm.initial_effect(c)
 				if og and #og>0 and tc:CheckRemoveOverlayCard(p,#og,r) then rg:Merge(og) end
 			end
 			if rg and #rg>0 and (ct>ct0 or Duel.SelectYesNo(p,aux.Stringid(m,2))) then
-				Duel.Hint(HINT_SELECTMSG,ep,HINTMSG_REMOVEXYZ)
-				local tg=rg:Select(ep,math.max(1,ct-ct0),ct,nil)
+				Duel.Hint(HINT_SELECTMSG,p,HINTMSG_REMOVEXYZ)
+				local tg=rg:Select(p,math.max(1,ct-ct0),ct,nil)
 				if #tg>0 then
 					local ct1=Duel.SendtoGrave(tg,r)
 					ct=ct-ct1

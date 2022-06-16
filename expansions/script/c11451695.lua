@@ -27,6 +27,7 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.ConfirmCards(1-tp,g)
 	if Duel.SendtoDeck(g,nil,2,REASON_COST)>0 then
 		Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,e:GetHandler())

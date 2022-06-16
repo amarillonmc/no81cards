@@ -54,6 +54,7 @@ function c67200082.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 --spsummon
 function c67200082.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	return e:GetHandler():IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)
 end
 function c67200082.spfilter(c,e,tp)

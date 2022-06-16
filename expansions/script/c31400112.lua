@@ -5,7 +5,6 @@ function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	local e0=aux.AddLinkProcedure(c,nil,3,3,cm.lcheck)
 	e0:SetProperty(e0:GetProperty()|EFFECT_FLAG_SET_AVAILABLE)
-	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_MATERIAL_CHECK)
@@ -40,7 +39,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	
 	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetType(EFFECT_TYPE_SINGLE)
 	e5:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
 	e5:SetRange(LOCATION_EXTRA)
 	e5:SetTargetRange(LOCATION_ONFIELD,0)
@@ -84,7 +83,9 @@ function cm.lcheckc(c)
 	return 0x100
 end
 function cm.lcheck2(c)
-	return (not c:IsType(TYPE_CONTINUOUS)) and c:IsPosition(POS_FACEDOWN_DEFENSE)
+	local con1=c:IsType(TYPE_MONSTER) and c:IsPosition(POS_FACEDOWN_DEFENSE)
+	local con2=c:IsType(TYPE_TRAP+TYPE_SPELL) and not c:IsType(TYPE_CONTINUOUS+TYPE_TRAPMONSTER)
+	return con1 or con2 or con3
 end
 function cm.lcheck(g)
 	return g:GetClassCount(cm.lcheckc)==g:GetCount() and g:FilterCount(cm.lcheck2,nil)==0
