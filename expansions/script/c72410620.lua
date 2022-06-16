@@ -38,7 +38,8 @@ function c72410620.initial_effect(c)
 end
 function c72410620.spcon(e,c)
 	if c==nil then return true end
-	return  Duel.GetMatchingGroupCount(nil,c:GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD,nil)>=7
+	local g=Duel.GetFieldGroup(0,LOCATION_ONFIELD,LOCATION_ONFIELD)
+	return #g>=7 and g:FilterCount(Card.IsAbleToGraveAsCost,nil)==#g
 end
 
 function c72410620.spop(e,tp,eg,ep,ev,re,r,rp,c)

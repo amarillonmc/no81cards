@@ -36,7 +36,7 @@ function c113398100.cfilter(c)
 	return c:IsRace(RACE_SPELLCASTER) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
 end
 function c113398100.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and Duel.IsExistingMatchingCard(c113398100.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+	return Duel.GetTurnPlayer()==tp --and Duel.IsExistingMatchingCard(c113398100.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 end
 function c113398100.filter(c)
 	return c:IsSetCard(0x306e) and c:GetCode()~=113398100 and c:IsType(TYPE_SPELL) and c:IsAbleToDeck()
