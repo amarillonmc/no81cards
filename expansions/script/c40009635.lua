@@ -9,7 +9,7 @@ end
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCost(cm.cost)
@@ -18,7 +18,6 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--set
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCost(cm.setcost)
@@ -30,59 +29,46 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
-function cm.tgfilter1(c)
+function cm.filter1(c)
 	return cm.Diablotherhood(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
-function cm.spfilter(c,e,tp)
+function cm.filter2(c,e,tp)
 	return cm.Diablotherhood(c) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.dfilter(c)
 	return c:IsFaceup() and c:IsCode(40010230)
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
-	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0
-	local b2=Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil)
-	--local b2=true
-	if chk==0 then return b2 end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local b1=Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil)
+	local b2=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil,e,tp)
+	if chk==0 then return b1 or b2 end
 	local op=0
-	if b1 then
+	if b1 and b2 then
 		if (Duel.GetFlagEffect(tp,40009560)>0 or Duel.IsExistingMatchingCard(cm.dfilter,tp,LOCATION_MZONE,0,1,nil)) then
 			op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2))
 		else
 			op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))
 		end
+	elseif b1 then
+		op=Duel.SelectOption(tp,aux.Stringid(m,0))
 	else
 		op=Duel.SelectOption(tp,aux.Stringid(m,1))+1
 	end
 	e:SetLabel(op)
-	if op~=0 then 
-		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
-		--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK)
-		if op==1 then
-			e:SetCategory(CATEGORY_TOGRAVE)
-		else
-			e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
-			Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK)
-		end
-	else
-		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK)
-	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local op=e:GetLabel()
-	local res=0
-	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
-	if op~=1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0 then
-		local tg=g:Select(tp,1,1,nil)
-		res=Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
+	if op~=1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,cm.filter1,tp,LOCATION_DECK,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+		end
 	end
 	if op~=0 then
-		local g1=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+		local g1=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		if g1:GetCount()>0 then
-			if op==2 and res~=0 then Duel.BreakEffect() end
-			Duel.SendtoGrave(g1,REASON_EFFECT)
+			Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
 end

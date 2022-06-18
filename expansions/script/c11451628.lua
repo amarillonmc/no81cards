@@ -5,6 +5,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:SetSPSummonOnce(m)
 	aux.AddSynchroProcedure(c,cm.tfilter,cm.ntfilter,1)
+	c:EnableReviveLimit()
 	--twist synchro
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(m,0))
@@ -195,22 +196,33 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 		c:SetMaterial(g)
 		Duel.SendtoGrave(g,REASON_MATERIAL+REASON_SYNCHRO)
 		g:KeepAlive()
-		cm[0]=g
-		cm[1]=e
+		local _GetReasonCard=Card.GetReasonCard
+		function Card.GetReasonCard(gc)
+			local res=_GetReasonCard(gc)
+			local ref=c:GetReasonEffect()
+			if res==c and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC_G then return bc end
+			return res
+		end
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 		e1:SetProperty(EFFECT_FLAG_OATH)
+		e1:SetLabelObject(g)
 		e1:SetCountLimit(1)
 		e1:SetOperation(cm.adjustop2)
 		Duel.RegisterEffect(e1,tp)
 	end
 end
 function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RaiseEvent(cm[0],EVENT_BE_MATERIAL,cm[1],REASON_SYNCHRO,tp,tp,0)
-	for tc in aux.Next(cm[0]) do
-		Duel.RaiseSingleEvent(tc,EVENT_BE_MATERIAL,cm[1],REASON_SYNCHRO,tp,tp,0)
+	for tc in aux.Next(eg) do
+		tc:CompleteProcedure()
 	end
+	local g=e:GetLabelObject()
+	Duel.RaiseEvent(g,EVENT_BE_MATERIAL,nil,REASON_SYNCHRO,tp,tp,0)
+	for tc in aux.Next(g) do
+		Duel.RaiseSingleEvent(tc,EVENT_BE_MATERIAL,nil,REASON_SYNCHRO,tp,tp,0)
+	end
+	g:DeleteGroup()
 end
 function cm.sycon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()

@@ -2,6 +2,7 @@ local m=25000098
 local cm=_G["c"..m]
 cm.name="真爆裂模式"
 function cm.initial_effect(c)
+	aux.EnableExtraDeckSummonCountLimit()
 	aux.AddCodeList(c,80280737)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
