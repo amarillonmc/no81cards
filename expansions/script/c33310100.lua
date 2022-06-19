@@ -4,20 +4,6 @@ local cm=_G["c"..m]
 cm.rssetcode="Cochrot"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	--bgm
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetOperation(cm.bgmop)
-	c:RegisterEffect(e0)
-	--announce
-	local e7=Effect.CreateEffect(c)
-	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e7:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e7:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e7:SetOperation(cm.anop)
-	c:RegisterEffect(e7)
 	--summon success
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -54,13 +40,8 @@ function cm.initial_effect(c)
 	e6:SetOperation(cm.actop)
 	c:RegisterEffect(e6)
 end
-function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,tp,aux.Stringid(m,0))
-end
-function cm.anop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(24,0,aux.Stringid(m,1))
-end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,tp,aux.Stringid(m,0))
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	if not e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) then return end
 	if #g<=0 then return end

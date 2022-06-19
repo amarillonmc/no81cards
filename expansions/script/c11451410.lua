@@ -89,11 +89,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local op=e:GetLabel()
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
+	local rflag=false
 	if op~=1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0 then
 		local tg=g:Select(tp,1,1,nil)
 		Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
+		rflag=true
 	end
 	if op~=0 then
+		if rflag then Duel.BreakEffect() end
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
 		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_DECK,0,1,1,nil)
 		local tc=g:GetFirst()
