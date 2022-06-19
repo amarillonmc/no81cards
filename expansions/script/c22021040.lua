@@ -29,7 +29,8 @@ function c22021040.discon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==1-tp and re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
 end
 function c22021040.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:IsLocation(LOCATION_MZONE) and re:IsControler(1-tp) and re:IsAbleToChangeControler() end
+	local rc=re:GetHandler()
+	if chk==0 then return rc:IsLocation(LOCATION_MZONE) and rc:IsControler(1-tp) and rc:IsAbleToChangeControler() end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsRelateToEffect(re) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 	end

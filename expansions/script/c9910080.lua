@@ -7,13 +7,20 @@ function c9910080.initial_effect(c)
 	c:RegisterEffect(e0)
 	--remove
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetDescription(aux.Stringid(9910080,0))
+	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_TO_GRAVE)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_SZONE)
-	e1:SetOperation(c9910080.operation)
+	e1:SetCountLimit(2)
+	e1:SetCondition(c9910080.rmcon)
+	e1:SetTarget(c9910080.rmtg)
+	e1:SetOperation(c9910080.rmop)
 	c:RegisterEffect(e1)
 	--to deck
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9910080,3))
 	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -27,18 +34,24 @@ end
 function c9910080.cfilter(c,tp)
 	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
-function c9910080.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9910080.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c9910080.cfilter,1,nil,tp)
+end
+function c9910080.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE)
+end
+function c9910080.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if eg:IsExists(c9910080.cfilter,1,nil,tp)
-		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil)
-		and Duel.SelectYesNo(tp,aux.Stringid(9910080,0)) then
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,2,nil)
+	if not c:IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,2,nil)
+	if #g>0 then
 		Duel.HintSelection(g)
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsAttribute,nil,ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)
-		if ct==0 and c:IsCanTurnSet() then
+		if ct==0 and c:IsRelateToEffect(e) and c:IsCanTurnSet() then
 			Duel.BreakEffect()
-			c:CancelToGrave()
 			Duel.ChangePosition(c,POS_FACEDOWN)
 			Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 		end

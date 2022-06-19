@@ -71,7 +71,7 @@ function c9910731.conop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 		e3:SetTarget(c9910731.distg)
 		e3:SetLabelObject(tc)
-		e3:SetReset(RESET_PHASE+PHASE_END)
+		e3:SetReset(RESET_PHASE+PHASE_END,2)
 		Duel.RegisterEffect(e3,tp)
 	end
 end

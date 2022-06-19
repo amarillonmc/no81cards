@@ -2,6 +2,10 @@
 local m=40006881
 local cm=_G["c"..m]
 cm.named_with_AShapeShifter=1
+function cm.AShapeShifter(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_AShapeShifter
+end
 function cm.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
@@ -9,6 +13,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCountLimit(1,m)
 	e1:SetCost(cm.sscost)
 	e1:SetTarget(cm.sstg)
 	e1:SetOperation(cm.ssop)
@@ -20,23 +25,23 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,m)
+	e2:SetCountLimit(1,m+1)
 	e2:SetCondition(cm.spcon2)
 	e2:SetTarget(cm.eqtg)
 	e2:SetOperation(cm.eqop)
 	c:RegisterEffect(e2)
 	--search
-	--local e3=Effect.CreateEffect(c)
-	--e3:SetDescription(aux.Stringid(m,2))
-	--e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	--e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	--e3:SetProperty(EFFECT_FLAG_DELAY)
-	--e3:SetCode(EVENT_TO_GRAVE)
-	--e3:SetCountLimit(1,m)
-	--e3:SetCondition(cm.thcon)
-	--e3:SetTarget(cm.thtg)
-	--e3:SetOperation(cm.thop)
-	--c:RegisterEffect(e3)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetCountLimit(1,m)
+	e3:SetCondition(cm.thcon)
+	e3:SetTarget(cm.thtg)
+	e3:SetOperation(cm.thop)
+	c:RegisterEffect(e3)
 end
 function cm.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,e:GetHandler()) end
@@ -58,7 +63,8 @@ function cm.ssop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return re and cm.AShapeShifter(re:GetHandler())
+	local c=e:GetHandler()
+	return re and cm.AShapeShifter(re)
 end
 function cm.eqfilter(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_DARK) and not c:IsForbidden()

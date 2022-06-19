@@ -107,6 +107,7 @@ function c67200604.operation(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetCondition(c67200604.sscon)
 			e2:SetTarget(c67200604.sstg1)
 			e2:SetOperation(c67200604.ssop)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			rc:RegisterEffect(e2,true)
 			rc:RegisterFlagEffect(67200604,RESET_EVENT+RESETS_STANDARD,0,1)
 		end

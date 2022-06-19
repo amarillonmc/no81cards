@@ -49,7 +49,8 @@ function c9910432.cfilter(c)
 end
 function c9910432.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9910432.cfilter,tp,LOCATION_MZONE,0,1,nil)
-		and rp==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainDisablable(ev)
+		and rp==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+		and Duel.IsChainDisablable(ev) and not Duel.IsChainDisabled(ev)
 		and e:GetHandler():GetFlagEffect(9910432)<=0
 end
 function c9910432.negop(e,tp,eg,ep,ev,re,r,rp)

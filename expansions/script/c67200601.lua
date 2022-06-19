@@ -17,6 +17,9 @@ end
 function c67200601.mfilter(c,e)
 	return bit.band(c:GetOriginalType(),TYPE_PENDULUM)~=0 and c:IsReleasableByEffect(e) 
 end
+function c67200601.mfilterm(c,e)
+	return bit.band(c:GetOriginalType(),TYPE_PENDULUM)~=0 and c:IsAbleToDeck() and c:IsFaceup()
+end
 function c67200601.filter(c,e,tp)
 	return c:IsSetCard(0x677) and c:IsType(TYPE_PENDULUM)
 end
@@ -66,11 +69,14 @@ function c67200601.RitualCheckAdditional(c,lscale,greater_or_equal)
 				end
 	end
 end
-function c67200601.RitualUltimateFilter(c,filter,e,tp,m1,m2,lscale_function,greater_or_equal,chk)
+function c67200601.RitualUltimateFilter(c,filter,e,tp,m1,m2,m3,lscale_function,greater_or_equal,chk)
 	if bit.band(c:GetType(),0x81)~=0x81 or (filter and not filter(c,e,tp,chk)) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
 	local mg=m1:Filter(Card.IsCanBeRitualMaterial,c,c)
 	if m2 then
 		mg:Merge(m2)
+	end
+	if m3 then
+		mg:Merge(m3)
 	end
 	if c.mat_filter then
 		mg=mg:Filter(c.mat_filter,c,tp)
@@ -87,9 +93,10 @@ function c67200601.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetRitualMaterial(tp):Filter(c67200601.matfilter,nil)
 		local mg2=Duel.GetMatchingGroup(c67200601.mfilter,tp,LOCATION_SZONE+LOCATION_FZONE,0,nil)
+		local mg3=Duel.GetMatchingGroup(c67200601.mfilterm,tp,LOCATION_EXTRA,0,nil)
 		aux.RCheckAdditional=c67200601.rcheck
 		aux.RGCheckAdditional=c67200601.rgcheck
-		local res=Duel.IsExistingMatchingCard(c67200601.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,c67200601.filter,e,tp,mg,mg2,c67200601.GetCappedLeftScale,"Greater")
+		local res=Duel.IsExistingMatchingCard(c67200601.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,c67200601.filter,e,tp,mg,mg2,mg3,c67200601.GetCappedLeftScale,"Greater")
 		aux.RCheckAdditional=nil
 		aux.RGCheckAdditional=nil
 		return res
@@ -99,14 +106,16 @@ end
 function c67200601.activate(e,tp,eg,ep,ev,re,r,rp)
 	local mg1=Duel.GetRitualMaterial(tp):Filter(c67200601.matfilter,nil)
 	local mg2=Duel.GetMatchingGroup(c67200601.mfilter,tp,LOCATION_SZONE+LOCATION_FZONE,0,nil)
+	local mg3=Duel.GetMatchingGroup(c67200601.mfilterm,tp,LOCATION_EXTRA,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	aux.RCheckAdditional=c67200601.rcheck
 	aux.RGCheckAdditional=c67200601.rgcheck
-	local tg=Duel.SelectMatchingCard(tp,c67200601.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,c67200601.filter,e,tp,mg1,mg2,c67200601.GetCappedLeftScale,"Greater")
+	local tg=Duel.SelectMatchingCard(tp,c67200601.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,c67200601.filter,e,tp,mg1,mg2,mg3,c67200601.GetCappedLeftScale,"Greater")
 	local tc=tg:GetFirst()
 	if tc then
 		local mg=mg1:Filter(Card.IsCanBeRitualMaterial,tc,tc)
 		mg:Merge(mg2)
+		mg:Merge(mg3)
 		if tc.mat_filter then
 			mg=mg:Filter(tc.mat_filter,tc,tp)
 		else
@@ -122,6 +131,11 @@ function c67200601.activate(e,tp,eg,ep,ev,re,r,rp)
 			return
 		end
 		tc:SetMaterial(mat)
+		local dmat=mat:Filter(Card.IsLocation,nil,LOCATION_EXTRA)
+		if dmat:GetCount()>0 then
+			mat:Sub(dmat)
+			Duel.SendtoDeck(dmat,nil,2,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
+		end
 		Duel.ReleaseRitualMaterial(mat)
 		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)

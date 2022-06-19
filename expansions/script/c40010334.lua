@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e11)
 	--Effect 3 
 	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,0))
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetHintTiming(0,TIMING_END_PHASE)

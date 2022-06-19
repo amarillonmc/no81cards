@@ -109,6 +109,7 @@ function c67200606.operation(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetCondition(c67200606.chcon)
 			e2:SetTarget(c67200606.chtg1)
 			e2:SetOperation(c67200606.chop)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			rc:RegisterEffect(e2,true)
 			rc:RegisterFlagEffect(67200606,RESET_EVENT+RESETS_STANDARD,0,1)
 		end

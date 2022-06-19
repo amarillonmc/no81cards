@@ -48,10 +48,11 @@ function c9910291.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c9910291.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,code)
 	if g:GetCount()==0 or Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	Duel.ShuffleDeck(tp)
-	Duel.BreakEffect()
 	local g=Duel.GetDecktopGroup(tp,6)
 	local b1=Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1)
 	local b2=g:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)>2
+	if not (b1 or b2) then return end
+	Duel.BreakEffect()
 	local off=1
 	local ops={}
 	local opval={}

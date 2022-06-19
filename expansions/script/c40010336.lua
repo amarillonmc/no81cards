@@ -7,6 +7,7 @@ function cm.Crimsonmoon(c)
 	return m and m.named_with_DragWizard
 end
 function cm.initial_effect(c)
+	c:EnableReviveLimit()
 	--Effect 1
 	local e11=Effect.CreateEffect(c)
 	e11:SetType(EFFECT_TYPE_SINGLE)
@@ -49,13 +50,18 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	return true
 end
 function cm.filter(c)
-	return  c:IsLevel(1) and c:IsAbleToDeckAsCost()
+	return c:IsLevel(1) and c:IsAbleToDeckAsCost()
 end
+
 function cm.filter1(c,e,tp)
 	return c:IsLevel(1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+
+
+
 	local rg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE,0,nil)
+
 	local cg=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil,e,tp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local c=e:GetHandler()

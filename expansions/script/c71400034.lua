@@ -33,13 +33,14 @@ function c71400034.initial_effect(c)
 	yume.AddYumeFieldGlobal(c,71400034,2)
 end
 function c71400034.filter1c(c)
-	return c:IsSetCard(0x714) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x714) and c:IsAbleToDeckOrExtraAsCost()
 end
 function c71400034.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400034.filter1c,tp,LOCATION_DECK,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c71400034.filter1c,tp,LOCATION_DECK,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400034.filter1c,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,c71400034.filter1c,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c71400034.filter1(c)
 	return c:IsSetCard(0x714) and c:IsLinkSummonable(nil)

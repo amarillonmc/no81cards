@@ -24,7 +24,7 @@ function c67200326.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(g:GetFirst():GetBaseAttack())
 end
 function c67200326.setfilter(c)
-	return c:IsSetCard(0x671) and c:IsType(TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x671) and c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSSetable()
 end
 function c67200326.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.desop)
 	c:RegisterEffect(e2)
 end
-aux.xyz_number[m]=39
+cm.xyz_number=39
 function cm.efilter(e,te)
 	local tc=te:GetHandler()
 	if tc==e:GetHandler() then return false end

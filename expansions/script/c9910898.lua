@@ -3,7 +3,7 @@ function c9910898.initial_effect(c)
 	aux.AddCodeList(c,9910871)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910898)
@@ -32,39 +32,30 @@ function c9910898.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function c9910898.spfilter(c,e,tp)
-	return aux.IsCodeListed(c,9910871)
-		and ((Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
-		or (Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)))
+function c9910898.cfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_NORMAL)
+end
+function c9910898.desfilter(c)
+	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_MONSTER)
 end
 function c9910898.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-	local g0=Duel.GetFieldGroup(tp,LOCATION_GRAVE,LOCATION_GRAVE):Filter(Card.IsType,nil,TYPE_MONSTER)
-	local g=Duel.GetMatchingGroup(c9910898.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
-	if g0 and g0:GetClassCount(Card.GetRace)>=3 and g:GetCount()>0
+	local g1=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+	local g2=Duel.GetMatchingGroup(c9910898.desfilter,tp,LOCATION_HAND,0,nil)
+	if Duel.IsExistingMatchingCard(c9910898.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and #g1>0 and #g2>0
 		and Duel.SelectYesNo(tp,aux.Stringid(9910898,0)) then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
-		local tc=sg:GetFirst()
-		if tc then
-			local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
-			local b2=Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)
-			local op=0
-			if b1 and b2 then
-				op=Duel.SelectOption(tp,aux.Stringid(9910898,1),aux.Stringid(9910898,2))
-			elseif b1 then
-				op=Duel.SelectOption(tp,aux.Stringid(9910898,1))
-			elseif b2 then
-				op=Duel.SelectOption(tp,aux.Stringid(9910898,2))+1
-			else return end
-			if op==0 then
-				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-			else
-				Duel.SpecialSummon(tc,0,tp,1-tp,false,false,POS_FACEUP)
-			end
-		end
+		Duel.ConfirmCards(tp,g1)
+		if not g1:IsExists(Card.IsType,1,nil,TYPE_MONSTER) then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local sg1=g1:FilterSelect(tp,Card.IsType,1,1,nil,TYPE_MONSTER)
+		local sg2=g2:FilterSelect(tp,c9910898.desfilter,1,1,nil)
+		sg1:Merge(sg2)
+		if sg1:GetCount()~=2 then return end
+		Duel.HintSelection(sg1)
+		Duel.Destroy(sg1,REASON_EFFECT)
+		Duel.ShuffleHand(1-tp)
 	end
 end
 function c9910898.cfilter2(c)

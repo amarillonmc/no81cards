@@ -67,7 +67,8 @@ function c9910315.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=c:GetEquipGroup()
 	return g:IsExists(c9910315.cfilter,1,nil) and rp==1-tp
 		and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE 
-		and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev) and c:GetFlagEffect(9910315)==0
+		and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev) and not Duel.IsChainDisabled(ev)
+		and c:GetFlagEffect(9910315)==0
 end
 function c9910315.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(9910315,0)) then

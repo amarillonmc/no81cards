@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunFun(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),cm.ffilter,2,true)
+	aux.AddFusionProcFunFun(c,cm.fffilter,cm.ffilter,2,true)
 	--splimit
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -56,6 +56,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4) 
 end
 --fusion material
+function cm.fffilter(c)
+	return c:IsFusionType(TYPE_FUSION) or c:IsRace(RACE_MACHINE)
+end
 function cm.ffilter(c)
 	return c:IsFusionType(TYPE_FUSION) 
 end
@@ -66,6 +69,9 @@ end
 function cm.fselect(g)
 	return g:IsExists(Card.IsType,1,nil,TYPE_FUSION)
 end
+function cm.tofilter(c)
+	return c:IsAbleToHand()
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.release,tp,LOCATION_MZONE,0,nil)
 	if chk==0 then return g:CheckSubGroup(cm.fselect,3,3) end
@@ -74,7 +80,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(rg,REASON_COST)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return cm.thfilter(chkc) end
+	if chkc then return cm.tofilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,2,e:GetHandler())

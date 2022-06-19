@@ -26,15 +26,7 @@ function c67200607.initial_effect(c)
 	e2:SetCode(EVENT_CHAIN_SOLVING)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetOperation(c67200607.disop)
-	c:RegisterEffect(e2)
-	--become material
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
-	e3:SetCode(EVENT_BE_MATERIAL)
-	e3:SetCondition(c67200607.condition)
-	e3:SetOperation(c67200607.operation)
-	c:RegisterEffect(e3)   
+	c:RegisterEffect(e2)  
 end
 function c67200607.scfilter(c)
 	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x677)
@@ -76,24 +68,5 @@ function c67200607.disop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-function c67200607.condition(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_RITUAL and not e:GetHandler():IsPreviousLocation(LOCATION_OVERLAY)
-end
-function c67200607.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local rc=eg:GetFirst()
-	while rc and rc:IsSetCard(0x677) and not rc:IsCode(67200607) do
-		if rc:GetFlagEffect(67200607)==0 then
-			local e2=Effect.CreateEffect(c)
-			e2:SetDescription(aux.Stringid(67200607,1))
-			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e2:SetCode(EVENT_CHAIN_SOLVING)
-			e2:SetRange(LOCATION_MZONE)
-			e2:SetOperation(c67200607.disop)
-			rc:RegisterEffect(e2,true)
-			rc:RegisterFlagEffect(67200607,RESET_EVENT+RESETS_STANDARD,0,1)
-		end
-		rc=eg:GetNext()
-	end
-end
+
 

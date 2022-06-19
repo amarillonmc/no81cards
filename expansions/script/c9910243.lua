@@ -36,7 +36,6 @@ function c9910243.initial_effect(c)
 	c:RegisterEffect(e4)
 	local e5=e3:Clone()
 	e5:SetDescription(aux.Stringid(9910243,1))
-	e5:SetCategory(CATEGORY_TOGRAVE)
 	e5:SetTarget(c9910243.target2)
 	e5:SetOperation(c9910243.operation2)
 	c:RegisterEffect(e5)
@@ -77,7 +76,8 @@ function c9910243.filter1(c)
 	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9910243.filter2(c)
-	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
+	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_FIELD)
+		and c:IsSSetable()
 end
 function c9910243.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910243.filter1,tp,LOCATION_DECK,0,1,nil) end
@@ -85,7 +85,6 @@ function c9910243.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910243.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910243.filter2,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c9910243.operation1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -96,13 +95,9 @@ function c9910243.operation1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910243.operation2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,c9910243.filter2,tp,LOCATION_DECK,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) and tc:IsCode(9910871)
-		and tc:CheckActivateEffect(true,true,false)~=nil and Duel.SelectYesNo(tp,aux.Stringid(9910243,2)) then
-		local te=tc:GetActivateEffect()
-		local op=te:GetOperation()
-		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+	if g:GetCount()>0 then
+		Duel.SSet(tp,g:GetFirst())
 	end
 end
