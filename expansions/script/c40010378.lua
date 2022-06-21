@@ -158,13 +158,11 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:Select(1-tp,1,1,nil)
 		Duel.HintSelection(sg)
 		local dg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
-		if Duel.SendtoGrave(sg,REASON_RULE)~=0 then
-			if dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
-				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				local sdg=dg:Select(tp,1,1,nil)
-				Duel.SpecialSummon(sdg,0,tp,tp,false,false,POS_FACEUP)
-			end
+		if Duel.SendtoGrave(sg,REASON_RULE) and dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sdg=dg:Select(tp,1,1,nil)
+			Duel.SpecialSummon(sdg,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
 end
@@ -174,11 +172,11 @@ end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttacker()==e:GetHandler() and Duel.IsExistingMatchingCard(cm.spcfilter,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():GetFlagEffect(m)>0
 end
-function cm.spfilter(c,e,tp)
-	return not c:IsLevel(8) and c:IsSetCard(0x171) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+function cm.sp2filter(c,e,tp)
+	return cm.JewelPaladin(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.sp2filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -186,7 +184,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local cg=Duel.GetMatchingGroup(cm.spcfilter,tp,LOCATION_MZONE,0,nil)
 	--local ct=math.min(#cg,(Duel.GetLocationCount(tp,LOCATION_MZONE)))
 	if cg>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then cg=1 end
-	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil,e,tp)
+	local g=Duel.GetMatchingGroup(cm.sp2filter,tp,LOCATION_HAND+LOCATION_DECK,0,nil,e,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,cg)
 	if sg then

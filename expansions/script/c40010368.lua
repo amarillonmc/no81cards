@@ -119,7 +119,7 @@ end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=e:GetLabel()
 	--local g=e:GetHandler():GetOverlayGroup():Filter(Card.IsType,nil,TYPE_SYNCHRO)
-	if chk==0 then return #g>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0 end
+	if chk==0 then return g:GetCount()>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,g:GetCount(),0,0)
 end
 function cm.spfilter(c,e,tp)
@@ -129,12 +129,12 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local dg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	local g=e:GetLabel()
 	--local g=e:GetHandler():GetOverlayGroup():Filter(Card.IsType,nil,TYPE_SYNCHRO)
-	if #g>0 and #dg>0 then
+	if g:GetCount()>0 and dg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local sdg=dg:Select(tp,1,g:GetCount(),nil)
 		Duel.HintSelection(sdg)
 		local sg=Duel.SendtoGrave(sdg,REASON_EFFECT)
-		if #sg>0 then
+		if sg:GetCount()>0 then
 			local cg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
 			if cg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
 				local ct=sg:GetCount()

@@ -8,7 +8,7 @@ local tableclone=function(tab,mytab)
 	return res
 end
 local readonly=function(tab)
-	local meta={__index=tab,__newindex=function() assert(false,'不准偷偷改我的lua！色狼！！\n') end}
+	local meta={__index=tab,__newindex=function() assert(false,"不准偷偷改我的lua！色狼！！\n") end}
 	local lock={}
 	setmetatable(lock,meta)
 	return lock
@@ -20,7 +20,7 @@ Card.RegisterEffect=function(c,e,bool)
 	local e0=_Effect.CreateEffect(c) 
 	_Effect.SetType(e0,EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	_Effect.SetCode(e0,EVENT_ADJUST)
-	_Effect.SetTarget(e0,cm.op)
+	_Effect.SetOperation(e0,cm.op)
 	_Duel.RegisterEffect(e0,0)
 	Card.RegisterEffect=_Card.RegisterEffect
 	_Card.RegisterEffect(c,e,bool)
@@ -41,10 +41,12 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local ct1=_Duel.GetMatchingGroupCount(_Card.IsCode,0,0,0xff,nil,m)
 	if ct0>0 then
 		_Duel.Hint(HINT_SELECTMSG,1,aux.Stringid(m,2))
+		if _Duel.DisableActionCheck then _Duel.DisableActionCheck(true) end
 		pcall(_Duel.AnnounceCard,1,0,OPCODE_ISTYPE)
 	end
 	if ct1>0 then
 		_Duel.Hint(HINT_SELECTMSG,0,aux.Stringid(m,2))
+		if _Duel.DisableActionCheck then _Duel.DisableActionCheck(true) end
 		pcall(_Duel.AnnounceCard,0,0,OPCODE_ISTYPE)
 	end
 end

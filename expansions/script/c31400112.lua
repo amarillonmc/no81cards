@@ -4,7 +4,7 @@ cm.name="真龙皇 十二炼机圣"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	local e0=aux.AddLinkProcedure(c,nil,3,3,cm.lcheck)
-	e0:SetProperty(e0:GetProperty()|EFFECT_FLAG_SET_AVAILABLE)
+	e0:SetLabel(m)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_MATERIAL_CHECK)
@@ -37,38 +37,15 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.tg)
 	e4:SetOperation(cm.op)
 	c:RegisterEffect(e4)
-	
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
-	e5:SetRange(LOCATION_EXTRA)
-	e5:SetTargetRange(LOCATION_ONFIELD,0)
-	e5:SetTarget(cm.mattg)
-	e5:SetValue(cm.matval)
-	c:RegisterEffect(e5)
-	if not aux.link_mat_hack_check then
-		aux.link_mat_hack_check=true
-		_IsCanBeLinkMaterial=Card.IsCanBeLinkMaterial
-		function Card.IsCanBeLinkMaterial(c,lc)
-			if c:GetOriginalType()&TYPE_MONSTER~=0 then
-				return _IsCanBeLinkMaterial(c,lc)
-			end
-			if c:IsForbidden() then return false end
-			local le={c:IsHasEffect(EFFECT_CANNOT_BE_LINK_MATERIAL)}
-			for _,te in pairs(le) do
-				local tf=te:GetValue()
-				local tval=tf(te,lc)
-				if tval then return false end
-			end
-			return true
-		end
-	end
-	if not aux.get_link_mat_hack_check then
-		aux.get_link_mat_hack_check=true
+	if not cm.get_link_mat_hack_check then
+		cm.get_link_mat_hack_check=true
+		cm._GetLinkMaterials=aux.GetLinkMaterials
 		function aux.GetLinkMaterials(tp,f,lc,e)
-			local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_ONFIELD,0,nil,f,lc,e)
-			local mg2=Duel.GetMatchingGroup(Auxiliary.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
-			if mg2:GetCount()>0 then mg:Merge(mg2) end
+			local mg=cm._GetLinkMaterials(tp,f,lc,e)
+			if e:GetLabel()==m then
+				local mg2=Duel.GetMatchingGroup(cm.exmatfilter,tp,LOCATION_SZONE,0,nil,lc)
+				if mg2:GetCount()>0 then mg:Merge(mg2) end
+			end
 			return mg
 		end
 	end
@@ -82,19 +59,11 @@ function cm.lcheckc(c)
 	end
 	return 0x100
 end
-function cm.lcheck2(c)
-	local con1=c:IsType(TYPE_MONSTER) and c:IsPosition(POS_FACEDOWN_DEFENSE)
-	local con2=c:IsType(TYPE_TRAP+TYPE_SPELL) and not c:IsType(TYPE_CONTINUOUS+TYPE_TRAPMONSTER)
-	return con1 or con2 or con3
-end
 function cm.lcheck(g)
-	return g:GetClassCount(cm.lcheckc)==g:GetCount() and g:FilterCount(cm.lcheck2,nil)==0
+	return g:GetClassCount(cm.lcheckc)==g:GetCount()
 end
-function cm.mattg(e,c)
-	return c:IsType(TYPE_CONTINUOUS)
-end
-function cm.matval(e,lc,mg,c,tp)
-	return true,true
+function cm.exmatfilter(c,lc)
+	return c:IsType(TYPE_CONTINUOUS) and c:IsCanBeLinkMaterial(lc)
 end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()

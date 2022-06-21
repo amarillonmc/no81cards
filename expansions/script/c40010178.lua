@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 function cm.filter(c,e,tp)
-	return cm.linkjoker(c)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (cm.linkjoker(c) or cm.Reverse(c))  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -29,5 +29,5 @@ function cm.getzone(c,tp)
 end
 function cm.disval(e)
 	local g=Duel.GetFieldGroup(0,LOCATION_ONFIELD,LOCATION_ONFIELD)
-	return g:GetSum(cm.getzone,e:GetHandlerPlayer())
+	return g:GetSum(cm.getzone,0)
 end
