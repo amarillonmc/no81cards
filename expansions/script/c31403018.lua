@@ -1,12 +1,32 @@
 local m=31403018
 local cm=_G["c"..m]
 cm.name="本我追想"
-cm.org=Card.GetRitualLevel
+cm._GetRitualLevel=Card.GetRitualLevel
 function Card.GetRitualLevel(c,rc)
-	if c:GetLevel()>0 then return cm.org(c,rc) end
+	if c:GetLevel()>0 then return cm._GetRitualLevel(c,rc) end
 	local e=c:IsHasEffect(EFFECT_RITUAL_LEVEL)
 	if e then return e:GetValue()(e,rc) end
 	return 0
+end
+cm._IsCanBeRitualMaterial=Card.IsCanBeRitualMaterial
+function Card.IsCanBeRitualMaterial(c,rc)
+	local e=c:IsHasEffect(EFFECT_RITUAL_LEVEL)
+	if e and e:GetLabel()==m and e:GetValue()(e,rc)~=nil then return true end
+	return cm._IsCanBeRitualMaterial(c,rc)
+end
+cm._GetRitualMaterial=Duel.GetRitualMaterial
+function cm.grmfilter(c)
+	local e=c:IsHasEffect(EFFECT_RITUAL_LEVEL)
+	if not (e and e:GetLabel()==m) then return false end
+	local con1=c:IsLocation(LOCATION_MZONE)
+	local con2=c:IsHasEffect(EFFECT_EXTRA_RITUAL_MATERIAL)
+	return con1 or con2
+end
+function Duel.GetRitualMaterial(tp)
+	local g=cm._GetRitualMaterial(tp)
+	local exg=Duel.GetMatchingGroup(cm.grmfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,0,nil)
+	g:Merge(exg)
+	return g
 end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
@@ -36,6 +56,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_RITUAL_LEVEL)
 	e3:SetValue(cm.rlevel)
+	e3:SetLabel(m)
 	c:RegisterEffect(e3)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
@@ -129,9 +150,8 @@ function cm.athop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.rlevel(e,c)
-	local lv=e:GetHandler():GetLevel()
 	if not c:IsType(TYPE_EFFECT) then
 		local clv=c:GetLevel()
-		return clv*65536+clv
+		return clv
 	else return nil end
 end

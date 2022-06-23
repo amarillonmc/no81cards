@@ -74,7 +74,7 @@ function c19198156.thop(e,tp,eg,ep,ev,re,r,rp)
    -- Duel.RegisterEffect(e1,tp)
 end
 --function c19198156.splimit(e,c)
---	return not c:IsSetCard(0x14d)
+--  return not c:IsSetCard(0x14d)
 --end
 
 --to hand 2
@@ -86,7 +86,7 @@ function c19198156.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
 end
 function c19198156.thfilter2(c)
-	return c:IsSetCard(0x140) and c:IsAbleToHand()
+	return (c:IsSetCard(0x140) or c:IsRace(RACE_ROCK)) and c:IsAbleToHand()
 end
 function c19198156.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=4 then return end

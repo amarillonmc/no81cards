@@ -83,7 +83,7 @@ function c9310055.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED) and re:GetHandler():IsSetCard(0x97d) and re:GetHandler():GetType()&0x100004==0x100004 and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function c9310055.chop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetLabel()&0x2~=0 then return end
+	if re:GetLabel()&0x80~=0 then return end
 	local op=re:GetOperation()
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)
@@ -92,11 +92,11 @@ function c9310055.chop(e,tp,eg,ep,ev,re,r,rp)
 			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,2,nil)
 			if #g>0 then
 				Duel.HintSelection(g)
-				Duel.SendtoHand(g,nil,REASON_EFFECT)
+				Duel.SendtoDeck(g,nil,REASON_EFFECT)
 			end
 		end
 	end
 	re:SetOperation(repop)
 	if not re:IsHasCategory(CATEGORY_TODECK) then re:SetCategory(re:GetCategory()+CATEGORY_TODECK) end
-	re:SetLabel(re:GetLabel()|0x2)
+	re:SetLabel(re:GetLabel()|0x80)
 end

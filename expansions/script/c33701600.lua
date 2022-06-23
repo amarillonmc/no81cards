@@ -2,7 +2,8 @@
 local m=33701600
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	--Ritual Summon		
+	aux.AddCodeList(c,33701601)
+	--Ritual Summon	 
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

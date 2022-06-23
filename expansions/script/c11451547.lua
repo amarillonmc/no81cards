@@ -132,7 +132,6 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCategory(te:GetCategory())
 		e1:SetType(EFFECT_TYPE_ACTIVATE)
 		e1:SetCode(EVENT_CHAINING)
-		e1:SetLabel(m)
 		e1:SetCondition(te:GetCondition())
 		e1:SetCost(cm.addcost)
 		e1:SetTarget(te:GetTarget())
@@ -157,7 +156,7 @@ end
 function cm.actarget(e,te,tp)
 	local og=e:GetHandler():GetOverlayGroup()
 	e:SetLabelObject(te)
-	return og and og:IsContains(te:GetHandler()) and te:GetLabel()==m
+	return og and og:IsContains(te:GetHandler())
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()

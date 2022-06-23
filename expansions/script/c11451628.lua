@@ -223,6 +223,7 @@ function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RaiseSingleEvent(tc,EVENT_BE_MATERIAL,nil,REASON_SYNCHRO,tp,tp,0)
 	end
 	g:DeleteGroup()
+	e:Reset()
 end
 function cm.sycon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
