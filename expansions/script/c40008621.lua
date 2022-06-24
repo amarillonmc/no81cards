@@ -69,16 +69,15 @@ function c40008621.spop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40008621.condition(e,tp,eg,ep,ev,re,r,rp)
-	return (re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:IsActiveType(TYPE_MONSTER))
-		and re:GetHandler()~=e:GetHandler() and re:GetHandler():IsLocation(LOCATION_ONFIELD) and Duel.IsChainNegatable(ev)
+	local c=e:GetHandler()
+	return not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and re:GetHandler()~=c
+		and bit.band(Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION),LOCATION_ONFIELD)~=0
 end
 function c40008621.condition2(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	if not g or g:GetCount()~=1 then return false end
-	local tc=g:GetFirst()
-	local c=e:GetHandler()
-	return not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	return tg and tg:IsExists(Card.IsOnField,1,nil) and Duel.IsChainNegatable(ev)
 end
 function c40008621.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
