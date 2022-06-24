@@ -49,8 +49,7 @@ function c67200602.psfilter(c)
 	return c:IsSetCard(0x677) and c:IsType(TYPE_PENDULUM) and c:IsType(TYPE_RITUAL) and not c:IsForbidden() and not c:IsCode(67200602)
 end
 function c67200602.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
-		and Duel.IsExistingMatchingCard(c67200602.psfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c67200602.psfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,1,nil) end
 end
 function c67200602.stop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
