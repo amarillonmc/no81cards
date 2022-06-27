@@ -18,13 +18,19 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.discon)
 	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2)
-	--leav effect
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetOperation(cm.tdop)
-	c:RegisterEffect(e3)
+	--leave
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e6:SetCode(EVENT_LEAVE_FIELD_P)
+	e6:SetOperation(cm.checkop)
+	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e7:SetCode(EVENT_LEAVE_FIELD)
+	e7:SetLabelObject(e6)
+	e7:SetOperation(cm.leave)
+	c:RegisterEffect(e7)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetDecktopGroup(tp,3)
@@ -71,6 +77,17 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 	end
 end
-function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Damage(e:GetHandlerPlayer(),500*Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil),REASON_EFFECT)
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsDisabled() then
+		e:SetLabel(1)
+	else e:SetLabel(0) end
+end
+function cm.leave(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ct=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)
+	if e:GetLabelObject():GetLabel()==0 and c:IsPreviousControler(tp) and ct>0 then
+		Duel.Hint(HINT_CARD,0,m)
+		Duel.Damage(tp,500*ct,REASON_EFFECT)
+	end
 end

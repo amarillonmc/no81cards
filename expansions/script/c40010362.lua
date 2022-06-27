@@ -111,21 +111,34 @@ end
 function cm.spfilter(c,e,tp)
 	return cm.JewelPaladin(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function cm.tgfilter(c,e,tp)
+	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp,c) and c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0
+end
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)) or (Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_MZONE,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)) end
 	local bpchk=0
 	if Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<PHASE_BATTLE then bpchk=1 end
 	e:SetLabel(bpchk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
+	local ftf=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local ft=99
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,ft,nil,e,tp)
-	if g:GetCount()>0 then
+	local tt=g:GetCount()
+	if g:GetCount()>0 and ftf>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	else
+		local tg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,tt,tt,nil,e,tp)
+		if Duel.Release(tg,REASON_COST) ~=0  then
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+			Duel.RegisterFlagEffect(tp,m,RESET_EVENT+0x1fe0000+RESET_CHAIN,EFFECT_FLAG_OATH,1)
+		end
 	end
+	Duel.ResetFlagEffect(tp,m)
 	if e:GetLabel()==1 then
 		Duel.ChainAttack()
 	end

@@ -152,6 +152,7 @@ function cm.spfilter(c,e,tp)
 	return cm.JewelPaladin(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g=Duel.GetMatchingGroup(nil,1-tp,LOCATION_ONFIELD+LOCATION_HAND,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
@@ -162,7 +163,17 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local sdg=dg:Select(tp,1,1,nil)
-			Duel.SpecialSummon(sdg,0,tp,tp,false,false,POS_FACEUP)
+			if sdg:GetCount()>0 and ft>0 then
+				Duel.SpecialSummon(sdg,0,tp,tp,false,false,POS_FACEUP)
+			else
+				local tg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
+				local tc=tg:GetFirst()
+				if tc and Duel.Release(tc,REASON_COST) ~=0 and tc:IsLocation(LOCATION_GRAVE) then
+					Duel.SpecialSummon(sdg,0,tp,tp,false,false,POS_FACEUP)
+					Duel.RegisterFlagEffect(tp,m,RESET_EVENT+0x1fe0000+RESET_CHAIN,EFFECT_FLAG_OATH,1)
+				end
+			end
+			Duel.ResetFlagEffect(tp,m)
 		end
 	end
 end
@@ -175,21 +186,33 @@ end
 function cm.sp2filter(c,e,tp)
 	return cm.JewelPaladin(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
+function cm.tgfilter(c,e,tp)
+	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,c) and c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0
+end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.sp2filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.sp2filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp)) or (Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_MZONE,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(cm.sp2filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp)) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local cg=Duel.GetMatchingGroup(cm.spcfilter,tp,LOCATION_MZONE,0,nil)
 	--local ct=math.min(#cg,(Duel.GetLocationCount(tp,LOCATION_MZONE)))
 	if cg>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then cg=1 end
 	local g=Duel.GetMatchingGroup(cm.sp2filter,tp,LOCATION_HAND+LOCATION_DECK,0,nil,e,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,cg)
-	if sg then
+	local bg=sg:GetCount()
+	if sg and ft>0  then
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	else
+		local tg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,bg,bg,nil,e,tp)
+		if  Duel.Release(tc,REASON_COST) ~=0  then
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+			Duel.RegisterFlagEffect(tp,m,RESET_EVENT+0x1fe0000+RESET_CHAIN,EFFECT_FLAG_OATH,1)
+		end
 	end
+	Duel.ResetFlagEffect(tp,m)
 end
 
 

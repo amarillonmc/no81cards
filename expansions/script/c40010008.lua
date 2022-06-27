@@ -77,10 +77,14 @@ end
 function cm.spfilter(c,e,tp)
 	return cm.JewelPaladin(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function cm.tgfilter(c,e,tp)
+	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp,c) and c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.drfilter(chkc) end
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(cm.drfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)  end
+		and Duel.IsExistingTarget(cm.drfilter,tp,LOCATION_GRAVE,0,1,nil) and ((Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)) or (Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_MZONE,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)))  end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,cm.drfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
@@ -90,14 +94,25 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+		if ft<=-1 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
-		if g:GetCount()>0 then
+		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		if g:GetCount()>0 and ft>0 then
 			Duel.BreakEffect()
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 			Duel.Draw(tp,1,REASON_EFFECT)   
+		else
+			Duel.BreakEffect()
+			local tg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
+			local tc1=tg:GetFirst()
+			if tc1 and Duel.Release(tc1,REASON_COST)~=0 and tc1:IsLocation(LOCATION_GRAVE) then
+				Duel.RegisterFlagEffect(tp,m,RESET_EVENT+0x1fe0000+RESET_CHAIN, EFFECT_FLAG_OATH,1)
+				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+				Duel.Draw(tp,1,REASON_EFFECT)   
+			end
 		end
+	Duel.ResetFlagEffect(tp,m)
 	end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)

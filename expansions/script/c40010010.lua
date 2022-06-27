@@ -74,20 +74,39 @@ end
 function cm.spfilter(c,e,tp)
 	return cm.JewelPaladin(c) and c:IsLevelBelow(6) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function cm.tgfilter(c,e,tp)
+	return c:IsFaceup() 
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp,c) and c:IsAbleToGrave() and Duel.GetMZoneCount(tp,c)>0
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)) or (Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_MZONE,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local cb=1
 	if e:GetHandler():GetFlagEffect(m)>0 and not Duel.IsPlayerAffectedByEffect(tp,59822133) then cb=2 end
 	local ct=math.min(1,cb)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil,e,tp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ct)
-	if sg then
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	if g:GetCount()>0 and ft>=ct then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ct)
+		if sg then
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		end
+	else
+		local tg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,ct,ct,nil,e,tp)
+		if Duel.Release(tg,REASON_COST) ~=0  then
+			Duel.RegisterFlagEffect(tp,m,RESET_EVENT+0x1fe0000+RESET_CHAIN,EFFECT_FLAG_OATH,1)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ct)
+			if sg then
+				Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+			end
+		end
 	end
+	Duel.ResetFlagEffect(tp,m)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	--Debug.Message("0")

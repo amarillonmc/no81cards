@@ -117,6 +117,9 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
 end
+function cm.tgfilter(c,e,tp)
+	return  c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0
+end
 function cm.spfilter(c,e,tp)
 	return cm.JewelPaladin(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
@@ -130,7 +133,19 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.DisableShuffleCheck()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:FilterSelect(tp,cm.spfilter,1,1,nil,e,tp)
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+		if ft<=-1 then return end
+		if sg:GetCount()>0 and ft>0 then
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		else
+			local tg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
+			local tc=tg:GetFirst()
+			if tc and Duel.Release(tc,REASON_COST) ~=0 and tc:IsLocation(LOCATION_GRAVE) then
+				Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+				Duel.RegisterFlagEffect(tp,m,RESET_EVENT+0x1fe0000+RESET_CHAIN,EFFECT_FLAG_OATH,1)
+			end
+		end
+		Duel.ResetFlagEffect(tp,m)
 		ct=g:GetCount()-sg:GetCount()
 	end
 	if ct>0 then

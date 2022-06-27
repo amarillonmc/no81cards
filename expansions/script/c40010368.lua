@@ -107,6 +107,9 @@ end
 function cm.costfilter(c)
 	return  c:IsType(TYPE_MONSTER)
 end
+function cm.tgfilter(c,e,tp)
+	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c) and c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0
+end
 function cm.tgcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetMatchingGroupCount(cm.costfilter,tp,LOCATION_MZONE,0,nil)
 	if ct==0 then return end
@@ -138,10 +141,22 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 			local cg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
 			if cg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
 				local ct=sg:GetCount()
+				local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+				if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 				local gg=cg:Select(tp,1,ct,nil)
-				Duel.SpecialSummon(gg,0,tp,tp,false,false,POS_FACEUP)
+				local ctg=gg:GetCount()
+				if gg:GetCount()>0 and ft>0 then
+					Duel.SpecialSummon(gg,0,tp,tp,false,false,POS_FACEUP)
+				else
+					local tg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,ctg,ctg,nil,e,tp)
+					if Duel.Release(tg,REASON_COST) ~=0 then
+						Duel.SpecialSummon(gg,0,tp,tp,false,false,POS_FACEUP)
+						Duel.RegisterFlagEffect(tp,m,RESET_EVENT+0x1fe0000+RESET_CHAIN,EFFECT_FLAG_OATH,1)
+					end
+				end
+				Duel.ResetFlagEffect(tp,m)
 			end
 		end
 	end

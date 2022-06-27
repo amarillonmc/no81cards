@@ -72,14 +72,17 @@ function c33200650.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg,2,0,0)
 end
 function c33200650.spfilter4(c,e,tp)
-	return c:IsLocation(LOCATION_HAND) or (c:IsLocation(LOCATION_GRAVE) and c:IsRelateToEffect(e)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLocation(LOCATION_GRAVE) and c:IsRelateToEffect(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c33200650.spfilter5(c,e,tp)
+	return (c:IsLocation(LOCATION_GRAVE) and c:IsRelateToEffect(e)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c33200650.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) or Duel.GetLocationCount(tp,LOCATION_MZONE)<2 then return end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c33200650.spfilter4,nil,e,tp)
 	local sgc2=e:GetLabelObject()
+	if g:GetCount()==0 or not sgc2:IsLocation(LOCATION_HAND) then return end
 	g:AddCard(sgc2)
-	--Debug.Message(g:GetCount())
 	local tc=g:GetFirst()
 	while tc do
 		Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
