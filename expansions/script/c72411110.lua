@@ -18,18 +18,18 @@ end
 function c72411110.filterb(c)
 	return c:IsCode(72411030) and c:IsAbleToHand()
 end
-function c72411110.filterc(c)
-	return c:IsSetCard(0x5729) and c:IsAbleToDeck()
+function c72411110.filterc(c,tp)
+	return (c:IsSetCard(0x5729) or (Duel.IsPlayerAffectedByEffect(tp,72413440) and c:GetType()==TYPE_SPELL)) and c:IsAbleToDeck()
 end
 function c72411110.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c72411110.filtera,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(c72411110.filterb,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(c72411110.filterc,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c72411110.filtera,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(c72411110.filterb,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(c72411110.filterc,tp,LOCATION_HAND,0,1,e:GetHandler(),tp) end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK)
 end
 function c72411110.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local g=Duel.GetMatchingGroup(c72411110.filterc,p,LOCATION_HAND,0,nil)
+	local g=Duel.GetMatchingGroup(c72411110.filterc,p,LOCATION_HAND,0,nil,tp)
 	if g:GetCount()>=1 then
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
 		local sg=g:Select(p,1,1,nil)

@@ -43,7 +43,8 @@ function c72411150.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return b1 or b2 end
 end
 function c72411150.tokentarget(e,c)
-	return c:IsSetCard(0x5729)
+	local tp=e:GetHandler():GetControler()
+	return c:IsSetCard(0x5729) or (c:GetType()==TYPE_SPELL and Duel.IsPlayerAffectedByEffect(tp,72413440))
 end
 function c72411150.tokenfilter(e,re)
 	return re:GetOwnerPlayer()~=e:GetHandlerPlayer()

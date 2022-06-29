@@ -31,27 +31,27 @@ function c72411050.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c:IsDiscardable() end
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
-function c72411050.filtera(c)
-	return c:IsSetCard(0x5729) and c:GetType()==TYPE_SPELL and c:IsAbleToHand()
+function c72411050.filtera(c,tp)
+	return (c:IsSetCard(0x5729) or Duel.IsPlayerAffectedByEffect(tp,72413440)) and c:GetType()==TYPE_SPELL and c:IsAbleToHand()
 end
 function c72411050.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c72411050.filtera,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c72411050.filtera,tp,LOCATION_DECK,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c72411050.operation1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c72411050.filtera,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c72411050.filtera,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c72411050.filterb(c,e)
-	return c:IsSetCard(0x5729) and c:IsType(TYPE_SPELL) and c:IsAbleToDeck() and c:IsCanBeEffectTarget(e)
+function c72411050.filterb(c,e,tp)
+	return ((c:IsSetCard(0x5729) and c:IsType(TYPE_SPELL)) or (c:IsSetCard(0x5729) or Duel.IsPlayerAffectedByEffect(tp,72413440))) and c:IsAbleToDeck() and c:IsCanBeEffectTarget(e)
 end
 function c72411050.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	local g=Duel.GetMatchingGroup(c72411050.filterb,tp,LOCATION_GRAVE,0,e:GetHandler(),e)
+	local g=Duel.GetMatchingGroup(c72411050.filterb,tp,LOCATION_GRAVE,0,e:GetHandler(),e,tp)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
 		and g:GetClassCount(Card.GetCode)>2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)

@@ -47,12 +47,12 @@ function c72411140.operation1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --e2
-function c72411140.costfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x5729) and c:IsDiscardable(REASON_COST)
+function c72411140.costfilter(c,tp)
+	return (c:IsSetCard(0x5729) and c:IsType(TYPE_SPELL)) or (c:IsSetCard(0x5729) or Duel.IsPlayerAffectedByEffect(tp,72413440)) and c:IsDiscardable(REASON_COST)
 end
 function c72411140.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c72411140.costfilter,tp,LOCATION_HAND,0,1,nil)  end
-	Duel.DiscardHand(tp,c72411140.costfilter,1,1,REASON_COST+REASON_DISCARD)
+	if chk==0 then return Duel.IsExistingMatchingCard(c72411140.costfilter,tp,LOCATION_HAND,0,1,nil,tp)  end
+	Duel.DiscardHand(tp,c72411140.costfilter,1,1,REASON_COST+REASON_DISCARD,nil,tp)
 end
 function c72411140.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
