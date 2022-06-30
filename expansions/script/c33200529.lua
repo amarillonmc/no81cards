@@ -56,6 +56,6 @@ function c33200529.tzop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetCode(33200505)
 	e2:SetTargetRange(1,0)
-	e:SetReset(RESET_EVENT+RESET_CHAIN)
+	e2:SetReset(RESET_EVENT+RESET_CHAIN)
 	Duel.RegisterEffect(e2,tp)
 end
