@@ -44,7 +44,7 @@ function c33200623.initial_effect(c)
 	--disable
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_BATTLE_DESTROYING)
+	e4:SetCode(EVENT_BATTLE_DAMAGE)
 	e4:SetCondition(aux.bdocon)
 	e4:SetCondition(c33200623.effcon6)
 	e4:SetOperation(c33200623.disop)

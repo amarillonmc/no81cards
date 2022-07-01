@@ -62,7 +62,7 @@ end
 cm.lvup={15000282}
 cm.lvdn={15000280}
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler()==e:GetHandler() and re~=c15000281.self_effect1
+	return re:GetHandler()==e:GetHandler() and not (re==c15000281.self_effect1 or re:GetDescription()==aux.Stringid(m,0))
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
