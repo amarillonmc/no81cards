@@ -118,23 +118,21 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1,Duel.GetCurrentChain())
 	if Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+		local tc=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+		c:SetCardTarget(tc)
+		e:GetLabelObject():AddCard(tc)
 	end
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc then
-		c:SetCardTarget(tc)
-		e:GetLabelObject():AddCard(tc)
-	end
+	e:GetHandler():RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 function cm.desfilter2(c,e)
 	return c:IsOnField() and e:GetHandler():IsHasCardTarget(c)
 end
 function cm.descon2(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
-	return g:IsExists(cm.desfilter2,1,nil,e)
+	return g:IsExists(cm.desfilter2,1,nil,e) and e:GetHandler():GetFlagEffect(m-1)>0
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
