@@ -52,6 +52,7 @@ function cm.actarget(e,te,tp)
 	return te:GetHandler()==e:GetHandler()
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
 	local c=e:GetHandler()
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,3,3,nil)
 	local cg=g:Filter(Card.IsFacedown,nil)

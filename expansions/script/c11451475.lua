@@ -38,6 +38,7 @@ function cm.actarget(e,te,tp)
 	return te:GetHandler()==e:GetHandler()
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
 	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 	e:GetHandler():CreateEffectRelation(te)
 end

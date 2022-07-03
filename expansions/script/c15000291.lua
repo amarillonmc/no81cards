@@ -27,6 +27,7 @@ function cm.initial_effect(c)
 	e5:SetCode(EFFECT_DISABLE)
 	c:RegisterEffect(e5)
 end
+cm.has_text_type=TYPE_DUAL 
 function cm.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_DUAL) and not c:IsDualState()
 end

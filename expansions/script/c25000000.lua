@@ -73,6 +73,7 @@ function cm.condition(e,tp)
 	return true
 end
 function cm.activate(e,tp)
+	Duel.Hint(HINT_CARD,0,m)
 	Duel.ConfirmCards(1-tp,e:GetHandler())
 	local c=e:GetHandler()
 	if Duel.GetFlagEffect(tp,m)>0 or Duel.GetFlagEffect(1-tp,m)>0 then
