@@ -129,7 +129,7 @@ function c71400023.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g2=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 	g1:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,2,0,0)
-	Duel.SetChainLimit(c71400023.limit(g1))
+	Duel.SetChainLimit(c71400023.chlimit)
 end
 function c71400023.op2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
@@ -138,8 +138,7 @@ function c71400023.op2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(sg,REASON_EFFECT)
 	end
 end
-function c71400023.limit(g)
-	return  function (e,lp,tp)
-				return not g:IsContains(e:GetHandler())
-			end
+function c71400023.chlimit(e,ep,tp)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	return tp==ep or not g:IsContains(e:GetHandler())
 end

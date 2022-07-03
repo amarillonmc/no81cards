@@ -2,9 +2,8 @@
 function c9910579.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_POSITION+CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_POSITION)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,9910579+EFFECT_COUNT_CODE_OATH)
@@ -39,51 +38,61 @@ function c9910579.chfilter(c)
 	return c:IsFacedown() and c:IsCanChangePosition()
 end
 function c9910579.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910579.chfilter,tp,LOCATION_MZONE,0,1,nil) end
-	local g=Duel.GetMatchingGroup(c9910579.chfilter,tp,LOCATION_MZONE,0,nil)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
+	local g1=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_MZONE,0,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,0,nil)
+	if chk==0 then return #g1+#g2>0 end
+	local s=0
+	if #g1>0 and #g2==0 then
+		s=Duel.SelectOption(tp,aux.Stringid(9910579,0))
+	end
+	if #g1==0 and #g2>0 then
+		s=Duel.SelectOption(tp,aux.Stringid(9910579,1))+1
+	end
+	if #g1>0 and #g2>0 then
+		s=Duel.SelectOption(tp,aux.Stringid(9910579,0),aux.Stringid(9910579,1))
+	end
+	e:SetLabel(s)
+	if s==0 then
+		Duel.SetOperationInfo(0,CATEGORY_POSITION,g1,g1:GetCount(),0,0)
+	else
+		e:SetCategory(CATEGORY_POSITION+CATEGORY_SPECIAL_SUMMON)
+		Duel.SetOperationInfo(0,CATEGORY_POSITION,g2,g2:GetCount(),0,0)
+	end
 end
-function c9910579.setfilter(c,e,tp)
-	if c:IsType(TYPE_MONSTER) then
-		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
-	else return c:IsSSetable() end
+function c9910579.thfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_FLIP) and c:IsAbleToHand()
 end
-function c9910579.gselect(g,ct,ft1,ft2,flag)
-	local mct=g:FilterCount(Card.IsType,nil,TYPE_MONSTER)
-	local fct=g:FilterCount(Card.IsType,nil,TYPE_FIELD)
-	local sct=g:FilterCount(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)-fct
-	local b1=mct<=ft1 and fct<=1 and sct<=ft2 and #g==ct
-	local b2=mct==ft1 and sct==ft2
-	if flag then b2=b2 and fct==1 end
-	return b1 or b2
+function c9910579.spfilter(c,e,tp)
+	return c:IsSetCard(0xc951) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c9910579.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c9910579.chfilter,tp,LOCATION_MZONE,0,nil)
-	if g:GetCount()>0 then
-		Duel.ChangePosition(g,POS_FACEUP_DEFENSE)
-		local og=Duel.GetOperatedGroup():Filter(Card.IsPosition,nil,POS_FACEUP_DEFENSE)
-		local g2=Duel.GetMatchingGroup(c9910579.setfilter,1-tp,LOCATION_HAND,0,nil,e,1-tp)
-		local ct=math.min(#og,#g2)
-		if ct<=0 then return end
-		local ft1=Duel.GetLocationCount(1-tp,LOCATION_MZONE)
-		if ft1>1 and Duel.IsPlayerAffectedByEffect(1-tp,59822133) then ft1=1 end
-		local ft2=Duel.GetLocationCount(1-tp,LOCATION_SZONE)
-		local flag=g2:IsExists(Card.IsType,1,nil,TYPE_FIELD)
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SET)
-		local sg=g2:SelectSubGroup(1-tp,c9910579.gselect,false,1,#g2,ct,ft1,ft2,flag)
-		local sg1=sg:Filter(Card.IsType,nil,TYPE_MONSTER)
-		if #sg1>0 then Duel.SpecialSummon(sg1,0,1-tp,1-tp,false,false,POS_FACEDOWN_DEFENSE) end
-		local sg2=sg:Filter(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)
-		if #sg2>0 then Duel.SSet(1-tp,sg2,1-tp) end
-		local tg=Duel.GetMatchingGroup(Card.IsFacedown,tp,0,LOCATION_ONFIELD,nil)
-		if #tg<=0 then return end
-		Duel.BreakEffect()
-		Duel.ConfirmCards(tp,tg)
-		local dct=Group.__band(sg,tg):GetCount()
-		if dct>0 then
-			Duel.Draw(tp,dct,REASON_EFFECT)
-			Duel.Draw(1-tp,dct,REASON_EFFECT)
+	local g1=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_MZONE,0,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,0,nil)
+	if e:GetLabel()==0 and #g1>0 and Duel.ChangePosition(g1,POS_FACEUP_DEFENSE)>0 then
+		local ct=Duel.GetCurrentChain()
+		if ct<2 then return end
+		local te,tep=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		if tep==1-tp and Duel.IsExistingMatchingCard(c9910579.thfilter,tep,0,LOCATION_MZONE,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(9910579,2)) then
+			Duel.BreakEffect()
+			local g=Group.CreateGroup()
+			Duel.ChangeTargetCard(ct-1,g)
+			Duel.ChangeChainOperation(ct-1,c9910579.repop)
 		end
+	end
+	if e:GetLabel()==1 and #g2>0 and Duel.ChangePosition(g2,POS_FACEDOWN_DEFENSE)>0
+		and Duel.IsExistingMatchingCard(c9910579.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+		and Duel.SelectYesNo(tp,aux.Stringid(9910579,3)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,c9910579.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function c9910579.repop(e,tp,eg,ep,ev,re,r,rp)
+	local sg=Duel.SelectMatchingCard(tp,c9910579.thfilter,tp,0,LOCATION_MZONE,1,1,nil)
+	if sg:GetCount()>0 then
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end
 end

@@ -6,9 +6,9 @@ function cm.initial_effect(c)
 	aux.AddLinkProcedure(c,nil,2,2)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e1:SetCode(m)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetRange(LOCATION_ONFIELD)
 	e1:SetCondition(function(e)return Duel.GetFlagEffect(e:GetHandler():GetControler(),m)==0 end)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -44,6 +44,7 @@ function cm.initial_effect(c)
 				for tc in aux.Next(sg) do
 					local p=tc:GetControler()
 					if Duel.GetFieldGroupCount(p,LOCATION_DECK,0)>4 and Duel.GetFlagEffect(p,m)==0 then
+						if tc:IsFacedown() then Duel.ConfirmCards(1-p,tc) end
 						Duel.Hint(HINT_CARD,0,m)
 						Duel.ConfirmDecktop(p,5)
 						local dg=Duel.GetDecktopGroup(p,5):Filter(function(c,mc)return c:IsType(TYPE_MONSTER) and c:IsAbleToGrave() and c:IsCanBeFusionMaterial(mc)end,nil,mc)
@@ -59,10 +60,7 @@ function cm.initial_effect(c)
 				end
 				mc:SetMaterial(g)
 			end
-			cm[1](g,reason)
-			if #res>0 then
-				for i=1,#res do Duel.ShuffleDeck(res[i]) end
-			end
+			return cm[1](g,reason)
 		end
 	end
 end

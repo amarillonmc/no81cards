@@ -1,11 +1,22 @@
 --机械加工 鼠妇
 if not pcall(function() require("expansions/script/c40008000") end) then require("script/c40008000") end
 local m,cm=rscf.DefineCard(40009432)
+local m=40009432
+local cm=_G["c"..m]
+cm.named_with_Machining=1
+function cm.Machining(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Machining
+end
+
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x5f1d),2,2)
+	aux.AddLinkProcedure(c,cm.matfilter,2,2)
 	local e1 = rsef.I(c,"sp",{1,m},"tk,sp",nil,LOCATION_MZONE,nil,nil,cm.tktg,cm.tkop)
 	local e2 = rsef.QO(c,nil,"des",{1,m+100},"des","tg",LOCATION_MZONE,nil,nil,rstg.target({Card.IsFaceup,cm.gcheck},"des",LOCATION_ONFIELD,LOCATION_ONFIELD,2,2),cm.desop)
+end
+function cm.matfilter(c)
+	return cm.Machining(c) and c:IsType(TYPE_MONSTER)
 end
 function cm.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

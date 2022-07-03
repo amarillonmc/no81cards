@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 end
 cm.rkdn={11451579}
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not te:GetOwner():IsOriginalSetCard(0x97f)
+	return not re:GetHandler():IsSetCard(0x97f)
 end
 function cm.filter(c,re)
 	return c:IsCanOverlay() and c:IsRelateToEffect(re)

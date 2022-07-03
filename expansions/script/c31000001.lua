@@ -108,6 +108,7 @@ function c31000001.operation(e,tp,eg,ep,ev,re,r,rp)
 			local tc=sg:GetFirst()
 			if tc and Duel.IsPlayerCanSendtoHand(tp,tc) then
 				Duel.SendtoHand(sg,tp,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,sg)
 			end
 		end
 	end

@@ -12,6 +12,8 @@ function cm.initial_effect(c)
 	--Tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCountLimit(1,m)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_DECK)
 	e2:SetCondition(cm.thcon)

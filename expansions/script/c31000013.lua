@@ -47,7 +47,7 @@ end
 
 function c31000013.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(31000013,tp,ACTIVITY_SUMMON)==0
-	 	and Duel.GetCustomActivityCount(31000013,tp,ACTIVITY_SPSUMMON)==0 end
+		and Duel.GetCustomActivityCount(31000013,tp,ACTIVITY_SPSUMMON)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
@@ -112,7 +112,12 @@ function c31000013.operation(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g1:Select(tp,1,1,nil)
 		local tc=sg:GetFirst()
 		if tc and Duel.IsPlayerCanSendtoHand(tp,tc) then
-			Duel.SendtoHand(sg,tp,REASON_EFFECT)
+			if tc:IsLocation(LOCATION_DECK) then
+				Duel.SendtoHand(sg,tp,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,sg)
+			else 
+				Duel.SendtoHand(sg,tp,REASON_EFFECT)
+			end
 		end
 		c31000013.cost(e,tp,eg,ep,ev,re,r,rp)
 	else

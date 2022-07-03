@@ -165,13 +165,18 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return eg:GetCount()==1 and eg:GetFirst()==c and c:IsSummonType(SUMMON_TYPE_PENDULUM)
 end
+function cm.matfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_PENDULUM)
+end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSpecialSummonable,tp,LOCATION_EXTRA,0,1,nil,SUMMON_TYPE_LINK) end
+	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_ONFIELD,0,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,mg) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_ONFIELD,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,Card.IsSpecialSummonable,tp,LOCATION_EXTRA,0,1,1,nil,SUMMON_TYPE_LINK)
+	local g=Duel.SelectMatchingCard(tp,Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,1,nil,mg)
 	local tc=g:GetFirst()
-	if tc then Duel.SpecialSummonRule(tp,tc,SUMMON_TYPE_LINK) end
+	if tc then Duel.LinkSummon(tp,tc,mg) end
 end

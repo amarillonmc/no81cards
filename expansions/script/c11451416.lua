@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.matfilter(c)
-	return c:IsRace(RACE_SEASERPENT)
+	return c:IsAttribute(ATTRIBUTE_WATER)
 end
 function cm.filter(c,tp)
 	return c:IsPreviousSetCard(0x6978) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_RITUAL) and c:GetReasonPlayer()==tp

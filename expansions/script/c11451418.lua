@@ -26,7 +26,7 @@ function cm.filter(c,e,tp)
 	return c:IsAttribute(ATTRIBUTE_WATER) and bit.band(c:GetType(),0x81)==0x81 and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)
 end
 function cm.cfilter(c)
-	return c:IsSetCard(0x6978) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return c:IsRace(RACE_SEASERPENT) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function cm.drfilter(c)
 	return c:IsFaceup() and bit.band(c:GetType(),0x81)==0x81 and c:IsSetCard(0x6978) and c:IsSummonType(SUMMON_TYPE_RITUAL)

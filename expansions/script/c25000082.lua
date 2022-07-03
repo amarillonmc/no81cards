@@ -2,7 +2,7 @@ local m=25000082
 local cm=_G["c"..m]
 cm.name="ZGMF-X42S 命运"
 function cm.initial_effect(c)
-	aux.AddXyzProcedure(c,nil,10,3)
+	aux.AddXyzProcedure(c,nil,10,2,nil,nil,99)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -12,6 +12,12 @@ function cm.initial_effect(c)
 	e1:SetCondition(
 		function(e,tp,eg,ep,ev,re,r,rp)
 			return rp~=tp
+		end
+	)
+	e1:SetCost(
+		function(e,tp,eg,ep,ev,re,r,rp,chk)
+			if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+			e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 		end
 	)
 	e1:SetTarget(cm.imtg)
@@ -36,7 +42,6 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCost(cm.descost)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
 	c:RegisterEffect(e3)
@@ -82,24 +87,25 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
-function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	local cards=Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	local max=c:GetOverlayCount()
-	if max>cards then
-		max=cards
-	end
-	e:SetLabel(c:RemoveOverlayCard(tp,1,max,REASON_COST))
-end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetLabel(),1,0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local num=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,num,num,nil)
-	if #g>0 then Duel.Destroy(g,REASON_EFFECT) end
+	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+	if #g>0 then
+		Duel.HintSelection(g)
+		if Duel.Destroy(g,REASON_EFFECT)==0 then return end
+		local ct=Duel.GetCurrentChain()
+		if ct<2 then return end
+		local te,tep=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		if tep==1-tp and te:GetHandler():IsRelateToEffect(te) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_CARD,0,m)
+			Duel.Destroy(te:GetHandler(),REASON_EFFECT)
+		end
+	end
 end

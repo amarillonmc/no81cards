@@ -14,7 +14,7 @@ function cm.initial_effect(c)
 	e2:SetCode(m)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(1,0)
-	e2:SetCondition(cm.con)
+	--e2:SetCondition(cm.con)
 	c:RegisterEffect(e2)
 	--copy
 	local e4=Effect.CreateEffect(c)

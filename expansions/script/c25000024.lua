@@ -102,7 +102,7 @@ function c25000024.sktg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c25000024.skop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local op=Duel.SelectOption(tp,aux.Stringid(25000024,2),aux.Stringid(25000024,3),aux.Stringid(25000024,4),aux.Stringid(25000024,5))
+	local op=Duel.SelectOption(tp,aux.Stringid(25000024,4),aux.Stringid(25000024,5))
 	local p=Duel.GetTurnPlayer()
 	local e0=Effect.CreateEffect(c)
 	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -124,9 +124,9 @@ function c25000024.skop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(0,1)
 	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 	Duel.RegisterEffect(e1,p)
-	if op>=1 then Duel.SkipPhase(p,PHASE_DRAW,RESET_PHASE+PHASE_END,2) end
-	if op>=2 then Duel.SkipPhase(p,PHASE_STANDBY,RESET_PHASE+PHASE_END,2) end
-	if op>=3 then
+	Duel.SkipPhase(p,PHASE_DRAW,RESET_PHASE+PHASE_END,2)
+	if op>=0 then Duel.SkipPhase(p,PHASE_STANDBY,RESET_PHASE+PHASE_END,2) end
+	if op>=1 then
 		Duel.SkipPhase(p,PHASE_MAIN1,RESET_PHASE+PHASE_END,2)
 		local ct=1
 		if Duel.GetCurrentPhase()<=PHASE_BATTLE_START then ct=2 end 

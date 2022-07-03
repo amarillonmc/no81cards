@@ -1,5 +1,11 @@
 --秘藏的永夏 岬镜子
 function c9910969.initial_effect(c)
+	--flag
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetOperation(c9910969.flag)
+	c:RegisterEffect(e0)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_RECOVER)
@@ -10,6 +16,12 @@ function c9910969.initial_effect(c)
 	e1:SetTarget(c9910969.sptg)
 	e1:SetOperation(c9910969.spop)
 	c:RegisterEffect(e1)
+end
+function c9910969.flag(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsReason(REASON_EFFECT) then
+		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
+	end
 end
 function c9910969.costfilter(c)
 	return c:IsSetCard(0x5954) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()

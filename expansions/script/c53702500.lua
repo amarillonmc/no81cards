@@ -2644,3 +2644,346 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 	Card.RegisterEffect=reg
 	e:Reset()
 end
+function cm.reni(c,sdes,scat,styp,spro,scod,sran,sct,sht,scon,scos,stg,sop)
+	if scon==0 then scon=aux.TRUE end
+	if scos==0 then scos=aux.TRUE end
+	if stg==0 then stg=aux.TRUE end
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(sdes)
+	e1:SetCategory(scat)
+	e1:SetType(styp)
+	e1:SetProperty(spro)
+	e1:SetCode(scod)
+	e1:SetRange(sran)
+	if sct~=0 then e1:SetCountLimit(table.unpack(sct)) end
+	e1:SetHintTiming(table.unpack(sht))
+	e1:SetCondition(scon)
+	e1:SetCost(scos)
+	e1:SetTarget(stg)
+	e1:SetOperation(sop)
+	c:RegisterEffect(e1)
+	return e1
+end
+function cm.renf(c,spro,scod,sran,stran,scon,stg,sval)
+	if scon==0 then scon=aux.TRUE end
+	if stg==0 then stg=aux.TRUE end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(spro)
+	e1:SetCode(scod)
+	e1:SetRange(sran)
+	e1:SetTargetRange(table.unpack(stran))
+	e1:SetCondition(scon)
+	e1:SetTarget(stg)
+	e1:SetValue(sval)
+	c:RegisterEffect(e1)
+	return e1
+end
+function cm.renst(c,sdes,scat,styp,spro,scod,sct,scon,scos,stg,sop)
+	if scon==0 then scon=aux.TRUE end
+	if scos==0 then scos=aux.TRUE end
+	if stg==0 then stg=aux.TRUE end
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(sdes)
+	e1:SetCategory(scat)
+	e1:SetType(EFFECT_TYPE_SINGLE+styp)
+	e1:SetProperty(spro)
+	e1:SetCode(scod)
+	if sct~=0 then e1:SetCountLimit(table.unpack(sct)) end
+	e1:SetCondition(scon)
+	e1:SetCost(scos)
+	e1:SetTarget(stg)
+	e1:SetOperation(sop)
+	c:RegisterEffect(e1)
+	return e1
+end
+function cm.renft(c,sdes,scat,styp,spro,scod,sran,sct,scon,scos,stg,sop)
+	if scon==0 then scon=aux.TRUE end
+	if scos==0 then scos=aux.TRUE end
+	if stg==0 then stg=aux.TRUE end
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(sdes)
+	e1:SetCategory(scat)
+	e1:SetType(EFFECT_TYPE_FIELD+styp)
+	e1:SetProperty(spro)
+	e1:SetCode(scod)
+	e1:SetRange(sran)
+	if sct~=0 then e1:SetCountLimit(table.unpack(sct)) end
+	e1:SetCondition(scon)
+	e1:SetCost(scos)
+	e1:SetTarget(stg)
+	e1:SetOperation(sop)
+	c:RegisterEffect(e1)
+	return e1
+end
+function cm.recst(c,sct)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	if sct~=0 then e1:SetCountLimit(table.unpack(sct)) end
+	c:RegisterEffect(e1)
+	return e1
+end
+function cm.rest(c,scat,styp,spro,scod,sct,scon,scos,stg,sop)
+	if scon==0 then scon=aux.TRUE end
+	if scos==0 then scos=aux.TRUE end
+	if stg==0 then stg=aux.TRUE end
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(scat)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetProperty(spro)
+	e1:SetCode(scod)
+	if sct~=0 then e1:SetCountLimit(table.unpack(sct)) end
+	e1:SetCondition(scon)
+	e1:SetCost(scos)
+	e1:SetTarget(stg)
+	e1:SetOperation(sop)
+	c:RegisterEffect(e1)
+	return e1
+end
+function cm.bettertrg(c,scod,code)
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetOperation(cm.btcount(code))
+		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_CHAIN_END)
+		ge2:SetOperation(cm.btreset(code))
+		Duel.RegisterEffect(ge2,0)
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetCode(scod)
+		ge3:SetOperation(cm.bteg(code))
+		Duel.RegisterEffect(ge3,0)
+end
+function cm.btcount(code)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+	_G["c"..code].chain=true
+	end
+end
+function cm.bteg(code)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+	local class=_G["c"..code]
+	if class.chain==true then
+		local g=Group.CreateGroup()
+		if class[0] then g=class[0] end
+		g:Merge(eg)
+		g:KeepAlive()
+		class[0]=g
+	end
+	if class.chain==false then
+		Duel.RaiseEvent(eg,EVENT_CUSTOM+code,re,r,rp,ep,ev)
+	end
+	end
+end
+function cm.btreset(code)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+	local class=_G["c"..code]
+	class.chain=false
+	if not class[0] then return end
+	Duel.RaiseEvent(class[0],EVENT_CUSTOM+code,re,r,rp,ep,ev)
+	class[0]=nil
+	end
+end
+function cm.RinnaZone(tp,cg)
+	local fdzone=0
+	for cc in aux.Next(cg) do
+		local cs=cc:GetSequence()
+		local cz=1<<cs
+		fdzone=fdzone|cz
+		local bcz=1<<(cs+16)
+		local ce={Duel.IsPlayerAffectedByEffect(tp,EFFECT_DISABLE_FIELD)}
+		for _,te in ipairs(ce) do
+			local con=te:GetCondition()
+			local val=te:GetValue()
+			if (not con or con(te)) then
+				if val then
+					if aux.GetValueType(val)=="function" then
+						if tp==0 then
+							if cz&val(te)>0 then fdzone=fdzone&(~cz) end
+						else
+							if bcz&val(te)>0 then fdzone=fdzone&(~cz) end
+						end
+					else
+						if tp==0 then
+							if cz&val>0 then fdzone=fdzone&(~cz) end
+						else
+							if bcz&val>0 then fdzone=fdzone&(~cz) end
+						end
+					end
+				end
+			end
+		end
+	end
+	return fdzone
+end
+function cm.DisMZone(tp)
+	local zone=0
+	local ce={Duel.IsPlayerAffectedByEffect(tp,EFFECT_DISABLE_FIELD)}
+	for _,te in ipairs(ce) do
+		local con=te:GetCondition()
+		local val=te:GetValue()
+		if (not con or con(te)) then
+			if val then if aux.GetValueType(val)=="function" then zone=zone|val(te) else zone=zone|val end end
+		end
+	end
+	if tp==1 then zone=((zone&0xffff)<<16)|((zone>>16)&0xffff) end
+	return zone
+end
+function cm.ReleaseMZone(e,tp,z)
+	if tp==1 then z=((z&0xffff)<<16)|((z>>16)&0xffff) end
+	local ce={Duel.IsPlayerAffectedByEffect(tp,EFFECT_DISABLE_FIELD)}
+	for _,te in ipairs(ce) do
+		local con=te:GetCondition()
+		local val=te:GetValue()
+		if (not con or con(te)) and val then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			local res=false
+			local xe={Duel.IsPlayerAffectedByEffect(tp,53734000)}
+			local t={}
+			for _,i in ipairs(xe) do table.insert(t,i:GetLabelObject()) end
+			if not cm.IsInTable(te,t) then res=true end
+			if not Duel.IsPlayerAffectedByEffect(tp,53734000) or res then
+				local e2=Effect.CreateEffect(e:GetHandler())
+				e2:SetType(EFFECT_TYPE_FIELD)
+				e2:SetCode(53734000)
+				e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+				e2:SetTargetRange(1,1)
+				e2:SetLabelObject(te)
+				e2:SetValue(val)
+				Duel.RegisterEffect(e2,tp)
+			end
+			local xe={Duel.IsPlayerAffectedByEffect(tp,53734000)}
+			local eval=0
+			for _,i in ipairs(xe) do
+				if i:GetLabelObject()==te then eval=i:GetValue() end
+			end
+			local zone=0
+			if aux.GetValueType(eval)=="function" then
+				zone=eval(te)
+				eval=zone
+				e1:SetValue(0)
+			else
+				zone=eval
+				e1:SetValue(1)
+			end
+			if aux.GetValueType(val)=="function" then val=val(te) end
+			if z&val~=0 then
+				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e1:SetCode(EVENT_ADJUST)
+				e1:SetLabel(zone)
+				e1:SetLabelObject(te)
+				e1:SetOperation(cm.ReturnLock)
+				Duel.RegisterEffect(e1,tp)
+				val=val&(~z)
+				te:SetValue(val)
+			end
+		end
+	end
+end
+function cm.ReturnLock(e,tp,eg,ep,ev,re,r,rp)
+	local zone,te=e:GetLabel(),e:GetLabelObject()
+	if not te then
+		e:Reset()
+		return
+	end
+	local res=true
+	local ce={Duel.IsPlayerAffectedByEffect(tp,EFFECT_DISABLE_FIELD)}
+	for _,ke in ipairs(ce) do
+		if ke==te then res=false end
+	end
+	local xe={Duel.IsPlayerAffectedByEffect(tp,53734000)}
+	local val=0
+	for _,i in ipairs(xe) do
+		if i:GetLabelObject()==te then val=i:GetValue() end
+	end
+	local eval=0
+	if e:GetValue()==0 then eval=val(te) else eval=val end
+	--Debug.Message(res)
+	if zone~=eval or res then
+		te:SetValue(val)
+		e:Reset()
+	end
+end
+function cm.OjamaAdjust()--Deserted
+	f1=Duel.RegisterEffect
+	Duel.RegisterEffect=function(e,p)
+		if e:GetCode()==EFFECT_DISABLE_FIELD then
+			local pro,pro2=e:GetProperty()
+			pro=pro|EFFECT_FLAG_PLAYER_TARGET
+			e:SetProperty(pro,pro2)
+			e:SetTargetRange(1,1)
+		end
+		f1(e,p)
+	end
+	f2=Card.RegisterEffect
+	Card.RegisterEffect=function(sc,e,bool)
+		if e:GetCode()==EFFECT_DISABLE_FIELD then
+			local op,range,con=e:GetOperation(),e:GetRange(),e:GetCondition()
+			if op then
+				local res=false
+				local xe={Duel.IsPlayerAffectedByEffect(0,53734099)}
+				local t={}
+				for _,i in ipairs(xe) do table.insert(t,i:GetLabelObject()) end
+				if not cm.IsInTable(e,t) then res=true end
+				if not Duel.IsPlayerAffectedByEffect(0,53734099) or res then
+					local ex2=Effect.CreateEffect(sc)
+					ex2:SetType(EFFECT_TYPE_FIELD)
+					ex2:SetCode(53734099)
+					ex2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+					ex2:SetTargetRange(1,1)
+					ex2:SetLabelObject(e)
+					if range then ex2:SetRange(range) end
+					if con then ex2:SetCondition(con) end
+					ex2:SetOperation(op)
+					Duel.RegisterEffect(ex2,0)
+				end
+				local ex=Effect.CreateEffect(sc)
+				ex:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				ex:SetCode(EVENT_ADJUST)
+				ex:SetRange(range)
+				ex:SetLabelObject(e)
+				ex:SetOperation(cm.OjamaAdjustop)
+				f2(sc,ex)
+				e:SetOperation(nil)
+			else
+				local pro,pro2=e:GetProperty()
+				pro=pro|EFFECT_FLAG_PLAYER_TARGET
+				e:SetProperty(pro,pro2)
+				e:SetTargetRange(1,1)
+			end
+		end
+		f2(sc,e,bool)
+	end
+end
+function cm.OjamaAdjustop(e,tp,eg,ep,ev,re,r,rp)--Deserted
+	local c=e:GetHandler()
+	if c:GetFlagEffect(m)>0 then return end
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_OVERLAY,0,0)
+	local te=e:GetLabelObject()
+	local con,range,op=0,0,0
+	local xe={Duel.IsPlayerAffectedByEffect(0,53734099)}
+	local t={}
+	for _,i in ipairs(xe) do
+		if te==i:GetLabelObject() then
+			if i:GetCondition() then con=i:GetCondition() end
+			if i:GetRange() then range=i:GetRange() end
+			op=i:GetOperation()
+		end
+	end
+	local val=op(e,tp)
+	if tp==1 then val=((val&0xffff)<<16)|((val>>16)&0xffff) end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DISABLE_FIELD)
+	if range~=0 then e1:SetRange(range) else e1:SetRange(LOCATION_MZONE) end
+	if con~=0 then e1:SetCondition(con) end
+	e1:SetValue(val)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_OVERLAY)
+	c:RegisterEffect(e1)
+end

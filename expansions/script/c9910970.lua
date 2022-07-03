@@ -1,5 +1,11 @@
 --永夏的花海
 function c9910970.initial_effect(c)
+	--flag
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetOperation(c9910970.flag)
+	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -18,7 +24,7 @@ function c9910970.initial_effect(c)
 	--to hand
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9910970,1))
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetCategory(CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
@@ -27,12 +33,18 @@ function c9910970.initial_effect(c)
 	e3:SetOperation(c9910970.thop)
 	c:RegisterEffect(e3)
 end
+function c9910970.flag(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsReason(REASON_EFFECT) then
+		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
+	end
+end
 function c9910970.rmfilter(c,tp)
 	return c:IsSetCard(0x5954) and c:IsAbleToRemove(tp,POS_FACEDOWN)
 end
 function c9910970.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910970.rmfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,tp)
-		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_HAND) end
+		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)+2 end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
@@ -45,7 +57,7 @@ function c9910970.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=rg:GetFirst()
 	if rc and rc:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(1-tp,rc) end
 	if not rc or Duel.Remove(rc,POS_FACEDOWN,REASON_EFFECT)==0 or not rc:IsLocation(LOCATION_REMOVED) then return end
-	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)+1
+	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)+2
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<ct then return end
 	Duel.BreakEffect()
 	Duel.ConfirmDecktop(tp,ct)
@@ -64,7 +76,7 @@ function c9910970.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910970.tdfilter(c)
-	return c:IsFacedown() and c:IsReason(REASON_EFFECT) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsFacedown() and c:IsSetCard(0x5954) and c:IsReason(REASON_EFFECT) and c:IsAbleToDeckOrExtraAsCost()
 end
 function c9910970.ccfilter(c)
 	return bit.band(c:GetType(),0x7)
@@ -80,19 +92,15 @@ function c9910970.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_COST)
 	Duel.ConfirmCards(1-tp,sg)
 end
-function c9910970.thfilter2(c)
-	return c:IsSetCard(0x5954) and c:IsAbleToHand() and not c:IsCode(9910970)
-end
 function c9910970.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910970.thfilter2,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,nil)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
 end
 function c9910970.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910970.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
 	end
 end

@@ -1,4 +1,5 @@
 --方舟骑士-阿米娅·青色怒火
+c29065513.named_with_Arknight=1
 function c29065513.initial_effect(c)
 	aux.AddCodeList(c,29065500) 
 	c:EnableReviveLimit()

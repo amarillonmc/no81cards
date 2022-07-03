@@ -1,5 +1,11 @@
 --永夏的释怀
 function c9910959.initial_effect(c)
+	--flag
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetOperation(c9910959.flag)
+	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW+CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -12,6 +18,12 @@ function c9910959.initial_effect(c)
 	Duel.AddCustomActivityCounter(9910959,ACTIVITY_CHAIN,c9910959.chainfilter1)
 	Duel.AddCustomActivityCounter(9910960,ACTIVITY_CHAIN,c9910959.chainfilter2)
 	Duel.AddCustomActivityCounter(9910961,ACTIVITY_CHAIN,c9910959.chainfilter3)
+end
+function c9910959.flag(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsReason(REASON_EFFECT) then
+		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
+	end
 end
 function c9910959.chainfilter1(re,tp,cid)
 	return not re:GetHandler():IsType(TYPE_MONSTER)

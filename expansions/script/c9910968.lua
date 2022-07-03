@@ -1,5 +1,11 @@
 --尽露的永夏 三谷良一
 function c9910968.initial_effect(c)
+	--flag
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetOperation(c9910968.flag)
+	c:RegisterEffect(e0)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -10,6 +16,12 @@ function c9910968.initial_effect(c)
 	e1:SetTarget(c9910968.sptg)
 	e1:SetOperation(c9910968.spop)
 	c:RegisterEffect(e1)
+end
+function c9910968.flag(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsReason(REASON_EFFECT) then
+		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
+	end
 end
 function c9910968.costfilter(c)
 	return c:IsSetCard(0x5954) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(ATTRIBUTE_WATER)

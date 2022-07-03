@@ -57,18 +57,18 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(cm.splimit)
-	Duel.RegisterEffect(e1,tp)
+	--Duel.RegisterEffect(e1,tp)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)
 	e2:SetLabelObject(e1)
-	Duel.RegisterEffect(e2,tp)
+	--Duel.RegisterEffect(e2,tp)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_ADJUST)
 	e3:SetOperation(cm.adjustop)
 	e3:SetLabelObject(e2)
 	e3:SetOwnerPlayer(tp)
-	Duel.RegisterEffect(e3,tp)
+	--Duel.RegisterEffect(e3,tp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return sumpos&POS_FACEUP>0
@@ -120,6 +120,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=hg:Select(tp,1,1,nil):GetFirst()
 		local te=tc.hand_effect
 		local op=te:GetOperation()
-		if op then op(te,tp,eg,ep,ev,re,r,rp) end
+		if op then
+			tc:CreateEffectRelation(te)
+			op(te,tp,eg,ep,ev,re,r,rp)
+		end
 	end
 end

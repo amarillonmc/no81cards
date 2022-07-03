@@ -1,7 +1,7 @@
 --方舟骑士-凯尔希
 c29065501.named_with_Arknight=1
 function c29065501.initial_effect(c)
-	aux.AddCodeList(c,29065500)
+	aux.AddCodeList(c,29065500,29065501)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--pendulum set
@@ -9,7 +9,7 @@ function c29065501.initial_effect(c)
 	e3:SetDescription(aux.Stringid(29065501,0))
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_PZONE)
-	e3:SetCountLimit(1,09065501)
+	e3:SetCountLimit(1,29065502)
 	e3:SetTarget(c29065501.pctg)
 	e3:SetOperation(c29065501.pcop)
 	c:RegisterEffect(e3)
@@ -18,7 +18,7 @@ function c29065501.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND+LOCATION_EXTRA)
-	e1:SetCountLimit(1,19065501+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,29065504+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c29065501.spcon)
 	e1:SetOperation(c29065501.spop)
 	c:RegisterEffect(e1)

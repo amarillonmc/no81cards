@@ -1,7 +1,7 @@
 --方舟骑士-阿米娅
 c29065500.named_with_Arknight=1
 function c29065500.initial_effect(c)
-	c:EnableReviveLimit()
+	aux.AddCodeList(c,29065500)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29065500,0))
@@ -13,12 +13,15 @@ function c29065500.initial_effect(c)
 	e1:SetTarget(c29065500.thtg)
 	e1:SetOperation(c29065500.thop)
 	c:RegisterEffect(e1)   
+	local e3=e1:Clone()
+	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e3)
 	--copy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29065500,0)) 
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,19065500)
+	e2:SetCountLimit(1,29065503)
 	e2:SetCost(c29065500.cocost)
 	e2:SetTarget(c29065500.cotg)
 	e2:SetOperation(c29065500.coop)

@@ -9,6 +9,7 @@ function c29065523.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,29065524+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c29065523.spcon)
 	c:RegisterEffect(e1)
 	--counter
@@ -27,10 +28,13 @@ function c29065523.initial_effect(c)
 	c:RegisterEffect(e3)
 	c29065523.summon_effect=e2
 end
-function c29065523.spcon(e,c)
+function c29065523.spfilter(c)
+	return c:IsFacedown() or not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+end
+function c29065523.spcon(e,c,tp,eg,ep,ev,re,r,rp)
 	if c==nil then return true end
-	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.GetFieldGroupCount(c:GetControler(),LOCATION_ONFIELD,0)==0
+	local tp=c:GetControler()
+	return not Duel.IsExistingMatchingCard(c29065523.spfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c29065523.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

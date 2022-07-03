@@ -3,6 +3,7 @@ local m=29065506
 local cm=_G["c"..m]
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,29065502)
 	--link summon
 	aux.AddLinkProcedure(c,nil,2,2,cm.lcheck)
 	c:EnableReviveLimit()
@@ -70,7 +71,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(ac/600)
 end
 function cm.cfilter(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand() --or c:IsCode(29065502) 
 end
 function cm.tga(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0

@@ -58,7 +58,7 @@ end
 
 function c31000005.difilter(c,r1,r2,r3)
 	local bool=c:IsLevel(r1) or c:IsLevel(r2) or c:IsLevel(r3)
-	return c:IsSetCard(0x308) and not bool
+	return c:IsSetCard(0x308) and c:IsType(TYPE_MONSTER) and not bool
 end
 
 c31000005.toss_dice=true
@@ -75,7 +75,12 @@ function c31000005.operation(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:Select(tp,1,1,nil)
 		local tc=sg:GetFirst()
 		if tc and Duel.IsPlayerCanSendtoHand(tp,tc) then
-			Duel.SendtoHand(sg,tp,REASON_EFFECT)
+			if tc:IsLocation(LOCATION_DECK) then
+				Duel.SendtoHand(sg,tp,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,sg)
+			else 
+				Duel.SendtoHand(sg,tp,REASON_EFFECT)
+			end
 		end
 	end
 end

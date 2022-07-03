@@ -69,5 +69,6 @@ function c9910279.disop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg=g:FilterSelect(tp,Card.IsAbleToRemove,1,1,nil,tp,POS_FACEDOWN)
 		Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
+		Duel.ShuffleExtra(1-tp)
 	end
 end

@@ -1,5 +1,11 @@
 --顾盼的永夏 野村美希
 function c9910955.initial_effect(c)
+	--flag
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetOperation(c9910955.flag)
+	c:RegisterEffect(e0)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON)
@@ -33,6 +39,12 @@ function c9910955.initial_effect(c)
 	e3:SetOperation(c9910955.desop)
 	c:RegisterEffect(e3)
 end
+function c9910955.flag(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsReason(REASON_EFFECT) then
+		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
+	end
+end
 function c9910955.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,e:GetHandler(),tp,POS_FACEDOWN)
@@ -59,13 +71,13 @@ function c9910955.filter2(c,e,tp,tc)
 		and (c:IsAbleToHand() or (Duel.GetMZoneCount(tp,tc)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c9910955.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910955.filter1,tp,LOCATION_MZONE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910955.filter1,tp,LOCATION_ONFIELD,0,1,nil,e,tp) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c9910955.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rg=Duel.SelectMatchingCard(tp,c9910955.filter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
+	local rg=Duel.SelectMatchingCard(tp,c9910955.filter1,tp,LOCATION_ONFIELD,0,1,1,nil,e,tp)
 	local rc=rg:GetFirst()
 	if rc and Duel.Remove(rc,POS_FACEDOWN,REASON_EFFECT)~=0 and rc:IsLocation(LOCATION_REMOVED) then
 		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910955.filter2),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,e,tp,nil)

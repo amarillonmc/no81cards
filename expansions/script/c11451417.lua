@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.spfilter(c,e,tp,mc)
-	return c:IsRace(RACE_SEASERPENT) and bit.band(c:GetType(),0x81)==0x81 and (not c.mat_filter or c.mat_filter(mc)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and mc:IsCanBeRitualMaterial(c) and mc:IsLocation(LOCATION_MZONE) and mc:IsAttribute(ATTRIBUTE_WATER)
+	return c:IsRace(RACE_SEASERPENT) and bit.band(c:GetType(),0x81)==0x81 and (not c.mat_filter or c.mat_filter(mc)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and mc:IsCanBeRitualMaterial(c) and mc:IsLocation(LOCATION_MZONE)
 end
 function cm.rfilter(c,mc)
 	local mlv=mc:GetRitualLevel(c)

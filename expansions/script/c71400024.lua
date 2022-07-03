@@ -50,7 +50,7 @@ function c71400024.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71400024.con2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return (c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT)) and c:IsPreviousLocation(LOCATION_MZONE)
+	return c:IsSummonType(SUMMON_TYPE_LINK) and (c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT)) and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function c71400024.filter2(c,e,tp)
 	return c:GetBaseAttack()>2500 and c:GetOriginalAttribute()==ATTRIBUTE_DARK and c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(71400024)

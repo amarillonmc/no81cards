@@ -3,6 +3,12 @@ function c9910963.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
+	--flag
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetOperation(c9910963.flag)
+	c:RegisterEffect(e0)
 	--Special Summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910963,0))
@@ -30,6 +36,12 @@ function c9910963.initial_effect(c)
 	e2:SetOperation(c9910963.disop)
 	c:RegisterEffect(e2)
 end
+function c9910963.flag(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsReason(REASON_EFFECT) then
+		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
+	end
+end
 function c9910963.filter1(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0x5954) and c:IsAbleToRemove(tp,POS_FACEDOWN)
 end
@@ -37,7 +49,7 @@ function c9910963.filter2(c,e,tp)
 	return Duel.IsExistingMatchingCard(c9910963.filter3,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp,c)
 end
 function c9910963.filter3(c,e,tp,tc)
-	if not (c:IsSetCard(0x5954) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) then return false end
+	if not (c:IsSetCard(0x5954) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)) then return false end
 	if c:IsLocation(LOCATION_EXTRA) then
 		return Duel.GetLocationCountFromEx(tp,tp,tc,c)>0
 	else
@@ -71,7 +83,7 @@ function c9910963.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910963.filter3),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp,nil)
 		if #sg>0 then
-			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 		end
 	end
 end

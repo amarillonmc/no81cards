@@ -1,4 +1,5 @@
 --未解的远古造物 原杉藻
+require("expansions/script/c9910700")
 function c9910740.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xc950),2)

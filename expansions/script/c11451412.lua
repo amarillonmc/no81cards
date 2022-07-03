@@ -44,9 +44,6 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_CHAIN_NEGATED)
 	c:RegisterEffect(e5)
 end
-function cm.mat_filter(c)
-	return c:IsAttribute(ATTRIBUTE_WATER)
-end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=Duel.GetTurnPlayer() and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and not e:GetHandler():IsPublic()
 end

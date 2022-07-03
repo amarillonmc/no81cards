@@ -1,6 +1,13 @@
 --机械加工 敲击南洋大兜虫
 if not pcall(function() require("expansions/script/c40008000") end) then require("script/c40008000") end
 local m,cm=rscf.DefineCard(40009281)
+local m=40009281
+local cm=_G["c"..m]
+cm.named_with_Machining=1
+function cm.Machining(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Machining
+end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_INSECT),2)

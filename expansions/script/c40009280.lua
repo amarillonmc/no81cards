@@ -1,6 +1,11 @@
 --机械加工 破坏者
 local m=40009280
 local cm=_G["c"..m]
+cm.named_with_Machining=1
+function cm.Machining(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Machining
+end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_MONSTER),3)

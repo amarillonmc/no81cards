@@ -54,9 +54,6 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge2,0)
 	end
 end
-function cm.mat_filter(c)
-	return c:IsAttribute(ATTRIBUTE_WATER)
-end
 function cm.filter(c,tp)
 	return c:IsControler(tp) and c:IsSetCard(0x6978) and c:IsFaceup()
 end

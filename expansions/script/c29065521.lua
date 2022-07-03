@@ -1,4 +1,5 @@
 --方舟骑士-德克萨斯
+c29065521.named_with_Arknight=1
 function c29065521.initial_effect(c)
 	c:EnableCounterPermit(0x10ae)
 	--special summon
@@ -26,13 +27,12 @@ function c29065521.initial_effect(c)
 	c29065521.summon_effect=e2
 end
 function c29065521.spfilter(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
+	return c:IsFacedown() or not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
-function c29065521.spcon(e,c)
+function c29065521.spcon(e,c,tp,eg,ep,ev,re,r,rp)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c29065521.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+	return not Duel.IsExistingMatchingCard(c29065521.spfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c29065521.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanAddCounter(0x10ae,1) end

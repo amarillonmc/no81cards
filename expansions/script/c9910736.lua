@@ -44,13 +44,15 @@ function c9910736.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c9910736.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
-		Duel.Summon(tp,tc,true,nil)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e1:SetValue(c9910736.efilter)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-		tc:RegisterEffect(e1)
+		e1:SetOwnerPlayer(tp)
+		tc:RegisterEffect(e1,true)
+		Duel.Summon(tp,tc,true,nil)
 	end
 end
 function c9910736.efilter(e,re)

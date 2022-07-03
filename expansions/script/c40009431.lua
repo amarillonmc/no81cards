@@ -1,6 +1,13 @@
 --机械加工 赤蚁兵
 if not pcall(function() require("expansions/script/c40008000") end) then require("script/c40008000") end
 local m,cm=rscf.DefineCard(40009431)
+local m=40009431
+local cm=_G["c"..m]
+cm.named_with_Machining=1
+function cm.Machining(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Machining
+end
 function cm.initial_effect(c)
 	local e1 = rsef.SV_CHANGE(c,"type",TYPE_NORMAL+TYPE_MONSTER)
 	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
@@ -17,7 +24,7 @@ function cm.resfilter(c,e,tp)
 	return Duel.GetMZoneCount(tp,c,tp)>0
 end
 function cm.spfilter(c,e,tp)
-	return not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x5f1d) 
+	return not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and cm.Machining(c)
 end
 function cm.spfilter2(c,e,tp)
 	return cm.spfilter(c,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0

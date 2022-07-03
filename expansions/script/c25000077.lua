@@ -2,7 +2,7 @@ local m=25000077
 local cm=_G["c"..m]
 cm.name="CONCEPT-X6-1-2 逆X"
 function cm.initial_effect(c)
-	aux.AddXyzProcedure(c,nil,9,2,nil,nil,99)
+	aux.AddXyzProcedure(c,nil,4,2,nil,nil,99)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)

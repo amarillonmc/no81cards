@@ -1,5 +1,11 @@
 --永夏的倾覆
 function c9910971.initial_effect(c)
+	--flag
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetOperation(c9910971.flag)
+	c:RegisterEffect(e0)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -32,6 +38,12 @@ function c9910971.initial_effect(c)
 	e3:SetOperation(c9910971.rtop)
 	c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(9910971,ACTIVITY_CHAIN,c9910971.chainfilter)
+end
+function c9910971.flag(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsReason(REASON_EFFECT) then
+		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
+	end
 end
 function c9910971.chainfilter(re,tp,cid)
 	return not (re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0x5954))
@@ -66,13 +78,13 @@ function c9910971.tgfilter(c)
 	return c:IsFacedown() and c:IsSetCard(0x5954) and c:IsType(TYPE_MONSTER) and c:IsReason(REASON_EFFECT)
 end
 function c9910971.rttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910971.tgfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910971.tgfilter,tp,LOCATION_REMOVED,0,1,nil) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_REMOVED)
 end
 function c9910971.rtop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local tc=Duel.SelectMatchingCard(tp,c9910971.tgfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c9910971.tgfilter,tp,LOCATION_REMOVED,0,1,1,nil):GetFirst()
 	if tc and Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)~=0 and tc:IsLocation(LOCATION_GRAVE) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
