@@ -15,12 +15,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,nil,1-tp,LOCATION_DECK)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local op_deck=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
+	local op_deck=Duel.GetFieldGroup(tp,0,LOCATION_DECK)
 	if #op_deck<2 then return end
 	local t={}
 	local i=2
 	local max=op_deck:GetCount()
-	for i=2,max do t[i]=i end
+	for i=2,max do t[i-1]=i end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_NUMBER)
 	local num=Duel.AnnounceNumber(1-tp,table.unpack(t))
 	Duel.ConfirmDecktop(1-tp,num)

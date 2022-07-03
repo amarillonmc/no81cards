@@ -15,22 +15,24 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return g:FilterCount(Card.IsAbleToHand,nil)>=2 end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local op_deck=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
+	local op_deck=Duel.GetFieldGroup(tp,0,LOCATION_DECK)
 	if #op_deck<2 then return end
 	if Duel.IsChainDisablable(0) and e:GetHandler():IsSSetable() and Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
 		Duel.SetLP(1-tp,math.ceil(Duel.GetLP(tp)/2))
 		Duel.NegateEffect(0)
-		e:GetHandler():CancelToGrave()
 		Duel.SSet(1-tp,e:GetHandler(),1-tp)
+		e:GetHandler():CancelToGrave()
+		Duel.MoveToField(e:GetHandler(),1-tp,1-tp,LOCATION_SZONE,POS_FACEDOWN,false)
+		Duel.RaiseEvent(Group.FromCards(e:GetHandler()),EVENT_SSET,e,REASON_EFFECT,1-tp,1-tp,0)
 		return
 	end
 	local max=20
 	if #op_deck<max then max=#op_deck end
 	local p=1-tp
-	if Duel.GetFieldGroup(tp,LOCATION_HAND,0)==0 then p=tp end
+	if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0 then p=tp end
 	local t={}
 	local i=2
-	for i=2,max do t[i]=i end
+	for i=2,max do t[i-1]=i end
 	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_NUMBER)
 	local num=Duel.AnnounceNumber(p,table.unpack(t))
 	Duel.ConfirmDecktop(1-tp,num)

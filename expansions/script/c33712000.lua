@@ -1,6 +1,7 @@
 local m=33712000
 local cm=_G["c"..m]
 cm.name="赛扬娜拉"
+function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -20,7 +21,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_SZONE,LOCATION_SZONE,nil)
 	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
-	local g4=Duel.GetDecktopGroup(tp,15):Merge(Duel.GetDecktopGroup(1-tp,15))
+	local g4=Duel.GetDecktopGroup(tp,15)
+	g4:Merge(Duel.GetDecktopGroup(1-tp,15))
 	g4=g4:Filter(Card.IsAbleToRemove,nil)
 	local sel=0
 	if g1 and #g1>0 and Duel.GetLP(tp)>=4000 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
