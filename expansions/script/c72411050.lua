@@ -47,7 +47,7 @@ function c72411050.operation1(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c72411050.filterb(c,e,tp)
-	return ((c:IsSetCard(0x5729) and c:IsType(TYPE_SPELL)) or (c:IsSetCard(0x5729) or Duel.IsPlayerAffectedByEffect(tp,72413440))) and c:IsAbleToDeck() and c:IsCanBeEffectTarget(e)
+	return ((c:IsSetCard(0x5729) and c:IsType(TYPE_SPELL)) or (c:GetType()==TYPE_SPELL and Duel.IsPlayerAffectedByEffect(tp,72413440))) and c:IsAbleToDeck() and c:IsCanBeEffectTarget(e)
 end
 function c72411050.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

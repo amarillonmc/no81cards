@@ -41,7 +41,7 @@ function c72411060.operation1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c72411060.cpfilter(c,exc,e,tp,eg,ep,ev,re,r,rp)
 	local te=c:CheckActivateEffect(true,true,false)
-	if not (c:IsSetCard(0x5729) and c:GetType()==TYPE_SPELL and c:IsAbleToRemoveAsCost() and te and te:GetOperation()) then return false end
+	if not ((c:IsSetCard(0x5729) or Duel.IsPlayerAffectedByEffect(tp,72413440)) and c:GetType()==TYPE_SPELL and c:IsAbleToRemoveAsCost() and te and te:GetOperation()) then return false end
 	local tg=te:GetTarget()
 	return (not tg) or tg(e,tp,eg,ep,ev,re,r,rp,0,nil,exc)
 end
