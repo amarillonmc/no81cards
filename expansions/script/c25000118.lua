@@ -1,6 +1,7 @@
 local m=25000118
 local cm=_G["c"..m]
 cm.name="百万巨神 大丢奥"
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
