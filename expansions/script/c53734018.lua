@@ -132,6 +132,7 @@ end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	Duel.ReturnToField(tc,tc:GetPreviousPosition(),e:GetLabel())
+	e:Reset()
 end
 function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(function(c)return c:IsFaceup() and c:IsSetCard(0x3536)end,tp,LOCATION_REMOVED,0,nil)

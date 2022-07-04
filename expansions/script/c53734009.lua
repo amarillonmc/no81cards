@@ -133,6 +133,7 @@ end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	Duel.ReturnToField(tc,tc:GetPreviousPosition(),e:GetLabel())
+	e:Reset()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local tn=Duel.GetTurnPlayer()

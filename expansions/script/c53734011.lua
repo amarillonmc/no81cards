@@ -100,4 +100,5 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	rsop.MoveToField(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),false,e:GetLabel())
 	--Duel.ReturnToField(tc,tc:GetPreviousPosition(),e:GetLabel())
+	e:Reset()
 end
