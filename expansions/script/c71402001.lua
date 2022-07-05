@@ -24,6 +24,12 @@ function c71402001.initial_effect(c)
 	e2:SetCost(c71402001.cost2)
 	e2:SetOperation(c71402001.op2)
 	c:RegisterEffect(e2)
+	--double tuner check
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_MATERIAL_CHECK)
+	e3:SetValue(c71402001.valcheck)
+	c:RegisterEffect(e3)
 end
 function c71402001.mfilter(c,sc)
 	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsNotTuner(sc) or c:IsType(TYPE_TUNER) and c:IsSummonType(SUMMON_TYPE_NORMAL)
@@ -69,4 +75,15 @@ function c71402001.op2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
 		end
 	end 
+end
+function c71402001.valcheck(e,c)
+	local g=c:GetMaterial()
+	if g:IsExists(Card.IsType,2,nil,TYPE_TUNER) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetCode(21142671)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e1)
+	end
 end

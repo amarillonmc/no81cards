@@ -101,7 +101,6 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e3:SetCode(EVENT_BE_BATTLE_TARGET)
-		e3:SetCountLimit(1)
 		e3:SetOperation(cm.atkop)
 		e3:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e3,tp)
@@ -146,6 +145,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local d=Duel.GetAttackTarget()
 	if d and d:IsFacedown() or not d:IsSetCard(0x3536) then return end
 	if not Duel.SelectYesNo(tp,aux.Stringid(m,1)) then return end
+	e:Reset()
 	Duel.Hint(HINT_CARD,0,m)
 	if not Duel.NegateAttack() then return end
 	local tc=Duel.GetAttacker()
