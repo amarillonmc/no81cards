@@ -3,6 +3,8 @@ local m=60002029
 local cm=_G["c"..m]
 cm.name="明灯之大剑喻 底比里斯"
 function cm.initial_effect(c)
+	--pendulum summon
+	aux.EnablePendulumAttribute(c)
 	--summon with s/t
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

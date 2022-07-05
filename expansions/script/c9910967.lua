@@ -60,8 +60,8 @@ function c9910967.gselect(sg,lv)
 end
 function c9910967.spfilter(c,e,tp,g)
 	local clv=c:GetLevel()
-	local b1=c:IsSetCard(0x5954) and clv>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and not c:IsPublic()
+	local b1=c:IsSetCard(0x5954) and clv>1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsPublic()
 	if not b1 then return false end
 	aux.GCheckAdditional=c9910967.gcheck(clv)
 	local b2=g:CheckSubGroup(c9910967.gselect,1,#g,clv)

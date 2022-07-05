@@ -117,7 +117,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if hg:GetCount()>0 and Duel.SendtoHand(hg,tp,REASON_EFFECT)>0 and hg:GetFirst():IsLocation(LOCATION_HAND) then
 		Duel.ConfirmCards(1-tp,hg)
 		local dis=1<<c:GetSequence()
-		if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)>0 and c:IsLocation(LOCATION_REMOVED) then
+		if c:IsRelateToEffect(e) and Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)>0 and c:IsLocation(LOCATION_REMOVED) then
 			if SNNM.DisMZone(tp)&dis>0 then return end
 			local zone=dis
 			if tp==1 then dis=((dis&0xffff)<<16)|((dis>>16)&0xffff) end

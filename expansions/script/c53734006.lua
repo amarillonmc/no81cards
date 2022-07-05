@@ -82,7 +82,7 @@ function cm.discon2(e,tp,eg,ep,ev,re,r,rp)
 	return SNNM.DisMZone(tp)&0x1f>0
 end
 function cm.disfilter(c)
-	return aux.NegateAnyFilter(c) and c:IsStatus(STATUS_EFFECT_ENABLED)
+	return aux.NegateAnyFilter(c) and c:IsStatus(STATUS_EFFECT_ENABLED) and not c:IsStatus(STATUS_LEAVE_CONFIRMED)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local b1=SNNM.RinnaZone(tp,Duel.GetMatchingGroup(function(c)return c:GetSequence()<5 and c:IsAbleToRemove()end,tp,LOCATION_MZONE,0,nil))>0 and Duel.IsExistingMatchingCard(cm.disfilter,tp,0,LOCATION_ONFIELD,1,nil)

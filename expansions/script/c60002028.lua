@@ -3,6 +3,8 @@ local m=60002028
 local cm=_G["c"..m]
 cm.name="血影之大剑喻 莉莉安"
 function cm.initial_effect(c)
+	--pendulum summon
+	aux.EnablePendulumAttribute(c)
 	--summon with s/t
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

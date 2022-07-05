@@ -43,7 +43,7 @@ end
 
 function c79078004.thop(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		if Duel.Destroy(g,REASON_EFFECT)~=0 then

@@ -20,7 +20,7 @@ function cm.filter(c,e,tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c34611551mIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
@@ -28,6 +28,5 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
-end
-end
+	end
 end

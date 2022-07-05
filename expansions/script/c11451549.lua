@@ -48,7 +48,7 @@ end
 function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=g:SelectSubGroup(tp,cm.fselect,Duel.IsSummonCancelable(),4,#g)
+	local sg=g:SelectSubGroup(tp,cm.fselect,Duel.IsSummonCancelable(),2,#g)
 	if sg and sg:GetSum(Card.GetLevel)%5==0 then
 		sg:KeepAlive()
 		e:SetLabelObject(sg)

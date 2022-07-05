@@ -32,7 +32,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local ct=math.ceil(Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)/2)
+	local ct=math.floor(Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)/2)
 	if ct<1 then return end
 	local g=Duel.GetDecktopGroup(tp,ct)
 	Duel.ConfirmCards(tp,g)
@@ -65,7 +65,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 		else
-			local mat2=Duel.SelectFusionMaterial(tp,tc,mg2,nil,chkf)
+			local mat2=Duel.SelectFusionMaterial(tp,tc,mg3,nil,chkf)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat2)
 		end
