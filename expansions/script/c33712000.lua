@@ -6,9 +6,14 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message(Duel.GetTurnCount())
+	return Duel.GetTurnCount()>=3
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local check1=Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)
@@ -16,6 +21,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local check3=Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
 	local check4=Duel.GetDecktopGroup(tp,15):FilterCount(Card.IsAbleToRemove,nil)==15 and Duel.GetDecktopGroup(1-tp,15):FilterCount(Card.IsAbleToRemove,nil)==15
 	if chk==0 then return (check1 or check2 or check3 or check4) and Duel.GetLP(tp)>=4000 end
+	Duel.SetChainLimit(aux.FALSE)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_SZONE,LOCATION_SZONE,nil)

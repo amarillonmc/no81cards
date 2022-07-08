@@ -85,8 +85,8 @@ end
 
 function c31000013.distg(e,c)
 	local tp=e:GetHandler():GetControler()
-	return Duel.IsExistingMatchingCard(c31000013.tkfilter,tp,nil,LOCATION_MZONE,1,nil,c:GetLevel())
-		and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0) and not c:IsDisabled()
+	return (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0) and
+		Duel.IsExistingMatchingCard(c31000013.tkfilter,tp,nil,LOCATION_MZONE,1,nil,c:GetLevel())
 end
 
 function c31000013.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -112,12 +112,8 @@ function c31000013.operation(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g1:Select(tp,1,1,nil)
 		local tc=sg:GetFirst()
 		if tc and Duel.IsPlayerCanSendtoHand(tp,tc) then
-			if tc:IsLocation(LOCATION_DECK) then
-				Duel.SendtoHand(sg,tp,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,sg)
-			else 
-				Duel.SendtoHand(sg,tp,REASON_EFFECT)
-			end
+			Duel.SendtoHand(sg,tp,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
 		end
 		c31000013.cost(e,tp,eg,ep,ev,re,r,rp)
 	else

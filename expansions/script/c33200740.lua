@@ -23,11 +23,12 @@ function c33200740.initial_effect(c)
 	--counter
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(33200740,1))
-	e3:SetCategory(CATEGORY_COUNTER)
+	e3:SetCategory(CATEGORY_COUNTER+CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetHintTiming(0,TIMING_END_PHASE)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCountLimit(1,33200741)
 	e3:SetTarget(c33200740.counttg)
 	e3:SetOperation(c33200740.counter)
@@ -79,18 +80,20 @@ end
 
 --e3
 function c33200740.counttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c33200740.cfilter,tp,LOCATION_REMOVED,0,2,nil) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED) and c33200740.cfilter(chkc) end
+	if chk==0 then return e:GetHandler():IsCanAddCounter(0x32a,2) and Duel.IsExistingTarget(c33200740.cfilter,tp,LOCATION_REMOVED,0,2,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectTarget(tp,c33200740.cfilter,tp,LOCATION_REMOVED,0,2,2,nil)
+	Duel.HintSelection(g)
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,e:GetHandler(),0,0x32a)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,LOCATION_REMOVED)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(33200740,1))
 end
 function c33200740.cfilter(c)
 	return c:IsSetCard(0xc32a) and c:IsAbleToDeck()
 end
 function c33200740.counter(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(c33200740.cfilter,tp,LOCATION_REMOVED,0,2,nil) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c33200740.cfilter,tp,LOCATION_REMOVED,0,2,2,nil)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if g:GetCount()==2 then
 		if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)==2 and e:GetHandler():IsRelateToEffect(e) then
 			e:GetHandler():AddCounter(0x32a,2)

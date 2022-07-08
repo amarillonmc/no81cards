@@ -11,7 +11,10 @@ function cm.initial_effect(c)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local _GetTurnCount=Duel.GetTurnCount
+	Duel.GetTurnCount=function() if Duel.GetTurnPlayer()==tp then return _GetTurnCount()+2 else return _GetTurnCount()+1 end end
 	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_SKIP_TURN)}
+	Duel.GetTurnCount=_GetTurnCount
 	if #eset>0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -40,7 +43,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.RegisterEffect(e1,tp)
 	end
+	Duel.GetTurnCount=function() if Duel.GetTurnPlayer()==1-tp then return _GetTurnCount()+2 else return _GetTurnCount()+1 end end
 	local eset2={Duel.IsPlayerAffectedByEffect(1-tp,EFFECT_SKIP_TURN)}
+	Duel.GetTurnCount=_GetTurnCount
 	if #eset2>0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

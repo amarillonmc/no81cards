@@ -72,12 +72,12 @@ function c31000014.op(e,tp,eg,ep,ev,re,r,rp)
     e2:SetCode(EFFECT_UPDATE_DEFENSE)
     e2:SetValue(vl2)
     tc:RegisterEffect(e2)
-    if (preatk~=0 or predef~=0) and tc:IsAttack(0) and tc:IsDefense(0)
-      then dg:AddCard(tc) end
-    if Duel.Destroy(dg,REASON_EFFECT) then
-      for i=1,ev do
-        local tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_PLAYER)
-        if tgp~=tp then Duel.NegateEffect(i) end
+    if (preatk~=0 or predef~=0) and tc:IsAttack(0) and tc:IsDefense(0) then
+      if Duel.Destroy(tc,REASON_EFFECT)>0 then
+        for i=1,ev do
+          local tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_PLAYER)
+          if tgp~=tp then Duel.NegateEffect(i) end
+        end
       end
     end
   end

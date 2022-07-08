@@ -157,12 +157,21 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.retfilter2(c,p,loc)
+	if (c:IsPreviousLocation(LOCATION_SZONE) and c:GetPreviousTypeOnField()&TYPE_EQUIP>0) or c:IsPreviousLocation(LOCATION_FZONE) then return false end
 	return c:IsPreviousControler(p) and c:IsPreviousLocation(loc)
 end
 function cm.fselect2(g,pft)
 	return g:FilterCount(Card.IsPreviousLocation,nil,LOCATION_PZONE)<=pft
 end
 function cm.returntofield(tc)
+	if tc:IsPreviousLocation(LOCATION_FZONE) then
+		local p=tc:GetPreviousControler()
+		local gc=Duel.GetFieldCard(p,LOCATION_FZONE,0)
+		if gc then
+			Duel.SendtoGrave(gc,REASON_RULE)
+			Duel.BreakEffect()
+		end
+	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)
 	else

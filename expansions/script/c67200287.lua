@@ -15,15 +15,25 @@ function c67200287.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e2:SetRange(LOCATION_EXTRA+LOCATION_HAND)
+	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,67200287+EFFECT_COUNT_CODE_OATH)
 	e2:SetCondition(c67200287.spcon)
 	e2:SetOperation(c67200287.spop)
-	e2:SetValue(SUMMON_VALUE_SELF)
+	--e2:SetValue(SUMMON_VALUE_SELF)
 	c:RegisterEffect(e2) 
+	--special summon
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_SPSUMMON_PROC)
+	e3:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e3:SetRange(LOCATION_EXTRA)
+	e3:SetCountLimit(1,67200287+EFFECT_COUNT_CODE_OATH)
+	e3:SetCondition(c67200287.spcon2)
+	e3:SetOperation(c67200287.spop2)
+	c:RegisterEffect(e3) 
 	--Equip
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(67200287,2))
+	e4:SetDescription(aux.Stringid(67200287,5))
 	e4:SetCategory(CATEGORY_EQUIP)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
@@ -49,36 +59,59 @@ function c67200287.repval(e,c)
 	return c67200287.repfilter(c,e:GetHandlerPlayer())
 end
 --
-function c67200287.spfilter1(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x674) and c:IsReleasable()
+function c67200287.rfilter(c,tp)
+	--local tp=c:GetControler()
+	return c:IsFaceup() and c:IsSetCard(0x674) and c:IsReleasable() 
 end
+
+function c67200287.mfilter(c,tp)
+	--local tp=c:GetControler()
+	return c:GetSequence()<5 and c:IsLocation(LOCATION_MZONE) 
+end
+
 function c67200287.spcon(e,c)
---
 	if c==nil then return true end
 	local tp=c:GetControler()
+	local rg=Duel.GetMatchingGroup(c67200287.rfilter,tp,LOCATION_ONFIELD,0,nil,tp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local ct=-ft+1
-	if ct>1 then return false end
-	if ct>0 and not Duel.IsExistingMatchingCard(c67200287.spfilter1,tp,LOCATION_SZONE+LOCATION_FZONE,0,ct,nil) then return false end
-	return Duel.IsExistingMatchingCard(c67200287.spfilter1,tp,LOCATION_ONFIELD,0,1,nil) and ((c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)>-1) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0))
-end
-function c67200287.spop(e,tp,eg,ep,ev,re,r,rp,c)
---
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local ct=-ft+1
-	if ct<0 then ct=0 end
-	local g=Group.CreateGroup()
-	if ct>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local sg=Duel.SelectMatchingCard(tp,c67200287.spfilter1,tp,LOCATION_MZONE,0,ct,ct,nil)
-		g:Merge(sg)
+	if ft>0 then 
+		return Duel.IsExistingMatchingCard(c67200287.rfilter,tp,LOCATION_ONFIELD,0,1,nil,tp) 
+	else
+		return rg:GetCount()>1 and rg:IsExists(c67200287.mfilter,1,nil,tp)
 	end
-	if ct<1 then
+end
+
+function c67200287.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	local rg=Duel.GetMatchingGroup(c67200287.rfilter,tp,LOCATION_ONFIELD,0,nil,tp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local g=nil
+	if ft>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local sg=Duel.SelectMatchingCard(tp,c67200287.spfilter1,tp,LOCATION_ONFIELD,0,1-ct,1-ct,g:GetFirst())
-		g:Merge(sg)
+		g=rg:Select(tp,1,1,nil)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		g=rg:FilterSelect(tp,c67200287.mfilter,1,1,nil,tp)
+		local g2=rg:Select(tp,1,1,g:GetFirst())
+		g:Merge(g2)
 	end
 	Duel.Release(g,REASON_COST)
+end
+--
+function c67200287.spfilter2(c,tp,mc)
+	return Duel.GetLocationCountFromEx(tp,tp,Group.FromCards(c,mc))>0 and c:IsSetCard(0x674) and c:IsReleasable() and c:IsFaceup()
+end
+function c67200287.spcon2(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(c67200287.spfilter2,tp,LOCATION_ONFIELD,0,nil)
+	return g:IsExists(c67200287.spfilter2,1,nil,tp,g)
+end
+function c67200287.spop2(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=Duel.GetMatchingGroup(c67200287.spfilter2,tp,LOCATION_ONFIELD,0,nil,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g1=g:FilterSelect(tp,c67200287.spfilter2,1,1,nil,tp,g)
+
+	Duel.Release(g1,REASON_COST)
 end
 --
 function c67200287.tgfilter(c)

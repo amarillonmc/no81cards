@@ -317,7 +317,7 @@ function cm.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)
 			oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
 		end
 		og:KeepAlive()
-		local e1=Effect.CreateEffect(c)
+		local e1=Effect.CreateEffect(e:GetOwner())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
@@ -376,7 +376,8 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	for tc in aux.Next(sg) do
 		if tc:GetPreviousLocation()&LOCATION_ONFIELD>0 then
-			Duel.MoveToField(tc,tp,tc:GetPreviousControler(),tc:GetPreviousLocation(),tc:GetPreviousPosition(),true)
+			Duel.ReturnToField(tc)
+			--Duel.MoveToField(tc,tp,tc:GetPreviousControler(),tc:GetPreviousLocation(),tc:GetPreviousPosition(),true)
 		elseif tc:IsPreviousLocation(LOCATION_HAND) then
 			Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)
 		end

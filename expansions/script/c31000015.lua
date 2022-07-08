@@ -38,7 +38,7 @@ end
 
 function c31000015.xyzop(e,tp,chk)
 	local filter=function(c)
-		return c:IsCode(31000013)
+		return c:IsCode(31000013) and c:IsFaceup()
 	end
 	if chk==0 then return Duel.IsExistingMatchingCard(filter,tp,LOCATION_ONFIELD,nil,1,nil) end
 end

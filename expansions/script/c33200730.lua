@@ -22,9 +22,8 @@ function c33200730.initial_effect(c)
 	e2:SetDescription(aux.Stringid(33200730,1))
 	e2:SetCategory(CATEGORY_COUNTER)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1,33200731)
 	e2:SetCondition(c33200730.ccon)
 	e2:SetTarget(c33200730.ctg)
@@ -83,7 +82,7 @@ end
 
 --e2
 function c33200730.ccon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+	return e:GetHandler():IsPreviousLocation(LOCATION_MZONE) and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c33200730.filter(c)
 	return c:IsFaceup() and c:IsCanAddCounter(0x32a,2)

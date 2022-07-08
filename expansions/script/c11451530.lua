@@ -70,7 +70,7 @@ function cm.fselect(g,c,e,tp)
 	return true,zone1,zone2
 end
 function cm.tgfilter(c,e)
-	return c:IsCanBeEffectTarget(e) and not c:IsLocation(LOCATION_FZONE)
+	return c:IsCanBeEffectTarget(e) --and not c:IsLocation(LOCATION_FZONE)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
