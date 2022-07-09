@@ -9,13 +9,13 @@ function cm.initial_effect(c)
 	--mat
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_CHAINING)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e1:SetTarget(cm.adtg(EVENT_CHAINING))
 	e1:SetOperation(cm.adop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
+	--[[local e2=e1:Clone()
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(TIMING_BATTLE_END,TIMING_BATTLE_START+TIMING_BATTLE_END)
 	e2:SetTarget(cm.adtg(EVENT_FREE_CHAIN))
@@ -39,7 +39,7 @@ function cm.initial_effect(c)
 	local e7=e1:Clone()
 	e7:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e7:SetTarget(cm.adtg(EVENT_ATTACK_ANNOUNCE))
-	c:RegisterEffect(e7)
+	c:RegisterEffect(e7)--]]
 	--act
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -72,7 +72,7 @@ end
 function cm.filter(c,event)
 	if not (c:IsCanOverlay(tp) and c:GetType()&0x100004==0x100004) then return false end
 	local te=c:CheckActivateEffect(false,true,false)
-	return te and te:GetCode()==event
+	return te --and te:GetCode()==event
 end
 function cm.adtg(event)
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
