@@ -1,7 +1,11 @@
 --守护天使 急诊天马
-local m=40009101
+local m=40009106
 local cm=_G["c"..m]
 cm.named_with_ProtectorSpirit=1
+function cm.ProtectorSpirit(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_ProtectorSpirit
+end
 function cm.initial_effect(c)
 	--summon
 	local e2=Effect.CreateEffect(c)
@@ -36,10 +40,6 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sumtg)
 	e3:SetOperation(cm.sumop)
 	c:RegisterEffect(e3)	  
-end
-function cm.ProtectorSpirit(c)
-	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_ProtectorSpirit
 end
 function cm.sumcon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLP(e:GetHandlerPlayer())<=10000 or Duel.GetLP(1-tp)<=10000

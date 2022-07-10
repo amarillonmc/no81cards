@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SUMMON_COST)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(0,0xff)
+	e1:SetTargetRange(0xff,0xff)
 	e1:SetCondition(cm.costcon)
 	e1:SetCost(cm.costchk)
 	e1:SetOperation(cm.costop)
@@ -38,19 +38,31 @@ function cm.matfilter(c)
 end
 function cm.costcon(e)
 	local tp=e:GetHandlerPlayer()
-	if Duel.GetFieldGroupCount(tp,0,LOCATION_GRAVE)==0 then return false end
-	cm[0]=false
+	if Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)==0 then return false end
 	return true
 end
 function cm.costchk(e,te_or_c,tp)
-	return Duel.IsExistingMatchingCard(Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE,0,1,nil)
+	local p=e:GetHandlerPlayer()
+	if p==tp then
+		return true
+	elseif cm[0] and (cm[0]:IsStatus(STATUS_SPSUMMON_STEP) or cm[0]:IsStatus(STATUS_SUMMONING)) then
+		return true
+	elseif Duel.IsExistingMatchingCard(Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE,0,1,te_or_c) then
+		e:SetLabelObject(te_or_c)
+		cm[0]=nil
+		return true
+	end
+	return false
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local p=e:GetHandlerPlayer()
+	if p==tp then return end
+	local tc=e:GetLabelObject()
 	if cm[0] then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.SendtoDeck(g,nil,2,REASON_COST)
-	cm[0]=true
+	local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE,0,1,1,tc)
+	Duel.SendtoDeck(sg,nil,2,REASON_COST)
+	cm[0]=tc
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp

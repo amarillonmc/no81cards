@@ -59,19 +59,19 @@ function cm.costchk(e,te_or_c,tp)
 	return Duel.IsExistingMatchingCard(Card.IsAbleToDeckOrExtraAsCost,tp,0,LOCATION_GRAVE,1,nil)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	if cm[0] then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckOrExtraAsCost,tp,0,LOCATION_GRAVE,1,1,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
+	cm[0]=true
 end
 function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(1)~=0 and ep==tp
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
-	if cm[0] then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_GRAVE,1,1,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-	cm[0]=true
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
