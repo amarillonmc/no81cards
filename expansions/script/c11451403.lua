@@ -146,7 +146,7 @@ function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
-	local lg=eg
+	local lg=eg:Clone()
 	if g==nil or #g==0 then
 		lg:KeepAlive()
 		e:SetLabelObject(lg)

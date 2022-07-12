@@ -338,7 +338,7 @@ end
 function cm.spcostfliter(c)
 	return c:IsSetCard(0x8d) and c:IsAbleToGraveAsCost()
 end
-function cm.spfliter(c)
+function cm.spfilter(c)
 	return c:IsSetCard(0x8d) and c:IsDiscardable() and c:IsType(TYPE_MONSTER) and Duel.GetMatchingGroupCount(cm.spcostfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil)>=c:GetLevel()
 end
 function cm.spcon(e,c)
@@ -352,8 +352,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local tc=g:GetFirst()
 	local lv=tc:GetLevel()
 	Duel.SendtoGrave(g,REASON_DISCARD+REASON_COST)
-	local g2=Duel.SelectMatchingCard(tp,cm.spcostfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,lv,lv,nil)
-	Duel.SendtoGrave(g2,REASON_COST)
+	e:GetHandler():RegisterFlagEffect(m+100,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,lv)
 end
 function cm.serstfilter(c)
 	return c:IsSetCard(0x8d) and c:IsType(TYPE_SPELL+TYPE_TRAP)
@@ -362,19 +361,16 @@ function cm.serstfilter2(c)
 	return c:IsSetCard(0x8d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsPosition(POS_FACEUP)
 end
 function cm.serstcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonLocation()==LOCATION_EXTRA and Duel.GetMatchingGroupCount(cm.serstfilter2,tp,LOCATION_ONFIELD,0,nil)==0
+	return e:GetHandler():GetSummonLocation()==LOCATION_EXTRA and e:GetHandler():GetFlagEffect(m+100)>0
 end
 function cm.sersttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.serstfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return true end
 end
 function cm.serstop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(90700010,1))
-	local g=Duel.SelectMatchingCard(tp,cm.serstfilter,tp,LOCATION_DECK,0,1,2,nil)
-	local tc=g:GetFirst()
-	while tc do
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		tc=g:GetNext()
-	end
+	local lv=e:GetHandler():GetFlagEffectLabel(m+100)
+	local g2=Duel.SelectMatchingCard(tp,cm.spcostfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,lv,lv,nil)
+	Duel.Overlay(e:GetHandler(),g2)
 end
 function cm.sermfilter1(c)
 	return c:IsPosition(POS_FACEUP) and c:IsSetCard(0x8d) and c:IsAbleToGraveAsCost()

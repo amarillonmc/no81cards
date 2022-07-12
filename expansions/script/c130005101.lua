@@ -8,12 +8,18 @@ rscf.DefineSet(rsdc,"DragonCaller")
 function rsdc.SynchroFun(c,code,att,cate,cost,tg,op,limit)
 	c:EnableReviveLimit()
 	aux.AddSynchroProcedure(c,rsdc.IsSet,aux.FilterBoolFunction(Card.IsAttribute,att),1)
-	local e1=rsef.QO(c,nil,{m,2},nil,"sp",nil,LOCATION_EXTRA,nil,rscost.cost({cm.resfilter,cm.resgcheck},"res",LOCATION_HAND+LOCATION_MZONE,0,2,2),rsop.target3(cm.checkfun,rscf.spfilter(),"sp"),cm.synop)
+	local e1=rsef.QO(c,nil,{m,2},nil,"sp",nil,LOCATION_EXTRA,nil,rscost.cost({cm.resfilter,cm.resgcheck},"res",LOCATION_HAND+LOCATION_MZONE,0,2,2),rsop.target3(cm.checkfun,cm.spfilter,"sp"),cm.synop)
 	e1:SetLabel(att)
-	local e2=rsef.QO(c,nil,{m,2},{1,code},"sp",nil,LOCATION_GRAVE,nil,rscost.cost(cm.resfilter2,"res",LOCATION_HAND+LOCATION_MZONE),rsop.target(rscf.spfilter2(),"sp"),cm.synop)
+	local e2=rsef.QO(c,nil,{m,2},{1,code},"sp",nil,LOCATION_GRAVE,nil,rscost.cost(cm.resfilter2,"res",LOCATION_HAND+LOCATION_MZONE),rsop.target(cm.spfilter2,"sp"),cm.synop2)
 	e2:SetLabel(att)
 	local e3=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{code,0},{1,code+100},cate,"de",nil,cost,cm.synsptg(tg,limit),op)
 	return e1,e2,e3
+end
+function cm.spfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false)
+end
+function cm.spfilter2(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.checkfun(e,tp)
 	return not e:GetHandler():IsStatus(STATUS_CHAINING)
@@ -25,6 +31,10 @@ function cm.resgcheck(g,e,tp)
 	return Duel.GetLocationCountFromEx(tp,tp,g,e:GetHandler())>0
 end
 function cm.synop(e,tp)
+	local c=rscf.GetSelf(e)
+	if c then rssf.SpecialSummon(c,SUMMON_TYPE_SYNCHRO) c:CompleteProcedure() end
+end
+function cm.synop2(e,tp)
 	local c=rscf.GetSelf(e)
 	if c then rssf.SpecialSummon(c) end
 end
