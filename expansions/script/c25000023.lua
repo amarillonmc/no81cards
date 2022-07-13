@@ -68,6 +68,7 @@ function c25000023.rmcon(e,tp,eg,ep,ev,re,r,rp)
 		return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 	else
 		return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+	end
 end
 function c25000023.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) end 
@@ -77,19 +78,19 @@ function c25000023.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil) 
 	if g:GetCount()>0 then 
-	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	local tc=g:GetFirst()
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+		local tc=g:GetFirst()
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_DISABLE)
-	e1:SetReset(RESET_EVENT+0x17a0000)
-	tc:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_DISABLE_EFFECT)
-	e2:SetReset(RESET_EVENT+0x17a0000)
-	tc:RegisterEffect(e2)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+0x17a0000)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetReset(RESET_EVENT+0x17a0000)
+		tc:RegisterEffect(e2)
 	end
 end
 

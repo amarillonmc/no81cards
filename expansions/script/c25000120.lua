@@ -2,6 +2,7 @@ local m=25000120
 local cm=_G["c"..m]
 cm.name="神之终焉"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,10000000,10000010,10000020)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)

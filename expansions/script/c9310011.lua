@@ -38,11 +38,26 @@ function c9310011.initial_effect(c)
 	e5:SetCode(EVENT_PHASE+PHASE_END)
 	e5:SetRange(LOCATION_GRAVE)
 	e5:SetCountLimit(1,9311011)
+	e5:SetCondition(c9310011.qcon)
 	e5:SetCost(c9310011.thcost)
 	e5:SetTarget(c9310011.target)
 	e5:SetOperation(c9310011.operation)
 	c:RegisterEffect(e5)
+	local e7=e5:Clone()
+	e7:SetType(EFFECT_TYPE_QUICK_O)
+	e7:SetCode(EVENT_FREE_CHAIN)
+	e7:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e7:SetCondition(c9310011.qcon1)
+	c:RegisterEffect(e7)
 end
+--quick
+function c9310011.qcon(e,tp)
+	return not Duel.IsPlayerAffectedByEffect(tp,30013020)
+end
+function c9310011.qcon1(e,tp)
+	return Duel.IsPlayerAffectedByEffect(tp,30013020)
+end
+--
 function c9310011.rscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
@@ -156,8 +171,3 @@ function c9310011.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
-
-
-
-
