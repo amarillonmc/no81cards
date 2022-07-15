@@ -14,7 +14,7 @@ function c72410280.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(72410280,1))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetCountLimit(1,72410281)
 	e2:SetCondition(c72410280.retcon)
@@ -56,7 +56,7 @@ end
 function c72410280.retcon(e,tp,eg,ep,ev,re,r,rp)
 	if not re then return false end
 	local rc=re:GetHandler()
-	return rc:IsType(TYPE_SPELL) and rc:IsType(TYPE_CONTINUOUS)
+	return (rc:IsType(TYPE_SPELL) and rc:IsType(TYPE_CONTINUOUS)) or rc==e:GetHandler()
 end
 function c72410280.filter(c)
 	local thchk=Duel.IsEnvironment(56433456)

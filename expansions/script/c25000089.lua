@@ -25,7 +25,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	fdzone=fdzone|exzone
 	local g=Duel.GetMatchingGroup(function(c)return c:GetSequence()>4 end,tp,0,LOCATION_MZONE,nil)
-	if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if #g>0 and (Duel.GetMatchingGroupCount(function(c)return c:GetSequence()<5 end,tp,LOCATION_MZONE,LOCATION_MZONE,nil)==0 or Duel.SelectYesNo(tp,aux.Stringid(m,1))) then
 		local b1,b2=0,0
 		for tc in aux.Next(g) do
 			if tc:GetSequence()==5 then b2=1 end

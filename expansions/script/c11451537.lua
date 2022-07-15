@@ -120,7 +120,9 @@ function cm.otcon(e,c,minc)
 	if ct==0 then return false end
 	local tp=c:GetControler()
 	local mi,ma=c:GetTributeRequirement()
-	return minc<=ma and ((math.max(mi,minc)<=ct and Duel.GetMZoneCount(tp)>0) or Duel.CheckTribute(c,math.max(1,math.max(mi,minc)-ct)))
+	Debug.Message(mi)
+	Debug.Message(ma)
+	return ma>0 and minc<=ma and ((math.max(mi,minc)<=ct and Duel.GetMZoneCount(tp)>0) or Duel.CheckTribute(c,math.max(1,math.max(mi,minc)-ct)))
 end
 function cm.fselect(g)
 	return Duel.GetMZoneCount(tp,g)>0
