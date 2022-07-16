@@ -43,10 +43,13 @@ end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tc=re:GetHandler():GetPreviousEquipTarget()
 	if chkc then return false end
-	if chk==0 then return tc and Duel.IsPlayerCanDraw(tp,1) and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and tc:IsCanBeEffectTarget(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	if chk==0 then return tc and Duel.IsPlayerCanDraw(tp,1) and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and tc:IsCanBeEffectTarget(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsPlayerCanSSet(tp) end
 	Duel.SetTargetCard(tc)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_HAND)
+end
+function cm.nffilter(c)
+	return not c:IsForbidden()
 end
 function cm.eqlimit(e,c)
 	return c==e:GetLabelObject()
@@ -54,11 +57,12 @@ end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
-	if Duel.Draw(tp,1,REASON_EFFECT)>0 and tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+	if Duel.Draw(tp,1,REASON_EFFECT)>0 and tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsPlayerCanSSet(tp) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local ec=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
+		local ec=Duel.SelectMatchingCard(tp,cm.nffilter,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
 		if ec and ec:IsPublic() then Duel.MoveToField(ec,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
 		if ec and Duel.Equip(tp,ec,tc,false) then
+			Duel.RaiseEvent(ec,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_EQUIP_LIMIT)

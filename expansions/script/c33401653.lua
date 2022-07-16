@@ -93,7 +93,7 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	if #g2>0 then
 	Duel.HintSelection(g2)
-	 if Duel.Destroy(g2,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(tp,aux.disfilter1,tp,LOCATION_ONFIELD,0,1,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then 
+	 if Duel.Destroy(g2,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(aux.disfilter1,tp,LOCATION_ONFIELD,0,1,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then 
 		local tg=Duel.SelectMatchingCard(tp,aux.disfilter1,tp,LOCATION_ONFIELD,0,1,1,nil)
 		local tc=tg:GetFirst()
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)

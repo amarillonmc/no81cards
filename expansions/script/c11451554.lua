@@ -32,6 +32,7 @@ function cm.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function cm.equipfd(c,tp,tc)
+	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
 	if not Duel.Equip(tp,tc,c,false) then return false end
 	--Add Equip limit
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
@@ -47,13 +48,18 @@ end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local phase=Duel.GetCurrentPhase()
 	local c=e:GetHandler()
-	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or c:IsStatus(STATUS_BATTLE_DESTROYED) then return end
+	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or c:IsStatus(STATUS_BATTLE_DESTROYED) or not Duel.IsPlayerCanSSet(tp) then return end
 	if not c:GetEquipGroup():IsExists(cm.eqfilter,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetMatchingGroupCount(nil,tp,LOCATION_DECK,0,nil)>0 then
 		Duel.Hint(HINT_CARD,0,m)
 		local tc=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil):GetMaxGroup(Card.GetSequence):GetFirst()
 		Duel.DisableShuffleCheck()
-		if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
-		if cm.equipfd(c,tp,tc) then Duel.Readjust() end
+		if tc:IsForbidden() then
+			Duel.DiscardDeck(tp,1,REASON_RULE)
+			Duel.Readjust()
+		elseif cm.equipfd(c,tp,tc) then
+			Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+			Duel.Readjust()
+		end
 	end
 end
 function cm.filter(c,type1)
