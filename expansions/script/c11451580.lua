@@ -41,7 +41,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local op=0
 	local rc=re:GetHandler()
-	local b1=rc:IsCanOverlay() and rc:IsRelateToEffect(re)
+	local b1=e:GetHandler():IsType(TYPE_XYZ) and rc:IsCanOverlay() and rc:IsRelateToEffect(re)
 	local b2=e:GetHandler():GetOverlayGroup():IsExists(Card.IsAbleToDeck,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,4))
 	if b1 and b2 then
