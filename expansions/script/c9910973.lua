@@ -70,17 +70,20 @@ function c9910973.activate(e,tp,eg,ep,ev,re,r,rp)
 	local b2=#g2>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	if not (b1 or b2) then return end
 	local lab=0
+	local loc=LOCATION_HAND+LOCATION_DECK
 	if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910973,0),aux.Stringid(9910973,1))==0) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local tc=g1:Select(tp,1,1,nil):GetFirst()
+		if tc then loc=loc-tc:GetLocation() end
 		if tc then
 			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		end
 		lab=1
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g2:Select(tp,1,1,nil)
-		if sg:GetCount()>0 and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		local tc=g2:Select(tp,1,1,nil):GetFirst()
+		if tc then loc=loc-tc:GetLocation() end
+		if tc and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)~=0 then
 			Duel.RaiseEvent(e:GetHandler(),EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
 			g=Duel.GetMatchingGroup(c9910973.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 			if Duel.IsExistingMatchingCard(c9910973.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,g) then
@@ -100,7 +103,7 @@ function c9910973.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
-	e1:SetLabel(lab)
+	e1:SetLabel(lab,loc)
 	e1:SetCountLimit(1)
 	e1:SetCondition(c9910973.regcon)
 	e1:SetOperation(c9910973.regop)
@@ -108,21 +111,23 @@ function c9910973.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910973.regcon(e,tp,eg,ep,ev,re,r,rp)
+	local lab,loc=e:GetLabel()
 	local g=Duel.GetMatchingGroup(c9910973.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
-	local b1=e:GetLabel()==2 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(c9910973.tffilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,tp)
-	local b2=e:GetLabel()==1
+	local b1=lab==2 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingMatchingCard(c9910973.tffilter,tp,loc,0,1,nil,tp)
+	local b2=lab==1
 		and Duel.IsPlayerCanSpecialSummonCount(tp,2) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9910973.spfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,g)
+		and Duel.IsExistingMatchingCard(c9910973.spfilter1,tp,loc,0,1,nil,e,tp,g)
 	return b1 or b2
 end
 function c9910973.regop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(9910973,2)) then return end
 	Duel.Hint(HINT_CARD,0,9910973)
+	local lab,loc=e:GetLabel()
 	local g=Duel.GetMatchingGroup(c9910973.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
-	local g1=Duel.GetMatchingGroup(c9910973.tffilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil,tp)
-	local g2=Duel.GetMatchingGroup(c9910973.spfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,nil,e,tp,g)
-	if e:GetLabel()==2 then
+	local g1=Duel.GetMatchingGroup(c9910973.tffilter,tp,loc,0,nil,tp)
+	local g2=Duel.GetMatchingGroup(c9910973.spfilter1,tp,loc,0,nil,e,tp,g)
+	if lab==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local tc=g1:Select(tp,1,1,nil):GetFirst()
 		if tc then

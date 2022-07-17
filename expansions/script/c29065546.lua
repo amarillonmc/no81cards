@@ -68,7 +68,7 @@ function c29065546.xspop(e,tp,eg,ep,ev,re,r,rp)
 				num[i]=i
 				i=i+1
 			end
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(29065547,1))
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(29065546,1))
 			count=Duel.AnnounceNumber(tp,table.unpack(num))
 		end
 		repeat

@@ -30,11 +30,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.mzfilter(c)
-	return c:IsAbleToGraveAsCost() and (c:GetLevel()>=1) and c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_LIGHT)
+	return c:IsAbleToGraveAsCost() and (c:GetLevel()>=1) and c:IsRace(RACE_PSYCHO)
 end
 function cm.fselect(g,lv,c)
 	local tp=c:GetControler()
-	return g:GetSum(Card.GetLevel)==lv and g:GetCount()>=2 and Duel.GetLocationCountFromEx(tp,tp,g,c)>0
+	return g:GetSum(Card.GetLevel)==lv and g:GetCount()>=2 and g:IsExists(Card.IsType,1,nil,TYPE_SYNCHRO) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0
 end
 function cm.sprcon(e,c)
 	if c==nil then return true end

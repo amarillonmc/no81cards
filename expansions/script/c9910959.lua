@@ -8,7 +8,7 @@ function c9910959.initial_effect(c)
 	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,9910959+EFFECT_COUNT_CODE_OATH)
@@ -34,9 +34,8 @@ end
 function c9910959.chainfilter3(re,tp,cid)
 	return not re:GetHandler():IsType(TYPE_TRAP)
 end
-function c9910959.rmfilter(c,tp)
-	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5954)
-		and c:IsAbleToRemove(tp,POS_FACEDOWN)
+function c9910959.tdfilter(c)
+	return c:IsFacedown() and c:IsSetCard(0x5954) and c:IsReason(REASON_EFFECT) and c:IsAbleToDeck()
 end
 function c9910959.thfilter(c,tp)
 	local b1=Duel.GetCustomActivityCount(9910959,1-tp,ACTIVITY_CHAIN)~=0 and c:IsType(TYPE_MONSTER)
@@ -45,8 +44,8 @@ function c9910959.thfilter(c,tp)
 	return c:IsSetCard(0x5954) and c:IsAbleToHand() and (b1 or b2 or b3)
 end
 function c9910959.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(c9910959.rmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,tp)
-		and Duel.IsPlayerCanDraw(tp,2)
+	local b1=Duel.IsExistingMatchingCard(c9910959.tdfilter,tp,LOCATION_REMOVED,0,5,nil)
+		and Duel.IsPlayerCanDraw(tp,1)
 	local b2=Duel.IsExistingMatchingCard(c9910959.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
 	if chk==0 then return b1 or b2 end
 end
@@ -56,24 +55,29 @@ function c9910959.gcheck(g)
 		and g:FilterCount(Card.IsType,nil,TYPE_TRAP)<=1
 end
 function c9910959.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(c9910959.rmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,tp)
+	local g1=Duel.GetMatchingGroup(c9910959.tdfilter,tp,LOCATION_REMOVED,0,nil)
 	local g2=Duel.GetMatchingGroup(c9910959.thfilter,tp,LOCATION_DECK,0,nil,tp)
-	local b1=#g1>0 and Duel.IsPlayerCanDraw(tp,2)
+	local b1=#g1>4 and Duel.IsPlayerCanDraw(tp,1)
 	local b2=#g2>0
 	if not (b1 or b2) then return end
 	local lab=0
 	if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910959,0),aux.Stringid(9910959,1))==0) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local rg=g1:Select(tp,1,1,nil)
-		if rg:GetFirst():IsLocation(LOCATION_HAND) then
-			Duel.ConfirmCards(1-tp,rg)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local sg=g1:Select(tp,5,5,nil)
+		if #sg==5 and Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
+			local og=Duel.GetOperatedGroup()
+			Duel.ConfirmCards(1-tp,og)
+			if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then
+				Duel.ShuffleDeck(tp)
+				Duel.BreakEffect()
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
 		end
-		if Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)~=0 then Duel.Draw(tp,2,REASON_EFFECT) end
 		lab=1
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g2:SelectSubGroup(tp,c9910959.gcheck,false,1,3)
-		if sg then
+		if #sg>0 then
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg)
 		end
@@ -90,27 +94,32 @@ function c9910959.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910959.regcon(e,tp,eg,ep,ev,re,r,rp)
-	local b1=Duel.IsExistingMatchingCard(c9910959.rmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,tp)
-		and Duel.IsPlayerCanDraw(tp,2) and e:GetLabel()==2
+	local b1=Duel.IsExistingMatchingCard(c9910959.tdfilter,tp,LOCATION_REMOVED,0,5,nil)
+		and Duel.IsPlayerCanDraw(tp,1) and e:GetLabel()==2
 	local b2=Duel.IsExistingMatchingCard(c9910959.thfilter,tp,LOCATION_DECK,0,1,nil,tp) and e:GetLabel()==1
 	return b1 or b2
 end
 function c9910959.regop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(9910959,2)) then return end
 	Duel.Hint(HINT_CARD,0,9910959)
-	local g1=Duel.GetMatchingGroup(c9910959.rmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,tp)
+	local g1=Duel.GetMatchingGroup(c9910959.tdfilter,tp,LOCATION_REMOVED,0,nil)
 	local g2=Duel.GetMatchingGroup(c9910959.thfilter,tp,LOCATION_DECK,0,nil,tp)
 	if e:GetLabel()==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local rg=g1:Select(tp,1,1,nil)
-		if rg:GetFirst():IsLocation(LOCATION_HAND) then
-			Duel.ConfirmCards(1-tp,rg)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local sg=g1:Select(tp,5,5,nil)
+		if #sg==5 and Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
+			local og=Duel.GetOperatedGroup()
+			Duel.ConfirmCards(1-tp,og)
+			if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then
+				Duel.ShuffleDeck(tp)
+				Duel.BreakEffect()
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
 		end
-		if Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)~=0 then Duel.Draw(tp,2,REASON_EFFECT) end
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g2:SelectSubGroup(tp,c9910959.gcheck,false,1,3)
-		if sg then
+		if #sg>0 then
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg)
 		end

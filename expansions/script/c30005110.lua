@@ -26,9 +26,6 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
-	--Effect 3 
-	--Effect 4 
-	--Effect 5 
 end
 --Effect 1
 function cm.filter(c)
@@ -104,7 +101,5 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
 	end
 end
---Effect 3 
---Effect 4 
---Effect 5   
+
 

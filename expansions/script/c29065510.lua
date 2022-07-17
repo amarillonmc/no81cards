@@ -11,6 +11,16 @@ function c29065510.initial_effect(c)
 	e1:SetTarget(c29065510.target)
 	e1:SetOperation(c29065510.activate)
 	c:RegisterEffect(e1)
+	--search
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(29065510,0))
+	e6:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e6:SetType(EFFECT_TYPE_IGNITION)
+	e6:SetRange(LOCATION_FZONE)
+	e6:SetCountLimit(1)
+	e6:SetTarget(c29065510.thtg)
+	e6:SetOperation(c29065510.thop)
+	c:RegisterEffect(e6)
 	--Add Counter
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
@@ -33,6 +43,21 @@ function c29065510.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
 	c:RegisterEffect(e4)
+end
+function c29065510.thfilter(c)
+	return aux.IsCodeListed(c,29065500) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+end
+function c29065510.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065510.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c29065510.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c29065510.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end
 function c29065510.cfilter(c)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER)

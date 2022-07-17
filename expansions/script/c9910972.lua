@@ -7,8 +7,8 @@ function c9910972.initial_effect(c)
 	e0:SetOperation(c9910972.flag)
 	c:RegisterEffect(e0)
 	--link summon
-	aux.AddLinkProcedure(c,c9910972.matfilter,1,1)
 	c:EnableReviveLimit()
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x5954),2,2)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_ACTION)
@@ -18,15 +18,20 @@ function c9910972.initial_effect(c)
 	e1:SetTarget(c9910972.thtg)
 	e1:SetOperation(c9910972.thop)
 	c:RegisterEffect(e1)
+	--indes
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e2:SetValue(1)
+	c:RegisterEffect(e2)
 end
 function c9910972.flag(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsReason(REASON_EFFECT) then
 		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
 	end
-end
-function c9910972.matfilter(c)
-	return c:IsLinkSetCard(0x5954) and not c:IsLinkType(TYPE_LINK)
 end
 function c9910972.rmfilter(c,tp)
 	return c:IsSetCard(0x5954) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove(tp,POS_FACEDOWN)
@@ -37,22 +42,19 @@ end
 function c9910972.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c9910972.rmfilter,tp,LOCATION_DECK,0,nil,tp)
 	local ct=g:GetClassCount(Card.GetCode)
-	if chk==0 then return #g>0 and Duel.IsExistingMatchingCard(c9910972.thfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,g:GetClassCount(Card.GetCode)) end
+	local gct=Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,LOCATION_GRAVE)
+	if ct>gct then ct=gct end
+	if chk==0 then return #g>0
+		and Duel.IsExistingMatchingCard(c9910972.thfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,ct) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_DECK)
 end
 function c9910972.thop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c9910972.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 	local g=Duel.GetMatchingGroup(c9910972.rmfilter,tp,LOCATION_DECK,0,nil,tp)
 	if #g==0 then return end
 	local ct=g:GetClassCount(Card.GetCode)
+	local gct=Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,LOCATION_GRAVE)
+	if ct>gct then ct=gct end
 	local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910972.thfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,nil,ct)
 	if #tg==0 then return end
 	local lvt={}
@@ -85,7 +87,4 @@ function c9910972.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.SetLP(tp,Duel.GetLP(tp)-rct*500)
 	end
-end
-function c9910972.splimit(e,c)
-	return not c:IsSetCard(0x5954)
 end

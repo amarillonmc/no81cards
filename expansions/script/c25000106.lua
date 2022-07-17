@@ -18,16 +18,17 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_FZONE)
 	e3:SetProperty(EFFECT_FLAG_BOTH_SIDE)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e3:SetTarget(cm.sdtg)
 	e3:SetOperation(cm.sdop)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	e4:SetRange(LOCATION_FZONE)
-	e4:SetCountLimit(1)
+	e4:SetProperty(EFFECT_FLAG_BOTH_SIDE)
+	e4:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetCondition(cm.thcon)
 	e4:SetTarget(cm.thtg)
@@ -78,7 +79,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 		if ct>0 then
 			Duel.SortDecktop(i,i,ct)
 			for x=1,ct do
-				local mg=Duel.GetDecktopGroup(tp,1)
+				local mg=Duel.GetDecktopGroup(i,1)
 				Duel.MoveSequence(mg:GetFirst(),1)
 			end
 		end
@@ -86,6 +87,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.sdop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=math.min(6,Duel.GetFieldGroupCount(tp,LOCATION_DECK,0))
@@ -106,7 +108,7 @@ function cm.sdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_HAND)
+	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_HAND) and Duel.GetTurnPlayer()==tp
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
@@ -114,6 +116,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=g:GetMinGroup(Card.GetSequence):GetFirst()
 	if chk==0 then return tc:IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tc,1,0,0)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)

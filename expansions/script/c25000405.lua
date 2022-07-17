@@ -6,9 +6,8 @@ function cm.initial_effect(c)
 	aux.AddXyzProcedureLevelFree(c,function(c)return c:GetLevel()>0 and c:IsRace(RACE_PSYCHO)end,function(g)return g:GetClassCount(Card.GetLevel)==1 end,3,3)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_EXTRA_ATTACK)
-	e1:SetCondition(function(e)return e:GetHandler():GetFlagEffect(m)==0 end)
-	e1:SetValue(114514)
+	e1:SetCode(EFFECT_ATTACK_ALL)
+	e1:SetValue(1)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -22,11 +21,6 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.distg)
 	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_BATTLE_START)
-	e3:SetOperation(cm.op)
-	c:RegisterEffect(e3)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)&LOCATION_ONFIELD~=0 and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
@@ -57,8 +51,4 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		if tgp==p and Duel.NegateActivation(i) and tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) then dg:AddCard(tc) end
 	end
 	Duel.Destroy(dg,REASON_EFFECT)
-end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetAttackTarget()~=nil then return end
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end

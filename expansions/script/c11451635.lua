@@ -138,7 +138,7 @@ function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.actfilter,1,nil) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
 end
 function cm.desfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToGrave() or c:IsOnField())
+	return (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsOnField()) or (c:IsSetCard(0x1979) and c:IsLocation(LOCATION_DECK) and c:IsAbleToGrave())
 end
 function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_DECK+LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end

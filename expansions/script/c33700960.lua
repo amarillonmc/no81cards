@@ -1,5 +1,5 @@
 --Maize ～自我重生的树精～
-local m=33700949
+local m=33700960
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon

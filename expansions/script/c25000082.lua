@@ -7,13 +7,9 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_CHAINING)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(
-		function(e,tp,eg,ep,ev,re,r,rp)
-			return rp~=tp
-		end
-	)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCost(
 		function(e,tp,eg,ep,ev,re,r,rp,chk)
 			if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -53,18 +49,18 @@ end
 function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local ph=Duel.GetCurrentPhase()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetValue(
-			function(e,re)
-				return re==e:GetLabelObject()
-			end
-		)
-		e1:SetLabelObject(re)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+		e1:SetValue(cm.efilter)
+		e1:SetOwnerPlayer(tp)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+ph)
 		c:RegisterEffect(e1)
 	end
+end
+function cm.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local bc=e:GetHandler():GetBattleTarget()
@@ -102,10 +98,9 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		local ct=Duel.GetCurrentChain()
 		if ct<2 then return end
 		local te,tep=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if tep==1-tp and te:GetHandler():IsRelateToEffect(te) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+		if tep==1-tp and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_CARD,0,m)
-			Duel.Destroy(te:GetHandler(),REASON_EFFECT)
+			Duel.NegateActivation(ct-1)
 		end
 	end
 end

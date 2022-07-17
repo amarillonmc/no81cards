@@ -63,17 +63,32 @@ end
 function cm.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsLocation(LOCATION_ONFIELD) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
+	local ct=Duel.GetCurrentChain()
+	if ct>1 then e:SetLabel(1) else e:SetLabel(0) end
 end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.Destroy(e:GetHandler(),REASON_EFFECT)~=0 then
-		local ct=Duel.GetCurrentChain()
-		if ct<2 then return end
-		local te,tep=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if tep==1-tp and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_CARD,0,m)
-			if Duel.NegateActivation(ct-1) and te:GetHandler():IsRelateToEffect(te) then Duel.Destroy(te:GetHandler(),REASON_EFFECT) end
+	if c:IsRelateToEffect(e) and Duel.Destroy(e:GetHandler(),REASON_EFFECT)~=0 and e:GetLabel()==1 then
+		local res=false
+		local ct=Duel.GetCurrentChain()-1
+		for i=1,ct do
+			local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+			if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(i) then
+				res=true
+			end
 		end
+		if not res or not Duel.SelectYesNo(tp,aux.Stringid(m,2)) then return end
+		local dg=Group.CreateGroup()
+		for i=1,ct do
+			local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+			if tgp~=tp and Duel.NegateActivation(i) then
+				local tc=te:GetHandler()
+				if tc:IsDestructable() and tc:IsRelateToEffect(te) then
+					tc:CancelToGrave()
+					dg:AddCard(tc)
+				end
+			end
+		end
+		Duel.Destroy(dg,REASON_EFFECT)
 	end
 end

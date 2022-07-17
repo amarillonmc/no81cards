@@ -18,7 +18,7 @@ function cm.posfilter(c)
 	return c:IsCanChangePosition() and not c:IsPosition(POS_FACEUP_DEFENSE)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x5f1d) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return cm.Machining(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.spop(e,tp)
 	local tc=rscf.GetTargetCard()

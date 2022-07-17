@@ -20,7 +20,7 @@ function c29002021.initial_effect(c)
 	--change 
 	local e2=Effect.CreateEffect(c) 
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
-	e2:SetCode(EVENT_CHAINING) 
+	e2:SetCode(EVENT_CHAIN_SOLVING) 
 	e2:SetRange(LOCATION_MZONE) 
 	e2:SetCondition(c29002021.cgcon) 
 	e2:SetOperation(c29002021.cgop) 
@@ -29,11 +29,11 @@ end
 function c29002021.ovfilter(c)
 local tp=c:GetControler()
 	local x=Duel.GetActivityCount(tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SPSUMMON)
-	return c:IsFaceup() and x>=12 and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and not c:IsCode(29002019)
+	return c:IsFaceup() and x>=12 and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and not c:IsCode(29002021)
 end
 function c29002021.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,19002021)==0 end
-	Duel.RegisterFlagEffect(tp,19002021,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	if chk==0 then return Duel.GetFlagEffect(tp,29002021)==0 end
+	Duel.RegisterFlagEffect(tp,29002021,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c29002021.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

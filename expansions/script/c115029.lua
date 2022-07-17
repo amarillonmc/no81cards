@@ -1,84 +1,93 @@
---方舟骑士-苏苏洛
+--方舟骑士-末药
+c115029.named_with_Arknight=1
 function c115029.initial_effect(c)
 	--pendulum summon
-	aux.EnablePendulumAttribute(c)
+	aux.EnablePendulumAttribute(c) 
 	--to hand 
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_DESTROY)
-	e1:SetRange(LOCATION_PZONE)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetDescription(aux.Stringid(115029,0))
+	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,115029)
-	e1:SetCondition(c115029.thcon)
 	e1:SetTarget(c115029.thtg)
 	e1:SetOperation(c115029.thop)
 	c:RegisterEffect(e1)
-	--Recover
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCategory(CATEGORY_RECOVER)
-	e4:SetCode(EVENT_DESTROYED)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetTarget(c115029.rectg)
-	e4:SetOperation(c115029.recop)
-	c:RegisterEffect(e4)
-	--SpecialSummon
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e4:SetCode(EVENT_RECOVER)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetRange(LOCATION_HAND)
-	e4:SetCountLimit(1,115030)
-	e4:SetTarget(c115029.sptg1)
-	e4:SetOperation(c115029.spop1)
-	c:RegisterEffect(e4)
+	--to hand
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_PZONE)
+	e2:SetCountLimit(1,315029)
+	e2:SetCondition(c115029.spcon)
+	e2:SetTarget(c115029.sptg)
+	e2:SetOperation(c115029.spop)
+	c:RegisterEffect(e2)
 end
-function c115029.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c115029.sslfilter,tp,LOCATION_PZONE,0,1,e:GetHandler())
-end
-function c115029.thfil(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
-end
-function c115029.sslfilter(c)
-	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
-end
+function c115029.thfil(c) 
+	return c:IsAbleToHand() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsFaceup() and not c:IsCode(115029)  
+end 
 function c115029.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c115029.thfil,tp,LOCATION_DECK,0,1,nil) end
-	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,0,nil)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,tp,LOCATION_PZONE)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,0)
-end
+	if chk==0 then return Duel.IsExistingMatchingCard(c115029.thfil,tp,LOCATION_EXTRA,0,1,nil) end 
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_EXTRA)
+end 
 function c115029.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local g1=Duel.GetMatchingGroup(c115029.thfil,tp,LOCATION_DECK,0,1,nil)
-	if Duel.Destroy(g,REASON_EFFECT) and g1:GetCount()>0 then
-	local tg=g1:Select(tp,1,1,nil)
-	Duel.SendtoHand(tg,tp,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,tg)
-	if Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)==0 then
-	Duel.BreakEffect()
-	Duel.Draw(tp,1,REASON_EFFECT) 
-	end
-	end
-end
-function c115029.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReason(REASON_EFFECT) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(800)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,800)
-end
-function c115029.recop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Recover(p,d,REASON_EFFECT)
-end
-function c115029.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and ep==tp end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_HAND)
-end
-function c115029.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	local g=Duel.GetMatchingGroup(c115029.thfil,tp,LOCATION_EXTRA,0,nil) 
+	if g:GetCount()>0 then 
+	local sg=g:Select(tp,1,1,nil) 
+	Duel.SendtoHand(sg,tp,REASON_EFFECT) 
+	Duel.ConfirmCards(1-tp,sg)
+	end 
+end 
+function c115029.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
 end
+function c115029.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local sc=Duel.GetFirstMatchingCard(nil,tp,LOCATION_PZONE,0,e:GetHandler())
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	Duel.SetTargetCard(sc)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sc,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c115029.spop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) 
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCountLimit(1)
+	e1:SetCondition(c115029.srcon)
+	e1:SetOperation(c115029.srop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	end 
+	end
+end
+function c115029.srfil(c,e,tp) 
+	return c:IsType(TYPE_PENDULUM) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and (c:IsAbleToHand() or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) 
+end
+function c115029.srcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c115029.srfil,tp,LOCATION_DECK,0,1,nil,e,tp) 
+end
+function c115029.srop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler() 
+	Duel.Hint(HINT_CARD,0,115029)
+	local tc=Duel.SelectMatchingCard(tp,c115029.srfil,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE) 
+	if tc then
+		if tc:IsAbleToHand() and (not tc:IsCanBeSpecialSummoned(e,0,tp,false,false) or ft<=0 or Duel.SelectOption(tp,1190,1152)==0) then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		else
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		end
+	end
+end 
+
+

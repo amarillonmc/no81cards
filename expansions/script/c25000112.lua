@@ -11,7 +11,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.thfilter(c)
-	return c:IsCode(25000106,25000109,25000110) and c:IsAbleToHand()
+	return c:IsCode(25000109,25000110) and c:IsAbleToHand()
+end
+function cm.fzfilter(c)
+	return c:IsCode(25000106) and c:IsFaceup()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
@@ -23,11 +26,11 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		else og=g end
 	end
 	local b1=#og>0 and og:IsExists(Card.IsAbleToHand,1,nil) and Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_DECK,0,1,nil,TYPE_TRAP)
-	local b2=Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
+	local b2=Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
 	if chk==0 then return b1 or b2 end
 	local op=0
 	if b1 and b2 then
-		if Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_FZONE,LOCATION_FZONE,1,nil) then
+		if Duel.IsExistingMatchingCard(cm.fzfilter,tp,LOCATION_FZONE,LOCATION_FZONE,1,nil) then
 			op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,3))
 		else
 			op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))
@@ -87,7 +90,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if op~=0 then
 		if op==2 then Duel.BreakEffect() end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+		local sg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 		if sg:GetCount()>0 then
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg)

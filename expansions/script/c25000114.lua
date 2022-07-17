@@ -18,8 +18,11 @@ end
 function cm.drfilter(c)
 	return (c:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP) and c:IsAbleToDeck()
 end
+function cm.fzfilter(c)
+	return c:IsCode(25000106) and c:IsFaceup()
+end
 function cm.filter(c,tp)
-	return c:IsCode(25000106,25000109,25000110) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
+	return c:IsCode(25000109,25000110) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsPlayerCanDraw(tp) and Duel.IsExistingMatchingCard(cm.drfilter,tp,LOCATION_GRAVE,0,1,nil)
@@ -33,7 +36,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		ac=Duel.SelectOption(tp,aux.Stringid(m,0))
 	elseif sel==2 then
 		ac=Duel.SelectOption(tp,aux.Stringid(m,1))+1
-	elseif Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_FZONE,LOCATION_FZONE,1,nil) then
+	elseif Duel.IsExistingMatchingCard(cm.fzfilter,tp,LOCATION_FZONE,LOCATION_FZONE,1,nil) then
 		ac=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2))
 	else
 		ac=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))

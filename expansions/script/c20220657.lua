@@ -50,11 +50,11 @@ function s.setfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x20ab) and c:IsType(TYPE_SYNCHRO)
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_END and Duel.GetTurnPlayer(tp)
+	return Duel.GetCurrentPhase()==PHASE_END and Duel.IsTurnPlayer(tp)
 		and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.costfilter(c)
-	return c:IsRace(RACE_WARRIOR) and c:IsAbleToRemoveAsCost() 
+	return c:IsMonster() and c:IsRace(RACE_WARRIOR) and c:IsAbleToRemoveAsCost() and aux.SpElimFilter(c,true)
 end
 function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_GRAVE,0,1,nil) end

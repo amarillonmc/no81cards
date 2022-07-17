@@ -43,8 +43,10 @@ function c9910970.rmfilter(c,tp)
 	return c:IsSetCard(0x5954) and c:IsAbleToRemove(tp,POS_FACEDOWN)
 end
 function c9910970.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local hct=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
+	local dct=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910970.rmfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,tp)
-		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)+2 end
+		and hct>0 and dct>=hct end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
@@ -57,8 +59,8 @@ function c9910970.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=rg:GetFirst()
 	if rc and rc:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(1-tp,rc) end
 	if not rc or Duel.Remove(rc,POS_FACEDOWN,REASON_EFFECT)==0 or not rc:IsLocation(LOCATION_REMOVED) then return end
-	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)+2
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<ct then return end
+	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
+	if ct==0 or Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<ct then return end
 	Duel.BreakEffect()
 	Duel.ConfirmDecktop(tp,ct)
 	local g=Duel.GetDecktopGroup(tp,ct)
@@ -78,17 +80,19 @@ end
 function c9910970.tdfilter(c)
 	return c:IsFacedown() and c:IsSetCard(0x5954) and c:IsReason(REASON_EFFECT) and c:IsAbleToDeckOrExtraAsCost()
 end
-function c9910970.ccfilter(c)
-	return bit.band(c:GetType(),0x7)
+function c9910970.ccfilter(c,type1)
+	return bit.band(c:GetType(),0x7)==type1
 end
 function c9910970.fselect(g)
-	return g:GetClassCount(c9910970.ccfilter)==g:GetCount()
+	return g:FilterCount(c9910970.ccfilter,nil,TYPE_MONSTER)==2
+		and g:FilterCount(c9910970.ccfilter,nil,TYPE_SPELL)==2
+		and g:FilterCount(c9910970.ccfilter,nil,TYPE_TRAP)==2
 end
 function c9910970.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c9910970.tdfilter,tp,LOCATION_REMOVED,0,nil)
-	if chk==0 then return g:CheckSubGroup(c9910970.fselect,3,3) end
+	if chk==0 then return g:CheckSubGroup(c9910970.fselect,6,6) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=g:SelectSubGroup(tp,c9910970.fselect,false,3,3)
+	local sg=g:SelectSubGroup(tp,c9910970.fselect,false,6,6)
 	Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_COST)
 	Duel.ConfirmCards(1-tp,sg)
 end

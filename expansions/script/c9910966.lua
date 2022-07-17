@@ -18,7 +18,7 @@ function c9910966.initial_effect(c)
 	c:RegisterEffect(e1)
 	--disable
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_DISABLE+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_HAND)
@@ -99,7 +99,7 @@ end
 function c9910966.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToRemove(tp,POS_FACEDOWN)
-		and Duel.IsExistingMatchingCard(c9910966.rmfilter,tp,LOCATION_HAND,0,1,c) and Duel.IsPlayerCanDraw(tp,1) end
+		and Duel.IsExistingMatchingCard(c9910966.rmfilter,tp,LOCATION_HAND,0,1,c) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
@@ -110,8 +110,7 @@ function c9910966.disop(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 or not c:IsRelateToEffect(e) or not c:IsAbleToRemove(tp,POS_FACEDOWN) then return end
 	g:AddCard(c)
 	Duel.ConfirmCards(1-tp,g)
-	if Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)==2 and Duel.NegateEffect(ev) then
-		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
+	if Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)==2 then
+		Duel.NegateEffect(ev)
 	end
 end

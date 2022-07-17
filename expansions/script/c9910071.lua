@@ -43,6 +43,7 @@ function c9910071.attop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910071.reccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroupEx(tp,Card.IsRace,2,nil,RACE_FAIRY) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectReleaseGroupEx(tp,Card.IsRace,2,2,nil,RACE_FAIRY)
 	local label=0
 	if g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_LIGHT) then label=label+1 end
@@ -73,6 +74,7 @@ function c9910071.recop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
 	if (ct==1 or ct==3) and Duel.IsExistingMatchingCard(c9910071.thfilter,tp,LOCATION_DECK,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910071,0)) then
+		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c9910071.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 		if g:GetCount()>0 then
@@ -82,6 +84,7 @@ function c9910071.recop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if (ct==2 or ct==3) and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
 		and Duel.SelectYesNo(tp,aux.Stringid(9910071,1)) then
+		Duel.BreakEffect()
 		local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,1)
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end

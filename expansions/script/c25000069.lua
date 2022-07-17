@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_HAND,0)==4 end)
+	e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_HAND,0)<5 end)
 	c:RegisterEffect(e2)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)

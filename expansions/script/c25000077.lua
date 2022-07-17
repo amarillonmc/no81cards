@@ -99,7 +99,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cpcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+	return rp==1-tp and not re:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)

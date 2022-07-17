@@ -43,8 +43,7 @@ function c9910909.negcon1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)
 	local sg=g:Filter(Card.IsFaceup,nil)
 	return sg and sg:GetClassCount(Card.GetRace)>=3 and rp==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
-		and Duel.IsChainDisablable(ev) and not Duel.IsChainDisabled(ev)
-	and Duel.GetFlagEffect(tp,9910909)==0
+		and Duel.IsChainDisablable(ev) and not Duel.IsChainDisabled(ev) and Duel.GetFlagEffect(tp,9910909)==0
 end
 function c9910909.negop1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectEffectYesNo(tp,aux.Stringid(9910909,0)) then
