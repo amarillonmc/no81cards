@@ -20,14 +20,6 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)  
-	--fusion check
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetCondition(cm.matcon)
-	e2:SetOperation(cm.matop)
-	c:RegisterEffect(e2)
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
@@ -42,14 +34,8 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)  
 end
-function cm.matcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
-end
-function cm.matop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0xd6c0000,0,1)
-end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(m)>0
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function cm.cfilter2(c)
 	return c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect()
@@ -60,7 +46,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
 	if chk==0 then
-		local loc=LOCATION_MZONE 
+		local loc=LOCATION_MZONE+LOCATION_HAND 
 		return Duel.IsExistingMatchingCard(cm.cfilter2,tp,loc,0,4,nil)
 			and g:GetCount()>0 
 	end
@@ -73,13 +59,13 @@ function cm.chlimit(e,ep,tp)
 	return tp==ep
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local loc=LOCATION_MZONE 
+	local loc=LOCATION_MZONE+LOCATION_HAND 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g1=Duel.SelectMatchingCard(tp,cm.cfilter2,tp,loc,0,4,4,nil)
 	local g2=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_MZONE,nil)
 	if g1:GetCount()>0 and Duel.Release(g1,REASON_EFFECT)>0 and g2:GetCount()>0   then
 		Duel.SendtoGrave(g2,REASON_EFFECT)
-		local sg=Duel.GetMatchingGroup(cm.sspfilter2,tp,LOCATION_DECK,0,nil,e,tp)
+		local sg=Duel.GetMatchingGroup(cm.spfilter2,tp,LOCATION_DECK,0,nil,e,tp)
 		if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
