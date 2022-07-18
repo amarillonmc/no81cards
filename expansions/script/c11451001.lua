@@ -55,7 +55,7 @@ function cm.initial_effect(c)
 				Duel.SetTargetCard(tg)
 				return tg
 			else
-				return _SelectMatchingCard(sp,f,p,s,o,min,max,nc,...)
+				return _SelectTarget(sp,f,p,s,o,min,max,nc,...)
 			end
 		end
 		function Duel.SelectTribute(sp,ac,min,max,mg,top)
@@ -105,7 +105,7 @@ function cm.initial_effect(c)
 				if c and e then Duel.RaiseSingleEvent(c,EVENT_DETACH_MATERIAL,e,0,0,0,0) end
 				return ct
 			else
-				return _DRemoveOverlayCard(sp,s,o,min,max,r)
+				return _CRemoveOverlayCard(oc,sp,min,max,r)
 			end
 		end
 		function Group.FilterSelect(g,sp,f,min,max,nc,...)
@@ -113,7 +113,7 @@ function cm.initial_effect(c)
 				local fg=cm.filter(g,f,nc,...)
 				return fg:Select(sp,min,max,nc)
 			else
-				return _FilterSelect(g,sp,f,min,max,nc)
+				return _FilterSelect(g,sp,f,min,max,nc,...)
 			end
 		end
 		function Group.Select(g,sp,min,max,nc)

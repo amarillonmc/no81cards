@@ -96,7 +96,7 @@ end
 function c9911007.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev)
-		and not Duel.IsChainDisabled(ev) and Duel.GetFlagEffect(tp,9911007)<1
+		and Duel.GetFlagEffect(tp,9911007)<1
 end
 function c9911007.negop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(9911007,1)) then return end

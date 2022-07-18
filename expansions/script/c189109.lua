@@ -27,7 +27,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_EXTRA,0,1,nil)
 end
 function cm.filter(c)
-	return c:GetType()&0x82~=0 and c:IsAbleToHand()
+	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -158,22 +158,22 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	end
 	end
 	local all_cards=Duel.GetMatchingGroup(nil,tp,0x1ff,0x1ff,nil)
-	all_cards:ForEach(cm.enum)
-	local nng=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0x1ff,0x1ff,nil,115045)
 	local reg=Card.RegisterEffect
 	Card.RegisterEffect=function(sc,se,bool)
-							se:SetOperation(cm.nnop)
-							reg(sc,se,bool)
-						end
-	for tc in aux.Next(nng) do
+		if sc:GetOriginalCode()==115045 then se:SetOperation(cm.nnop) end
+		reg(sc,se,bool)
+	end
+	for tc in aux.Next(all_cards) do
 		if tc.initial_effect then
-			tc:ReplaceEffect(tc:GetOriginalCode(),0)
+			local ini=cm.initial_effect
+			cm.initial_effect=function() end
+			tc:ReplaceEffect(m,0)
+			cm.initial_effect=ini
+			tc.initial_effect(tc)
 		end
 	end
 	Card.RegisterEffect=reg
-end
-function cm.enum(c)
-	Card.ReplaceEffect(c,c:GetCode(),RESET_EVENT,1)
+	e:Reset()
 end
 function cm.nnop(e,tp,eg,ep,ev,re,r,rp)
 	local exf=function(c)return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_PENDULUM) and c:IsFaceup() and c:IsLevelAbove(1) and c:IsAbleToGrave() and c:IsLocation(LOCATION_EXTRA)end
