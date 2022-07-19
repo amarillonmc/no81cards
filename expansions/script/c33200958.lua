@@ -68,7 +68,7 @@ end
 
 --e2
 function c33200958.thfilter(c)
-	return c:IsSetCard(0x632a) and c:IsAbleToHand()
+	return c:IsSetCard(0x632a) and c:IsAbleToHand() and not c:IsCode(33200958)
 end
 function c33200958.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33200958.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_DECK,0,1,e:GetHandler()) end

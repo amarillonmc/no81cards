@@ -1,77 +1,92 @@
---方舟骑士-瑕光
+--方舟骑士-华法琳
 c115025.named_with_Arknight=1
 function c115025.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
-	--to hand 
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_RECOVER)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,115025)
-	e1:SetCost(c115025.thcost)
-	e1:SetTarget(c115025.thtg)
-	e1:SetOperation(c115025.thop)
-	c:RegisterEffect(e1)
-	--set
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_RECOVER)
-	e3:SetRange(LOCATION_PZONE)
-	e3:SetCountLimit(1,115026)
-	e3:SetCondition(c115025.stcon)
-	e3:SetTarget(c115025.sttg)
-	e3:SetOperation(c115025.stop)
+	--XDestroy 
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_DESTROYED)
+	e2:SetCountLimit(1,215025)
+	e2:SetTarget(c115025.xdtg)
+	e2:SetOperation(c115025.xdop)
+	c:RegisterEffect(e2) 
+	--SpecialSummon P 
+	local e3=Effect.CreateEffect(c) 
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY+CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_IGNITION) 
+	e3:SetRange(LOCATION_PZONE)  
+	e3:SetCountLimit(1,315025) 
+	e3:SetCondition(c115025.pspcon)
+	e3:SetTarget(c115025.psptg) 
+	e3:SetOperation(c115025.pspop) 
 	c:RegisterEffect(e3)
+
 end
-function c115025.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
-	Duel.Release(e:GetHandler(),REASON_COST)
+function c115025.pspcon(e,tp,eg,ep,ev,re,r,rp) 
+	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler()) 
+end   
+function c115025.psptg(e,tp,eg,ep,ev,re,r,rp,chk) 
+	local sc=Duel.GetFirstMatchingCard(nil,tp,LOCATION_PZONE,0,e:GetHandler()) 
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end 
+	Duel.SetTargetCard(sc) 
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0) 
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sc,1,0,0) 
+end 
+function c115025.pthfil(c) 
+	return c:IsAbleToHand() and c:IsType(TYPE_PENDULUM) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))  
+end 
+function c115025.pspop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget() 
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then 
+	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if Duel.IsExistingMatchingCard(c115025.pthfil,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(115025,0)) then 
+	local sg=Duel.SelectMatchingCard(tp,c115025.pthfil,tp,LOCATION_DECK,0,1,1,nil) 
+	Duel.SendtoHand(sg,tp,REASON_EFFECT) 
+	Duel.ConfirmCards(1-tp,sg)
+	end 
+	end 
+	end 
+end 
+function c115025.xdtg(e,tp,eg,ep,ev,re,r,rp,chk) 
+	if chk==0 then return true end 
+end 
+function c115025.xdop(e,tp,eg,ep,ev,re,r,rp,chk) 
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+	e1:SetCountLimit(1)
+	e1:SetLabel(Duel.GetTurnCount())
+	e1:SetCondition(c115025.atkcon)
+	e1:SetOperation(c115025.atkop) 
+	if Duel.GetTurnPlayer()==tp then 
+	e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2) 
+	else 
+	e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)   
+	end 
+	Duel.RegisterEffect(e1,tp)
 end
-function c115025.thfil(c)
-	return c:IsAbleToHand() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM)
+function c115025.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()~=e:GetLabel() and Duel.GetTurnPlayer()==tp and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil)
 end
-function c115025.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c115025.thfil,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,0)
-end
-function c115025.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c115025.thfil,tp,LOCATION_DECK,0,nil)
-	if g:GetCount()<=0 then return end
-	local tg=g:Select(tp,1,1,nil)
-	Duel.SendtoHand(tg,tp,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,tg)
-	local tc=tg:GetFirst()
-	Duel.Recover(tp,tc:GetAttack()/2,REASON_EFFECT)
-end
-function c115025.stfil(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_PENDULUM) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
-end
-function c115025.stcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c115025.xgfilter,tp,LOCATION_PZONE,0,1,e:GetHandler())
-end
-function c115025.xgfilter(c)
-	return c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
-end
-function c115025.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c115025.xgfilter,tp,LOCATION_PZONE,0,1,nil) and ep==tp and (re:GetHandler():IsSetCard(0x87af) or (_G["c"..re:GetHandler():GetCode()] and  _G["c"..re:GetHandler():GetCode()].named_with_Arknight)) and Duel.IsExistingMatchingCard(c115025.stfil,tp,LOCATION_DECK,0,2,nil) end
-	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,tp,LOCATION_PZONE)
-end
-function c115025.stop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local g1=Duel.GetMatchingGroup(c115025.stfil,tp,LOCATION_DECK,0,nil)
-	if Duel.Destroy(g,REASON_EFFECT) and g1:GetCount()>1 then
-	local tg=g1:Select(tp,2,2,nil)
-	local tc=tg:GetFirst()
-	while tc do
-	Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
-	tc=tg:GetNext()
+function c115025.spop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,115025)
+	local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 then
+	local tc=g:GetFirst() 
+	local e1=Effect.CreateEffect(c) 
+	e1:SetType(EFFECT_TYPE_SINGLE) 
+	e1:SetCode(EFFECT_SET_ATTACK_FINAL) 
+	e1:SetRange(LOCATION_MZONE) 
+	e1:SetValue(tc:GetAttack()*2) 
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
+	tc:RegisterEffect(e1) 
 	end
-	end
 end
+
+

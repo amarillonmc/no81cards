@@ -65,6 +65,7 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local c=e:GetHandler()
+	local ec=e:GetHandler():GetEquipTarget()
 	if e:GetHandler():IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		local ct=tama.cosmicBattleship_getCoreLevel(ec)
 		local e1=Effect.CreateEffect(c)

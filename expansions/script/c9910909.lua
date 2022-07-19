@@ -43,7 +43,7 @@ function c9910909.negcon1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)
 	local sg=g:Filter(Card.IsFaceup,nil)
 	return sg and sg:GetClassCount(Card.GetRace)>=3 and rp==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
-		and Duel.IsChainDisablable(ev) and not Duel.IsChainDisabled(ev) and Duel.GetFlagEffect(tp,9910909)==0
+		and Duel.IsChainDisablable(ev) and Duel.GetFlagEffect(tp,9910909)==0
 end
 function c9910909.negop1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectEffectYesNo(tp,aux.Stringid(9910909,0)) then
@@ -62,8 +62,7 @@ function c9910909.negcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return Duel.IsExistingMatchingCard(c9910909.cfilter,tp,LOCATION_MZONE,0,1,c)
 		and rp==1-tp and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE 
-		and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev) and not Duel.IsChainDisabled(ev)
-		and c:GetFlagEffect(9910910)==0
+		and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev) and c:GetFlagEffect(9910910)==0
 end
 function c9910909.negop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(9910909,1)) then

@@ -83,7 +83,7 @@ function c9910973.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tc=g2:Select(tp,1,1,nil):GetFirst()
 		if tc then loc=loc-tc:GetLocation() end
-		if tc and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
 			Duel.RaiseEvent(e:GetHandler(),EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
 			g=Duel.GetMatchingGroup(c9910973.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 			if Duel.IsExistingMatchingCard(c9910973.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,g) then

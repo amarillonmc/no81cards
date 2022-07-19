@@ -44,9 +44,9 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		local tc1=nil
 		if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and Duel.SelectYesNo(1-tp,aux.Stringid(m,1)) then
 			Duel.DiscardHand(1-tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
-			tc1=e:GetOperatedGroup()
+			tc1=Duel.GetOperatedGroup()
 			hb=false
-			if not hb and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.SelectYesNo(1-tp,aux.Stringid(m,2)) then
+			if not hb and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 				Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
 				hb=true
 			end

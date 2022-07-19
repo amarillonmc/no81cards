@@ -1,4 +1,5 @@
 --方舟骑士追逐黎明
+c115045.named_with_Arknight=1
 function c115045.initial_effect(c)
 	aux.AddCodeList(c,115043)
 	--Activate
@@ -8,40 +9,30 @@ function c115045.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,115045+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c115045.target)
-	e1:SetOperation(c115045.operation)
+	e1:SetOperation(c115045.activate)
 	c:RegisterEffect(e1)
 end
-function c115045.exfilter0(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
-		and c:IsType(TYPE_PENDULUM) and c:IsFaceup() and c:IsLevelAbove(1) and c:IsAbleToGrave()
-end
-function c115045.filter(c)
-	return c:GetOriginalCode()==115043 and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
+function c115045.filter(c,e,tp)
+	return c:IsCode(115043) and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
 end
 function c115045.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local mg=Duel.GetRitualMaterial(tp)
-		local sg=nil
-		if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE) then
-			sg=Duel.GetMatchingGroup(c115045.exfilter0,tp,LOCATION_EXTRA,0,nil)
-		end
-		return Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,c115045.filter,e,tp,mg,sg,Card.GetLevel,"Greater")
+		local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsType,nil,TYPE_PENDULUM)
+		local mg2=nil
+		return Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,c115045.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
-function c115045.operation(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetRitualMaterial(tp)
-	local sg=nil
-	if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE) then
-		sg=Duel.GetMatchingGroup(c115045.exfilter0,tp,LOCATION_EXTRA,0,nil)
-	end
+function c115045.activate(e,tp,eg,ep,ev,re,r,rp)
+	local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsType,nil,TYPE_PENDULUM)
+	local mg2=nil
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tg=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,c115045.filter,e,tp,mg,sg,Card.GetLevel,"Greater")
+	local tg=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,c115045.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
 	local tc=tg:GetFirst()
 	if tc then
 		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
-		if sg then
-			mg:Merge(sg)
+		if mg2 then
+			mg:Merge(mg2)
 		end
 		if tc.mat_filter then
 			mg=mg:Filter(tc.mat_filter,tc,tp)
@@ -54,12 +45,17 @@ function c115045.operation(e,tp,eg,ep,ev,re,r,rp)
 		aux.GCheckAdditional=nil
 		if not mat or mat:GetCount()==0 then return end
 		tc:SetMaterial(mat)
-		local mat2=mat:Filter(Card.IsLocation,nil,LOCATION_EXTRA)
-		mat:Sub(mat2)
 		Duel.ReleaseRitualMaterial(mat)
-		Duel.SendtoGrave(mat2,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
 		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		tc:CompleteProcedure()
 	end
 end
+
+
+
+
+
+
+
+

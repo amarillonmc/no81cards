@@ -53,9 +53,9 @@ function c114824019.sumop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	local s1=c:IsSummonable(false,nil)
 	local s2=c:IsMSetable(false,nil)
-	if (s1 and s2 and Duel.SelectPosition(tp,c,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
+	if (s1 and s2 and Duel.SelectPosition(tp,c,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or (s1 and not s2) then
 		Duel.Summon(tp,c,false,nil)
-	else
+	elseif s2 then
 		Duel.MSet(tp,c,false,nil)
 	end
 end

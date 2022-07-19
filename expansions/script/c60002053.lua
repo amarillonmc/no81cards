@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function cm.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsOnField,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST,nil)
 end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)

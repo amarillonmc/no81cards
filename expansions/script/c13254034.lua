@@ -48,7 +48,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Damage(tp,600,REASON_EFFECT)
+	Duel.Damage(1-tp,600,REASON_EFFECT)
 	if e:GetLabel()==1 then
 		Duel.Draw(tp,2,REASON_EFFECT)
 	end
