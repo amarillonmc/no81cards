@@ -72,7 +72,7 @@ end
 function cm.immval(e,te_or_c)
 	local res=aux.GetValueType(te_or_c)~="Effect" or (te_or_c:IsActivated() and te_or_c:GetOwner()~=e:GetHandler())
 	if res then
-		if te_or_c:IsActivated() then Duel.Hint(HINT_CARD,0,m) end
+		if aux.GetValueType(te_or_c)=="Effect" then Duel.Hint(HINT_CARD,0,m) end
 		local c=e:GetHandler()
 		local flag=c:GetFlagEffectLabel(m)
 		if flag then

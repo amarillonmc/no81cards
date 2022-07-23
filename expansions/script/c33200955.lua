@@ -55,7 +55,7 @@ function c33200955.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=Duel.GetRitualMaterial(tp):Filter(c33200951.refilter,nil)
 	local mg2=Duel.GetMatchingGroup(Card.IsReleasable,tp,LOCATION_PZONE,0,e:GetHandler())
 	mg:Merge(mg2)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 and mg:GetCount()>0 end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 and mg:GetCount()>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c33200955.spop(e,tp,eg,ep,ev,re,r,rp)

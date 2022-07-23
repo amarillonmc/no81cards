@@ -34,7 +34,7 @@ function cm.spcon(e,c)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE,0,1,nil)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,0,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)

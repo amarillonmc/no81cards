@@ -35,7 +35,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsPublic()
+	return true
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

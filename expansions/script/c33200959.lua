@@ -88,7 +88,7 @@ function c33200959.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,5)
 	local ct=g:GetCount()
 	local atk=c:GetAttack()
-	if ct>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:FilterCount(c33200959.dspfilter,nil,e,tp,atk)>0
+	if ct>0 and g:FilterCount(c33200959.dspfilter,nil,e,tp,atk)>0
 		and Duel.SelectYesNo(tp,aux.Stringid(33200959,2)) then
 		Duel.DisableShuffleCheck()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

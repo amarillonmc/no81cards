@@ -26,6 +26,9 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 	
+	elements={{"tama_elements",{{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_LIFE,2}}}}
+	cm[c]=elements
+	
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and aux.NegateEffectMonsterFilter(chkc) end
@@ -42,7 +45,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	else
 		local hb=true
 		local tc1=nil
-		if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and Duel.SelectYesNo(1-tp,aux.Stringid(m,1)) then
+		if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and not Duel.SelectYesNo(1-tp,aux.Stringid(m,1)) then
 			Duel.DiscardHand(1-tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
 			tc1=Duel.GetOperatedGroup()
 			hb=false

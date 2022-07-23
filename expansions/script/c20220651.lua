@@ -9,7 +9,8 @@ function s.initial_effect(c)
 	e3:SetDescription(aux.Stringid(id,0))
 	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+    e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetCountLimit(1,id)
 	e3:SetCondition(s.remcon)
 	e3:SetTarget(s.remtg)
@@ -19,6 +20,7 @@ function s.initial_effect(c)
 	e6:SetDescription(aux.Stringid(id,1))
 	e6:SetCategory(CATEGORY_REMOVE)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e6:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e6:SetCountLimit(1,id)
 	e6:SetCondition(s.remcon)
@@ -30,6 +32,7 @@ function s.initial_effect(c)
 	e5:SetDescription(aux.Stringid(id,2))
 	e5:SetCategory(CATEGORY_REMOVE)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e5:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e5:SetCountLimit(1,id)
 	e5:SetCondition(s.remcon)
@@ -45,8 +48,8 @@ function s.initial_effect(c)
 	e33:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
     e33:SetCountLimit(1,{id,1})
     e33:SetCondition(s.sccon)
-	e33:SetTarget(s.sctg)
-	e33:SetOperation(s.scop)
+	e33:SetTarget(s.sptg)
+	e33:SetOperation(s.spop)
 	c:RegisterEffect(e33)
 end
 --Remove
@@ -97,18 +100,17 @@ function s.filter(c,e,tp)
 	return c:IsSetCard(0x20ab) and c:IsLevelBelow(9) and c:IsType(TYPE_SYNCHRO)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false)
 end
-function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local pg=aux.GetMustBeMaterialGroup(tp,Group.CreateGroup(),tp,nil,nil,REASON_SYNCHRO)
-		return #pg<=0 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA+LOCATION_GRAVE)
 end
-function s.scop(e,tp,eg,ep,ev,re,r,rp)
-	local pg=aux.GetMustBeMaterialGroup(tp,Group.CreateGroup(),tp,nil,nil,REASON_SYNCHRO)
-	if #pg>0 then return end
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
-	if tc and Duel.SpecialSummon(tc,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)>0 then
-		tc:CompleteProcedure()
+	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
 	end
 end

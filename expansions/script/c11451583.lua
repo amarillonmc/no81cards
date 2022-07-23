@@ -39,6 +39,11 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.drtg)
 	e4:SetOperation(cm.drop)
 	c:RegisterEffect(e4)
+	--act in hand
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
+	c:RegisterEffect(e5)
 end
 function cm.actarget(e,te,tp)
 	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
@@ -77,7 +82,21 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_END and Duel.GetCurrentChain()==0 and Duel.GetTurnPlayer()==1-tp
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckActivateEffect(false,false,false)~=nil and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	local c=e:GetHandler()
+	if chk==0 then
+		local res=true
+		if Card.SetCardData then
+			Duel.DisableActionCheck(true)
+			local dc=Duel.CreateToken(tp,m)
+			Duel.DisableActionCheck(false)
+			dc:SetCardData(CARDDATA_TYPE,TYPE_QUICKPLAY+TYPE_SPELL)
+			res=dc:GetActivateEffect():IsActivatable(tp)
+			dc:SetCardData(CARDDATA_TYPE,TYPE_SPELL)
+		else
+			res=(c:CheckActivateEffect(false,false,false)~=nil)
+		end
+		return res and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+	end
 end
 function cm.filter(c)
 	return c:GetTurnID()==Duel.GetTurnCount() and not c:IsReason(REASON_RETURN) and c:IsType(TYPE_MONSTER)

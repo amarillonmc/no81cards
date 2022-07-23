@@ -67,10 +67,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e12)
 end
 function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsPublic()
+	return true
 end
 function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsFacedown,1,nil) and not e:GetHandler():IsPublic()
+	return eg:IsExists(Card.IsFacedown,1,nil)
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

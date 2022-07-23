@@ -49,7 +49,7 @@ function cm.filter(c)
 	return c:IsFaceup()
 end
 function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter,1,nil) and not e:GetHandler():IsPublic()
+	return eg:IsExists(cm.filter,1,nil)
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -38,7 +38,7 @@ function cm.matfilter(c)
 end
 function cm.costcon(e)
 	local tp=e:GetHandlerPlayer()
-	if Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)==0 then return false end
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_GRAVE)==0 then return false end
 	return true
 end
 function cm.costchk(e,te_or_c,tp)
