@@ -41,8 +41,8 @@ function cm.efilter(e,re)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ec=e:GetHandler():GetEquipTarget()
-	if chk==0 then return ec and ec:IsCanRemoveCounter(tp,0x353,1,REASON_COST) end
-	ec:RemoveCounter(tp,0x353,1,REASON_COST)
+	if chk==0 then return ec and ec:IsCanRemoveCounter(tp,TAMA_COSMIC_BATTLESHIP_COUNTER_SHIELD,1,REASON_COST) end
+	ec:RemoveCounter(tp,TAMA_COSMIC_BATTLESHIP_COUNTER_SHIELD,1,REASON_COST)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetEquipTarget()

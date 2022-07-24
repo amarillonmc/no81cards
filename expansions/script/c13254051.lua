@@ -83,5 +83,5 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return e:GetLabelObject()==c and se:GetHandler():IsCode(e:GetOwner():GetCode())
+	return c:IsCode(e:GetLabelObject():GetCode()) and se:GetHandler():IsCode(e:GetOwner():GetCode())
 end

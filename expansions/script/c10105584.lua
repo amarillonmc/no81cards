@@ -55,9 +55,11 @@ function c10105584.cfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsLevelAbove(10) and c:IsAbleToRemoveAsCost()
 end
 function c10105584.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c10105584.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,nil) end
+    local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(c10105584.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,c) end
 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c10105584.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,2,nil)
+    local c=e:GetHandler()
+	local g=Duel.SelectMatchingCard(tp,c10105584.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,2,c)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c10105584.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

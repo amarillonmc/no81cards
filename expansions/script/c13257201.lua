@@ -72,7 +72,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetCounter(COSMIC_BATTLESHIP_SHIELD)==0
+	return e:GetHandler():GetCounter(TAMA_COSMIC_BATTLESHIP_COUNTER_SHIELD)==0
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end

@@ -41,7 +41,7 @@ function c72411220.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) 
 end
 function c72411220.sendfilter(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and (c:GetAttack()<=e:GetHandler():GetAttack() or c:GetDefense()<=e:GetHandler():GetAttack())  and c:GetControler()==1-tp 
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:GetControler()==1-tp and ((not c:IsType(TYPE_LINK) and (c:GetAttack()<=e:GetHandler():GetAttack() or c:GetDefense()<=e:GetHandler():GetAttack())) or (c:IsType(TYPE_LINK) and c:GetAttack()<=e:GetHandler():GetAttack()))
 end
 function c72411220.sendop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
