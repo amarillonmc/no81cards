@@ -46,9 +46,6 @@ function c72412200.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c72412200.thfilter1(c)
-	return c:IsCode(72412210) or (Duel.IsPlayerAffectedByEffect(c:GetOwner(),72412340) and c:IsSetCard(0x9728))
-end
 function c72412200.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,72412200,RESET_PHASE+PHASE_END,0,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -59,17 +56,19 @@ function c72412200.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(c72412200.thop)
 	Duel.RegisterEffect(e1,tp)
 end
-function c72412200.thfilter2(c)
-	return c72412200.thfilter1(c) and c:IsAbleToHand()
+function c72412200.thfilter(c,tp)
+	local res=Duel.IsPlayerAffectedByEffect(tp,9911020) and c:IsSetCard(0x9728) and c:IsType(TYPE_MONSTER)
+	return (c:IsCode(72412210) or res) and c:IsAbleToHand()
 end
 function c72412200.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c72412200.thfilter2),tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,72412200)==0
+	return Duel.IsExistingMatchingCard(c72412200.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
+		and Duel.GetFlagEffect(tp,72412200)==0
 end
 function c72412200.thop(e,tp,eg,ep,ev,re,r,rp)
 	Effect.Reset(e)
 	Duel.Hint(HINT_CARD,0,72412200)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c72412200.thfilter2),tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c72412200.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)

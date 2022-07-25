@@ -12,6 +12,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.execution)
 	c:RegisterEffect(e1)
 end
+cm.toss_coin=true
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
 end

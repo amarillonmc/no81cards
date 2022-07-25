@@ -38,15 +38,12 @@ function c72412240.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
 	Duel.Destroy(eg,REASON_EFFECT)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		if not e:GetHandler():IsRelateToEffect(e) then return end
-		local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_HAND,0,1,1,e:GetHandler(),0x9728)
-		if g~=0 then
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_HAND,0,1,1,e:GetHandler(),0x9728)
+	if g~=0 then
 		Group.AddCard(g,e:GetHandler())
 		Duel.SendtoGrave(g,REASON_EFFECT)   
-		end
-end
-function c72412240.thfilter1(c)
-	return c:IsCode(72412250) or (Duel.IsPlayerAffectedByEffect(c:GetOwner(),72412340) and c:IsSetCard(0x9728))
+	end
 end
 function c72412240.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,72412240,RESET_PHASE+PHASE_END,0,1)
@@ -58,17 +55,19 @@ function c72412240.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(c72412240.thop)
 	Duel.RegisterEffect(e1,tp)
 end
-function c72412240.thfilter2(c)
-	return c72412240.thfilter1(c) and c:IsAbleToHand()
+function c72412240.thfilter(c,tp)
+	local res=Duel.IsPlayerAffectedByEffect(tp,9911020) and c:IsSetCard(0x9728) and c:IsType(TYPE_MONSTER)
+	return (c:IsCode(72412250) or res) and c:IsAbleToHand()
 end
 function c72412240.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c72412240.thfilter2),tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,72412240)==0
+	return Duel.IsExistingMatchingCard(c72412240.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
+		and Duel.GetFlagEffect(tp,72412240)==0
 end
 function c72412240.thop(e,tp,eg,ep,ev,re,r,rp)
 	Effect.Reset(e)
 	Duel.Hint(HINT_CARD,0,72412240)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c72412240.thfilter2),tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c72412240.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)

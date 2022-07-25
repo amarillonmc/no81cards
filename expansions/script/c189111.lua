@@ -2,6 +2,9 @@ local m=189111
 local cm=_G["c"..m]
 cm.name="半洗孤钻-傀影"
 function cm.initial_effect(c)
+	--xyz summon
+	aux.AddXyzProcedure(c,nil,6,2)
+	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_TOGRAVE)

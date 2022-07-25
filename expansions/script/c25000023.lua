@@ -29,7 +29,6 @@ function c25000023.initial_effect(c)
 	e2:SetCode(EVENT_REMOVE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(c25000023.condition)
-	e2:SetTarget(c25000023.target)
 	e2:SetOperation(c25000023.operation)
 	c:RegisterEffect(e2) 
 	--Remove
@@ -60,7 +59,7 @@ function c25000023.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function c25000023.operation(e,tp,eg,ep,ev,re,r,rp)
    local ct=eg:FilterCount(c25000023.filter,nil,tp)
-   Duel.Recover(1-tp,ct*300,REASON_EFFECT)
+   Duel.Damage(1-tp,ct*300,REASON_EFFECT)
 end
 function c25000023.rmcon(e,tp,eg,ep,ev,re,r,rp) 
 	local ph=Duel.GetCurrentPhase()

@@ -101,7 +101,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:GetFlagEffect(m)==0 or not c:IsLocation(LOCATION_HAND) then
+	if c:GetFlagEffect(m)==0 or not c:IsLocation(LOCATION_HAND) or (c:GetOriginalCode()~=m and not c:IsStatus(STATUS_COPYING_EFFECT)) then
 		e:Reset()
 		return false
 	else

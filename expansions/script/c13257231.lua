@@ -70,7 +70,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.counterfilter(c)
-	return not c:IsRace(RACE_MACHINE)
+	return c:IsRace(RACE_MACHINE)
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	tama.cosmicBattleship_equipShield(e:GetHandler(),2)

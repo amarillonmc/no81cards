@@ -41,7 +41,7 @@ function cm.dptcheck(g)
 end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,LOCATION_MZONE,0,nil)
-	return mg:CheckSubGroup(cm.dptcheck,2,99) and e:GetHandler():IsSSetable()
+	return mg:CheckSubGroup(cm.dptcheck,2,99) and e:GetHandler():IsSSetable() and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

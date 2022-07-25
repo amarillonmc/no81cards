@@ -1,15 +1,16 @@
 --星宫守护神·阿波萝蒂亚
 function c72412340.initial_effect(c)
-		--xyz summon
+	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x9728),4,2)
 	c:EnableReviveLimit()
 	--change effect type
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(72412340)
+	e1:SetCode(9911020)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(1,0)
+	e1:SetCondition(c72412340.condition)
 	c:RegisterEffect(e1)
 	--negate
 	local e3=Effect.CreateEffect(c)
@@ -25,7 +26,6 @@ function c72412340.initial_effect(c)
 	e3:SetOperation(c72412340.disop)
 	c:RegisterEffect(e3)
 end
-
 function c72412340.desfilter(c)
 	return c:IsSetCard(0x9728) and c:IsAbleToGrave()
 end
@@ -55,4 +55,6 @@ function c72412340.disop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
+function c72412340.condition(e)
+	return true
+end

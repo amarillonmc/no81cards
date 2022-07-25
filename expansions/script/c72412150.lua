@@ -16,7 +16,7 @@ function c72412150.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetCountLimit(1,72412151)
@@ -47,9 +47,6 @@ function c72412150.disop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c72412150.thfilter1(c)
-	return c:IsCode(72412160) or (Duel.IsPlayerAffectedByEffect(c:GetOwner(),72412340) and c:IsSetCard(0x9728))
-end
 function c72412150.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,72412150,RESET_PHASE+PHASE_END,0,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -60,17 +57,19 @@ function c72412150.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(c72412150.thop)
 	Duel.RegisterEffect(e1,tp)
 end
-function c72412150.thfilter2(c)
-	return c72412150.thfilter1(c) and c:IsAbleToHand()
+function c72412150.thfilter(c,tp)
+	local res=Duel.IsPlayerAffectedByEffect(tp,9911020) and c:IsSetCard(0x9728) and c:IsType(TYPE_MONSTER)
+	return (c:IsCode(72412160) or res) and c:IsAbleToHand()
 end
 function c72412150.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c72412150.thfilter2),tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,72412150)==0
+	return Duel.IsExistingMatchingCard(c72412150.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
+		and Duel.GetFlagEffect(tp,72412150)==0
 end
 function c72412150.thop(e,tp,eg,ep,ev,re,r,rp)
 	Effect.Reset(e)
 	Duel.Hint(HINT_CARD,0,72412150)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c72412150.thfilter2),tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c72412150.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)

@@ -1,6 +1,6 @@
 --星宫守护者·双鱼
 function c72412260.initial_effect(c)
-	aux.AddCodeList(c,72412150)
+	aux.AddCodeList(c,72412260)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(72412260,0))
@@ -45,10 +45,6 @@ function c72412260.drop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
-function c72412260.thfilter1(c)
-	return c:IsCode(72412150) or (Duel.IsPlayerAffectedByEffect(c:GetOwner(),72412340) and c:IsSetCard(0x9728))
-end
 function c72412260.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,72412260,RESET_PHASE+PHASE_END,0,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -59,17 +55,19 @@ function c72412260.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(c72412260.thop)
 	Duel.RegisterEffect(e1,tp)
 end
-function c72412260.thfilter2(c)
-	return c72412260.thfilter1(c) and c:IsAbleToHand()
+function c72412260.thfilter(c,tp)
+	local res=Duel.IsPlayerAffectedByEffect(tp,9911020) and c:IsSetCard(0x9728) and c:IsType(TYPE_MONSTER)
+	return (c:IsCode(72412150) or res) and c:IsAbleToHand()
 end
 function c72412260.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c72412260.thfilter2),tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,72412260)==0
+	return Duel.IsExistingMatchingCard(c72412260.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
+		and Duel.GetFlagEffect(tp,72412260)==0
 end
 function c72412260.thop(e,tp,eg,ep,ev,re,r,rp)
 	Effect.Reset(e)
 	Duel.Hint(HINT_CARD,0,72412260)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c72412260.thfilter2),tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c72412260.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
