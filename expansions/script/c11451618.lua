@@ -104,7 +104,7 @@ function cm.efffilter(c,tp,eg,ep,ev,re,r,rp)
 	local te=c.hand_effect
 	if not te then return false end
 	local tg=te:GetTarget()
-	return not tg or tg and tg(te,tp,eg,ep,ev,re,r,rp,0)
+	return not tg or (tg and tg(te,tp,eg,ep,ev,re,r,rp,0))
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

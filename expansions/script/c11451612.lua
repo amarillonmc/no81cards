@@ -108,10 +108,10 @@ function cm.shtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.filter2(c,e)
-	return (c:IsPosition(POS_FACEDOWN_DEFENSE) or c:IsCanTurnSet()) and c:GetSequence()<=4 and not c:IsImmuneToEffect(e)
+	return (c:IsPosition(POS_FACEDOWN_DEFENSE) or c:IsCanTurnSet()) and c:GetSequence()<=4 and not c:IsImmuneToEffect(e) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.ctfilter(c,e)
-	return (c:IsPosition(POS_FACEDOWN_DEFENSE) or c:IsCanTurnSet()) and c:IsControlerCanBeChanged() and not c:IsImmuneToEffect(e)
+	return (c:IsPosition(POS_FACEDOWN_DEFENSE) or c:IsCanTurnSet()) and c:IsControlerCanBeChanged() and not c:IsImmuneToEffect(e) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.mzfilter(c,tp)
 	return c:IsLocation(LOCATION_MZONE) and c:IsFacedown() and c:IsControler(tp) and c:GetSequence()<=4
@@ -120,7 +120,7 @@ function cm.shop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_MZONE,0,nil,e)
 	if #g==0 or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not (c:IsRelateToEffect(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)) then return end
-	local dg=g:Filter(Card.IsFaceup,nil)
+	local dg=g:Filter(Card.IsCanTurnSet,nil)
 	if #dg>0 then
 		for tc in aux.Next(dg) do
 			Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
