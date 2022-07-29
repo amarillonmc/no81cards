@@ -103,10 +103,24 @@ function cm.xylabel(c,tp)
 	end
 	return x,y
 end
+function cm.gradient(y,x)
+	if y>0 and x==0 then return math.pi/2 end
+	if y<0 and x==0 then return math.pi*3/2 end
+	if y>=0 and x>0 then return math.atan(y/x) end
+	if x<0 then return math.pi+math.atan(y/x) end
+	if y<0 and x>0 then return 2*math.pi+math.atan(y/x) end
+	return 1000
+end
+function cm.fieldline(x1,y1,x2,y2,...)
+	for _,k in pairs({...}) do
+		if cm.gradient(y2-y1,x2-x1)==k then return true end
+	end
+	return false
+end
 function cm.seqfilter(c,tc,tp)
 	local x1,y1=cm.xylabel(c,tp)
 	local x2,y2=cm.xylabel(tc,tp)
-	return math.abs(y1-y2)<=1 and math.abs(x1-x2)==1
+	return (math.abs(y1-y2)==1 or y1==y2) and math.abs(x1-x2)==1
 end
 function cm.distarget(e,c)
 	return (c:IsType(TYPE_EFFECT+TYPE_SPELL+TYPE_TRAP) or c:GetOriginalType()&TYPE_EFFECT~=0) and cm.seqfilter(c,e:GetHandler(),0)
@@ -158,22 +172,62 @@ function cm.GetCardsInZone(tp,fd)
 	end
 	return Duel.GetFieldCard(p,loc,seq)
 end
+function cm.xytozone(x,y)
+	if x==-1 and y==0.5 then return 1<<13
+	elseif x==5 and y==3.5 then return 1<<29
+	elseif x>=0 and x<=4 then
+		if y==0 then return 1<<(x+8)
+		elseif y==1 then return 1<<x
+		elseif y==3 then return 1<<(20-x)
+		elseif y==4 then return 1<<(28-x)
+		elseif y==2 and x==1 then return 0x400020
+		elseif y==2 and x==3 then return 0x200040 end
+	end
+	return nil
+end
+function cm.islinkdir(lc,x,y,tp)
+	if lc:IsControler(1-tp) then x,y=4-x,4-y end
+	local x0,y0=cm.xylabel(lc,lc:GetControler())
+	local list={5/4,3/2,7/4,1,1000,0,3/4,1/2,1/4}
+	for i=0,8 do
+		if lc:IsLinkMarker(1<<i) and cm.fieldline(x0,y0,x,y,list[i+1]*math.pi) then return true end
+	end
+	return false
+end
+function cm.getlinkdirzone(lc,tp,...)
+	local loc,exlcheck,p=table.unpack({...})
+	local x0,y0=cm.xylabel(lc,lc:GetControler())
+	local res=0
+	for x=0,4 do
+		for y=0,4 do
+			local zone=cm.xytozone(x,y)
+			if zone and cm.islinkdir(lc,x,y,tp) then res=zone|res end
+		end
+	end
+	if loc and loc==LOCATION_MZONE then res=res&0xff00ff end
+	if loc and loc==LOCATION_SZONE then res=res&0xff00ff00 end
+	if exlcheck then
+		if (Duel.GetFieldCard(p,LOCATION_MZONE,5)~=nil and p==tp) or (Duel.GetFieldCard(p,LOCATION_MZONE,6)~=nil and p~=tp) then res=res&(~0x200040) end
+		if (Duel.GetFieldCard(p,LOCATION_MZONE,6)~=nil and p==tp) or (Duel.GetFieldCard(p,LOCATION_MZONE,5)~=nil and p~=tp) then res=res&(~0x400020) end
+	end
+	return res
+end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	local zone=c:GetLinkedZone(tp)
+	local zone=c:GetLinkedZone(tp) --cm.getlinkdirzone(c,tp,LOCATION_MZONE,true,c:GetControler())
 	local seq=c:GetSequence()
 	if seq<5 then
 		local fd=0
 		if zone&0x600060>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
 			local off=1
 			local ops,opval={},{}
-			if zone&0x400020>0 and ((c:IsControler(tp) and Duel.GetFieldCard(tp,LOCATION_MZONE,6)==nil) or (c:IsControler(1-tp) and Duel.GetFieldCard(1-tp,LOCATION_MZONE,5)==nil)) then
+			if zone&0x400020>0 then
 				ops[off]=aux.Stringid(m,1)
 				opval[off]=0
 				off=off+1
 			end
-			if zone&0x200040>0 and ((c:IsControler(tp) and Duel.GetFieldCard(tp,LOCATION_MZONE,5)==nil) or (c:IsControler(1-tp) and Duel.GetFieldCard(1-tp,LOCATION_MZONE,6)==nil)) then
+			if zone&0x200040>0 then
 				ops[off]=aux.Stringid(m,2)
 				opval[off]=1
 				off=off+1
@@ -190,10 +244,11 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 		local nseq=math.log(fd,2)
 		if c:IsControler(tp) then
 			if fd==0x400020 then nseq=5 elseif fd==0x200040 then nseq=6 end
+			if nseq<16 then Duel.MoveSequence(c,nseq) else Duel.GetControl(c,1-tp,0,0,1<<(nseq-16)) end
 		else
-			if fd==0x400020 then nseq=6 elseif fd==0x200040 then nseq=5 end
+			if fd==0x400020 then nseq=22 elseif fd==0x200040 then nseq=21 end
+			if nseq<16 then Duel.GetControl(c,tp,0,0,1<<nseq) else Duel.MoveSequence(c,nseq-16) end
 		end
-		if nseq<16 then Duel.MoveSequence(c,nseq) else Duel.MoveSequence(c,nseq-16) end
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 		local fd=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~zone)

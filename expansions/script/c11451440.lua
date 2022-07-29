@@ -84,6 +84,7 @@ function cm.filter2(c)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	Duel.HintSelection(Group.FromCards(e:GetHandler()))
 	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_CARD,0,m)
 		if Duel.NegateEffect(ev) then

@@ -43,49 +43,55 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ft1=math.min(5,Duel.GetLocationCount(tp,LOCATION_MZONE))
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft1=1 end
 	local ft2=math.min(5,Duel.GetLocationCount(1-tp,LOCATION_MZONE))
-	if ft1>0 and ft2>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11451572,0,0x4011,1050,1050,10,RACE_MACHINE,0x3) and Duel.IsPlayerCanSpecialSummonMonster(1-tp,11451572,0,0x4011,1050,1050,10,RACE_MACHINE,0x3) and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
+	if Duel.IsPlayerAffectedByEffect(1-tp,59822133) then ft2=1 end
+	if (ft1>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11451572,0,0x4011,1050,1050,10,RACE_MACHINE,0x3)) or (ft2>0 and Duel.IsPlayerCanSpecialSummonMonster(1-tp,11451572,0,0x4011,1050,1050,10,RACE_MACHINE,0x3)) then
 		local fid=e:GetHandler():GetFieldID()
 		local g=Group.CreateGroup()
-		local list1={}
-		for i=1,ft1 do list1[i]=i end
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
-		ct1=Duel.AnnounceNumber(tp,table.unpack(list1))
-		for i=1,ct1 do
-			local token=Duel.CreateToken(tp,11451572)
-			Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_ATTACK)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-			e1:SetValue(1)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			token:RegisterEffect(e1,true)
-			local e2=e1:Clone()
-			e2:SetCode(EFFECT_UNRELEASABLE_SUM)
-			e2:SetValue(function(e,c) return not c:IsRace(RACE_MACHINE) end)
-			token:RegisterEffect(e2,true)
-			g:AddCard(token)
+		if ft1>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11451572,0,0x4011,1050,1050,10,RACE_MACHINE,0x3) then
+			local list1={}
+			for i=1,ft1 do list1[i]=i end
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
+			ct1=Duel.AnnounceNumber(tp,table.unpack(list1))
+			for i=1,ct1 do
+				local token=Duel.CreateToken(tp,11451572)
+				Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+				e1:SetValue(1)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				token:RegisterEffect(e1,true)
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_UNRELEASABLE_SUM)
+				e2:SetValue(function(e,c) return not c:IsRace(RACE_MACHINE) end)
+				token:RegisterEffect(e2,true)
+				g:AddCard(token)
+			end
 		end
-		local list2={}
-		for i=1,ft2 do list2[i]=i end
-		Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(m,0))
-		ct2=Duel.AnnounceNumber(1-tp,table.unpack(list2))
-		for i=1,ct2 do
-			local token=Duel.CreateToken(1-tp,11451572)
-			Duel.SpecialSummonStep(token,0,1-tp,1-tp,false,false,POS_FACEUP_ATTACK)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-			e1:SetValue(1)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			token:RegisterEffect(e1,true)
-			local e2=e1:Clone()
-			e2:SetCode(EFFECT_UNRELEASABLE_SUM)
-			e2:SetValue(function(e,c) return not c:IsRace(RACE_MACHINE) end)
-			token:RegisterEffect(e2,true)
-			g:AddCard(token)
+		if ft2>0 and Duel.IsPlayerCanSpecialSummonMonster(1-tp,11451572,0,0x4011,1050,1050,10,RACE_MACHINE,0x3) then
+			local list2={}
+			for i=1,ft2 do list2[i]=i end
+			Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(m,0))
+			ct2=Duel.AnnounceNumber(1-tp,table.unpack(list2))
+			for i=1,ct2 do
+				local token=Duel.CreateToken(1-tp,11451572)
+				Duel.SpecialSummonStep(token,0,1-tp,1-tp,false,false,POS_FACEUP_ATTACK)
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+				e1:SetValue(1)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				token:RegisterEffect(e1,true)
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_UNRELEASABLE_SUM)
+				e2:SetValue(function(e,c) return not c:IsRace(RACE_MACHINE) end)
+				token:RegisterEffect(e2,true)
+				g:AddCard(token)
+			end
 		end
 		g:KeepAlive()
 		g:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD,0,1,fid)

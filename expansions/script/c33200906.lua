@@ -56,9 +56,9 @@ function c33200906.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetCondition(c33200906.descon)
 	e1:SetOperation(c33200906.desop)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,5)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,9)
 	e:GetHandler():RegisterEffect(e1)
-	e:GetHandler():RegisterFlagEffect(33200906,RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,5)
+	e:GetHandler():RegisterFlagEffect(33200906,RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,9)
 	c33200906[e:GetHandler()]=e1
 end
 function c33200906.descon(e,tp,eg,ep,ev,re,r,rp)
