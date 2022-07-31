@@ -75,6 +75,6 @@ function cm.pencon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.penop(e,tp,eg,ep,ev,re,r,rp)
   if e:GetHandler():IsRelateToEffect(e) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and (Duel.GetMatchingGroupCount(aux.FilterBoolFunction(Card.IsCode,31400026),tp,LOCATION_ONFIELD,0,nil)<=0) then
-  Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+  Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
   end
 end

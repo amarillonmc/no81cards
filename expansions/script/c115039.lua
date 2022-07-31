@@ -57,10 +57,11 @@ function c115039.pspop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget() 
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then 
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 	if Duel.IsExistingMatchingCard(c115039.pspfil,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(115039,0)) then 
 	local sg=Duel.SelectMatchingCard(tp,c115039.pspfil,tp,LOCATION_HAND,0,1,1,nil,e,tp) 
 	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	end
 	end 
 	end 
 	end 

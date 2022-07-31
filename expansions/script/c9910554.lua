@@ -1,5 +1,5 @@
 --甜心机仆 泪光的礼物
-Duel.LoadScript("c9910550.lua")
+require("expansions/script/c9910550")
 function c9910554.initial_effect(c)
 	--special summon
 	Txjp.AddSpProcedure(c,9910554)

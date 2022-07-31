@@ -87,7 +87,7 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x97e) and c:IsAbleToHand()
+	return c:IsSetCard(0x97e) and (c:IsAbleToHand() or c:IsAbleToDeck())
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE,0,1,nil)
@@ -95,9 +95,12 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local rg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE,0,1,e:GetLabel()-1,nil)
-	if rg:GetCount()>0 then
-		Duel.SendtoHand(rg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,rg)
+	local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE,0,nil)
+	local sg=rg:FilterSelect(tp,Card.IsAbleToHand,1,e:GetLabel()-1,nil)
+	if #sg>0 then
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+		rg:Sub(sg)
 	end
+	Duel.SendtoDeck(rg,nil,2,REASON_EFFECT)
 end

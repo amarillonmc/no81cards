@@ -35,14 +35,6 @@ function c6160007.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,1,tp,LOCATION_GRAVE)
 end
 function c6160007.operation(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetTargetRange(0xff,0xff)
-	e1:SetTarget(c6160007.splimit)  
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	if g:FilterCount(Card.IsRelateToEffect,nil,e)<2 or not g:IsExists(c6160007.fcheck,1,nil,g) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -50,7 +42,4 @@ function c6160007.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 and sg:GetFirst():IsLocation(LOCATION_HAND) then
 		Duel.Remove(g-sg,nil,REASON_EFFECT)
 	end
-end
-function c6160007.splimit(e,c)
-	return not c:IsSetCard(0x616)
 end

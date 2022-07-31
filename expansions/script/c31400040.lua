@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.tgfilter(c,e,tp)
-	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,c,e,tp)
+	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,c,e,tp) and c:IsPosition(POS_FACEUP)
 end
 function cm.spfilter(c,tc,e,tp)
 	return c:IsRace(RACE_MACHINE) and c:IsLevelAbove(0) and c:GetLevel()~=tc:GetLevel() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

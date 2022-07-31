@@ -6,6 +6,7 @@ cm.named_with_Overlord=1
 function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,1))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_BATTLE_DESTROYING)
 	e1:SetCondition(cm.atcon)
@@ -22,6 +23,16 @@ function cm.initial_effect(c)
 	e2:SetValue(1)
 	e2:SetCondition(cm.actcon)
 	c:RegisterEffect(e2)  
+	--atk up
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(21770839,0))
+	e3:SetCategory(CATEGORY_ATKCHANGE)
+	e3:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e3:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+	e3:SetCost(cm.cost)
+	e3:SetCondition(cm.atkcon)
+	e3:SetOperation(cm.atkop)
+	c:RegisterEffect(e3)
 end
 function cm.Dragonicfilter(c)
 --「龙纹」字段在ocg持有的卡
@@ -48,4 +59,25 @@ function cm.atop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.actcon(e)
 	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,800) end
+	Duel.PayLPCost(tp,800)
+end
+function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local d=c:GetBattleTarget()
+	--local gc=Duel.GetMatchingGroupCount(c21770839.atkfilter,tp,LOCATION_EXTRA,0,nil)
+	return c==Duel.GetAttacker() and d 
+end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(1000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_BATTLE)
+		c:RegisterEffect(e1)
+	end
 end

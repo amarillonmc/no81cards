@@ -1,7 +1,7 @@
---皎月之精灵
+--无瑕皎月之月神
 function c9910060.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,6,2,c9910060.ovfilter,aux.Stringid(9910060,0),2,c9910060.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),6,2,c9910060.ovfilter,aux.Stringid(9910060,0),2,c9910060.xyzop)
 	c:EnableReviveLimit()
 	--cannot remove
 	local e1=Effect.CreateEffect(c)
@@ -24,6 +24,11 @@ function c9910060.initial_effect(c)
 	e2:SetTarget(c9910060.distg)
 	e2:SetOperation(c9910060.disop)
 	c:RegisterEffect(e2)
+	Duel.AddCustomActivityCounter(9910060,ACTIVITY_CHAIN,c9910060.chainfilter)
+end
+function c9910060.chainfilter(re,tp,cid)
+	return not (re:GetHandler():IsRace(RACE_FAIRY) and re:IsActiveType(TYPE_MONSTER)
+		and Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)==LOCATION_HAND)
 end
 function c9910060.cfilter(c)
 	return c:IsAbleToRemoveAsCost() and c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)
@@ -48,8 +53,8 @@ end
 function c9910060.xyzop(e,tp,chk)
 	local g=Duel.GetMatchingGroup(c9910060.cfilter,tp,LOCATION_GRAVE,0,nil)
 	local sg=Group.CreateGroup()
-	if chk==0 then return Duel.GetFlagEffect(tp,9910060)==0
-		and g:IsExists(c9910060.selector,1,nil,tp,g,sg,1) end
+	if chk==0 then return Duel.GetCustomActivityCount(9910060,tp,ACTIVITY_CHAIN)~=0
+		and Duel.GetFlagEffect(tp,9910060)==0 and g:IsExists(c9910060.selector,1,nil,tp,g,sg,1) end
 	for i=1,2 do
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local g1=g:FilterSelect(tp,c9910060.selector,1,1,nil,tp,g,sg,i)
@@ -63,8 +68,7 @@ function c9910060.effcon(e)
 	return e:GetHandler():GetOverlayCount()>0
 end
 function c9910060.discon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and re:IsActiveType(TYPE_MONSTER)
-		and Duel.IsChainDisablable(ev)
+	return ep~=tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev)
 end
 function c9910060.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -75,7 +79,5 @@ function c9910060.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
 function c9910060.disop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsFaceup() or not c:IsRelateToEffect(e) then return end
 	Duel.NegateEffect(ev)
 end

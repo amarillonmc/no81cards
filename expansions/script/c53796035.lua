@@ -1,0 +1,140 @@
+local m=53796035
+local cm=_G["c"..m]
+cm.name="艾布雷普斯"
+function cm.initial_effect(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_LIMIT_SUMMON_PROC)
+	e1:SetCondition(cm.ttcon)
+	e1:SetOperation(cm.ttop)
+	e1:SetValue(SUMMON_TYPE_ADVANCE)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_LIMIT_SET_PROC)
+	e2:SetCondition(cm.setcon)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e3:SetValue(aux.FALSE)
+	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_TRIBUTE_LIMIT)
+	e4:SetValue(cm.tlimit)
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_SUMMON_SUCCESS)
+	e5:SetOperation(cm.sumsuc)
+	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e6:SetCode(m)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetTargetRange(1,0)
+	e6:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)<=1 and e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE)end)
+	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
+	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e7:SetCode(EVENT_TO_GRAVE)
+	e7:SetProperty(EFFECT_FLAG_DELAY)
+	e7:SetCondition(cm.atkcon)
+	e7:SetTarget(cm.atktg)
+	e7:SetOperation(cm.atkop)
+	c:RegisterEffect(e7)
+end
+function cm.ttcon(e,c,minc)
+	if c==nil then return true end
+	return minc<=3 and Duel.CheckTribute(c,3)
+end
+function cm.ttop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=Duel.SelectTribute(tp,c,3,3)
+	c:SetMaterial(g)
+	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
+end
+function cm.setcon(e,c,minc)
+	if not c then return true end
+	return false
+end
+function cm.tlimit(e,c)
+	return not c:IsAttribute(ATTRIBUTE_LIGHT)
+end
+function cm.cfilter(c)
+	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToRemove()
+end
+function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE) then return end
+	local g=Duel.GetMatchingGroup(Card.IsType,tp,0xff,0xff,nil,TYPE_COUNTER)
+	for tc in aux.Next(g) do
+		local le={tc:GetActivateEffect()}
+		for _,te in pairs(le) do
+			local e1=te:Clone()
+			e1:SetDescription(aux.Stringid(m,1))
+			e1:SetRange(LOCATION_DECK)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(tc)
+			e2:SetType(EFFECT_TYPE_FIELD)
+			e2:SetCode(EFFECT_ACTIVATE_COST)
+			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e2:SetRange(LOCATION_DECK)
+			e2:SetTargetRange(1,0)
+			e2:SetLabelObject(e1)
+			e2:SetTarget(function(e,te,tp)return te==e:GetLabelObject()end)
+			e2:SetCost(function(e,te_or_c,tp)return Duel.IsPlayerAffectedByEffect(tp,m) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE,0,3,nil)end)
+			e2:SetOperation(cm.costop)
+			tc:RegisterEffect(e2)
+		end
+	end
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_GRAVE,0,3,3,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetOperation(cm.ready)
+	e1:SetReset(RESET_CHAIN)
+	e1:SetLabelObject(e:GetHandler())
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.ready(e,tp)
+	e:GetLabelObject():SetStatus(STATUS_EFFECT_ENABLED,true)
+	e:Reset()
+end
+function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_ADVANCE)
+end
+function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local tc=g:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e1:SetValue(0)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local ex=e1:Clone()
+		ex:SetCode(EFFECT_SET_DEFENSE_FINAL)
+		tc:RegisterEffect(ex)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_CANNOT_TRIGGER)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2,true)
+		tc=g:GetNext()
+	end
+end

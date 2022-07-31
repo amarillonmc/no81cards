@@ -1,5 +1,6 @@
 --
 function c6160401.initial_effect(c)
+	c:SetSPSummonOnce(6160401)  
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x616),1,1)  
 	c:EnableReviveLimit()
 	--Activate  

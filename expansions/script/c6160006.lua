@@ -1,29 +1,26 @@
 --破碎世界的幸运轮
 function c6160006.initial_effect(c)
 	 --to hand
-	local e1=Effect.CreateEffect(c)  
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)  
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)  
-	e1:SetCode(EVENT_TO_GRAVE)  
-	e1:SetOperation(c6160006.regop)  
-	c:RegisterEffect(e1)  
-end
-	function c6160006.regop(e,tp,eg,ep,ev,re,r,rp)  
-	local c=e:GetHandler()  
-	local e1=Effect.CreateEffect(c)  
-	e1:SetDescription(aux.Stringid(6160006,0,1))  
-	e1:SetCategory(CATEGORY_SEARCH)  
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)  
-	e1:SetCode(EVENT_PHASE+PHASE_END)  
-	e1:SetRange(LOCATION_GRAVE)  
-	e1:SetCountLimit(1,6160006)  
-	e1:SetTarget(c6160006.thtg)  
-	e1:SetOperation(c6160006.thop)  
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)  
-	c:RegisterEffect(e1)  
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(6160003,0))
+	e1:SetCategory(CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_TO_GRAVE)
+	e1:SetCountLimit(1,6160006) 
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCondition(c6160006.condition)
+	e1:SetTarget(c6160006.thtg)
+	e1:SetOperation(c6160006.thop)
+	c:RegisterEffect(e1)
+end 
+function c6160006.cfilter(c)  
+	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER)
 end  
+function c6160006.condition(e,tp,eg,ep,ev,re,r,rp)  
+	return Duel.IsExistingMatchingCard(c6160006.cfilter,tp,LOCATION_ONFIELD,0,1,nil)  
+end   
 function c6160006.thfilter(c,e,tp)  
-	return c:IsLevelAbove(3) and c:IsLevelBelow(8) and c:IsRace(RACE_SPELLCASTER)
+	return c:IsSetCard(0x616) and c:IsType(TYPE_MONSTER) and not c:IsCode(6160006)
 end
 function c6160006.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c6160006.thfilter,tp,LOCATION_DECK,0,1,nil) end

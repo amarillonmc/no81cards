@@ -32,8 +32,11 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.mrop)
 	c:RegisterEffect(e3)
 end
+function cm.ccfilter(c,tp)
+	return c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==tp
+end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,0)==0
+	return Duel.GetMatchingGroupCount(cm.ccfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,tp)==0
 end
 function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemove() end
@@ -104,9 +107,9 @@ function cm.xylabel(c,tp)
 	return x,y
 end
 function cm.gradient(y,x)
-	if y~=0 and x==0 then return 100 end
-	if y~=0 and x~=0 then return y/x end
-	if y==0 and x~=0 then return 0 end
+	if y~=0 and x==0 then return math.pi/2 end
+	if x*y>=0 and x~=0 then return math.atan(y/x) end
+	if x*y<0 and x~=0 then return math.pi+math.atan(y/x) end
 	return 1000
 end
 function cm.direction(c,lc,tp)

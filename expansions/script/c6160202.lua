@@ -4,12 +4,11 @@ function c6160202.initial_effect(c)
 	c:EnableReviveLimit()  
 	aux.AddFusionProcCodeRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x616),2,true)  
 	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,0,Duel.SendtoGrave,REASON_COST)  
-	--spsummon	 
+	--spsummon   
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(6160202,1))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetRange(LOCATION_MZONE)
 	e1:SetProperty(EFFECT_FLAG_DELAY)  
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)  
 	e1:SetCountLimit(1,6160202)

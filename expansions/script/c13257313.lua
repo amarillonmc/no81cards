@@ -48,7 +48,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return f and f:IsExists(Card.IsRelateToBattle,1,nil)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 end
@@ -60,7 +60,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(1-tp,cm.spfilter,tp,0,LOCATION_HAND,1,1,nil,e,1-tp)
 	if g:GetCount()>0 then
-		if Duel.SpecialSummon(g,0,1-tp,1-tp,false,false,POS_FACEUP)~=0 then
+		if Duel.SpecialSummon(g,0,1-tp,1-tp,true,false,POS_FACEUP)~=0 then
 			local tc=g:GetFirst()
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

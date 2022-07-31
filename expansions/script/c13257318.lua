@@ -31,8 +31,19 @@ function cm.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e4:SetValue(aux.tgoval)
 	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_EQUIP)
+	e5:SetCode(EFFECT_IMMUNE_EFFECT)
+	e5:SetValue(cm.efilter1)
+	c:RegisterEffect(e5)
 	
 end
 function cm.eqlimit(e,c)
 	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x5352)
+end
+function cm.efilter1(e,te)
+	local ec=e:GetHandler():GetEquipTarget()
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	return not te:GetOwnerPlayer()~=e:GetHandlerPlayer() and (g==nil and {g:IsContains(ec)})[1]
+	--return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
 end

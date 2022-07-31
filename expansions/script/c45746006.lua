@@ -120,7 +120,7 @@ function cm.initial_effect(c)
 		end
 		e:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
 	end)
-	c:RegisterEffect(e3)
+  --  c:RegisterEffect(e3) 
 end
 function cm.t1(c)
 	return c:IsControlerCanBeChanged() and c:IsFaceup()

@@ -57,11 +57,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--leave field
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_LEAVE_FIELD_P)
-	e2:SetCondition(cm.tdcon)
-	e2:SetOperation(cm.tdop)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCode(EFFECT_SEND_REPLACE)
+	e2:SetTarget(cm.reptg)
+	e2:SetValue(cm.repval)
 	c:RegisterEffect(e2)
 end
 GM_global_to_deck_check=true
@@ -214,16 +214,47 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 	end
 end
-function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
-	return re~=e and GM_global_to_deck_check
+function cm.seqfilter(c,tp)
+	return c:IsLocation(LOCATION_DECK) and c:IsControler(tp)
 end
-function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,m)
+function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return re~=e and GM_global_to_deck_check and eg:IsContains(c) end
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
+	local exg=Group.__band(g,eg):Filter(Card.IsAbleToExtraAsCost,nil)
+	g:Sub(exg)
 	g:AddCard(e:GetHandler())
 	if g:GetCount()>0 then
+		Duel.Hint(HINT_CARD,0,m)
 		GM_global_to_deck_check=false
-		Duel.SendtoDeck(g,nil,1,REASON_EFFECT)
+		local tc=exg:GetFirst()
+		while tc do
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+			e1:SetValue(LOCATION_DECK)
+			tc:RegisterEffect(e1,true)
+			tc=g:GetNext()
+		end
+		Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)
+		local p=tp
+		for i=1,2 do
+			local dg=g:Filter(cm.seqfilter,nil,p)
+			if #dg>1 then
+				Duel.SortDecktop(tp,p,#dg)
+			end
+			for i=1,#dg do
+				local mg=Duel.GetDecktopGroup(p,1)
+				Duel.MoveSequence(mg:GetFirst(),SEQ_DECKBOTTOM)
+			end
+			p=1-tp
+		end
 		GM_global_to_deck_check=true
-	end
+		return true
+	else return false end
+end
+function cm.repval(e,c)
+	return false
 end

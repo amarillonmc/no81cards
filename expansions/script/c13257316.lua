@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_EQUIP)
 	e2:SetCode(EFFECT_UPDATE_DEFENSE)
-	e2:SetValue(1000)
+	e2:SetValue(1500)
 	c:RegisterEffect(e2)
 	--indes
 	local e3=Effect.CreateEffect(c)

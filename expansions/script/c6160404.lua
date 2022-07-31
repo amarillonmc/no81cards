@@ -18,9 +18,11 @@ function c6160404.initial_effect(c)
 	--copy  
 	local e2=Effect.CreateEffect(c)  
 	e2:SetDescription(aux.Stringid(6160403,1))  
-	e2:SetType(EFFECT_TYPE_IGNITION)  
+	e2:SetType(EFFECT_TYPE_QUICK_O) 
+	e2:SetCode(EVENT_FREE_CHAIN) 
+	e2:SetHintTiming(0,TIMING_END_PHASE) 
 	e2:SetRange(LOCATION_MZONE)  
-	e2:SetCountLimit(1,6160403)  
+	e2:SetCountLimit(1,6161404)  
 	e2:SetCost(c6160404.cpcost)  
 	e2:SetTarget(c6160404.cptg)  
 	e2:SetOperation(c6160404.cpop)  
@@ -84,8 +86,7 @@ function c6160404.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
 function c6160404.cpfilter(c)  
-	return (c:GetType()==TYPE_SPELL or c:IsType(TYPE_TRAP)) and c:IsSetCard(0x616) and c:IsAbleToGraveAsCost()  
-		and c:CheckActivateEffect(false,true,false)~=nil  
+	return (c:GetType()==TYPE_SPELL or c:IsType(TYPE_TRAP)) and c:IsSetCard(0x616) and c:IsAbleToGraveAsCost() and c:CheckActivateEffect(false,true,false) and not c:IsType(TYPE_CONTINUOUS) and not c:IsType(TYPE_COUNTER) 
 end  
 function c6160404.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	e:SetLabel(1)  

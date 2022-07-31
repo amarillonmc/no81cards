@@ -24,16 +24,9 @@ function c29065708.initial_effect(c)
 	e1:SetCondition(c29065708.imcon)
 	e1:SetValue(c29065708.efilter)
 	c:RegisterEffect(e1)
-	--cannot remove
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_REMOVE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(LOCATION_ONFIELD+LOCATION_OVERLAY+LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE+LOCATION_EXTRA,0)
-	c:RegisterEffect(e1)
 end
 function c29065708.thfil(c)
-	return c:IsAbleToHand() and c:IsSetCard(0x87ac)
+	return c:IsAbleToHand() and c:IsSetCard(0x87ac) and c:IsType(TYPE_MONSTER)
 end
 function c29065708.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

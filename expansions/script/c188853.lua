@@ -41,7 +41,7 @@ function cm.costfilter(c,tp)
 	return c:IsReleasableByEffect() and c:IsType(TYPE_MONSTER) and (c:IsControler(tp) or c:IsFaceup()) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetLevel(),c:GetRace(),tp)
 end
 function cm.thfilter(c,lv,rac,tp)
-	return c:IsSetCard(0x11b) and not c:IsCode(m) and c:IsAbleToHand() and (rac&RACE_MACHINE==0 or Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,c,lv))
+	return c:IsSetCard(0x11b) and c:IsType(TYPE_MONSTER) and not c:IsCode(m) and c:IsAbleToHand() and (rac&RACE_MACHINE==0 or Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,c,lv))
 end
 function cm.tgfilter(c,lv)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x11b) and not c:IsLevel(lv) and c:IsAbleToGrave()

@@ -2,7 +2,6 @@
 local m=45746011
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:SetSPSummonOnce(m)  
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

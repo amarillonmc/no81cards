@@ -1,0 +1,97 @@
+local m=53796044
+local cm=_G["c"..m]
+cm.name="冬风"
+function cm.initial_effect(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMING_MAIN_END+TIMINGS_CHECK_MONSTER)
+	e1:SetOperation(cm.activate)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCondition(function(e)return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2 end)
+	c:RegisterEffect(e2)
+end
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCondition(cm.con)
+	e1:SetOperation(cm.op)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_PHASE+PHASE_END)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	e3:SetLabel(0)
+	e3:SetCountLimit(1)
+	e3:SetOperation(cm.operation)
+	Duel.RegisterEffect(e3,tp)
+	e1:SetLabelObject(e3)
+	e2:SetLabelObject(e3)
+end
+function cm.filter(c,tp)
+	return c:IsControler(tp) and c:IsPosition(POS_FACEUP_ATTACK)
+end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.filter,1,nil,1-tp)
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local atk=eg:GetSum(Card.GetTextAttack)
+	if atk==0 then return end
+	Duel.Hint(HINT_CARD,0,m)
+	local lp=Duel.GetLP(tp)
+	Duel.SetLP(tp,lp-atk)
+	local ct=e:GetLabelObject():GetLabel()
+	e:GetLabelObject():SetLabel(ct+atk)
+end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	local atk=e:GetLabel()
+	if atk==0 then return end
+	local g=Duel.GetMatchingGroup(function(c,e,tp,atk)return c:IsAttackBelow(atk) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)end,tp,LOCATION_DECK,0,nil,e,tp,atk)
+	if #g==0 or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_CARD,0,m)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local tc=g:Select(tp,1,1,nil):GetFirst()
+	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCountLimit(1)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetLabel(Duel.GetTurnCount())
+		e1:SetLabelObject(tc)
+		e1:SetCondition(cm.descon)
+		e1:SetOperation(cm.desop)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e2:SetRange(LOCATION_MZONE)
+		e2:SetCode(EFFECT_IMMUNE_EFFECT)
+		e2:SetValue(cm.efilter)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
+	end
+	Duel.SpecialSummonComplete()
+end
+function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	return Duel.GetTurnCount()~=e:GetLabel() and tc:GetFlagEffect(m)~=0
+end
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.Destroy(tc,REASON_EFFECT)
+end
+function cm.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
+end

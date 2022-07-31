@@ -104,6 +104,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if index then obj=tama.get(index) end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_WATER,3},{TAMA_ELEMENT_FIRE,3}},obj) then
 		if broken then Duel.BreakEffect() end
+		--[[
 		local fid=e:GetHandler():GetFieldID()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
@@ -122,6 +123,33 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetLabel(fid)
 		e2:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e2,tp)
+		]]
+		local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
+		local g1=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil)
+		local tc=g:GetFirst()
+		while tc do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e2)
+			tc=g:GetNext()
+		end
+		tc=g1:GetFirst()
+		while tc do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CANNOT_ATTACK)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e1)
+			tc=g1:GetNext()
+		end
 		broken=true
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_WATER,2},{TAMA_ELEMENT_WIND,2}},obj) then
@@ -166,6 +194,9 @@ function cm.disable(e,c)
 end
 function cm.ftarget(e,c)
 	return e:GetLabel()~=c:GetFieldID()
+end
+function cm.cafilter(c)
+	return c:GetFieldID()~=e:GetLabel() and (not c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_EFFECT) or bit.band(c:GetOriginalType(),TYPE_EFFECT)==TYPE_EFFECT))
 end
 --[[
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)

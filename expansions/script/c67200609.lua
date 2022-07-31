@@ -30,13 +30,16 @@ end
 --
 function c67200609.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,c) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and c:GetAttack()>=700 end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_MZONE,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_MZONE,0,1,c) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and c:GetAttack()>=700 end
 end
 function c67200609.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_CARD,0,67200609)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g1=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,0,1,1,nil)
+	g:Merge(g1)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then

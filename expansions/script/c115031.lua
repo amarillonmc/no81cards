@@ -3,23 +3,23 @@ c115031.named_with_Arknight=1
 function c115031.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c) 
-	--to hand 
+	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(115031,0))
-	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_DESTROYED)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,115031)
-	e1:SetTarget(c115031.drtg)
-	e1:SetOperation(c115031.drop)
+	e1:SetTarget(c115031.sptg2)
+	e1:SetOperation(c115031.spop2)
 	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_PZONE)
-	e2:SetCountLimit(1,315031)
+	e2:SetCountLimit(1,115032)
 	e2:SetCondition(c115031.spcon)
 	e2:SetTarget(c115031.sptg)
 	e2:SetOperation(c115031.spop)
@@ -53,15 +53,28 @@ function c115031.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) 
-	if Duel.IsExistingMatchingCard(c115031.spfil,tp,LOCATION_EXTRA,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(115031,0)) then 
-	local sg=Duel.SelectMatchingCard(tp,c115031.spfil,tp,LOCATION_EXTRA,0,1,1,nil,e,tp) 
-	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+	if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(115031,1)) then 
+	Duel.BreakEffect()
+	Duel.Draw(tp,1,REASON_EFFECT)
+	end
 	end 
 	end 
 	end 
 end 
-
+function c115031.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c115031.spfil,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c115031.spop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(c115031.spfil,tp,LOCATION_EXTRA,0,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
 
 
 

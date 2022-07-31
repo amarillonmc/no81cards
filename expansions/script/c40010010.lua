@@ -34,9 +34,9 @@ function cm.initial_effect(c)
 	--spsummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_CUSTOM+m)
-	e3:SetRange(LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
+	--e3:SetRange(LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e3:SetTarget(cm.tdtg)
 	e3:SetOperation(cm.tdop)
@@ -133,7 +133,7 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	--Debug.Message("2")
 	if rc and rc==eg:GetFirst() and rc:GetSequence()==c:GetPreviousSequence() and rc:IsControler(tp) then
 		--Debug.Message("3")
-		Duel.RaiseEvent(c,EVENT_CUSTOM+m,nil,0,0,tp,0)
+		Duel.RaiseSingleEvent(c,EVENT_CUSTOM+m,nil,0,0,tp,0)
 	end
 	e:Reset()
 end

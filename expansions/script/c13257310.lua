@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1)
+	e3:SetCost(cm.cost)
 	e3:SetCondition(cm.econ)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
@@ -45,6 +45,12 @@ function cm.eqlimit(e,c)
 end
 function cm.filter(c,def)
 	return c:IsFaceup() and c:IsAttackBelow(def)
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local f=tama.cosmicFighters_equipGetFormation(c)
+	if chk==0 then return f and f:GetCount()<c:GetFlagEffect(m) end
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function cm.econ(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetEquipTarget()

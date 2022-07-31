@@ -1,4 +1,4 @@
---史尔特尔
+--播火巨人
 function c9910624.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),4)
@@ -20,12 +20,14 @@ function c9910624.initial_effect(c)
 	e2:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
+	e2:SetCondition(c9910624.descon)
 	e2:SetTarget(c9910624.destg)
 	e2:SetOperation(c9910624.desop)
 	c:RegisterEffect(e2)
 end
 function c9910624.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and Duel.IsChainDisablable(ev) and e:GetHandler():GetFlagEffect(9910624)<=0
+	return Duel.GetTurnPlayer()~=tp and rp==1-tp and Duel.IsChainDisablable(ev)
+		and e:GetHandler():GetFlagEffect(9910624)<=0
 end
 function c9910624.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -63,7 +65,7 @@ function c9910624.negop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 	end
-	c:RegisterFlagEffect(9910624,RESET_EVENT+RESETS_STANDARD,0,1)
+	c:RegisterFlagEffect(9910624,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
@@ -72,10 +74,16 @@ function c9910624.negop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_IMMUNE_EFFECT)
-	e3:SetValue(c9910624.imfilter)
+	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e3:SetValue(1)
 	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_IMMUNE_EFFECT)
+	e4:SetValue(c9910624.imfilter)
+	e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e4)
 end
 function c9910624.imfilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer()
@@ -93,18 +101,29 @@ function c9910624.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	Duel.SendtoGrave(tc,REASON_EFFECT)
 end
+function c9910624.descon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
+end
 function c9910624.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsOnField() end
 	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g1=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
-	local g2=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	local g1=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,0,1,2,nil)
+	local g2=Group.CreateGroup()
+	for tc in aux.Next(g1) do
+		g2:Merge(tc:GetColumnGroup())
+	end
 	g1:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,g1:GetCount(),0,0)
 end
 function c9910624.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
-	if tc:IsRelateToEffect(e) then g:AddCard(tc) end
-	Duel.Destroy(g,REASON_EFFECT)
+	local g1=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	local g2=Group.CreateGroup()
+	for tc in aux.Next(g1) do
+		g2:Merge(tc:GetColumnGroup())
+	end
+	g1:Merge(g2)
+	if g1:GetCount()>0 then
+		Duel.Destroy(g1,REASON_EFFECT)
+	end
 end

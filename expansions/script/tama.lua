@@ -4,6 +4,7 @@ tama=tama or {}
 xpcall(function() require("expansions/script/c" + "code") end,function() require("script/c" + "code") end) ]]
 TAMA_THEME_CODE=13250000
 tama.loaded_metatable_list=tama.loaded_metatable_list or {}
+--读取卡的metatable，通常以c+code[card]的形式存在
 function tama.load_metatable(code)
 	local m1=_G["c"..code]
 	if m1 then return m1 end
@@ -21,6 +22,7 @@ function tama.load_metatable(code)
 		_G["c"..code]=nil
 	end
 end
+--c可以是code，里面是code的table，card。此函数用于判断c对应的code是否拥有内置字段series。v用于判断是否拥有内置子字段。f用于从card类的c获取code。后续参数用于判断c是否是对应的卡名
 function tama.is_series(c,series,v,f,...) 
 	local codet=nil
 	if type(c)=="number" then
@@ -36,11 +38,12 @@ function tama.is_series(c,series,v,f,...)
 		for i,ncode in pairs(ncodet) do
 			if code==ncode then return true end
 		end
-		local mt=tama.LoadMetatable(code)
-		if mt and mt["is_series_with_"..series] and (not v or mt["is_series_with_"..series]==v) then return true end
+		local mt=tama.load_metatable(code)
+		if mt and mt["tama_series_with_"..series] and (not v or mt["tama_series_with_"..series]==v) then return true end
 	end
 	return false
 end
+--深度复制table
 function tama.DeepCopy( obj )   
 	local InTable = {};
 	local function Func(obj)
@@ -56,7 +59,8 @@ function tama.DeepCopy( obj )
 	end
 	return Func(obj) --若表中有表，则把内嵌的表也复制了
 end
-function tama.getTargetTable(c,str)
+--tama的数据结构是{{键1,值1},{键2,值2}}的形式，参数填键就能获取对应的值
+function tama.getTargetTable(c,str,f)
 	local mt=tama.load_metatable(c:GetOriginalCode())
 	if mt==nil or type(mt[c])~="table" then return nil end
 	local eflist=mt[c]

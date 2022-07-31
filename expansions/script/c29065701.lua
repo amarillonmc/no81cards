@@ -15,12 +15,12 @@ function c29065701.initial_effect(c)
 	e1:SetCode(EFFECT_DIRECT_ATTACK)
 	e1:SetCondition(c29065701.dacon)
 	c:RegisterEffect(e1)
-	--
+	--SendtoGrave
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_LEAVE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,29065701)
 	e3:SetCondition(c29065701.efcon)
 	e3:SetTarget(c29065701.eftg)
@@ -28,7 +28,7 @@ function c29065701.initial_effect(c)
 	c:RegisterEffect(e3)  
 	local e4=e3:Clone()
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_TO_GRAVE)  
+	e4:SetCode(EVENT_MOVE)
 	e4:SetCondition(c29065701.xefcon)
 	c:RegisterEffect(e4)
 end
@@ -38,22 +38,30 @@ function c29065701.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c29065701.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+		e1:SetValue(LOCATION_REMOVED)
+		c:RegisterEffect(e1,true)
+	end
 end
 function c29065701.dacon(e,tp,eg,ep,ev,re,r,rp)
 	 local tp=e:GetHandlerPlayer()
 	 return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0,nil)<Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE,nil)
 end
-function c29065701.efcon(e,tp,eg,ep,ev,re,r,rp
+function c29065701.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end 
 function c29065701.xefcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsPreviousLocation(LOCATION_OVERLAY)  and (c:IsReason(REASON_COST) or c:IsReason(REASON_EFFECT))
+	return c:IsPreviousLocation(LOCATION_OVERLAY) and (c:IsReason(REASON_COST) or c:IsReason(REASON_EFFECT))
 end
 function c29065701.tgfil(c)
-	return c:IsLevel(12)
+	return c:IsLevel(12) and c:IsType(TYPE_MONSTER) and not c:IsCode(29065701)
 end
 function c29065701.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29065701.tgfil,tp,LOCATION_DECK,0,1,nil) end

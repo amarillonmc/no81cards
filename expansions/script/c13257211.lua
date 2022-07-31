@@ -41,6 +41,13 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_BE_MATERIAL)
+	e4:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
+	e4:SetCondition(cm.accon)
+	e4:SetOperation(cm.acop)
+	c:RegisterEffect(e4)
 	local e12=Effect.CreateEffect(c)
 	e12:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e12:SetCode(EVENT_SUMMON_SUCCESS)
@@ -86,30 +93,11 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND,0,1,1,nil)
 	local tc=g:GetFirst()
-	if tc then
-		local s1=tc:IsSummonable(true,nil,1)
-		if s1 then
-			Duel.Summon(tp,tc,true,nil,1)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetDescription(aux.Stringid(m,5))
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(TAMA_COSMIC_BATTLESHIP_CODE_ADD_CORE_LEVEL)
-			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetRange(LOCATION_MZONE)
-			e1:SetValue(1)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
-			tc:RegisterEffect(e1,true)
-			--[[
-			local label=tc:GetFlagEffectLabel(13257200)
-			tc:ResetFlagEffect(13257200)
-			tc:RegisterFlagEffect(13257200,RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,1,label+1,aux.Stringid(m,5))
-			tc:RegisterFlagEffect(13257200,0,0,0,label)
-			]]
-		end
+	if tc and tc:IsSummonable(true,nil,1) then
+		Duel.Summon(tp,tc,true,nil,1)
 	end
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -163,6 +151,24 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.splimit(e,c)
 	return not c:IsSetCard(0x353)
+end
+function cm.accon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local rc=c:GetReasonCard()
+	return r==REASON_SUMMON and rc:IsSetCard(0x353)
+end
+function cm.acop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=c:GetReasonCard()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(m,5))
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(TAMA_COSMIC_BATTLESHIP_CODE_ADD_CORE_LEVEL)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(1)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e1,true)
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(11,0,aux.Stringid(m,4))

@@ -123,6 +123,6 @@ function cm.penop(e,tp,eg,ep,ev,re,r,rp)
   local con3=lc:IsLocation(LOCATION_MZONE)
   local con4=lc:IsLocation(LOCATION_EXTRA) and (Duel.GetMatchingGroupCount(aux.FilterBoolFunction(Card.IsCode,31400025),tp,LOCATION_ONFIELD,0,nil)<=0)
   if con1 and con2 and (con3 or con4) then
-  Duel.MoveToField(lc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+  Duel.MoveToField(lc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
   end
 end

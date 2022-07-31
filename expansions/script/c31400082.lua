@@ -97,9 +97,9 @@ end
 function cm.rfilter_check(c,e,tp,tc)
 	local lv=c:GetLevel()-tc:GetLevel()
 	if lv<0 then lv=-lv end
-	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup() or c:IsControler(tp)) and c:IsLevelAbove(1) and c:IsSetCard(0x163) and Duel.IsExistingMatchingCard(cm.spfilter_check,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp,lv)
+	return c:IsLevelAbove(1) and Duel.IsExistingMatchingCard(cm.spfilter_check,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp,lv,Group.FromCards(c,tc))
 end
-function cm.spfilter_check(c,e,tp,lv)
+function cm.spfilter_check(c,e,tp,lv,g)
 	local loccheck
 	if c:IsLocation(LOCATION_EXTRA) then
 		loccheck=Duel.GetLocationCountFromEx(tp,tp,g,c)>0
@@ -116,14 +116,14 @@ end
 function cm.rfilter_op(c,e,tp,tc)
 	local lv=c:GetLevel()-tc:GetLevel()
 	if lv<0 then lv=-lv end
-	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup() or c:IsControler(tp)) and c:IsLevelAbove(1) and c:IsSetCard(0x163) and Duel.IsExistingMatchingCard(cm.spfilter_op,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp,lv)
+	return c:IsLevelAbove(1) and Duel.IsExistingMatchingCard(cm.spfilter_op,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp,lv,Group.FromCards(c,tc))
 end
-function cm.spfilter_op(c,e,tp,lv)
+function cm.spfilter_op(c,e,tp,lv,g)
 	local loccheck
 	if c:IsLocation(LOCATION_EXTRA) then
-		loccheck=Duel.GetLocationCountFromEx(tp,tp,g,c)>0
+		loccheck=(Duel.GetLocationCountFromEx(tp,tp,g,c)>0)
 	else
-		loccheck=Duel.GetMZoneCount(tp,g)>0 and not c:IsHasEffect(EFFECT_NECRO_VALLEY)
+		loccheck=(Duel.GetMZoneCount(tp,g)>0) and not c:IsHasEffect(EFFECT_NECRO_VALLEY)
 	end
 	return c:IsSetCard(0x163) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and loccheck and c:IsLevel(lv)
 end

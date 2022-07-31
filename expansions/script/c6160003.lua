@@ -19,6 +19,7 @@ function c6160003.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetCountLimit(1,6161003)
+	e2:SetCost(c6160003.cost)
 	e2:SetTarget(c6160003.sptg2)
 	e2:SetOperation(c6160003.spop2)
 	c:RegisterEffect(e2)
@@ -30,24 +31,29 @@ function c6160003.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0) 
 end
 function c6160003.thop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetTargetRange(0xff,0xff)
-	e1:SetTarget(c6160003.splimit)  
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		local e1=Effect.CreateEffect(e:GetHandler())  
+		e1:SetType(EFFECT_TYPE_FIELD)  
+		e1:SetRange(LOCATION_MZONE)  
+		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)  
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)  
+		e1:SetAbsoluteRange(tp,1,0)  
+		e1:SetTarget(c6160003.splimit)  
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)  
+		c:RegisterEffect(e1,true) 
 	end
 end
 function c6160003.splimit(e,c)
-	return not c:IsRace(RACE_SPELLCASTER)
+	return not c:IsSetCard(0x616)
 end
+function c6160003.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end  
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)  
+end  
 function c6160003.spfilter(c,e,tp)
-	return c:IsSetCard(0x616) and c:IsLevelBelow(3) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x616) and c:IsLevelBelow(3) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c6160003.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -24,7 +24,7 @@ function c115034.initial_effect(c)
 	c:RegisterEffect(e2)
 	--to extra
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(115035,1))
+	e3:SetDescription(aux.Stringid(115034,1))
 	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_TOEXTRA)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)

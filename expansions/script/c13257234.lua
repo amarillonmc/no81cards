@@ -5,8 +5,10 @@ xpcall(function() require("expansions/script/tama") end,function() require("scri
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
 	--remove
 	local e2=Effect.CreateEffect(c)
@@ -20,6 +22,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.reop)
 	c:RegisterEffect(e2)
 	--Effect Draw
+	--[[
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_DRAW_COUNT)
@@ -35,6 +38,7 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_FZONE)
 	e4:SetOperation(cm.activate)
 	c:RegisterEffect(e4)
+	]]
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
 	e5:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -71,6 +75,20 @@ function cm.initial_effect(c)
 	cm[c]=elements
 	
 end
+function cm.thfilter(c)
+	return c:IsCode(13257250) and c:IsAbleToHand()
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	Duel.Hint(11,0,aux.Stringid(m,3))
+	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,6)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+	end
+end
 function cm.recon(e,tp)
 	return not e:GetHandler():IsForbidden() and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
@@ -86,6 +104,15 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(1,0)
 	e1:SetValue(m)
 	Duel.RegisterEffect(e1,tp)
+	--recover
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,2))
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_DRAW)
+	e2:SetOperation(cm.recop)
+	Duel.RegisterEffect(e2,tp)
+	--[[
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -94,9 +121,14 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCondition(cm.spcon)
 	e2:SetOperation(cm.spop)
 	Duel.RegisterEffect(e2,tp)
+	]]
 end
 function cm.chkfilter(c,tp)
 	return c:IsSetCard(0x353) and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_MZONE)
+end
+function cm.recop(e,tp,eg,ep,ev,re,r,rp)
+	if ep~=tp then return end
+	Duel.Recover(tp,1000,REASON_EFFECT)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.chkfilter,1,nil,tp) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0

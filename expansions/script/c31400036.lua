@@ -58,7 +58,6 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,1-tp,LOCATION_MZONE)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MESSAGE,tp,HINTMSG_RELEASE)
-	Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,0,LOCATION_MZONE,1,1,nil)
-	Duel.Release(sg,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	Duel.Release(Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,0,LOCATION_MZONE,1,1,nil),REASON_EFFECT)
 end

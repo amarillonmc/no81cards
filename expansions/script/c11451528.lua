@@ -25,6 +25,9 @@ function cm.initial_effect(c)
 	e3:SetCondition(cm.recon)
 	e3:SetOperation(cm.reop)
 	c:RegisterEffect(e3)
+	local e6=e3:Clone()
+	e6:SetCode(EVENT_CHAIN_NEGATED)
+	c:RegisterEffect(e6)
 	--Win
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -62,10 +65,19 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoExtraP(sg,tp,REASON_EFFECT)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
+	local c=e:GetHandler()
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAIN_SOLVED)
+	e3:SetOperation(cm.sop)
+	e3:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e3,tp)
+end
+function cm.sop(e,tp,eg,ep,ev,re,r,rp)
+	if ep~=tp then e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1) end
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and e:GetHandler():GetFlagEffect(m)~=0
+	return Duel.GetCurrentChain()==1 and (e:GetHandler():GetFlagEffect(m)>0 or (ep~=tp and e:GetCode()~=EVENT_CHAIN_NEGATED))
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsReleasable,tp,LOCATION_ONFIELD,0,e:GetHandler())

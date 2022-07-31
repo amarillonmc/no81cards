@@ -43,7 +43,7 @@ function c6160503.activate(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function c6160503.hdfilter(c)  
-	return c:IsFaceup() and c:IsSetCard(0x616) and c:IsAbleToHand() 
+	return c:IsFaceup() and c:IsSetCard(0x616) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() 
 end
 function c6160503.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c6160503.hdfilter(chkc) end  

@@ -70,7 +70,7 @@ end
 
 --e2
 function c33200913.thfilter(c)
-	return c:IsSetCard(0x332a,0x532a) and c:IsType(TYPE_MONSTER) and not c:IsCode(33200913) and c:IsAbleToHand()
+	return c:IsSetCard(0x332a) and c:IsType(TYPE_MONSTER) and not c:IsCode(33200913) and c:IsAbleToHand()
 end
 function c33200913.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33200913.thfilter,tp,LOCATION_DECK,0,1,nil) and (e:GetHandler():IsLocation(LOCATION_MZONE) or (e:GetHandler():IsLocation(LOCATION_HAND) and e:GetHandler():IsAbleToExtra())) end

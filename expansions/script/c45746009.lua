@@ -6,6 +6,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,m)
 	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
 		if chk==0 then return Duel.IsExistingMatchingCard(cm.tf1,tp,LOCATION_DECK,0,1,nil) end
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
@@ -23,18 +24,6 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCountLimit(1,m)
-	e2:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if chk==0 then return Duel.IsExistingMatchingCard(cm.tf2,tp,LOCATION_DECK,0,1,nil) end
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
-	end)
-	e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,cm.tf2,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-		end
-	end)
 	c:RegisterEffect(e2)
 	local e3=e1:Clone()
 	e3:SetCategory(CATEGORY_CONTROL)
@@ -137,10 +126,6 @@ end
 --e1
 function cm.tf1(c)
 	return c:IsSetCard(0x5880) and c:IsAbleToHand()
-end
---e2
-function cm.tf2(c)
-	return c:IsSetCard(0x5880) and c:IsAbleToRemove()
 end
 --e3
 function cm.f3(c)

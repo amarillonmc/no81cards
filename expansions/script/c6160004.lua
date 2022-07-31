@@ -9,18 +9,17 @@ function c6160004.initial_effect(c)
 	e1:SetCondition(c6160004.spcon)  
 	e1:SetOperation(c6160004.spop)  
 	c:RegisterEffect(e1)   
-	 --negative  
+	  --Negate  
 	local e2=Effect.CreateEffect(c)  
-	e2:SetDescription(aux.Stringid(36734924,0))  
-	e2:SetCategory(CATEGORY_NEGATE)  
+	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)  
 	e2:SetType(EFFECT_TYPE_QUICK_O)  
-	e2:SetRange(LOCATION_MZONE)  
 	e2:SetCode(EVENT_CHAINING)  
-	e2:SetCountLimit(1)  
-	e2:SetCondition(c6160004.condition)  
+	e2:SetRange(LOCATION_MZONE)  
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)  
+	e2:SetCondition(c6160004.condition)   
 	e2:SetTarget(c6160004.target)  
 	e2:SetOperation(c6160004.operation)  
-	c:RegisterEffect(e2)  
+	c:RegisterEffect(e2)   
 end
 function c6160004.cfilter(c)  
 	return c:IsSetCard(0x616) and c:IsAbleToGraveAsCost()  
@@ -53,8 +52,8 @@ function c6160004.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(sg,REASON_COST)  
 end  
 function c6160004.filter(c,tp)  
-	return c:IsLocation(LOCATION_MZONE) and c:IsFaceup()
-end  
+	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
+end
 function c6160004.condition(e,tp,eg,ep,ev,re,r,rp)  
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end  
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)  
@@ -63,5 +62,13 @@ function c6160004.condition(e,tp,eg,ep,ev,re,r,rp)
 end  
 function c6160004.target(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return true end  
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)	 
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)  
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then  
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)  
+	end  
+end  
+function c6160004.operation(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then 
+	Duel.Destroy(eg,REASON_EFFECT)  
+	end  
 end  

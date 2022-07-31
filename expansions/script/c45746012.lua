@@ -2,7 +2,26 @@
 local m=45746012
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
+		if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.t2,tp,LOCATION_REMOVED,0,1,nil,e,tp)end
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED)
+	end)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		local g=Duel.GetMatchingGroup(cm.t2,tp,LOCATION_REMOVED,0,nil,e,tp)
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+			if g:GetCount()>0 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+				local g=Duel.SelectMatchingCard(tp,cm.t2,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
+				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+			end
+		end
+	end)
+	c:RegisterEffect(e1)
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_DRAW)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)

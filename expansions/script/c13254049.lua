@@ -82,17 +82,26 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 	e2:SetTargetRange(LOCATION_SZONE+LOCATION_HAND,0)
 	e2:SetTarget(cm.eftg)
 	e2:SetLabelObject(e1)
+	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.eftg(e,c)
 	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x356)
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local ct=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
+	if chk==0 then return c:GetFlagEffect(m)<ct end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

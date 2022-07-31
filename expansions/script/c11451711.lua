@@ -31,8 +31,11 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.mrop)
 	c:RegisterEffect(e3)
 end
+function cm.ccfilter(c,tp)
+	return c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==tp
+end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,0)==0
+	return Duel.GetMatchingGroupCount(cm.ccfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,tp)==0
 end
 function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemove() end

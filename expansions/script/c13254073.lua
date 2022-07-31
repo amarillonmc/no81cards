@@ -78,8 +78,22 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetOperatedGroup():IsExists(cm.cfilter,1,nil) then
 			Duel.Draw(tp,1,REASON_EFFECT)
 		elseif Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then 
-			Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD) end
+			Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD) 
+			--activate limit
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+			e1:SetTargetRange(1,0)
+			e1:SetValue(cm.actlimit)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+		end
 	end
+end
+function cm.actlimit(e,re,rp)
+	local rc=re:GetHandler()
+	return rc:IsLocation(LOCATION_GRAVE)
 end
 function cm.filter(c)
 	return c:IsSummonLocation(LOCATION_HAND+LOCATION_DECK) and c:IsSetCard(0x5356)

@@ -15,14 +15,14 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_EQUIP)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(-1000)
+	e1:SetValue(-800)
 	e1:SetCondition(cm.atkcon)
 	c:RegisterEffect(e1)
 	--def up
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_EQUIP)
 	e2:SetCode(EFFECT_UPDATE_DEFENSE)
-	e2:SetValue(-1500)
+	e2:SetValue(-1200)
 	e2:SetCondition(cm.atkcon)
 	c:RegisterEffect(e2)
 	--indes
@@ -56,10 +56,16 @@ function cm.initial_effect(c)
 	local e6=e5:Clone()
 	e6:SetCode(EVENT_REMOVE)
 	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e7:SetCode(EVENT_EQUIP)
+	e7:SetRange(LOCATION_SZONE)
+	e7:SetOperation(cm.desop)
+	c:RegisterEffect(e7)
 	
 end
 function cm.eqlimit(e,c)
-	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x5352)
+	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,nil,0x5352)
 end
 function cm.atkcon(e)
 	return not e:GetHandler():GetEquipTarget():IsSetCard(0x351)
@@ -101,4 +107,15 @@ function cm.eqtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,cm.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,c)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,c,1,0,0)
+end
+function cm.filter(c,ec)
+	return ec:GetEquipTarget()==c
+end
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	if eg:IsContains(e:GetHandler()) then
+		local ec=e:GetHandler():GetEquipTarget()
+		if ec:IsAttackBelow(0) or ec:IsDefenseBelow(0) then
+			Duel.Destroy(ec,REASON_EFFECT)
+		end
+	end
 end

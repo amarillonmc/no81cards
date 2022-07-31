@@ -51,7 +51,7 @@ function cm.spfilter(c,tc)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
-	return Duel.IsExistingMatchingCard(cm.spfilter,c:GetControler(),LOCATION_ONFIELD,0,1,nil,c)
+	return Duel.IsExistingMatchingCard(cm.spfilter,c:GetControler(),LOCATION_ONFIELD,0,2,nil,c)
 end
 function cm.spgoal(g)
 	return true
@@ -59,7 +59,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,lmat,min,max)
 	local mg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_ONFIELD,0,nil,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=mg:SelectSubGroup(tp,cm.spgoal,true,1,1,tp,c,gf,lmat)
+	local g=mg:SelectSubGroup(tp,cm.spgoal,true,2,2,tp,c,gf,lmat)
 	if g then
 		g:KeepAlive()
 		e:SetLabelObject(g)

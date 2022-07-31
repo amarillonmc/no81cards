@@ -9,7 +9,7 @@ function c115029.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_DESTROYED)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,115029)
 	e1:SetTarget(c115029.thtg)
 	e1:SetOperation(c115029.thop)
@@ -19,7 +19,7 @@ function c115029.initial_effect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_PZONE)
-	e2:SetCountLimit(1,315029)
+	e2:SetCountLimit(1,115030)
 	e2:SetCondition(c115029.spcon)
 	e2:SetTarget(c115029.sptg)
 	e2:SetOperation(c115029.spop)
@@ -56,7 +56,7 @@ function c115029.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) 
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
@@ -66,6 +66,7 @@ function c115029.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(c115029.srop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+	end
 	end 
 	end
 end

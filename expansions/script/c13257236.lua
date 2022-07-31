@@ -5,8 +5,10 @@ xpcall(function() require("expansions/script/tama") end,function() require("scri
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
 	--remove
 	local e2=Effect.CreateEffect(c)
@@ -31,6 +33,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 	--unreleaseable nonsum
+	--[[
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetTargetRange(LOCATION_MZONE,0)
@@ -51,9 +54,10 @@ function cm.initial_effect(c)
 	local e8=e4:Clone()
 	e8:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	c:RegisterEffect(e8)
+	]]
 	--draw
 	local e9=Effect.CreateEffect(c)
-	e9:SetDescription(aux.Stringid(m,1))
+	e9:SetDescription(aux.Stringid(m,5))
 	e9:SetCategory(CATEGORY_DRAW)
 	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e9:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -70,6 +74,20 @@ function cm.initial_effect(c)
 	elements={{"theme_effect",e2}}
 	cm[c]=elements
 	
+end
+function cm.thfilter(c)
+	return c:IsCode(13257245) and c:IsAbleToHand()
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	Duel.Hint(11,0,aux.Stringid(m,4))
+	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,6)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+	end
 end
 function cm.recon(e,tp)
 	return not e:GetHandler():IsForbidden() and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
@@ -95,6 +113,16 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e2:SetValue(cm.dtcon)
 	Duel.RegisterEffect(e2,tp)
+	--extra summon
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,3))
+	e3:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+	e3:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
+	e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x353))
+	Duel.RegisterEffect(e3,tp)
+	--[[
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,3))
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -103,6 +131,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetTargetRange(1,0)
 	e3:SetTarget(cm.sumlimit)
 	Duel.RegisterEffect(e3,tp)
+	]]
 end
 function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLocation(LOCATION_EXTRA)
@@ -128,16 +157,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter(c)
-	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and c:IsLevelAbove(5) and c:IsSetCard(0x353)
+	return c:IsSummonType(SUMMON_TYPE_ADVANCE) and c:IsLevelAbove(5) and c:IsSetCard(0x353) and c:IsSummonPlayer(tp)
 end
 function cm.cfilter1(c)
-	return c:IsLevelAbove(5) and c:IsSetCard(0x353)
+	return c:IsFaceup() and c:IsLevelAbove(5) and c:IsSetCard(0x353) and c:IsSummonPlayer(tp)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==tp and eg:IsExists(cm.cfilter,1,nil)
+	return eg:IsExists(cm.cfilter,1,nil)
 end
 function cm.drcon1(e,tp,eg,ep,ev,re,r,rp)
-	return ep==tp and eg:IsExists(cm.cfilter1,1,nil)
+	return eg:IsExists(cm.cfilter1,1,nil)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

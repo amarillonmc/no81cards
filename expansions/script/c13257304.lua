@@ -10,7 +10,6 @@ function c13257304.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.necon)
 	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.netg)
@@ -52,7 +51,7 @@ function cm.necon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and Duel.IsChainNegatable(ev) and Duel.GetTurnPlayer()==tp
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x351) and c:IsAbleToHandAsCost() and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+	return c:IsFaceup() and c:IsSetCard(0x351) and c:IsAbleToHandAsCost() and not c:IsStatus(STATUS_BATTLE_DESTROYED) and not c:IsCode(m)
 end
 function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x352) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)

@@ -5,7 +5,7 @@ xpcall(function() require("expansions/script/tama") end,function() require("scri
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -14,7 +14,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetDescription(aux.Stringid(m,2))
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -57,12 +57,33 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
 		local code=tc:GetCode()
+		--[[
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,code)
 		if g:GetCount()>0 then
 			Duel.Hint(12,0,aux.Stringid(m,7))
 			Duel.SendtoHand(g,tp,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
+		end
+		]]
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,code)
+		local tc=g:GetFirst()
+		if tc then
+			Duel.Hint(12,0,aux.Stringid(m,7))
+			if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
+				Duel.BreakEffect()
+				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_FIELD)
+				e1:SetCode(EFFECT_CANNOT_SUMMON)
+				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+				e1:SetReset(RESET_PHASE+PHASE_END)
+				e1:SetTargetRange(1,0)
+				Duel.RegisterEffect(e1,tp)
+			else
+				Duel.ConfirmCards(1-tp,tc)
+			end
 		end
 	end
 end

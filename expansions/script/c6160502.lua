@@ -23,7 +23,7 @@ function c6160502.initial_effect(c)
 	c:RegisterEffect(e2)  
 end 
 function c6160502.thfilter(c)  
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x616)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x616) 
 end  
 function c6160502.activate(e,tp,eg,ep,ev,re,r,rp)  
 	if not e:GetHandler():IsRelateToEffect(e) then return end  

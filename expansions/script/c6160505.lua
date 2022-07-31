@@ -25,7 +25,7 @@ function c6160505.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c6160505.cfilter(c)  
-	return c:IsFaceup() and c:IsType(TYPE_LINK) and c:IsRace(RACE_SPELLCASTER)
+	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER)
 end  
 function c6160505.thcon(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.IsExistingMatchingCard(c6160505.cfilter,tp,LOCATION_MZONE,0,1,nil)  
@@ -47,7 +47,7 @@ function c6160505.thop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function c6160505.rfilter(c)  
-	return c:IsFaceup()  and c:IsType(TYPE_FUSION) and c:IsRace(RACE_SPELLCASTER)
+	return c:IsFaceup()  and c:IsType(TYPE_LINK) and c:IsRace(RACE_SPELLCASTER)
 end  
 function c6160505.condition(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.IsExistingMatchingCard(c6160505.rfilter,tp,LOCATION_MZONE,0,1,e:GetHandler())

@@ -58,15 +58,9 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) or not c:IsRelateToEffect(e) or not ec then return end
 	if ec and ec:IsFaceup() then
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e4:SetRange(LOCATION_MZONE)
-		e4:SetCode(EFFECT_IMMUNE_EFFECT)
-		e4:SetValue(cm.efilter1)
-		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
-		ec:RegisterEffect(e4,true)
-
+		Duel.Destroy(tc,REASON_EFFECT)
+		if tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA+LOCATION_HAND) then return end
+		Duel.BreakEffect()
 		if not Duel.Equip(tp,tc,ec,false) then return end
 		--Add Equip limit
 		local e1=Effect.CreateEffect(c)
@@ -88,6 +82,14 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCondition(cm.phcon)
 		e2:SetOperation(cm.phop)
 		tc:RegisterEffect(e2)
+		local e4=Effect.CreateEffect(e:GetHandler())
+		e4:SetType(EFFECT_TYPE_SINGLE)
+		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e4:SetRange(LOCATION_MZONE)
+		e4:SetCode(EFFECT_IMMUNE_EFFECT)
+		e4:SetValue(cm.efilter1)
+		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
+		ec:RegisterEffect(e4,true)
 	else Duel.SendtoGrave(tc,REASON_RULE) end
 end
 function cm.phcon(e,tp,eg,ep,ev,re,r,rp)

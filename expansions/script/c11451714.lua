@@ -33,8 +33,11 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.mrop)
 	c:RegisterEffect(e3)
 end
+function cm.ccfilter(c,tp)
+	return c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==tp
+end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,0)==0
+	return Duel.GetMatchingGroupCount(cm.ccfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,tp)==0
 end
 function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemove() end
@@ -91,7 +94,7 @@ function cm.sumfilter(c,e,tp)
 end
 function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(cm.sumfilter,tp,LOCATION_HAND,0,nil,e,tp)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.sumfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 	local dr=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<c:GetFlagEffectLabel(11451717)
 	local b1=0
 	local fid=e:GetLabel()

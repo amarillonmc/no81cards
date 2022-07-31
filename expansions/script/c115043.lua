@@ -1,6 +1,7 @@
 --方舟骑士-临光·耀骑士
 c115043.named_with_Arknight=1
 function c115043.initial_effect(c)
+	aux.AddCodeList(c,115045,115039)
 	c:EnableReviveLimit()
 	--pendulum summon
 	aux.EnablePendulumAttribute(c) 
@@ -26,7 +27,7 @@ function c115043.initial_effect(c)
 	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_IGNITION) 
 	e3:SetRange(LOCATION_PZONE)  
-	e3:SetCountLimit(1,315043) 
+	e3:SetCountLimit(1,115043) 
 	e3:SetCondition(c115043.pspcon)
 	e3:SetTarget(c115043.psptg) 
 	e3:SetOperation(c115043.pspop) 

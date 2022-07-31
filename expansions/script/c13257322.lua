@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetCountLimit(1)
+	e3:SetCost(cm.cost)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
 	c:RegisterEffect(e3)
@@ -31,6 +31,12 @@ function cm.initial_effect(c)
 end
 function cm.eqlimit(e,c)
 	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x6352)
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local f=tama.cosmicFighters_equipGetFormation(c)
+	if chk==0 then return f and f:GetCount()<c:GetFlagEffect(m) end
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function cm.desfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP)

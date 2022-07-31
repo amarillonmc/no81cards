@@ -2,7 +2,7 @@ local m=31400050
 local cm=_G["c"..m]
 cm.name="归亡死恶魔"
 function cm.initial_effect(c)
-	c:SetSPSummonOnce(31400050)
+	c:SetSPSummonOnce(m)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -18,7 +18,6 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_GRAVE)
 	e1:SetValue(SUMMON_VALUE_SELF)
 	e1:SetCondition(cm.dualscon)
-	e1:SetOperation(cm.dualsop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -51,8 +50,6 @@ function cm.dualscon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return not c:IsDualState() and c:IsCanBeSpecialSummoned(e,1,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-end
-function cm.dualsop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function cm.actlimit(e,re,tp)
 	return aux.IsDualState(e)

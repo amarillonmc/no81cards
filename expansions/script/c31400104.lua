@@ -66,12 +66,12 @@ function cm.srgfilter(g,lv)
 	return g:GetSum(Card.GetLevel)<=lv
 end
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil):CheckSubGroup(cm.srgfilter,nil,nil,e:GetHandler():GetLevel()) end
+	if chk==0 then return Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil):FilterCount(Card.IsLevelBelow,nil,e:GetHandler():GetLevel()) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil):Filter(Card.IsLevelBelow,nil,e:GetHandler():GetLevel())
 	aux.GCheckAdditional=aux.dncheck
 	local tg=g:SelectSubGroup(tp,cm.srgfilter,false,1,#g,e:GetHandler():GetLevel())
 	aux.GCheckAdditional=nil
@@ -97,6 +97,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
 	if not aux.NecroValleyFilter(nil)(c) then return end
 	local mg=Duel.GetRitualMaterial(tp)
 	mg:RemoveCard(c)

@@ -44,7 +44,7 @@ function cm.racecon(e)
 end
 function cm.tpcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return (c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsPreviousLocation(LOCATION_HAND+LOCATION_DECK)) or c:IsSummonType(SUMMON_TYPE_NORMAL)
+	return (c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsPreviousLocation(LOCATION_HAND+LOCATION_EXTRA)) or c:IsSummonType(SUMMON_TYPE_NORMAL)
 end
 function cm.tptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsForbidden() and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end

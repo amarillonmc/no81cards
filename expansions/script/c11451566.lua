@@ -31,6 +31,8 @@ function cm.lfilter2(c,tc)
 	return false
 end
 function cm.GetCardsInZone(tp,fd)
+	if fd==0x400020 then return Duel.GetFieldCard(tp,LOCATION_MZONE,5) or Duel.GetFieldCard(1-tp,LOCATION_MZONE,6) end
+	if fd==0x200040 then return Duel.GetFieldCard(tp,LOCATION_MZONE,6) or Duel.GetFieldCard(1-tp,LOCATION_MZONE,5) end
 	local seq=math.log(fd,2)
 	local p=tp
 	if seq>=16 then
@@ -51,7 +53,26 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFlagEffect(tp,m)<=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local fd=Duel.SelectField(tp,1,0,LOCATION_ONFIELD,1<<29)
+	local fd=0
+	if (Duel.GetFieldCard(1-tp,LOCATION_MZONE,5)~=nil or Duel.GetFieldCard(1-tp,LOCATION_MZONE,6)~=nil) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+		local off=1
+		local ops,opval={},{}
+		if Duel.GetFieldCard(1-tp,LOCATION_MZONE,6)~=nil then
+			ops[off]=aux.Stringid(m,4)
+			opval[off]=0
+			off=off+1
+		end
+		if Duel.GetFieldCard(1-tp,LOCATION_MZONE,5)~=nil then
+			ops[off]=aux.Stringid(m,5)
+			opval[off]=1
+			off=off+1
+		end
+		local op=Duel.SelectOption(tp,table.unpack(ops))+1
+		local sel=opval[op]
+		if sel==0 then fd=0x400020 else fd=0x200040 end
+	else
+		fd=Duel.SelectField(tp,1,0,LOCATION_ONFIELD,1<<29)
+	end
 	local tc=cm.GetCardsInZone(tp,fd)
 	Duel.Hint(HINT_ZONE,tp,fd)
 	Duel.Hint(HINT_ZONE,1-tp,fd>>16)

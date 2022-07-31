@@ -2,7 +2,8 @@
 local m=45746000
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5880),4,3,cm.ovfilter,aux.Stringid(m,0),3,cm.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5880),4,3)
+--  aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5880),4,3,cm.ovfilter,aux.Stringid(m,0),3,cm.xyzop)
 	c:EnableReviveLimit()
 --e1
 	local e1=Effect.CreateEffect(c)

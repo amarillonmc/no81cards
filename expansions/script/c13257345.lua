@@ -97,7 +97,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local tg=g:Select(tp,1,1,nil)
+	local tg=g:Select(tp,1,4,nil)
 	if tg:GetCount()>0 then
 		Duel.HintSelection(tg)
 		if Duel.Destroy(tg,REASON_EFFECT)>0 then

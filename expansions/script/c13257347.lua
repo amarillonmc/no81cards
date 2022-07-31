@@ -54,11 +54,9 @@ function cm.bombcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	ec:RemoveCounter(tp,0x351,1,REASON_COST)
 end
 function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())
-		return f and tama.tamas_groupHasGroupCard(eg,f) 
-	end
-	local g=ec:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
+	local ec=e:GetHandler():GetEquipTarget()
+	if chk==0 then return true end
+	local g=ec:GetColumnGroup(1,1):Filter(Card.IsControler,nil,1-tp)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
@@ -81,7 +79,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e5:SetValue(1000)
 		ec:RegisterEffect(e5,true)
 	end
-	local g=ec:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
+	local g=ec:GetColumnGroup(1,1):Filter(Card.IsControler,nil,1-tp)
 	local tc=g:GetFirst()
 	if g:GetCount()>0 then
 		while tc do

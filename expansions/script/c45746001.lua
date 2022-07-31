@@ -32,11 +32,4 @@ function cm.initial_effect(c)
 		return e:GetHandler():GetOriginalRace()==RACE_PSYCHO
 	end)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_IMMUNE_EFFECT)
-	e3:SetValue(function(e,re)
-		local tp=e:GetHandler():GetControler()
-		return re:IsActiveType(TYPE_TRAP) and re:GetHandler():IsControler(1-tp)
-	end)
-	c:RegisterEffect(e3)
 end

@@ -52,6 +52,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.ConfirmCards(1-tp,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -72,6 +73,8 @@ function cm.dualop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.dualfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,e:GetHandler(),tp)
 	if g then
 		Duel.Release(g,REASON_COST)
+		Duel.Hint(HINT_CARD,1-tp,m)
+		Duel.Hint(HINT_CARD,tp,m)
 	end
 end
 function cm.efilter(e,te)

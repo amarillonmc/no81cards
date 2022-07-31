@@ -63,14 +63,13 @@ function cm.initial_effect(c)
 	e13:SetCode(EVENT_SUMMON_SUCCESS)
 	e13:SetOperation(cm.bgmop)
 	c:RegisterEffect(e13)
-	Duel.AddCustomActivityCounter(13257231,ACTIVITY_SPSUMMON,cm.counterfilter)
-	Duel.AddCustomActivityCounter(13257231,ACTIVITY_NORMALSUMMON,cm.counterfilter)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
 	eflist={{"deck_equip",e5},{"core_level",1}}
 	cm[c]=eflist
 	
 end
 function cm.counterfilter(c)
-	return c:IsRace(RACE_MACHINE)
+	return not c:IsSummonLocation(LOCATION_EXTRA)
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	tama.cosmicBattleship_equipShield(e:GetHandler(),2)
@@ -108,12 +107,19 @@ end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or c:IsFacedown() or not c:IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,LOCATION_EXTRA,1,1,nil,c)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.Equip(tp,tc,c)
+	local hg=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
+	Duel.ConfirmCards(tp,hg)
+	hg:Merge(Duel.GetFieldGroup(tp,LOCATION_EXTRA,0))
+	local hg1=hg:Filter(cm.eqfilter,nil,c)
+	if hg1:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+		local g=hg1:Select(tp,1,1,nil)
+		local tc=g:GetFirst()
+		if tc then
+			Duel.Equip(tp,tc,c)
+		end
 	end
+	Duel.ShuffleExtra(1-tp)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -141,7 +147,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcost(e,c,tp)
-	return Duel.GetActivityCount(tp,ACTIVITY_NORMALSUMMON)==0 and Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)==0
+	return Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)==0
 end
 function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -160,7 +166,7 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsRace(RACE_MACHINE)
+	return c:IsSummonLocation(LOCATION_EXTRA)
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(11,0,aux.Stringid(m,4))

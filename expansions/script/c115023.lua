@@ -5,6 +5,7 @@ function c115023.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--indes
 	local e1=Effect.CreateEffect(c) 
+	e1:SetDescription(aux.Stringid(115023,2))
 	e1:SetType(EFFECT_TYPE_QUICK_O) 
 	e1:SetCode(EVENT_FREE_CHAIN) 
 	e1:SetHintTiming(0,TIMING_STANDBY_PHASE)
@@ -18,9 +19,9 @@ function c115023.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_DESTROYED)
-	e2:SetCountLimit(1,215023)
+	e2:SetCountLimit(1,115024)
 	e2:SetTarget(c115023.xdtg)
 	e2:SetOperation(c115023.xdop)
 	c:RegisterEffect(e2) 
@@ -29,7 +30,7 @@ function c115023.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_IGNITION) 
 	e3:SetRange(LOCATION_PZONE)  
-	e3:SetCountLimit(1,315023) 
+	e3:SetCountLimit(1,115022) 
 	e3:SetCondition(c115023.pspcon)
 	e3:SetTarget(c115023.psptg) 
 	e3:SetOperation(c115023.pspop) 
@@ -100,10 +101,11 @@ function c115023.pspop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget() 
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then 
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 	if Duel.IsExistingMatchingCard(c115023.pspfil,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(115023,0)) then 
 	local sg=Duel.SelectMatchingCard(tp,c115023.pspfil,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp) 
 	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	end
 	end 
 	end 
 	end 

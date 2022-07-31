@@ -15,8 +15,10 @@ function c6160403.initial_effect(c)
 	--copy  
 	local e3=Effect.CreateEffect(c)  
 	e3:SetDescription(aux.Stringid(6160403,1))  
-	e3:SetType(EFFECT_TYPE_IGNITION)  
-	e3:SetRange(LOCATION_MZONE)  
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)  
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetHintTiming(0,TIMING_END_PHASE)  
 	e3:SetCountLimit(1,6160403)  
 	e3:SetCost(c6160403.cpcost)  
 	e3:SetTarget(c6160403.cptg)  
@@ -27,7 +29,7 @@ function c6160403.lcheck(g)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x616)  
 end
 function c6160403.atkfilter(c)  
-	return c:IsFaceup() and c:GetAttribute()~=0  
+	return c:IsFaceup() and c:GetAttribute()~=0 and c:IsRace(RACE_SPELLCASTER) 
 end  
 function c6160403.val(e,c)  
 	local g=Duel.GetMatchingGroup(c6160403.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)  
@@ -45,8 +47,7 @@ function c6160403.val(e,c)
 	return ct*500  
 end 
 function c6160403.cpfilter(c)  
-	return (c:GetType()==TYPE_SPELL or c:IsType(TYPE_TRAP)) and c:IsSetCard(0x616) and c:IsAbleToGraveAsCost()  
-		and c:CheckActivateEffect(false,true,false)~=nil  
+	return (c:GetType()==TYPE_SPELL or c:IsType(TYPE_TRAP)) and c:IsSetCard(0x616) and c:IsAbleToGraveAsCost() and c:CheckActivateEffect(false,true,false) and not c:IsType(TYPE_CONTINUOUS) and not c:IsType(TYPE_COUNTER)
 end  
 function c6160403.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	e:SetLabel(1)  

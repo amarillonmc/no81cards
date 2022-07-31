@@ -1,5 +1,5 @@
 --甜心机仆的残波
-Duel.LoadScript("c9910550.lua")
+require("expansions/script/c9910550")
 function c9910557.initial_effect(c)
 	--flag
 	Txjp.AddTgFlag(c)

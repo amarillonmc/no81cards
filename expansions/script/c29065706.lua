@@ -6,6 +6,7 @@ function c29065706.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_GRAVE+LOCATION_HAND)
 	e1:SetCountLimit(1,29065707)
+	e1:SetCost(c29065706.spcost)
 	e1:SetTarget(c29065706.sptg2)
 	e1:SetOperation(c29065706.spop2)
 	c:RegisterEffect(e1)
@@ -15,7 +16,7 @@ function c29065706.initial_effect(c)
 	e1:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)	
-	--
+	--SendtoDeck
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -28,15 +29,22 @@ function c29065706.initial_effect(c)
 	c:RegisterEffect(e3)  
 	local e4=e3:Clone()
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_TO_GRAVE)  
+	e4:SetCode(EVENT_MOVE)
 	e4:SetCondition(c29065706.xefcon)
 	c:RegisterEffect(e4)
 end
-function c29065706.cfilter(c)
-	return not c:IsSetCard(0x87ac)
+function c29065706.cofilter(c)
+	return (c:IsLevel(12) or c:IsRank(12)) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+end
+function c29065706.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065706.cofilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c29065706.cofilter,tp,LOCATION_GRAVE,0,1,1,e:GetHandler())
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c29065706.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)  and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0 and not Duel.IsExistingMatchingCard(c29065706.cfilter,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c29065706.spop2(e,tp,eg,ep,ev,re,r,rp)
@@ -52,8 +60,7 @@ function c29065706.spop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c29065706.efcon(e,tp,eg,ep,ev,re,r,rp)
-	local ec=e:GetHandler():GetReasonCard()
-	return bit.band(r,REASON_MATERIAL)~=0 and bit.band(r,REASON_SUMMON)==0
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end 
 function c29065706.xefcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

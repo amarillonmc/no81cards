@@ -7,9 +7,9 @@ function c115025.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_DESTROYED)
-	e2:SetCountLimit(1,215025)
+	e2:SetCountLimit(1,115025)
 	e2:SetTarget(c115025.xdtg)
 	e2:SetOperation(c115025.xdop)
 	c:RegisterEffect(e2) 
@@ -18,7 +18,7 @@ function c115025.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY+CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_IGNITION) 
 	e3:SetRange(LOCATION_PZONE)  
-	e3:SetCountLimit(1,315025) 
+	e3:SetCountLimit(1,115026) 
 	e3:SetCondition(c115025.pspcon)
 	e3:SetTarget(c115025.psptg) 
 	e3:SetOperation(c115025.pspop) 
@@ -43,11 +43,12 @@ function c115025.pspop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget() 
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then 
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 	if Duel.IsExistingMatchingCard(c115025.pthfil,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(115025,0)) then 
 	local sg=Duel.SelectMatchingCard(tp,c115025.pthfil,tp,LOCATION_DECK,0,1,1,nil) 
 	Duel.SendtoHand(sg,tp,REASON_EFFECT) 
 	Duel.ConfirmCards(1-tp,sg)
+	end
 	end 
 	end 
 	end 
@@ -76,7 +77,7 @@ function c115025.atkcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c115025.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,115025)
-	local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
 	if g:GetCount()>0 then
 	local tc=g:GetFirst() 
 	local e1=Effect.CreateEffect(c) 
