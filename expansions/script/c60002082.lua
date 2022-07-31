@@ -1,17 +1,28 @@
---多元随风旅鸟×雪猫头鹰
-local m=60002071
+--光渡随风旅鸟×雪猫头鹰
+local m=60002082
 local cm=_G["c"..m]
-cm.name="多元随风旅鸟×雪猫头鹰"
+cm.name="光渡随风旅鸟×雪猫头鹰"
 function cm.initial_effect(c)
+	--spsummon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,m)
+	e1:SetCost(cm.spcost)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
+	c:RegisterEffect(e1)
 	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,3))
 	e3:SetCategory(CATEGORY_SUMMON)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetRange(LOCATION_HAND)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_CHAIN_END+TIMING_END_PHASE)
-	e3:SetCost(cm.sumcost2)
-	e3:SetTarget(cm.sumtg2)
-	e3:SetOperation(cm.sumop2)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_REMOVED)
+	e3:SetCountLimit(1,m+10000000)
+	e3:SetCost(cm.sumcostr)
+	e3:SetTarget(cm.sumtgr)
+	e3:SetOperation(cm.sumopr)
 	c:RegisterEffect(e3)
 	--normal summon/set
 	local e1=Effect.CreateEffect(c)
@@ -46,24 +57,62 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.posop)
 	c:RegisterEffect(e3)
 end
-function cm.sumcost2(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.sumcostr(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end
 	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
+	if chk==0 then return Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)==0 end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	Duel.RegisterEffect(e1,tp)
 end
-function cm.sumtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSummonable(false,nil) or e:GetHandler():IsMSetable(false,nil) end
+function cm.sumtgr(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsSummonable(true,nil) or e:GetHandler():IsMSetable(true,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 end
-function cm.sumop2(e,tp,eg,ep,ev,re,r,rp)
+function cm.sumopr(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	local s1=c:IsSummonable(false,nil)
-	local s2=c:IsMSetable(false,nil)
-	if (s1 and s2 and Duel.SelectPosition(tp,c,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
-		Duel.Summon(tp,c,false,nil)
-	elseif s2 then
-		Duel.MSet(tp,c,false,nil)
+	Duel.Summon(tp,c,true,nil)
+end
+function cm.costfilter(c)
+	return c:IsRace(RACE_WINDBEAST) and c:IsDiscardable()
+end
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable()
+		and Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND,0,1,c) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	local g=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_HAND,0,1,1,c)
+	g:AddCard(c)
+	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+	if chk==0 then return Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)==0 end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.filter(c,e,tp)
+	return c:IsSetCard(0x16d) and c:IsLevelBelow(4) and c:IsSummonable(true,nil)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,tp,LOCATION_DECK)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.Summon(tp,g:GetFirst(),true,nil)
 	end
 end
 function cm.sumcon(e,tp,eg,ep,ev,re,r,rp)
