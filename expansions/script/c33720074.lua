@@ -2,10 +2,11 @@
 --Scripted by: XGlitchy30
 
 local s,id=GetID()
-
+s.unique_label = 0
 xpcall(function() require("expansions/script/glitchylib_vsnemo") end,function() require("script/glitchylib_vsnemo") end)
 
 function s.initial_effect(c)
+	s.unique_label = s.unique_label + 1
 	--ss proc
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(id,0))
@@ -59,7 +60,7 @@ function s.initial_effect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e8:SetCode(EVENT_SUMMON_SUCCESS)
 	e8:SetTarget(s.target)
-	e8:SetOperation(s.operation)
+	e8:SetOperation(s.operation(s.unique_label))
 	c:RegisterEffect(e8)
 	local e8x=e8:Clone()
 	e8x:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -147,62 +148,69 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
 	end
 end
-function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=s.resolution_count
-	if ct>=2 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_ADJUST)
-		e1:SetLabel(e:GetFieldID())
-		e1:SetOperation(s.chkop)
-		Duel.RegisterEffect(e1,tp)
-		ct=s.resolution_count
-		Duel.RegisterFlagEffect(1-tp,id,0,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
-		Duel.BreakEffect()
-	end
-	if ct>=4 then
-		Duel.Damage(1-tp,Duel.GetLP(1-tp),REASON_EFFECT)
-		ct=s.resolution_count
-		Duel.BreakEffect()
-	end
-	if ct>=7 then
-		local g=Duel.GetMatchingGroup(s.df,tp,0,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,nil,e)
-		if #g>0 then
-			Duel.Destroy(g,REASON_EFFECT)
-		end
-	end
+function s.operation(lab)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				local c=e:GetHandler()
+				local ct=s.resolution_count
+				if ct>=2 then
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+					e1:SetCode(EVENT_ADJUST)
+					e1:SetLabel(e:GetFieldID())
+					e1:SetOperation(s.chkop(lab))
+					Duel.RegisterEffect(e1,tp)
+					ct=s.resolution_count
+					Duel.RegisterFlagEffect(1-tp,id,0,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
+					Duel.BreakEffect()
+				end
+				if ct>=4 then
+					Duel.Damage(1-tp,Duel.GetLP(1-tp),REASON_EFFECT)
+					ct=s.resolution_count
+					Duel.BreakEffect()
+				end
+				if ct>=7 then
+					local g=Duel.GetMatchingGroup(s.df,tp,0,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,nil,e)
+					if #g>0 then
+						Duel.Destroy(g,REASON_EFFECT)
+					end
+				end
+			end
 end
 
-function s.notflag(c,lab)
-	return c:IsFaceup() and (c:GetFlagEffect(id)==0 or c:GetFlagEffectLabel(id)~=lab)
+function s.notflag(c,lab,fid)
+	return c:IsFaceup() and (c:GetFlagEffect(id+lab*100)==0 or c:GetFlagEffectLabel(id+lab*100)~=fid)
 end
-function s.chkop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(s.notflag,tp,0,LOCATION_MZONE,nil,e:GetLabel())
-	if #g<=0 then return end
-	local dg=Group.CreateGroup()
-	for tc in aux.Next(g) do
-		local preatk,predef=tc:GetAttack(),tc:GetDefense()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(-2000)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_UPDATE_DEFENSE)
-		tc:RegisterEffect(e2)
-		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1,e:GetLabel())
-		if preatk~=0 and not tc:IsImmuneToEffect(e1) and tc:GetAttack()==0 and predef~=0 and not tc:IsImmuneToEffect(e2) and tc:GetDefense()==0 then
-			dg:AddCard(tc)
-		end
-	end
-	if #dg>0 then
-		for tc in aux.Next(dg) do
-			Duel.Negate(tc,e)
-		end
-		Duel.Readjust()
-	end
-	dg:DeleteGroup()
+function s.chkop(lab)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				local c=e:GetHandler()
+				local g=Duel.GetMatchingGroup(s.notflag,tp,0,LOCATION_MZONE,nil,lab,e:GetLabel())
+				if #g<=0 then return end
+				local dg=Group.CreateGroup()
+				for tc in aux.Next(g) do
+					local preatk,predef=tc:GetAttack(),tc:GetDefense()
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_UPDATE_ATTACK)
+					e1:SetValue(-2000)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e1)
+					local e2=e1:Clone()
+					e2:SetCode(EFFECT_UPDATE_DEFENSE)
+					tc:RegisterEffect(e2)
+					if tc:GetFlagEffect(id+lab*100)==0 then
+						tc:RegisterFlagEffect(id+lab*100,RESET_EVENT+RESETS_STANDARD,0,1)
+					end
+					tc:SetFlagEffectLabel(id+lab*100,e:GetLabel())
+					if preatk~=0 and not tc:IsImmuneToEffect(e1) and tc:GetAttack()==0 and predef~=0 and not tc:IsImmuneToEffect(e2) and tc:GetDefense()==0 then
+						dg:AddCard(tc)
+					end
+				end
+				if #dg>0 then
+					for tc in aux.Next(dg) do
+						Duel.Negate(tc,e)
+					end
+					Duel.Readjust()
+				end
+				dg:DeleteGroup()
+			end
 end

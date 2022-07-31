@@ -512,6 +512,55 @@ Group.SelectWithSumGreater = function(g,p,f,acc,...)
 end
 
 --Glitchylib imports
+function Auxiliary.Option(id,tp,desc,...)
+	local list={...}
+	local off=1
+	local ops={}
+	local opval={}
+	local truect=1
+	for ct,b in ipairs(list) do
+		local check=b
+		local localid=id
+		local localdesc=desc+truect-1
+		if aux.GetValueType(b)=="table" then
+			check=b[1]
+			localid=b[2]
+			localdesc=b[3]
+		else
+			truect=truect+1
+		end
+		if check==true then
+			ops[off]=aux.Stringid(localid,localdesc)
+			opval[off]=ct-1
+			off=off+1
+		end
+	end
+	local op=Duel.SelectOption(tp,table.unpack(ops))+1
+	local sel=opval[op]
+	Duel.Hint(HINT_OPSELECTED,1-tp,ops[op])
+	return sel
+end
+
+function Duel.Attach(c,xyz)
+	if aux.GetValueType(c)=="Card" then
+		local og=c:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+		Duel.Overlay(xyz,Group.FromCards(c))
+		return xyz:GetOverlayGroup():IsContains(c)
+			
+	elseif aux.GetValueType(c)=="Group" then
+		for tc in aux.Next(c) do
+			local og=tc:GetOverlayGroup()
+			if og:GetCount()>0 then
+				Duel.SendtoGrave(og,REASON_RULE)
+			end
+		end
+		Duel.Overlay(xyz,c)
+		return c:FilterCount(function (card,group) return group:IsContains(card) end, nil, xyz:GetOverlayGroup())
+	end
+end
 function Duel.Negate(tc,e,reset,notfield,forced)
 	if not reset then reset=0 end
 	Duel.NegateRelatedChain(tc,RESET_TURN_SET)
@@ -554,6 +603,9 @@ function Card.HasLevel(c)
 		return not (c:IsOriginalType(TYPE_XYZ+TYPE_LINK) or c:IsStatus(STATUS_NO_LEVEL))
 	end
 	return false
+end
+function Card.HasDefense(c)
+	return not c:IsOriginalType(TYPE_LINK)
 end
 
 --EFFECT TABLES
