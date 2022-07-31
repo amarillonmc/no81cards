@@ -89,7 +89,7 @@ function c15000066.actop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function c15000066.chainlm(e,rp,tp)  
-	return tp==rp and not e:IsActiveType(TYPE_TRAP)
+	return not (tp~=rp and e:IsActiveType(TYPE_TRAP))
 end
 function c15000066.p3con(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.GetMatchingGroupCount(c15000066.pfilter,e:GetHandlerPlayer(),LOCATION_PZONE,LOCATION_PZONE,nil)>=3

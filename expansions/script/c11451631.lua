@@ -180,6 +180,10 @@ function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateActivation(ev)
+	Duel.SetChainLimit(function(e,p1,p2)
+							local con=e:GetCondition()
+							return not con or con(e,p1,eg,ep,ev,re,r,rp)
+						end)
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
 	e:Reset()
 end

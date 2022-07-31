@@ -9,6 +9,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--copy
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -20,6 +21,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--disable
 	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetCategory(CATEGORY_DISABLE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
@@ -32,12 +34,14 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	--skip
 	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,2))
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
 	e4:SetCondition(cm.skipcon)
+	e4:SetTarget(cm.skiptg)
 	e4:SetOperation(cm.skipop)
 	c:RegisterEffect(e4)
 end
@@ -47,6 +51,7 @@ function cm.copyfilter(c,e,tp)
 end
 function cm.copytg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.copyfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function cm.copyop(e,tp,eg,ep,ev,re,r,rp)
@@ -65,6 +70,7 @@ function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.disop(e,tp,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -104,7 +110,12 @@ function cm.cfilter(c)
 	return c:IsFaceup() and _G["c"..c:GetCode()].rssetcode and _G["c"..c:GetCode()].rssetcode=="Cochrot"
 end
 function cm.skipcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 and Duel.IsAbleToEnterBP()
+		and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
+end
+function cm.skiptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.skipop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetTurnPlayer()

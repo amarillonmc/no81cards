@@ -178,7 +178,8 @@ function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget() 
-	if tc:IsRelateToEffect(e) and tc:GetCode()~=tc:GetOriginalCode() and tc:IsAbleToRemove()  and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if not tc:IsRelateToEffect(e) then return end 
+	if tc:GetCode()~=tc:GetOriginalCode() and tc:IsAbleToRemove()  and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	else
 		Duel.Destroy(tc,REASON_EFFECT)
