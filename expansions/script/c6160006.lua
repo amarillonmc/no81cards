@@ -8,25 +8,23 @@ function c6160006.initial_effect(c)
 	e1:SetCode(EVENT_TO_GRAVE)
 	e1:SetCountLimit(1,6160006) 
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(c6160006.condition)
 	e1:SetTarget(c6160006.thtg)
 	e1:SetOperation(c6160006.thop)
 	c:RegisterEffect(e1)
 end 
 function c6160006.cfilter(c)  
 	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER)
-end  
-function c6160006.condition(e,tp,eg,ep,ev,re,r,rp)  
-	return Duel.IsExistingMatchingCard(c6160006.cfilter,tp,LOCATION_ONFIELD,0,1,nil)  
-end   
+end
 function c6160006.thfilter(c,e,tp)  
 	return c:IsSetCard(0x616) and c:IsType(TYPE_MONSTER) and not c:IsCode(6160006)
 end
 function c6160006.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c6160006.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c6160006.thfilter,tp,LOCATION_DECK,0,1,nil)
+		and Duel.IsExistingMatchingCard(c6160006.cfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c6160006.thop(e,tp,eg,ep,ev,te,r,rp)
+	if not Duel.IsExistingMatchingCard(c6160006.cfilter,tp,LOCATION_MZONE,0,1,nil) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c6160006.thfilter,tp,LOCATION_DECK,0,1,1,nil) 
 	if g:GetCount()>0 then

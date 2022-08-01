@@ -49,7 +49,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local f=tama.cosmicFighters_equipGetFormation(c)
-	if chk==0 then return f and f:GetCount()<c:GetFlagEffect(m) end
+	if chk==0 then return f and f:GetCount()>c:GetFlagEffect(m) end
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function cm.econ(e,tp,eg,ep,ev,re,r,rp)
