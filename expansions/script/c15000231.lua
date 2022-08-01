@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetCondition(cm.matcon)
+	e3:SetTarget(cm.mattg)
 	e3:SetOperation(cm.matop)
 	c:RegisterEffect(e3)
 	e0:SetLabelObject(e3)
@@ -56,12 +56,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.lvfilter(c,rc)
-	return c:GetSynchroLevel(rc)>0
+	return c:GetLevel()>0
 end
 function cm.valcheck(e,c)
 	local mg=c:GetMaterial()
 	local fg=mg:Filter(cm.lvfilter,nil,c)
-	if #fg>0 and fg:GetSum(Card.GetSynchroLevel,c)<=2 then
+	if #fg>0 and fg:GetSum(Card.GetLevel,c)<=2 then
 		e:GetLabelObject():SetLabel(1)
 	else
 		e:GetLabelObject():SetLabel(0)
@@ -108,8 +108,12 @@ function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	c:SetMaterial(g)
 	Duel.Release(g,REASON_COST)
 end
-function cm.matcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) and e:GetLabel()==1
+function cm.mattg(e,tp,eg,ep,ev,re,r,chk)
+	if chk==0 then
+		if e:GetLabel()~=1 then return false end
+		e:SetLabel(0)
+		return e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL)
+	end
 end
 function cm.matop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(15000231,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(15000231,2))

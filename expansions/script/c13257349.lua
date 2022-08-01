@@ -46,7 +46,8 @@ function cm.desfilter(c)
 end
 function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ec=e:GetHandler():GetEquipTarget()
-	if chk==0 then return ec and Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,ec:GetBaseAttack()) end
+	if chk==0 then return ec end 
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,ec:GetBaseAttack())
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

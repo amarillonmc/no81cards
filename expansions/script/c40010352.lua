@@ -99,7 +99,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function cm.atkfilter(c)
-	return (c:IsRace(RACE_SPELLCASTER) or (cm.Crimsonmoon(c) and c:IsType(TYPE_MONSTER))) 
+	return (c:IsRace(RACE_SPELLCASTER) or (cm.DragWizard(c) and c:IsType(TYPE_MONSTER))) 
 	and c:IsDiscardable()
 end
 function cm.spfilter(c,e,tp)

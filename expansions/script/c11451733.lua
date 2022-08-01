@@ -34,7 +34,7 @@ function cm.limit(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetTurnPlayer()
 	local ct=Duel.GetTurnCount()
 	local eset={Duel.IsPlayerAffectedByEffect(p,EFFECT_HAND_LIMIT)}
-	local flag=Duel.GetFlagEffectLabel(tp,11451731) or 0
+	local flag=Duel.GetFlagEffectLabel(p,11451731) or 0
 	if #eset==0 and flag>0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
@@ -43,7 +43,7 @@ function cm.limit(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetTargetRange(1,0)
 		e1:SetValue(6-flag)
 		e1:SetReset(RESET_PHASE+PHASE_DRAW)
-		Duel.RegisterEffect(e1,tp)
+		Duel.RegisterEffect(e1,p)
 	elseif #eset>0 and flag>0 then
 		for _,te in pairs(eset) do
 			local val=te:GetValue()
@@ -70,7 +70,6 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetLabel(flag)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(0x10000000+11451731)
-	e1:SetRange(LOCATION_PZONE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetTargetRange(1,0)
 	e1:SetReset(RESET_PHASE+PHASE_END)

@@ -68,7 +68,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_MZONE,0,1,1,nil,ft,tp)
 	Duel.SendtoGrave(g,REASON_COST)
-	Duel.Hint(11,0,aux.Stringid(m,7))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 end
 function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x352) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
@@ -147,7 +147,7 @@ function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if e:GetLabel()==0 then
+	if e:GetLabel()==1 then
 		local eq=c:GetEquipGroup()
 		local g=eq:Filter(Card.IsAbleToDeck,nil)
 		local op=0
@@ -167,7 +167,7 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 		if tc then
 			Duel.Equip(tp,tc,c)
 		end
-	elseif e:GetLabel()==1 then
+	elseif e:GetLabel()==2 then
 		local atk=c:GetAttack()
 		local def=c:GetDefense()
 		local lv=c:GetLevel()
