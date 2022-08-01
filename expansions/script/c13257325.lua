@@ -27,6 +27,7 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
 	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetCondition(cm.econ)
 	e3:SetTarget(cm.etarget)
 	e3:SetValue(cm.efilter)
 	c:RegisterEffect(e3)
@@ -169,6 +170,9 @@ end
 function cm.tokendes(e)
 	return not e:GetOwner():GetCardTarget():IsContains(e:GetHandler())
 end
+function cm.econ(e)
+	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+end
 function cm.etarget(e,c)
 	return c:IsSetCard(0x351)
 end
@@ -212,5 +216,5 @@ function cm.upop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,7))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 end

@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetCondition(cm.econ)
 	e3:SetTarget(cm.etarget)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
@@ -39,6 +40,7 @@ function cm.initial_effect(c)
 	e5:SetCode(EFFECT_UPDATE_ATTACK)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetTargetRange(LOCATION_MZONE,0)
+	e5:SetCondition(cm.econ)
 	e5:SetTarget(cm.etarget)
 	e5:SetValue(1300)
 	c:RegisterEffect(e5)
@@ -182,6 +184,9 @@ end
 function cm.tokendes(e)
 	return not e:GetOwner():GetCardTarget():IsContains(e:GetHandler())
 end
+function cm.econ(e)
+	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+end
 function cm.etarget(e,c)
 	return c:IsSetCard(0x351)
 end
@@ -222,5 +227,5 @@ function cm.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,7))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 end
