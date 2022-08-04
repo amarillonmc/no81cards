@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function cm.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsOnField,tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST,nil)
 end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
@@ -54,8 +54,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT)
+	if Duel.NegateActivation(ev) then
 		Duel.Damage(1-tp,1000,REASON_EFFECT)
 	end
 end

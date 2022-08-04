@@ -116,7 +116,7 @@ function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter2(c,re,tp,r)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and re:IsActivated() and bit.band(r,REASON_COST)~=0 and re:GetHandler()==c
+	return c:IsAttribute(ATTRIBUTE_LIGHT) and re:IsActivated() and bit.band(r,REASON_COST)~=0 and re:GetHandler()==c and c:IsReason(REASON_RELEASE)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	Duel.RegisterEffect(e4,1)
 end
 function cm.cfilter(c)
-	return cm.BeastDeity(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return cm.BeastDeity(c)  and c:IsAbleToRemoveAsCost()
 end
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()

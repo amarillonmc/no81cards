@@ -6,6 +6,7 @@ function c6160005.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)  
 	e1:SetCode(EFFECT_SPSUMMON_PROC)  
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)  
+	e1:SetCountLimit(1,6161005+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c6160005.spcon)  
 	e1:SetOperation(c6160005.spop)  
 	c:RegisterEffect(e1)
@@ -30,13 +31,13 @@ function c6160005.spcon(e,c)
 	if c==nil then return true end  
 	local tp=c:GetControler()  
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)  
-	local g=Duel.GetMatchingGroup(c6160005.cfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,c)  
+	local g=Duel.GetMatchingGroup(c6160005.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,c)  
 	return g:GetCount()>=2 and ft>-2 and g:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)>-ft  
 end  
 function c6160005.spop(e,tp,eg,ep,ev,re,r,rp,c)  
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)  
 	local ct=-ft+1  
-	local g=Duel.GetMatchingGroup(c6160005.cfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,c)  
+	local g=Duel.GetMatchingGroup(c6160005.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,c)  
 	local sg=nil  
 	if ft<=0 then  
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)  

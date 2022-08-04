@@ -44,6 +44,6 @@ end
 function cm.efilter1(e,te)
 	local ec=e:GetHandler():GetEquipTarget()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and (g and g:IsContains(ec))
+	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and (g~=nil and g:IsContains(ec))
 	--return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
 end

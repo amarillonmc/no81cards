@@ -66,14 +66,14 @@ function c9911014.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if #sg==0 or Duel.Destroy(sg,REASON_EFFECT)==0 then return end
 	local dg=Duel.GetOperatedGroup():Filter(c9911014.disfilter,nil)
-	if lab==1 or lab==3 and c:IsRelateToEffect(e) and c:IsCanTurnSet()
+	if (lab==1 or lab==3) and c:IsRelateToEffect(e) and c:IsCanTurnSet()
 		and Duel.SelectYesNo(tp,aux.Stringid(9911014,0)) then
 		Duel.BreakEffect()
 		c:CancelToGrave()
 		Duel.ChangePosition(c,POS_FACEDOWN)
 		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 	end
-	if lab==2 or lab==3 and #dg>0 and Duel.SelectYesNo(tp,aux.Stringid(9911014,1)) then
+	if (lab==2 or lab==3) and #dg>0 and Duel.SelectYesNo(tp,aux.Stringid(9911014,1)) then
 		Duel.BreakEffect()
 		for sc in aux.Next(dg) do
 			local e1=Effect.CreateEffect(c)

@@ -19,11 +19,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)	
 end
 function cm.tdfilter(c,tp)
-	return cm.BeastDeity(c) and not c:IsPublic() and c:IsAbleToDeck()
+	return cm.BeastDeity(c) and c:IsType(TYPE_MONSTER) and not c:IsPublic() and c:IsAbleToDeck()
 		and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
 function cm.thfilter(c,code)
-	return cm.BeastDeity(c) and not c:IsCode(code) and c:IsAbleToHand()
+	return cm.BeastDeity(c) and not c:IsCode(code) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_HAND,0,1,nil,tp) end

@@ -39,8 +39,7 @@ function c29065703.ntcon(e,c,minc)
 		and Duel.IsExistingMatchingCard(c29065703.ntfilter,c:GetControler(),LOCATION_ONFIELD,0,1,nil)
 end
 function c29065703.efcon(e,tp,eg,ep,ev,re,r,rp)
-	local ec=e:GetHandler():GetReasonCard()
-	return bit.band(r,REASON_MATERIAL)~=0 and bit.band(r,REASON_SUMMON)==0
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end 
 function c29065703.xefcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

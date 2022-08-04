@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.cfilter(c)
-	return cm.BeastDeity(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return cm.BeastDeity(c)  and c:IsAbleToRemoveAsCost()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()

@@ -68,7 +68,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-		Duel.Hint(11,0,aux.Stringid(g:GetFirst():GetCode(),4))
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(g:GetFirst():GetCode(),4))
 	end
 end
 function cm.chkfilter(c,tp)
@@ -102,7 +102,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		local tc=g:GetFirst()
-		Duel.Hint(11,0,aux.Stringid(tc:GetCode(),4))
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(tc:GetCode(),4))
 		local tep=tc:GetControler()
 		local PCe=tama.getTargetTable(tc,"deck_equip")
 		if PCe and cm.canActivate(tc,PCe,eg,ep,ev,re,r,rp) then

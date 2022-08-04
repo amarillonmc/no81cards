@@ -64,18 +64,18 @@ function c115025.xdop(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetLabel(Duel.GetTurnCount())
 	e1:SetCondition(c115025.atkcon)
 	e1:SetOperation(c115025.atkop) 
-	if Duel.GetTurnPlayer()==tp then 
-	e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2) 
+	if Duel.GetTurnPlayer()==tp and Duel.IsAbleToEnterBP() then 
+	e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN) 
 	else 
-	e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)   
+	e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)   
 	end 
 	Duel.RegisterEffect(e1,tp)
 end
 function c115025.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()~=e:GetLabel() and Duel.GetTurnPlayer()==tp and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return (Duel.GetTurnCount()~=e:GetLabel() or Duel.IsAbleToEnterBP()) and Duel.GetTurnPlayer()==tp and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil)
 end
-function c115025.spop(e,tp,eg,ep,ev,re,r,rp)
+function c115025.atkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,115025)
 	local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
 	if g:GetCount()>0 then

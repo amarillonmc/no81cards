@@ -13,6 +13,7 @@ function c115039.initial_effect(c)
 	e1:SetTarget(c115039.sptg) 
 	e1:SetOperation(c115039.spop) 
 	c:RegisterEffect(e1)
+	c115039.summon_effect=e2
 	--SpecialSummon P 
 	local e3=Effect.CreateEffect(c) 
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)

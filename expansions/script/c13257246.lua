@@ -38,7 +38,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsOnField() and re:GetHandler():IsFaceup() and (re:IsActiveType(TYPE_MONSTER)
+	local rc=re:GetHandler()
+	return rc:IsOnField() and rc:IsControler(1-tp) and rc:IsFaceup() and (re:IsActiveType(TYPE_MONSTER)
 		or (re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not re:IsHasType(EFFECT_TYPE_ACTIVATE)))
 end
 function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
