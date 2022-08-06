@@ -71,8 +71,12 @@ end
 function cm.desfilter(c,e)
 	return c:IsSetCard(0xa001) and c:GetOriginalType()&TYPE_MONSTER and (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and not c:IsImmuneToEffect(e)
 end
-function cm.desfilter1(c,e,tp)
-	return c:IsSetCard(0xa001) and c:GetOriginalType()&TYPE_MONSTER and (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetAttack())
+function cm.desfilter3(c)
+	return c:IsSetCard(0xa001) and c:GetOriginalType()&TYPE_MONSTER and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
+end
+function cm.fselect3(g,e,tp)
+	local atk=g:GetSum(Card.GetAttack)
+	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,atk)
 end
 function cm.desfilter2(c)
 	return c:IsLocation(LOCATION_MZONE) and Duel.GetMZoneCount(tp,c)>0
@@ -85,7 +89,8 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local loc=LOCATION_HAND+LOCATION_ONFIELD+LOCATION_EXTRA
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if ft<=0 then loc=LOCATION_MZONE end
-		return Duel.IsExistingMatchingCard(cm.desfilter1,tp,loc,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		local g=Duel.GetMatchingGroup(cm.desfilter3,tp,loc,0,nil)
+		return #g>0 and g:CheckSubGroup(cm.fselect3,1,2,e,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_EXTRA)

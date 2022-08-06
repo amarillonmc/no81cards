@@ -25,7 +25,6 @@ function c29065510.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetOperation(c29065510.counter)
 	c:RegisterEffect(e2)
@@ -59,11 +58,11 @@ function c29065510.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c29065510.cfilter(c)
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER)
+function c29065510.cfilter(c,tp)
+	return c:IsPreviousControler(tp) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_MZONE) and (c:IsPreviousSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29065510.counter(e,tp,eg,ep,ev,re,r,rp)
-	local ct=eg:FilterCount(c29065510.cfilter,nil)
+	local ct=eg:FilterCount(c29065510.cfilter,nil,tp)
 	if ct>0 then
 		e:GetHandler():AddCounter(0x10ae,ct)
 	end

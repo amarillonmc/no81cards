@@ -30,17 +30,22 @@ function cm.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST,nil)
 end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
-	--disable
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_DISABLE)
-	e2:SetTargetRange(0,LOCATION_MZONE)
-	e2:SetReset(RESET_PHASE+PHASE_END,2)
-	e2:SetTarget(cm.distarget)
-	Duel.RegisterEffect(e2,tp)
-end
-function cm.distarget(e,c)
-	return c~=e:GetHandler() and c:IsType(TYPE_MONSTER)
+	local g=Duel.GetMatchingGroup(aux.NegateMonsterFilter,tp,0,LOCATION_MZONE,nil)
+	local tc=g:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+		tc:RegisterEffect(e2)
+		tc=g:GetNext()
+	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()

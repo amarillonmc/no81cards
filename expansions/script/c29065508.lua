@@ -28,8 +28,8 @@ function c29065508.ovfilter(c)
 	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29065508.xyzop(e,tp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x10ae,2,REASON_COST) and Duel.GetFlagEffect(tp,29065508)==0 end
-	Duel.RemoveCounter(tp,1,1,0x10ae,2,REASON_RULE)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST) and Duel.GetFlagEffect(tp,29065508)==0 end
+	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
 	Duel.RegisterFlagEffect(tp,29065508,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c29065508.discon(e,tp,eg,ep,ev,re,r,rp)

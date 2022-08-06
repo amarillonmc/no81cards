@@ -3,7 +3,6 @@ c115031.named_with_Arknight=1
 function c115031.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c) 
-	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(115031,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -14,9 +13,8 @@ function c115031.initial_effect(c)
 	e1:SetTarget(c115031.sptg2)
 	e1:SetOperation(c115031.spop2)
 	c:RegisterEffect(e1)
-	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCountLimit(1,115032)
@@ -24,16 +22,6 @@ function c115031.initial_effect(c)
 	e2:SetTarget(c115031.sptg)
 	e2:SetOperation(c115031.spop)
 	c:RegisterEffect(e2)
-end
-function c115031.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function c115031.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
 end
 function c115031.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())

@@ -71,7 +71,7 @@ function c15000065.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c15000065.desfilter,1,nil,tp)
 end
 function c15000065.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.SelectMatchingCard(e:GetHandlerPlayer(),c15000065.desfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(e:GetHandlerPlayer(),c15000065.desfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,1,nil,e:GetHandlerPlayer())
 	if g:GetCount()~=0 then
 		Duel.Destroy(g,REASON_EFFECT)
 		Duel.BreakEffect()

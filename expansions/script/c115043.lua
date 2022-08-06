@@ -24,7 +24,7 @@ function c115043.initial_effect(c)
 	c:RegisterEffect(e2)
 	--SpecialSummon P 
 	local e3=Effect.CreateEffect(c) 
-	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
+	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_IGNITION) 
 	e3:SetRange(LOCATION_PZONE)  
 	e3:SetCountLimit(1,115043) 

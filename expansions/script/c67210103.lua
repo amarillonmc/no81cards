@@ -1,5 +1,6 @@
 --夏乡追忆 灯下烟火
 function c67210103.initial_effect(c)
+	aux.EnablePendulumAttribute(c)
 	--setP
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(67210103,1))
