@@ -53,7 +53,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsType,c:GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD,nil,TYPE_EQUIP)*1000
+	return Duel.GetMatchingGroupCount(cm.eqfilter,c:GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD,nil)*1000
+end
+function cm.eqfilter(c)
+	return c:IsType(TYPE_EQUIP) and c:IsFaceup()
 end
 function cm.eqsfilter(c,tp)
 	return c:IsType(TYPE_EQUIP) and Duel.IsExistingMatchingCard(cm.eqmfilter,tp,LOCATION_DECK,0,1,nil,c) and not c:IsPublic()

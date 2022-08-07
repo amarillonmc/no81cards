@@ -40,6 +40,6 @@ function c22021180.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.SelectMatchingCard(tp,c22021180.spfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
-function c3096468.splimit(e,c)
+function c22021180.splimit(e,c)
 	return not c:IsSetCard(0xff1)
 end

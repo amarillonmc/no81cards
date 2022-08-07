@@ -40,7 +40,7 @@ end
 function c22021190.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
-function c22021190.atkop(e,tp,eg,ep,ev,re,r,rp)
+function c22021190.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsFaceup() and c:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(c)

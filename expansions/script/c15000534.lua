@@ -38,7 +38,7 @@ end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local x=e:GetHandler():GetLeftScale()
 	return e:GetHandler():GetFlagEffect(15000534)==0 and re:IsActivated() and re:IsActiveType(TYPE_MONSTER)
-		and (re:GetHandler():GetLevel()<=x or (re:GetHandler():IsType(TYPE_PENDULUM) and re:GetHandler():GetLeftScale()<=x)) and Duel.IsChainDisablable(ev)
+		and (re:GetHandler():GetLevel()<=x or (re:GetHandler():IsType(TYPE_PENDULUM) and re:GetHandler():GetLeftScale()<=x)) and Duel.IsChainDisablable(ev) and not re:GetHandler():IsType(TYPE_XYZ) and not re:GetHandler():IsType(TYPE_LINK)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
@@ -69,18 +69,25 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.r1tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and re~=e end
+	if chk==0 then return c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and re~=e and bit.band(r,REASON_EFFECT)~=0 end
 	if Duel.SelectYesNo(tp,aux.Stringid(15000534,0)) then
 		if Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 			--send replace
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-			e3:SetCode(EFFECT_SEND_REPLACE)
-			e3:SetRange(LOCATION_PZONE)
-			e3:SetTarget(cm.r2tg)
-			e3:SetValue(cm.rval)
-			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-			c:RegisterEffect(e3)
+--			local e3=Effect.CreateEffect(c)
+--			e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+--			e3:SetCode(EFFECT_SEND_REPLACE)
+--			e3:SetRange(LOCATION_PZONE)
+--			e3:SetTarget(cm.r2tg)
+--			e3:SetValue(cm.rval)
+--			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+--			c:RegisterEffect(e3)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+		e1:SetValue(LOCATION_DECKBOT)
+		c:RegisterEffect(e1)
 			c:RegisterFlagEffect(15000538,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(15000538,1))
 		end
 		return true

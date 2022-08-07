@@ -27,6 +27,9 @@ end
 function cm.filter(c)
 	return c:IsCode(15000862) and c:IsAbleToHand()
 end
+function cm.nfilter(c)
+	return (aux.NegateMonsterFilter(c) or c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and c:IsFaceup()
+end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
@@ -40,7 +43,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-			local ag=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,1,nil)
+			local ag=Duel.SelectMatchingCard(tp,cm.nfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 			local bc=ag:GetFirst()
 			if bc then
 				Duel.NegateRelatedChain(bc,RESET_TURN_SET)

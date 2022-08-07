@@ -22,12 +22,12 @@ function c22020370.cfilter(c)
 end
 function c22020370.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetMatchingGroupCount(c22020370.cfilter,tp,0,LOCATION_ONFIELD,nil)
-	return ct>0
+	return ct>0 
 end
 function c22020370.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local ct=Duel.GetMatchingGroupCount(c22020370.cfilter,tp,0,LOCATION_ONFIELD,nil)
-		if ct>=3 then return Duel.GetFieldGroupCount(ep,LOCATION_HAND,0)>0 end
+		if ct<=1 then return Duel.GetFieldGroupCount(ep,LOCATION_HAND,0)>0 end
 		return true
 	end
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
