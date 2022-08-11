@@ -26,38 +26,21 @@ function c77693530.initial_effect(c)
 	--deck fusion material
 	if not c77693530.globle_check then
 		c77693530.globle_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD)
-		ge1:SetCode(EFFECT_EXTRA_FUSION_MATERIAL)
-		ge1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		ge1:SetTargetRange(LOCATION_DECK,0)
-		ge1:SetTarget(c77693530.mttg)
-		ge1:SetValue(c77693530.mtval)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=ge1:Clone()
-		Duel.RegisterEffect(ge2,1)
-	end
-	--workaround
-	if not aux.fus_deck_mat_hack_check then
-		aux.fus_deck_mat_hack_check=true
-		function aux.fus_mat_deck_hack_exmat_filter(c,tp)
-			return c:IsHasEffect(EFFECT_EXTRA_FUSION_MATERIAL,tp)
-		end
-		_GetFusionMaterial=Duel.GetFusionMaterial
-		function Duel.GetFusionMaterial(tp)
-			local g1=_GetFusionMaterial(tp)
-			local g2=Duel.GetMatchingGroup(aux.fus_mat_deck_hack_exmat_filter,tp,LOCATION_DECK,0,nil,tp)
-			g1:Merge(g2)
-			return g1
+		_hack_fusion_check=Card.CheckFusionMaterial
+		function Card.CheckFusionMaterial(card,Group_fus,Card_g,int_chkf,not_mat)
+			local exg=Group.CreateGroup()
+			if card:GetOriginalCode()==77693530 then
+				exg=Duel.GetMatchingGroup(c77693530.filter0,int_chkf,LOCATION_DECK,0,nil)
+				if exg:GetCount()>0 then
+					Group_fus:Merge(exg)
+				end
+			end
+			return _hack_fusion_check(card,Group_fus,Card_g,int_chkf,not_mat)
 		end
 	end
 end
-function c77693530.mttg(e,c)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
-end
-function c77693530.mtval(e,c)
-	if not c then return false end
-	return c:IsCode(77693530)
+function c77693530.filter0(c)
+	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial()
 end
 function c77693530.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)

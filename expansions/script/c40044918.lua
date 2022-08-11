@@ -1,101 +1,74 @@
---暗金教
-local m=10419901
-local cm=_G["c"..m]
-cm.named_with_Kabal=1
-function cm.Kabal(c)
-	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_Kabal
-end
-function cm.Potion(c)
-	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_Potion
-end
-
-function cm.initial_effect(c)
-	--to hand
+--E・HERO エアーマン
+function c40044918.initial_effect(c)
+	--effect
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetDescription(aux.Stringid(40044918,0))
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.thtg)
-	e1:SetOperation(cm.thop)
+	e1:SetTarget(c40044918.tg)
+	e1:SetOperation(c40044918.op)
 	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2)
 end
-function cm.thfilter(c)
-	return cm.Potion(c) and c:IsAbleToHand() and c:IsType(TYPE_SPELL+TYPE_TRAP)
+function c40044918.ctfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x8)
 end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function c40044918.schfilter(c)
+	return c:IsSetCard(0x8) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
-		--Public
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(m,9))
-		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_PUBLIC)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		g:GetFirst():RegisterEffect(e1)
+function c40044918.desfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP)
+end
+function c40044918.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then
+		local ct=Duel.GetMatchingGroupCount(c40044918.ctfilter,tp,LOCATION_MZONE,0,c)
 		local sel=0
-		local tc=g:GetFirst()
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
-		sel=Duel.SelectOption(tp,aux.Stringid(m,3),aux.Stringid(m,4),aux.Stringid(m,5),aux.Stringid(m,6),aux.Stringid(m,7))+1
-		if sel==1 then
-			tc:RegisterFlagEffect(10419701,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
-			--Public
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetDescription(aux.Stringid(m,3))
-			e2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_PUBLIC)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
-		elseif sel==2 then
-			tc:RegisterFlagEffect(10419702,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
-			--Public
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetDescription(aux.Stringid(m,4))
-			e2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_PUBLIC)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
-		elseif sel==3 then
-			tc:RegisterFlagEffect(10419703,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
-			--Public
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetDescription(aux.Stringid(m,5))
-			e2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_PUBLIC)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
-		elseif sel==4 then
-			tc:RegisterFlagEffect(10419704,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
-			--Public
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetDescription(aux.Stringid(m,6))
-			e2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_PUBLIC)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
-		elseif sel==5 then
-			tc:RegisterFlagEffect(10419705,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
-			--Public
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetDescription(aux.Stringid(m,7))
-			e2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_PUBLIC)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
+		if ct>0 and Duel.IsExistingMatchingCard(c40044918.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then sel=sel+1 end
+		if Duel.IsExistingMatchingCard(c40044918.schfilter,tp,LOCATION_DECK,0,1,nil) then sel=sel+2 end
+		e:SetLabel(sel)
+		return sel~=0
+	end
+	local sel=e:GetLabel()
+	if sel==3 then
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(40044918,0))
+		sel=Duel.SelectOption(tp,aux.Stringid(40044918,1),aux.Stringid(40044918,2))+1
+	elseif sel==1 then
+		Duel.SelectOption(tp,aux.Stringid(40044918,1))
+	else
+		Duel.SelectOption(tp,aux.Stringid(40044918,2))
+	end
+	e:SetLabel(sel)
+	if sel==1 then
+		local g=Duel.GetMatchingGroup(c40044918.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+		e:SetCategory(CATEGORY_DESTROY)
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	else
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	end
+end
+function c40044918.op(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local sel=e:GetLabel()
+	if sel==1 then
+		local ct=Duel.GetMatchingGroupCount(c40044918.ctfilter,tp,LOCATION_MZONE,0,c)
+		local g=Duel.GetMatchingGroup(c40044918.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+		if ct>0 and g:GetCount()>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local dg=g:Select(tp,1,ct,nil)
+			Duel.HintSelection(dg)
+			Duel.Destroy(dg,REASON_EFFECT)
+		end
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,c40044918.schfilter,tp,LOCATION_DECK,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
 		end
 	end
 end

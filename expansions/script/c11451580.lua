@@ -5,7 +5,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.AddCodeList(c,11451583)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_SPELLCASTER),7,2)
+	aux.AddXyzProcedure(c,nil,7,2)
 	c:EnableReviveLimit()
 	--effect1
 	local e1=Effect.CreateEffect(c)

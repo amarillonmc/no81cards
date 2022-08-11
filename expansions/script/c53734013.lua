@@ -41,7 +41,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.spfilter(c,e,tp,dis)
-	return (c:IsSetCard(0x3536) or c:IsCode(53734009)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,dis)
+	return (c:IsSetCard(0x3536) or c:IsCode(53734009)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,dis) and not Duel.IsExistingMatchingCard(function(c,tc)return tc:IsCode(c:GetCode()) and c:IsFaceup()end,tp,LOCATION_ONFIELD,0,1,nil,c)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local dis=e:GetLabel()
