@@ -1,5 +1,4 @@
 --驶向明日的方舟
-c29065551.named_with_Arknight=1
 function c29065551.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

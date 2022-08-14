@@ -12,6 +12,11 @@ fu.des = {
 	["RE"] = 1192   ,  --除外
 	["SP"] = 1152   ,  --特殊召唤
 }
+--category Variable
+fu.cat = {
+	["SH"] = 0x20008	, --CATEGORY_SEARCH+CATEGORY_TOHAND
+	["SP"] = CATEGORY_SPECIAL_SUMMON	,
+}
 --code Variable
 fu.cod = {
 	--other
@@ -22,6 +27,14 @@ fu.cod = {
 	["TG"] = EVENT_TO_GRAVE  ,
 	["TH"] = EVENT_TO_HAND   ,
 	["RE"] = EVENT_REMOVE   ,
+}
+--property Variable
+fu.pro = {
+	["TG"] = EFFECT_FLAG_CARD_TARGET   ,
+	["DE"] = EFFECT_FLAG_DELAY  ,
+	["SR"] = EFFECT_FLAG_SINGLE_RANGE   ,
+	["HINT"] = EFFECT_FLAG_CLIENT_HINT   ,
+	["OE"] = 17408   , --EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE(out effect)
 }
 --Location Variable
 fu.ran = {
@@ -51,19 +64,19 @@ fu.pha = {
 }
 --count limit Variable
 fu.ctl = {
-	["O"] = EFFECT_COUNT_CODE_OATH  ,  --发动次数
-	["D"] = EFFECT_COUNT_CODE_DUEL  ,  --决斗次数
-	["S"] = EFFECT_COUNT_CODE_SINGLE  ,  --公共次数
+	O = EFFECT_COUNT_CODE_OATH  ,  --发动次数
+	D = EFFECT_COUNT_CODE_DUEL  ,  --决斗次数
+	S = EFFECT_COUNT_CODE_SINGLE  ,  --公共次数
 }
 --Effect Variable
 fu.eff = {
 	CRE   = Effect.CreateEffect,
-	DES   = function(e,...) if fu.sf.Not_All_nil(...) then Effect.SetDescription(e,fu.sf.des({...})) end end,
-	CAT   = function(e,v) if v then Effect.SetCategory(e,v) end end,
+	DES   = function(e,...) if fu.sf.Not_All_nil(...) then Effect.SetDescription(fu.sf.des(e,{...})) end end,
+	CAT   = function(e,v) if v then Effect.SetCategory(e,fu.sf.cat(v)) end end,
 	TYP   = function(e,v) if v then Effect.SetType(e,v) end end,
 	COD   = function(e,v) if v then Effect.SetCode(e,fu.sf.cod(v)) end end,
-	CTL   = function(e,...) if fu.sf.Not_All_nil(...) then Effect.SetCountLimit(e,fu.sf.ctl({...})) end end,
-	PRO   = function(e,v) if v then Effect.SetProperty(e,v) end end,
+	CTL   = function(e,...) if fu.sf.Not_All_nil(...) then Effect.SetCountLimit(fu.sf.ctl(e,{...})) end end,
+	PRO   = function(e,...) if fu.sf.Not_All_nil(...) then Effect.SetProperty(e,fu.sf.pro({...})) end end,
 	RAN   = function(e,...) if fu.sf.Not_All_nil(...) then Effect.SetRange(e,fu.sf.ran({...})) end end,
 	CON   = function(e,v) if v then Effect.SetCondition(e,v) end end,
 	COS   = function(e,v) if v then Effect.SetCost(e,v) end end,
@@ -85,8 +98,9 @@ fu.df = {
 --------------------------------------"Support Function"
 function fu.sf.Not_All_nil(...)
 	local v = {...}
-	for _,l in ipairs(v) do
-		if l then return true end
+	v=type(v) =="table" and type(v[1]) =="table" and v[1] or v
+	for _,l in pairs(v) do
+		return l
 	end
 	return false
 end
@@ -102,25 +116,35 @@ function fu.sf.GetCardTable(c)
 			C[#C+1] = i
 		end
 	end
-	return C
+	return C 
 end
-function fu.sf.des(v)
+function fu.sf.des(e,v)
 --return des
-	v = type(v[1]) == "table" and v[1] or v
+	v = type(v) == "table" and #v==1 and v[1] or v
 	if type(v) == "table" then
---{m,0}
 		v = aux.Stringid(table.unpack(v))
 	elseif type(v) == "string" then
 		v = fu.des[v]
 	elseif type(v) == "number" then
---m + 0xn0000000
-		v = aux.Stringid(v&0xff,v>>28)
+		v = v<17 and aux.Stringid(e:GetOwner():GetOriginalCode(),v) or v
 	end
-	return v
+	return e,v
+end
+function fu.sf.cat(v)
+--return category
+	return type(v) == "string" and fu.cat[v] or v
 end
 function fu.sf.cod(v)
 --return code
 	return type(v) == "string" and fu.cod[v] or v
+end
+function fu.sf.pro(v)
+--return property
+	v = { 0, table.unpack(type(v) == "table" and v or { v }) }
+	for _,l in ipairs(v) do
+		v[1] = v[1] + (type(l) == "string" and fu.pro[l] or l)
+	end
+	return v[1]
 end
 function fu.sf.ran(v)
 --return range
@@ -130,11 +154,19 @@ function fu.sf.ran(v)
 	end
 	return v[1]
 end
-function fu.sf.ctl(v)
+function fu.sf.ctl(e,v)
 --return count limit
 	v = type(v) == "table" and v or { v }
-	v = {v[1]>99 and 1 or v[1], v[1]>99 and v[1] + (fu.ctl[v[2] ] or 0) or (v[2] or 0) + (fu.ctl[v[3] ] or 0)}
-	return table.unpack(v)
+	local V = {nil,nil,nil}
+	for i = #v,1 do
+		V[3] = type(v[i]) == "string" and v[i] or V[3]
+		V[2] = type(v[i]) == "number" and v[i]>99 and v[i] or V[2]
+		V[1] = type(v[i]) == "number" and v[i]<99 and v[i] or V[1]
+	end
+	if V[3] and not V[2] then V[2] = e:GetOwner():GetOriginalCode() end
+	if V[3] then V[2] = V[2] + fu.ctl[V[3] ] end
+	V[1] = V[1] or 1
+	return e,table.unpack(V)
 end
 function fu.sf.res(v)
 --return Reset
@@ -146,6 +178,4 @@ function fu.sf.tran(v)
 	v = type(v) == "table" and (#v == 2 and v or { v[1], v[1] } ) or { v, v }
 	return table.unpack(v)
 end
-
-
 

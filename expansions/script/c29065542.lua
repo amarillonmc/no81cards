@@ -2,7 +2,7 @@
 c29065542.named_with_Arknight=1
 function c29065542.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,6,3,c29065542.ovfilter,aux.Stringid(29065542,0),3,c29065542.xyzop)
+	aux.AddXyzProcedure(c,nil,6,3,c29065542.ovfilter,aux.Stringid(29065542,1),3,c29065542.xyzop)
 	c:EnableReviveLimit()  
 	--xyz 
 	local e1=Effect.CreateEffect(c)

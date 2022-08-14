@@ -26,6 +26,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 	if Duel.SendtoHand(g,1-tp,REASON_EFFECT)~=0 then
 		Duel.BreakEffect()
-		Duel.Draw(tp,2,REASON_EFFECT)
+		Duel.Draw(tp,Duel.GetFieldGroupCount(tp,0,LOCATION_HAND),REASON_EFFECT)
 	end
 end

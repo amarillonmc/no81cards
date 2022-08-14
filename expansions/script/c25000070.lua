@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	e0:SetRange(LOCATION_HAND)
-	e0:SetCountLimit(1,m)
+	e0:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
 	e0:SetCondition(cm.con)
 	e0:SetOperation(cm.op)
 	c:RegisterEffect(e0)
@@ -20,34 +20,31 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
-function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(0,m)==0 then Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1) end
-	if Duel.GetFlagEffect(1,m)==0 then Duel.RegisterFlagEffect(1,m,RESET_PHASE+PHASE_END,0,1) end
-	for tc in aux.Next(eg) do
-		local p1,p2,p3=tc:GetControler(),tc:GetPreviousControler(),tc:GetReasonPlayer()
-		if p2~=p3 and p1==p2 then
-			local flag=Duel.GetFlagEffectLabel(p1,m)
-			Duel.SetFlagEffectLabel(p1,m,flag|(tc:GetPreviousTypeOnField()&0x7))
-		end
-	end
+function cm.cfilter(c)
+	return rp~=c:GetPreviousControler()
 end
-function cm.filter(c,flag)
-	return c:IsType(flag) and c:IsAbleToHand()
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	if eg:IsExists(cm.cfilter,1,nil,rp) then Duel.RegisterFlagEffect(1-rp,m,RESET_PHASE+PHASE_END,0,1) end
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m)==0 then return false end
 	local ph=Duel.GetCurrentPhase()
-	local flag=Duel.GetFlagEffectLabel(tp,m)
-	return Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)-Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>3 and e:GetHandler():IsDiscardable() and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,flag) and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and Duel.GetCurrentChain()==0 and Duel.GetTurnPlayer()==tp
+	return Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)-Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>0 and e:GetHandler():IsDiscardable() and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil) and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and Duel.GetTurnPlayer()==tp
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT+REASON_DISCARD)
-	local flag=Duel.GetFlagEffectLabel(tp,m)
+	local sg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_DECK,0,nil)
+	if sg:GetCount()==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,flag):GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+	local hg=sg:Select(tp,1,1,nil)
+	sg:RemoveCard(hg:GetFirst())
+	sg=sg:Filter(Card.IsCode,nil,hg:GetFirst():GetCode())
+	if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local tg=sg:Select(tp,1,2,nil)
+		hg:Merge(tg)
 	end
+	Duel.SendtoHand(hg,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,hg)
 end

@@ -1,45 +1,88 @@
 --方舟之骑士·幽灵鲨
 c29010014.named_with_Arknight=1
 function c29010014.initial_effect(c)
-	--to hand 
+	--sp summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29010014,0))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_PHASE+PHASE_END)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,29010014)   
-	e1:SetTarget(c29010014.thtg)
-	e1:SetOperation(c29010014.thop)
-	c:RegisterEffect(e1)
-	--immune
+	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCountLimit(1,29010014)
+	e1:SetCondition(c29010014.tgcon)
+	e1:SetTarget(c29010014.tgtg)
+	e1:SetOperation(c29010014.tgop)
+	c:RegisterEffect(e1) 
+	--battle 
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_IMMUNE_EFFECT)
+	e2:SetDescription(aux.Stringid(29010014,1))
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetValue(c29010014.efilter)
-	e2:SetTarget(c29010014.imtg)
-	c:RegisterEffect(e2)
+	e2:SetCountLimit(1,19010014)
+	e2:SetCondition(c29010014.defcon)
+	e2:SetOperation(c29010014.defop)
+	c:RegisterEffect(e2)  
+end 
+function c29010014.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsAttribute(ATTRIBUTE_WATER)
 end
-function c29010014.thfilter(c)
-	return c:IsSetCard(0x77af) and c:IsAbleToHand() and c:IsType(TYPE_TRAP)
-end
-function c29010014.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29010014.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c29010014.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c29010014.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if #g>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+function c29010014.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	end
 end
-function c29010014.efilter(e,re)
-	return re:GetOwnerPlayer()~=e:GetHandlerPlayer()
-		and re:IsActiveType(TYPE_TRAP)
+function c29010014.tgop(e,tp,eg,ep,ev,re,r,rp)  
+	local c=e:GetHandler() 
+	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) 
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+	Duel.Destroy(eg,REASON_EFFECT)
+	end 
+	end 
 end
-function c29010014.imtg(e,c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_FISH) and c:IsType(TYPE_MONSTER)
+function c29010014.defcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local bc=c:GetBattleTarget()
+	return bc and bc:IsControler(1-tp) and bc:IsFaceup() and bc:GetAttack()>0 and Duel.GetFlagEffect(tp,29010014)==0 
 end
+function c29010014.defop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local bc=c:GetBattleTarget()
+	if c:IsRelateToBattle() and c:IsFaceup() and bc:IsRelateToBattle() and bc:IsFaceup() and bc:IsControler(1-tp) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetValue(1)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		c:RegisterEffect(e2)
+		local e3=e2:Clone()
+		e3:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+		c:RegisterEffect(e3)
+	--atklimit
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_CANNOT_ATTACK)
+	e4:SetCondition(c29010014.atkcon)
+	e4:SetLabel(Duel.GetTurnCount())
+	e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+	c:RegisterEffect(e4) 
+	Duel.RegisterFlagEffect(tp,29010014,RESET_PHASE+PHASE_END,0,2)
+	end
+end
+function c29010014.atkcon(e)
+	return Duel.GetTurnCount()~=e:GetLabel()
+end
+
+
+
+
+

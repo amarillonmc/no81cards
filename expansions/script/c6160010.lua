@@ -80,5 +80,5 @@ function c6160010.spop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end 
 function c6160010.splimit(e,c) 
-	return not c:IsRace(RACE_SPELLCASTER)
+	return not c:IsSetCard(0x616)
 end

@@ -56,7 +56,7 @@ function c6160008.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end
 function c6160008.cfilter(c)  
-	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER)  
+	return c:IsFaceup() and c:IsSetCard(0x616)  
 end 
 function c6160008.condition(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()  

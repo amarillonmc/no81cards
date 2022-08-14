@@ -93,7 +93,7 @@ function c9910895.immop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 end
 function c9910895.efilter(e,te)
-	return te:GetOwner()~=e:GetOwner()
+	return e:GetOwner():GetBattledGroupCount()==0 and te:GetOwner()~=e:GetOwner()
 end
 function c9910895.raop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

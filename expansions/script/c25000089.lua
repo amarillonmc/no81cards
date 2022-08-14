@@ -93,7 +93,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if not tc then return end
-	Duel.SetLP(1-tp,Duel.GetLP(1-tp)-800)
 	local lg=cm.tgfilter2(Group.FromCards(tc),tp)
 	Duel.HintSelection(Group.FromCards(tc))
 	if Duel.SendtoGrave(tc,REASON_EFFECT)==0 then return end
@@ -105,7 +104,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(sg)
 		if Duel.SendtoGrave(sg,REASON_EFFECT)==0 then return end
 		og=Duel.GetOperatedGroup()
-		Duel.SetLP(1-tp,Duel.GetLP(1-tp)-og:GetCount()*800)
 		sg=lg:Filter(cm.tgfilter3,nil,og)
 	end
 end

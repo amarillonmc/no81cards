@@ -14,30 +14,13 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,4))
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e2:SetTarget(cm.atktg)
-	e2:SetOperation(cm.atkop)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetTarget(cm.target)
+	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_DAMAGE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetCountLimit(1)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCondition(cm.damcon)
-	e3:SetTarget(cm.damtg)
-	e3:SetOperation(cm.damop)
-	c:RegisterEffect(e3)
-	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
-end
-function cm.chainfilter(re,tp,cid)
-	return not (re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:GetActiveType()==TYPE_SPELL or re:GetActiveType()==TYPE_TRAP))
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_FZONE,LOCATION_FZONE,1,nil) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:GetActiveType()==TYPE_SPELL or re:GetActiveType()==TYPE_TRAP)
@@ -54,35 +37,51 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function cm.tdfilter(c)
-	return c:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP
+function cm.thfilter(c)
+	return c:IsCode(25000112,25000115) and c:IsAbleToHand()
 end
-function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-end
-function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.NegateAttack() then return end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,5))
-	local tc=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	if tc then
-		Duel.ShuffleDeck(tp)
-		Duel.MoveSequence(tc,0)
-		Duel.ConfirmDecktop(tp,1)
-		Duel.MoveSequence(tc,1)
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsType(TYPE_SPELL+TYPE_TRAP) end
+	local b1=Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
+	local b2=Duel.IsExistingTarget(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP)
+	if chk==0 then return b1 or b2 end
+	local op=0
+	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))
+	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(m,2))
+	else op=Duel.SelectOption(tp,aux.Stringid(m,3))+1 end
+	e:SetLabel(op)
+	if op==0 then
+		e:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_TODECK)
+		e:SetProperty(EFFECT_FLAG_DELAY)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
+	else
+		e:SetCategory(CATEGORY_DESTROY)
+		e:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local g=Duel.SelectTarget(tp,Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,TYPE_SPELL+TYPE_TRAP)
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 	end
 end
-function cm.damcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)>0
-end
-function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(1000)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-end
-function cm.damop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Damage(p,d,REASON_EFFECT)
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetLabel()==0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
+			Duel.ConfirmCards(1-tp,g)
+			Duel.ShuffleDeck(tp)
+			Duel.ShuffleHand(tp)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+			if sg:GetCount()>0 then
+				Duel.BreakEffect()
+				Duel.SendtoDeck(sg,nil,1,REASON_EFFECT)
+			end
+		end
+	else
+		local tc=Duel.GetFirstTarget()
+		if tc:IsRelateToEffect(e) then
+			Duel.Destroy(tc,REASON_EFFECT)
+		end
+	end
 end

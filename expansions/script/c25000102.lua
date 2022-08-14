@@ -17,9 +17,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
 	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetTarget(cm.sptg)
-	e3:SetOperation(cm.spop)
+	e3:SetTarget(cm.ytg)
+	e3:SetOperation(cm.yop)
 	c:RegisterEffect(e3)
 end
 function cm.xfilter(c)
@@ -65,50 +64,28 @@ function cm.rstop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then Duel.SendtoGrave(g,REASON_RULE) end
 	e:Reset()
 end
-function cm.spfilter(c,e,tp,p)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,p) and c:IsLevelAbove(1)
+function cm.filter1(c,e,tp)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
 end
-function cm.filter(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:GetOverlayGroup():IsExists(cm.spfilter,1,nil,e,tp,c:GetControler()) and c:IsCanOverlay() and Duel.GetMZoneCount(c:GetControler())>0
+function cm.filter2(c,e)
+	return c:IsType(TYPE_MONSTER) and c:IsCanOverlay() and not (e and c:IsImmuneToEffect(e))
 end
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp) end
+function cm.ytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.filter1(chkc,e,tp) end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_OVERLAY)
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.SelectTarget(tp,cm.filter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
 end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+function cm.yop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsFacedown() or not tc:IsRelateToEffect(e) or tc:IsImmuneToEffect(e) or Duel.GetMZoneCount(tc:GetControler())==0 then return end
-	local g=tc:GetOverlayGroup()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sc=g:FilterSelect(tp,cm.spfilter,1,1,nil,e,tp,tc:GetControler()):GetFirst()
-	if sc then
-		local typ,otyp,lv=sc:GetType(),sc:GetOriginalType(),sc:GetLevel()
-		local ctyp=typ&(TYPE_FUSION+TYPE_RITUAL+TYPE_SYNCHRO+TYPE_MONSTER+TYPE_NORMAL)
-		sc:SetCardData(4,typ-ctyp+TYPE_MONSTER+TYPE_XYZ)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_CHANGE_RANK)
-		e2:SetValue(lv)
-		e2:SetReset(RESET_EVENT+0xff0000)
-		sc:RegisterEffect(e2)
-		Duel.SpecialSummon(sc,0,tp,tc:GetControler(),false,false,POS_FACEUP)
-		local mg=tc:GetOverlayGroup()
-		if mg:GetCount()>0 then Duel.Overlay(sc,mg,false) end
-		sc:SetMaterial(Group.FromCards(tc))
-		Duel.Overlay(sc,Group.FromCards(tc))
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_MOVE)
-		e1:SetLabel(otyp)
-		e1:SetLabelObject(sc)
-		e1:SetOperation(cm.rstop)
-		Duel.RegisterEffect(e1,tp)
-		local e3=e1:Clone()
-		e3:SetCode(EVENT_ADJUST)
-		Duel.RegisterEffect(e3,tp)
+	if not tc:IsRelateToEffect(e) or tc:IsImmuneToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,tc,e)
+	if g:GetCount()>0 then
+		local og=g:GetFirst():GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+		Duel.Overlay(tc,g)
 	end
 end

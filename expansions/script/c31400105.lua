@@ -40,7 +40,7 @@ function cm.initial_effect(c)
 	Duel.RegisterEffect(e5,0)
 end
 function cm.racecon(e)
-	return e:GetHandler():GetFlagEffect(m)~=0
+	return e:GetHandler():GetFlagEffect(m)~=0 and not Duel.IsPlayerAffectedByEffect(0,EFFECT_NECRO_VALLEY) and not Duel.IsPlayerAffectedByEffect(1,EFFECT_NECRO_VALLEY)
 end
 function cm.tpcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

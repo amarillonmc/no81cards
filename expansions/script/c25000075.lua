@@ -2,7 +2,7 @@ local m=25000075
 local cm=_G["c"..m]
 cm.name="GX-9901-DX 双X"
 function cm.initial_effect(c)
-	aux.AddXyzProcedure(c,nil,12,2)
+	aux.AddXyzProcedure(c,nil,12,3,nil,nil,99)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -13,6 +13,9 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_PHASE+PHASE_END)
+	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetCategory(CATEGORY_DESTROY)
@@ -80,8 +83,8 @@ end
 function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(2000)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,2000)
+	Duel.SetTargetParam(3000)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,3000)
 end
 function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

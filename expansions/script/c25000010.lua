@@ -29,11 +29,6 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(Card.IsSummonPlayer,1,nil,tp) then
-		Duel.Hint(HINT_CARD,0,m)
-		local g1=Duel.SelectReleaseGroup(tp,nil,1,1,nil)
-		Duel.Release(g1,REASON_RULE)
-	end
 	if eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp) then
 		Duel.Hint(HINT_CARD,0,m)
 		local g2=Duel.SelectReleaseGroup(1-tp,nil,1,1,nil)

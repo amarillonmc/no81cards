@@ -37,6 +37,12 @@ function c25000037.initial_effect(c)
 	local e5=e3:Clone()
 	e5:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
 	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_DELAY)
+	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e6:SetOperation(c25000037.winop)
+	c:RegisterEffect(e6)
 end
 c25000037.spchecks=aux.CreateChecks(Card.IsType,{TYPE_RITUAL+TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_PENDULUM+TYPE_LINK})
 function c25000037.spcostfilter(c)
@@ -83,6 +89,10 @@ function c25000037.xxop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,e:GetHandler()) 
 	Duel.GetControl(eg,tp) 
 	end
+end
+function c25000037.winop(e,tp,eg,ep,ev,re,r,rp)
+	local WIN_REASON_CREATORGOD=0x13
+	Duel.Win(tp,WIN_REASON_CREATORGOD)
 end
 
 

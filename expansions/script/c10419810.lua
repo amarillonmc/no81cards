@@ -40,8 +40,7 @@ function cm.actfilter(c)
 end
 function cm.actcon(e)
 	local tp=e:GetHandler():GetControler()
-	return Duel.GetFieldGroupCount(tp,LOCATION_SZONE,0)==0
-		and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==1
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==1
 		and Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.cfilter(c)

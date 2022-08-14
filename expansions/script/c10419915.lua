@@ -39,28 +39,6 @@ function cm.initial_effect(c)
 	e5:SetTarget(cm.drtg)
 	e5:SetOperation(cm.drop)
 	c:RegisterEffect(e5)
-	if cm.counter==nil then
-		cm.counter=true
-		cm[0]=0
-		cm[1]=0
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		e2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-		e2:SetOperation(cm.resetcount)
-		Duel.RegisterEffect(e2,0)
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		e3:SetCode(EVENT_CHAINING)
-		e3:SetCondition(cm.regcon)
-		e3:SetOperation(cm.regop1)
-		Duel.RegisterEffect(e3,0)
-		local e4=Effect.CreateEffect(c)
-		e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e4:SetCode(EVENT_CHAIN_NEGATED)
-		e4:SetCondition(cm.regcon)
-		e4:SetOperation(cm.regop2)
-		Duel.RegisterEffect(e4,0)
-	end
 	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
 end
 function cm.chainfilter(re,tp,cid)
@@ -68,7 +46,7 @@ function cm.chainfilter(re,tp,cid)
 	return not cm.Potion(re:GetHandler())
 end
 function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)~=0
+	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)~=0
 end
 --function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 --  local g=Duel.GetReleaseGroup(tp)

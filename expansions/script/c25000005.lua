@@ -86,10 +86,11 @@ function cm.just(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabelObject() and e:GetLabelObject():GetFlagEffect(m)>0 then exc=e:GetLabelObject() end
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,exc)
 	if #g==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local ct=math.min(#g,cm[tp])
-	local sg=g:Select(tp,ct,ct,nil)
-	Duel.SendtoGrave(sg,REASON_RULE)
+	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	--local ct=math.min(#g,cm[tp])
+	--local sg=g:Select(tp,ct,ct,nil)
+	local ct=Duel.SendtoGrave(g,REASON_RULE)
+	Duel.SetLP(tp,Duel.GetLP(tp)-ct*800)
 end
 function cm.reset(e,tp,eg,ep,ev,re,r,rp)
 	local re,op=e:GetLabelObject(),nil

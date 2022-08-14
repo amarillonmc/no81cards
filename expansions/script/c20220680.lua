@@ -26,17 +26,16 @@ function s.initial_effect(c)
 	e1:SetCost(s.negcost)
 	e1:SetOperation(s.negop)
 	c:RegisterEffect(e1)
-	--战斗时攻击力上升
-    local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,3))
+	--人渣效果
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_FIELD)
 	e3:SetCategory(CATEGORY_ATKCHANGE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(s.atkcon)
-	e3:SetCost(s.atkcost)
-	e3:SetOperation(s.atkop)
-	c:RegisterEffect(e3,false,REGISTER_FLAG_DETACH_XMAT)
+	e3:SetCondition(s.con1)
+	e3:SetCost(s.cost)
+	e3:SetOperation(s.op)
+	c:RegisterEffect(e3)
 end
 s.xyz_number=107
 function s.cfilter(c)
@@ -96,17 +95,18 @@ end
 function s.disable(e,c)
 	return c~=e:GetHandler() and (not c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_EFFECT) or bit.band(c:GetOriginalType(),TYPE_EFFECT)==TYPE_EFFECT))
 end
-function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c==Duel.GetAttacker() or c==Duel.GetAttackTarget()
+function s.con1(e,tp,eg,ep,ev,re,r,rp)
+	local a=Duel.GetAttacker()
+	local d=Duel.GetAttackTarget()
+	if a:IsControler(1-tp) then a,d=d,a end
+	return a==e:GetHandler() and d and e:GetHandler():GetFlagEffect(id)==0
 end
-function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) and c:GetFlagEffect(id)==0 end
-	c:RemoveOverlayCard(tp,1,1,REASON_COST)
-	c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
+function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():GetFlagEffect(id)==0 end
+	e:GetHandler():RegisterFlagEffect(id,RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
+    Duel.SetChainLimit(s.chlimit)
 end
-function s.atkop(e,tp,eg,ep,ev,re,r,rp)
+function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local a=Duel.GetAttacker()
 	local d=Duel.GetAttackTarget()
 	if not a:IsRelateToBattle() or a:IsFacedown() or not d:IsRelateToBattle() or d:IsFacedown() then return end

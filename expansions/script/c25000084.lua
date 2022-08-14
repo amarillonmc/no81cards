@@ -38,7 +38,7 @@ end
 function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetCounter(0x9af7)>0 end
 	local ct=e:GetHandler():GetCounter(0x9af7)
-	e:SetLabel(ct*600)
+	e:SetLabel(ct*200)
 	e:GetHandler():RemoveCounter(tp,0x9af7,ct,REASON_COST)
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)

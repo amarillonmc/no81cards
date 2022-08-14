@@ -30,10 +30,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
-	e4:SetCategory(CATEGORY_TOHAND)
+	e4:SetCategory(CATEGORY_TODECK)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
-	e4:SetCountLimit(1,m)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCondition(cm.thcon)
@@ -69,17 +68,18 @@ end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and cm.thfilter(chkc) end
 	if chk==0 then return e:GetHandler():IsAbleToExtra()
-	and Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	and Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,5,nil)
+	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,5,e:GetHandler())
+	g:AddCard(e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,tp,LOCATION_GRAVE)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if tg:GetCount()<=0 or not e:GetHandler():IsAbleToExtra() then return end
-	if c:IsRelateToEffect(e) then
+	if tg:GetCount()==0 or not e:GetHandler():IsAbleToExtra() then return end
+	if e:GetHandler():IsRelateToEffect(e) then
 		tg:AddCard(e:GetHandler())
 		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end
+

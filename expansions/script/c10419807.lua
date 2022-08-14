@@ -69,10 +69,10 @@ function cm.cfilter(c,tp)
 	return cm.Kabal(c) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and  c:GetReasonPlayer()==1-tp
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler()) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+	return eg:IsExists(cm.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function cm.spfilter(c,e,tp)
-	return cm.Kabal(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) and c:IsLevelBelow(Duel.GetTurnCount())
+	return cm.Kabal(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and c:IsLevelBelow(Duel.GetTurnCount())
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -84,20 +84,24 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+		local rg=Duel.GetReleaseGroup(tp)
+		rg:RemoveCard(g:GetFirst())
+		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and rg:GetCount()~=0 then
+			Duel.BreakEffect()
+			Duel.Release(g,REASON_EFFECT)
+		end
 	end
 end
 
 function cm.actfilter(c)
 	return c:IsFaceup() and cm.Kabal(c)
 end
-function cm.actcon(e)
+function cm.actcon(e,tp)
 	local tp=e:GetHandler():GetControler()
-	return Duel.GetFieldGroupCount(tp,LOCATION_SZONE,0)==0
-		and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==1
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==1
 		and Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_MZONE,0,1,nil)
 end
-function cm.condition(e)
+function cm.condition(e,tp)
 	return Duel.GetTurnCount()<3 or (Duel.IsPlayerAffectedByEffect(tp,10419902) and Duel.GetFlagEffect(tp,10419902)==0)
 end
 function cm.thfilter(c)
@@ -134,7 +138,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	cm.ActivateReflect4(e,tp,eg,ep,ev,re,r,rp)
 	cm.ActivateReflect5(e,tp,eg,ep,ev,re,r,rp)
 end
-function cm.conditiont(e)
+function cm.conditiont(e,tp)
 	return Duel.GetTurnCount()>=3 or (Duel.IsPlayerAffectedByEffect(tp,10419902) and Duel.GetFlagEffect(tp,10419902)==0)
 end
 function cm.targett(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

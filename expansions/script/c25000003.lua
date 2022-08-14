@@ -12,16 +12,19 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e2:SetCode(EFFECT_REMAIN_FIELD)
 	c:RegisterEffect(e2)
-end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
-	e1:SetOperation(cm.remain)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetOperation(cm.remain)
+	c:RegisterEffect(e3)
 end
 function cm.remain(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:GetHandler():IsType(TYPE_EQUIP+TYPE_CONTINUOUS) or re:GetHandler():IsLocation(LOCATION_FZONE) then return end
+	if not re:GetHandler():IsType(TYPE_SPELL+TYPE_TRAP) or not re:GetHandler():IsLocation(LOCATION_SZONE) then return end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_REMAIN_FIELD)
+	e1:SetProperty(EFFECT_FLAG_OATH)
+	re:GetHandler():RegisterEffect(e1)
 	re:GetHandler():CancelToGrave()
 end

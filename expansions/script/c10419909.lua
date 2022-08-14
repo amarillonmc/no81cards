@@ -18,7 +18,6 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
 	e1:SetCondition(cm.thcon)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
@@ -329,5 +328,15 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(cm.aclimit)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.aclimit(e,re,tp)
+	return re:GetHandler():IsCode(m) 
 end
 

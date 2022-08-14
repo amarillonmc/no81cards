@@ -2,14 +2,14 @@ local m=25000082
 local cm=_G["c"..m]
 cm.name="ZGMF-X42S 命运"
 function cm.initial_effect(c)
-	aux.AddXyzProcedure(c,nil,10,2,nil,nil,99)
+	aux.AddXyzProcedure(c,nil,10,3,nil,nil,99)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCost(
 		function(e,tp,eg,ep,ev,re,r,rp,chk)
 			if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -38,6 +38,12 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCost(
+		function(e,tp,eg,ep,ev,re,r,rp,chk)
+			if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+			e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+		end
+	)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
 	c:RegisterEffect(e3)
@@ -49,18 +55,17 @@ end
 function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsFaceup() then
-		local ph=Duel.GetCurrentPhase()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
 		e1:SetValue(cm.efilter)
-		e1:SetOwnerPlayer(tp)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+ph)
+		e1:SetLabel(e)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
 	end
 end
 function cm.efilter(e,re)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
+	return re==e:GetLabel()
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local bc=e:GetHandler():GetBattleTarget()
@@ -68,7 +73,8 @@ function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(m)==0 end
+	if chk==0 then return c:GetFlagEffect(m)==0 and c:CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	c:RemoveOverlayCard(tp,1,1,REASON_COST)
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)

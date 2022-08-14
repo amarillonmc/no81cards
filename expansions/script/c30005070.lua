@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunFun(c,cm.fffilter,cm.ffilter,2,true)
+	aux.AddFusionProcFunFun(c,cm.ft,cm.ffilter,2,true)
 	--splimit
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	--e1:SetCountLimit(1)
 	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.tg)
@@ -56,38 +57,35 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4) 
 end
 --fusion material
-function cm.fffilter(c)
+function cm.ft(c)
 	return c:IsFusionType(TYPE_FUSION) or c:IsRace(RACE_MACHINE)
 end
 function cm.ffilter(c)
 	return c:IsFusionType(TYPE_FUSION) 
 end
 --Effect 1
-function cm.release(c)
+function cm.release(c,tp)
 	return  Duel.IsPlayerCanRelease(tp,c)
 end
 function cm.fselect(g)
 	return g:IsExists(Card.IsType,1,nil,TYPE_FUSION)
 end
-function cm.tofilter(c)
-	return c:IsAbleToHand()
-end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(cm.release,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(cm.release,tp,LOCATION_MZONE,0,nil,tp)
 	if chk==0 then return g:CheckSubGroup(cm.fselect,3,3) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local rg=g:SelectSubGroup(tp,cm.fselect,false,3,3)
 	Duel.Release(rg,REASON_COST)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return cm.tofilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,e:GetHandler()) end
+	if chkc then return chkc:IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,2,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,2,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,2,2,e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS) 
 	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
 	if tg:GetCount()>0 then
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
@@ -168,4 +166,3 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-

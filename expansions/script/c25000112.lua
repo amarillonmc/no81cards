@@ -11,10 +11,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.thfilter(c)
-	return c:IsCode(25000109,25000110) and c:IsAbleToHand()
+	return c:IsCode(25000106,25000109) and c:IsAbleToHand()
 end
 function cm.fzfilter(c)
-	return c:IsCode(25000106) and c:IsFaceup()
+	return c:IsCode(25000110) and c:IsFaceup()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)

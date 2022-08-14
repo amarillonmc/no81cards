@@ -1,12 +1,14 @@
 --荒败之城 盐风
 function c29010022.initial_effect(c)
 	aux.AddCodeList(c,29010023)
-	--activate
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_ACTIVATE)
-	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetCountLimit(1,29010022+EFFECT_COUNT_CODE_OATH)
-	c:RegisterEffect(e0)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,29010022+EFFECT_COUNT_CODE_OATH)
+	e1:SetOperation(c29010022.activate)
+	c:RegisterEffect(e1)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e1:SetType(EFFECT_TYPE_IGNITION)
@@ -15,18 +17,18 @@ function c29010022.initial_effect(c)
 	e1:SetTarget(c29010022.totg)
 	e1:SetOperation(c29010022.toop)
 	c:RegisterEffect(e1)
-	--special summon
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetRange(LOCATION_FZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(c29010022.spcon)
-	e2:SetTarget(c29010022.sptg)
-	e2:SetOperation(c29010022.spop)
-	c:RegisterEffect(e2)
+end
+function c29010022.filter(c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_FISH) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+function c29010022.activate(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c29010022.filter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(29010022,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+	end
 end
 function c29010022.totg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>1

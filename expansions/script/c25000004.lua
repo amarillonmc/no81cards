@@ -25,8 +25,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,0)
 end
 function cm.todeck(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(Card.IsSummonType,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,SUMMON_TYPE_NORMAL) then return end
+	if not Duel.IsExistingMatchingCard(aux.NOT(Card.IsType),tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,TYPE_EFFECT) then return end
 	Duel.Hint(HINT_CARD,0,m)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
+	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 end

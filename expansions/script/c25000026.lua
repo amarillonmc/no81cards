@@ -35,7 +35,7 @@ function c25000026.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c25000026.ffilter(c,fc,sub,mg,sg)
-	return ( not sg or sg:GetClassCount(Card.GetLevel)==1) and c:IsRace(RACE_FIEND)
+	return (not sg or sg:FilterCount(aux.TRUE,c)==0 or (sg:IsExists(Card.IsLevel,1,c,c:GetLevel()))) and c:IsRace(RACE_FIEND)
 end
 function c25000026.splimit(e,se,sp,st)
 	return e:GetHandler():GetLocation()~=LOCATION_EXTRA

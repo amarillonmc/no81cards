@@ -4,11 +4,9 @@ cm.name="来自光之星的使者 佐菲"
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCondition(cm.spcon)
 	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.sptg)
@@ -22,34 +20,33 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.tdop)
 	c:RegisterEffect(e2)
 end
-function cm.cfilter(c,tp)
-	return c:GetOwner()==tp
+function cm.cfilter(c,e,tp)
+	return c:GetOwner()==tp and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp,cm.zone(c))
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,0,LOCATION_MZONE,1,nil,tp)
+	return Duel.IsExistingMatchingCard(cm.cfilter,tp,0,LOCATION_MZONE,1,nil,e,tp)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(m)==0 and not c:IsPublic() end
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+	if chk==0 then return not e:GetHandler():IsPublic() end
 end
-function cm.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+function cm.spfilter(c,e,tp,z)
+	return c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP,tp,z)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,c,e,tp) and c:IsAbleToDeck() end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(cm.cfilter,tp,0,LOCATION_MZONE,nil,e,tp)
+	if #g==0 then return end
+	local zone=0
+	for tc in aux.Next(g) do zone=zone|cm.zone(tc) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,e:GetHandler(),e,tp)
-	if #g>0 and Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)~=0 and c:IsRelateToEffect(e) then Duel.SendtoDeck(c,nil,0,REASON_EFFECT) end
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp,zone)
+	if #g>0 then Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP,zone) end
 end
 function cm.tdfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:GetPreviousControler()~=tp and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToDeck()
+	return c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_LIGHT) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToDeck()
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and cm.tdfilter(chkc,tp) end
@@ -68,14 +65,15 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=Group.FromCards(c,tc)
 		Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
 		local og=Duel.GetOperatedGroup()
-		local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK)
+		if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+		local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 		if ct==0 then return end
-		Duel.SortDecktop(tp,tp,ct)
-		for i=1,ct do
-			local mg=Duel.GetDecktopGroup(tp,1)
-			Duel.MoveSequence(mg:GetFirst(),1)
-		end
 		Duel.BreakEffect()
 		Duel.Draw(tp,2,REASON_EFFECT)
 	end
+end
+function cm.zone(c)
+	local seq,z=c:GetSequence(),0
+	if seq<5 then z=1<<(4-seq) elseif seq==5 then z=0x8 elseif seq==6 then z=0x2 end
+	return z
 end

@@ -45,7 +45,7 @@ function c9910234.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c9910234.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsChainNegatable(ev) and Duel.GetFlagEffect(tp,9910234)==0 and ep~=tp
+	return Duel.IsChainDisablable(ev) and Duel.GetFlagEffect(tp,9910234)==0 and ep~=tp
 end
 function c9910234.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910234)

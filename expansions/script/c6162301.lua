@@ -34,7 +34,11 @@ function c6162301.mfilter(c)
 end  
 function c6162301.ovfilter(c)  
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsRace(RACE_SPELLCASTER)  
-end  
+end 
+function c6162301.xyzop(e,tp,chk)  
+	if chk==0 then return Duel.GetFlagEffect(tp,6162301)==0 end  
+	Duel.RegisterFlagEffect(tp,10443957,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)  
+end   
 function c6162301.incost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end  
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)  

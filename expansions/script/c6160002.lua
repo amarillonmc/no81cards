@@ -16,6 +16,7 @@ function c6160002.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
+	e2:SetCondition(c6160002.thcon)
 	e2:SetCost(c6160002.cost)
 	e2:SetTarget(c6160002.thtg1)
 	e2:SetOperation(c6160002.thop1)
@@ -30,12 +31,18 @@ function c6160002.spcon(e,c)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c6160002.filter,tp,LOCATION_MZONE,0,1,nil)
 end
+function c6160002.cfilter(c)  
+	return c:IsFaceup() and c:IsSetCard(0x616)
+end  
+function c6160002.atkcon(e)  
+	return Duel.IsExistingMatchingCard(c6160002.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,e:GetHandler())  
+end  
 function c6160002.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end  
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)  
 end  
 function c6160002.thfilter1(c)
-	return c:IsSetCard(0x616)and c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsSetCard(0x616) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c6160002.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c6160002.thfilter1,tp,LOCATION_DECK,0,1,nil) end

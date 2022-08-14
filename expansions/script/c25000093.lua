@@ -21,6 +21,9 @@ function cm.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EFFECT_SPSUMMON_COST)
 	c:RegisterEffect(e3)
+	local e4=e2:Clone()
+	e4:SetCode(EFFECT_MSET_COST)
+	c:RegisterEffect(e4)
 	if not cm.global_check then
 		cm.global_check=true
 		local ge1=Effect.CreateEffect(c)

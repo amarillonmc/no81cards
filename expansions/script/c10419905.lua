@@ -59,7 +59,6 @@ function cm.ntcon(e,c,minc)
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	if not (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) then return false end
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 		or Duel.IsExistingMatchingCard(cm.ntfilter,tp,LOCATION_GRAVE,0,1,nil)
 end
@@ -72,7 +71,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetReleaseGroup(tp)
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and g:GetCount()==0 then
+	g:RemoveCard(c)
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and g:GetCount()~=0 then
 		Duel.BreakEffect()
 		Duel.Release(g,REASON_EFFECT)
 	end

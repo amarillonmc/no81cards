@@ -12,18 +12,11 @@ function c9910667.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(c9910667.rmcon1)
 	e1:SetCost(c9910667.rmcost)
 	e1:SetTarget(c9910667.rmtg1)
 	e1:SetOperation(c9910667.rmop1)
 	e1:SetLabelObject(g)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCondition(c9910667.rmcon2)
-	c:RegisterEffect(e2)
 	--remove grave
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9910667,1))
@@ -38,12 +31,6 @@ function c9910667.initial_effect(c)
 	e3:SetOperation(c9910667.rmop2)
 	e3:SetLabelObject(g)
 	c:RegisterEffect(e3)
-end
-function c9910667.rmcon1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetOverlayGroup():FilterCount(Card.IsRace,nil,RACE_MACHINE)==0
-end
-function c9910667.rmcon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetOverlayGroup():FilterCount(Card.IsRace,nil,RACE_MACHINE)~=0
 end
 function c9910667.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

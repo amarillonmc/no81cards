@@ -27,40 +27,18 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.operation1)
 	c:RegisterEffect(e2)
 	--draw
-	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_DRAW)
-	e5:SetDescription(aux.Stringid(m,1))
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e5:SetCode(EVENT_PHASE+PHASE_END)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1,m+1)
-	e5:SetCondition(cm.drcon)
-	e5:SetTarget(cm.drtg)
-	e5:SetOperation(cm.drop)
-	c:RegisterEffect(e5)
-	if cm.counter==nil then
-		cm.counter=true
-		cm[0]=0
-		cm[1]=0
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		e2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-		e2:SetOperation(cm.resetcount)
-		Duel.RegisterEffect(e2,0)
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		e3:SetCode(EVENT_CHAINING)
-		e3:SetCondition(cm.regcon)
-		e3:SetOperation(cm.regop1)
-		Duel.RegisterEffect(e3,0)
-		local e4=Effect.CreateEffect(c)
-		e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e4:SetCode(EVENT_CHAIN_NEGATED)
-		e4:SetCondition(cm.regcon)
-		e4:SetOperation(cm.regop2)
-		Duel.RegisterEffect(e4,0)
-	end
+	--local e5=Effect.CreateEffect(c)
+	--e5:SetCategory(CATEGORY_DRAW)
+	--e5:SetDescription(aux.Stringid(m,1))
+	--e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	--e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	--e5:SetCode(EVENT_PHASE+PHASE_END)
+	--e5:SetRange(LOCATION_MZONE)
+	--e5:SetCountLimit(1,m+1)
+	--e5:SetCondition(cm.drcon)
+	--e5:SetTarget(cm.drtg)
+	--e5:SetOperation(cm.drop)
+	--c:RegisterEffect(e5)
 	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
 end
 function cm.chainfilter(re,tp,cid)
@@ -68,12 +46,12 @@ function cm.chainfilter(re,tp,cid)
 	return not cm.Potion(re:GetHandler())
 end
 function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)~=0
+	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)~=0
 end
 --function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
---	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsRace,1,nil,RACE_SPELLCASTER) end
---	local sg=Duel.SelectReleaseGroup(tp,Card.IsRace,1,1,nil,RACE_SPELLCASTER)
---	Duel.Release(sg,REASON_COST)
+--  if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsRace,1,nil,RACE_SPELLCASTER) end
+--  local sg=Duel.SelectReleaseGroup(tp,Card.IsRace,1,1,nil,RACE_SPELLCASTER)
+--  Duel.Release(sg,REASON_COST)
 --end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -99,20 +77,6 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,sg)
 		end
 	end
-end
-function cm.resetcount(e,tp,eg,ep,ev,re,r,rp)
-	cm[0]=0
-	cm[1]=0
-end
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return cm.Potion(re:GetHandler()) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
-end
-function cm.regop1(e,tp,eg,ep,ev,re,r,rp)
-	cm[re:GetOwnerPlayer()]=cm[re:GetOwnerPlayer()]+1
-end
-function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
-	if cm[re:GetOwnerPlayer()]==0 then cm[re:GetOwnerPlayer()]=1 end
-	cm[re:GetOwnerPlayer()]=cm[re:GetOwnerPlayer()]-1
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp

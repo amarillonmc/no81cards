@@ -1,97 +1,78 @@
---可爱四糸乃
+--魔玩具·剪刀狐
 local m=13131356
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-		aux.AddXyzProcedure(c,nil,7,2,cm.ovfilter,aux.Stringid(m,0))
 	c:EnableReviveLimit()
-	--sucai
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.operation)
-	c:RegisterEffect(e1)
-	--wuxiao
+	aux.AddFusionProcCodeFun(c,30068120,aux.FilterBoolFunction(Card.IsFusionSetCard,0xa9),1,true,true)
+	
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCategory(CATEGORY_ATKCHANGE)
+	e2:SetType(EFFECT_TYPE_IGNITION
+)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e2:SetCountLimit(1)
-	e2:SetCost(cm.spcost)
-	e2:SetCondition(cm.condition)
+	e2:SetCost(cm.cost)
 	e2:SetOperation(cm.atkop)
 	c:RegisterEffect(e2)
-	--heihei
+
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,0))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e3:SetCode(EVENT_LEAVE_FIELD)
-	e1:SetCountLimit(1,m)
-	e3:SetCondition(cm.spcon)
-	e3:SetTarget(cm.sptg)
-	e3:SetOperation(cm.spop)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(0,1)
+	e3:SetCondition(cm.costcon)
+	e3:SetValue(cm.actlimit)
 	c:RegisterEffect(e3)
+
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e7:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e7:SetCode(EFFECT_DESTROY_REPLACE)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetTarget(cm.reptg)
+	c:RegisterEffect(e7)
 end
-function cm.ovfilter(c)
-	return c:IsFaceup() and c:IsLevelAbove(7) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_PLANT)
+function cm.cfilter(c)
+	return c:IsSetCard(0xc3) and c:IsAbleToGraveAsCost()
 end
-function cm.filter(c)
-	return c:IsRace(RACE_PLANT) and c:IsCanOverlay()
-end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and cm.filter(chkc) and chkc~=e:GetHandler() end
-	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ)
-		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	Duel.SelectTarget(tp,cm.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,e:GetHandler())
-end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
-		local og=tc:GetOverlayGroup()
-		if og:GetCount()>0 then
-			Duel.SendtoGrave(og,REASON_RULE)
-		end
-		Duel.Overlay(c,Group.FromCards(tc))
-	end
-end
-function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	local g=e:GetHandler():GetOverlayGroup():Select(tp,1,1,nil)
-	e:SetLabel(g:GetFirst():GetAttribute())
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return tp~=Duel.GetTurnPlayer()
-end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateAttack()
-	if Duel.GetAttacker():IsAttribute(e:GetLabel()) then
-		Duel.Destroy(Duel.GetAttacker(),REASON_EFFECT)
-	end
-end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsPreviousPosition(POS_FACEUP)
-end
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
-end
-function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x123) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local tc=Duel.GetFirstMatchingCard(cm.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
-	if tc then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(500)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e1)
 	end
+end
+function cm.costcon(e)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
+end
+function cm.actlimit(e,re,tp)
+	return re:GetActivateLocation()==LOCATION_HAND
+end
+function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return e:GetHandler():IsReason(REASON_EFFECT) and c:GetAttack()~=0 end
+	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	local preatk=c:GetAttack()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_COPY_INHERIT)
+	e1:SetReset(RESET_EVENT+0x1ff0000)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(-1000)
+	c:RegisterEffect(e1)
+		return true
+	else return false end
 end
