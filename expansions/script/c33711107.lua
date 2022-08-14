@@ -66,7 +66,8 @@ function cm.initial_effect(c)
 	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e5:SetRange(LOCATION_FZONE)
 	e5:SetTargetRange(1,1)
-	e5:SetValue(cm.drval)
+	e5:SetCondition(cm.drcon)
+	e5:SetValue(2)
 	c:RegisterEffect(e5)
 	--recover
 	local e6=Effect.CreateEffect(c)
@@ -142,15 +143,8 @@ function cm.sumval(e,c)
 	local sp=cm.GetNorthPlayer(e:GetHandler(),e:GetHandlerPlayer())
 	return c:IsControler(sp)
 end
-function cm.drval(e)
-	local tp=Duel.GetTurnPlayer()
-	local sp=cm.GetNorthPlayer(e:GetHandler(),e:GetHandlerPlayer())
-	local dr=Duel.GetDrawCount(tp)
-	if tp==1-sp then
-		return 2
-	else
-		return dr
-	end
+function cm.drcon(e)
+	return Duel.GetTurnPlayer()=1-cm.GetNorthPlayer(e:GetHandler(),e:GetHandlerPlayer())
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local sp=cm.GetNorthPlayer(e:GetHandler(),tp)
