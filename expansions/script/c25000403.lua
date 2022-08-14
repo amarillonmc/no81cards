@@ -25,7 +25,7 @@ function cm.condition2(e,tp)
 	return Duel.GetFlagEffect(tp,25000000)>0 or Duel.GetFlagEffect(1-tp,25000000)>0
 end
 function cm.spcheck(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,true,true) and c:GetOriginalCode()==25000000
+	return Duel.IsPlayerCanSummon(tp,SUMMON_TYPE_NORMAL,c)
 end
 function cm.check(c)
 	return c:GetOriginalCode()==m and c:IsAbleToExtra()
@@ -41,16 +41,15 @@ function cm.operation(e,tp)
 	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sc=Duel.SelectMatchingCard(tp,cm.spcheck,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
-		if Duel.SpecialSummonStep(sc,0,tp,tp,true,true,POS_FACEUP) then
+		local sc=Duel.SelectMatchingCard(tp,cm.spcheck,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
+		if Duel.MoveToField(sc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true) then
 			sc:CopyEffect(ac,RESET_EVENT+0x7e0000)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-			e1:SetCode(EFFECT_CHANGE_TYPE)
-			e1:SetValue(TYPE_MONSTER+TYPE_EFFECT)
+			e1:SetCode(EFFECT_DUAL_SUMMONABLE)
 			e1:SetReset(RESET_EVENT+0x7e0000)
-			sc:RegisterEffect(e1)
+			tc:RegisterEffect(e1)
+			Duel.Summon(tp,sc,true,nil)
 		end
 	end
 end

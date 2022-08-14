@@ -115,14 +115,14 @@ function cm.econ2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,m)==0 and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and Duel.GetCurrentChain()==0 and Duel.GetTurnPlayer()==tp
 end
 function cm.ceoperation(e,tp,eg,ep,ev,re,r,rp)
-	if rp==tp or not re:IsActiveType(TYPE_MONSTER) then return end
+	if rp==tp then return end
 	local g=Group.CreateGroup()
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,cm.repop)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) then Duel.Destroy(c,REASON_EFFECT) end
+	if c:IsRelateToEffect(e) then Duel.Destroy(c,REASON_EFFECT) end
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)

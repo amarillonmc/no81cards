@@ -86,11 +86,24 @@ function cm.activate(e,tp)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetOperation(cm.opdo)
 	Duel.RegisterEffect(e1,tp)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e2:SetCode(EVENT_CHAIN_END)
-	e2:SetOperation(cm.opdo3)
-	Duel.RegisterEffect(e2,tp)
+	local g=Duel.GetMatchingGroup(nil,0,0x7f,0x7f,nil)
+	for tc in aux.Next(g) do
+		if tc:GetActivateEffect() then
+			local ce=tc:GetActivateEffect():Clone()
+			ce:SetRange(LOCATION_DECK)
+			local pro,pro2=ce:GetProperty()
+			ce:SetProperty(pro|EFFECT_FLAG_SET_AVAILABLE,pro2)
+			tc:RegisterEffect(ce,true)
+		elseif not c:IsSummonableCard() then
+			local tpe=tc:GetOriginalType()
+			tc:SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_EFFECT)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_TYPE)
+			e1:SetValue(tpe|TYPE_MONSTER|TYPE_EFFECT)
+			tc:RegisterEffect(e1,true)
+		end
+	end
 end
 function cm.opdo(e,tp,eg,ep,ev,re,r,rp)
 	local cev,effect_do,rtp,cost,target,operation,code=table.unpack(cm.chain_rev_tab[1])
@@ -132,45 +145,4 @@ function cm.opdo(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.op2(e,tp)
 	return false 
-end
-function cm.opdo3(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local full_flag=true
-	local code_pack={EFFECT_SKIP_DP,EFFECT_SKIP_SP,EFFECT_SKIP_M1,EFFECT_SKIP_BP,EFFECT_SKIP_M2}
-	local phase_pack={PHASE_STANDBY,PHASE_MAIN1,PHASE_BATTLE_START,PHASE_BATTLE,PHASE_END}
-	local cp=Duel.GetTurnPlayer()
-	for k,v in ipairs(code_pack) do
-		if Duel.GetCurrentPhase()<phase_pack[k] and cm.skip_check[cp+1][k]==0 then
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_FIELD)
-			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e2:SetTargetRange(1,0)
-			e2:SetCondition(cm.reset)
-			e2:SetCode(v)
-			e2:SetLabel(k)
-			Duel.RegisterEffect(e2,cp)
-			cm.skip_check[cp+1][k]=1
-			full_flag=false
-			return
-		end
-	end
-	if full_flag==true then
-		cm.skip_check[cp+1]={0,0,0,0,0}
-		for k,v in ipairs(code_pack) do
-			if Duel.GetCurrentPhase()<phase_pack[k] and cm.skip_check[cp+1][k]==0 then
-				cm.skip_check[cp+1][k]=1
-				return
-			end
-		end
-	end
-	--
-end
-function cm.reset(e,tp)
-	local flag=false
-	for k,v in ipairs(cm.skip_check[e:GetHandlerPlayer()+1]) do
-		if v==0 then
-			flag=true
-		end
-	end
-	return flag and cm.skip_check[e:GetHandlerPlayer()+1][e:GetLabel()]==1
 end
