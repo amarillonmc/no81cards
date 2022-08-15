@@ -17,10 +17,10 @@ end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local n=Duel.GetFieldGroup(tp,32,0):Filter(Card.IsSetCard,nil,0x564):Filter(Card.IsFaceup,nil):Filter(Card.IsType,nil,1):GetClassCount(Card.GetCode)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return n>0 and Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,n,nil)
-	if n>0 then
+	if n>1 then
 		Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,#g,0,0)
 	end
 end
