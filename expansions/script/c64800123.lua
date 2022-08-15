@@ -52,17 +52,21 @@ function c64800123.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c64800123.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g1=Duel.SelectMatchingCard(tp,c64800123.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,e,tp)
-	local tc=g1:GetFirst()
-	if tc then 
-		local lv=tc:GetLevel()
+	if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)~=0 then 
+		Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
+	else
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g2=Duel.SelectMatchingCard(tp,c64800123.spfilter2,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,tc,e,tp,lv) 
-		g1:Merge(g2)
-		if g1:GetCount()==2 then
-			Duel.SpecialSummon(g1,0,tp,tp,true,false,POS_FACEUP)
+		local g1=Duel.SelectMatchingCard(tp,c64800123.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,e,tp)
+		local tc=g1:GetFirst()
+		if tc then 
+			local lv=tc:GetLevel()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local g2=Duel.SelectMatchingCard(tp,c64800123.spfilter2,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,tc,e,tp,lv) 
+			g1:Merge(g2)
+			if g1:GetCount()==2 then
+				Duel.SpecialSummon(g1,0,tp,tp,true,false,POS_FACEUP)
+			end
 		end
 	end
 end

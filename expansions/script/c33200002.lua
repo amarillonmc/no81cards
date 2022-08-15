@@ -73,24 +73,21 @@ function c33200002.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 --e4
-function c33200002.pffilter0(c,e)
-	return c:IsCanBeFusionMaterial() and not c:IsImmuneToEffect(e)
-end
-function c33200002.filter0(c)
-	return (c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) or c:IsFaceup()) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck()
+function c33200002.filter0(c,e)
+	return c:IsCanBeFusionMaterial() and c:IsAbleToDeck() and not c:IsImmuneToEffect(e)
 end
 function c33200002.filter1(c,e)
-	return (c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) or c:IsFaceup()) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck() and not c:IsImmuneToEffect(e)
+	return c:IsCanBeFusionMaterial() and c:IsFusionType(TYPE_MONSTER) and c:IsAbleToDeck() and not c:IsImmuneToEffect(e)
 end
-function c33200002.filter2(c,e,tp,m,f,chkf)
+function c33200002.filter2(c,e,tp,m,f,chkf) 
+	if c:IsSetCard(0x321) then m=Duel.GetMatchingGroup(c33200002.filter0,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,e:GetHandler(),e) end
 	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_FIRE) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c33200002.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg=Duel.GetMatchingGroup(c33200002.filter0,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,e:GetHandler())
-		mg:Merge(Duel.GetMatchingGroup(c33200002.pffilter0,tp,LOCATION_PZONE+LOCATION_SZONE,0,e:GetHandler(),e))
+		local mg=Duel.GetMatchingGroup(c33200002.filter1,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,e:GetHandler(),e)
 		local res=Duel.IsExistingMatchingCard(c33200002.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -109,7 +106,6 @@ end
 function c33200002.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c33200002.filter1),tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,e:GetHandler(),e)
-	mg:Merge(Duel.GetMatchingGroup(c33200002.pffilter0,tp,LOCATION_PZONE+LOCATION_SZONE,0,e:GetHandler(),e))
 	local sg1=Duel.GetMatchingGroup(c33200002.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg,nil,chkf)
 	local mg3=nil
 	local sg2=nil
@@ -126,6 +122,7 @@ function c33200002.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=sg:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
+		if tc:IsSetCard(0x321) then mg=Duel.GetMatchingGroup(c33200002.filter0,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,e:GetHandler(),e) end
 		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
 			local mat=Duel.SelectFusionMaterial(tp,tc,mg,nil,chkf)
 			tc:SetMaterial(mat)
