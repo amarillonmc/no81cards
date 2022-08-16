@@ -67,7 +67,7 @@ function c67210106.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.IsExistingMatchingCard(c67210106.pfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil) end
 end
 function c67210106.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c67210106.pfilter),tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)

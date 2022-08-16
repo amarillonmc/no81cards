@@ -34,8 +34,8 @@ end
 function c6160002.cfilter(c)  
 	return c:IsFaceup() and c:IsSetCard(0x616)
 end  
-function c6160002.atkcon(e)  
-	return Duel.IsExistingMatchingCard(c6160002.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,e:GetHandler())  
+function c6160002.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c6160002.cfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 end  
 function c6160002.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end  
