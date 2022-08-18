@@ -16,7 +16,7 @@ function cm.tdfilter(c)
 	return c:IsAbleToDeck() and not c:IsPublic()
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_EXTRA,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_EXTRA,0,1,nil) end
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_HAND,0,nil)
