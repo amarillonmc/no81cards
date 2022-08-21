@@ -38,7 +38,7 @@ end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_FZONE,LOCATION_FZONE,1,nil)
+	return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_FZONE,0,1,nil)
 end
 function cm.damcon(e,tp,eg,ep,ev,re,r,rp)
 	return tp==Duel.GetTurnPlayer()
@@ -62,7 +62,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local t1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp)
-	local t2=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)>0
+	local t2=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil):GetCount()>0
 	if chk==0 then return t1 or t2 end
 	local op=0
 	local m={}

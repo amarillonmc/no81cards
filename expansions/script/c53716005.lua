@@ -32,20 +32,20 @@ function cm.matfilter1(c)
 	return c:IsSynchroType(TYPE_TUNER) or c:IsSetCard(0x353b)
 end
 function cm.filter(c)
-	return c:GetSequence()<5
+	return c:GetSequence()<5 and not c:IsLocation(LOCATION_PZONE)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(tp) and cm.setfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.setfilter,tp,LOCATION_SZONE,0,1,nil)
-		and Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE,PLAYER_NONE,0)>0 end
+	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(tp) and cm.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_SZONE,0,1,nil)
+		and Duel.GetLocationCount(tp,LOCATION_SZONE,PLAYER_NONE,0)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
-	local g=Duel.SelectTarget(tp,cm.setfilter,tp,LOCATION_SZONE-LOCATION_FZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_SZONE,0,1,1,nil)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) or tc:IsControler(1-tp) or Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE,PLAYER_NONE,0)<=0 then return end
+	if not tc:IsRelateToEffect(e) or tc:IsControler(1-tp) or Duel.GetLocationCount(tp,LOCATION_SZONE,PLAYER_NONE,0)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-	local s=Duel.SelectDisableField(tp,1,LOCATION_SZONE-LOCATION_FZONE,0,0)
+	local s=Duel.SelectDisableField(tp,1,LOCATION_SZONE,0,0)
 	local nseq=math.log(s,2)
 	Duel.MoveSequence(tc,nseq-8)
 end

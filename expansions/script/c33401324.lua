@@ -88,7 +88,7 @@ function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
 		local tc=g:GetFirst()
-		if tc:IsType(TYPE_RITUAL) then Duel.SpecialSummon(tc2,SUMMON_TYPE_RITUAL,tp,tp,true,true,POS_FACEUP)
+		if tc:IsType(TYPE_RITUAL) then Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,true,true,POS_FACEUP)
 		else
 		 Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		end 

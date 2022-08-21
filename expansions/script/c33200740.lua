@@ -84,7 +84,6 @@ function c33200740.counttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanAddCounter(0x32a,2) and Duel.IsExistingTarget(c33200740.cfilter,tp,LOCATION_REMOVED,0,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c33200740.cfilter,tp,LOCATION_REMOVED,0,2,2,nil)
-	Duel.HintSelection(g)
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,e:GetHandler(),0,0x32a)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(33200740,1))

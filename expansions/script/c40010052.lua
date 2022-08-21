@@ -62,7 +62,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local loc=LOCATION_MZONE+LOCATION_HAND 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g1=Duel.SelectMatchingCard(tp,cm.cfilter2,tp,loc,0,4,4,nil)
-	local g2=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_MZONE,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
 	if g1:GetCount()>0 and Duel.Release(g1,REASON_EFFECT)>0 and g2:GetCount()>0   then
 		Duel.SendtoGrave(g2,REASON_EFFECT)
 		local sg=Duel.GetMatchingGroup(cm.spfilter2,tp,LOCATION_DECK,0,nil,e,tp)

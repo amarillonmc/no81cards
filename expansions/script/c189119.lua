@@ -88,9 +88,11 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsCanOverlay),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.Overlay(c,g)
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsCanOverlay),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil):GetFirst()
+	if tc and not tc:IsImmuneToEffect(e) then
+		local og=tc:GetOverlayGroup()
+		if og:GetCount()>0 then Duel.SendtoGrave(og,REASON_RULE) end
+		Duel.Overlay(c,tc)
 	end
 end
 function cm.aclimit(e,re,tp)

@@ -110,7 +110,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function cm.thfilter(c,lv)
-	return not c:IsLevel(lv) and c:IsSetCard(0x163) and c:IsAbleToHand()
+	return c:IsType(TYPE_MONSTER) and not c:IsLevel(lv) and c:IsSetCard(0x163) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lv=e:GetLabelObject():GetLabel()

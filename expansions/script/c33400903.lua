@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x341,0x340) and c:IsType(TYPE_CONTINUOUS) and c:IsAbleToGrave()
+	return c:IsSetCard(0x341,0x340) and c:IsType(TYPE_CONTINUOUS+TYPE_FIELD) and c:IsAbleToGrave()
 end
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end

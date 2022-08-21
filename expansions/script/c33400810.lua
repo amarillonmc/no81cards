@@ -142,11 +142,7 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 		   if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,nil)~=0 then 
 		   local sg=Duel.GetOperatedGroup()
 		   local sc=sg:GetFirst()
-		   Duel.Draw(tp,1,REASON_EFFECT)
-		   if  Duel.IsPlayerCanDraw(tp,1) and sc:IsSetCard(0xa341) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then 
-		   Duel.Draw(tp,1,REASON_EFFECT)
-		   end  
-		   end
+		   Duel.Draw(tp,2,REASON_EFFECT)	  
 		end
 	end
 end

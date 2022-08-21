@@ -67,7 +67,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=5 end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=5 end
 	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,5)
 end
 function cm.cfilter(c)

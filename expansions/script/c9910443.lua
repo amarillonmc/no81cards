@@ -47,6 +47,7 @@ function c9910443.atkcon(e)
 end
 function c9910443.descon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and re:IsActiveType(TYPE_MONSTER)
+		and Duel.IsChainNegatable(ev)
 end
 function c9910443.cfilter(c)
 	return c:IsRace(RACE_MACHINE) and c:IsAbleToRemoveAsCost()

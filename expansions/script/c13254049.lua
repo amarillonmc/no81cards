@@ -100,7 +100,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local ct=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
-	if chk==0 then return c:GetFlagEffect(m)<ct end
+	if chk==0 then return Duel.GetFlagEffect(tp,m)<ct end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -112,9 +112,4 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		c:CancelToGrave()
-		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
-	end
 end

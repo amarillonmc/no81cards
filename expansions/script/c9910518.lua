@@ -91,7 +91,7 @@ function c9910518.atkop(e,tp,eg,ep,ev,re,r,rp)
 		sc:RegisterEffect(e0)
 		sc=tg:GetNext()
 	end
-	local g=Duel.GetMatchingGroup(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910518,2)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910518,3))

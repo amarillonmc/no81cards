@@ -66,7 +66,7 @@ function c9910879.cfilter2(c)
 	return c:IsSummonLocation(LOCATION_EXTRA) and c:IsFaceup() and c:IsRace(RACE_MACHINE)
 end
 function c9910879.descon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and re:IsActiveType(TYPE_MONSTER)
+	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
 		and Duel.IsExistingMatchingCard(c9910879.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function c9910879.destg(e,tp,eg,ep,ev,re,r,rp,chk)

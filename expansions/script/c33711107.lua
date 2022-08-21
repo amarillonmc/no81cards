@@ -144,7 +144,7 @@ function cm.sumval(e,c)
 	return c:IsControler(sp)
 end
 function cm.drcon(e)
-	return Duel.GetTurnPlayer()=1-cm.GetNorthPlayer(e:GetHandler(),e:GetHandlerPlayer())
+	return Duel.GetTurnPlayer()==1-cm.GetNorthPlayer(e:GetHandler(),e:GetHandlerPlayer())
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local sp=cm.GetNorthPlayer(e:GetHandler(),tp)
