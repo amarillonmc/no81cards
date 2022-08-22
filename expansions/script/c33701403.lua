@@ -3,7 +3,7 @@ local m=33701403
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,5,2,cm.ovfilter,aux.Stringid(m,0))
+	aux.AddXyzProcedure(c,nil,5,2,cm.ovfilter,aux.Stringid(m,0),2)
 	c:EnableReviveLimit()
 	--atk
 	local e1=Effect.CreateEffect(c)
@@ -25,9 +25,10 @@ function cm.initial_effect(c)
 	e3:SetCondition(cm.indcon)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
+	
 end
 function cm.ovfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:GetOverlayCount()==0
+	return c:IsFaceup() and not c:IsCode(m) and c:GetOverlayCount()==0
 end
 function cm.atkval(e,c)
 	return c:GetOverlayCount()*500
