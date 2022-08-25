@@ -18,6 +18,10 @@ function cm.lvsum(c,e,tp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())
 	return g:GetSum(Card.GetLevel)
 end
+function cm.lvsum2(c,e,tp)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	return g:GetSum(Card.GetLevel)
+end
 function cm.adcon(e,c)
 	return cm.lvsum(c,e,tp)~=0
 end
@@ -29,12 +33,15 @@ end
 function cm.filter(c,e,tp)
 	return c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and (cm.lvsum(c,e,tp)%c:GetLevel()==0)
 end
+function cm.filter2(c,e,tp)
+	return c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and (cm.lvsum2(c,e,tp)%c:GetLevel()==0)
+end
 function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_DECK)
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil,e,tp)
+	local g=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_DECK,0,nil,e,tp)
 	if g:GetCount()==0 then return end
 	local ct=math.min(2,g:GetClassCount(Card.GetLevel))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

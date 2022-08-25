@@ -126,7 +126,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local _SendtoGrave=Duel.SendtoGrave
 		Duel.SendtoGrave=function(g,r)
 							if r==REASON_MATERIAL+REASON_SYNCHRO then
-								Duel.Remove(g,POS_FACEUP,r)
+								local rg=g:Filter(Card.IsAbleToRemove,nil,tp,POS_FACEUP,REASON_MATERIAL+REASON_SYNCHRO)
+								g:Sub(rg)
+								_SendtoGrave(g,r)
+								Duel.Remove(rg,POS_FACEUP,r)
 								Duel.SendtoGrave=_SendtoGrave
 							else
 								_SendtoGrave(g,r)

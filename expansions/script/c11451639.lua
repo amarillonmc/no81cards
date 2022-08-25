@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do
-		if tc:IsPreviousLocation(LOCATION_REMOVED) and tc:IsPreviousPosition(POS_FACEDOWN) then
+		if tc:IsPreviousLocation(LOCATION_REMOVED) and tc:IsPreviousPosition(POS_FACEDOWN) and tc:IsLocation(LOCATION_DECK) then
 			Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1)
 		end
 	end
