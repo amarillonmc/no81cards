@@ -39,7 +39,7 @@ function cm.eop(e,tp,eg,ep,ev,re,r,rp)
 	local ag=Duel.GetMatchingGroup(cm.cefilter,tp,0xff,0xff,nil,ev)
 	if ag:GetCount()~=0 then
 		Duel.Hint(HINT_CARD,tp,15000294)
-		local bg=ag:RandomSelect(ag,tp,1)
+		local bg=ag:RandomSelect(tp,1)
 		if bg:GetCount()==1 then
 			Duel.HintSelection(bg)
 			Duel.ChangeTargetCard(ev,bg)

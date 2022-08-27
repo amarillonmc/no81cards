@@ -77,7 +77,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetTargetRange(LOCATION_ONFIELD,0)
 			e3:SetReset(RESET_PHASE+PHASE_END)
 			e3:SetTarget(function(e,c) return c:IsSetCard(0x6978) and c:IsFaceup() end)
-			e3:SetValue(1)
+			e3:SetValue(function(e,re,r,rp) if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then return 1 else return 0 end)
 			Duel.RegisterEffect(e3,tp)
 		end
 	end

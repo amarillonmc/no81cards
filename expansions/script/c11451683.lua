@@ -125,7 +125,7 @@ end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=e:GetHandler():GetCardTarget()
-	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,g) and c:IsCanTurnSet() end
+	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,g) and c:IsCanTurnSet() and (not re or re:GetCode()~=EFFECT_SPSUMMON_PROC or Duel.GetLocationCountFromEx(re:GetHandlerPlayer(),re:GetHandlerPlayer(),Group.__sub(eg,g),re:GetHandler())>0) end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
 		g:KeepAlive()
 		e:SetLabelObject(g)
