@@ -1,6 +1,6 @@
 local m=90700071
 local cm=_G["c"..m]
-cm.name="暗影少女的黑猫"
+cm.name="影中少女的黑猫"
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

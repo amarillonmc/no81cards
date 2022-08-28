@@ -1,6 +1,6 @@
 local m=90700021
 local cm=_G["c"..m]
-cm.name="魔轰神兽 卡尔卡丹"
+cm.name="未界域的魔轰神兽 尤尼科"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	local e0=Effect.CreateEffect(c)
@@ -21,14 +21,13 @@ function cm.initial_effect(c)
 	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
 	--aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x35),aux.NonTuner(nil),1)
-	c:EnableReviveLimit()
 	local egain=Effect.CreateEffect(c)
 	egain:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	egain:SetCode(EVENT_ADJUST)
 	egain:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	egain:SetRange(LOCATION_EXTRA)
 	egain:SetOperation(cm.egainop)
-	egain:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL)
+	egain:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
 	c:RegisterEffect(egain)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)

@@ -22,6 +22,9 @@ end
 function cm.sfilter(c)
 	return c:IsSetCard(0x6312) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_RITUAL) and c:IsSSetable()
 end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler())
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then

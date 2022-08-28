@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.bantg)
 	e2:SetOperation(cm.banop)
 	c:RegisterEffect(e2)
-end 
+end
 function cm.matcheck(e,c)
 	e:SetLabel(e:GetHandler():GetMaterial():GetFirst():GetAttribute())
 end

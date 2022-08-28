@@ -45,7 +45,7 @@ function cm.actop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(field,REASON_RULE)
 	end
 	local tc=e:GetHandler()
-	Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 end
 function cm.atktgfilter(e,c)
 	return c:IsSetCard(0x5ac0)

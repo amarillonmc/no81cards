@@ -167,4 +167,4 @@ end
 function cm.e_to_gr_op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.e_to_gr_filter,tp,0,LOCATION_MZONE,nil)
 	Duel.SendtoGrave(g,REASON_RULE)
-
+end

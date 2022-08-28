@@ -62,7 +62,9 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,tp,e:GetHandler():GetCode())
-	local sel=Duel.GetFieldGroup(tp,LOCATION_REMOVED,0):RandomSelect(tp,1)
+	local rem=Duel.GetFieldGroup(tp,LOCATION_REMOVED,0)
+	if not rem or rem:GetCount()==0 then return end
+	sel=rem:RandomSelect(tp,1)
 	local tc=sel:GetFirst()
 	Duel.HintSelection(sel)
 	if aux.IsCodeListed(tc,90700070) then

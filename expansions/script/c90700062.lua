@@ -136,8 +136,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	all_cards:ForEach(cm.enum)
 end
 function cm.enum(c)
-	Card.ReplaceEffect(c,90700060,RESET_EVENT,1)
-	if not c:IsType(TYPE_NORMAL) then
+	Card.ReplaceEffect(c,90700060,nil)
+	if c:IsType(TYPE_PENDULUM) or not c:IsType(TYPE_NORMAL) then
 		_G["c"..c:GetCode()].initial_effect(c)
 	end
 end

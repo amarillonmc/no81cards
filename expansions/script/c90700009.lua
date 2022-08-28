@@ -65,8 +65,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			if op==0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 				local g=Duel.SelectMatchingCard(tp,cm.gravemtfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-				local tc=g:GetFirst()	
-				local m=_G["c"..tc:GetCode()]
+				local tc=g:GetFirst()   
+				local m=_G["c"..tc:GetOriginalCode()]
 				local te=m.act
 				local op=te:GetOperation()
 				te:SetLabel(1)
