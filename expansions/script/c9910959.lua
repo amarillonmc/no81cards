@@ -44,7 +44,7 @@ function c9910959.thfilter(c,tp)
 	return c:IsSetCard(0x5954) and c:IsAbleToHand() and (b1 or b2 or b3)
 end
 function c9910959.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(c9910959.tdfilter,tp,LOCATION_REMOVED,0,5,nil)
+	local b1=Duel.IsExistingMatchingCard(c9910959.tdfilter,tp,LOCATION_REMOVED,0,4,nil)
 		and Duel.IsPlayerCanDraw(tp,1)
 	local b2=Duel.IsExistingMatchingCard(c9910959.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
 	if chk==0 then return b1 or b2 end
@@ -57,14 +57,14 @@ end
 function c9910959.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetMatchingGroup(c9910959.tdfilter,tp,LOCATION_REMOVED,0,nil)
 	local g2=Duel.GetMatchingGroup(c9910959.thfilter,tp,LOCATION_DECK,0,nil,tp)
-	local b1=#g1>4 and Duel.IsPlayerCanDraw(tp,1)
+	local b1=#g1>3 and Duel.IsPlayerCanDraw(tp,1)
 	local b2=#g2>0
 	if not (b1 or b2) then return end
 	local lab=0
 	if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910959,0),aux.Stringid(9910959,1))==0) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg=g1:Select(tp,5,5,nil)
-		if #sg==5 and Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
+		local sg=g1:Select(tp,4,4,nil)
+		if #sg==4 and Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
 			local og=Duel.GetOperatedGroup()
 			Duel.ConfirmCards(1-tp,og)
 			if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then
@@ -94,7 +94,7 @@ function c9910959.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910959.regcon(e,tp,eg,ep,ev,re,r,rp)
-	local b1=Duel.IsExistingMatchingCard(c9910959.tdfilter,tp,LOCATION_REMOVED,0,5,nil)
+	local b1=Duel.IsExistingMatchingCard(c9910959.tdfilter,tp,LOCATION_REMOVED,0,4,nil)
 		and Duel.IsPlayerCanDraw(tp,1) and e:GetLabel()==2
 	local b2=Duel.IsExistingMatchingCard(c9910959.thfilter,tp,LOCATION_DECK,0,1,nil,tp) and e:GetLabel()==1
 	return b1 or b2
@@ -106,8 +106,8 @@ function c9910959.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.GetMatchingGroup(c9910959.thfilter,tp,LOCATION_DECK,0,nil,tp)
 	if e:GetLabel()==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg=g1:Select(tp,5,5,nil)
-		if #sg==5 and Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
+		local sg=g1:Select(tp,4,4,nil)
+		if #sg==4 and Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
 			local og=Duel.GetOperatedGroup()
 			Duel.ConfirmCards(1-tp,og)
 			if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then

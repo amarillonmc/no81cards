@@ -14,7 +14,7 @@ function cm.thfilter(c)
 	return c:IsCode(25000106,25000110) and c:IsAbleToHand()
 end
 function cm.fzfilter(c)
-	return c:IsCode(25000109) and c:IsAbleToHand()
+	return c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)

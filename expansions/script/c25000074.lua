@@ -39,6 +39,7 @@ function cm.initial_effect(c)
 	e3:SetCountLimit(1)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCondition(cm.dscon)
+	e3:SetCost(cm.dscost)
 	e3:SetTarget(cm.dstg)
 	e3:SetOperation(cm.dsop)
 	c:RegisterEffect(e3)
@@ -60,15 +61,21 @@ end
 function cm.dscon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0
 end
+function cm.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() end
+	Duel.Release(e:GetHandler(),REASON_COST)
+end
 function cm.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsLocation(LOCATION_ONFIELD) end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(1-tp)
+	Duel.SetTargetParam(1200)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1200)
 	local ct=Duel.GetCurrentChain()
 	if ct>1 then e:SetLabel(1) else e:SetLabel(0) end
 end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.Destroy(e:GetHandler(),REASON_EFFECT)~=0 and e:GetLabel()==1 then
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	if Duel.Damage(p,d,REASON_EFFECT)~=0 and e:GetLabel()==1 then
 		local res=false
 		local ct=Duel.GetCurrentChain()-1
 		for i=1,ct do

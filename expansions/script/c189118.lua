@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:IsType(TYPE_SPIRIT) and (c:IsSummonable(true,nil) or c:IsMSetable(true,nil))
+	return c:IsType(TYPE_SPIRIT) and (c:IsSummonable(true,nil) or c:IsMSetable(true,nil)) and not c:IsCode(m)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end

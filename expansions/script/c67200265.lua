@@ -42,7 +42,7 @@ function c67200265.pcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.BreakEffect()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,67200266,0x674,TYPES_TOKEN_MONSTER,0,0,1,RACE_PSYCHO,ATTRIBUTE_LIGHT) then
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,67200266,0x674,TYPES_TOKEN_MONSTER,0,0,1,RACE_PSYCHO,ATTRIBUTE_LIGHT) and Duel.SelectYesNo(tp,aux.Stringid(67200265,1)) then
 		local token=Duel.CreateToken(tp,67200266)
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 		Duel.SpecialSummonComplete()

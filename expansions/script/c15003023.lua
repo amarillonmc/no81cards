@@ -86,27 +86,26 @@ function cm.initial_effect(c)
 	e11:SetCode(EFFECT_UPDATE_ATTACK)
 	e11:SetRange(LOCATION_MZONE)
 	e11:SetCondition(cm.con5)
-	e11:SetValue(6000)
+	e11:SetValue(5000)
 	c:RegisterEffect(e11)
 	local e12=e11:Clone()
 	e12:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e12)
 	if not cm.GreezaCheck then
 		cm.GreezaCheck=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		ge1:SetCode(EVENT_CHAINING)
-		ge1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-		ge1:SetCondition(cm.callcon)
-		ge1:SetOperation(cm.callchk)
-		Duel.RegisterEffect(ge1,0)
+		_GAnnounceCard=Duel.AnnounceCard
+		function Duel.AnnounceCard(p,...)
+			local res=_GAnnounceCard(p,...)
+			if res==15003023 then res=0 end
+			return res
+		end
 	end
 end
 function cm.mfilter(c,xyzc)
-	return c:IsRace(RACE_FIEND)
+	return c:IsRace(RACE_FIEND) and c:IsType(TYPE_XYZ)
 end
 function cm.xyzcheck(g)
-	return g:GetClassCount(Card.GetCode)==g:GetCount()
+	return g:GetClassCount(Card.GetCode)==g:GetCount() and g:GetClassCount(Card.GetRank)==1
 end
 function cm.callcon(e,tp,eg,ep,ev,re,r,rp)
 	local ex,cg,ct,cp,cv=Duel.GetOperationInfo(ev,CATEGORY_ANNOUNCE)
@@ -144,7 +143,7 @@ function cm.con3(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetOverlayGroup():GetCount()<=4 and e:GetHandler():GetOverlayGroup():GetCount()>=3
 end
 function cm.con4(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetOverlayGroup():GetCount()>=4 and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+	return e:GetHandler():GetOverlayGroup():GetCount()==4 and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function cm.con5(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetOverlayGroup():GetCount()>=5

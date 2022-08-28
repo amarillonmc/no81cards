@@ -3,18 +3,6 @@ local cm=_G["c"..m]
 cm.name="新生命体 德拉斯"
 function cm.initial_effect(c)
 	aux.EnableDualAttribute(c)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(aux.IsDualState)
-	e1:SetValue(cm.atkval)
-	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_UPDATE_DEFENSE)
-	e2:SetValue(cm.defval)
-	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetCategory(CATEGORY_EQUIP)
@@ -29,23 +17,10 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.eqop)
 	c:RegisterEffect(e3)
 end
-function cm.adfilter(c,f)
-	return math.max(f(c),0)
-end
-function cm.atkval(e,c)
-	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_DUAL)
-	if #g==0 then return false end
-	return g:GetSum(cm.adfilter,Card.GetTextAttack)
-end
-function cm.defval(e,c)
-	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_DUAL)
-	if #g==0 then return false end
-	return g:GetSum(cm.adfilter,Card.GetTextDefense)
-end
 function cm.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local eqg=c:GetEquipGroup()
-	return c:IsDualState() and eqg==nil or not eqg:IsExists(function(c)return c:GetFlagEffect(m)>0 end,1,nil)
+	return c:IsDualState() and (eqg==nil or not eqg:IsExists(function(c)return c:GetFlagEffect(m)>0 end,1,nil))
 end
 function cm.eqfilter(c)
 	return c:IsAbleToChangeControler() and c:IsType(TYPE_EFFECT) and c:IsFaceup()
@@ -81,5 +56,11 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
 		c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_UPDATE_ATTACK)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		e2:SetValue(tc:GetBaseAttack())
+		c:RegisterEffect(e2)
 	end
 end

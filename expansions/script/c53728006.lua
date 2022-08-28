@@ -32,7 +32,8 @@ function cm.spfilter(c,e,tp,code)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or e:GetHandler():IsLocation(LOCATION_SZONE)) and Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,nil,e,tp) end
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (ft>1 or (ft>0 and e:GetHandler():IsLocation(LOCATION_SZONE))) and Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)

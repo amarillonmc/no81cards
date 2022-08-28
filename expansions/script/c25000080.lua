@@ -26,14 +26,17 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) or not Duel.IsChainNegatable(ev) then return false end
 	local te=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT)
 	return te and te:GetHandler()==e:GetHandler() and rp==1-tp and re:GetHandler():IsRelateToEffect(re)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsDestructable() end
+	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 and re:GetHandler():IsDestructable() end
+	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -19,7 +19,7 @@ function cm.drfilter(c)
 	return (c:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP) and c:IsAbleToDeck()
 end
 function cm.fzfilter(c)
-	return c:IsCode(25000106) and c:IsFaceup()
+	return c:IsFaceup()
 end
 function cm.filter(c,tp)
 	return c:IsCode(25000109,25000110) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)

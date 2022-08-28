@@ -1,5 +1,7 @@
 --方舟骑士-亚叶
-local cm,m,t=GetID()  
+local m=115027
+local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--Effect 1
@@ -20,20 +22,20 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e1:SetCountLimit(1,m+t)
+	e1:SetCountLimit(1,m+m)
 	e1:SetTarget(cm.destg)
 	e1:SetOperation(cm.desop)
 	c:RegisterEffect(e1)   
 	--Effect 3 
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e6:SetCode(EVENT_DESTROYED)
-	e6:SetProperty(EFFECT_FLAG_DELAY)
-	e6:SetCountLimit(1,m+t*2) 
-	e6:SetCondition(cm.pencon)
-	e6:SetTarget(cm.pentg)
-	e6:SetOperation(cm.penop)
-	c:RegisterEffect(e6)
+	--local e6=Effect.CreateEffect(c)
+	--e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	--e6:SetCode(EVENT_DESTROYED)
+	--e6:SetProperty(EFFECT_FLAG_DELAY)
+	--e6:SetCountLimit(1,m+t*2) 
+	--e6:SetCondition(cm.pencon)
+	--e6:SetTarget(cm.pentg)
+	--e6:SetOperation(cm.penop)
+	--c:RegisterEffect(e6)
 end
 --Effect 1
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -53,22 +55,29 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0
 		and c:IsRelateToEffect(e) 
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local e4=Effect.CreateEffect(c)
-		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetCode(EFFECT_IMMUNE_EFFECT)
-		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e4:SetRange(LOCATION_MZONE)
-		e4:SetValue(cm.efilter)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e4)
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0)) 
+		and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
+		and Duel.IsExistingMatchingCard(cm.tun,tp,LOCATION_MZONE,0,1,nil,e)
+		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+		local g=Duel.SelectMatchingCard(tp,cm.tun,tp,LOCATION_MZONE,0,1,1,nil,e)
+		if g:GetCount()>0 then
+			Duel.HintSelection(g)
+			local tc=g:GetFirst()
+			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(m,3))
+			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)  
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_ADD_TYPE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e1:SetValue(TYPE_TUNER)
+			tc:RegisterEffect(e1) 
+		end
 	end
 end
-function cm.efilter(e,te)
-	local tc=te:GetHandler()
-	return tc:GetOriginalType()&TYPE_FIELD~=0
+function cm.tun(c,e)
+	return not c:IsImmuneToEffect(e) 
+		and not c:IsType(TYPE_TUNER)
+		and c:IsFaceup() and (c:IsSetCard(0x87af) or ((_G["c"..c:GetCode()]and  _G["c"..c:GetCode()].named_with_Arknight)))
 end
 --Effect 2
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -98,7 +107,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			local e2=e1:Clone()
 			e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 			tc:RegisterEffect(e2)
-			tc:RegisterFlagEffect(m+t,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))  
+			tc:RegisterFlagEffect(m+m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))  
 		end
 	end
 end

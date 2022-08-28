@@ -21,25 +21,26 @@ function c76029002.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
-	--
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,16029002) 
-	e2:SetTarget(c76029002.detg)
-	e2:SetOperation(c76029002.deop)
-	c:RegisterEffect(e2)
+	--da 
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TOHAND)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_REMOVE)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,16029002) 
-	e3:SetTarget(c76029002.detg)
-	e3:SetOperation(c76029002.deop)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCode(EVENT_LEAVE_FIELD_P)
+	e3:SetOperation(c76029002.eqcheck)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_DAMAGE)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_TO_GRAVE)
+	e4:SetProperty(EFFECT_FLAG_DELAY) 
+	e4:SetLabelObject(e3) 
+	e4:SetCountLimit(1,16029002) 
+	e4:SetTarget(c76029002.datg)
+	e4:SetOperation(c76029002.daop)
+	c:RegisterEffect(e4)
+	local e5=e4:Clone() 
+	e5:SetCode(EVENT_REMOVE) 
+	c:RegisterEffect(e5) 
 end
 c76029002.named_with_Kazimierz=true 
 function c76029002.ntcon(e,c,minc)
@@ -82,25 +83,28 @@ function c76029002.eqop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c76029002.eqlimit(e,c)
 	return e:GetOwner()==c
+end 
+function c76029002.eqcheck(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetLabelObject() then e:GetLabelObject():DeleteGroup() end
+	local g=e:GetHandler():GetEquipGroup()
+	g:KeepAlive()
+	e:SetLabelObject(g)
 end
-function c76029002.detg(e,tp,eg,ep,ev,re,r,rp,chk)  
-	local x1=Duel.GetMatchingGroupCount(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil) 
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeckAsCost,tp,LOCATION_REMOVED,0,1,nil) and x1>0 end  
-	if x1>2 then x1=2 end 
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckAsCost,tp,LOCATION_REMOVED,0,1,x1,nil)
-	local x=g:GetCount()
-	Duel.SendtoDeck(g,nil,2,REASON_COST)
-	e:SetLabel(x)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,x,0,LOCATION_ONFIELD)
+function c76029002.datg(e,tp,eg,ep,ev,re,r,rp,chk)  
+	local g=e:GetLabelObject():GetLabelObject()
+	if chk==0 then return g:GetCount()>0 end   
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,g:GetCount()*500)
 end
-function c76029002.deop(e,tp,eg,ep,ev,re,r,rp)
+function c76029002.daop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	local x=e:GetLabel()
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if g:GetCount()>=x then 
-	local dg=g:Select(tp,x,x,nil)
-	Duel.Destroy(dg,REASON_EFFECT)
+	local g=e:GetLabelObject():GetLabelObject()
+	if g:GetCount()>0 then 
+	Duel.Damage(1-tp,g:GetCount()*500,REASON_EFFECT)
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(76029002,3))
 	Debug.Message("战斗可没有点到为止的说法。")
 	end
 end
+
+
+
+

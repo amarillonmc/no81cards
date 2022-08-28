@@ -60,9 +60,9 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local flag=Duel.GetFlagEffectLabel(tp,11451731) or 0
 	local ht=6
 	for _,te in pairs(eset) do ht=te:GetValue() end
-	if chk==0 then return ht>=flag+2 end
+	if chk==0 then return ht>=flag+1 end
 	--limit
-	flag=flag+2
+	flag=flag+1
 	Duel.ResetFlagEffect(tp,11451731)
 	local ct=math.max(math.min(flag+5,16),0)
 	local e1=Effect.CreateEffect(e:GetHandler())

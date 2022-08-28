@@ -21,7 +21,7 @@ function c9910327.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910327.synfilter(chkc,e,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingTarget(c9910327.filter,tp,LOCATION_MZONE,0,1,nil)
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,9910328,0,0x4011,0,0,4,RACE_PLANT,ATTRIBUTE_LIGHT) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,9910309,0,0x4011,0,0,4,RACE_PLANT,ATTRIBUTE_LIGHT) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c9910327.filter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
@@ -29,7 +29,7 @@ function c9910327.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c9910327.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,9910328,0,0x4011,0,0,4,RACE_PLANT,ATTRIBUTE_LIGHT) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,9910309,0,0x4011,0,0,4,RACE_PLANT,ATTRIBUTE_LIGHT) then return end
 	local token=Duel.CreateToken(tp,9910328)
 	if token and Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 		and tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsControler(tp) then

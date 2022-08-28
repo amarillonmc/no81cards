@@ -86,8 +86,10 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if e:GetHandler():IsRelateToEffect(e) and tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
+	if e:GetHandler():IsRelateToEffect(e) and tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		Duel.BreakEffect()
+		Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD,nil)
+		--[[local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(m,0))
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
@@ -103,7 +105,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetLabelObject(tc)
 		e2:SetCondition(cm.descon)
 		e2:SetOperation(cm.desop)
-		Duel.RegisterEffect(e2,tp)
+		Duel.RegisterEffect(e2,tp)--]]
 	end
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)

@@ -5,88 +5,60 @@ function cm.initial_effect(c)
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),1)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,2))
-	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_CATEGORY_POSITION)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
+	e1:SetCountLimit(2)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetOperation(cm.op)
+	e1:SetTarget(cm.postg)
+	e1:SetOperation(cm.posop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_POSITION)
-	e2:SetTarget(cm.postg)
-	e2:SetOperation(cm.posop)
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_DAMAGE)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(EVENT_BATTLE_DESTROYING)
+	e2:SetCondition(cm.con1)
+	e2:SetOperation(cm.damop)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(cm.con2)
+	e3:SetOperation(cm.regop)
+	c:RegisterEffect(e3)
 end
-function cm.posfilter(c)
-	return c:IsDefensePos() or c:IsFacedown()
-end
+cm.material_type=TYPE_SYNCHRO
 function cm.postg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,e:GetHandler(),1,0,0)
 end
 function cm.posop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetCount()==0 then return end
-	if Duel.ChangePosition(g,POS_FACEUP_ATTACK)==0 then return end
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	if Duel.ChangePosition(c,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)~=0 and c:IsRelateToEffect(e) and c:IsPosition(POS_FACEUP_ATTACK) and c:IsAttackable() and Duel.IsExistingMatchingCard(function(c,tc)return c:IsCanBeBattleTarget(tc)end,tp,0,LOCATION_MZONE,1,nil,c) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
-	local bc=Duel.SelectMatchingCard(tp,function(c)return c:GetOwner()~=tp end,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and bc then
-		if c:GetFlagEffect(m)>0 then cm.cbc(c,bc) end
+	local bc=Duel.SelectMatchingCard(tp,function(c,tc)return c:IsCanBeBattleTarget(tc)end,tp,0,LOCATION_MZONE,1,1,nil,c):GetFirst()
+	if bc then
 		Duel.CalculateDamage(c,bc)
 	end
+	end
 end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e3:SetOperation(cm.disop)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EVENT_BE_BATTLE_TARGET)
-	c:RegisterEffect(e4)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVING)
-	e2:SetCountLimit(1)
-	e2:SetOperation(cm.negop)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
-	c:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,0,1)
+function cm.con1(e)
+	return e:GetHandler():IsAttackPos() and aux.bdocon(e,tp,eg,ep,ev,re,r,rp)
 end
-function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsFaceup() then return end
-	local bc=c:GetBattleTarget()
-	if bc then cm.cbc(c,bc) end
+function cm.damop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Damage(1-tp,e:GetHandler():GetBaseAttack(),REASON_EFFECT)
 end
-function cm.negop(e,tp,eg,ep,ev,re,r,rp)
-	if rp==tp or not Duel.IsChainDisablable(ev) then return end
-	Duel.Hint(HINT_CARD,0,m)
-	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then Duel.Destroy(re:GetHandler(),REASON_EFFECT) end
+function cm.con2(e)
+	return e:GetHandler():IsDefensePos()
 end
-function cm.cbc(c,bc)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_DISABLE)
-	e1:SetReset(RESET_EVENT+0x1fe0000)
-	bc:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_DISABLE_EFFECT)
-	e2:SetReset(RESET_EVENT+0x1fe0000)
-	bc:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_SET_ATTACK_FINAL)
-	e3:SetValue(0)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-	bc:RegisterEffect(e3)
+function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
+	if re==e:GetHandler() then
+		Duel.SetChainLimit(function(e,rp,tp)return tp==rp end)
+	end
 end

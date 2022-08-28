@@ -81,14 +81,30 @@ function cm.exop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chk==0 then return cm.WataruZone(tp)~=0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,cm.WataruZone(tp)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	local dis=cm.WataruZone(tp)
+	if chk==0 then return dis~=0 and cm.WataruSP(c,e,tp,dis) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local dis=cm.WataruZone(tp)
-	if dis~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP,dis)~=0 and c:IsLocation(LOCATION_MZONE) then
+	if dis==0 or Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then return end
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e0:SetCode(EFFECT_ADD_RACE)
+	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e0:SetRange(LOCATION_HAND)
+	e0:SetValue(RACE_FAIRY)
+	e0:SetReset(RESET_EVENT+0xff0000)
+	c:RegisterEffect(e0)
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP,dis)~=0 then
+		if not c:IsLocation(LOCATION_MZONE) then return end
+		if e0 then
+			e0:SetProperty(0)
+			e0:SetRange(LOCATION_MZONE)
+		end
 		local st,cs={},c:GetSequence()
 		if cs>0 then table.insert(st,cs-1) end
 		if cs<4 then table.insert(st,cs+1) end
@@ -99,7 +115,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			if cz&SNNM.DisMZone(tp)>0 then z=z|cz end
 		end
 		SNNM.ReleaseMZone(e,tp,z)
-	end
+	elseif e0 then e0:Reset() end
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -135,6 +151,20 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	e:SetLabelObject(te:GetLabelObject())
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+end
+function cm.WataruSP(c,e,tp,dis)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e0:SetCode(EFFECT_ADD_RACE)
+	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e0:SetRange(LOCATION_HAND)
+	e0:SetValue(RACE_FAIRY)
+	e0:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e0)
+	local res=c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,dis)
+	e0:Reset()
+	return res
 end
 function cm.WataruZone(tp)
 	local s={}

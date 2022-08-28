@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_COUNTER)  
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN) 
-	e2:SetOperation(c15000060.ctop)
+	e2:SetOperation(cm.ctop)
 	c:RegisterEffect(e2)
 	--counter  
 	local e3=Effect.CreateEffect(c) 
@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_FZONE)  
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS) 
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY) 
-	e3:SetOperation(c15000060.ct2op)  
+	e3:SetOperation(cm.ct2op)  
 	c:RegisterEffect(e3)
 	local e4=Effect.Clone(e3)
 	e4:SetCode(EVENT_SUMMON_SUCCESS)
@@ -33,14 +33,13 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_FLIP)
 	c:RegisterEffect(e5)
 	--san Check
-	local e6=Effect.CreateEffect(c)  
-	e6:SetCategory(CATEGORY_COUNTER)
+	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e6:SetRange(LOCATION_FZONE)
 	e6:SetCode(EVENT_SPSUMMON_SUCCESS) 
 	e6:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e6:SetCondition(c15000060.sccon)
-	e6:SetOperation(c15000060.scop)  
+	e6:SetCondition(cm.sccon)
+	e6:SetOperation(cm.scop)  
 	c:RegisterEffect(e6)
 	local e7=Effect.Clone(e6)
 	e7:SetCode(EVENT_SUMMON_SUCCESS)
@@ -49,31 +48,47 @@ function cm.initial_effect(c)
 	e8:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
 	c:RegisterEffect(e8)
 end
-function c15000060.ctfilter(c)  
+function cm.roll(min,max)
+	local A=1103515245
+	local B=12345
+	local M=32767
+	min=tonumber(min)
+	max=tonumber(max)
+	cm.r=((cm.r*A+B)%M)/M
+	if min~=nil then
+		if max==nil then
+			return math.floor(cm.r*min)+1
+		else
+			max=max-min+1
+			return math.floor(cm.r*max+min)
+		end
+	end
+	return cm.r
+end
+function cm.ctfilter(c)  
 	return c:IsFaceup()
-end 
-function c15000060.ctop(e,tp,eg,ep,ev,re,r,rp)  
+end
+function cm.ctcount(c)
+	local count=0
+	count=c:GetLevel()*10
+	if c:IsType(TYPE_XYZ) then
+		count=c:GetRank()*10
+	end
+	if c:IsType(TYPE_LINK) then
+		count=c:GetLink()*20
+	end
+	if count>=60 then count=60 end
+	return count
+end
+function cm.ctop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()  
 	if not c:IsRelateToEffect(e) then return end  
-	local g=Duel.GetMatchingGroup(c15000060.ctfilter,tp,0,LOCATION_MZONE,nil)  
+	local g=Duel.GetMatchingGroup(cm.ctfilter,tp,0,LOCATION_MZONE,nil)  
 	local tc=g:GetFirst()  
 	while tc do 
 		if tc:GetCounter(0x1f33)==0 then
-			if tc:GetLevel()~=nil then
-				local x=tc:GetLevel()*10
-				if x>=60 then x=60 end
-				tc:AddCounter(0x1f33,x)
-			end
-			if tc:IsType(TYPE_XYZ) then
-				local y=tc:GetRank()*10
-				if y>=60 then y=60 end
-				tc:AddCounter(0x1f33,y)
-			end
-			if tc:IsType(TYPE_LINK) then
-				local z=tc:GetLink()*20
-				if z>=60 then z=60 end
-				tc:AddCounter(0x1f33,z)
-			end
+			local count=cm.ctcount(tc)
+			tc:AddCounter(0x1f33,count)
 		end
 		tc=g:GetNext()  
 	end
@@ -82,100 +97,109 @@ function c15000060.ctop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)  
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)  
 	e1:SetTargetRange(1,1)  
-	e1:SetCondition(c15000060.con)  
-	e1:SetValue(c15000060.actlimit)  
+	e1:SetCondition(cm.con)  
+	e1:SetValue(cm.actlimit)  
 	Duel.RegisterEffect(e1,tp)  
 	local e2=Effect.CreateEffect(e:GetHandler())  
 	e2:SetType(EFFECT_TYPE_FIELD)  
 	e2:SetCode(EFFECT_CANNOT_SSET)  
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)  
 	e2:SetTargetRange(1,1)  
-	e2:SetCondition(c15000060.con)  
-	e2:SetTarget(c15000060.setlimit)  
+	e2:SetCondition(cm.con)  
+	e2:SetTarget(cm.setlimit)  
 	Duel.RegisterEffect(e2,tp)
+	if not cm.r then
+		local result=0
+		local g=Duel.GetFieldGroup(0,0xff,0xff):RandomSelect(2,8)
+		local ct={}
+		local c=g:GetFirst()
+		for i=0,7 do
+			ct[c]=i
+			c=g:GetNext()
+		end
+		for i=0,10 do
+			result=result+(ct[g:RandomSelect(2,1):GetFirst()]<<(3*i))
+		end
+		g:DeleteGroup()
+		cm.r=result&0xffffffff
+	end
 	Duel.RegisterFlagEffect(tp,15000060,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
-function c15000060.con(e)  
+function cm.con(e)  
 	return e:GetHandler():IsLocation(LOCATION_FZONE) and e:GetHandler():IsFaceup()
 end  
-function c15000060.actlimit(e,re,tp)  
+function cm.actlimit(e,re,tp)  
 	return re:IsActiveType(TYPE_FIELD) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetOwner()==e:GetHandler():GetOwner()
 end  
-function c15000060.setlimit(e,c,tp)  
+function cm.setlimit(e,c,tp)  
 	return c:IsType(TYPE_FIELD) and c:GetOwner()==e:GetHandler():GetOwner()
 end
-function c15000060.ct2op(e,tp,eg,ep,ev,re,r,rp) 
+function cm.ct2op(e,tp,eg,ep,ev,re,r,rp) 
 	local tp=e:GetHandlerPlayer() 
 	local tc=eg:GetFirst()  
 	while tc do  
-		if tc:IsFaceup() and tc:IsControler(1-tp) then  
-			if tc:GetCounter(0x1f33)==0 then
-				if tc:GetLevel()~=nil then
-					local x=tc:GetLevel()*10
-					if x>=60 then x=60 end
-					tc:AddCounter(0x1f33,x)
-				end
-				if tc:IsType(TYPE_XYZ) then
-					local y=tc:GetRank()*10
-					if y>=60 then y=60 end
-					tc:AddCounter(0x1f33,y)
-				end
-				if tc:IsType(TYPE_LINK) then
-					local z=tc:GetLink()*20
-					if z>=60 then z=60 end
-					tc:AddCounter(0x1f33,z)
-				end
-			end
+		if tc:IsFaceup() and tc:IsControler(1-tp) then
+			local count=cm.ctcount(tc)
+			tc:AddCounter(0x1f33,count)
 		end  
 		tc=eg:GetNext()  
 	end  
 	Duel.RegisterFlagEffect(tp,15000060,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
-function c15000060.scfilter(c,tp)  
+function cm.scfilter(c,tp)  
 	return c:IsFaceup() and c:IsSetCard(0xf33) and c:IsControler(tp)
 end 
-function c15000060.sc2filter(c,tp)  
+function cm.sc2filter(c,tp)  
 	return c:IsFaceup() and c:IsSetCard(0x1f33) and c:IsControler(tp)
 end 
-function c15000060.sccon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c15000060.scfilter,1,nil,tp)
+function cm.sccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.scfilter,1,nil,tp)
 end
-function c15000060.scop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,15000060)
+
+function cm.scopop(e,c,tc)
+	local z=cm.ctcount(tc)
+	local sc=tc:GetCounter(0x1f33)
+	if sc<=z*4/5 then
+		local atk=tc:GetBaseAttack()  
+		local e1=Effect.CreateEffect(c)  
+		e1:SetType(EFFECT_TYPE_SINGLE)  
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)  
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL)  
+		e1:SetValue(math.ceil(atk/2))  
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)  
+		tc:RegisterEffect(e1,true)
+	end
+	if sc<=z*3/5 then
+		local e2=Effect.CreateEffect(c)  
+		e2:SetType(EFFECT_TYPE_SINGLE) 
+		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)  
+		e2:SetCode(EFFECT_DISABLE)  
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)  
+		tc:RegisterEffect(e2)
+	end
+	if sc<=z*1/5 then
+		Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
+	end
+end
+function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c15000060.ctfilter,tp,0,LOCATION_MZONE,nil)
-	local tc=g:GetFirst()  
+	local g=Duel.GetMatchingGroup(cm.ctfilter,tp,0,LOCATION_MZONE,nil)
+	local tc=g:GetFirst()
+	if tc then Duel.Hint(HINT_CARD,0,15000060) end
 	while tc do
 		if tc:GetCounter(0x1f33)~=0 then
-			local tg=Group.FromCards(tc)
-			Duel.HintSelection(tg)
+			Duel.HintSelection(Group.FromCards(tc))
 			local sc=tc:GetCounter(0x1f33)
-			local aag=Duel.GetMatchingGroup(nil,tp,0xff,0xff,nil)
-			local ccg=Group.RandomSelect(aag,tp,10)
-			local bc=ccg:GetFirst()
-			local y=1
-			while bc do
-				bc:RegisterFlagEffect(15000061,RESET_PHASE+PHASE_END,0,99,y)
-				y=y+1
-				bc=ccg:GetNext()
-			end
-			local bac=Group.RandomSelect(ccg,tp,1):GetFirst()
-			local x1=bac:GetFlagEffectLabel(15000061)
-			e:GetHandler():SetTurnCounter(x1)
-			local bbc=Group.RandomSelect(ccg,tp,1):GetFirst()
-			local x2=bbc:GetFlagEffectLabel(15000061)
-			e:GetHandler():SetTurnCounter(x2)
-			local bc=ccg:GetFirst()
-			while bc do
-				bc:ResetFlagEffect(15000061)
-				bc=ccg:GetNext()
-			end
-			if x1==10 and x2==10 then x2=0 end
-			if x1==10 and not x2==10 then x1=0 end
-			if x2==10 and not x1==10 then x2=0 end
-			local x=(x1*10)+x2
-			if x>=sc or eg:IsExists(c15000060.sc2filter,1,nil,tp) then
+			local dice1=cm.roll(1,10)
+			e:GetHandler():SetTurnCounter(dice1)
+			local dice2=cm.roll(1,10)
+			e:GetHandler():SetTurnCounter(dice2)
+			if dice1==10 and dice2~=10 then dice1=0 end
+			if dice1~=10 and dice2==10 then dice2=0 end
+			local x=(dice1*10)+dice2
+			if dice1==10 and dice2==10 then x=100 end
+			if x>=sc or eg:IsExists(cm.sc2filter,1,nil,tp) then
 				if x<95 then
 					Duel.Hint(HINT_CARD,0,15000062)
 					local d1=Duel.TossDice(1-tp,1)
@@ -190,86 +214,9 @@ function c15000060.scop(e,tp,eg,ep,ev,re,r,rp)
 					if d4>=tc:GetCounter(0x1f33) then d4=tc:GetCounter(0x1f33)-1 end
 					tc:RemoveCounter(tp,0x1f33,d4,REASON_EFFECT)
 				end
-				if tc:IsType(TYPE_LINK) then
-					local z=tc:GetLink()*20
-					if z>=60 then z=60 end
-					local sc=tc:GetCounter(0x1f33)
-					if sc<=z*4/5 then
-						local atk=tc:GetBaseAttack()  
-						local e1=Effect.CreateEffect(c)  
-						e1:SetType(EFFECT_TYPE_SINGLE)  
-						e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)  
-						e1:SetCode(EFFECT_SET_ATTACK_FINAL)  
-						e1:SetValue(math.ceil(atk/2))  
-						e1:SetReset(RESET_EVENT+RESETS_STANDARD)  
-						tc:RegisterEffect(e1,true)
-					end
-					if sc<=z*3/5 then
-						local e2=Effect.CreateEffect(c)  
-						e2:SetType(EFFECT_TYPE_SINGLE) 
-						e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)  
-						e2:SetCode(EFFECT_DISABLE)  
-						e2:SetReset(RESET_EVENT+RESETS_STANDARD)  
-						tc:RegisterEffect(e2)
-					end
-					if sc<=z*1/5 then
-						Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
-					end
-				end
-				if tc:IsType(TYPE_XYZ) then
-					local y=tc:GetRank()*10
-					if y>=60 then y=60 end
-					local sc=tc:GetCounter(0x1f33)
-					if sc<=y*4/5 then
-						local atk=tc:GetBaseAttack()  
-						local e1=Effect.CreateEffect(c)  
-						e1:SetType(EFFECT_TYPE_SINGLE)  
-						e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)  
-						e1:SetCode(EFFECT_SET_ATTACK_FINAL)  
-						e1:SetValue(math.ceil(atk/2))  
-						e1:SetReset(RESET_EVENT+RESETS_STANDARD)  
-						tc:RegisterEffect(e1,true)
-					end
-					if sc<=y*3/5 then
-						local e2=Effect.CreateEffect(c)  
-						e2:SetType(EFFECT_TYPE_SINGLE) 
-						e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)  
-						e2:SetCode(EFFECT_DISABLE)  
-						e2:SetReset(RESET_EVENT+RESETS_STANDARD)  
-						tc:RegisterEffect(e2)
-					end
-					if sc<=y*1/5 then
-						Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
-					end
-				end
-				 if (not tc:IsType(TYPE_LINK) and not tc:IsType(TYPE_XYZ)) then
-					local x=tc:GetLevel()*10
-					if x>=60 then x=60 end
-					local sc=tc:GetCounter(0x1f33)
-					if sc<=x*4/5 then
-						local atk=tc:GetBaseAttack()  
-						local e1=Effect.CreateEffect(c)  
-						e1:SetType(EFFECT_TYPE_SINGLE)  
-						e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)  
-						e1:SetCode(EFFECT_SET_ATTACK_FINAL)  
-						e1:SetValue(math.ceil(atk/2))  
-						e1:SetReset(RESET_EVENT+RESETS_STANDARD)  
-						tc:RegisterEffect(e1,true)
-					end
-					if sc<=x*3/5 then
-						local e2=Effect.CreateEffect(c)  
-						e2:SetType(EFFECT_TYPE_SINGLE) 
-						e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)  
-						e2:SetCode(EFFECT_DISABLE)  
-						e2:SetReset(RESET_EVENT+RESETS_STANDARD)  
-						tc:RegisterEffect(e2)
-					end
-					if sc<=x*1/5 then
-						Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
-					end
-				end
+				cm.scopop(e,c,tc)
 			end
-			if x<sc and not eg:IsExists(c15000060.sc2filter,1,nil,tp) then
+			if x<sc and not eg:IsExists(cm.sc2filter,1,nil,tp) then
 				Duel.Hint(HINT_CARD,0,15000061)
 			end
 		end

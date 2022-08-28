@@ -25,11 +25,11 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_NO_TURN_RESET)
+	e4:SetCode(EVENT_CHAINING)
 	e4:SetRange(LOCATION_FZONE)
-	e4:SetProperty(EFFECT_FLAG_BOTH_SIDE)
-	e4:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e4:SetCountLimit(1)
 	e4:SetCondition(cm.thcon)
 	e4:SetTarget(cm.thtg)
 	e4:SetOperation(cm.thop)
@@ -108,22 +108,19 @@ function cm.sdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_HAND) and Duel.GetTurnPlayer()==tp
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:GetActiveType()==TYPE_SPELL or re:GetActiveType()==TYPE_TRAP)
 end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-	if g:GetCount()==0 then return false end
-	local tc=g:GetMinGroup(Card.GetSequence):GetFirst()
-	if chk==0 then return tc:IsAbleToHand() end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tc,1,0,0)
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+function cm.thfilter(c)
+	return c:IsCode(25000117) and c:IsAbleToHand()
 end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-	if g:GetCount()==0 then return end
-	local tc=g:GetMinGroup(Card.GetSequence):GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tg=Duel.GetFirstMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,nil)
+	if tg then
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 end

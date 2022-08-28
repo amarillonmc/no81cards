@@ -30,6 +30,17 @@ function c9910065.initial_effect(c)
 	e3:SetTarget(c9910065.distg)
 	e3:SetOperation(c9910065.disop)
 	c:RegisterEffect(e3)
+	--to deck
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TODECK)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e4:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e4:SetCountLimit(1)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetCondition(c9910065.rtdcon)
+	e4:SetTarget(c9910065.rtdtg)
+	e4:SetOperation(c9910065.rtdop)
+	c:RegisterEffect(e4)
 end
 function c9910065.cfilter(c,status)
 	return c:IsFaceup() and c:IsRace(RACE_FAIRY) and c:IsStatus(status)
@@ -67,4 +78,17 @@ function c9910065.disop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(c9910065.filter,nil,1-tp)
 	Duel.NegateSummon(g)
 	Duel.Destroy(g,REASON_EFFECT)
+end
+function c9910065.rtdcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
+end
+function c9910065.rtdtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
+end
+function c9910065.rtdop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
 end
