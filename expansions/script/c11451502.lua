@@ -51,6 +51,12 @@ function cm.redop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=e1:Clone()
 	e2:SetOwnerPlayer(1)
 	Duel.RegisterEffect(e2,1)
+	local e3=e1:Clone()
+	e3:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e3,0)
+	local e4=e2:Clone()
+	e4:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e4,1)
 	cm.reg=true
 end
 function cm.filter(c,e,tp)

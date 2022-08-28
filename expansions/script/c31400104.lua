@@ -52,6 +52,7 @@ function cm.initial_effect(c)
 	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e4:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e4:SetCountLimit(1,m)
+	e4:SetCondition(cm.spcon)
 	e4:SetTarget(cm.sptg)
 	e4:SetOperation(cm.spop)
 	c:RegisterEffect(e4)
@@ -66,12 +67,12 @@ function cm.srgfilter(g,lv)
 	return g:GetSum(Card.GetLevel)<=lv
 end
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil):FilterCount(Card.IsLevelBelow,nil,e:GetHandler():GetLevel()) end
+	if chk==0 then return Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil):CheckSubGroup(cm.srgfilter,nil,nil,e:GetHandler():GetLevel()) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil):Filter(Card.IsLevelBelow,nil,e:GetHandler():GetLevel())
+	local g=Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil)
 	aux.GCheckAdditional=aux.dncheck
 	local tg=g:SelectSubGroup(tp,cm.srgfilter,false,1,#g,e:GetHandler():GetLevel())
 	aux.GCheckAdditional=nil
@@ -82,6 +83,9 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.exrmtg(e,c)
 	return c:IsSetCard(0x138)
+end
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
