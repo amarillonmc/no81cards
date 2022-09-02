@@ -130,7 +130,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 		for i=1,Duel.GetCurrentChain() do
 			local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 			local tc=te:GetHandler()
-			if tc:IsRelateToEffect(te) and tc:IsAbleToHand() then g:AddCard(tc) end
+			if tc:IsRelateToEffect(te) and tc:IsAbleToHand() and not (tc:IsLocation(LOCATION_HAND) or (tc:IsLocation(LOCATION_EXTRA) and tc:IsFacedown())) then g:AddCard(tc) end
 		end
 		return #g>0
 	end
@@ -138,7 +138,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	for i=1,Duel.GetCurrentChain() do
 		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 		local tc=te:GetHandler()
-		if tc:IsRelateToEffect(te) and tc:IsAbleToHand() then g:AddCard(tc) end
+		if tc:IsRelateToEffect(te) and tc:IsAbleToHand() and not (tc:IsLocation(LOCATION_HAND) or (tc:IsLocation(LOCATION_EXTRA) and tc:IsFacedown())) then g:AddCard(tc) end
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
@@ -148,7 +148,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	while type(cm[i])=="table" do
 		local te,tf,cid=table.unpack(cm[i])
 		local tc=te:GetHandler()
-		if ((i<=Duel.GetCurrentChain() and tc:IsRelateToEffect(te)) or (i>Duel.GetCurrentChain() and tf and tc:GetRealFieldID()==cid)) and tc:IsAbleToHand() then g:AddCard(tc) end
+		if ((i<=Duel.GetCurrentChain() and tc:IsRelateToEffect(te)) or (i>Duel.GetCurrentChain() and tf and tc:GetRealFieldID()==cid)) and tc:IsAbleToHand() and not (tc:IsLocation(LOCATION_HAND) or (tc:IsLocation(LOCATION_EXTRA) and tc:IsFacedown())) then g:AddCard(tc) end
 		i=i+1
 	end
 	if #g>0 then

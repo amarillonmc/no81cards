@@ -32,7 +32,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local ct=math.floor(Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)/2)
+	local ct=math.ceil(Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)/2)
 	if ct<1 then return end
 	local g=Duel.GetDecktopGroup(tp,ct)
 	Duel.ConfirmCards(tp,g)

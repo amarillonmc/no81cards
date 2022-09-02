@@ -51,7 +51,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE and Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_ONFIELD,0,nil)==0
 end
 function cm.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect() and cm.Revenger(c) and c:IsCode(m)
+	return c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect() and cm.Revenger(c) and not c:IsCode(m)
 end
 function cm.spfilter(c,e,tp)
 	return cm.Revenger(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -92,7 +92,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if e:GetLabel()==1 and gg:GetCount()>0 then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
-			local tc=sg:Select(tp,1,1,nil)
+			local tc=gg:Select(tp,1,1,nil)
 			if tc:IsRelateToEffect(e) then
 				Duel.GetControl(tc,tp,PHASE_END,1)
 			end

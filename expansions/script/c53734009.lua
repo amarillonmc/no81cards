@@ -105,7 +105,7 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 			local dis=1<<tc:GetPreviousSequence()
 			if dis&SNNM.DisMZone(tp)>0 then return end
 			local zone=dis
-			if tp==1 then dis=((dis&0xffff)<<16)|((dis>>16)&0xffff) end
+			if tc:GetPreviousControler()==1 then dis=((dis&0xffff)<<16)|((dis>>16)&0xffff) end
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetCode(EFFECT_DISABLE_FIELD)
@@ -128,7 +128,7 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 	if not tc or tc:GetFlagEffect(m)==0 then
 		e:Reset()
 		return false
-	else return Duel.CheckLocation(tp,LOCATION_MZONE,math.log(dis,2)) end
+	else return Duel.CheckLocation(tc:GetPreviousControler(),LOCATION_MZONE,math.log(dis,2)) end
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()

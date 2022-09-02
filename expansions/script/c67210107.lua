@@ -55,7 +55,7 @@ function c67210107.op(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67210107.pfilter(c)
-	return c:IsSetCard(0x67e) and c:IsAbleToHand()
+	return c:IsSetCard(0x67e) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c67210107.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67210107.pfilter,tp,LOCATION_DECK,0,1,nil) end

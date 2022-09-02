@@ -104,6 +104,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.MoveSequence(tg,0)
 			tg=rg:GetNext()
 		end
-		Duel.SortDecktop(tp,tp,rg)
+		Duel.SortDecktop(tp,tp,#rg)
 	end
 end

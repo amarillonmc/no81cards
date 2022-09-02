@@ -3,13 +3,17 @@ function c10105510.initial_effect(c)
 --link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkAttribute,ATTRIBUTE_EARTH),2,2,c10105510.lcheck)
 	c:EnableReviveLimit()
-	--disable spsummon
+	--tohand
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCode(EFFECT_CANNOT_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(0,1)
+	e1:SetDescription(aux.Stringid(10105510,0))
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,10105510)
+	e1:SetCondition(c10105510.thcon)
+	e1:SetTarget(c10105510.thtg)
+	e1:SetOperation(c10105510.thop)
 	c:RegisterEffect(e1)
 --disable
 	local e2=Effect.CreateEffect(c)
@@ -31,6 +35,24 @@ function c10105510.lcheck(g,lc)
 end
 function c10105510.cfilter(c)
 	return c:IsSetCard(0x7ccd) and c:IsFaceup()
+end
+function c10105510.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+end
+function c10105510.thfilter(c)
+	return c:IsSetCard(0x7ccd) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+function c10105510.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c10105510.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c10105510.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c10105510.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end
 function c10105510.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return aux.exccon(e) and Duel.IsExistingMatchingCard(c10105510.cfilter,tp,LOCATION_ONFIELD,0,1,nil)

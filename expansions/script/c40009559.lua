@@ -74,8 +74,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Release(g,REASON_COST)
 end
 function cm.indtg(e,c)
-	local dcount=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
-	return  c:IsRace(RACE_WARRIOR) and c:IsLevelBelow(7) and (not c:IsLocation(LOCATION_DECK) or c:GetSequence()==dcount-1)
+	local dcount=Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_DECK,0)
+	return c:IsRace(RACE_WARRIOR) and c:IsLevelBelow(7) and (not c:IsLocation(LOCATION_DECK) or c:GetSequence()==dcount-1)
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local at=Duel.GetAttacker()
@@ -108,4 +108,3 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.MoveSequence(tc,1)
 	end
 end
-

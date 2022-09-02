@@ -14,6 +14,7 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
 	e1:SetCode(EVENT_CUSTOM+m)
+	e1:SetValue(11451480)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
@@ -43,7 +44,7 @@ function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Group.CreateGroup()
 	for tc in aux.Next(eg) do
 		local te=tc:GetReasonEffect()
-		if te and te:GetHandler():IsSetCard(0x97f) and tc:IsReason(REASON_EFFECT) then return end
+		if te and (te:GetHandler():IsSetCard(0x97f) or te:GetValue()==11451480) and tc:IsReason(REASON_EFFECT) then return end
 		if tc:GetReasonPlayer()==0 and tc:GetOwner()==0 then
 			g1:AddCard(tc)
 		elseif tc:GetReasonPlayer()==1 and tc:GetOwner()==1 then

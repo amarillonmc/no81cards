@@ -35,13 +35,10 @@ end
 function cm.thfilter(c)
 	return cm.linkjoker(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function cm.filter(c)
-	return c:IsFacedown() and c:IsType(TYPE_MONSTER) 
-end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	e:SetLabel(0)
-	if Duel.IsExistingMatchingCard(cm.filter,tp,0,LOCATION_ONFIELD,1,nil) then e:SetLabel(1) end
+	if Duel.IsExistingMatchingCard(Card.IsFacedown,tp,0,LOCATION_MZONE,1,nil) then e:SetLabel(1) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)

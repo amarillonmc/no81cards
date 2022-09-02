@@ -9,7 +9,7 @@ end
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_NEGATE)
+	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCondition(cm.condition)
@@ -40,19 +40,23 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	e:SetCategory(CATEGORY_NEGATE)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_ONFIELD and re:GetHandler():IsRelateToEffect(re)
-		and not re:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then
-		e:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
+	local rc=re:GetHandler()
+	if rc:IsRelateToEffect(re) and rc:IsOnField() then
+		local g=rc:GetColumnGroup()
+		g:AddCard(rc)
+		g=g:Filter(cm.tdfilter,nil,1-tp)
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
 	end
 end
-function cm.gyfilter(c,g)
-	return g:IsContains(c)
+function cm.tdfilter(c,tp)
+	return c:IsControler(tp) and c:IsAbleToDeck() and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_ONFIELD 
-		and re:GetHandler():IsRelateToEffect(re) and not re:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then
-		local g=Duel.GetMatchingGroup(cm.gyfilter,tp,0,LOCATION_ONFIELD,nil,re:GetHandler():GetColumnGroup())
+	local rc=re:GetHandler()
+	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) and rc:IsOnField() then
+		local g=rc:GetColumnGroup()
+		g:AddCard(rc)
+		g=g:Filter(cm.tdfilter,nil,1-tp)
 		Duel.BreakEffect()
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end

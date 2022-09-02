@@ -14,6 +14,7 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_EVENT_PLAYER)
 	e1:SetCode(EVENT_CHAINING)
+	e1:SetValue(11451480)
 	e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
@@ -32,7 +33,7 @@ function cm.initial_effect(c)
 end
 cm.rkdn={11451579}
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re:GetHandler():IsSetCard(0x97f)
+	return not re:GetHandler():IsSetCard(0x97f) and not re:GetValue()==11451480
 end
 function cm.filter(c,re)
 	return c:IsCanOverlay() and c:IsRelateToEffect(re)
