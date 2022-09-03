@@ -32,13 +32,13 @@ function c40008539.lcheck(g)
 end
 function c40008539.cfilter(c,e,tp,zone)
 	return Duel.GetMZoneCount(tp,c,tp,LOCATION_REASON_TOFIELD,zone)>0
-		and Duel.IsExistingTarget(c40008539.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetOriginalRace())
+		and Duel.IsExistingMatchingCard(c40008539.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetOriginalRace())
 end
 function c40008539.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local zone=c:GetLinkedZone(tp)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c40008539.cfilter,1,c,e,tp,zone) end
-	local g=Duel.SelectReleaseGroup(tp,c40008539.cfilter,1,1,c,e,tp,zone)
+	if chk==0 then return Duel.IsExistingMatchingCard(c40008539.cfilter,tp,LOCATION_MZONE,0,1,c,e,tp,zone) end
+	local g=Duel.SelectMatchingCard(tp,c40008539.cfilter,tp,LOCATION_MZONE,0,1,1,c,e,tp,zone)
 	Duel.SendtoHand(g,nil,REASON_COST)
 	e:SetLabelObject(g:GetFirst())
 end
