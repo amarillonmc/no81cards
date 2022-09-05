@@ -113,7 +113,7 @@ function cm.atkval(e,c)
 	return g:GetSum(Card.GetBaseAttack)
 end
 function cm.dacon(e)
-	return Duel.IsExistingMatchingCard(Card.IsFacedown,e:GetHandlerPlayer(),0,LOCATION_MZONE,1,nil)
+	return not Duel.IsExistingMatchingCard(Card.IsFaceup,e:GetHandlerPlayer(),0,LOCATION_MZONE,1,nil)
 end
 function cm.datg(e,c)
 	return cm.linkjoker(c) or cm.Reverse(c)
