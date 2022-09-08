@@ -65,13 +65,13 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local t2=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil):GetCount()>0
 	if chk==0 then return t1 or t2 end
 	local op=0
-	local m={}
-	local n={}
+	local m1={}
+	local n1={}
 	local ct=1
-	if t1 then m[ct]=aux.Stringid(m,2) n[ct]=1 ct=ct+1 end
-	if t2 then m[ct]=aux.Stringid(m,3) n[ct]=2 ct=ct+1 end
-	local sp=Duel.SelectOption(tp,table.unpack(m))
-	op=n[sp+1]
+	if t1 then m1[ct]=aux.Stringid(m,2) n1[ct]=1 ct=ct+1 end
+	if t2 then m1[ct]=aux.Stringid(m,3) n1[ct]=2 ct=ct+1 end
+	local sp=Duel.SelectOption(tp,table.unpack(m1))
+	op=n1[sp+1]
 
 	e:SetLabel(op)
 	if op==1 then

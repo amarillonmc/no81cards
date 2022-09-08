@@ -82,9 +82,10 @@ function cm.caop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.acfilter(c,typ)
-	return c:IsFaceup() and bit.band(c:GetType(),typ)~=0 and not c:IsSetCard(0x157)
+	return c:IsFaceup() and bit.band(c:GetType(),typ)~=0
 end
 function cm.aclimit(e,re,tp)
+	if re:GetHandler():IsSetCard(0x157) then return false end
 	if re:IsActiveType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(cm.acfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil,TYPE_MONSTER) then return true end
 	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and Duel.IsExistingMatchingCard(cm.acfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil,TYPE_SPELL) then return true end
 	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_TRAP) and Duel.IsExistingMatchingCard(cm.acfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil,TYPE_TRAP) then return true end

@@ -58,6 +58,13 @@ function cm.initial_effect(c)
 	e4:SetValue(LOCATION_DECKBOT)
 	e4:SetCondition(function(e,c) return Duel.GetTurnCount()%4==0 end)
 	c:RegisterEffect(e4)
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e10:SetRange(LOCATION_FZONE)
+	e10:SetCode(EVENT_TO_DECK)
+	e10:SetCondition(function(e,c) return Duel.GetTurnCount()%4==0 end)
+	e10:SetOperation(cm.sortop)
+	c:RegisterEffect(e10)
 	--cannot be destroyed
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_SINGLE)
@@ -134,4 +141,29 @@ function cm.setlimit(e,c,tp)
 end
 function cm.actlimit(e,re,tp)
 	return re:IsActiveType(TYPE_FIELD) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function cm.sfilter(c,loc,p)
+	return c:IsReason(REASON_REDIRECT) and c:IsLocation(loc) and (not p or c:IsControler(p))
+
+function cm.sortop(e,tp,eg,ep,ev,re,r,rp)
+	local tp=Duel.GetTurnPlayer()
+	local g=eg:Filter(cm.sfilter,nil,LOCATION_DECK)
+	local mg={}
+	mg[1]=g:Filter(cm.sfilter,nil,LOCATION_DECK,tp)
+	mg[2]=g:Filter(cm.sfilter,nil,LOCATION_DECK,1-tp)
+	for i=1,2 do
+		if #mg[i]>1 then
+			local p=tp
+			if i>1 then p=1-tp end
+			for i=1,#mg[i] do
+				local mgx=Duel.GetDecktopGroup(p,1)
+				Duel.MoveSequence(mgx:GetFirst(),SEQ_DECKTOP)
+			end
+			Duel.SortDecktop(tp,p,#mg[i])
+			for i=1,#mg[i] do
+				local mgx=Duel.GetDecktopGroup(p,1)
+				Duel.MoveSequence(mgx:GetFirst(),SEQ_DECKBOTTOM)
+			end
+		end
+	end
 end

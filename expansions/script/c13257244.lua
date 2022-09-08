@@ -63,7 +63,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	fop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.eftg(e,c)
-	return e:GetHandler():GetEquipGroup():IsContains(c) and c:IsSetCard(0x9354)
+	return e:GetHandler():GetEquipGroup():IsContains(c) and c:IsSetCard(0x5354)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	if bit.band(r,REASON_EFFECT)<=0 then return false end

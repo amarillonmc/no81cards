@@ -6,10 +6,9 @@ function c40008539.initial_effect(c)
 	--to grave
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(40008539,0))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetCountLimit(1,40008539)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCost(c40008539.spcost)
 	e2:SetTarget(c40008539.sptg)
@@ -35,30 +34,39 @@ function c40008539.cfilter(c,e,tp,zone)
 		and Duel.IsExistingMatchingCard(c40008539.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetOriginalRace())
 end
 function c40008539.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then e:SetLabel(1) return true end
+end
+function c40008539.spfilter(c,e,tp)
+	return c:IsSetCard(0x114) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c40008539.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local zone=c:GetLinkedZone(tp)
-	if chk==0 then return Duel.IsExistingMatchingCard(c40008539.cfilter,tp,LOCATION_MZONE,0,1,c,e,tp,zone) end
+	if chk==0 then
+		if e:GetLabel()==0 or not Duel.IsExistingMatchingCard(c40008539.cfilter,tp,LOCATION_MZONE,0,1,c,e,tp,zone) then return false end
+		local g=Duel.GetMatchingGroup(c40008539.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
+		return #g>0
+	end
+	e:SetLabel(0)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,c40008539.cfilter,tp,LOCATION_MZONE,0,1,1,c,e,tp,zone)
 	Duel.SendtoHand(g,nil,REASON_COST)
 	e:SetLabelObject(g:GetFirst())
-end
-function c40008539.spfilter(c,e,tp,race)
-	return c:IsSetCard(0x114) and c:GetOriginalRace()~=race and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c40008539.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local cc=e:GetLabelObject()
-	if chkc then return chkc:IsLocation(LOCATION_DECK) and chkc:IsControler(tp)
-		and chkc~=cc and c40008539.spfilter(chkc,e,tp,cc:GetOriginalRace()) end
-	if chk==0 then return true end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c40008539.spfilter,tp,LOCATION_DECK,0,1,1,cc,e,tp,cc:GetOriginalRace())
+	local zone=e:GetHandler():GetLinkedZone(tp)
+	local g=Duel.GetMatchingGroup(c40008539.spfilter,tp,LOCATION_DECK,0,cc,e,tp,cc:GetOriginalRace(),zone)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
+function c40008539.spfilter2(c,e,tp,race,zone)
+	return c:IsSetCard(0x114) and c:GetOriginalRace()~=race and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp)
+end
 function c40008539.spop(e,tp,eg,ep,ev,re,r,rp)
-	local zone=e:GetHandler():GetLinkedZone(tp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)
+	local cc=e:GetLabelObject()
+	if e:GetHandler():IsRelateToEffect(e) then
+		local zone=e:GetHandler():GetLinkedZone(tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,c40008539.spfilter2,tp,LOCATION_DECK,0,1,1,cc,e,tp,cc:GetOriginalRace(),zone)
+		Duel.SpecialSummon(g:GetFirst(),0,tp,tp,false,false,POS_FACEUP,zone)
 	end
 end
 function c40008539.spcon2(e,tp,eg,ep,ev,re,r,rp)
