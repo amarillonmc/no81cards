@@ -1,44 +1,53 @@
 local m=31400044
 local cm=_G["c"..m]
-cm.name="星鱼"
+cm.name="幻魔的桥梁"
 function cm.initial_effect(c)
+	c:EnableReviveLimit()
+	aux.AddFusionProcFunRep(c,cm.ffilter,3,true)
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_HAND+LOCATION_DECK)
-	e1:SetCondition(cm.spcon)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(cm.fcon)
+	e1:SetValue(1)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_FIELD)
-	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCondition(cm.con)
-	e2:SetCost(cm.cost)
-	e2:SetTarget(cm.tg)
-	e2:SetOperation(cm.op)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_IMMUNE_EFFECT)
+	e2:SetValue(cm.efilter)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCountLimit(1)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCost(cm.cost)
+	e3:SetOperation(cm.operation)
+	c:RegisterEffect(e3)
 end
-function cm.spcon(e,c)
-	if c==nil then return true end
-	return Duel.GetMatchingGroupCount(aux.TRUE,c:GetControler(),LOCATION_HAND+LOCATION_ONFIELD,0,e:GetHandler())==0 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+function cm.ffilter(c,fc,sub,mg,sg)
+	return c:IsLevel(10) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode()))
 end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+function cm.fcon(e)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.efilter(e,te)
+	return te:GetOwnerPlayer()~=e:GetHandlerPlayer()
+end
+function cm.filter(c)
+	return c:IsLevel(10) and c:IsRace(RACE_DEVINE) and c:IsAbleToRemoveAsCost()
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	e:SetLabel(g:GetFirst():GetOriginalCode())
+end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToDeckAsCost() end
-	Duel.ConfirmCards(1-tp,c)
-	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
-end
-function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_HAND,1,nil) end
-end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(1-tp,Card.IsAbleToDeck,1-tp,LOCATION_HAND,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	local code=e:GetLabel()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,1)
 	end
 end
