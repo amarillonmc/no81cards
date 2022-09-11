@@ -35,7 +35,7 @@ function cm.initial_effect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e8:SetProperty(EFFECT_FLAG_DELAY)
 	e8:SetCode(EVENT_DESTROYED)
-	e8:SetCountLimit(1,m)
+	e8:SetCountLimit(1,m+20000)
 	e8:SetTarget(cm.srtg)
 	e8:SetOperation(cm.srop)
 	c:RegisterEffect(e8)
@@ -61,7 +61,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)	  
+		Duel.ConfirmCards(1-tp,g)	
 	end 
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -87,12 +87,11 @@ function cm.spfilter(c,e,tp)
 end
 function cm.spfilter2(c,e,tp,code)
 	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_FUSION) and c:IsSetCard(0x9341) 
- and c:IsLevelBelow(8)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(code)
+ and c:IsLevelBelow(8)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and not c:IsCode(code)  
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return eg:IsContains(chkc) and chkc:IsControler(tp) and cm.spfilter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-		and eg:IsExists(cm.spfilter,1,nil,e,tp) end
+	if chk==0 then return  eg:IsExists(cm.spfilter,1,nil,e,tp) end
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=eg:FilterSelect(tp,cm.spfilter,1,1,nil,e,tp)
 	Duel.SetTargetCard(g)

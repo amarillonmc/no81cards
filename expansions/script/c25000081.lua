@@ -57,7 +57,7 @@ end
 function cm.con2(e)
 	return e:GetHandler():IsDefensePos()
 end
-function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	if re==e:GetHandler() then
 		Duel.SetChainLimit(function(e,rp,tp)return tp==rp end)
 	end
