@@ -35,5 +35,6 @@ function s.initial_effect(c)
 end
 
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 	Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(id,e:GetLabel()))
 end
