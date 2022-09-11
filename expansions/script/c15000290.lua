@@ -54,10 +54,10 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
 	if chkc then return cm.spfilter(chkc,e,tp) end
 	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
-		and (g:CheckSubGroup(cm.fselect,1,1,g,tp,chk) or not Duel.IsPlayerAffectedByEffect(tp,59822133))
-		and g:CheckSubGroup(cm.fselect,1,99,g,tp,chk) end
+		and (g:CheckSubGroup(cm.fselect,1,1,tp,chk) or not Duel.IsPlayerAffectedByEffect(tp,59822133))
+		and g:CheckSubGroup(cm.fselect,1,99,tp,chk) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local tg=g:SelectSubGroup(tp,cm.fselect,false,1,99,g,tp,chk)
+	local tg=g:SelectSubGroup(tp,cm.fselect,false,1,99,tp,chk)
 	Duel.SetTargetCard(tg)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,tg,tg:GetCount(),tp,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
