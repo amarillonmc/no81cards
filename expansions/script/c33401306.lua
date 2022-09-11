@@ -2,7 +2,7 @@
 function c33401306.initial_effect(c)
 		--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(c33401306.condition)
@@ -28,13 +28,13 @@ function c33401306.condition(e,tp,eg,ep,ev,re,r,rp)
 	return   Duel.IsExistingMatchingCard(c33401306.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c33401306.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE+LOCATION_FZONE,1,nil) end
-	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE+LOCATION_FZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) end
+	local sg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,sg:GetCount(),0,0)
 end
 function c33401306.activate(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE+LOCATION_FZONE,nil)
-	Duel.Destroy(sg,REASON_EFFECT)
+	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+	Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 end
 
 function c33401306.condition2(e,tp,eg,ep,ev,re,r,rp)

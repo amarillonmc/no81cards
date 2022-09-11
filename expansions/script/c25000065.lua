@@ -28,7 +28,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 end
 function cm.costfilter(c,e,tp)
-	return c:IsDiscardable() and c:IsAttack(2400) and c:IsDefense(1000) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
+	return c:IsAttack(2400) and c:IsDefense(1000) and (c:IsControler(tp) or c:IsFaceup()) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
 end
 function cm.spfilter(c,e,tp,code)
 	return c:IsAttack(2400) and c:IsDefense(1000) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(code)
@@ -37,12 +37,11 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
-		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.CheckReleaseGroupEx(tp,cm.costfilter,1,nil,e,tp)
 	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local g=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	local g=Duel.SelectReleaseGroupEx(tp,cm.costfilter,1,1,nil,e,tp)
 	e:SetLabelObject(g:GetFirst())
-	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+	Duel.Release(g,REASON_COST)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)

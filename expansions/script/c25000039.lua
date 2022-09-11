@@ -96,9 +96,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 end
+function cm.cfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_FUSION) and c:IsAbleToRemoveAsCost()
+end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
-	local g,sg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,LOCATION_MZONE,0,1,nil),Group.CreateGroup()
+	local g,sg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,1,nil),Group.CreateGroup()
 	if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		sg=g:Select(tp,1,1,nil)

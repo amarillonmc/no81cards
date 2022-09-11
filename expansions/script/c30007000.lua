@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 end
 --Effect 1
 function cm.counterfilter(c)
-	return not c:IsSummonLocation(LOCATION_EXTRA)
+	return not c:IsSummonLocation(LOCATION_EXTRA) or (c:IsSetCard(0x4093) and c:IsSummonLocation(LOCATION_EXTRA))
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
@@ -41,7 +41,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return c:IsLocation(LOCATION_EXTRA)
+	return c:IsLocation(LOCATION_EXTRA) and not c:IsSetCard(0x4093)
 end
 function cm.summon(c)
 	return c:IsSummonable(true,nil) and c:IsSetCard(0x4093) and c:IsRace(RACE_MACHINE)

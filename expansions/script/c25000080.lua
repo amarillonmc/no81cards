@@ -33,12 +33,12 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return te and te:GetHandler()==e:GetHandler() and rp==1-tp and re:GetHandler():IsRelateToEffect(re)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 and re:GetHandler():IsDestructable() end
-	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+	if chk==0 then return re:GetHandler():IsDestructable() end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Destroy(eg,REASON_EFFECT)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsFaceup() then
 		local e1=Effect.CreateEffect(c)
@@ -48,9 +48,6 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetLabelObject(re:GetHandler())
 		c:RegisterEffect(e1)
-		if not re:GetHandler():IsRelateToEffect(re) then return end
-		Duel.BreakEffect()
-		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
 function cm.efilter(e,te)

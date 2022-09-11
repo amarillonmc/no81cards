@@ -2,16 +2,18 @@
 local m=33401005
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-   --destroy replace
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EFFECT_DESTROY_REPLACE)
-	e2:SetRange(LOCATION_HAND+LOCATION_MZONE)
-	e2:SetCountLimit(1,m)
-	e2:SetTarget(cm.reptg)
-	e2:SetValue(cm.repval)
-	e2:SetOperation(cm.repop)
-	c:RegisterEffect(e2)
+   --
+   local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
+	e1:SetCountLimit(1,m)
+	e1:SetCondition(cm.condition)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.activate)
+	c:RegisterEffect(e1)
 --sps
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
@@ -24,19 +26,40 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.srop)
 	c:RegisterEffect(e3)
 end
-function cm.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x9341)
-		and c:IsOnField() and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
 end
-function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemove() and eg:IsExists(cm.repfilter,1,e:GetHandler():IsCode(m),tp) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	 Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
 end
-function cm.repval(e,c)
-	return cm.repfilter(c,e:GetHandlerPlayer())
+function cm.ckfilter1(c)
+	return   c:IsSetCard(0x9341) and c:IsFaceup()
 end
-function cm.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g2=Duel.GetMatchingGroup(cm.ckfilter1,tp,LOCATION_ONFIELD,0,nil)
+			local tc=g2:GetFirst()
+			while tc do
+				local e4=Effect.CreateEffect(e:GetHandler())
+				e4:SetType(EFFECT_TYPE_SINGLE)
+				e4:SetCode(EFFECT_IMMUNE_EFFECT)
+				e4:SetValue(cm.efilter)
+				e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
+				e4:SetOwnerPlayer(tp)
+				tc:RegisterEffect(e4)
+				tc=g2:GetNext()
+			end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_REMOVE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+	e1:SetValue(1)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	if c:IsRelateToEffect(e) then
+		Duel.Destroy(c,REASON_EFFECT)
+	end
 end
 
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)

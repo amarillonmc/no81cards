@@ -22,7 +22,17 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	return rp~=tp and loc==LOCATION_HAND
+end
+function cm.cfilter(c)
+	return c:IsPreviousLocation(LOCATION_HAND)
+end
+function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
+	local bool,ceg,cep,cev,cre,cr,crp=Duel.CheckEvent(EVENT_MOVE,true)
+	if bool and ceg:IsExists(cm.cfilter,1,nil) and cr&REASON_EFFECT>0 then return true end
+	bool,ceg,cep,cev,cre,cr,crp=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
+	return bool and ceg:IsExists(cm.cfilter,1,nil) and cre and cre:IsHasType(EFFECT_TYPE_ACTIONS)
 end
 function cm.filter(c,type)
 	return c:IsType(type) and c:IsFaceup()

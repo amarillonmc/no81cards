@@ -23,8 +23,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCondition(cm.spcon)
-	e1:SetTarget(cm.sptg)
-	e1:SetOperation(cm.spop)
+	e1:SetTarget(cm.anctg)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -39,7 +38,6 @@ function cm.initial_effect(c)
 	e32:SetType(EFFECT_TYPE_IGNITION)
 	e32:SetRange(LOCATION_GRAVE)
 	e32:SetCountLimit(1)
-	e32:SetCondition(cm.retcon)
 	e32:SetTarget(cm.rettg)
 	e32:SetOperation(cm.retop)
 	c:RegisterEffect(e32)  
@@ -55,27 +53,6 @@ function cm.initial_effect(c)
 	e12:SetTarget(cm.tetg)
 	e12:SetOperation(cm.teop)
 	c:RegisterEffect(e12)  
-	if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_TO_GRAVE)
-		ge1:SetLabel(m)
-		ge1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		ge1:SetOperation(cm.sumreg)
-		Duel.RegisterEffect(ge1,0)
-	end
-end
-function cm.sumreg(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	local code=e:GetLabel()
-	while tc do
-		if tc:GetOriginalCode()==code then
-			tc:RegisterFlagEffect(code,RESET_EVENT+0x1ec0000+RESET_PHASE+PHASE_END,0,1)
-			tc:RegisterFlagEffect(code,RESET_EVENT+0x1ec0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(code,0))
-		end
-		tc=eg:GetNext()
-	end
 end
 function cm.ffilter(c,fc,sub,mg,sg)
 	if not sg then return true end
@@ -86,7 +63,7 @@ function cm.ffilter(c,fc,sub,mg,sg)
 end
 function cm.matlimit(e,c,fc,st)
 	if st~=SUMMON_TYPE_FUSION then return true end
-	return c:IsLocation(LOCATION_HAND) or c:IsControler(fc:GetControler()) and c:IsOnField()
+	return c:IsLocation(LOCATION_HAND) or c:IsControler(fc:GetControler())   and c:IsOnField()
 end
 --Effect 1
 function cm.valcheck(e,c)
@@ -94,79 +71,48 @@ function cm.valcheck(e,c)
 	e:GetLabelObject():SetLabel(g)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
+	local g=e:GetLabel()
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) and g>4
 end
-function cm.tg(c,e)
-	return not c:IsImmuneToEffect(e) 
-end
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=e:GetLabel()
-	local g=Duel.GetMatchingGroup(cm.tg,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,e:GetHandler(),e)
-	if chk==0 then return ct>0 and #g>=ct end
-	Duel.SetChainLimit(aux.FALSE)
-end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=e:GetLabel()
-	local sg=Duel.GetMatchingGroup(cm.tg,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,e:GetHandler(),e)
-	if ct==0 or sg==0 then return end
-	if c:IsLocation(LOCATION_MZONE) and c:IsFaceup() then
-		local xg=Group.CreateGroup()
-		local mg=Group.CreateGroup()
-		local g=sg:Select(tp,ct,ct,nil)
-		local tc=g:GetFirst()
-		while tc do
-			if tc:IsControler(1-tp) then
-				tc:RegisterFlagEffect(m+100,RESET_EVENT+RESETS_STANDARD,0,1)
-				xg:AddCard(tc)
-			else
-				tc:RegisterFlagEffect(m+101,RESET_EVENT+RESETS_STANDARD,0,1)
-				mg:AddCard(tc)
-			end   
-			tc=g:GetNext()
-		end
-		Duel.HintSelection(g)
-		if #xg>0 or #mg>0 then
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_FIELD)
-			e2:SetRange(LOCATION_MZONE)
-			e2:SetCode(EFFECT_CANNOT_ACTIVATE)
-			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e2:SetTargetRange(0,1)
-			e2:SetValue(cm.aclimit)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			c:RegisterEffect(e2)
-			local e4=Effect.CreateEffect(c)
-			e4:SetType(EFFECT_TYPE_FIELD)
-			e4:SetCode(EFFECT_CANNOT_INACTIVATE)
-			e4:SetRange(LOCATION_MZONE)
-			e4:SetValue(cm.effectfilter)
-			e4:SetReset(RESET_EVENT+RESETS_STANDARD)
-			c:RegisterEffect(e4)
-			local e5=Effect.CreateEffect(c)
-			e5:SetType(EFFECT_TYPE_FIELD)
-			e5:SetCode(EFFECT_CANNOT_DISEFFECT)
-			e5:SetRange(LOCATION_MZONE)
-			e5:SetValue(cm.effectfilter)
-			e5:SetReset(RESET_EVENT+RESETS_STANDARD)
-			c:RegisterEffect(e5)
-		end
+function cm.anctg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		return true
 	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	local ac1=Duel.AnnounceCard(tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	local ac2=Duel.AnnounceCard(tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	local ac3=Duel.AnnounceCard(tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	local ac4=Duel.AnnounceCard(tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	local ac5=Duel.AnnounceCard(tp)
+	e:SetOperation(cm.codeop(ac1,ac2,ac3,ac4,ac5))
 end
-function cm.aclimit(e,re)
-	local c=re:GetHandler()
-	return  c:GetFlagEffect(m+100)>0
+function cm.codeop(ac1,ac2,ac3,ac4,ac5)
+	return
+		function (e,tp,eg,ep,ev,re,r,rp)
+			local c=e:GetHandler()
+			local tsp=e:GetHandlerPlayer()
+			local e12=Effect.CreateEffect(c)
+			e12:SetType(EFFECT_TYPE_FIELD)
+			e12:SetRange(LOCATION_MZONE)
+			e12:SetCode(EFFECT_CANNOT_ACTIVATE)
+			e12:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e12:SetAbsoluteRange(tsp,0,1)
+			e12:SetLabel(ac1,ac2,ac3,ac4,ac5)
+			e12:SetValue(cm.aclimit)
+			e12:SetReset(RESET_EVENT+RESETS_STANDARD) 
+			c:RegisterEffect(e12)
+		end
 end
-function cm.effectfilter(e,ct)
-	local p=e:GetHandler():GetControler()
-	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	local c=te:GetHandler()
-	return  p==tp and c:GetFlagEffect(m+101)>0
+function cm.aclimit(e,re,tp)
+	local ac1,ac2,ac3,ac4,ac5=e:GetLabel()
+	local tc=re:GetHandler()
+	return tc:IsCode(ac1,ac2,ac3,ac4,ac5)
 end
 --Effect 2
-function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(m)>0
-end
 function cm.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToExtra() end
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
@@ -239,3 +185,4 @@ function cm.teop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
  
+

@@ -32,21 +32,17 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField()  end
-	if chk==0 then return  Duel.IsExistingTarget(Card.IsSetCard,tp,LOCATION_FZONE,0,1,nil,0x341)  end   
+	if chk==0 then return  Duel.IsExistingTarget(Card.IsSetCard,tp,LOCATION_FZONE,0,1,nil,0x341,0x340)  end   
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)  
-   local g2=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,nil)
-			local tc=g2:GetFirst()
-			while tc do
-				local e4=Effect.CreateEffect(e:GetHandler())
-				e4:SetType(EFFECT_TYPE_SINGLE)
-				e4:SetCode(EFFECT_IMMUNE_EFFECT)
-				e4:SetValue(cm.efilter)
-				e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
-				e4:SetOwnerPlayer(tp)
-				tc:RegisterEffect(e4)
-				tc=g2:GetNext()
-			end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x341,0x340,0x5344))
+	e1:SetValue(cm.efilter)
+	e1:SetReset(RESET_PHASE+Duel.GetCurrentPhase())
+	Duel.RegisterEffect(e1,tp)
 end
 function cm.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()

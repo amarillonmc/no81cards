@@ -37,17 +37,28 @@ function c9911018.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
+function c9911018.cfilter(c,tp,mc)
+	local b1=c:IsLocation(LOCATION_MZONE)
+	local b2=c:IsLocation(LOCATION_EXTRA) and Duel.IsPlayerAffectedByEffect(tp,9911013)
+		and Duel.GetFlagEffect(tp,9911013)==0 and mc:IsLevelAbove(0) and c:IsLevelAbove(mc:GetLevel()+1)
+	return (b1 or b2) and c:IsReleasable()
+end
 function c9911018.attfilter(c)
 	return not c:IsAttribute(ATTRIBUTE_WATER)
 end
 function c9911018.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,aux.TRUE,1,nil,tp) end
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(c9911018.cfilter,tp,LOCATION_MZONE+LOCATION_EXTRA,0,nil,tp,c)
+	if chk==0 then return #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(tp,aux.TRUE,1,1,nil,tp)
+	local rg=g:Select(tp,1,1,nil)
 	local label=0
-	if g:IsExists(c9911018.attfilter,1,nil) then label=1 end
+	if rg:IsExists(c9911018.attfilter,1,nil) then label=1 end
+	if rg:IsExists(Card.IsLocation,1,nil,LOCATION_EXTRA) then
+		Duel.RegisterFlagEffect(tp,9911013,RESET_PHASE+PHASE_END,0,0)
+	end
 	e:SetLabel(label)
-	Duel.Release(g,REASON_COST)
+	Duel.SendtoGrave(rg,REASON_RELEASE+REASON_COST)
 end
 function c9911018.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct1=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)

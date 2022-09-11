@@ -35,7 +35,7 @@ function cm.ccfilter(c,tp)
 	return c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==tp
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetMatchingGroupCount(cm.ccfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,tp)==0
+	return e:GetHandler():GetFlagEffect(m)==0 --Duel.GetMatchingGroupCount(cm.ccfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,tp)==0
 end
 function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemove() end
@@ -44,6 +44,7 @@ function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	for i=1,7 do t[i]=i+2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_NUMBER)
 	e:SetLabel(Duel.AnnounceNumber(tp,table.unpack(t)))
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0x56e0000+RESET_PHASE+PHASE_END,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),0,0,0)
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)

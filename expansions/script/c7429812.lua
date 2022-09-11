@@ -58,6 +58,13 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.reptg)
 	e2:SetValue(cm.repval)
 	c:RegisterEffect(e2)
+	--destroy replace
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_DESTROY_REPLACE)
+	e8:SetRange(LOCATION_MZONE)
+	e8:SetTarget(cm.desreptg)
+	c:RegisterEffect(e8)
 	--to grave
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
@@ -173,7 +180,7 @@ function cm.seqfilter(c,tp)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return re~=e and GM_global_to_deck_check and eg:IsContains(c) end
+	if chk==0 then return GM_global_to_deck_check and eg:IsContains(c) end
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
 	local exg=Group.__band(g,eg):Filter(Card.IsAbleToExtraAsCost,nil)
 	g:Sub(exg)
@@ -211,6 +218,31 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.repval(e,c)
 	return false
+end
+function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsReason(REASON_BATTLE) end
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
+	g:AddCard(e:GetHandler())
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_CARD,0,m)
+		GM_global_to_deck_check=false
+		Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)
+		local p=tp
+		for i=1,2 do
+			local dg=g:Filter(cm.seqfilter,nil,p)
+			if #dg>1 then
+				Duel.SortDecktop(tp,p,#dg)
+			end
+			for i=1,#dg do
+				local mg=Duel.GetDecktopGroup(p,1)
+				Duel.MoveSequence(mg:GetFirst(),SEQ_DECKBOTTOM)
+			end
+			p=1-tp
+		end
+		GM_global_to_deck_check=true
+		return true
+	else return false end
 end
 function cm.cfilter(c)
 	return c:IsFaceup() and c:IsCode(7429101)

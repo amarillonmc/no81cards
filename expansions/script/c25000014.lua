@@ -42,14 +42,18 @@ function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler()==e:GetHandler():GetFirstCardTarget()
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tc=e:GetHandler():GetFirstCardTarget()
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tc:GetControler(),tc:GetLevel()) end
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tc:GetControler(),tc:GetLevel())
+	local lv=e:GetHandler():GetFirstCardTarget():GetLevel()
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,lv) and Duel.IsPlayerCanDiscardDeck(1-tp,lv) end
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,0,0,PLAYER_ALL,lv)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetHandler():GetFirstCardTarget()
 	if not tc then return false end
-	Duel.DiscardDeck(tc:GetControler(),tc:GetLevel(),REASON_EFFECT)
+	local g1=Duel.GetDecktopGroup(tp,tc:GetLevel())
+	local g2=Duel.GetDecktopGroup(1-tp,tc:GetLevel())
+	g1:Merge(g2)
+	Duel.DisableShuffleCheck()
+	Duel.SendtoGrave(g1,REASON_EFFECT)
 	local g=Duel.GetOperatedGroup()
 	if g:IsExists(Card.IsLevel,1,nil,tc:GetLevel()) then
 		Duel.BreakEffect()

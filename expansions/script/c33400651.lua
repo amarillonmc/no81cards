@@ -3,8 +3,6 @@ local m=33400651
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	 c:SetUniqueOnField(1,0,m)
-cm.dfc_front_side=m
-cm.dfc_back_side=m+1
   --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -12,18 +10,26 @@ cm.dfc_back_side=m+1
 	c:RegisterEffect(e1)
  --
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DISABLE+CATEGORY_ATKCHANGE+CATEGORY_SPECIAL_SUMMON)
+	e2:SetDescription(aux.Stringid(m,5))
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCondition(cm.con)
+	e2:SetCountLimit(1,m)
 	e2:SetCost(cm.cost)
 	e2:SetOperation(cm.activate)
 	c:RegisterEffect(e2)
-end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return  not c:IsStatus(STATUS_CHAINING) and (Duel.GetFlagEffect(tp,m+70001)==0 or Duel.GetFlagEffect(tp,m+70002)==0 or  Duel.GetFlagEffect(tp,m+70003)==0 or Duel.GetFlagEffect(tp,m+70004)==0 or Duel.GetFlagEffect(tp,m+70005)==0 ) and Duel.GetFlagEffect(tp,m+70006)<3
+ --change code
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,4))
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetCountLimit(1,m+10000)
+	e4:SetCondition(cm.changecon)
+	e4:SetTarget(cm.changetg)
+	e4:SetOperation(cm.changeop) 
+	c:RegisterEffect(e4)
 end
 function cm.cfilter(c)
 	return  c:IsSetCard(0x9342) and c:IsAbleToRemoveAsCost() 
@@ -35,37 +41,20 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=g:GetFirst()   
 	Duel.Remove(tc,POS_FACEUP,REASON_COST)   
 end
-function cm.tdfilter(c)
-	return  c:IsSetCard(0x9342) and c:IsAbleToDeck() 
-end
-function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x341)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
-end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)   
 local c=e:GetHandler()  
 	local op={}
 	local i=1
-	if Duel.GetFlagEffect(tp,m+70001)==0  then 
 	op[i]=1 
 	i=i+1
-	end
-	if Duel.GetFlagEffect(tp,m+70002)==0 and Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_REMOVED,0,2,nil) and Duel.IsExistingMatchingCard(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then 
+	if  Duel.IsExistingMatchingCard(aux.disfilter1,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) then 
 	op[i]=2
 	i=i+1
 	end
-	if Duel.GetFlagEffect(tp,m+70003)==0 and Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_REMOVED,0,4,nil) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) then 
+	if  Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) then 
 	op[i]=3
 	i=i+1
 	end
-	if Duel.GetFlagEffect(tp,m+70004)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp) then 
-	op[i]=4
-	i=i+1
-	end 
-	if Duel.GetFlagEffect(tp,m+70005)==0  and c.dfc_back_side and c.dfc_front_side==c:GetOriginalCode() then 
-	op[i]=5
-	i=i+1
-	end   
 		 if i==2 then 
 		  op1=1
 		 end
@@ -77,25 +66,12 @@ local c=e:GetHandler()
 		 Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
 		  op1=Duel.SelectOption(tp,aux.Stringid(m,op[1]),aux.Stringid(m,op[2]),aux.Stringid(m,op[3]))+1
 		 end
-		 if i==5 then 
-		 Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
-		   op1=Duel.SelectOption(tp,aux.Stringid(m,op[1]),aux.Stringid(m,op[2]),aux.Stringid(m,op[3]),aux.Stringid(m,op[4]))+1
-		 end
-		 if i==6 then 
-		 Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
-		   op1=Duel.SelectOption(tp,aux.Stringid(m,op[1]),aux.Stringid(m,op[2]),aux.Stringid(m,op[3]),aux.Stringid(m,op[4]),aux.Stringid(m,op[5]))+1
-		 end
 		  if op[op1]==1 then
 			  Duel.RegisterFlagEffect(tp,m+60000,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)  
-			  Duel.RegisterFlagEffect(tp,m+70001,RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
-			  Duel.RegisterFlagEffect(tp,m+70006,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)   
 		  end
 		  if op[op1]==2  then 
-			 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			 local tdc=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_REMOVED,0,2,2,nil)
-			 Duel.SendtoDeck(tdc,tp,2,REASON_EFFECT)
 			 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-			 local disg=Duel.SelectMatchingCard(tp,aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+			 local disg=Duel.SelectMatchingCard(tp,aux.disfilter1,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
 			 local disc=disg:GetFirst()
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_FIELD)
@@ -113,56 +89,12 @@ local c=e:GetHandler()
 				e2:SetLabelObject(disc)
 				e2:SetReset(RESET_PHASE+PHASE_END)
 				Duel.RegisterEffect(e2,tp)
-Duel.RegisterFlagEffect(tp,m+70002,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
-Duel.RegisterFlagEffect(tp,m+70006,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)	
 		  end
-		  if op[op1]==3  then 
-			 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			 local tdc=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_REMOVED,0,4,4,nil)
-			 Duel.SendtoDeck(tdc,tp,2,REASON_EFFECT)
-			 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-			 local disg=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-			 local tc=disg:GetFirst()
-			  local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-				e1:SetValue(tc:GetBaseAttack()*2)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-				tc:RegisterEffect(e1)
-			 local e2=Effect.CreateEffect(c)
-				e2:SetType(EFFECT_TYPE_SINGLE)
-				e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
-				e2:SetValue(tc:GetBaseDefense()*2)
-				e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-				tc:RegisterEffect(e2)
-Duel.RegisterFlagEffect(tp,m+70003,RESET_EVENT+RESET_PHASE+PHASE_END,0,0) 
-Duel.RegisterFlagEffect(tp,m+70006,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)   
+		  if op[op1]==3  then			
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+				local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
+				Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 		  end
-		  if op[op1]==4  then 
-			 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			 local tg=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
-			 Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
-			 local tc=tg:GetFirst()
-			 local e1=Effect.CreateEffect(c)
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetCode(EFFECT_DISABLE)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-					tc:RegisterEffect(e1)
-					local e2=Effect.CreateEffect(c)
-					e2:SetType(EFFECT_TYPE_SINGLE)
-					e2:SetCode(EFFECT_DISABLE_EFFECT)
-					e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-					tc:RegisterEffect(e2)
-Duel.RegisterFlagEffect(tp,m+70004,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)
-Duel.RegisterFlagEffect(tp,m+70006,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)	
-		  end
-		  if op[op1]==5  then 
-			  local tcode=c.dfc_back_side
-				c:SetEntityCode(tcode,true)
-				c:ReplaceEffect(tcode,0,0)
-Duel.RegisterFlagEffect(tp,m+70005,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)   
-Duel.RegisterFlagEffect(tp,m+70006,RESET_EVENT+RESET_PHASE+PHASE_END,0,0)  
-		  end	 
 end
 function cm.distg(e,c)
 	local tc=e:GetLabelObject()
@@ -174,4 +106,22 @@ function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
+end
+
+function cm.filter4(c)
+	return c:IsFaceup() and c:IsSetCard(0x9342) and c:IsType(TYPE_XYZ)
+end
+function cm.changecon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(cm.filter4,tp,LOCATION_MZONE,0,1,nil)
+end
+function cm.changetg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return m+1 and m==c:GetOriginalCode() end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+end
+function cm.changeop(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) or c:IsFacedown() or c:IsImmuneToEffect(e) then return end
+	c:SetEntityCode(m+1,true)
+	c:ReplaceEffect(m+1,0,0)
 end

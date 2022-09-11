@@ -33,21 +33,28 @@ end
 function c9911001.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,9911005)
 end
-function c9911001.cfilter(c,tp)
-	return Duel.GetMZoneCount(tp,c)>0
+function c9911001.cfilter(c,tp,mc)
+	local b1=c:IsLocation(LOCATION_HAND+LOCATION_MZONE)
+	local b2=c:IsLocation(LOCATION_EXTRA) and Duel.IsPlayerAffectedByEffect(tp,9911013)
+		and Duel.GetFlagEffect(tp,9911013)==0 and mc:IsLevelAbove(0) and c:IsLevelAbove(mc:GetLevel()+1)
+	return (b1 or b2) and c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0
 end
 function c9911001.attfilter(c)
 	return not c:IsAttribute(ATTRIBUTE_WATER)
 end
 function c9911001.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9911001.cfilter,1,c,tp) end
+	local g=Duel.GetMatchingGroup(c9911001.cfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_EXTRA,0,c,tp,c)
+	if chk==0 then return #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(tp,c9911001.cfilter,1,1,c,tp)
+	local rg=g:Select(tp,1,1,nil)
 	local label=0
-	if g:IsExists(c9911001.attfilter,1,nil) then label=1 end
+	if rg:IsExists(c9911001.attfilter,1,nil) then label=1 end
+	if rg:IsExists(Card.IsLocation,1,nil,LOCATION_EXTRA) then
+		Duel.RegisterFlagEffect(tp,9911013,RESET_PHASE+PHASE_END,0,0)
+	end
 	e:SetLabel(label)
-	Duel.Release(g,REASON_COST)
+	Duel.SendtoGrave(rg,REASON_RELEASE+REASON_COST)
 end
 function c9911001.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end

@@ -18,6 +18,16 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.tg)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
+	local e5=Effect.CreateEffect(c)
+	e5:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetProperty(EFFECT_FLAG_DELAY)
+	e5:SetCode(EVENT_SUMMON_SUCCESS)
+	e5:SetRange(LOCATION_SZONE)
+	e5:SetCondition(cm.rmcon)
+	e5:SetTarget(cm.rmtg)
+	e5:SetOperation(cm.rmop)
+	c:RegisterEffect(e5)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
@@ -38,13 +48,6 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,nil,tp):GetFirst()
 	Duel.SetTargetParam(rc:GetRace())
 	Duel.RegisterFlagEffect(tp,m+Duel.GetCurrentChain()*10000,RESET_CHAIN,0,1,rc:GetAttribute())
-	local c=e:GetHandler()
-	for i=1,100 do
-		if c:GetFlagEffect(m+i*10000)==0 then
-			c:RegisterFlagEffect(m+i*10000,RESET_EVENT+RESETS_STANDARD,0,0,rc:GetCode())
-			break
-		end
-	end
 	Duel.Release(rc,REASON_COST)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
@@ -56,34 +59,20 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 		if not tc:IsSummonable(true,nil) then return end
 		Duel.BreakEffect()
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_SUMMON_SUCCESS)
-		e1:SetOperation(cm.regop)
-		Duel.RegisterEffect(e1,tp)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_SUMMON_NEGATED)
-		e2:SetOperation(cm.rstop)
-		e2:SetLabelObject(e1)
-		Duel.RegisterEffect(e2,tp)
 		Duel.Summon(tp,tc,true,nil)
 	end
 end
-function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c,tc,res=e:GetHandler(),eg:GetFirst(),false
-	for i=1,100 do
-		if c:GetFlagEffect(m+i*10000)==0 then break end
-		if tc:GetCode()==c:GetFlagEffectLabel(m+i*10000) then res=true end
-	end
-	if not res then return end
-	Duel.Hint(HINT_CARD,0,m)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,POS_FACEDOWN)
-	g:AddCard(c)
-	Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
-	e:Reset()
+function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,nil,tp)
 end
-function cm.rstop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetLabelObject() then e:GetLabelObject():Reset() end
-	e:Reset()
+function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil,POS_FACEDOWN) and not Duel.IsExistingMatchingCard(aux.NOT(Card.IsAbleToRemove),tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil,POS_FACEDOWN) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil,POS_FACEDOWN)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
+end
+function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil,POS_FACEDOWN)
+	if g:GetCount()>0 then
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	end
 end

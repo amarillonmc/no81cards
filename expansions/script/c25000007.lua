@@ -50,28 +50,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			sc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 			Duel.SpecialSummonComplete()
 			sc:CompleteProcedure()
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e3:SetCode(EVENT_PHASE+PHASE_END)
-			e3:SetCountLimit(1)
-			e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-			e3:SetLabelObject(sc)
-			e3:SetCondition(cm.descon)
-			e3:SetOperation(cm.desop)
-			Duel.RegisterEffect(e3,tp)
 		end
 	end
-end
-function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc:GetFlagEffect(m)~=0 then
-		return true
-	else
-		e:Reset()
-		return false
-	end
-end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	Duel.Destroy(tc,REASON_EFFECT)
 end

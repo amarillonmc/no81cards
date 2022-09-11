@@ -15,12 +15,11 @@ c:EnableReviveLimit()
 --Destroy all
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCode(EVENT_DESTROYED)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.condition)
+	e1:SetCountLimit(1)
 	e1:SetTarget(cm.destg)
 	e1:SetOperation(cm.desop)
 	c:RegisterEffect(e1)
@@ -64,12 +63,6 @@ function cm.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
 
-function cm.cfilter(c,tp)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_ONFIELD) 
-end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp)
-end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 	if chk==0 then return g:GetCount()>0 end

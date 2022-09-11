@@ -52,7 +52,7 @@ function c25000100.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c25000100.indct(e,re,r,rp)
-	return bit.band(r,REASON_BATTLE)~=0 or (bit.band(r,REASON_EFFECT)~=0 and rp~=e:GetOwnerPlayer())
+	return bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0
 end
 function c25000100.same_check(c,mc)
 	local flag=0

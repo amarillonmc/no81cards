@@ -66,6 +66,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() then Duel.Equip(tp,c,tc) end
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	if rp==tp then return false end
 	if not e:GetHandler():GetEquipTarget() then return false end
 	local tc=Duel.GetAttacker()
 	local bc=Duel.GetAttackTarget()

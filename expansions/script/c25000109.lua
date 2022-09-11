@@ -32,10 +32,9 @@ function cm.initial_effect(c)
 	e4:SetDescription(aux.Stringid(m,2))
 	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_NO_TURN_RESET)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetRange(LOCATION_FZONE)
-	e4:SetCountLimit(1)
 	e4:SetCondition(cm.thcon)
 	e4:SetTarget(cm.thtg)
 	e4:SetOperation(cm.thop)
@@ -94,9 +93,10 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tg=Duel.GetFirstMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,nil)
-	if tg then
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tg)
+	local tc=Duel.GetFirstMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,nil)
+	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
+		Duel.ConfirmCards(1-tp,tc)
+		Duel.BreakEffect()
+		Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 	end
 end

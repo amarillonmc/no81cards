@@ -10,6 +10,22 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.settg)
 	e1:SetOperation(cm.setop)
 	c:RegisterEffect(e1)
+	--hint
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetCode(EVENT_TO_GRAVE)
+	e5:SetOperation(cm.chkop)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetCode(EVENT_REMOVE)
+	c:RegisterEffect(e6)
+end
+function cm.chkop(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if c:IsReason(REASON_DISCARD) then
+		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451742,0))
+	end
 end
 function cm.filter(c)
 	return c:IsCode(m+4) and c:IsSSetable()

@@ -27,12 +27,11 @@ end
 function cm.filter(c,tp)
 	local code=c:GetCode()
 	return  c:IsRace(RACE_DRAGON+RACE_MACHINE) 
-		and c:IsAttribute(ATTRIBUTE_DARK) 
 		and c:IsDiscardable(REASON_EFFECT)
 		and Duel.IsExistingMatchingCard(cm.tohand,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,code)
 end
 function cm.tohand(c,code)
-	return c:IsSetCard(0x4093) and c:IsRace(RACE_MACHINE) 
+	return c:IsSetCard(0x4093) and c:IsType(TYPE_MONSTER)
 		and c:IsAbleToHand() 
 		and not c:IsCode(code)
 end
@@ -74,6 +73,7 @@ function cm.tohop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0
 		and c:IsLocation(LOCATION_HAND) 
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 
 		and Duel.IsExistingMatchingCard(cm.ec,tp,LOCATION_MZONE,0,1,nil,tp)
 		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)

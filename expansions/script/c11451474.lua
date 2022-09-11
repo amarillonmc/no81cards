@@ -96,11 +96,11 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local g1=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+	Duel.ConfirmCards(tp,g1)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	g:Merge(g1)
 	if tc:IsRelateToEffect(e) then
 		local atk=tc:GetAttack()
-		Duel.ConfirmCards(tp,g1)
 		g=g:Filter(cm.desfilter,nil,atk)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local tg=g:Select(tp,1,1,nil)

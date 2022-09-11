@@ -48,7 +48,7 @@ function cm.spfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
 function cm.thfilter(c)
-	return c:IsRace(RACE_INSECT) and c:IsLevelAbove(5) and c:IsAbleToHand()
+	return c:IsRace(RACE_INSECT) and c:IsLevelAbove(5) and c:IsLevelBelow(10) and c:IsAbleToHand()
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
@@ -76,7 +76,7 @@ end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or not c:IsSpecialSummonable(0) then return end
-	--[[if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) then
+	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(m,1))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -86,7 +86,7 @@ function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(cm.thop)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
-	end--]]
+	end
 	Duel.SpecialSummonRule(tp,c,0)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
