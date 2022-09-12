@@ -1,4 +1,4 @@
---英豪冠军 圣盾王
+--天空尊者 莫提乌斯
 function c94393218.initial_effect(c)
 	--xyz summon
 	local e1=Effect.CreateEffect(c)
@@ -97,7 +97,7 @@ function c94393218.XyzOperation(e,tp,eg,ep,ev,re,r,rp,c,og)
 			e:SetLabel(1)
 		end
 		if mg:Filter(Card.IsLocation,nil,LOCATION_HAND|LOCATION_GRAVE):GetCount()~=0 then 
-			Duel.RegisterFlagEffect(tp,94393218,RESET_PHASE+PHASE_END,0,1)
+			Duel.RegisterFlagEffect(tp,94393218,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 		end
 		local sg=Group.CreateGroup()
 		local tc=mg:GetFirst()
@@ -151,3 +151,4 @@ function c94393218.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.SpecialSummonComplete()
 end
+

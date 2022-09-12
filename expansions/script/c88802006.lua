@@ -63,7 +63,7 @@ function c88802006.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local tc=Duel.GetAttacker()
 	if tc==c then tc=Duel.GetAttackTarget() end
-	if chk==0 then return tc and tc:IsFaceup() and tc:GetRank()<5 or tc:GetLevel()<5  end
+	if chk==0 then return tc and tc:IsFaceup() and (tc:GetRank()<5 and not tc:GetRank()==0) or (tc:GetLevel()<5 and not tc:GetLevel()==0) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tc,1,0,0)
 end
 function c88802006.desop(e,tp,eg,ep,ev,re,r,rp)
