@@ -31,5 +31,9 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	if p==2 and d==0 then
+		p=tp
+		d=2
+	end
 	Duel.Draw(p,d,REASON_EFFECT)
 end

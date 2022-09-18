@@ -3,6 +3,7 @@ function c35399020.initial_effect(c)
 --
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(35399020,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,35399020)

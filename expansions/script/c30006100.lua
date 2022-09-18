@@ -212,12 +212,8 @@ function cm.copy(c,e)
 end
 function cm.cytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	local g=c:GetOverlayGroup():Filter(cm.copy,nil,e) 
-	if chkc then
-		local te=e:GetLabelObject()
-		local tg=te:GetTarget()
-		return tg(e,tp,eg,ep,ev,re,r,rp,0,chkc) and g:IsContains(chkc) and cm.copy(chkc,e)
-	end
+	local g=c:GetOverlayGroup():Filter(cm.copy,nil,e)
+	if chkc then return false end
 	if chk==0 then
 		return g:GetCount()>0 and e:GetHandler():GetFlagEffect(m+2)==0
 	end
@@ -232,6 +228,7 @@ function cm.cytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e:GetHandler():RegisterFlagEffect(m+2,RESET_CHAIN,0,1)
 	e:GetHandler():RegisterFlagEffect(m+7,RESET_EVENT+RESETS_STANDARD,0,75)
 	local tg=te:GetTarget()
+	local re=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT)
 	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
 	if Duel.GetCurrentPhase()==PHASE_STANDBY then
 		e:GetHandler():RegisterFlagEffect(m+3,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,EFFECT_FLAG_OATH,2,Duel.GetTurnCount())
@@ -251,6 +248,7 @@ function cm.cyop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsFaceup()  then
 		local op=te:GetOperation()
 		if op then
+			local re=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT)
 			op(e,tp,eg,ep,ev,re,r,rp) 
 		end
 		local code=tc

@@ -85,12 +85,18 @@ function c33200907.activate(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,c33200907.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 		local tc2=g:GetFirst()
 		if tc2 and Duel.SSet(tp,tc2)~=0 then
-			if tc2:IsType(TYPE_QUICKPLAY) then
+			if tc2:IsType(TYPE_QUICKPLAY) or tc2:IsType(TYPE_TRAP) then
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc2:RegisterEffect(e1)
+				local e2=Effect.CreateEffect(e:GetHandler())
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+				e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc2:RegisterEffect(e1)
 			end
 			Duel.SendtoExtraP(e:GetHandler(),tp,REASON_EFFECT)

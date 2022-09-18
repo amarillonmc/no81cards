@@ -38,6 +38,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local fid=c:GetFieldID()
 	local sg=Duel.GetMatchingGroup(cm.rmfilter2,0,0xff,0xff,nil)
+	local sg2=Duel.GetOverlayGroup(0,1,1):Filter(cm.rmfilter2,nil)
+	sg:Merge(sg2)
 	for sc in aux.Next(sg) do
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)

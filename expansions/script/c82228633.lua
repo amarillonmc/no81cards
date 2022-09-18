@@ -65,6 +65,6 @@ function cm.postg(e,c)
 end  
 function cm.damval(e,re,dam,r,rp,rc)  
 	if bit.band(r,REASON_BATTLE)~=0 and Duel.GetAttacker()==e:GetHandler() and e:GetHandler():GetBattleTarget()~=nil and e:GetHandler():GetBattleTarget():IsPosition(POS_DEFENSE) then  
-		return dam*4 
+		return dam*3
 	else return dam end  
 end 

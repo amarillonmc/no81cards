@@ -30,7 +30,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
-	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)==0 and Duel.GetCurrentPhase()==PHASE_MAIN1 and not Duel.CheckPhaseActivity() end
+	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)==0 and Duel.GetCurrentPhase()==PHASE_MAIN1 and Duel.GetTurnPlayer()==tp and not Duel.CheckPhaseActivity() end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)

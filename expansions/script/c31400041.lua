@@ -61,7 +61,7 @@ function cm.disfilter(c)
 	return c:IsCode(95440946) and c:IsFaceup()
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetMatchingGroupCount(cm.disfilter,e:GetHandler(),LOCATION_MZONE,0,nil)>0
+	return Duel.GetMatchingGroupCount(cm.disfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)>0
 end
 function cm.disable(e,c)
 	if c:IsCode(95440946) then return false end

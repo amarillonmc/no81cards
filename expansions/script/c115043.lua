@@ -49,7 +49,7 @@ function c115043.initial_effect(c)
 end
 function c115043.cecon(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()
-	return c:GetFlagEffect(115043)~=0 and c:GetFlagEffect(215043)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,115046,nil,TYPES_TOKEN_MONSTER,0,2000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT)
+	return c:GetFlagEffect(115043)~=0 and c:GetFlagEffect(215043)==0 and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(1-tp,115046,nil,TYPES_TOKEN_MONSTER,0,2000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT) and rp==1-tp 
 end 
 function c115043.ceop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()

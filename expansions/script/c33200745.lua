@@ -54,7 +54,7 @@ end
 function s.spop0(e,tp,eg,ep,ev,re,r,rp,c)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g1=Duel.SelectMatchingCard(tp,s.spf0,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_MZONE,0,1,1,e:GetHandler(),e:GetHandler(),ft)
+	local g1=Duel.SelectMatchingCard(tp,s.spf0,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_MZONE,0,1,1,e:GetHandler(),e:GetHandler(),ft,tp)
 	local rc=g1:GetFirst()
 	local g2=Duel.SelectMatchingCard(tp,s.spf1,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_MZONE,0,1,1,e:GetHandler(),rc,ft)
 	g1:Merge(g2)

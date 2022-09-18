@@ -111,7 +111,7 @@ end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=e:GetHandler():GetOverlayGroup()
 	if chk==0 then
-		local res=e:GetLabel()==0 or #g>2
+		local res=e:GetLabel()==0 or #g>=2
 		e:SetLabel(0)
 		return res and g:IsExists(Card.IsAbleToHand,1,nil)
 	end

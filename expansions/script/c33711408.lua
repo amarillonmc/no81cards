@@ -85,20 +85,23 @@ function cm.top(e,tp)
 		local g=Duel.GetOperatedGroup()
 		local sg=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
 		Duel.BreakEffect()
-		if sg:GetClassCount(Card.GetCode)==#sg and sg:IsExists(cm.rfilter2,1,nil) then
-			local rg=sg:Filter(cm.rfilter2,nil) 
-			
+		if sg:GetClassCount(Card.GetCode)==#sg then
+			local rct=sg:FilterCount(cm.rfilter2,nil)
+			local num=Duel.GetMatchingGroupCount(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,nil)
+			if rct==0 or num==0 then return end
+			if rct>num then rct=num end
+			if not Duel.SelectYesNo(tp,aux.Stringid(9910024,0)) then return end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg1=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,#rg,nil)
+			local sg1=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,rct,nil)
 			if sg1:GetCount()>0 then
 				Duel.SendtoHand(sg1,nil,REASON_EFFECT)
 			end
-		else
+		elseif sg:GetClassCount(Card.GetCode)<#sg then
 			local num=Duel.GetMatchingGroupCount(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 			if num<1 then return end
+			if num>#sg then num=#sg end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local ct=math.min(#sg,num)
-			local sg1=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,ct,ct,nil)
+			local sg1=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,num,num,nil)
 			if sg1:GetCount()>0 then
 				Duel.SendtoGrave(sg1,REASON_EFFECT)
 			end

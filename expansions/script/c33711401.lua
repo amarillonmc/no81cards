@@ -91,7 +91,7 @@ function cm.top(e,tp)
 		if sg:GetClassCount(Card.GetCode)==#sg and sg:IsExists(cm.rfilter2,1,nil) then
 			local rg=sg:Filter(cm.rfilter2,nil) 
 			Duel.Recover(tp,rg:GetSum(Card.GetAttack),REASON_EFFECT)
-		else
+		elseif sg:GetClassCount(Card.GetCode)<#sg then
 			Duel.Damage(tp,#sg*2000,REASON_EFFECT)
 		end
 	end

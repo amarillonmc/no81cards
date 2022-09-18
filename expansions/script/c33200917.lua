@@ -117,8 +117,8 @@ function c33200917.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local fc=Duel.GetFlagEffect(tp,33200917) 
 	if fc>8 then fc=8 end
 	local cc=10-fc
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,LOCATION_ONFIELD,0x132a,cc,REASON_EFFECT) and c:GetFlagEffect(33200917)==0 end
-	c:RegisterFlagEffect(33200917,RESET_CHAIN,0,1)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,LOCATION_ONFIELD,0x132a,cc,REASON_EFFECT) and c:GetFlagEffect(33200918)==0 end
+	c:RegisterFlagEffect(33200918,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
 function c33200917.operation(e,tp,eg,ep,ev,re,r,rp)

@@ -9,7 +9,7 @@ end
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,cm.mfilter,2,63,false)
+	aux.AddFusionProcFunRep2(c,cm.mfilter,2,63,true)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))

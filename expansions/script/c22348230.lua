@@ -81,10 +81,8 @@ function c22348230.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_ONFIELD+LOCATION_GRAVE)
 end
 function c22348230.reop(e,tp,eg,ep,ev,re,r,rp)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.HintSelection(g)
-			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+		if re:GetHandler():IsRelateToEffect(re) then
+			Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 		end
 end
 function c22348230.retop(e,tp,eg,ep,ev,re,r,rp)
