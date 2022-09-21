@@ -52,7 +52,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=true--Duel.IsExistingMatchingCard(cm.sfilter2,tp,LOCATION_DECK,0,1,nil)
 	local b2=(Duel.GetCurrentPhase()~=PHASE_END)
-	if chk==0 then return true end
+	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) end
 	local op=1
 	if b1 and b2 then
 		op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2))

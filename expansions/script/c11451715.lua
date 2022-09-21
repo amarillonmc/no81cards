@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
+	--e1:SetCountLimit(1)
 	e1:SetCondition(cm.recon)
 	e1:SetTarget(cm.retg)
 	e1:SetOperation(cm.reop)
@@ -237,7 +237,7 @@ function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x3977) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.mrtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsAbleToDeck() end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsAbleToDeck() and not e:GetHandler():IsStatus(STATUS_CHAINING) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
 end

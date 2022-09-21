@@ -60,19 +60,19 @@ end
 function cm.srcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
 end
-function cm.srfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:IsAbleToHand()
+function cm.srfilter(c,lv)
+	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:IsAbleToHand() and c:IsLevelAbove(1) and c:IsLevelBelow(lv)
 end
 function cm.srgfilter(g,lv)
 	return g:GetSum(Card.GetLevel)<=lv
 end
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil):CheckSubGroup(cm.srgfilter,nil,nil,e:GetHandler():GetLevel()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.srfilter,tp,LOCATION_DECK,0,1,nil,e:GetHandler():GetLevel()) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetMatchingGroup(cm.srfilter,tp,LOCATION_DECK,0,nil,e:GetHandler():GetLevel())
 	aux.GCheckAdditional=aux.dncheck
 	local tg=g:SelectSubGroup(tp,cm.srgfilter,false,1,#g,e:GetHandler():GetLevel())
 	aux.GCheckAdditional=nil

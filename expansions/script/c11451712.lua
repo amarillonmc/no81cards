@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
+	--e1:SetCountLimit(1)
 	e1:SetCondition(cm.recon)
 	e1:SetTarget(cm.retg)
 	e1:SetOperation(cm.reop)
@@ -166,7 +166,7 @@ function cm.mrcon(e,tp,eg,ep,ev,re,r,rp)
 	return r&REASON_EFFECT~=0
 end
 function cm.mrtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_DECK,0,1,nil,RACE_PSYCHO) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_DECK,0,1,nil,RACE_PSYCHO) and not e:GetHandler():IsStatus(STATUS_CHAINING) end
 end
 function cm.mrop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)

@@ -22,11 +22,10 @@ function cm.initial_effect(c)
 	e2:SetCode(EFFECT_MATERIAL_CHECK)
 	e2:SetValue(cm.valcheck)
 	c:RegisterEffect(e2)
-	e1:SetLabelObject(e2)
 end
 function cm.valcheck(e,c)
-	e:SetLabel(0)
-	if c:GetMaterial():IsExists(Card.IsLink,1,nil,2) then e:SetLabel(1) end
+	c:ResetFlagEffect(m)
+	if c:GetMaterial():IsExists(Card.IsLink,1,nil,2) then c:RegisterFlagEffect(m,RESET_EVENT+0xff0000,0,0) end
 end
 function cm.atkfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_LINK)
@@ -61,7 +60,6 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 		e3:SetRange(LOCATION_MZONE)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-		e3:SetLabel(e:GetLabelObject():GetLabel())
 		e3:SetCondition(cm.negcon)
 		e3:SetCost(cm.negcost)
 		e3:SetTarget(cm.negtg)
@@ -70,7 +68,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp~=tp and Duel.IsChainNegatable(ev) and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetLabel()==1
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp~=tp and Duel.IsChainNegatable(ev) and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetHandler():GetFlagEffect(m)>0
 end
 function cm.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

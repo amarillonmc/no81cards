@@ -55,6 +55,9 @@ function c29065501.pspop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 	end 
 end 
+function c29065501.checkfilter(c)
+	return c:IsFaceup() and c:IsCode(29065500)
+end
 function c29065501.xthfilter(c)
 	return aux.IsCodeListed(c,29065500) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
@@ -63,7 +66,7 @@ function c29065501.xthfilter1(c)
 end
 function c29065501.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		if not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,29065500) then
+		if not Duel.IsExistingMatchingCard(c29065501.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) then
 			return Duel.IsExistingMatchingCard(c29065501.xthfilter,tp,LOCATION_DECK,0,1,nil) end
 		return Duel.IsExistingMatchingCard(c29065501.xthfilter1,tp,LOCATION_DECK,0,1,nil)
 	end
@@ -72,7 +75,7 @@ end
 function c29065501.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=nil
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	if not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,29065500) then
+	if not Duel.IsExistingMatchingCard(c29065501.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) then
 		g=Duel.SelectMatchingCard(tp,c29065501.xthfilter,tp,LOCATION_DECK,0,1,1,nil)
 	else g=Duel.SelectMatchingCard(tp,c29065501.xthfilter1,tp,LOCATION_DECK,0,1,1,nil) end
 	if g:GetCount()>0 then

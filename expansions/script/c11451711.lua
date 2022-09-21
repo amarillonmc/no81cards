@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
+	--e1:SetCountLimit(1)
 	e1:SetCondition(cm.recon)
 	e1:SetTarget(cm.retg)
 	e1:SetOperation(cm.reop)
@@ -122,7 +122,7 @@ function cm.pfilter(c)
 	return (seq>0 and Duel.CheckLocation(p,loc,seq-1)) or (seq<4 and Duel.CheckLocation(p,loc,seq+1))
 end
 function cm.mrtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.pfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.pfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and not e:GetHandler():IsStatus(STATUS_CHAINING) end
 end
 function cm.mrop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)

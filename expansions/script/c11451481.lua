@@ -94,7 +94,7 @@ function cm.thfilter(c)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return (#eg>=2 or Duel.IsPlayerAffectedByEffect(tp,11451481)) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return (#eg>=2 or Duel.IsPlayerAffectedByEffect(tp,11451481)) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and not e:GetHandler():IsStatus(STATUS_CHAINING) end
 	if Duel.IsPlayerAffectedByEffect(tp,11451481) then
 		if #eg>=2 then
 			local op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))

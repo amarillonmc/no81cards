@@ -11,7 +11,7 @@ function c29065511.initial_effect(c)
 	c:RegisterEffect(e1)
 end 
 function c29065511.spfil1(c,e,tp) 
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))  
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x87af)  
 end 
 function c29065511.spfil2(c,e,tp) 
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCode(29065502)  
@@ -21,7 +21,7 @@ function c29065511.ckfil(c)
 end 
 function c29065511.actg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local b1=Duel.IsExistingMatchingCard(c29065511.spfil1,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-	local b2=Duel.IsExistingMatchingCard(c29065511.spfil2,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c29065511.ckfil,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+	local b2=Duel.IsExistingMatchingCard(c29065511.spfil2,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c29065511.ckfil,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 	if chk==0 then return b1 or b2 end  
 	local op=0 
 	if b1 and b2 then 
