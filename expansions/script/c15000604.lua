@@ -22,9 +22,9 @@ function cm.exfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf36) and c:IsFaceup() and c:IsSummonLocation(LOCATION_EXTRA)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return (re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_TRAP) and Duel.IsChainNegatable(ev))
+	return (re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and Duel.IsChainNegatable(ev))
 		or
-		(Duel.IsExistingMatchingCard(cm.exfilter,tp,LOCATION_MZONE,0,1,nil) and ((re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL)) or re:IsActiveType(TYPE_MONSTER)) and Duel.IsChainNegatable(ev))
+		(Duel.IsExistingMatchingCard(cm.exfilter,tp,LOCATION_MZONE,0,1,nil) and ((re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_TRAP)) or re:IsActiveType(TYPE_MONSTER)) and Duel.IsChainNegatable(ev))
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

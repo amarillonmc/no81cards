@@ -8,7 +8,6 @@ function c9310016.initial_effect(c)
 	e1:SetDescription(aux.Stringid(9310016,0))
 	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCondition(c9310016.thcon)
 	e1:SetTarget(c9310016.thtg)
@@ -44,19 +43,18 @@ function c9310016.thfilter(c)
 	return c:IsType(TYPE_RITUAL) and c:IsLevel(4) and c:IsAbleToHand()
 end
 function c9310016.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_EXTRA) and chkc:IsControler(tp) and c9310016.thfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9310016.thfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,c9310016.thfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9310016.thfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil) end
+	local g=Duel.GetMatchingGroup(c9310016.thfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function c9310016.filter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c9310016.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) then return end 
-	if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9310016.thfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0
 		and ((tc:IsType(TYPE_PENDULUM) and Duel.IsExistingMatchingCard(c9310016.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)) 
 		or (tc:IsType(TYPE_TUNER) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)))
 		and Duel.SelectYesNo(tp,aux.Stringid(9310016,0)) then
