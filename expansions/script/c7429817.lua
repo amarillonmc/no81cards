@@ -75,8 +75,8 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EFFECT_SEND_REPLACE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetTarget(cm.reptg)
-	e3:SetValue(cm.repval)
+	e3:SetTarget(cm.reptg2)
+	e3:SetValue(cm.repval2)
 	c:RegisterEffect(e3)
 end
 GM_global_to_deck_check=true
@@ -304,12 +304,12 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.repfilter(c,tp,rp)
+function cm.repfilter2(c,tp,rp)
 	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsCode(7429501)
 	and c:GetReasonPlayer()==1-tp
 end
-function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and eg:IsExists(cm.repfilter,1,nil,tp,rp) end
+function cm.reptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and eg:IsExists(cm.repfilter2,1,nil,tp,rp) end
 	local eqg=eg:Filter(cm.eqfilter,nil,tp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0
 		or not Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,eg) or eqg:GetCount()<=0 then return false end
@@ -344,7 +344,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	return true
 end
-function cm.repval(e,c)
+function cm.repval2(e,c)
 	return c:IsControler(e:GetHandlerPlayer()) and c:IsCode(7429501)
 end
 function cm.eqlimit(e,c)

@@ -83,7 +83,7 @@ function cm.stfilterg(g,tp,tc,lv,smat)
 	local g1=g:Filter(cm.stfilter1,nil)
 	local g2=g:Filter(cm.stfilter2,nil)
 	local count=g:GetCount()
-	return g1:GetCount()==1 and g2:GetCount()==count-1 and g:GetSum(Card.GetLevel)==lv and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	return g1:GetCount()==1 and g2:GetCount()==count-1 and g:GetSum(Card.GetLevel)==lv and Duel.GetLocationCountFromEx(tp,tp,nil,tc)>0
 end
 function cm.sycon(e,c,smat,mg)
 	if c==nil then return true end

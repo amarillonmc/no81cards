@@ -1580,8 +1580,8 @@ function rstg.disneg(dn_type, dn_str, ex_tg)
 		dn_str = dn_str or "dum"
 		local c = e:GetHandler()
 		local rc = re:GetHandler()
-		if chkc then return ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc) end
-		if chk == 0 then return (dn_str ~= "rm" or aux.nbcon(tp, re)) and (ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)) end
+		if chkc then return not ex_tg or ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc) end
+		if chk == 0 then return (dn_str ~= "rm" or aux.nbcon(tp, re)) and (not ex_tg or ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)) end
 		local op_cate = rscate.cate_selhint_list[dn_str][2]
 		if op_cate and op_cate ~= 0 and rc:IsRelateToEffect(re) then
 			local res = rsop.Operation_Solve(eg, dn_str, REASON_EFFECT, { }, 0, e, tp, eg, ep, ev, re, r, rp) 

@@ -1,5 +1,5 @@
 --五河士道 祈福
-local m=m
+local m=33401307
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	 --link summon
