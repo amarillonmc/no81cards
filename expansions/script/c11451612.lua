@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m)
+	--e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -30,8 +30,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
-	return #g>0 and #g==g:FilterCount(Card.IsFacedown,nil)
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	return #g==g:FilterCount(Card.IsFacedown,nil)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x3978) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
@@ -98,14 +98,21 @@ function cm.shtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_MZONE,0,nil)
 	if chk==0 then return #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-	local p,ph=Duel.GetTurnPlayer(),Duel.GetCurrentPhase()
-	e:SetLabel(p,ph)
+	local seq=e:GetHandler():GetPreviousSequence()
+	if e:GetHandler():GetPreviousControler()==1-tp then seq=4-seq end
+	e:SetLabel(seq)
+	local fd=1<<seq
+	Duel.Hint(HINT_ZONE,tp,fd)
+	Duel.Hint(HINT_ZONE,1-tp,fd<<16)
 	local sg=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
-	if p~=tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) then
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	if Duel.GetMatchingGroupCount(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,seq)==0 then
 		e:SetCategory(CATEGORY_POSITION+CATEGORY_SPECIAL_SUMMON+CATEGORY_CONTROL)
 		Duel.SetOperationInfo(0,CATEGORY_CONTROL,sg,1,0,0)
 	end
+end
+function cm.clfilter(c,tp,seq)
+	return aux.GetColumn(c,tp)==seq
 end
 function cm.filter2(c,e)
 	return (c:IsPosition(POS_FACEDOWN_DEFENSE) or c:IsCanTurnSet()) and c:GetSequence()<=4 and not c:IsImmuneToEffect(e) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
@@ -130,9 +137,9 @@ function cm.shop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 	Duel.ConfirmCards(1-tp,c)
 	g:AddCard(c)
-	local p,ph=e:GetLabel()
+	local seq=e:GetLabel()
 	local sg=Duel.GetMatchingGroup(cm.ctfilter,tp,0,LOCATION_MZONE,nil,e)
-	if p~=tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and #sg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if Duel.GetMatchingGroupCount(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,seq)==0 and #sg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
 		local rg=sg:Select(tp,1,1,nil)
 		Duel.HintSelection(rg)

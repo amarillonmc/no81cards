@@ -40,7 +40,7 @@ function c67200406.initial_effect(c)
 	c:RegisterEffect(e4)	  
 end
 function c67200406.excostfilter(c)
-	return c:IsSetCard(0x5671) and c:IsAbleToHandAsCost() 
+	return c:IsSetCard(0x5671) and c:IsAbleToHandAsCost() and c:IsType(TYPE_PENDULUM)
 end
 function c67200406.mfilter(c,tp)
 	--local tp=c:GetControler()
@@ -48,7 +48,7 @@ function c67200406.mfilter(c,tp)
 end
 function c67200406.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200406.excostfilter,tp,LOCATION_ONFIELD,0,1,nil) end
-	local rg=Duel.GetMatchingGroup(c67200406.excostfilter,tp,LOCATION_ONFIELD,0,nil,tp)
+	local rg=Duel.GetMatchingGroup(c67200406.excostfilter,tp,LOCATION_ONFIELD,0,nil)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g=nil
 	if ft>0 then
@@ -57,16 +57,13 @@ function c67200406.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		g=rg:FilterSelect(tp,c67200406.mfilter,1,1,nil,tp)
-		local g2=rg:Select(tp,1,1,g:GetFirst())
-		g:Merge(g2)
 	end
 	Duel.SendtoHand(g,nil,REASON_COST)
 	e:SetLabel(g:GetFirst():GetBaseAttack())
 end
 function c67200406.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsCanAddCounter(tp,0x671,1,c) end
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsCanAddCounter(tp,0x671,1,c) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c67200406.spop(e,tp,eg,ep,ev,re,r,rp)

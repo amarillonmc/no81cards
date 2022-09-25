@@ -3,20 +3,12 @@ function c9910403.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6950),2,true)
-	--cannot be material
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-	e1:SetValue(c9910403.splimit)
-	c:RegisterEffect(e1)
 	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,9910403)
 	e2:SetTarget(c9910403.destg)
 	e2:SetOperation(c9910403.desop)
 	c:RegisterEffect(e2)
@@ -26,15 +18,11 @@ function c9910403.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetCountLimit(1,9910404)
+	e3:SetCountLimit(1,9910403)
 	e3:SetCondition(c9910403.spcon)
 	e3:SetTarget(c9910403.sptg)
 	e3:SetOperation(c9910403.spop)
 	c:RegisterEffect(e3)
-end
-function c9910403.splimit(e,c)
-	if not c then return false end
-	return not c:IsSetCard(0x6950)
 end
 function c9910403.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>0

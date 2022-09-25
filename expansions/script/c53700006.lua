@@ -1,5 +1,6 @@
 --青 娥 娘 娘
 function c53700006.initial_effect(c)
+	aux.AddCodeList(c,53700001)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2(c,53700004,53700005,true,true)

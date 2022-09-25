@@ -3,7 +3,7 @@ function c9911022.initial_effect(c)
 	c:EnableReviveLimit()
 	--set
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	e1:SetCategory(CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9911022)
@@ -20,7 +20,7 @@ function c9911022.initial_effect(c)
 	c:RegisterEffect(e2)
 	--change attribute
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_NEGATE)
+	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -71,30 +71,8 @@ function c9911022.setop(e,tp,eg,ep,ev,re,r,rp)
 	if not tc or Duel.SSet(tp,tc)==0 then return end
 	local cg=tc:GetColumnGroup()
 	cg:AddCard(tc)
-	local off=1
-	local ops={}
-	local opval={}
-	if Duel.IsExistingMatchingCard(c9911022.tgfilter,tp,LOCATION_DECK,0,1,nil) then
-		ops[off]=aux.Stringid(9911022,0)
-		opval[off-1]=1
-		off=off+1
-	end
-	if tc:IsOnField() and cg:IsExists(Card.IsAbleToGrave,1,nil) then
-		ops[off]=aux.Stringid(9911022,1)
-		opval[off-1]=2
-		off=off+1
-	end
-	ops[off]=aux.Stringid(9911022,2)
-	opval[off-1]=3
-	off=off+1
-	local op=Duel.SelectOption(tp,table.unpack(ops))
-	if opval[op]==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local tg=Duel.SelectMatchingCard(tp,c9911022.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if tg:GetCount()>0 then
-			Duel.SendtoGrave(tg,REASON_EFFECT)
-		end
-	elseif opval[op]==2 then
+	if tc:IsOnField() and cg:IsExists(Card.IsAbleToGrave,1,nil)
+		and Duel.SelectYesNo(tp,aux.Stringid(9911022,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local sg=cg:FilterSelect(tp,Card.IsAbleToGrave,1,1,nil)
@@ -104,12 +82,15 @@ function c9911022.setop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9911022.attcon(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end
-	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainNegatable(ev)
 end
 function c9911022.atttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsFaceup() and not c:IsAttribute(ATTRIBUTE_EARTH) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
+	end
 end
 function c9911022.attop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -120,6 +101,10 @@ function c9911022.attop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(ATTRIBUTE_EARTH)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
-		Duel.NegateActivation(ev)
+		local ec=re:GetHandler()
+		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+			ec:CancelToGrave()
+			Duel.SendtoDeck(ec,nil,2,REASON_EFFECT)
+		end
 	end
 end

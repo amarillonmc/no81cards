@@ -3,13 +3,6 @@ function c9910402.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6950),aux.FilterBoolFunction(Card.IsAttackBelow,1500),true)
-	--cannot be material
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-	e1:SetValue(c9910402.splimit)
-	c:RegisterEffect(e1)
 	--can not be effect target
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -31,10 +24,6 @@ function c9910402.initial_effect(c)
 	e3:SetTarget(c9910402.sptg)
 	e3:SetOperation(c9910402.spop)
 	c:RegisterEffect(e3)
-end
-function c9910402.splimit(e,c)
-	if not c then return false end
-	return not c:IsSetCard(0x6950)
 end
 function c9910402.etlimit(e,c)
 	return c~=e:GetHandler()

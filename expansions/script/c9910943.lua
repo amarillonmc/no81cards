@@ -52,7 +52,7 @@ function c9910943.filter(c,e,tp,ft)
 end
 function c9910943.gselect(g,e,tp,check1,check2)
 	local b1=#g==1
-	local b2=check1 and g:IsExists(Card.IsAbleToHand,2,nil)==2
+	local b2=check1 and g:IsExists(Card.IsAbleToHand,2,nil)
 	local b3=check1 and check2
 		and g:IsExists(Card.IsCanBeSpecialSummoned,2,nil,e,0,tp,false,false,POS_FACEUP_DEFENSE)
 	return b1 or b2 or b3

@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m)
+	--e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -30,8 +30,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
-	return #g>0 and #g==g:FilterCount(Card.IsFacedown,nil)
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	return #g==g:FilterCount(Card.IsFacedown,nil)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x3978) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
@@ -101,10 +101,11 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.tgfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(cm.tgfilter,tp,LOCATION_GRAVE,0,1,nil,e) end
 	local sg=Group.CreateGroup()
-	local p,ph=Duel.GetTurnPlayer(),Duel.GetCurrentPhase()
-	e:SetLabel(p,ph)
+	local seq=e:GetHandler():GetPreviousSequence()
+	if e:GetHandler():GetPreviousControler()==1-tp then seq=4-seq end
+	e:SetLabel(seq)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	if p~=tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) then
+	if Duel.GetMatchingGroupCount(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,seq)==0 then
 		local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_GRAVE,0,nil,e)
 		sg=g:SelectSubGroup(tp,cm.fselect,false,1,99)
 		Duel.HintSelection(sg)
@@ -113,6 +114,9 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		sg=Duel.SelectTarget(tp,cm.tgfilter,tp,LOCATION_GRAVE,0,1,1,nil,e)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,sg,#sg,0,0)
+end
+function cm.clfilter(c,tp,seq)
+	return aux.GetColumn(c,tp)==seq
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)

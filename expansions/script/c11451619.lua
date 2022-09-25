@@ -5,7 +5,7 @@ local cm=_G["c"..m]
 cm.IsFusionSpellTrap=true
 function cm.initial_effect(c)
 	--fusion set
-	aux.AddFusionProcFunRep2(c,cm.ffilter,3,63,true)
+	aux.AddFusionProcFunRep2(c,cm.ffilter,2,63,true)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
@@ -37,19 +37,22 @@ function cm.ffilter(c,fc,sub,mg,sg)
 	return c:IsLevelAbove(1) and (not sg or not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()))
 end
 function cm.dptcheck(g)
-	return g:GetClassCount(Card.GetPosition)==#g
+	return g:GetClassCount(Card.GetLevel)==#g
+end
+function cm.cfilter(c)
+	return c:IsLevelAbove(1) and c:IsReleasable()
 end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,LOCATION_MZONE,0,nil)
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)
 	return mg:CheckSubGroup(cm.dptcheck,2,99) and e:GetHandler():IsSSetable() and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local mg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,LOCATION_MZONE,0,nil)
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)
 	local tg=mg:SelectSubGroup(tp,cm.dptcheck,true,2,99)
 	if tg and #tg>0 then
 		c:SetMaterial(tg)
-		Duel.Remove(tg,POS_FACEUP,REASON_COST+REASON_MATERIAL)
+		Duel.Release(tg,REASON_COST+REASON_MATERIAL)
 		Duel.BreakEffect()
 		Duel.SSet(tp,c)
 	end

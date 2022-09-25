@@ -40,19 +40,23 @@ function cm.costcon(e)
 	cm[0]=false
 	return true
 end
+function cm.refilter(c,e)
+	return c:IsReleasable()
+end
 function cm.costchk(e,te,tp)
-	return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_MZONE,0,1,nil,te)
 end
 function cm.costtg(e,te,tp)
 	e:SetLabelObject(te)
-	return Duel.GetFlagEffect(tp,m)>0 and te:GetHandler() and not te:GetHandler():IsOnField()
+	return Duel.GetFlagEffect(tp,m)>0 and te:GetHandler() and not te:GetHandler():IsOnField() and not te:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	if cm[0] then return end
-	Duel.ConfirmCards(1-tp,e:GetLabelObject():GetHandler())
+	local te=e:GetLabelObject()
+	Duel.ConfirmCards(1-tp,te:GetHandler())
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local sg=Duel.SelectMatchingCard(1-tp,Card.IsReleasable,tp,LOCATION_MZONE,0,1,1,nil)
+	local sg=Duel.SelectMatchingCard(1-tp,cm.refilter,tp,LOCATION_MZONE,0,1,1,nil,te)
 	if Duel.Release(sg,REASON_COST)>0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)

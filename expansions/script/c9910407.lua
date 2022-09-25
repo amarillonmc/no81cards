@@ -1,12 +1,5 @@
 --赛博空间的邪教主
 function c9910407.initial_effect(c)
-	--cannot be material
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-	e1:SetValue(c9910407.splimit)
-	c:RegisterEffect(e1)
 	--to grave
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DESTROY)
@@ -26,10 +19,6 @@ function c9910407.initial_effect(c)
 	e3:SetTarget(c9910407.sptg)
 	e3:SetOperation(c9910407.spop)
 	c:RegisterEffect(e3)
-end
-function c9910407.splimit(e,c)
-	if not c then return false end
-	return not c:IsSetCard(0x6950)
 end
 function c9910407.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end

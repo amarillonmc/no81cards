@@ -1250,13 +1250,11 @@ function Chikichikibanban.c4a71Limitsplimit2(e,se,sp,st)
 	return se:GetHandler():IsSetCard(0x4a71)
 end
 --铳影通用回收(代写)
-function Chikichikibanban.c4a71tohand(c,tg,op,category,cardcode,message)
+function Chikichikibanban.c4a71tohand(c,tg,op,category)
 	local tg=tg 
 	if not tg then tg=Chikichikibanban.c4a71tohandthtg end
 	local op=op 
 	if not op then op=Chikichikibanban.c4a71tohandthop end
-	local cardcode=cardcode
-	local message=message 
 	local category=category 
 	if not category then category=CATEGORY_TOHAND+CATEGORY_SEARCH end
 	--to hand
@@ -1266,9 +1264,6 @@ function Chikichikibanban.c4a71tohand(c,tg,op,category,cardcode,message)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_GRAVE)
 	e1:SetCost(aux.bfgcost)
-	if cardcode~=12825606 then
-		e1:SetCondition(aux.exccon)
-	end
 	e1:SetTarget(tg)
 	e1:SetOperation(op)
 	c:RegisterEffect(e1)

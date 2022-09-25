@@ -5,28 +5,9 @@ function c9910655.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCost(c9910655.cost)
 	e1:SetTarget(c9910655.target)
 	e1:SetOperation(c9910655.activate)
 	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(9910655,ACTIVITY_SPSUMMON,c9910655.counterfilter)
-end
-function c9910655.counterfilter(c)
-	return not c:IsType(TYPE_LINK)
-end
-function c9910655.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(9910655,tp,ACTIVITY_SPSUMMON)==0 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c9910655.splimit)
-	Duel.RegisterEffect(e1,tp)
-end
-function c9910655.splimit(e,c)
-	return c:IsType(TYPE_LINK)
 end
 function c9910655.cfilter(c,tp)
 	return c:IsType(TYPE_MONSTER) and not c:IsPublic()

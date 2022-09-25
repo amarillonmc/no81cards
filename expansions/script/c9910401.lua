@@ -6,16 +6,9 @@ function c9910401.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e1:SetCountLimit(1,9910401)
+	e1:SetCountLimit(1,9910401+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c9910401.spcon)
 	c:RegisterEffect(e1)
-	--cannot be material
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-	e2:SetValue(c9910401.splimit)
-	c:RegisterEffect(e2)
 	--fusion
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
@@ -26,14 +19,13 @@ function c9910401.initial_effect(c)
 	e3:SetOperation(c9910401.spop)
 	c:RegisterEffect(e3)
 end
+function c9910401.cfilter(c)
+	return c:IsType(TYPE_MONSTER) and not c:IsCode(9910401)
+end
 function c9910401.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and not Duel.IsExistingMatchingCard(Card.IsType,c:GetControler(),LOCATION_GRAVE,0,1,c,TYPE_MONSTER)
-end
-function c9910401.splimit(e,c)
-	if not c then return false end
-	return not c:IsSetCard(0x6950)
+		and not Duel.IsExistingMatchingCard(c9910401.cfilter,c:GetControler(),LOCATION_GRAVE,0,1,nil)
 end
 function c9910401.spfilter1(c,e)
 	return not c:IsImmuneToEffect(e)

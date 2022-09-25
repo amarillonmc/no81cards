@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeRep2(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),2,63,true)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),true)
 	--effect
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

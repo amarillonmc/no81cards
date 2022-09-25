@@ -41,7 +41,7 @@ function c67200414.initial_effect(c)
 end
 --
 function c67200414.excostfilter(c)
-	return c:IsSetCard(0x5671) and c:IsAbleToHandAsCost() 
+	return c:IsSetCard(0x5671) and c:IsAbleToHandAsCost() and c:IsType(TYPE_PENDULUM)
 end
 function c67200414.mfilter(c,tp)
 	--local tp=c:GetControler()
@@ -58,20 +58,17 @@ function c67200414.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		g=rg:FilterSelect(tp,c67200414.mfilter,1,1,nil,tp)
-		local g2=rg:Select(tp,1,1,g:GetFirst())
-		g:Merge(g2)
 	end
 	Duel.SendtoHand(g,nil,REASON_COST)
 	e:SetLabel(g:GetFirst():GetBaseAttack())
 end
 function c67200414.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsCanAddCounter(tp,0x671,1,c) end
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsCanAddCounter(tp,0x671,1,c) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c67200414.acfilter(c)
-	return c:IsSetCard(0x5671) and not c:IsForbidden()
+	return c:IsSetCard(0x5671) and not c:IsForbidden() and c:IsType(TYPE_PENDULUM)
 end
 function c67200414.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -97,7 +94,7 @@ function c67200414.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c67200414.ctfilter,1,nil,tp)
 end
 function c67200414.actfilter(c,e,tp)
-	return c:IsSetCard(0x5671) and c:IsCanBeSpecialSummoned(e,0,tp,tp,false)
+	return c:IsSetCard(0x5671) and c:IsCanBeSpecialSummoned(e,0,tp,tp,false) and c:IsType(TYPE_PENDULUM)
 end
 --function c67200414.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 

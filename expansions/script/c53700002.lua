@@ -1,5 +1,6 @@
 --苏我屠自古
 function c53700002.initial_effect(c)
+	aux.AddCodeList(c,53700001)
 	c:EnableReviveLimit()
 	--token
 	local e1=Effect.CreateEffect(c)
@@ -37,31 +38,43 @@ end
 function c53700002.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>2
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,53700001,0,0x4011,0,0,2,RACE_ZOMBIE,ATTRIBUTE_LIGHT) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,53700001,0,TYPES_TOKEN_MONSTER,0,0,2,RACE_ZOMBIE,ATTRIBUTE_LIGHT) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,3,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,3,0,0)
 end
 function c53700002.tkop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>2 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.IsPlayerCanSpecialSummonMonster(tp,53700001,0,0x4011,0,0,2,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then
-		for i=1,3 do
-			local token=Duel.CreateToken(tp,53700001)
-			Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UNRELEASABLE_SUM)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetValue(1)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			token:RegisterEffect(e1,true)
-			local e2=e1:Clone()
-			e2:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
-			token:RegisterEffect(e2,true)
-			local e3=e1:Clone()
-			e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-			token:RegisterEffect(e3,true)
+	local ft=math.min((Duel.GetLocationCount(tp,LOCATION_MZONE)),3)
+	if ft>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,53700001,0,TYPES_TOKEN_MONSTER,0,0,2,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then
+		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+		local ct=1
+		if ft>1 then
+			local num={}
+			local i=1
+			while i<=ft do
+				num[i]=i
+				i=i+1
+			end
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(53700002,7))
+			ct=Duel.AnnounceNumber(tp,table.unpack(num))
 		end
+		repeat
+			local token=Duel.CreateToken(tp,53700001)
+			Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+			ct=ct-1
+		until ct==0
 		Duel.SpecialSummonComplete()
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(function(e,c)return not (c:IsCode(53700001) or aux.IsCodeListed(c,53700001))end)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	Duel.RegisterEffect(e2,tp)
 end
 function c53700002.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)

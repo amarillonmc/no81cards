@@ -46,7 +46,9 @@ function c9910418.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) and e:GetLabel()==1
 end
 function c9910418.spfilter(c,e,tp)
-	return c:IsType(TYPE_FUSION) and c:IsLevel(8,9) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_MACHINE+RACE_CYBERSE)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c9910418.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910418.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end

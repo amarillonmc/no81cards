@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m)
+	--e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -25,8 +25,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
-	return #g>0 and #g==g:FilterCount(Card.IsFacedown,nil)
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	return #g==g:FilterCount(Card.IsFacedown,nil)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x3978) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
@@ -126,6 +126,7 @@ function cm.fstg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 		return res
 	end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,tp,LOCATION_GRAVE)
 end
 function cm.fsop(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp

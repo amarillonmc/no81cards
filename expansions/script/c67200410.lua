@@ -49,7 +49,7 @@ end
 --
 function c67200410.rfilter(c,tp)
 	--local tp=c:GetControler()
-	return c:IsFaceup() and c:IsSetCard(0x5671) and c:IsAbleToHand() and not c:IsCode(67200410)
+	return c:IsFaceup() and c:IsSetCard(0x5671) and c:IsAbleToHand() and not c:IsCode(67200410) and c:IsType(TYPE_PENDULUM)
 end
 
 function c67200410.mfilter(c,tp)
@@ -79,8 +79,6 @@ function c67200410.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		g=rg:FilterSelect(tp,c67200410.mfilter,1,1,nil,tp)
-		local g2=rg:Select(tp,1,1,g:GetFirst())
-		g:Merge(g2)
 	end
 	Duel.SendtoHand(g,nil,REASON_COST)
 end

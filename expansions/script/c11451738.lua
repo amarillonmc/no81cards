@@ -43,7 +43,7 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 		c:SetEntityCode(m+10,true)
 		c:ReplaceEffect(m+10,0)
 		c:EnableReviveLimit()
-		aux.AddFusionProcCodeRep2(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),2,63,true)
+		aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),true)
 		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,c)
 	end

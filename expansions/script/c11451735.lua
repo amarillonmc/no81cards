@@ -49,5 +49,5 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.matfilter(c)
-	return c:IsLinkRace(RACE_FAIRY) and c:IsLinkAttribute(ATTRIBUTE_DARK)
+	return c:IsLinkRace(RACE_FAIRY)
 end

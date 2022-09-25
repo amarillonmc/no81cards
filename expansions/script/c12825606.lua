@@ -5,7 +5,7 @@ function c12825606.initial_effect(c)
 	aux.AddXyzProcedure(c,nil,6,3)
 	c:EnableReviveLimit()
 	chiki.c4a71Limit(c)
-	chiki.c4a71tohand(c,c12825606.target,c12825606.activate,nil,12825606)
+	chiki.c4a71tohand(c,c12825606.target,c12825606.activate)
 	chiki.c4a71kang2(c,nil,c12825606.hdtg,c12825606.hdop,CATEGORY_REMOVE,12825606,1106,12825611)
 end
 function c12825606.hdtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.matfilter(c)
-	return c:IsLinkRace(RACE_FAIRY) and c:IsLinkAttribute(ATTRIBUTE_DARK)
+	return c:IsLinkRace(RACE_FAIRY)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	for i=1,Duel.GetCurrentChain() do

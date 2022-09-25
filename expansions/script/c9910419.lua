@@ -1,12 +1,5 @@
 --赛博空间的讯使
 function c9910419.initial_effect(c)
-	--cannot be material
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-	e1:SetValue(c9910419.splimit)
-	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND)
@@ -32,10 +25,6 @@ function c9910419.initial_effect(c)
 	e4:SetTarget(c9910419.sptg)
 	e4:SetOperation(c9910419.spop)
 	c:RegisterEffect(e4)
-end
-function c9910419.splimit(e,c)
-	if not c then return false end
-	return not c:IsSetCard(0x6950)
 end
 function c9910419.thfilter(c)
 	return c:IsSetCard(0x6950) and c:IsAbleToHand()

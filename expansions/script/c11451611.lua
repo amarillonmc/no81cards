@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m)
+	--e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -29,8 +29,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
-	return #g>0 and #g==g:FilterCount(Card.IsFacedown,nil)
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	return #g==g:FilterCount(Card.IsFacedown,nil)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x3978) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
@@ -92,8 +92,15 @@ function cm.cacon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.catg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local p,ph=Duel.GetTurnPlayer(),Duel.GetCurrentPhase()
-	e:SetLabel(p,ph)
+	local seq=e:GetHandler():GetPreviousSequence()
+	if e:GetHandler():GetPreviousControler()==1-tp then seq=4-seq end
+	e:SetLabel(seq)
+	local fd=1<<seq
+	Duel.Hint(HINT_ZONE,tp,fd)
+	Duel.Hint(HINT_ZONE,1-tp,fd<<16)
+end
+function cm.clfilter(c,tp,seq)
+	return aux.GetColumn(c,tp)==seq
 end
 function cm.caop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -104,8 +111,8 @@ function cm.caop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(cm.atklimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	local p,ph=e:GetLabel()
-	if p~=tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) then
+	local seq=e:GetLabel()
+	if Duel.GetMatchingGroupCount(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,seq)==0 then
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_CANNOT_TRIGGER)
 		e2:SetValue(0)

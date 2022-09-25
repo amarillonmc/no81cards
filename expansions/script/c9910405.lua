@@ -1,28 +1,14 @@
 --赛博空间的魔女
 function c9910405.initial_effect(c)
-	--cannot be material
+	--atk up
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-	e1:SetValue(c9910405.splimit)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_CYBERSE))
+	e1:SetValue(c9910405.atkval)
 	c:RegisterEffect(e1)
-	--spsummon limit
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,1)
-	e2:SetTarget(c9910405.sumlimit)
-	c:RegisterEffect(e2)
-	--inactivatable
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_CANNOT_INACTIVATE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetValue(c9910405.efilter)
-	c:RegisterEffect(e3)
 	--to hand
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -34,17 +20,12 @@ function c9910405.initial_effect(c)
 	e4:SetOperation(c9910405.thop)
 	c:RegisterEffect(e4)
 end
-function c9910405.splimit(e,c)
-	if not c then return false end
-	return not c:IsSetCard(0x6950)
+function c9910405.atkfilter(c)
+	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_FUSION)
 end
-function c9910405.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return c:IsLocation(LOCATION_EXTRA) and not c:IsType(TYPE_FUSION)
-end
-function c9910405.efilter(e,ct)
-	local p=e:GetHandlerPlayer()
-	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return p==tp and te:IsHasCategory(CATEGORY_FUSION_SUMMON)
+function c9910405.atkval(e)
+	local g=Duel.GetMatchingGroup(c9910405.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	return g:GetClassCount(Card.GetCode)*500
 end
 function c9910405.thfilter(c)
 	return c:IsSetCard(0x6950) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()

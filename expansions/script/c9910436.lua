@@ -21,7 +21,7 @@ function c9910436.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910436.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_LINK 
+	return e:GetHandler():GetSummonType()==SUMMON_TYPE_LINK and Duel.IsAbleToEnterBP()
 end
 function c9910436.cfilter(c,e)
 	return c:IsAbleToGrave() and not c:IsImmuneToEffect(e)
@@ -34,21 +34,33 @@ function c9910436.atkop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local cg=Duel.SelectMatchingCard(tp,c9910436.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,63,c,e)
 		Duel.SendtoGrave(cg,REASON_EFFECT)
+		local oc=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)		
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-		e1:SetValue(cg:GetCount()*1200)
+		e1:SetValue(c9910436.atkval)
+		e1:SetLabel(oc)
 		c:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD)
 		e2:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
 		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e2:SetTargetRange(1,0)
+		e2:SetCondition(c9910436.damcon)
 		e2:SetValue(DOUBLE_DAMAGE)
 		e2:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e2,tp)
 	end
+end
+function c9910436.atkval(e,c)
+	local ph=Duel.GetCurrentPhase()
+	if ph<PHASE_BATTLE_START or ph>PHASE_BATTLE then return 0 end
+	return e:GetLabel()*1400
+end
+function c9910436.damcon(e)
+	local ph=Duel.GetCurrentPhase()
+	return ph>PHASE_MAIN1 and ph<PHASE_MAIN2
 end
 function c9910436.rfcon(e)
 	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
