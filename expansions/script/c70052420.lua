@@ -1,180 +1,62 @@
---契灵·圣遗之墟
+--契灵·飞赢鱼
 local m=70052420
-local set=0xee0
+local set=0xff0
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-   c:SetUniqueOnField(1,0,m)
-	--Activate
+	--search S/T
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
+	e1:SetHintTiming(0,TIMING_END_PHASE)
+	e1:SetCountLimit(1,m)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.activate)
+	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
-	--draw skip
+	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
+	--draw
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCode(EFFECT_CANNOT_DRAW)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetTargetRange(1,0)
-	e2:SetCondition(cm.skipcon)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_TO_DECK)
+	e2:SetCountLimit(1,70052421)
+	e2:SetTarget(cm.drtg)
+	e2:SetOperation(cm.drop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_DRAW_COUNT)
-	e3:SetValue(0)
-	c:RegisterEffect(e3)
-	--cannot be target
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
-	e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetTargetRange(LOCATION_ONFIELD,0)
-	e4:SetCondition(cm.condition)
-	e4:SetValue(aux.tgoval)
-	c:RegisterEffect(e4)
-	--atkup
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_UPDATE_ATTACK)
-	e5:SetRange(LOCATION_SZONE)
-	e5:SetTargetRange(LOCATION_MZONE,0)
-	e5:SetTarget(aux.TargetBoolFunction(Card.IsCode,70052400))
-	e5:SetValue(cm.atkval)
-	c:RegisterEffect(e5)
-	local e6=e5:Clone()
-	e6:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e6:SetValue(aux.indoval)
-	c:RegisterEffect(e6)
-	local e7=e5:Clone()
-	e7:SetCode(EFFECT_EXTRA_ATTACK)
-	e7:SetValue(1)
-	c:RegisterEffect(e7)
-	--recover
-	local e8=Effect.CreateEffect(c)
-	e8:SetDescription(aux.Stringid(m,1))
-	e8:SetCategory(CATEGORY_RECOVER)
-	e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e8:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e8:SetRange(LOCATION_SZONE)
-	e8:SetCode(EVENT_BATTLE_DAMAGE)
-	e8:SetCondition(cm.reccon)
-	e8:SetTarget(cm.rectg)
-	e8:SetOperation(cm.recop)
-	c:RegisterEffect(e8)
-	--atk
-	local e9=Effect.CreateEffect(c)
-	e9:SetCategory(CATEGORY_ATKCHANGE)
-	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e9:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e9:SetRange(LOCATION_SZONE)
-	e9:SetCondition(cm.atkcon)
-	e9:SetTarget(cm.atktg)
-	e9:SetOperation(cm.atkop)
-	c:RegisterEffect(e9)
-	--to hand
-	local e10=Effect.CreateEffect(c)
-	e10:SetDescription(aux.Stringid(m,2))
-	e10:SetCategory(CATEGORY_TOHAND)
-	e10:SetType(EFFECT_TYPE_IGNITION)
-	e10:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e10:SetRange(LOCATION_SZONE)
-	e10:SetCountLimit(1,m)
-	e10:SetTarget(cm.thtg)
-	e10:SetOperation(cm.thop)
-	c:RegisterEffect(e10)
 end
-	--Activate
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return true end
+	--search S/T
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() end
+	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function cm.filter(c,e,sp)
-	return c:IsCode(70052400) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function cm.filter(c)
+	return c:IsSetCard(0xff0) and c:IsAbleToHand()
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local cg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,e,tp)
-	if cg:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=cg:Select(tp,1,1,nil)
-			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-		end
-	end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-	--draw skip
-function cm.skipcon(e)
-	return cm.condition(e) and Duel.GetCurrentPhase()==PHASE_DRAW
-end
-	--cannot be target
-function cm.cfilter(c)
-	return c:IsFaceup() and c:IsCode(70052400)
-end
-function cm.condition(e)
-	local tp=e:GetHandlerPlayer()
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
-end
-	--atkup
-function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsType,0,LOCATION_REMOVED,LOCATION_REMOVED,nil,TYPE_MONSTER)*300
-end
-	--recover
-function cm.reccon(e,tp,eg,ep,ev,re,r,rp)
-	if ep==tp then return false end
-	local rc=eg:GetFirst()
-	return cm.condition(e) and rc:IsControler(tp) and rc:IsSetCard(0xee0)
-end
-function cm.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(ev)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,ev)
-end
-function cm.recop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Recover(p,d,REASON_EFFECT)
-end
-	--atk
-function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	local ac=Duel.GetAttacker()
-	return cm.condition(e) and ac:IsFaceup() and ac:IsControler(tp) and ac:IsSetCard(0xee0)
-end
-function cm.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xee0)
-end
-function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.atkfilter,tp,LOCATION_MZONE,0,1,nil) end
-end
-function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(cm.atkfilter,tp,LOCATION_MZONE,0,nil)
-	local tc=g:GetFirst()
-	while tc do
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(100)
-		tc:RegisterEffect(e1)
-		tc=g:GetNext()
-	end
-end
-	--to hand
-function cm.thfilter(c)
-	return c:IsSetCard(0xee0) and c:IsAbleToHand()
-end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and cm.thfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
-end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	local tg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
+	if tg:GetCount()>0 then
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
+end
+function cm.counterfilter(c)
+	return c:IsSetCard(0xff0)
+end
+	--draw
+function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,PLAYER_ALL,1)
+end
+function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Draw(tp,1,REASON_EFFECT)
+	Duel.Draw(1-tp,1,REASON_EFFECT)
 end

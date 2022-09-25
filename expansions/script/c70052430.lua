@@ -1,89 +1,95 @@
---契灵·不恼虎
+--契灵·血魔剑 霸王
 local m=70052430
-local set=0xee0
+local set=0xff0
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:SetUniqueOnField(1,0,m)
-	--negate
+	--special summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
+	e0:SetCondition(cm.spcon)
+	e0:SetOperation(cm.spop)
+	c:RegisterEffect(e0)
+	--atk/def1
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_POSITION)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetCountLimit(1,m)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
-	e1:SetCondition(cm.discon)
-	e1:SetCost(cm.discost)
-	e1:SetTarget(cm.distg)
-	e1:SetOperation(cm.disop)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(cm.atkval1)
 	c:RegisterEffect(e1)
-	--atk up
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,70052431)
-	e2:SetCondition(cm.condition)
-	e2:SetTarget(cm.target)
-	e2:SetOperation(cm.operation)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e2)
+	--atk/def2
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_UPDATE_ATTACK)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(cm.atkval2)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e4)
+	--destroy
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,0))
+	e5:SetCategory(CATEGORY_DESTROY)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_DELAY)
+	e5:SetCode(EVENT_TO_DECK)
+	e5:SetCountLimit(1,m)
+	e5:SetTarget(cm.destg)
+	e5:SetOperation(cm.desop)
+	c:RegisterEffect(e5)
 end
-	--negate
-function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+	--special summon
+function cm.spfilter(c,ft,tp)
+	return c:IsSetCard(0xff0) and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5)) and (c:IsControler(tp) or c:IsFaceup())
 end
-function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+function cm.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	return ft>-1 and Duel.CheckReleaseGroup(tp,cm.spfilter,2,nil,ft,tp)
 end
-function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xee0) and c:IsCanTurnSet()
+function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local g=Duel.SelectReleaseGroup(tp,cm.spfilter,2,2,nil,ft,tp)
+	Duel.Release(g,REASON_COST)
+	--disable
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1:SetCode(EFFECT_DISABLE)
+	e1:SetTarget(cm.distg)
+	c:RegisterEffect(e1)
 end
-function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local c=e:GetHandler()
-	if chkc then return chkc~=c and chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,c) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,c)
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	--disable
+function cm.distg(e,c)
+	return c:IsType(TYPE_RITUAL+TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)
 end
-function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) then
-		local tc=Duel.GetFirstTarget()
-		if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-			Duel.BreakEffect()
-			Duel.Destroy(tc,REASON_EFFECT)
-		end
-	end
+	--atk/def1
+function cm.atkval1(e,c)
+	local g=Duel.GetMatchingGroup(Card.IsType,e:GetHandlerPlayer(),LOCATION_MZONE,LOCATION_MZONE,nil,TYPE_MONSTER)
+	return g:GetClassCount(Card.GetAttribute)*500
 end
-	--atk up
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetBattleTarget()
+	--atk/def2
+function cm.atkval2(e,c)
+	local g=Duel.GetMatchingGroup(Card.IsType,e:GetHandlerPlayer(),LOCATION_MZONE,LOCATION_MZONE,nil,TYPE_MONSTER)
+	return g:GetClassCount(Card.GetRace)*500
 end
-function cm.tgfilter(c)
-	return c:IsSetCard(0xee0) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	--destroy
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
-end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
-	local c=e:GetHandler()
-	local tc=g:GetFirst()
-	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE)
-		and c:IsRelateToBattle() and c:IsFaceup() then
-		local lv=tc:GetLevel()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(lv*500)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
-		c:RegisterEffect(e1)
-	end
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	Duel.Destroy(g,REASON_EFFECT)
 end

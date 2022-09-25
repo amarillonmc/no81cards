@@ -1,81 +1,100 @@
 --契灵·芳香法师
 local m=70052405
-local set=0xee0
+local set=0xff0
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:SetUniqueOnField(1,0,m)
-	--place
+	--special summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(m,2))
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(LOCATION_HAND)
+	e0:SetCondition(cm.spcon)
+	e0:SetOperation(cm.spop)
+	c:RegisterEffect(e0)
+	--to hand
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCost(cm.cost)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.operation)
+	e1:SetCategory(CATEGORY_DICE+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,m)
+	e1:SetTarget(cm.thtg)
+	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
-	--spsummon
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetRange(LOCATION_REMOVED)
-	e2:SetCountLimit(1,m)
-	e2:SetCondition(aux.exccon)
-	e2:SetTarget(cm.sptg)
-	e2:SetOperation(cm.spop)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
+	--special summon/to hand
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetCategory(CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_DELAY)
+	e3:SetCode(EVENT_TO_DECK)
+	e3:SetCountLimit(1,70052406)
+	e3:SetTarget(cm.stptg)
+	e3:SetOperation(cm.stpop)
+	c:RegisterEffect(e3)
 end
-	--fusion summon
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
-	Duel.Release(e:GetHandler(),REASON_COST)
+	--special summon
+function cm.spfilter(c)
+	return c:IsSetCard(0xff0) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
 end
+function cm.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler())
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,e:GetHandler())
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
+end
+	--to hand
 function cm.filter(c)
-	return c:IsSetCard(0xee0) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0xff0) and c:IsAbleToHand()
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,nil)
-		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil)
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
+	local dc=Duel.TossDice(tp,1)
+	Duel.ConfirmDecktop(tp,dc)
+	local dg=Duel.GetDecktopGroup(tp,dc)
+	local g=dg:Filter(cm.filter,nil)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+	end
+	Duel.ShuffleDeck(tp)
+end
+	--special summon/to hand
+function cm.stpfilter(c,e,tp,ft)
+	return c:IsSetCard(0xff0) and not c:IsCode(m) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+end
+function cm.stptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.stpfilter,tp,LOCATION_DECK,0,1,nil,e,tp,ft) end
+end
+function cm.stpop(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local g=Duel.SelectMatchingCard(tp,cm.stpfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,ft)
 	local tc=g:GetFirst()
 	if tc then
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
-		tc:RegisterEffect(e1)
-	end
-end
-	--spsummon
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.refilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.refilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.refilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,g:GetFirst():GetAttack())
-end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		Duel.BreakEffect()
-		local tc=Duel.GetFirstTarget()
-		if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:GetAttack()>0 then
-		Duel.Recover(tp,tc:GetAttack(),REASON_EFFECT)
+		if ft>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+			and (not tc:IsAbleToHand() or Duel.SelectOption(tp,1190,1152)==1) then
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		else
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
 		end
 	end
 end
