@@ -44,8 +44,11 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 		c:ReplaceEffect(m+10,0)
 		c:EnableReviveLimit()
 		aux.AddLinkProcedure(c,cm.matfilter,2,2)
+		local loc=c:GetLocation()
 		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,c)
+		local g=Duel.GetFieldGroup(tp,loc,0)
+		Duel.ConfirmCards(tp,g)
 	end
 end
 function cm.matfilter(c)

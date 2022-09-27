@@ -55,27 +55,52 @@ function cm.hand(g)
 end
 function cm.spcon(e,c,og,min,max)
 	if c==nil then return true end
-	if og and not min then return true end
 	local tp=c:GetControler()
+	local minc=2
+	local maxc=2
+	if min then
+		minc=math.max(minc,min)
+		maxc=math.min(maxc,max)
+	end
+	if maxc<minc then return false end
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,c)
 	if og then
-		local og2=og:Filter(Card.IsCanBeXyzMaterial,nil,c)
-		g:Merge(og2)
+		mg=og:Filter(cm.spfilter,c,c)
+	else
+		mg=g
 	end
-	return g:CheckSubGroup(cm.hand,2,2)
+	local sg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+	if sg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
+	Duel.SetSelectedCard(sg)
+	aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
+	local res=mg:CheckSubGroup(aux.XyzLevelFreeGoal,minc,maxc,tp,c,cm.hand)
+	aux.GCheckAdditional=nil
+	return res
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	if og and not min then return true end
+	local minc=2
+	local maxc=2
+	if min then
+		if min>minc then minc=min end
+		if max<maxc then maxc=max end
+	end
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,c)
 	if og then
-		local og2=og:Filter(Card.IsCanBeXyzMaterial,nil,c)
-		g:Merge(og2)
+		mg=og:Filter(cm.spfilter,c,c)
+	else
+		mg=g
 	end
+	local sg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+	Duel.SetSelectedCard(sg)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local sg=g:SelectSubGroup(tp,cm.hand,Duel.IsSummonCancelable(),2,2)
-	if sg then
-		sg:KeepAlive()
-		e:SetLabelObject(sg)
+	local cancel=Duel.IsSummonCancelable()
+	aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
+	local g=mg:SelectSubGroup(tp,aux.XyzLevelFreeGoal,cancel,minc,maxc,tp,c,cm.hand)
+	aux.GCheckAdditional=nil
+	if g and #g>0 then
+		g:KeepAlive()
+		e:SetLabelObject(g)
 		return true
 	else return false end
 end

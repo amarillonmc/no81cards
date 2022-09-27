@@ -44,5 +44,5 @@ function cm.xmatcon(e)
 	return e:GetHandler():GetOriginalAttribute()==ATTRIBUTE_DARK
 end
 function cm.rmtg(e,c)
-	return e:GetHandler():GetOverlayGroup():IsContains(c)
+	return e:GetHandler():GetOverlayGroup():IsContains(c) and not c:IsReason(REASON_LOST_OVERLAY+REASON_RULE)
 end

@@ -26,7 +26,7 @@ function c67200324.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c67200324.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+	if Duel.NegateActivation(ev) and c:IsRelateToEffect(e) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(67200324,1))
