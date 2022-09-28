@@ -77,10 +77,12 @@ end
 function c9910482.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c9910482.costfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	if chk==0 then return #g>0
-		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end
+	local pt=0
+	if Duel.CheckLocation(tp,LOCATION_PZONE,0) then pt=pt+1 end
+	if Duel.CheckLocation(tp,LOCATION_PZONE,1) then pt=pt+1 end
+	if chk==0 then return #g>0 and pt>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local sg=g:SelectSubGroup(tp,c9910482.fselect,false,1,2)
+	local sg=g:SelectSubGroup(tp,c9910482.fselect,false,1,pt)
 	for tc in aux.Next(sg) do
 		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
