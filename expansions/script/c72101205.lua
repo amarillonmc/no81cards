@@ -118,13 +118,13 @@ function c72101205.wtar(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(c72101205.wtfilter,tp,0,LOCATION_ONFIELD,1,c) end
 	local sg=Duel.GetMatchingGroup(c72101205.wfilter,tp,0,LOCATION_ONFIELD,c)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,sg,sg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,sg:GetCount(),0,0)
 end
 function c72101205.wofilter(c)
 	return c:IsCode(72101205)
 end
 function c72101205.wop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetMatchingGroup(c72101205.wfilter,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
+	local sg=Duel.GetMatchingGroup(c72101205.wtfilter,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	if Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
 
 		local tc=Duel.SelectMatchingCard(tp,c72101205.wofilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
