@@ -72,8 +72,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		else
 			res=(c:CheckActivateEffect(false,false,false)~=nil)
 		end
-		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		return res and ((ft>0 and c:IsLocation(LOCATION_HAND)) or (((Duel.GetLocationCountFromEx(tp,tp,nil,c,0x60)>0 and ft>0) or (Duel.GetLocationCountFromEx(tp,tp,nil,c,0x1f)>0 and ft>1)) and c:IsLocation(LOCATION_EXTRA)))
+		return res and ((Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)) or (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA)))
 	end
 end
 function cm.ngfilter(c)
@@ -161,7 +160,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	Duel.MoveToField(c,tp,tp,LOCATION_MZONE,POS_FACEUP,false)
-	c:CreateEffectRelation(te)
+	c:CreateEffectRelation(te) 
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_ADD_TYPE)
@@ -171,6 +170,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te2=te:Clone()
 	e:SetLabelObject(te2)
 	te:SetType(26)
+	c:RegisterEffect(te2,true)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -189,7 +189,6 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	local te2=e:GetLabelObject()
 	re:Reset()
-	rc:RegisterEffect(te2,true)
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
 		rc:CancelToGrave(false)
 		if KOISHI_CHECK then
@@ -220,7 +219,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_DECK+LOCATION_ONFIELD,0,1,nil) end
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_DECK+LOCATION_ONFIELD,0,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

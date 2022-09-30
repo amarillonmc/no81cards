@@ -19,13 +19,14 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(3,m+100)
+	e2:SetCountLimit(3,m+10000
+)
 	e2:SetTarget(cm.seqtg)
 	e2:SetOperation(cm.seqop)
 	c:RegisterEffect(e2)
 end
 function cm.tdfilter(c,tp)
-	return c:IsSetCard(0x156) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToHandAsCost() and Duel.IsExistingMatchingCard(cm.thcheck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c)
+	return c:IsSetCard(0x156) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToHandAsCost() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c)
 end
 function cm.thfilter(c)
 	return c:IsSetCard(0x156) and c:IsAbleToDeckAsCost() and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
@@ -37,7 +38,7 @@ function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),tp)
+		and Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),tp)
 end
 function cm.check(c)
 	return c:IsSetCard(0x156) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())

@@ -43,14 +43,8 @@ function c22348013.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c22348013.costfilter,tp,LOCATION_HAND,0,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
-	if te then
-		te:UseCountLimit(tp)
-		Duel.Release(e:GetHandler(),REASON_COST)
-		Duel.SendtoGrave(tc,REASON_COST)
-	else
-		Duel.Release(e:GetHandler(),REASON_COST)
-		Duel.SendtoGrave(tc,REASON_COST+REASON_DISCARD)
-	end
+	Duel.Release(e:GetHandler(),REASON_COST)
+	Duel.SendtoGrave(tc,REASON_COST+REASON_DISCARD)
 end
 function c22348013.spfilter(c,e,tp)
 	return c:IsSetCard(0x613) and not c:IsCode(22348013) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

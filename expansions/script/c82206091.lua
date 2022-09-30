@@ -50,7 +50,7 @@ function cm.filter(c)
 	return c:IsSetCard(0x29b) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()  
 end  
 function cm.intg(e,tp,eg,ep,ev,re,r,rp,chk)  
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end  
+	if chk==0 then return true end  
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)  
 end  
 function cm.inop(e,tp,eg,ep,ev,re,r,rp)  
