@@ -30,6 +30,7 @@ end
 
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,0,0,0)
 end
 function s.desfilter(c)
 	return (c:IsRace(RACE_ZOMBIE) or c:IsCode(33201009)) and c:IsFaceup()

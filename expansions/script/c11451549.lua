@@ -42,20 +42,53 @@ end
 function cm.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	return g:IsExists(Card.IsLocation,2,nil,LOCATION_GRAVE) and g:IsExists(Card.IsLocation,2,nil,LOCATION_REMOVED) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	local mg=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	local g=Group.CreateGroup()
+	return mg:IsExists(Card.IsLocation,2,nil,LOCATION_GRAVE) and mg:IsExists(Card.IsLocation,2,nil,LOCATION_REMOVED) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and mg:IsExists(cm.syncheck,1,g,g,mg)
+end
+function cm.syncheck(c,g,mg)
+	g:AddCard(c)
+	local res=cm.syngoal(g) or mg:IsExists(cm.syncheck,1,g,g,mg)
+	g:RemoveCard(c)
+	return res
+end
+function cm.syngoal(g)
+	return #g>=4 and g:IsExists(Card.IsLocation,2,nil,LOCATION_GRAVE) and g:IsExists(Card.IsLocation,2,nil,LOCATION_REMOVED) and g:GetSum(Card.GetLevel)%5==0
 end
 function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=g:SelectSubGroup(tp,cm.fselect,Duel.IsSummonCancelable(),4,#g)
+	local mg=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	local sg=Group.CreateGroup()
+	local cg=mg:Filter(cm.syncheck,sg,sg,mg)
+	local cg0=cg
+	local finish=cm.syngoal(sg)
+	for i=1,99 do
+		cg=cg0:Filter(cm.syncheck,sg,sg,cg0)
+		cg:Sub(sg)
+		finish=cm.syngoal(sg)
+		local cancel=not finish and Duel.IsSummonCancelable()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local tc=cg:SelectUnselect(sg,tp,finish,cancel,4,#cg)
+		if not tc then break end
+		if not sg:IsContains(tc) then
+			sg:AddCard(tc)
+			if #sg==#cg then finish=true end
+		else
+			sg:RemoveCard(tc)
+		end
+	end
+	if finish then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+	--[[local sg=g:SelectSubGroup(tp,cm.fselect,Duel.IsSummonCancelable(),4,#g)
 	if sg and sg:GetSum(Card.GetLevel)%5==0 then
 		sg:KeepAlive()
 		e:SetLabelObject(sg)
 		return true
 	elseif sg and sg:GetSum(Card.GetLevel)%5~=0 then
-		assert(false,"选择的怪兽合计等级不是5的倍数")
-	else return false end
+		Debug.Message("选择的怪兽合计等级不是5的倍数")
+	else return false end--]]
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()

@@ -50,8 +50,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0,rfid)
 				rc:CreateRelation(tc,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 				Duel.SpecialSummonComplete()
-				assert(false,"或许是由于过于疲惫，落单的怪兽不幸遭遇了来自额外卡组的黑色高级怪兽")
-				assert(false,"面对为了保护决斗者而揽下所有责任的落单怪兽，对方怪兽提出的和解条件是……")
+				Debug.Message("或许是由于过于疲惫，落单的怪兽不幸遭遇了来自额外卡组的黑色高级怪兽")
+				Debug.Message("面对为了保护决斗者而揽下所有责任的落单怪兽，对方怪兽提出的和解条件是……")
 			end
 		end
 	end

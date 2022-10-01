@@ -29,7 +29,8 @@ end
 function c40009546.cfilter(c)
 	return c:IsFacedown() or not c:IsSetCard(0x137)
 end
-function c40009546.condition(e,c)
+function c40009546.condition(e)
+	local c=e:GetHandler()
 	return not Duel.IsExistingMatchingCard(c40009546.cfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
 function c40009546.sfilter(c)

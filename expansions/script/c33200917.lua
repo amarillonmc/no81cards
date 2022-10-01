@@ -80,6 +80,7 @@ function c33200917.spoperation(e,tp,eg,ep,ev,re,r,rp)
   if g:GetCount()>0 then
 	local tc=g:GetFirst()
 	if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		tc:RegisterFlagEffect(33200917,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_PHASE+PHASE_END)
