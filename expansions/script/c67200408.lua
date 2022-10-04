@@ -41,7 +41,7 @@ function c67200408.initial_effect(c)
 end
 --
 function c67200408.excostfilter(c)
-	return c:IsSetCard(0x5671) and c:IsAbleToHandAsCost() and c:IsType(TYPE_PENDULUM)
+	return c:IsSetCard(0x5671) and c:IsAbleToHandAsCost()  and bit.band(c:GetOriginalType(),TYPE_PENDULUM)==TYPE_PENDULUM
 end
 function c67200408.mfilter(c,tp)
 	--local tp=c:GetControler()

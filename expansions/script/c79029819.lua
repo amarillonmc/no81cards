@@ -55,7 +55,7 @@ end
 function c79029819.xyzop(e,tp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79029819.cfilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,nil) end
 	local g=Duel.SelectMatchingCard(tp,c79029819.cfilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function c79029819.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

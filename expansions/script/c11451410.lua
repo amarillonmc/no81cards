@@ -1,7 +1,6 @@
 --conprologue of infinite saga
 --21.04.13
-local m=11451410
-local cm=_G["c"..m]
+local cm,m=GetID()
 cm.IsFusionSpellTrap=true
 function cm.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
@@ -61,6 +60,28 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(g,nil,2,REASON_COST+REASON_MATERIAL)
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 	e:GetHandler():CreateEffectRelation(te)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return re==te end)
+	e1:SetOperation(cm.rsop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+	end
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCode(11451406) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -86,7 +107,6 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if op~=1 then Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
 	local op=e:GetLabel()
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)

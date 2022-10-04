@@ -74,6 +74,7 @@ function c9910176.desop(e,tp,eg,ep,ev,re,r,rp)
 		and (Duel.GetCustomActivityCount(9910176,tp,ACTIVITY_CHAIN)~=0
 		or Duel.GetCustomActivityCount(9910176,1-tp,ACTIVITY_CHAIN)~=0)
 		and Duel.IsChainNegatable(ev) and Duel.SelectYesNo(tp,aux.Stringid(9910176,1)) then
+		Duel.BreakEffect()
 		Duel.NegateActivation(ev)
 	end
 end

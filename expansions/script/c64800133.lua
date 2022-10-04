@@ -11,7 +11,7 @@ function c64800133.initial_effect(c)
 	--control
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_CONTROL)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCountLimit(1,64800133)
@@ -60,18 +60,24 @@ function c64800133.cop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) and tc:IsControlerCanBeChanged() then
-		if tc:IsFaceup() then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CHANGE_RACE)
-			e1:SetValue(RACE_BEASTWARRIOR)
-			e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN)
-			tc:RegisterEffect(e1)
-		end
 		if Duel.GetTurnPlayer()==tp then
-			Duel.GetControl(tc,tp,PHASE_END,1)
-		else 
-			Duel.GetControl(tc,tp,PHASE_END,2)
+			if Duel.GetControl(tc,tp,PHASE_END,1) and tc:IsFaceup() then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_CHANGE_RACE)
+				e1:SetValue(RACE_BEASTWARRIOR)
+				e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN)
+				tc:RegisterEffect(e1)
+			end
+		else		   
+			if Duel.GetControl(tc,tp,PHASE_END,2) and tc:IsFaceup() then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_CHANGE_RACE)
+				e1:SetValue(RACE_BEASTWARRIOR)
+				e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN)
+				tc:RegisterEffect(e1)
+			end
 		end
 	end
 end

@@ -54,7 +54,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(e:GetLabel(),15000627,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,15000627)~=0 and Duel.GetCurrentChain()==0
+	return tp~=ep and Duel.GetFlagEffect(tp,15000627)~=0 and Duel.GetCurrentChain()==0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

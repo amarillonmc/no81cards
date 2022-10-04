@@ -1,6 +1,5 @@
 --蹈险之烬羽·瑾
-local m=11451733
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--tohand
 	local e1=Effect.CreateEffect(c)
@@ -75,7 +74,14 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_HAND_LIMIT)}
 	local flag=Duel.GetFlagEffectLabel(tp,11451731) or 0
 	local ht=6
-	for _,te in pairs(eset) do ht=te:GetValue() end
+	for _,te in pairs(eset) do
+		local val=te:GetValue()
+		if aux.GetValueType(val)=="function" then
+			ht=val(te,te:GetHandler())
+		elseif aux.GetValueType(val)=="number" then
+			ht=val
+		end
+	end
 	if chk==0 then return ht>=flag+1 end
 	--limit
 	flag=flag+1

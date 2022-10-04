@@ -1,7 +1,6 @@
 --风雨征程 云渺险峰
 --22.06.22
-local m=11451634
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--act in hand
 	local e0=Effect.CreateEffect(c)
@@ -83,6 +82,28 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 	local te=e:GetLabelObject()
 	e:GetHandler():CreateEffectRelation(te)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return re==te end)
+	e1:SetOperation(cm.rsop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+	end
 end
 function cm.filter(c,tp)
 	return c:IsCode(11451631) and not c:IsForbidden() and (c:GetActivateEffect():IsActivatable(tp,true,true) or c:CheckActivateEffect(false,false,false)~=nil)
@@ -91,7 +112,6 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()

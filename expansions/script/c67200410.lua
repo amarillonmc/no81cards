@@ -49,7 +49,7 @@ end
 --
 function c67200410.rfilter(c,tp)
 	--local tp=c:GetControler()
-	return c:IsFaceup() and c:IsSetCard(0x5671) and c:IsAbleToHand() and not c:IsCode(67200410) and c:IsType(TYPE_PENDULUM)
+	return c:IsFaceup() and c:IsSetCard(0x5671) and c:IsAbleToHand() and not c:IsCode(67200410)  and bit.band(c:GetOriginalType(),TYPE_PENDULUM)==TYPE_PENDULUM
 end
 
 function c67200410.mfilter(c,tp)
