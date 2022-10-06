@@ -1773,7 +1773,7 @@ function cm.SRoverDrawOp(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnCount()==1 then
 		ct=1
 		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_DRAW_COUNT)}
-		for _,te in pairs(eset) do if te:GetValue()>dt then dt=te:GetValue() end end
+		for _,te in pairs(eset) do if te:GetValue()>ct then ct=te:GetValue() end end
 	end
 	if ct>3 then return end
 	Duel.Hint(HINT_CARD,0,c:GetOriginalCode())

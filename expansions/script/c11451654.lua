@@ -1,7 +1,6 @@
 --均相扩散
 --21.12.31
-local m=11451654
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -23,10 +22,10 @@ function cm.filter0(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToGrave()
 end
 function cm.fcheck(tp,sg,fc)
-	return sg:GetClassCount(Card.GetCode)==1
+	return sg:GetClassCount(Card.GetCode)<=1
 end
 function cm.gcheck(sg)
-	return sg:GetClassCount(Card.GetCode)==1
+	return sg:GetClassCount(Card.GetCode)<=1
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end

@@ -47,5 +47,5 @@ end
 function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	Duel.SendtoHand(g,nil,REASON_EFFECT+REASON_RULE)
+	Duel.SendtoHand(g,nil,REASON_RULE)
 end
