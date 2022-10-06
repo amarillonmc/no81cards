@@ -1,7 +1,6 @@
 --悠久之心：联结
 --22.01.08
-local m=11451547
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,6,2,nil,nil,99)
@@ -128,14 +127,17 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	for oc in aux.Next(og) do
 		oc:RegisterFlagEffect(m,0,0,1)
 		local te=oc:GetActivateEffect()
+		local con=te:GetCondition()
+		local tg=te:GetTarget()
+		local op=te:GetOperation()
 		local e1=Effect.CreateEffect(oc)
 		e1:SetCategory(te:GetCategory())
 		e1:SetType(EFFECT_TYPE_ACTIVATE)
 		e1:SetCode(EVENT_CHAINING)
-		e1:SetCondition(te:GetCondition())
+		if con then e1:SetCondition(con) end
 		e1:SetCost(cm.addcost)
-		e1:SetTarget(te:GetTarget())
-		e1:SetOperation(te:GetOperation())
+		if tg then e1:SetTarget(tg) end
+		if op then e1:SetOperation(op) end
 		Duel.RegisterEffect(e1,tp)
 	end
 end
@@ -163,4 +165,26 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=te:GetHandler()
 	Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 	tc:CreateEffectRelation(te)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return re==te end)
+	e1:SetOperation(cm.rsop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+	end
 end

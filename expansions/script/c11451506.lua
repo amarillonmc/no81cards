@@ -1,6 +1,5 @@
 --悠久之阶：旋回
-local m=11451506
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -78,6 +77,8 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
+	Debug.Message(te)
+	Debug.Message(te:GetHandler():IsRelateToEffect(e))
 	if not te then return end
 	if not te:GetHandler():IsRelateToEffect(e) then return end
 	e:SetLabelObject(te:GetLabelObject())
@@ -108,7 +109,7 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 		end
 	end
-	if re:GetHandler():GetOriginalCode()==11451510 then
+	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)

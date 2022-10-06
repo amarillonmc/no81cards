@@ -88,12 +88,25 @@ function c9310055.chop(e,tp,eg,ep,ev,re,r,rp)
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(9310055,0)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,2,nil)
 			if #g>0 then
 				Duel.HintSelection(g)
-				Duel.SendtoDeck(g,nil,REASON_EFFECT)
+				Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 			end
+		end
+	end
+	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(9310055,0)) then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+				local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,2,nil)
+				if #g>0 then
+					Duel.HintSelection(g)
+					Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+				end
+			end
+			op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	re:SetOperation(repop)

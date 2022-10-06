@@ -19,7 +19,7 @@ end
 function c71400053.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=yume.YumeFieldCheck(tp,0,2,LOCATION_GRAVE) and Duel.IsPlayerCanDraw(tp,1)
 	local ct=Duel.GetMatchingGroupCount(c71400053.filterlink1,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local g=GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
 	local b2=yume.IsYumeFieldOnField(tp) and Duel.IsExistingMatchingCard(c71400053.filter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) and ct>0 and g:GetCount()>0
 	if chk==0 then return b1 or b2 end
 	local op=0

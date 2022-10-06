@@ -1,6 +1,5 @@
 --悠久之墟：流放
-local m=11451509
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -129,7 +128,7 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)
 		end
 	end
-	if re:GetHandler():GetOriginalCode()==11451510 then
+	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
 			local rc=re:GetHandler()
 			if rc:IsRelateToEffect(re) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then

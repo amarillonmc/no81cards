@@ -19,7 +19,7 @@ function c71400058.initial_effect(c)
 	--material
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400058,1))
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetRange(LOCATION_FZONE)

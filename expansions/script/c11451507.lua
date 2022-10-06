@@ -1,6 +1,5 @@
 --悠久之径：逶迤
-local m=11451507
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -92,7 +91,7 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then Duel.Draw(tp,1,REASON_EFFECT) end
 	end
-	if re:GetHandler():GetOriginalCode()==11451510 then
+	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then Duel.Draw(tp,1,REASON_EFFECT) end
 			op(e,tp,eg,ep,ev,re,r,rp)

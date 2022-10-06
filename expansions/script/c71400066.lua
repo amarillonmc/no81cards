@@ -39,7 +39,7 @@ end
 function c71400066.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc~=e:GetHandler() end
 	if chk==0 then
-		return Duel.CheckLPCost(tp,1000) and yume.YumeFieldCheck(tp,0,2,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED) and Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+		return Duel.CheckLPCost(tp,1000) and yume.YumeFieldCheck(tp,0,0,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED) and Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 	end
 	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
@@ -76,7 +76,7 @@ end
 function c71400066.tg1a(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc~=e:GetHandler() end
 	if chk==0 then
-		return Duel.CheckLPCost(tp,1000) and yume.YumeFieldCheck(tp,0,2,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED) and Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(c71400066.filter1a,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+		return Duel.CheckLPCost(tp,1000) and yume.YumeFieldCheck(tp,0,0,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED) and Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(c71400066.filter1a,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
 	end
 	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
