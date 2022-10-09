@@ -33,7 +33,7 @@ end
 function c71400027.op1(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	Duel.SetLP(tp,Duel.GetLP(tp)-math.ceil(tc:GetBaseAttack()/2))
-	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	local g=Duel.GetMatchingGroup(Card.IsSummonLocation,tp,LOCATION_MZONE,0,nil,LOCATION_EXTRA)
 	if g:FilterCount(c71400027.filter1,nil)==g:GetCount() and Duel.IsChainDisablable(ev) then
 		Duel.BreakEffect()
 		Duel.NegateEffect(ev)

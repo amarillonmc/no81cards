@@ -9,26 +9,21 @@ function c9910907.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1,9910907)
-	e1:SetCondition(c9910907.spcon)
 	e1:SetTarget(c9910907.sptg)
 	e1:SetOperation(c9910907.spop)
 	c:RegisterEffect(e1)
-	--tohand
+	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910907,3))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_TO_HAND)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,9910908)
-	e2:SetCondition(c9910907.thcon)
-	e2:SetCost(c9910907.thcost)
-	e2:SetTarget(c9910907.thtg)
-	e2:SetOperation(c9910907.thop)
+	e2:SetCondition(c9910907.spcon2)
+	e2:SetCost(c9910907.spcost2)
+	e2:SetTarget(c9910907.sptg2)
+	e2:SetOperation(c9910907.spop2)
 	c:RegisterEffect(e2)
-end
-function c9910907.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function c9910907.spfilter(c,e,tp)
 	return c:IsCode(9910907) and Duel.GetMZoneCount(tp) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -81,31 +76,39 @@ function c9910907.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
-function c9910907.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsReason(REASON_DRAW)
-		and e:GetHandler():IsPreviousLocation(LOCATION_DECK+LOCATION_GRAVE)
-end
-function c9910907.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,1000) end
-	Duel.PayLPCost(tp,1000)
-end
-function c9910907.thfilter(c,tp)
-	local typ=TYPE_TUNER 
-	if Duel.IsExistingMatchingCard(c9910907.cfilter,tp,LOCATION_MZONE,0,1,nil) then typ=typ+TYPE_PENDULUM end
-	return aux.IsCodeListed(c,9910871) and c:IsType(typ) and c:IsAbleToHand()
+function c9910907.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function c9910907.cfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_TUNER)
+	return aux.IsCodeListed(c,9910871)
 end
-function c9910907.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910907.thfilter,tp,LOCATION_DECK,0,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function c9910907.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable()
+		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,c) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	local g=Duel.SelectMatchingCard(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,1,1,c)
+	g:AddCard(c)
+	local ct=g:FilterCount(c9910907.cfilter,nil)
+	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+	e:SetLabel(ct)
 end
-function c9910907.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910907.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+function c9910907.spfilter2(c,e,tp)
+	return c:IsLevelBelow(3) and aux.IsCodeListed(c,9910871) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c9910907.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9910907.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+end
+function c9910907.spop2(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9910907.spfilter2,tp,LOCATION_DECK,0,nil,e,tp)
+	local ct=e:GetLabel()
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
+	ct=math.min(ct,Duel.GetLocationCount(tp,LOCATION_MZONE))
+	if ct>0 and g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ct)
+		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

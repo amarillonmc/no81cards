@@ -1,13 +1,13 @@
 --暮隐之斗争军势
 --21.06.18
-local m=11451536
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--advance
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11451537,2))
 	e1:SetCategory(CATEGORY_SUMMON+CATEGORY_TOGRAVE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,m)
@@ -35,7 +35,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
-	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE))
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -89,7 +89,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.dfcon(e,tp,eg,ep,ev,re,r,rp)
-	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.dfop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -107,7 +107,7 @@ function cm.dfop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

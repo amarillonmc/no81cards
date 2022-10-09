@@ -37,7 +37,7 @@ function c9910894.initial_effect(c)
 	c:RegisterEffect(e4)
 	--destroy
 	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE)
+	e5:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE+CATEGORY_COUNTER)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e5:SetRange(LOCATION_MZONE)
@@ -136,7 +136,8 @@ function c9910894.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910894.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsAbleToRemove() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil)
+		and Duel.IsCanAddCounter(tp,0x1,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)

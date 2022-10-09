@@ -63,7 +63,7 @@ function c51782333.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,c51782333.desfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,c)
-	if #g==0 then return end
+	if #g==0 or not c:IsRelateToEffect(e) then return end
 	g:AddCard(c)
 	if Duel.Destroy(g,REASON_EFFECT)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

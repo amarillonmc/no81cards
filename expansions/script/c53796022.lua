@@ -33,6 +33,20 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.tgop)
 	e4:SetLabelObject(e3)
 	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e5:SetValue(cm.splimit)
+	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetCode(EFFECT_SPSUMMON_COST)
+	e6:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SINGLE_RANGE)
+	e6:SetRange(0xff)
+	e6:SetCost(cm.spcost)
+	e6:SetOperation(cm.spcop)
+	c:RegisterEffect(e6)
 	if not cm.Sini_Ichigo_check then
 		cm.Sini_Ichigo_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -41,6 +55,26 @@ function cm.initial_effect(c)
 		ge1:SetOperation(cm.check)
 		Duel.RegisterEffect(ge1,0)
 	end
+end
+function cm.splimit(e,se,sp,st)
+	return not se or (not se:IsActivated() or (se:GetHandler():IsAbleToGraveAsCost() or se:GetHandler():IsLocation(LOCATION_GRAVE)))
+end
+function cm.spcost(e,c,tp)
+	local te=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
+	if not te then return true end
+	local tc=te:GetHandler()
+	if tc:IsLocation(LOCATION_GRAVE) then return true end
+	return tc:IsAbleToGraveAsCost()
+end
+function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
+	local te=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
+	if not te then return end
+	local tc=te:GetHandler()
+	if tc:IsLocation(LOCATION_GRAVE) then return end
+	local rs=REASON_COST
+	if tc:IsLocation(LOCATION_REMOVED) then rs=rs+REASON_RETURN end
+	Duel.Hint(HINT_CARD,0,m)
+	Duel.SendtoGrave(tc,rs)
 end
 function cm.cfilter(c,rp)
 	return c:GetPreviousControler()~=rp and c:IsPreviousLocation(LOCATION_MZONE)

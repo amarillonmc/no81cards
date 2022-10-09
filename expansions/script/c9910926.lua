@@ -65,6 +65,7 @@ function c9910926.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ChangePosition(c,POS_FACEDOWN)
 			Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 		elseif b2 then
+			Duel.BreakEffect()
 			if Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and c:IsLocation(LOCATION_DECK) then
 				Duel.ChangePosition(sg,POS_FACEDOWN_DEFENSE)
 			end

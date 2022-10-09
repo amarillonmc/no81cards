@@ -2,45 +2,34 @@
 function c31000015.initial_effect(c)
 	c:SetUniqueOnField(1,0,31000015)
 	--XYZ Summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),6,2,c31000015.ovfilter,aux.Stringid(31000015,0),2,c31000015.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),6,2,c31000015.ovfilter,aux.Stringid(31000015,0))
 	c:EnableReviveLimit()
-	--Negate
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DISABLE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-  e1:SetCode(EVENT_FREE_CHAIN)
-  e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-  e1:SetRange(LOCATION_MZONE)
-  e1:SetCost(c31000015.cst)
-  e1:SetTarget(c31000015.tg)
-  e1:SetOperation(c31000015.op)
-  c:RegisterEffect(e1)
 	--Protection
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(31000015,1))
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(c31000015.condition)
+	e1:SetCost(c31000015.unitcost)
+	e1:SetTarget(c31000015.target)
+  e1:SetOperation(c31000015.operation)
+	c:RegisterEffect(e1)
+	--Immunity
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e2:SetValue(c31000015.immval)
-	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	c:RegisterEffect(e3)
-	--Reflect Battle
-	local e4=e2:Clone()
-	e4:SetCode(EFFECT_REFLECT_BATTLE_DAMAGE)
-	c:RegisterEffect(e4)
+	e2:SetDescription(aux.Stringid(31000015,2))
+	e2:SetCategory(CATEGORY_ANNOUNCE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+  e2:SetCode(EVENT_FREE_CHAIN)
+  e2:SetRange(LOCATION_MZONE)
+  e2:SetCost(c31000015.cst)
+  e2:SetTarget(c31000015.tg)
+  e2:SetOperation(c31000015.op)
+  c:RegisterEffect(e2)
 end
 
 function c31000015.ovfilter(c)
 	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_DARK) and c:IsSetCard(0x308)
-end
-
-function c31000015.xyzop(e,tp,chk)
-	local filter=function(c)
-		return c:IsCode(31000013) and c:IsFaceup()
-	end
-	if chk==0 then return Duel.IsExistingMatchingCard(filter,tp,LOCATION_ONFIELD,nil,1,nil) end
 end
 
 function c31000015.filter(c)
@@ -54,37 +43,84 @@ function c31000015.cst(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
 end
 
-function c31000015.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and aux.NegateMonsterFilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local g=Duel.SelectTarget(tp,aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g:GetFirst(),1,1-tp,LOCATION_MZONE)
+function c31000015.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
+	local ag=Group.CreateGroup()
+	local codes={}
+	for c in aux.Next(g) do
+		if c:IsFaceup() then
+			local code=c:GetCode()
+			if not ag:IsExists(Card.IsCode,1,nil,code) then
+				ag:AddCard(c)
+				table.insert(codes,code)
+			end
+		end
+	end
+	local afilter={codes[1],OPCODE_ISCODE,OPCODE_NOT}
+	if #codes>1 then
+		for i=2,#codes do
+			table.insert(afilter,codes[i])
+			table.insert(afilter,OPCODE_ISCODE)
+			table.insert(afilter,OPCODE_NOT)
+			table.insert(afilter,OPCODE_AND)
+		end
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
+	Duel.SetTargetParam(ac)
+	Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,0)
 end
 
 function c31000015.op(e,tp,eg,ep,ev,re,r,rp)
+	local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetTargetRange(LOCATION_ONFIELD,0)
+	e1:SetValue(c31000015.efilter)
+	e1:SetLabel(ac)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+
+function c31000015.efilter(e,re)
+	local code=e:GetLabel()
+	return re:GetHandler():IsOriginalCodeRule(code)
+end
+
+function c31000015.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()~=tp
+end
+
+function c31000015.unitcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
+
+function c31000015.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,nil,1,nil,0x308) end
+end
+
+function c31000015.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) and not tc:IsDisabled() and not tc:IsImmuneToEffect(e) then
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2)
-	end
-end
-
-function c31000015.immfilter(c)
-	return c:IsSetCard(0x308) and c:GetOriginalType()&TYPE_MONSTER==TYPE_MONSTER
-end
-
-function c31000015.immval(e)
-	return e:GetHandler():GetOverlayGroup():IsExists(c31000015.immfilter,1,nil)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x308))
+	e1:SetValue(1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e1=e1:Clone()
+	e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	Duel.RegisterEffect(e1,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetTargetRange(1,0)
+	e3:SetReset(RESET_PHASE+PHASE_DAMAGE_CAL+PHASE_END)
+	Duel.RegisterEffect(e3,tp)
 end

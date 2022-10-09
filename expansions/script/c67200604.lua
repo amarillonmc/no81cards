@@ -22,11 +22,9 @@ function c67200604.initial_effect(c)
 	--token
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(67200604,1))
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
 	e2:SetCondition(c67200604.sscon)
 	e2:SetTarget(c67200604.sstg)
 	e2:SetOperation(c67200604.ssop)
@@ -61,11 +59,9 @@ function c67200604.stop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-function c67200604.cfilter2(c,tp)
-	return c:GetSummonPlayer()==tp and c:IsSetCard(0x677) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_RITUAL)
-end
+
 function c67200604.sscon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c67200604.cfilter2,1,nil,tp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
 end
 function c67200604.setfilter(c)
 	return c:IsSetCard(0x677) and bit.band(c:GetType(),0x82)==0x82 and c:IsSSetable()

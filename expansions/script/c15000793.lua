@@ -80,8 +80,9 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local tc=Duel.GetFirstTarget()
+	local b1=(tc:IsSetCard(0xf3d) and tc:IsType(TYPE_MONSTER))
 	if tc:IsRelateToEffect(e) then
-		if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)~=0 and tc:IsSetCard(0xf3d) and tc:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_MONSTER) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)~=0 and b1 and Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_MONSTER) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_ONFIELD,1,1,nil,TYPE_MONSTER)

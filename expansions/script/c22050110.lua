@@ -74,7 +74,7 @@ function c22050110.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(eg,nil,2,REASON_EFFECT)
 end
 function c22050110.cfilter(c)
-	return c:IsCode(22050020) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xff8) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
 end
 function c22050110.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22050110.cfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end

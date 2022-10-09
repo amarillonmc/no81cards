@@ -91,8 +91,9 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local tc=Duel.GetFirstTarget()
+	local b1=(tc:IsSetCard(0xf3d) and tc:IsType(TYPE_MONSTER))
 	if tc:IsRelateToEffect(e) then
-		if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)~=0 and tc:IsSetCard(0xf3d) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)~=0 and b1 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()
 			if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 				Duel.Destroy(eg,REASON_EFFECT)

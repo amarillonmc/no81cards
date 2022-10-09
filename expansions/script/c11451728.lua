@@ -1,26 +1,26 @@
---璇心救世军-“兽刃”
-local m=11451728
-local cm=_G["c"..m]
+--璇心救世军-“红玉”
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,nil,1,1)
-	--negate
+	--atk
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetCode(EVENT_TO_GRAVE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
-	e1:SetCondition(cm.discon)
-	e1:SetOperation(cm.disop)
+	e1:SetCountLimit(1)
+	e1:SetCondition(cm.smcon)
+	e1:SetCost(cm.smcost)
+	e1:SetOperation(cm.atkop)
 	c:RegisterEffect(e1)
-	--control
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EVENT_ADJUST)
-	e2:SetCountLimit(1)
-	e2:SetCondition(cm.ctcon)
-	e2:SetOperation(cm.ctop)
+	local e2=e1:Clone()
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCondition(cm.sscon)
+	e2:SetCost(cm.sscost)
 	c:RegisterEffect(e2)
 	--cannot be link material
 	local e3=Effect.CreateEffect(c)
@@ -30,16 +30,36 @@ function cm.initial_effect(c)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
 end
-function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return Duel.GetTurnPlayer()==tp and ep~=tp and loc&LOCATION_ONFIELD>0 and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
+function cm.smcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and Duel.GetTurnPlayer()==tp
 end
-function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
+function cm.cfilter(c,g)
+	return g:IsExists(Card.IsRace,1,nil,c:GetRace()) and c:IsFaceup() and c:IsAbleToGraveAsCost()
 end
-function cm.ctcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
+function cm.smcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,0,LOCATION_MZONE,1,nil,eg) end
+	local tg=Duel.SelectMatchingCard(tp,cm.cfilter,tp,0,LOCATION_MZONE,1,1,nil,eg)
+	Duel.SendtoGrave(tg,REASON_COST)
 end
-function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.GetControl(e:GetHandler(),1-tp)
+function cm.sscon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsType,1,nil,TYPE_SPELL+TYPE_TRAP) and Duel.GetTurnPlayer()~=tp
+end
+function cm.cfilter2(c,g)
+	return g:IsExists(Card.IsType,1,nil,c:GetType()&0x6) and c:IsFaceup() and c:IsAbleToGraveAsCost()
+end
+function cm.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter2,tp,0,LOCATION_SZONE,1,nil,eg) end
+	local tg=Duel.SelectMatchingCard(tp,cm.cfilter2,tp,0,LOCATION_SZONE,1,1,nil,eg)
+	Duel.SendtoGrave(tg,REASON_COST)
+end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(1500)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e1)
+	end
 end

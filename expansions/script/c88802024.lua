@@ -1,97 +1,74 @@
---阴影中的阿戈尔
+--归溟幽灵鲨
 local m=88802024
 local cm=_G["c"..m]
 
 function cm.initial_effect(c)
-	--Activate
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	aux.AddCodeList(c,88802004,88802022)
+	--search
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(m,0))
+	e0:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e0:SetCode(EVENT_SUMMON_SUCCESS)
+	e0:SetProperty(EFFECT_FLAG_DELAY)
+	e0:SetCountLimit(1,m)
+	e0:SetTarget(cm.thtg)
+	e0:SetOperation(cm.thop)
+	c:RegisterEffect(e0)
+	local e1=e0:Clone()
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e1)
-	--to hand
+	--token
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(88802024,1))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_TODECK)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_FZONE)
-	e2:SetCountLimit(1,88802020)
-	e2:SetTarget(c88802024.thtg)
-	e2:SetOperation(c88802024.thop)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetCondition(cm.condition)
+	e2:SetTarget(cm.target)
+	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
-	--equip
-	local e6=Effect.CreateEffect(c)
-	e6:SetDescription(aux.Stringid(88802024,0))
-	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e6:SetCode(EVENT_TO_GRAVE)
-	e6:SetProperty(EFFECT_FLAG_DELAY)
-	e6:SetCondition(c88802024.indcon)
-	e6:SetTarget(c88802024.indtg)
-	e6:SetOperation(c88802024.indop)
-	c:RegisterEffect(e6)
-	--Atk
-	local e3=Effect.CreateEffect(c)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetRange(LOCATION_FZONE)
-	e3:SetTarget(aux.TargetBoolFunction(aux.IsCodeListed,88802022))
-	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e3:SetValue(400)
-	c:RegisterEffect(e3)
-	--Def
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e4)
-	
 end
-
-function c88802024.thfilter(c)
-	return c:IsType(TYPE_MONSTER) and aux.IsCodeListed(c,88802022) and c:IsAbleToHand()
+--e0
+function cm.thfilter(c)
+	return aux.IsCodeListed(c,88802004) and c:IsAbleToHand() and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP))
 end
-function c88802024.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c88802024.thfilter,tp,LOCATION_DECK,0,1,nil) end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
 end
-function c88802024.thop(e,tp,eg,ep,ev,re,r,rp)
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c88802024.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleHand(tp)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
-		if #sg>0 then
-			Duel.BreakEffect()
-			Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		end
 	end
 end
-function c88802024.filter(c)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER)
-end
-function c88802024.indcon(e,tp,eg,ep,ev,re,r,rp)
+--e2
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and c:IsReason(REASON_DESTROY)
+	return c:IsReason(REASON_DESTROY) and c:IsReason(REASON_BATTLE+REASON_EFFECT)
 end
-function c88802024.indtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c88802024.filter,tp,LOCATION_MZONE,0,1,nil) end
+function cm.cfilter(c)
+	return c:IsCode(88802026) and c:IsFaceup()
 end
-function c88802024.indop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c88802024.filter,tp,LOCATION_MZONE,0,nil)
-	local tc=g:GetFirst()
-	while tc do
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetDescription(aux.Stringid(88802024,1))
-		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-		e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-		tc:RegisterEffect(e2)
-		tc=g:GetNext()
-	end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,88802026,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_FISH,ATTRIBUTE_WATER)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
+end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0  or not Duel.IsPlayerCanSpecialSummonMonster(tp,88802026,0,TYPES_TOKEN_MONSTER,0,0,3,RACE_FISH,ATTRIBUTE_WATER) then return end
+	local token=Duel.CreateToken(tp,88802026)
+	Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetCode(EFFECT_IGNORE_BATTLE_TARGET)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetValue(1)
+	token:RegisterEffect(e2,true)
+	Duel.SpecialSummonComplete()
 end

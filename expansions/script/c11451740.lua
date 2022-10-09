@@ -73,7 +73,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	elseif e:GetLabel()==1 then
 		local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 		local res=0
-		local g=Duel.GetMatchingGroup(aux.NOT(Card.IsSetCard),p,LOCATION_DECK,0,nil,0x6977)
+		--[[local g=Duel.GetMatchingGroup(aux.NOT(Card.IsSetCard),p,LOCATION_DECK,0,nil,0x6977)
 		local dcount=Duel.GetFieldGroupCount(p,LOCATION_DECK,0)
 		local seq=-1
 		local tc=g:GetFirst()
@@ -85,23 +85,25 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			end
 			tc=g:GetNext()
 		end
-		res=Duel.Draw(p,dcount-seq,REASON_EFFECT)
-		--[[local ct=Duel.Draw(p,1,REASON_EFFECT)
+		res=Duel.Draw(p,dcount-seq,REASON_EFFECT)--]]
+		local ct=Duel.Draw(p,1,REASON_EFFECT)
 		while ct>0 do
 			local dc=Duel.GetOperatedGroup():GetFirst()
 			Duel.ConfirmCards(1-p,dc)
-			res=true
+			res=res+1
 			ct=0
-			if dc:IsSetCard(0x6977) then
+			if dc:IsSetCard(0x6977) and not dc:IsLevel(8) then
+				Duel.BreakEffect()
 				ct=Duel.Draw(p,1,REASON_EFFECT)
 			end
-		end--]]
+		end
 		if res>0 then
-			local dg=Duel.GetOperatedGroup()
-			Duel.ConfirmCards(1-p,dg)
+			--local dg=Duel.GetOperatedGroup()
+			--Duel.ConfirmCards(1-p,dg)
 			local g=Duel.GetFieldGroup(p,LOCATION_HAND,0)
 			if #g<2 then return end
 			Duel.BreakEffect()
+			Duel.ShuffleHand(p)
 			Duel.DiscardHand(p,aux.TRUE,2,2,REASON_EFFECT+REASON_DISCARD)
 		end
 	end

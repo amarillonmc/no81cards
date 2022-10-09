@@ -13,9 +13,8 @@ function c9910445.initial_effect(c)
 	e2:SetCode(EVENT_SSET)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_FZONE)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,9910445)
 	e2:SetCondition(c9910445.thcon)
-	e2:SetCost(c9910445.cost)
 	e2:SetTarget(c9910445.thtg)
 	e2:SetOperation(c9910445.thop)
 	c:RegisterEffect(e2)
@@ -27,20 +26,14 @@ function c9910445.initial_effect(c)
 	e3:SetCode(EVENT_DESTROYED)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_FZONE)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,9910445)
 	e3:SetCondition(c9910445.descon)
-	e3:SetCost(c9910445.cost)
 	e3:SetTarget(c9910445.destg)
 	e3:SetOperation(c9910445.desop)
 	c:RegisterEffect(e3)
 end
 function c9910445.cfilter(c)
 	return c:GetSequence()<5 and (c:IsFacedown() or not c:IsType(TYPE_PENDULUM))
-end
-function c9910445.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(9910445)==0 end
-	c:RegisterFlagEffect(9910445,RESET_CHAIN,0,1)
 end
 function c9910445.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsControler,1,nil,tp)
@@ -51,7 +44,6 @@ end
 function c9910445.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910445.thfilter,tp,LOCATION_DECK,0,1,nil)
 		and not Duel.IsExistingMatchingCard(c9910445.cfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9910445.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -73,7 +65,6 @@ function c9910445.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() end
 	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
 		and not Duel.IsExistingMatchingCard(c9910445.cfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)

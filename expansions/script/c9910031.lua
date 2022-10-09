@@ -4,11 +4,11 @@ function c9910031.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE+CATEGORY_LEAVE_GRAVE+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,9910031)
-	e1:SetCondition(c9910031.rpcon)
 	e1:SetTarget(c9910031.rptg)
 	e1:SetOperation(c9910031.rpop)
 	c:RegisterEffect(e1)
@@ -43,35 +43,29 @@ function c9910031.ntcon(e,c,minc)
 	if c==nil then return true end
 	return minc==0 and Duel.CheckTribute(c,0)
 end
-function c9910031.rpcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
+function c9910031.rmfilter(c)
+	if not (c:IsSetCard(0x5950) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
+	return c:IsAbleToRemove() or c:IsSSetable()
 end
-function c9910031.thfilter(c,e,tp)
-	if not (c:IsSetCard(0x3950) and c:IsType(TYPE_MONSTER)) then return false end
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	return c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
-end
-function c9910031.rptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910031.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_DECK)
+function c9910031.rptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910031.rmfilter(chkc) end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingTarget(c9910031.rmfilter,tp,LOCATION_GRAVE,0,1,nil)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,c9910031.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c9910031.rpop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local dg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
-	if dg:GetCount()<2 then return end
-	if Duel.Destroy(dg,REASON_EFFECT)~=2 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c9910031.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local tc=g:GetFirst()
-	if tc then
-		if tc:IsAbleToHand() and (not tc:IsCanBeSpecialSummoned(e,0,tp,false,false) or ft<=0 or Duel.SelectOption(tp,1190,1152)==0) then
-			local ct=Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
-			if ct~=0 and tc:IsLocation(LOCATION_HAND)
-				and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil)
+	local tc=Duel.GetFirstTarget()
+	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	if tc:IsRelateToEffect(e) then
+		if tc:IsAbleToRemove() and (not tc:IsSSetable() or Duel.SelectOption(tp,1192,1153)==0) then
+			if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_REMOVED)
+				and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil)
 				and Duel.SelectYesNo(tp,aux.Stringid(9910031,1)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -80,7 +74,7 @@ function c9910031.rpop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.SendtoGrave(tg,REASON_EFFECT)
 			end
 		else
-			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SSet(tp,tc)
 		end
 	end
 end

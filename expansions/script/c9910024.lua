@@ -2,9 +2,10 @@
 function c9910024.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_TOHAND+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
+	e1:SetCountLimit(1,9910024+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c9910024.condition)
 	e1:SetCost(c9910024.cost)
 	e1:SetTarget(c9910024.target)
@@ -17,7 +18,7 @@ function c9910024.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910024.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,1,nil,0x3950)
+	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,2,nil,0x3950)
 		and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c9910024.cosfilter(c)
@@ -65,7 +66,7 @@ function c9910024.retop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ReturnToField(tc)
 	end
 	if lab==LOCATION_HAND then
-		Duel.SendtoHand(tc,tp,REASON_EFFECT)
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 	if lab==LOCATION_GRAVE then
 		Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
@@ -74,15 +75,15 @@ end
 function c9910024.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-	end
+end
+function c9910024.filter(c)
+	return c:IsFaceup() and c:IsCode(9910034)
 end
 function c9910024.thfilter(c)
 	return c:IsFaceup() and c:IsAbleToHand()
 end
 function c9910024.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)>0 then
+	if Duel.NegateActivation(ev) and Duel.IsExistingMatchingCard(c9910024.filter,tp,LOCATION_ONFIELD,0,1,nil) then
 		local g=Duel.GetMatchingGroup(c9910024.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 		if g:GetCount()>1 and Duel.SelectYesNo(tp,aux.Stringid(9910024,0)) then
 			Duel.BreakEffect()

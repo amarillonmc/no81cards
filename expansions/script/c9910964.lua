@@ -111,12 +111,7 @@ function c9910964.spfilter(c,e,tp)
 end
 function c9910964.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if g:GetCount()==0 or Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)==0 then return end
-	local g1=Duel.GetMatchingGroup(c9910964.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil,e,tp)
-	if g1:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910964,2)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g2=g1:Select(tp,1,1,nil)
-		Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
+	if g:GetCount()>0 then
+		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
 	end
 end

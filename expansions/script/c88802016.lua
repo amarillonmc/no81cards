@@ -4,6 +4,8 @@ local cm=_G["c"..m]
 
 function cm.initial_effect(c)
 	aux.AddCodeList(c,88802004)
+	--code
+	aux.EnableChangeCode(c,88802014,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_EXTRA+LOCATION_REMOVED)
 	--fusion summon
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunFunRep(c,88802014,c88802016.matfilter,1,1,true)

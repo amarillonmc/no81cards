@@ -80,7 +80,7 @@ function c9910015.splimit(e,c)
 	return not c:IsSetCard(0x3950)
 end
 function c9910015.thfilter(c)
-	return c:IsSetCard(0x3950) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910015)
+	return c:IsLevelBelow(4) and c:IsSetCard(0x3950) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910015)
 end
 function c9910015.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910015.thfilter,tp,LOCATION_DECK,0,1,nil) end

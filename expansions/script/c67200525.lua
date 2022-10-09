@@ -18,7 +18,7 @@ function c67200525.initial_effect(c)
 	e3:SetDescription(aux.Stringid(67200525,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_HAND)
 	e3:SetCountLimit(1,67200525)
@@ -52,15 +52,24 @@ end
 function c67200525.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c67200525.spfilter,1,nil,e,tp)
 end
+function c67200525.spfilter1(c,e,tp)
+	return not c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+end
 function c67200525.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>eg:FilterCount(c67200525.spfilter,nil,e,tp) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,eg:FilterCount(c67200525.spfilter,nil,e,tp),0,0)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>eg:GetCount() and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and not eg:IsExists(c67200525.spfilter1,1,nil,e,tp) and not Duel.IsPlayerAffectedByEffect(tp,59822133) end
+	local gg=Group.CreateGroup()
+	gg:AddCard(c)
+	gg:AddCard(eg)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,gg,0,0)
 end
 function c67200525.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		Duel.SpecialSummon(eg,0,tp,tp,false,false,POS_FACEUP)
+	local gg=Group.CreateGroup()
+	gg:AddCard(c)
+	gg:AddCard(eg)
+	if c:IsRelateToEffect(e) and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
+		Duel.SpecialSummon(gg,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 

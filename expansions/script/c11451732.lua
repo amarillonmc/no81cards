@@ -98,7 +98,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x6977) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x6977) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -122,12 +122,12 @@ function cm.matfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x6977) and c:IsType(TYPE_MONSTER)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE+LOCATION_REMOVED,0,nil)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,mg) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.matfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.matfilter),tp,LOCATION_MZONE+LOCATION_REMOVED,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,1,nil,mg)
 	local tc=g:GetFirst()

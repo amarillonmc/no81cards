@@ -51,6 +51,7 @@ function c9910929.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ChangePosition(c,POS_FACEDOWN)
 			Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 		elseif b2 then
+			Duel.BreakEffect()
 			Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD)

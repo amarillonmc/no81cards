@@ -1,99 +1,124 @@
 local m=53736009
 local cm=_G["c"..m]
-cm.name="交通标志灵-野物出没"
+cm.name="暗从者的边缘"
 function cm.initial_effect(c)
+	aux.EnablePendulumAttribute(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
-	e1:SetCost(cm.cost)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e1:SetRange(LOCATION_PZONE)
+	e1:SetCountLimit(1)
 	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.activate)
+	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(m,ACTIVITY_SUMMON,cm.counterfilter)
-	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
-end
-function cm.counterfilter(c)
-	return c:IsSetCard(0x539)
-end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SUMMON)==0 and Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_CANNOT_SUMMON)
-	Duel.RegisterEffect(e2,tp)
-end
-function cm.splimit(e,c)
-	return not c:IsSetCard(0x539)
-end
-function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x539) and c:IsType(TYPE_SPELL) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),nil,TYPE_MONSTER+TYPE_NORMAL,400,900,2,RACE_BEAST,ATTRIBUTE_EARTH,POS_FACEUP_DEFENSE) and c:IsCanBeSpecialSummoned(e,0,tp,true,true,POS_FACEUP_DEFENSE)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,4))
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetTarget(cm.tg)
+	e2:SetOperation(cm.op)
+	c:RegisterEffect(e2)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
-	local fid=e:GetHandler():GetFieldID()
-	local e1=Effect.CreateEffect(tc)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CHANGE_TYPE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetValue(TYPE_NORMAL+TYPE_MONSTER)
-	e1:SetReset(RESET_EVENT+0x47c0000)
-	tc:RegisterEffect(e1,true)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_CHANGE_RACE)
-	e2:SetValue(RACE_BEAST)
-	tc:RegisterEffect(e2,true)
-	local e3=e1:Clone()
-	e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
-	e3:SetValue(ATTRIBUTE_EARTH)
-	tc:RegisterEffect(e3,true)
-	local e4=e1:Clone()
-	e4:SetCode(EFFECT_SET_BASE_ATTACK)
-	e4:SetValue(400)
-	tc:RegisterEffect(e4,true)
-	local e5=e1:Clone()
-	e5:SetCode(EFFECT_SET_BASE_DEFENSE)
-	e5:SetValue(900)
-	tc:RegisterEffect(e5,true)
-	local e6=e1:Clone()
-	e6:SetCode(EFFECT_CHANGE_LEVEL)
-	e6:SetValue(2)
-	tc:RegisterEffect(e6,true)
-	tc:RegisterFlagEffect(m,RESET_EVENT+0x47c0000+RESET_PHASE+PHASE_END,0,1,fid)
-	if Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP_DEFENSE)~=0 then
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
+	local g=Duel.GetMatchingGroup(function(c)return c:IsSetCard(0x5538) and c:IsAbleToHand()end,tp,LOCATION_DECK,0,nil)
+	if e:GetHandler():IsRelateToEffect(e) and Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)>0 and #g>2 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,3,3,nil)
+		Duel.ConfirmCards(1-tp,sg)
+		Duel.ShuffleDeck(tp)
+		local tg=sg:RandomSelect(1-tp,1)
+		tg:GetFirst():SetStatus(STATUS_TO_HAND_WITHOUT_CONFIRM,true)
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+	end
+end
+function cm.thfilter(c)
+	return c:IsCode(m-2,m-1) and c:IsAbleToHand()
+end
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local b1=Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil)
+	local b2=Duel.IsExistingMatchingCard(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,1,nil)
+	local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,0,LOCATION_EXTRA,nil)
+	local b3=#g>2 and g:IsExists(Card.IsAbleToRemove,1,nil)
+	if chk==0 then return b1 or b2 or b3 end
+	local off=1
+	local ops,opval={},{}
+	if b1 then
+		ops[off]=aux.Stringid(m,1)
+		opval[off]=0
+		off=off+1
+	end
+	if b2 then
+		ops[off]=aux.Stringid(m,2)
+		opval[off]=1
+		off=off+1
+	end
+	if b3 then
+		ops[off]=aux.Stringid(m,3)
+		opval[off]=2
+		off=off+1
+	end
+	local op=Duel.SelectOption(tp,table.unpack(ops))+1
+	local sel=opval[op]
+	e:SetLabel(sel)
+	if sel==0 then
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_DECK)
+	elseif sel==1 then
+		e:SetCategory(0)
+	else
+		e:SetCategory(CATEGORY_REMOVE)
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_EXTRA)
+	end
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local sel=e:GetLabel()
+	if sel==0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
+		end
+	elseif sel==1 then
+		local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+		if g:GetCount()>0 then
+			Duel.ConfirmCards(tp,g)
+			Duel.ShuffleHand(1-tp)
+		end
+	else
+		local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,0,LOCATION_EXTRA,nil)
+		if g:GetCount()<3 then return end
+		local rg=g:RandomSelect(tp,3)
+		Duel.ConfirmCards(tp,rg)
+		local sg=rg:Filter(Card.IsAbleToRemove,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local tc=sg:Select(tp,1,1,nil):GetFirst()
+		if not tc or Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)==0 or not tc:IsLocation(LOCATION_REMOVED) then return end
+		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
-		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e1:SetLabel(fid)
+		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 		e1:SetLabelObject(tc)
-		e1:SetCondition(cm.descon)
-		e1:SetOperation(cm.desop)
+		e1:SetCountLimit(1)
+		e1:SetCondition(cm.retcon)
+		e1:SetOperation(cm.retop)
 		Duel.RegisterEffect(e1,tp)
+		Duel.ShuffleExtra(1-tp)
 	end
 end
-function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc:GetFlagEffectLabel(m)~=e:GetLabel() then
-		e:Reset()
-		return false
-	else return true end
+function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetLabelObject():GetFlagEffect(m)~=0 and Duel.GetTurnPlayer()~=tp
 end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Destroy(e:GetLabelObject(),REASON_EFFECT)
+function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.SendtoDeck(tc,1-tp,2,REASON_EFFECT)
 end

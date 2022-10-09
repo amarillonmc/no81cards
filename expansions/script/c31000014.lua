@@ -17,7 +17,7 @@ function c31000014.initial_effect(c)
 	c:RegisterEffect(e2)
   --Negate
   local e3=Effect.CreateEffect(c)
-  e3:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DESTROY+CATEGORY_DISABLE)
+  e3:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_DESTROY+CATEGORY_DISABLE)
   e3:SetType(EFFECT_TYPE_QUICK_O)
   e3:SetCode(EVENT_CHAINING)
   e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -56,9 +56,11 @@ end
 
 function c31000014.op(e,tp,eg,ep,ev,re,r,rp)
   local tc=Duel.GetFirstTarget()
+  local g=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_MZONE,0,nil,31000014)
+  local c=g:GetFirst()
   local dg=Group.CreateGroup()
-  local vl1=e:GetHandler():GetAttack()*(-1)
-  local vl2=e:GetHandler():GetDefense()*(-1)
+  local vl1=c:GetAttack()*(-1)
+  local vl2=c:GetDefense()*(-1)
   if tc:IsRelateToEffect(e) then
     local preatk=tc:GetAttack()
     local predef=tc:GetDefense()

@@ -23,15 +23,19 @@ function c22050130.initial_effect(c)
 	e2:SetTarget(c22050130.cttg)
 	e2:SetOperation(c22050130.ctop)
 	c:RegisterEffect(e2)
-	--attack all
+	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(22050130,1))
-	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,22050130)
-	e3:SetCondition(c22050130.condition)
-	e3:SetCost(c22050130.atkcost)
-	e3:SetOperation(c22050130.atkoperation)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetCondition(c22050130.discon)
+	e3:SetCost(c22050130.discost)
+	e3:SetTarget(c22050130.distg)
+	e3:SetOperation(c22050130.disop)
 	c:RegisterEffect(e3)
 	--spsummon
 	local e4=Effect.CreateEffect(c)
@@ -54,26 +58,28 @@ function c22050130.ctop(e,tp,eg,ep,ev,re,r,rp)
 		e:GetHandler():AddCounter(0xfec,1)
 	end
 end
-function c22050130.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsAbleToEnterBP() and not e:GetHandler():IsHasEffect(EFFECT_ATTACK_ALL)
+function c22050130.discon(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end
+	return rp==1-tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainNegatable(ev)
 end
-function c22050130.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c22050130.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0xfec,2,REASON_COST) end
 	Duel.RemoveCounter(tp,1,0,0xfec,2,REASON_COST)
 end
-function c22050130.atkoperation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_ATTACK_ALL)
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		c:RegisterEffect(e1)
+function c22050130.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	end
+end
+function c22050130.disop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
 function c22050130.cfilter(c)
-	return c:IsCode(22050080) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xff8) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
 end
 function c22050130.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22050130.cfilter,tp,LOCATION_GRAVE,0,1,nil) end
@@ -97,13 +103,6 @@ function c22050130.spop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		Duel.BreakEffect()
 		if c:IsFaceup() then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_COPY_INHERIT)
-			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-			e1:SetValue(0)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-			c:RegisterEffect(e1)
 		end
 		Duel.GetControl(c,1-tp)
 	end

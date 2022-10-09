@@ -1,99 +1,96 @@
 local m=53736001
 local cm=_G["c"..m]
-cm.name="交通标志灵警备员 狄余思"
+cm.name="暗从者的骑兵"
 function cm.initial_effect(c)
-	aux.AddLinkProcedure(c,cm.matfilter,1,1)
-	c:EnableReviveLimit()
+	aux.EnablePendulumAttribute(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_DECKDES)
-	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.ddcon)
-	e1:SetTarget(cm.ddtg)
-	e1:SetOperation(cm.ddop)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e1:SetRange(LOCATION_PZONE)
+	e1:SetCountLimit(1)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetValue(cm.atkval)
+	e2:SetDescription(aux.Stringid(m,4))
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetTarget(cm.tg)
+	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCountLimit(1,m+33)
-	e3:SetCondition(cm.cpcon)
-	e3:SetCost(cm.cpcost)
-	e3:SetTarget(cm.cptg)
-	e3:SetOperation(cm.cpop)
-	c:RegisterEffect(e3)
 end
-function cm.matfilter(c)
-	return c:IsLinkSetCard(0x539) and not c:IsLinkCode(m)
-end
-function cm.ddcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
-end
-function cm.ddtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,1) end
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,1)
-end
-function cm.ddop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.DiscardDeck(tp,1,REASON_EFFECT)==1 then
-		local tc=Duel.GetOperatedGroup():GetFirst()
-		if tc:IsSetCard(0x539) and tc:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
-		end
-	end
-end
-function cm.rmfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_SPELL) and c:IsSetCard(0x539)
-end
-function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(cm.rmfilter,c:GetControler(),LOCATION_REMOVED,0,nil)*200
-end
-function cm.cfilter(c)
-	return c:IsFacedown() or not c:IsSetCard(0x539)
-end
-function cm.cpcon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
-end
-function cm.cpfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x539) and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(false,true,false)
-end
-function cm.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	e:SetLabel(1)
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		if e:GetLabel()==0 then return false end
-		e:SetLabel(0)
-		return Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_GRAVE,0,1,nil)
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
+	local g=Duel.GetMatchingGroup(function(c)return c:IsSetCard(0x5538) and c:IsAbleToHand()end,tp,LOCATION_DECK,0,nil)
+	if e:GetHandler():IsRelateToEffect(e) and Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)>0 and #g>2 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,3,3,nil)
+		Duel.ConfirmCards(1-tp,sg)
+		Duel.ShuffleDeck(tp)
+		local tg=sg:RandomSelect(1-tp,1)
+		tg:GetFirst():SetStatus(STATUS_TO_HAND_WITHOUT_CONFIRM,true)
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,cm.cpfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	e:SetProperty(te:GetProperty())
-	local tg=te:GetTarget()
-	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
-	te:SetLabelObject(e:GetLabelObject())
-	e:SetLabelObject(te)
-	Duel.ClearOperationInfo(0)
 end
-function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
-	local te=e:GetLabelObject()
-	if not te then return end
-	e:SetLabelObject(te:GetLabelObject())
-	local op=te:GetOperation()
-	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return (e:GetLabel()==0 and chkc:IsLocation(LOCATION_GRAVE) and chkc:IsAbleToRemove()) or (e:GetLabel()==1 and chkc:IsLocation(LOCATION_REMOVED)) or (e:GetLabel()==2 and chkc:IsLocation(LOCATION_MZONE)) end
+	local b1=Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
+	local b2=Duel.IsExistingTarget(nil,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil)
+	local b3=Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	if chk==0 then return b1 or b2 or b3 end
+	local off=1
+	local ops,opval={},{}
+	if b1 then
+		ops[off]=aux.Stringid(m,1)
+		opval[off]=0
+		off=off+1
+	end
+	if b2 then
+		ops[off]=aux.Stringid(m,2)
+		opval[off]=1
+		off=off+1
+	end
+	if b3 then
+		ops[off]=aux.Stringid(m,3)
+		opval[off]=2
+		off=off+1
+	end
+	local op=Duel.SelectOption(tp,table.unpack(ops))+1
+	local sel=opval[op]
+	e:SetLabel(sel)
+	if sel==0 then
+		e:SetCategory(CATEGORY_REMOVE)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	elseif sel==1 then
+		e:SetCategory(CATEGORY_TOGRAVE)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectTarget(tp,nil,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil)
+		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
+	else
+		e:SetCategory(CATEGORY_DESTROY)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	end
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
+	local sel=e:GetLabel()
+	if sel==0 then
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	elseif sel==1 then
+		Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
+	else
+		Duel.Destroy(tc,REASON_EFFECT)
+	end
 end

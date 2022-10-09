@@ -76,8 +76,8 @@ function c22050120.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
 end
-function c22050120.cfilter(c,tp)
-	return c:IsCode(22050070) and c:IsAbleToRemoveAsCost()
+function c22050120.cfilter(c)
+	return c:IsSetCard(0xff8) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
 end
 function c22050120.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

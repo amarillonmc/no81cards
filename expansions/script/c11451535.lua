@@ -1,14 +1,14 @@
 --曜光之斗争军势
 --21.06.13
-local m=11451535
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--advance
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11451537,2))
 	e1:SetCategory(CATEGORY_SUMMON+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.adcon)
@@ -29,13 +29,12 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_TOHAND)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCountLimit(1,m+12)
-	e3:SetCondition(aux.TRUE)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
 end
 function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
-	return true
+	return re:IsActiveType(TYPE_MONSTER)
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -89,7 +88,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.ngcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE)
+	return re:IsActiveType(TYPE_MONSTER) and e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE)
 end
 function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -103,9 +102,8 @@ function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	local code=e:GetLabel()
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return ep~=tp and loc&LOCATION_ONFIELD~=0
+	local ph=Duel.GetCurrentPhase()
+	return ep~=tp and ph~=PHASE_MAIN1 and ph~=PHASE_MAIN2
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)

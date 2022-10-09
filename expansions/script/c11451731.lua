@@ -98,7 +98,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x6977) and c:IsAbleToHand()
+	return c:IsSetCard(0x6977) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

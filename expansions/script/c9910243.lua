@@ -6,16 +6,14 @@ function c9910243.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
-	--draw
+	--recover
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_FZONE)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetCountLimit(1,9910243)
-	e2:SetCondition(c9910243.drcon)
-	e2:SetTarget(c9910243.drtg)
-	e2:SetOperation(c9910243.drop)
+	e2:SetTarget(c9910243.rectg)
+	e2:SetOperation(c9910243.recop)
 	c:RegisterEffect(e2)
 	--destroy
 	local e3=Effect.CreateEffect(c)
@@ -30,31 +28,45 @@ function c9910243.initial_effect(c)
 	e3:SetOperation(c9910243.desop)
 	c:RegisterEffect(e3)
 end
-function c9910243.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
+function c9910243.confilter(c)
+	return c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end
-function c9910243.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)-Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
-	local dt=math.floor(ct/5)
-	if chk==0 then return dt>0 and Duel.IsPlayerCanDraw(tp,dt) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,dt)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,dt)
+function c9910243.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(c9910243.confilter,tp,LOCATION_HAND,0,nil)
+	if chk==0 then return g:CheckSubGroup(aux.drccheck,2,2) end
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,0)
 end
-function c9910243.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local ct=Duel.GetFieldGroupCount(p,LOCATION_DECK,0)-Duel.GetFieldGroupCount(p,0,LOCATION_DECK)
-	local dt=math.floor(ct/5)
-	if dt>0 and Duel.Draw(p,dt,REASON_EFFECT)==dt then
-		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,p,LOCATION_HAND,0,nil)
-		if g:GetCount()==0 then return end
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
-		local sg=g:Select(p,dt,dt,nil)
-		Duel.SendtoDeck(sg,nil,SEQ_DECKTOP,REASON_EFFECT)
-		Duel.SortDecktop(p,p,dt)
-		for i=1,dt do
-			local mg=Duel.GetDecktopGroup(p,1)
-			Duel.MoveSequence(mg:GetFirst(),SEQ_DECKBOTTOM)
+function c9910243.thfilter(c)
+	return (c:IsCode(9910871) or aux.IsCodeListed(c,9910871) and c:IsType(TYPE_TUNER)) and c:IsAbleToHand()
+end
+function c9910243.recop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(c9910243.confilter,tp,LOCATION_HAND,0,nil)
+	if not g:CheckSubGroup(aux.drccheck,2,2) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local sg=g:SelectSubGroup(tp,aux.drccheck,false,2,#g)
+	if #sg==0 then return end
+	Duel.ConfirmCards(1-tp,sg)
+	Duel.ShuffleHand(tp)
+	if Duel.Recover(tp,#sg*500,REASON_EFFECT)==0 then return end
+	if sg:IsExists(Card.IsCanBeSpecialSummoned,1,nil,e,0,tp,false,false)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(9910243,0)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local ssg=sg:Select(tp,1,1,nil)
+		Duel.SpecialSummon(ssg,0,tp,tp,false,false,POS_FACEUP)
+		sg:Sub(ssg)
+	end
+	if Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c9910243.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
+		and sg:IsExists(Card.IsAbleToGrave,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(9910243,1)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local sc=sg:Select(tp,1,1,nil):GetFirst()
+		if sc and Duel.SendtoGrave(sc,REASON_EFFECT)~=0 and sc:IsLocation(LOCATION_GRAVE) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local tsg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910243.thfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil)
+			Duel.SendtoHand(tsg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tsg)
 		end
 	end
 end

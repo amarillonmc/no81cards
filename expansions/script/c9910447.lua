@@ -6,10 +6,15 @@ function c9910447.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_LIMIT_ZONE)
+	e1:SetCost(c9910447.cost)
 	e1:SetTarget(c9910447.target)
 	e1:SetOperation(c9910447.activate)
 	e1:SetValue(c9910447.zones)
 	c:RegisterEffect(e1)
+end
+function c9910447.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,2000) end
+	Duel.PayLPCost(tp,2000)
 end
 function c9910447.zones(e,tp,eg,ep,ev,re,r,rp)
 	local zone=0xff
@@ -154,4 +159,16 @@ function c9910447.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 		tc:CompleteProcedure()
 	end
+	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetTarget(c9910447.splimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+end
+function c9910447.splimit(e,c)
+	return not c:IsSetCard(0x3950)
 end

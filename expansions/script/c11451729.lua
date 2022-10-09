@@ -80,6 +80,7 @@ end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=eg:Filter(cm.mfilter,nil)
 	for tc in aux.Next(g1) do
+		Debug.Message(tc:GetCode())
 		if Duel.GetFlagEffect(tc:GetPreviousControler(),m)==0 then
 			Duel.RegisterFlagEffect(tc:GetPreviousControler(),m,RESET_PHASE+PHASE_END,0,1)
 		end
@@ -87,6 +88,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local g2=eg:Filter(cm.sfilter,nil)
 	for tc in aux.Next(g2) do
+		Debug.Message(tc:GetCode())
 		if Duel.GetFlagEffect(tc:GetPreviousControler(),m-1)==0 then
 			Duel.RegisterFlagEffect(tc:GetPreviousControler(),m-1,RESET_PHASE+PHASE_END,0,1)
 		end

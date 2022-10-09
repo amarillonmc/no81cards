@@ -131,11 +131,4 @@ function c9910965.disop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
 		tc:RegisterEffect(e3)
 	end
-	local g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910965.setfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	if g1:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910965,2)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g2=g1:Select(tp,1,1,nil)
-		Duel.SSet(tp,g2)
-	end
 end

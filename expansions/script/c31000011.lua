@@ -4,7 +4,6 @@ function c31000011.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCountLimit(1,31000011)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(c31000011.spcon)
 	e1:SetCost(c31000011.spcst)
@@ -31,7 +30,6 @@ function c31000011.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_TO_GRAVE)
 	e5:SetProperty(EFFECT_FLAG_DELAY)
-	e5:SetCountLimit(1,31000012)
 	e5:SetTarget(c31000011.tg)
 	e5:SetOperation(c31000011.op)
 	c:RegisterEffect(e5)
@@ -40,7 +38,7 @@ function c31000011.initial_effect(c)
 end
 
 function c31000011.counterfilter(c)
-	return c:IsSetCard(0x308) or c:IsCode(31000002)
+	return c:IsSetCard(0x308) or not c:IsPreviousLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
 end
 
 function c31000011.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -60,12 +58,12 @@ function c31000011.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function c31000011.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x308) and not c:IsCode(31000002)
+	return not c:IsSetCard(0x308) and c:IsLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
 end
 
 function c31000011.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local spfilter=function(c)
-		return c:IsSetCard(0x308) and not c:IsAttribute(ATTRIBUTE_DARK)
+		return c:IsSetCard(0x308) and not c:IsAttribute(ATTRIBUTE_DARK) and c:IsFaceup()
 	end
 	local altfilter=function(c)
 		return not c:IsSetCard(0x308) or c:IsAttribute(ATTRIBUTE_DARK)

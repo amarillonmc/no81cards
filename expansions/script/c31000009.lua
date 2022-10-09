@@ -41,32 +41,6 @@ function c31000009.initial_effect(c)
 	e6:SetTarget(c31000009.tg)
 	e6:SetOperation(c31000009.op)
 	c:RegisterEffect(e6)
-	Duel.AddCustomActivityCounter(31000009,ACTIVITY_SUMMON,c31000009.counterfilter)
-	Duel.AddCustomActivityCounter(31000009,ACTIVITY_SPSUMMON,c31000009.counterfilter)
-end
-
-function c31000009.counterfilter(c)
-	return c:IsSetCard(0x308) or c:IsCode(31000002)
-end
-
-function c31000009.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(31000009,tp,ACTIVITY_SUMMON)==0
-		and Duel.GetCustomActivityCount(31000009,tp,ACTIVITY_SPSUMMON)==0 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SUMMON)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c31000009.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	Duel.RegisterEffect(e2,tp)
-end
-
-function c31000009.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x308) and not c:IsCode(31000002)
 end
 
 function c31000009.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -77,11 +51,9 @@ function c31000009.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c31000009.spcst(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,nil,1,nil)
-		and c31000009.cost(e,tp,eg,ep,ev,re,r,rp,0) end
+	if chk==0 then return Duel.CheckReleaseGroup(tp,nil,1,nil) end
 	local sg=Duel.SelectReleaseGroup(tp,nil,1,1,nil)
 	Duel.Release(sg,REASON_COST)
-	c31000009.cost(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c31000009.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -110,10 +82,8 @@ function c31000009.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		return c:IsSetCard(0x308)
 	end
 	local gc=Duel.GetMatchingGroupCount(filter,tp,LOCATION_MZONE,0,nil)
-	if chk==0 then return Duel.GetFieldGroup(tp,0,LOCATION_HAND):GetCount()>=gc
-		and c31000009.cost(e,tp,eg,ep,ev,re,r,rp,0) end
+	if chk==0 then return Duel.GetFieldGroup(tp,0,LOCATION_HAND):GetCount()>=gc end
 	e:SetLabel(gc)
-	c31000009.cost(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,0,0,1-tp,e:GetLabel())
 end
 
@@ -152,11 +122,9 @@ end
 
 function c31000009.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_REMOVED) and c31000009.opfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c31000009.opfilter,tp,0,LOCATION_REMOVED,1,nil)
-		and c31000009.cost(e,tp,eg,ep,ev,re,r,rp,0) end
+	if chk==0 then return Duel.IsExistingTarget(c31000009.opfilter,tp,0,LOCATION_REMOVED,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,c31000009.opfilter,tp,0,LOCATION_REMOVED,1,1,nil)
-	c31000009.cost(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetOperationInfo(0,CATEGORY_SEARCH,nil,1,tp,LOCATION_DECK)
 end
 

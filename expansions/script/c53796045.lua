@@ -24,7 +24,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_DECK,0,1,1,nil,tp,POS_FACEDOWN):GetFirst()
-		if tc and Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)~=0 and tc:IsCode(53799250,53799256,53799267,53796042,53796043,53796044) then
+		if tc and Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)~=0 and tc:IsCode(53799250,53799256,53799267,53796042,53796043,53796044,53796071) then
 			local le={tc:GetActivateEffect()}
 			for _,te in pairs(le) do
 				local e1=te:Clone()
@@ -63,13 +63,24 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetLabelObject(te)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return re==e:GetLabelObject() end)
 	e1:SetOperation(cm.ready)
-	e1:SetReset(RESET_CHAIN)
-	e1:SetLabelObject(tc)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	e2:SetOperation(cm.rsop)
+	Duel.RegisterEffect(e2,tp)
 end
-function cm.ready(e,tp)
-	e:GetLabelObject():SetStatus(STATUS_EFFECT_ENABLED,true)
+function cm.ready(e,tp,eg,ep,ev,re,r,rp)
+	e:GetLabelObject():GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
+	e:Reset()
+end
+function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetLabelObject():GetHandler():SetStatus(STATUS_ACTIVATE_DISABLED,true)
 	e:Reset()
 end

@@ -1,16 +1,19 @@
---魔导学者 恩蒂米娅
+--械心魔导王 恩底弥翁
 function c9910872.initial_effect(c)
 	aux.AddCodeList(c,9910871)
 	c:EnableCounterPermit(0x1)
-	--add counter / to hand
+	--add counter
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_COUNTER+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_COUNTER)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetTarget(c9910872.cttg)
 	e1:SetOperation(c9910872.ctop)
 	c:RegisterEffect(e1)
+	local e4=e1:Clone()
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e4)
 	--disable
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DISABLE)
@@ -30,40 +33,42 @@ function c9910872.initial_effect(c)
 	e3:SetCondition(c9910872.discon2)
 	c:RegisterEffect(e3)
 end
-function c9910872.thfilter(c)
-	return aux.IsCodeListed(c,9910871) and c:IsAbleToHand() and not c:IsCode(9910872)
+function c9910872.actfilter(c,tp)
+	local b1=c:GetType()==0x20002 and c:GetActivateEffect():IsActivatable(tp)
+	local b2=c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
+	return aux.IsCodeListed(c,9910871) and (b1 or b2)
 end
 function c9910872.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return true end
-	local sel=0
-	if Duel.IsExistingMatchingCard(c9910872.thfilter,tp,LOCATION_DECK,0,1,nil) then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910872,0))
-		sel=Duel.SelectOption(tp,aux.Stringid(9910872,1),aux.Stringid(9910872,2))+1
-	else
-		Duel.SelectOption(tp,aux.Stringid(9910872,1))
-		sel=1
-	end
-	e:SetLabel(sel)
-	if sel==1 then
-		e:SetCategory(CATEGORY_COUNTER)
-		Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x1)
-	else
-		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910872.actfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,tp)
+		and Duel.IsCanAddCounter(tp,0x1,2,e:GetHandler()) end
+	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
 end
 function c9910872.ctop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local sel=e:GetLabel()
-	if sel==1 then
-		if c:IsRelateToEffect(e) then c:AddCounter(0x1,2) end
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c9910872.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910872,0))
+	if e:GetLabel()==1 then Duel.RegisterFlagEffect(tp,9910872,RESET_CHAIN,0,1) end
+	local tc=Duel.SelectMatchingCard(tp,c9910872.actfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+	Duel.ResetFlagEffect(tp,9910872)
+	if tc then
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		if tc:IsType(TYPE_FIELD) and fc then
+			Duel.SendtoGrave(fc,REASON_RULE)
+			Duel.BreakEffect()
+		end
+		local res=false
+		if tc:IsType(TYPE_FIELD) then
+			res=Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		else
+			res=Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		end
+		local te=tc:GetActivateEffect()
+		if tc:IsType(TYPE_FIELD) then te:UseCountLimit(tp,1,true) end
+		local tep=tc:GetControler()
+		local cost=te:GetCost()
+		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+		if tc:IsType(TYPE_FIELD) then Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain()) end
+		if res then
+			Duel.BreakEffect()
+			e:GetHandler():AddCounter(0x1,2)
 		end
 	end
 end
@@ -77,8 +82,8 @@ function c9910872.discon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9910872.filter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9910872.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x1,1,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,0x1,1,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x1,2,REASON_COST)
 end
 function c9910872.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and aux.NegateAnyFilter(chkc) end

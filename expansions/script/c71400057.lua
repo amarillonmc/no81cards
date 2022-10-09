@@ -49,7 +49,7 @@ function c71400057.op1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c71400057.filter1b,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()<1 then return end
 	Duel.Overlay(tc,g)
-	local fg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	local fg=Duel.GetMatchingGroup(Card.IsSummonLocation,tp,LOCATION_MZONE,0,nil,LOCATION_EXTRA)
 	if fg:FilterCount(c71400057.filter1a,nil)~=fg:GetCount() or not aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) or tc:IsControler(1-tp) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local xyzg=Duel.SelectMatchingCard(tp,c71400057.filter1c,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)

@@ -4,6 +4,8 @@ local cm=_G["c"..m]
 
 function cm.initial_effect(c)
 	aux.AddCodeList(c,88802004,88802022)
+	--code
+	aux.EnableChangeCode(c,88802010,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_EXTRA+LOCATION_REMOVED)
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_FISH),2,2)

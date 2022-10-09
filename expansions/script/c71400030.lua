@@ -17,63 +17,49 @@ function c71400030.initial_effect(c)
 	local e1a=e1:Clone()
 	e1a:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	c:RegisterEffect(e1a)
-	--[[
-	local e1b=e1:Clone()
-	e1b:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	c:RegisterEffect(e1b)
-	--]]
-	--negate spsummon
+	--banish
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_REMOVE)
-	e2:SetType(EFFECT_TYPE_QUICK_F)
-	e2:SetCode(EVENT_SPSUMMON)
+	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetType(EFFECT_TYPE_TRIGGER_F)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetDescription(aux.Stringid(71400030,0))
-	e2:SetCondition(c71400030.condition)
-	e2:SetCost(c71400030.cost)
-	e2:SetTarget(c71400030.target)
-	e2:SetOperation(c71400030.operation)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e2:SetCondition(c71400030.con1)
+	e2:SetTarget(c71400030.tg1)
+	e2:SetOperation(c71400030.op1)
 	c:RegisterEffect(e2)
+	local e2a=e2:Clone()
+	e2a:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2a)
 end
-function c71400030.filter2(c)
-	return c:IsPreviousLocation(LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK) and c:IsAbleToRemove()
+function c71400030.con1(e,tp,eg,ep,ev,re,r,rp)
+	return not eg:IsContains(e:GetHandler()) and not yume.IsRust(tp)
 end
-function c71400030.cfilter2(c,g)
-	return g:IsContains(c)
-end
-function c71400030.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()==0 and eg:IsExists(c71400030.filter2,1,nil) and not yume.IsRust(tp)
-end
-function c71400030.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local lg=c:GetLinkedGroup()
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400030.cfilter2,tp,LOCATION_ONFIELD,0,1,nil,lg) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c71400030.cfilter2,tp,LOCATION_ONFIELD,0,1,1,nil,lg)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-end
-function c71400030.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function c71400030.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local g=eg:Filter(c71400030.filter2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
+	local g=eg:Filter(Card.IsAbleToRemove,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
-function c71400030.operation(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(c71400030.filter2,nil)
-	if g:GetCount()>0 then
-		Duel.NegateSummon(g)
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-		local og=Duel.GetOperatedGroup()
-		if og:GetCount()>0 then
+function c71400030.filter1(c,e)
+	return c:IsRelateToEffect(e) and c:IsAbleToRemove()
+end
+function c71400030.op1(e,tp,eg,ep,ev,re,r,rp)
+	local g1=eg:Filter(c71400030.filter1,nil,e)
+	if g1:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg1=g1:Select(tp,1,1,nil)
+		local mg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,aux.ExceptThisCard(e))
+		local g2=mg:Sub(sg1)
+		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400032,1)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local sg2=g2:Select(tp,1,2,nil)
+			sg1:Merge(sg2)
+		end
+		Duel.HintSelection(sg1)
+		if Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)>0 then
 			Duel.BreakEffect()
-			local tc=og:GetFirst()
-			local atk=0
-			while tc do
-				local tatk=tc:GetTextAttack()
-				if tatk>0 then atk=atk+tatk end
-				tc=og:GetNext()
-			end
-			Duel.SetLP(tp,Duel.GetLP(tp)-math.ceil(atk/2))
+			Duel.SetLP(tp,Duel.GetLP(tp)-sg1:GetCount()*600)
 		end
 	end
 end
