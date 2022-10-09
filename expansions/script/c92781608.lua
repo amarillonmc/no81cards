@@ -150,6 +150,6 @@ function c92781608.fieldop(e,tp,eg,ep,ev,re,r,rp)
 	if tc then return false end
 	local sc=Duel.GetFirstMatchingCard(c92781608.fdfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,tp)
 	if sc then
-		Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(sc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 	end
 end

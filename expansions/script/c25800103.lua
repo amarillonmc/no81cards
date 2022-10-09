@@ -3,10 +3,8 @@ function c25800103.initial_effect(c)
 	--extra summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(25800103,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-
 	e1:SetCondition(c25800103.sumcon)
 	e1:SetCost(c25800103.sumcost)
 	e1:SetTarget(c25800103.sumtg)
@@ -18,9 +16,7 @@ function c25800103.initial_effect(c)
 	e2:SetDescription(aux.Stringid(25800103,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
- 
 	e2:SetRange(LOCATION_GRAVE)
-
 	e2:SetCountLimit(1,25800103)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c25800103.sptg)

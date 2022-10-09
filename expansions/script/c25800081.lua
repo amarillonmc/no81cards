@@ -20,7 +20,7 @@ function c25800081.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
 	e3:SetCondition(c25800081.negcon)
-	e3:SetTarget(c25800081.negtg)
+	e3:SetTarget(aux.nbtg)
 	e3:SetOperation(c25800081.negop)
 	c:RegisterEffect(e3)
 
@@ -35,18 +35,9 @@ function c25800081.initial_effect(c)
 	e4:SetOperation(c25800081.sumop)
 	c:RegisterEffect(e4)
 end
-
 function c25800081.negcon(e,tp,eg,ep,ev,re,r,rp)
-	if ep==tp or e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end
-	return Duel.IsChainNegatable(ev)
-end
-
-function c25800081.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return aux.nbcon(tp,re) end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
-	end
+	 return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+		and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c25800081.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then

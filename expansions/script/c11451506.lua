@@ -77,8 +77,6 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
-	Debug.Message(te)
-	Debug.Message(te:GetHandler():IsRelateToEffect(e))
 	if not te then return end
 	if not te:GetHandler():IsRelateToEffect(e) then return end
 	e:SetLabelObject(te:GetLabelObject())

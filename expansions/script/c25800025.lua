@@ -17,6 +17,7 @@ aux.EnableChangeCode(c,25800023,LOCATION_MZONE+LOCATION_GRAVE)
 	c:RegisterEffect(e2)
 
 	local e3=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_HAND)
 	e3:SetCountLimit(1,25800026)

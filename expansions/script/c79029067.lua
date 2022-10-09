@@ -74,7 +74,7 @@ function c79029067.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.IsExistingMatchingCard(c79029067.thfil,tp,LOCATION_DECK,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(79029067,0)) then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c79029067.thfil,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c79029067.thfil,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if g:GetCount()<=0 then return end
 	local tc=g:GetFirst()
 	if tc:IsAbleToHand() and (not tc:IsAbleToGrave() or Duel.SelectOption(tp,1190,1191)==0) then
@@ -84,7 +84,7 @@ function c79029067.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end 
 	else
-	local g=Duel.SelectMatchingCard(tp,c79029067.srfil,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c79029067.srfil,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if g:GetCount()<=0 then return end
 	local tc=g:GetFirst()
 		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)

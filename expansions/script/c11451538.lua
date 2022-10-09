@@ -1,7 +1,6 @@
 --辉影翩跹
 --21.06.13
-local m=11451538
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--act in set turn
 	local e0=Effect.CreateEffect(c)
@@ -91,6 +90,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			local rg=tg:Select(tp,1,1,nil)
 			Duel.XyzSummon(tp,rg:GetFirst(),og)
 		end
+	else
+		Duel.ShuffleDeck(tp)
 	end
 end
 function cm.filter(c)

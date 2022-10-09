@@ -27,8 +27,8 @@ end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
-	return rc:IsOriginalCodeRule(24094653) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and rp==tp
-	and ((re:IsActiveType(TYPE_MONSTER) and ((Duel.GetLocationCount(tp,LOCATION_MZONE)>=1 and rc:GetSequence()>4) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>=0))) or (re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.GetLocationCount(tp,LOCATION_MZONE)>=1)) and rc:IsAbleToGraveAsCost() and not rc:IsLocation(LOCATION_GRAVE)
+	return rc:IsCode(24094653) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	and Duel.GetLocationCount(tp,LOCATION_MZONE)>=1 and rc:IsAbleToGraveAsCost() and rc:IsLocation(LOCATION_SZONE)
 end
 
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -41,7 +41,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.filter(c)
-	return c:IsOriginalCodeRule(24094653) and c:IsAbleToHand()
+	return c:IsCode(24094653) and c:IsAbleToHand()
 end
 
 function cm.shtg(e,tp,eg,ep,ev,re,r,rp,chk)

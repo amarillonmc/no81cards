@@ -1,7 +1,6 @@
 --无前之斗争军势
 --21.05.21
-local m=11451537
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,10,2,nil,nil,99)
@@ -120,8 +119,6 @@ function cm.otcon(e,c,minc)
 	if ct==0 then return false end
 	local tp=c:GetControler()
 	local mi,ma=c:GetTributeRequirement()
-	Debug.Message(mi)
-	Debug.Message(ma)
 	return ma>0 and minc<=ma and ((math.max(mi,minc)<=ct and Duel.GetMZoneCount(tp)>0) or Duel.CheckTribute(c,math.max(1,math.max(mi,minc)-ct)))
 end
 function cm.fselect(g)

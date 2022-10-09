@@ -94,17 +94,15 @@ function cm.rmfilter(c,fid)
 	return c:GetFlagEffectLabel(m)==fid
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetLabelObject()
-	if not g:IsExists(cm.rmfilter,1,nil,e:GetLabel()) then
-		g:DeleteGroup()
+	local c=e:GetLabelObject()
+	if c:GetFlagEffectLabel(m)~=e:GetLabel() then
 		e:Reset()
 		return false
 	else return true end
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetLabelObject()
-	local tg=g:Filter(cm.rmfilter,nil,e:GetLabel())
-	Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
+	local c=e:GetLabelObject()
+	Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
 end
 
 
