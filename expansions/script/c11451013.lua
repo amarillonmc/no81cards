@@ -1,6 +1,5 @@
 --焰色弹珠使·业炎
-local m=11451013
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
@@ -12,6 +11,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMINGS_CHECK_MONSTER)
+	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
@@ -66,7 +66,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 			local dc=Duel.CreateToken(tp,m)
 			Duel.DisableActionCheck(false)
 			dc:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
-			res=dc:GetActivateEffect():IsActivatable(tp)
+			res=dc:GetActivateEffect():IsActivatable(tp,true)
 			dc:SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_PENDULUM+TYPE_EFFECT)
 		else
 			res=(c:CheckActivateEffect(false,false,false)~=nil)
@@ -75,14 +75,29 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAttackPos,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(Card.IsAttackPos,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAttackPos,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and c:GetFlagEffect(m)==0 end
+	local fid=c:GetFieldID()
+	local e1=Card.RegisterFlagEffect(c,m,RESET_EVENT+0x43e0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(m,2))
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_TO_DECK)
+	e2:SetLabel(fid)
+	e2:SetLabelObject(e1)
+	e2:SetOperation(cm.tdop)
+	Duel.RegisterEffect(e2,tp)
+	local g=Duel.GetMatchingGroup(cm.ngfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,PLAYER_ALL,0)
 end
+function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
+	if eg:IsExists(cm.tdfilter,1,nil,e:GetLabel()) then
+		e:GetLabelObject():Reset()
+		e:Reset()
+	end
+end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	c:SetStatus(STATUS_EFFECT_ENABLED,true)
 	local g=Duel.GetMatchingGroup(Card.IsAttackPos,tp,LOCATION_MZONE,LOCATION_MZONE,aux.ExceptThisCard(e))
 	if #g>0 then
 		Duel.Destroy(g,REASON_EFFECT)
@@ -134,8 +149,11 @@ end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	local te2=e:GetLabelObject()
-	re:Reset()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
 		if KOISHI_CHECK then
 			rc:SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_EFFECT)
@@ -150,6 +168,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 			rc:RegisterEffect(e2)
 		end
 	end
+	re:Reset()
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)

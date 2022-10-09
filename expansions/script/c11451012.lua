@@ -1,6 +1,5 @@
 --茜色弹珠使·红莲
-local m=11451012
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
@@ -12,6 +11,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_DRAW_PHASE,TIMING_DRAW_PHASE+TIMING_TOHAND)
+	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
@@ -76,7 +76,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 			local dc=Duel.CreateToken(tp,m)
 			Duel.DisableActionCheck(false)
 			dc:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
-			res=dc:GetActivateEffect():IsActivatable(tp)
+			res=dc:GetActivateEffect():IsActivatable(tp,true)
 			dc:SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_PENDULUM+TYPE_EFFECT)
 		else
 			res=(c:CheckActivateEffect(false,false,false)~=nil)
@@ -85,12 +85,31 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) and c:GetFlagEffect(m)==0 end
+	local fid=c:GetFieldID()
+	local e1=Card.RegisterFlagEffect(c,m,RESET_EVENT+0x43e0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(m,2))
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_TO_DECK)
+	e2:SetLabel(fid)
+	e2:SetLabelObject(e1)
+	e2:SetOperation(cm.tdop)
+	Duel.RegisterEffect(e2,tp)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,1-tp,LOCATION_HAND)
+end
+function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
+	if eg:IsExists(cm.tdfilter,1,nil,e:GetLabel()) then
+		e:GetLabelObject():Reset()
+		e:Reset()
+	end
+end
+function cm.tdfilter(c,lab)
+	local fid=c:GetFlagEffectLabel(m)
+	return c:IsLocation(LOCATION_DECK) and fid and fid==lab
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	c:SetStatus(STATUS_EFFECT_ENABLED,true)
 	local g0=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	Duel.ConfirmCards(tp,g0)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -172,8 +191,11 @@ end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	local te2=e:GetLabelObject()
-	re:Reset()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
 		if KOISHI_CHECK then
 			rc:SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_EFFECT)
@@ -188,6 +210,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 			rc:RegisterEffect(e2)
 		end
 	end
+	re:Reset()
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
