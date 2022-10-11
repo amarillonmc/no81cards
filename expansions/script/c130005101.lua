@@ -67,7 +67,7 @@ function rsdc.HandActFun(c)
 	return e1
 end
 function cm.handcon(e)
-	return Duel.GetMatchingGroupCount(Card.IsType,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,nil,TYPE_SPELL+TYPE_TRAP)
+	return Duel.GetMatchingGroupCount(Card.IsType,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,nil,TYPE_SPELL+TYPE_TRAP)==0
 end
 ------------------------------------
 

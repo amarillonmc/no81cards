@@ -51,7 +51,7 @@ function c146747.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c146747.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return c:IsCode(146747) and bit.band(sumtype,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK
+	return c:IsCode(146747) --and bit.band(sumtype,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK
 end
 function c146747.matfilter(c)
 	return c:IsLinkSetCard(0x12f) and not c:IsLinkType(TYPE_LINK)

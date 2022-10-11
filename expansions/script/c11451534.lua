@@ -1,7 +1,6 @@
 --汐潮之斗争军势
 --21.06.17
-local m=11451534
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--advance
 	local e1=Effect.CreateEffect(c)
@@ -70,11 +69,14 @@ function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
 	return true
 end
 function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsFacedown,1,nil)
+	return eg:IsExists(cm.fdfilter,1,nil)
+end
+function cm.fdfilter(c)
+	return c:IsOnField() and c:IsFacedown()
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
+	if c:GetFlagEffect(m)>0 or not c:IsRelateToEffect(e) then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11451461,6))
 	e1:SetType(EFFECT_TYPE_SINGLE)

@@ -92,7 +92,7 @@ function cm.cfilter(c)
 	return c:IsPreviousLocation(LOCATION_DECK)  
 end  
 function cm.tfcon(e,tp,eg,ep,ev,re,r,rp)  
-	return Duel.GetCurrentPhase()~=PHASE_DRAW and eg:IsExists(cm.cfilter,1,nil) and Duel.GetFlagEffect(tp,m)==0
+	return r&REASON_DRAW==0 and eg:IsExists(cm.cfilter,1,nil) and Duel.GetFlagEffect(tp,m)==0
 end  
 function cm.tftg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then

@@ -160,7 +160,7 @@ function c9910447.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
-	local e2=Effect.CreateEffect(c)
+	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)

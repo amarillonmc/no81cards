@@ -1,6 +1,5 @@
 --星薙剑豪-轰炎
-local m=11451800
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
@@ -44,7 +43,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 local KOISHI_CHECK=false
-if io.open then KOISHI_CHECK=true end
+if io and io.open then KOISHI_CHECK=true end
 function cm.checkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler()==Duel.GetAttacker() or e:GetHandler()==Duel.GetAttackTarget()
 end
@@ -58,7 +57,6 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 			f:write("cm[0]=cm[0]+1\n")
 			f:flush()
 			f:close()
-			assert(false,"这是一条测试信息")
 		end
 	end
 end

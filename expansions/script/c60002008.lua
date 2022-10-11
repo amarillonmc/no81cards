@@ -31,7 +31,7 @@ function c60002008.thfil(c)
 	return c:IsAbleToHand() and c:IsSetCard(0xa9e1) 
 end
 function c60002008.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60002008.thfil,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c60002008.thfil,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
 end
 function c60002008.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -80,7 +80,7 @@ function c60002008.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c60002008.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
-		and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>1
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,28062326,0,0x4011,800,500,1,RACE_PLANT,ATTRIBUTE_EARTH,POS_FACEUP_DEFENSE,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,0,0)
@@ -96,7 +96,7 @@ function c60002008.spop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-	if Duel.GetLocationCount(1-tp,LOCATION_MZONE)<2 then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 then return end
 	if not Duel.IsPlayerCanSpecialSummonMonster(tp,28062326,0,0x4011,800,500,1,RACE_PLANT,ATTRIBUTE_EARTH,POS_FACEUP,tp) then return end
 	for i=1,2 do
 		local token=Duel.CreateToken(tp,28062326)

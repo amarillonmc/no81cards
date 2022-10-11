@@ -106,7 +106,7 @@ function MJ_VHisc.op(e,tp,eg,ep,ev,re,r,rp)
 			return
 		end
 		Duel.ConfirmDecktop(tp,dcount-seq)
-		if Duel.SendtoGrave(tgcard,REASON_EFFECT) then
+		if Duel.SendtoGrave(tgcard,REASON_EFFECT) and tgcard:IsLocation(LOCATION_GRAVE) then
 			local token=Duel.CreateToken(tp,33201009)
 			Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local lv=tgcard:GetOriginalLevel()

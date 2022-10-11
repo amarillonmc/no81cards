@@ -2,7 +2,7 @@ local m=82221014
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--Activate  
-	local e1=Effect.CreateEffect(c)  
+	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)  
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
@@ -25,10 +25,16 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)  
 	--act from deck
 	local e4=e1:Clone()
+	e4:SetDescription(aux.Stringid(9212051,0)) 
 	e4:SetRange(LOCATION_HAND+LOCATION_DECK)
 	e4:SetCost(cm.actcost2)
 	e4:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetDescription(aux.Stringid(9212051,1)) 
+	e5:SetTarget(cm.cptg)  
+	e5:SetOperation(cm.cpop)  
+	c:RegisterEffect(e5)  
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
 	e5:SetCode(EFFECT_ACTIVATE_COST)
@@ -38,12 +44,6 @@ function cm.initial_effect(c)
 	e5:SetTarget(cm.actarget)
 	e5:SetOperation(cm.costop)
 	c:RegisterEffect(e5)
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_FIELD)
-	e6:SetCode(EFFECT_SPSUMMON_PROC_G)
-	e6:SetRange(LOCATION_DECK)
-	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
-	c:RegisterEffect(e6)
 end
 function cm.cfilter(c)  
 	return c:IsSetCard(0xb4) and bit.band(c:GetType(),0x81)==0x81 and not c:IsPublic()  
@@ -74,9 +74,9 @@ end
 function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then 
 		if Duel.GetFlagEffect(tp,82211014)==0 then
-			return Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil)  
+			return Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) and not e:GetHandler():IsStatus(STATUS_CHAINING)
 		else
-			return Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_HAND,0,1,nil)
+			return Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_HAND,0,1,nil) and not e:GetHandler():IsStatus(STATUS_CHAINING)
 		end
 	end   
 	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)

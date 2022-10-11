@@ -96,6 +96,10 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 		e:Reset()
 	end
 end
+function cm.tdfilter(c,lab)
+	local fid=c:GetFlagEffectLabel(m)
+	return c:IsLocation(LOCATION_DECK) and fid and fid==lab
+end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsAttackPos,tp,LOCATION_MZONE,LOCATION_MZONE,aux.ExceptThisCard(e))

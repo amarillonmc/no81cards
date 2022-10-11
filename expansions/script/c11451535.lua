@@ -38,7 +38,7 @@ function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
+	if c:GetFlagEffect(m)>0 or not c:IsRelateToEffect(e) then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11451461,6))
 	e1:SetType(EFFECT_TYPE_SINGLE)

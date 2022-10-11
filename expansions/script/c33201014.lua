@@ -15,7 +15,7 @@ function s.initial_effect(c)
 end
 
 function s.rmfilter(c)
-	return c:IsRace(RACE_ZOMBIE) and c:IsAbleToRemove()
+	return c:IsRace(RACE_ZOMBIE) and c:IsLevelAbove(0) and c:IsAbleToRemove()
 end
 function s.rdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_GRAVE) and s.rmfilter(chkc) end

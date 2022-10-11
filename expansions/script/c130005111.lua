@@ -2,7 +2,7 @@
 if not pcall(function() require("expansions/script/c130005101") end) then require("script/c130005101") end
 local m,cm=rscf.DefineCard(130005111,"DragonCaller")
 function cm.initial_effect(c)
-	local e1,e2,e3=rsdc.SynchroFun(c,m,ATTRIBUTE_WIND,"td",rscost.reglabel(100),cm.tdtg,cm.tdop,cm.limit)   
+	local e1,e2,e3=rsdc.SynchroFun(c,m,ATTRIBUTE_WATER,"td",rscost.reglabel(100),cm.tdtg,cm.tdop,cm.limit)   
 end
 function cm.limit(c,rc)
 	return rc:IsOnField() and rc:IsFaceup()
