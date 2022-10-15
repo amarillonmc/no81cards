@@ -64,7 +64,7 @@ end
 function cm.poscon(e)
 	return e:GetHandler():IsAttackPos()
 end
-function cm.filter(c,e,tp)
+function cm.filter(c,tp)
 	return c:IsCode(14000105) and (c:IsAbleToHand() or c:GetActivateEffect():IsActivatable(tp,true,true))
 end
 function cm.cfilter(c,tp)
@@ -122,12 +122,12 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	else
-		local tg=Duel.GetFirstMatchingCard(cm.filter,tp,LOCATION_DECK,0,nil)
+		local tg=Duel.GetFirstMatchingCard(cm.filter,tp,LOCATION_DECK,0,nil,tp)
 		local tc=tg
 		if tc then
 			local te=tc:GetActivateEffect()
 			local b1=tc:IsAbleToHand()
-			local b2=te:IsActivatable(tp)
+			local b2=te:IsActivatable(tp,true,true)
 			if b1 and (not b2 or Duel.SelectYesNo(tp,aux.Stringid(m,2))) then
 				Duel.SendtoHand(tc,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,tc)

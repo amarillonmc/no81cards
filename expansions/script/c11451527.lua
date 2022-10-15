@@ -1,6 +1,5 @@
 --珂拉琪的造物双子
-local m=11451527
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--pendulum summon
 	c:EnableReviveLimit()
@@ -57,6 +56,11 @@ function cm.initial_effect(c)
 	e5:SetRange(0xff)
 	e5:SetValue(0x151)
 	c:RegisterEffect(e5)
+	if not cm.pendulum_link then
+		cm.pendulum_link=true
+		_GetLink=Card.GetLink
+		Card.GetLink=function(tc) if tc==c and tc:IsLocation(LOCATION_PZONE) then return 2 else return _GetLink(tc) end end
+	end
 end
 function cm.lcheck(g)
 	return g:GetClassCount(Card.GetLinkRace)==1 and g:GetClassCount(Card.GetCode)==g:GetCount()
@@ -79,12 +83,12 @@ function cm.LinkCondition(f,minc,maxc,gf)
 				local tp=c:GetControler()
 				local mg=nil
 				if og then
-					mg=og:Filter(Auxiliary.LConditionFilter,nil,f,c)
+					mg=og:Filter(Auxiliary.LConditionFilter,nil,f,c,e)
 				else
 					mg=Auxiliary.GetLinkMaterials(tp,f,c)
 				end
 				if lmat~=nil then
-					if not Auxiliary.LConditionFilter(lmat,f,c) then return false end
+					if not Auxiliary.LConditionFilter(lmat,f,c,e) then return false end
 					mg:AddCard(lmat)
 				end
 				local fg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)

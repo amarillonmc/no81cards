@@ -126,8 +126,13 @@ function c50587164.effop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c50587164.sctarg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
+
+	if chk==0 and c:IsOriginalCodeRule(74627016) then return Duel.GetFlagEffect(tp,50587164)==0
+		and (Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) or Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil,c)) end
+
 	if chk==0 then return Duel.GetFlagEffect(tp,50587164)==0
 		and (Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,c) or Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil,c)) end
+
 	Duel.RegisterFlagEffect(tp,50587164,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
@@ -135,6 +140,7 @@ function c50587164.scop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:GetControler()~=tp or not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,c)
+	if c:IsOriginalCodeRule(74627016) then g=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,nil) end
 	local g2=Duel.GetMatchingGroup(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,nil,nil,c)
 	if g:GetCount()>0 and g2:GetCount()<=0 then 
 		op=Duel.SelectOption(tp,aux.Stringid(50587164,5))+1

@@ -33,7 +33,7 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,0,0,0)
 end
 function s.desfilter(c)
-	return (c:IsRace(RACE_ZOMBIE) or c:IsCode(33201009)) and c:IsFaceup()
+	return ((c:IsRace(RACE_ZOMBIE) and c:IsType(TYPE_MONSTER)) or c:IsCode(33201009)) and c:IsFaceup()
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

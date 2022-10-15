@@ -1,6 +1,5 @@
 --闪刀姬-机影
-local m=11451429
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:SetSPSummonOnce(m)
 	--synchro summon
@@ -86,6 +85,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(LOCATION_HAND,0)
 	e1:SetLabel(turn)
 	e1:SetCondition(cm.qpcon)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x115))
 	e1:SetCountLimit(1)
 	e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
 	Duel.RegisterEffect(e1,tp)
