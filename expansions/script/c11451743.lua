@@ -1,6 +1,7 @@
 --不语之国 德沙兰
 local cm,m=GetID()
 function cm.initial_effect(c)
+	aux.AddCodeList(c,56433456)
 	--activate
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_ACTIVATE)

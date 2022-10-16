@@ -275,5 +275,6 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
+	Duel.DisableShuffleCheck()
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
 end
