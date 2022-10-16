@@ -59,13 +59,13 @@ function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
 		e1:SetValue(cm.efilter)
-		e1:SetLabel(e)
+		e1:SetLabelObject(re)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
 	end
 end
 function cm.efilter(e,re)
-	return re==e:GetLabel()
+	return re==e:GetLabelObject()
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local bc=e:GetHandler():GetBattleTarget()

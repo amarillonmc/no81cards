@@ -59,7 +59,7 @@ function cm.initial_effect(c)
 	if not cm.pendulum_link then
 		cm.pendulum_link=true
 		_GetLink=Card.GetLink
-		Card.GetLink=function(tc) if tc==c and tc:IsLocation(LOCATION_PZONE) then return 2 else return _GetLink(tc) end end
+		Card.GetLink=function(tc) if tc:GetOriginalCode()==m and tc:IsLocation(LOCATION_PZONE) then return 2 else return _GetLink(tc) end end
 	end
 end
 function cm.lcheck(g)

@@ -105,13 +105,13 @@ end
 
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	  if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and e:GetHandler():IsLocation(LOCATION_GRAVE)  end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,2000)
 end
 function cm.srop(e,tp,eg,ep,ev,re,r,rp)
    local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and e:GetHandler():IsLocation(LOCATION_GRAVE)  then
 			if  Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		Duel.Damage(tp,2000,REASON_EFFECT)
 			--must attack
@@ -190,7 +190,7 @@ function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCategory(CATEGORY_RECOVER)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_DAMAGE)
-		e2:SetReset(RESET_PHASE+PHASE_END)
+		e2:SetReset(RESET_PHASE+Duel.GetCurrentPhase())
 		e2:SetCondition(cm.con11)
 		e2:SetOperation(cm.op11)
 		Duel.RegisterEffect(e2,tp)

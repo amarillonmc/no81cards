@@ -31,7 +31,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
 		Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 	end
-	if ((re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL)) or re:IsActiveType(TYPE_MONSTER)) then
+	if ((re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_TRAP)) or re:IsActiveType(TYPE_MONSTER)) then
 		Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 	end
 end
