@@ -26,7 +26,7 @@ function c9910907.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910907.spfilter(c,e,tp)
-	return c:IsCode(9910907) and Duel.GetMZoneCount(tp) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(9910907) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c9910907.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

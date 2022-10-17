@@ -48,27 +48,37 @@ end
 function cm.limit(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetTurnPlayer()
 	local ct=Duel.GetTurnCount()
+	local flag=Duel.GetFlagEffectLabel(p,11451731)
 	local eset={Duel.IsPlayerAffectedByEffect(p,EFFECT_HAND_LIMIT)}
-	local flag=Duel.GetFlagEffectLabel(p,11451731) or 0
-	if #eset==0 and flag>0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_HAND_LIMIT)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetTargetRange(1,0)
-		e1:SetValue(6-flag)
-		e1:SetReset(RESET_PHASE+PHASE_DRAW)
-		Duel.RegisterEffect(e1,p)
-	elseif #eset>0 and flag>0 then
+	local ht=6
+	if not flag then return end
+	if #eset>0 then
 		for _,te in pairs(eset) do
 			local val=te:GetValue()
 			if aux.GetValueType(val)=="function" then
-				te:SetValue(function(e,c) if Duel.GetTurnCount()==ct then return val(e,c)-flag else return val(e,c) end end)
+				--te:SetValue(function(e,c) if Duel.GetTurnCount()==ct then return math.min(0,val(e,c)-flag) else return val(e,c) end end)
+				ht=val(te,te:GetHandler())
 			elseif aux.GetValueType(val)=="number" then
-				te:SetValue(function(e,c) if Duel.GetTurnCount()==ct then return val-flag else return val end end)
+				--te:SetValue(function(e,c) if Duel.GetTurnCount()==ct then return math.min(0,val-flag) else return val end end)
+				ht=val
 			end
 		end
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_HAND_LIMIT)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(ht-flag)
+	e1:SetReset(RESET_PHASE+PHASE_DRAW)
+	Duel.RegisterEffect(e1,p)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_DISCARD)
+	e2:SetLabelObject(e1)
+	e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) if bit.band(r,REASON_ADJUST)~=0 then e:GetLabelObject():Reset() e:Reset() end end)
+	e2:SetReset(RESET_PHASE+PHASE_DRAW)
+	Duel.RegisterEffect(e2,p)
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_HAND_LIMIT)}

@@ -9,10 +9,10 @@ function c30000053.initial_effect(c)
 	e1:SetDescription(aux.Stringid(30000051,0))
 	e1:SetCategory(CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,30000053)
+	e1:SetCountLimit(1)
 	e1:SetTarget(c30000053.tgtg)
 	e1:SetOperation(c30000053.tgop)
 	c:RegisterEffect(e1)
@@ -31,7 +31,6 @@ function c30000053.satg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not c:IsForbidden() and c:CheckUniqueOnField(tp) end
 end
-
 function c30000053.saop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)

@@ -1,7 +1,6 @@
 --绘舞华·绯梦之樱术使 RK7
 --21.06.23
-local m=11451580
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,11451583)
 	--xyz summon
@@ -33,7 +32,7 @@ function cm.initial_effect(c)
 end
 cm.rkdn={11451579}
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re:GetHandler():IsSetCard(0x97f) and not re:GetValue()==11451480
+	return not re:GetHandler():IsSetCard(0x97f) and re:GetValue()~=11451480
 end
 function cm.filter(c,re)
 	return c:IsCanOverlay() and c:IsRelateToEffect(re)
