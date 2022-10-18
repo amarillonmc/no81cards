@@ -45,10 +45,10 @@ function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function s.thfilter(c)
-	return c.setname=="Zx02" and c:IsType(TYPE_MONSTER) and not c:IsForbidden() 
+	return c.setname=="Zx02" and not c:IsForbidden() 
 end
 function s.mfilter(c)
-	return c.setname=="Zx02" and c:IsPreviousLocation(LOCATION_MZONE) and c:IsType(TYPE_MONSTER)
+	return c:IsPreviousLocation(LOCATION_MZONE)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mc=e:GetHandler():GetMaterial():Filter(s.mfilter,nil):GetCount()

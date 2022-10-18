@@ -78,6 +78,9 @@ end
 function cm.gcheck(g,fg)
 	return g:GetClassCount(Card.GetRace) == #g and fg:GetClassCount(Card.GetRace)==#g
 end
+function cm.tgfil(c,tp)
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local fg=eg:Filter(cm.ex,nil,1-tp)
@@ -112,12 +115,12 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_HAND)
 			local num = og:GetCount()
 			Duel.BreakEffect()
-			local ft=Duel.GetMatchingGroupCount(1-tp,LOCATION_HAND)
-			if ft>num then
+			--local ft=Duel.GetMatchingGroupCount(1-tp,LOCATION_HAND)
+			--if ft>num then
 				ft = num
-			end
+			--end
 			Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
-			local sg=Duel.SelectMatchingCard(1-tp,Card.IsAbleToGrave,1-tp,LOCATION_HAND,0,ft,ft,nil)
+			local sg=Duel.SelectMatchingCard(1-tp,cm.tgfil,1-tp,LOCATION_HAND,0,ft,ft,nil)
 			Duel.SendtoGrave(sg,REASON_EFFECT)
 		end
 	end
