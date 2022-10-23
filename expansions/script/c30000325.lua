@@ -49,7 +49,9 @@ function cm.rtop(e,tp,eg,ep,ev,re,r,rp)
 end
 --Effect 2
 function cm.filter5(c,tp)
-	return c:IsCanOverlay() and ((Duel.GetMZoneCount(tp,c)>0 and c:IsControler(tp)) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsControlerCanBeChanged() and c:IsControler(1-tp))
+	return c:IsCanOverlay() 
+		and ((Duel.GetMZoneCount(tp,c)>0 and c:IsControler(tp)) 
+		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsControlerCanBeChanged() and c:IsControler(1-tp)))
 end
 function cm.stg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -62,9 +64,11 @@ function cm.stg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()   
-	if not tc:IsImmuneToEffect(e) and c:IsRelateToEffect(e) 
-		and tc:IsRelateToEffect(e) and ((Duel.GetMZoneCount(tp,c)>0 and c:IsControler(tp)) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsControlerCanBeChanged() and c:IsControler(1-tp))  then
+	local tc=Duel.GetFirstTarget() 
+	if not tc:IsImmuneToEffect(e) and c:IsRelateToEffect(e)
+		and tc:IsRelateToEffect(e) 
+		and((Duel.GetMZoneCount(tp,tc)>0 and tc:IsControler(tp)) 
+		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsControlerCanBeChanged() and tc:IsControler(1-tp)))  then
 		if  Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

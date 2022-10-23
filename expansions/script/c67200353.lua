@@ -61,6 +61,7 @@ function c67200353.cfilter(c,sp)
 	return c:IsSummonPlayer(sp)
 end
 function c67200353.exctcon(e,tp,eg,ep,ev,re,r,rp)
+	if #eg~=1 then return false end
 	return eg:IsExists(c67200353.cfilter,1,nil,1-tp)
 end
 function c67200353.ctfilter(c,tp)

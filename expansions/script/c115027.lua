@@ -38,6 +38,11 @@ function cm.initial_effect(c)
 	--c:RegisterEffect(e6)
 end
 --Effect 1
+function cm.tun(c,e)
+	local b1=c:IsLevelAbove(1) and not c:IsImmuneToEffect(e) 
+		and not c:IsType(TYPE_TUNER)
+	return b1 and c:IsFaceup() and (c:IsSetCard(0x87af) or ((_G["c"..c:GetCode()]and  _G["c"..c:GetCode()].named_with_Arknight)))
+end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
 end
@@ -73,11 +78,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1) 
 		end
 	end
-end
-function cm.tun(c,e)
-	return not c:IsImmuneToEffect(e) 
-		and not c:IsType(TYPE_TUNER)
-		and c:IsFaceup() and (c:IsSetCard(0x87af) or ((_G["c"..c:GetCode()]and  _G["c"..c:GetCode()].named_with_Arknight)))
 end
 --Effect 2
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

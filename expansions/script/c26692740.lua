@@ -77,12 +77,7 @@ function c26692740.adjustop(e,tp,eg,ep,ev,re,r,rp)
 				local eff=effect:Clone()
 				local eff2=effect:Clone()
 				local op=eff:GetOperation()
-				local tg=eff:GetTarget()
 				eff:SetValue(26692740)
-				eff:SetTarget(
-				function(e,tp,eg,ep,ev,re,r,rp)
-					tg(e,tp,eg,ep,ev,re,r,1-tp)
-				end)
 				eff:SetOperation(
 				function(e,tp,eg,ep,ev,re,r,rp)
 					Duel.Hint(HINT_CARD,0,26692740)

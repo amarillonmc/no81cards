@@ -1,7 +1,6 @@
 --诡雷战术 补给接力
 --21.04.22
-local m=11451564
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -70,21 +69,20 @@ function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,0,nil)
+	local ct=0
 	if #g>0 and Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 then
-		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK)
-		if ct>1 then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetDescription(aux.Stringid(m,1))
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_PHASE+PHASE_END)
-			e1:SetCountLimit(1)
-			e1:SetLabel(ct)
-			e1:SetCondition(cm.thcon)
-			e1:SetOperation(cm.thop)
-			e1:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e1,tp)
-		end
+		ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(m,1))
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetLabel(ct)
+	e1:SetCondition(cm.thcon)
+	e1:SetOperation(cm.thop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 function cm.thfilter(c)
 	return c:IsSetCard(0x97e) and (c:IsAbleToHand() or c:IsAbleToDeck())
@@ -94,13 +92,16 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE,0,nil)
-	local sg=rg:FilterSelect(tp,Card.IsAbleToHand,1,e:GetLabel()-1,nil)
-	if #sg>0 then
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg)
-		rg:Sub(sg)
+	local ct=e:GetLabel()
+	if ct>1 and rg:IsExists(Card.IsAbleToHand,1,nil) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+		local sg=rg:FilterSelect(tp,Card.IsAbleToHand,1,ct-1,nil)
+		if #sg>0 then
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
+			rg:Sub(sg)
+		end
 	end
 	Duel.SendtoDeck(rg,nil,2,REASON_EFFECT)
 end

@@ -38,7 +38,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	g:ForEach(Card.ResetEffect,EFFECT_PUBLIC,RESET_CODE)
 	local ct=g:FilterCount(cm.filter,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local sg=Duel.SelectMatchingCard(tp,cm.disfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local sg=Duel.SelectMatchingCard(tp,cm.disfilter,tp,0,LOCATION_ONFIELD,1,ct,nil)
 	if #sg==0 then return end
 	Duel.HintSelection(sg)
 	local c=e:GetHandler()

@@ -74,11 +74,12 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,tc)   
 	end
 	if Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_REMOVED,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then 
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil)
-	local tc=g:GetFirst()
-	if #g>0 then
-		 Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) 
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
+		local g=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil)
+		local tc=g:GetFirst()
+		if #g>0 then
+			 Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) 
+		end
 	end
 end
 
