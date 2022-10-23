@@ -60,14 +60,14 @@ function c72101202.initial_effect(c)
 	e9:SetType(EFFECT_TYPE_SINGLE)
 	e9:SetCode(EFFECT_CANNOT_DISABLE_SUMMON)
 	e9:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e9:SetValue(c72101205.cdval)
+	e9:SetValue(c72101202.cdval)
 	c:RegisterEffect(e9)
 	--changdi zhaohuan buneng fadong
 	local e10=Effect.CreateEffect(c)
 	e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e10:SetCode(EVENT_SUMMON_SUCCESS)
-	e10:SetCondition(c72101205.cdcon)
-	e10:SetOperation(c72101205.cdop)
+	e10:SetCondition(c72101202.cdcon)
+	e10:SetOperation(c72101202.cdop)
 	c:RegisterEffect(e10)
 
 
@@ -178,23 +178,36 @@ function c72101202.effop(e,tp,eg,ep,ev,re,r,rp)
 		if et>0 then
 			Duel.ChangePosition(h,POS_FACEUP_ATTACK)
 			--fankai xiaoguo wuxiao
-			local e11=Effect.CreateEffect(c)
-			e11:SetType(EFFECT_TYPE_FIELD)
-			e11:SetCode(EFFECT_DISABLE)
-			e11:SetRange(LOCATION_MZONE)
-			e11:SetTargetRange(0,LOCATION_MZONE)
-			e11:SetTarget(c72101202.fktg)
-			e11:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			c:RegisterEffect(e11,tp)
+			local r=Duel.GetMatchingGroup(aux.NegateMonsterFilter,tp,0,LOCATION_MZONE,nil)
+			local rc=r:GetFirst()
+			while rc do
+				Duel.NegateRelatedChain(rc,RESET_TURN_SET)
+				local e11=Effect.CreateEffect(e:GetHandler())
+				e11:SetType(EFFECT_TYPE_SINGLE)
+				e11:SetCode(EFFECT_DISABLE)
+				e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e11:SetReset(RESET_EVENT+RESETS_STANDARD)
+				rc:RegisterEffect(e11)
+				local e12=Effect.CreateEffect(e:GetHandler())
+				e12:SetType(EFFECT_TYPE_SINGLE)
+				e12:SetCode(EFFECT_DISABLE_EFFECT)
+				e12:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e12:SetReset(RESET_EVENT+RESETS_STANDARD)
+				e12:SetValue(RESET_TURN_SET)
+				rc:RegisterEffect(e12)
+				rc=r:GetNext()
+			end
 		end
 		local j=Duel.GetMatchingGroup(c72101202.backfilter,tp,LOCATION_REMOVED,0,nil)
 		local jt=j:GetCount()
 		if jt>0 and Duel.SelectYesNo(tp,aux.Stringid(72101202,5)) then
 			Duel.SendtoDeck(j,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 			Duel.BreakEffect()
-			if Duel.IsPlayerCanDraw(tp,jt) then
+			if Duel.IsPlayerCanDraw(tp,jt) and jt<4 then
 				Duel.Draw(tp,jt,REASON_EFFECT)
-			end
+			elseif Duel.IsPlayerCanDraw(tp,3) then
+				Duel.Draw(tp,3,REASON_EFFECT)
+			else return end
 		end
 	end
 end
@@ -231,18 +244,18 @@ function c72101202.pcop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 --changdi zhaohuan bubei wuxiao
-function c72101205.cdval(e,tp)
+function c72101202.cdval(e,tp)
 	return Duel.IsPlayerAffectedByEffect(tp,72101207) 
 end
 --changdi zhaohuan chenggong bufadong
-function c72101205.cdcon(e,tp,eg,ep,ev,re,r,rp)
+function c72101202.cdcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,72101207) 
 end
-function c72101205.genchainlm(c)
+function c72101202.genchainlm(c)
 	return  function (e,rp,tp)
 				return e:GetHandler():IsSetCard(0xcea)
 			end
 end
-function c72101205.cdop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SetChainLimitTillChainEnd(c72101205.genchainlm(e:GetHandler()))
+function c72101202.cdop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SetChainLimitTillChainEnd(c72101202.genchainlm(e:GetHandler()))
 end

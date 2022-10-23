@@ -76,23 +76,29 @@ function c67210102.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1,true)
-	local reg=Card.RegisterEffect
-	Card.RegisterEffect=function(sc,se,bool)
-							if se:GetRange()&LOCATION_PZONE>0  then
-								se:SetRange(LOCATION_SZONE)
-								se:SetReset(RESET_EVENT+RESETS_STANDARD)
-							end
-							reg(sc,se,bool)
-						end
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetDescription(aux.Stringid(67210102,0))
+		e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e2:SetCode(EVENT_TO_HAND)
+		e2:SetRange(LOCATION_SZONE)
+		e2:SetCondition(c67210102.tgcon)
+		e2:SetOperation(c67210102.tgop)
+		tc:RegisterEffect(e2)
+	end
+end
+function c67210102.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsControler,1,nil,1-tp)
+end
 
-		if tc.initial_effect then
-			local ini=c67210102.initial_effect
-			c67210102.initial_effect=function() end
-			tc:ReplaceEffect(67210102,0)
-			c67210102.initial_effect=ini
-			tc.initial_effect(tc)
+function c67210102.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local sg=g:RandomSelect(tp,1)
+		Duel.Hint(HINT_CARD,0,67210102)
+		if Duel.SendtoGrave(sg,REASON_EFFECT)~=0 and e:GetHandler():IsAbleToDeck() then
+			Duel.BreakEffect()
+			Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_EFFECT)
 		end
-
-	Card.RegisterEffect=reg
 	end
 end

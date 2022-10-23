@@ -26,14 +26,6 @@ function c9910915.initial_effect(c)
 	e3:SetTargetRange(0,1)
 	e3:SetCondition(c9910915.atkcon)
 	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_CANNOT_DISCARD_DECK)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetTargetRange(0,1)
-	e4:SetCondition(c9910915.effcon)
-	c:RegisterEffect(e4)
 	--search
 	local e5=Effect.CreateEffect(c)
 	e5:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
@@ -79,10 +71,6 @@ end
 function c9910915.atkcon(e)
 	local tc=e:GetHandler():GetEquipTarget()
 	return tc and Duel.GetAttacker()==tc
-end
-function c9910915.effcon(e)
-	local tc=e:GetHandler():GetEquipTarget()
-	return tc
 end
 function c9910915.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

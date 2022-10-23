@@ -10,18 +10,27 @@ function c29065606.initial_effect(c)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCondition(c29065606.eqcon)
 	e1:SetOperation(c29065606.eqop)
-	c:RegisterEffect(e1)   
-	--Disable
+	c:RegisterEffect(e1)
+	--indes
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_ONFIELD,0)
+	e2:SetTarget(c29065606.indtg)
+	e2:SetValue(aux.tgoval)
+	c:RegisterEffect(e2)
+	--indes
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(29065606,0))
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
-	e3:SetCondition(c29065606.descon)
-	e3:SetTarget(c29065606.destg)
-	e3:SetOperation(c29065606.desop)
-	c:RegisterEffect(e3)  
+	e3:SetTargetRange(LOCATION_ONFIELD,0)
+	e3:SetTarget(c29065606.indtg)
+	e3:SetValue(aux.indoval)
+	c:RegisterEffect(e3)
 end
 function c29065606.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x87ad) and c:IsLevel(4) and Duel.GetCurrentPhase()==PHASE_MAIN2
@@ -56,44 +65,6 @@ end
 function c29065606.eqlimit(e,c)
 	return c==e:GetLabelObject() 
 end
-function c29065606.descon(e,tp,eg,ep,ev,re,r,rp)
-	return (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
+function c29065606.indtg(e,c)
+	return (c:IsFaceup() or c:GetEquipTarget()) and c:IsType(TYPE_EQUIP)
 end
-function c29065606.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
-	if chk==0 then return g:GetCount()>0 end
-end
-function c29065606.desop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
-	if g:GetCount()>0 then
-	local tc=g:GetFirst()
-	while tc do
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_TRIGGER)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_UPDATE_ATTACK)
-		e3:SetRange(LOCATION_MZONE)
-		e3:SetValue(-1000)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e3)
-		tc=g:GetNext()   
-	end
-	end
-end
-
-
-
-
-
-
-
-
-
-
-
-

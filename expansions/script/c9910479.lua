@@ -15,28 +15,20 @@ function c9910479.initial_effect(c)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910479,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_POSITION)
+	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetCountLimit(1,9910480)
 	e2:SetCost(c9910479.spcost)
 	e2:SetTarget(c9910479.sptg)
 	e2:SetOperation(c9910479.spop)
 	c:RegisterEffect(e2)
-	--position
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetOperation(c9910479.posop)
-	c:RegisterEffect(e3)
 	--set
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_DESTROYED)
-	e4:SetCountLimit(1,9910481)
+	e4:SetCountLimit(1,9910480)
 	e4:SetCondition(c9910479.setcon)
 	e4:SetTarget(c9910479.settg)
 	e4:SetOperation(c9910479.setop)
@@ -46,7 +38,7 @@ function c9910479.pencon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,1,e:GetHandler(),0x3950)
 end
 function c9910479.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,2,nil) end
 	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
@@ -56,8 +48,8 @@ function c9910479.penop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	local dg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
 	if dg:GetCount()<2 then return end
-	if Duel.Destroy(dg,REASON_EFFECT)~=2 then return end
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+	if Duel.Destroy(dg,REASON_EFFECT)~=2 or Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<2 then return end
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,2)
 	Duel.ConfirmCards(tp,g)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=g:FilterSelect(tp,Card.IsAbleToRemove,1,1,nil)
@@ -90,18 +82,19 @@ function c9910479.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910479.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	end
-end
-function c9910479.posop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910479,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-		local sg=g:Select(tp,1,2,nil)
-		if #sg==0 then return end
-		Duel.HintSelection(sg)
-		Duel.ChangePosition(sg,POS_FACEDOWN_DEFENSE)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) then
+		local g1=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,0,nil)
+		local g2=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,0,LOCATION_MZONE,nil)
+		if #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9910479,1)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+			local sg1=g1:Select(tp,1,1,nil)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+			local sg2=g2:Select(tp,1,1,nil)
+			sg1:Merge(sg2)
+			Duel.HintSelection(sg1)
+			Duel.ChangePosition(sg1,POS_FACEDOWN_DEFENSE)
+		end
 	end
 end
 function c9910479.setcon(e,tp,eg,ep,ev,re,r,rp)

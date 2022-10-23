@@ -15,28 +15,20 @@ function c9910476.initial_effect(c)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910476,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
+	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetCountLimit(1,9910477)
 	e2:SetCost(c9910476.spcost)
 	e2:SetTarget(c9910476.sptg)
 	e2:SetOperation(c9910476.spop)
 	c:RegisterEffect(e2)
-	--destroy
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetOperation(c9910476.desop)
-	c:RegisterEffect(e3)
 	--set
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_DESTROYED)
-	e4:SetCountLimit(1,9910478)
+	e4:SetCountLimit(1,9910477)
 	e4:SetCondition(c9910476.setcon)
 	e4:SetTarget(c9910476.settg)
 	e4:SetOperation(c9910476.setop)
@@ -92,17 +84,19 @@ function c9910476.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910476.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	end
-end
-function c9910476.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910476,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.HintSelection(sg)
-		Duel.Destroy(sg,REASON_EFFECT)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) then
+		local g1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
+		local g2=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+		if #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9910476,1)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local sg1=g1:Select(tp,1,1,nil)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local sg2=g2:Select(tp,1,1,nil)
+			sg1:Merge(sg2)
+			Duel.HintSelection(sg1)
+			Duel.Destroy(sg1,REASON_EFFECT)
+		end
 	end
 end
 function c9910476.setcon(e,tp,eg,ep,ev,re,r,rp)

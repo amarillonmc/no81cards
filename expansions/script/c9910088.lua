@@ -33,7 +33,7 @@ function c9910088.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9910088.disfilter(c,tp)
-	return c:IsDiscardable(REASON_EFFECT)
+	return c:IsSetCard(0x9951) and c:IsType(TYPE_MONSTER) and c:IsDiscardable(REASON_EFFECT)
 		and Duel.IsExistingMatchingCard(c9910088.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,c)
 end
 function c9910088.sumfilter(c)

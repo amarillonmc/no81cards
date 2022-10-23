@@ -128,9 +128,9 @@ function c72101205.wop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
 
 		local tc=Duel.SelectMatchingCard(tp,c72101205.wofilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
-		local sg=sg:GetCount()
+		local sgc=sg:GetCount()
 		tc:EnableCounterPermit(0x7210)
-		tc:AddCounter(0x7210,sg,true)
+		tc:AddCounter(0x7210,sgc,true)
 	end
 end
 

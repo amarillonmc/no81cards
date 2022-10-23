@@ -155,7 +155,7 @@ function c79029816.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,2000,REASON_EFFECT)
 	end
 	if bit.band(flag1,flag2)==0 and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) then 
-	local ng=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local ng=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,2,nil)
 	local mc=ng:GetFirst()
 	while mc do
 		Duel.NegateRelatedChain(mc,RESET_TURN_SET)

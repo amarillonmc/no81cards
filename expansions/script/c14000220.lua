@@ -31,12 +31,13 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.rmtg)
 	e3:SetOperation(cm.rmop)
 	c:RegisterEffect(e3)
-	--to hand
+	--get effect
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,0))
-	e4:SetCategory(CATEGORY_DESTROY)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e4:SetCode(EVENT_TO_DECK)
+	e4:SetDescription(aux.Stringid(m,1))
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_REMOVE)
+	e4:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetCountLimit(1)
 	e4:SetCondition(cm.thcon)
 	e4:SetTarget(cm.thtg)
 	e4:SetOperation(cm.thop)
@@ -71,20 +72,20 @@ function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(g1,REASON_COST)
 end
 function cm.cfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_EARTH) and not c:IsPreviousLocation(LOCATION_DECK)
+	return c:IsRace(RACE_MACHINE) and not c:IsPreviousLocation(LOCATION_DECK)
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil)
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,0)
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,POS_FACEDOWN) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,PLAYER_ALL,LOCATION_ONFIELD)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp,POS_FACEDOWN)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
@@ -102,25 +103,30 @@ end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_EFFECT)
 end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousPosition(POS_FACEUP) and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
+function cm.thfilter(c)
+	return c:IsRace(RACE_MACHINE) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_MZONE)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,PLAYER_ALL,LOCATION_ONFIELD)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,nil)
-	local ct1=Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	if g:GetCount()>0 then
-		local ct2=Duel.SendtoHand(g,nil,REASON_EFFECT)
-		if ct1>0 and ct2>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,ct2,nil)
-			Duel.HintSelection(sg)
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) and Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,POS_FACEDOWN) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp,POS_FACEDOWN)
+			local tc=g:GetFirst()
+			if tc then
+				Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
+			end
 		end
 	end
 end

@@ -32,13 +32,6 @@ function c71400069.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
-function c71400069.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	while tc do
-		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),71400069,RESET_PHASE+PHASE_END,0,1)
-		tc=eg:GetNext()
-	end
-end
 function c71400069.filtercon1(c)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_LINK)
 end
@@ -51,7 +44,7 @@ function c71400069.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 function c71400069.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler(),tp,POS_FACEDOWN)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler(),tp,POS_FACEDOWN) end
 end
 function c71400069.filter1(c)
 	return c:IsCode(71400038) and c:IsAbleToHand()

@@ -9,10 +9,10 @@ function c9911056.initial_effect(c)
 	e1:SetCondition(c9911056.hspcon)
 	e1:SetOperation(c9911056.hspop)
 	c:RegisterEffect(e1)
-	--spsummon from grave
+	--add counter
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9911056,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_COUNTER)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9911056)
@@ -39,36 +39,20 @@ end
 function c9911056.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.PayLPCost(tp,1000)
 end
-function c9911056.spfilter1(c,e,tp,tid)
-	return c:GetTurnID()==tid and bit.band(c:GetReason(),REASON_DESTROY)~=0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c9911056.ctfilter(c)
+	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsSetCard(0x9954)
 end
 function c9911056.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tid=Duel.GetTurnCount()
-	if chk==0 then return e:GetHandler():IsCanAddCounter(0x1954,2) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9911056.spfilter1,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp,tid) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+	local ct=Duel.GetMatchingGroupCount(c9911056.ctfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
+	if chk==0 then return ct>0 and e:GetHandler():IsCanAddCounter(0x1954,ct) end
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,ct,0,0x1954)
 end
 function c9911056.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tid=Duel.GetTurnCount()
-	if not c:IsRelateToEffect(e) or not c:AddCounter(0x1954,2) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9911056.spfilter1,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp,tid)
-	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1,true)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2,true)
+	local ct=Duel.GetMatchingGroupCount(c9911056.ctfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
+	if c:IsFaceup() and c:IsRelateToEffect(e) and ct>0 then
+		c:AddCounter(0x1954,ct)
 	end
-	Duel.SpecialSummonComplete()
 end
 function c9911056.spfilter2(c,e,tp)
 	return c:IsSetCard(0x8e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp)>0

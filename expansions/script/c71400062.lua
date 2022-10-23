@@ -7,7 +7,7 @@ function c71400062.initial_effect(c)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	e0:SetCondition(yume.YumeCon)
 	c:RegisterEffect(e0)
-	--direct attack
+	--extra attack
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_EXTRA_ATTACK)
@@ -18,7 +18,7 @@ function c71400062.initial_effect(c)
 	c:RegisterEffect(e1)
 	--sp summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(71400062,1))
+	e2:SetDescription(aux.Stringid(71400062,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -33,7 +33,7 @@ function c71400062.tg1(e,c)
 	return c:IsSetCard(0x714) and cg:IsContains(c)
 end
 function c71400062.filter2(c,e,tp,zone)
-	return c:IsSetCard(0x714) and c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,zone)
+	return c:IsSetCard(0x714) and c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 end
 function c71400062.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local zone=Duel.GetLinkedZone(tp)

@@ -1,15 +1,14 @@
 --战械人形 RO635
 function c29065603.initial_effect(c)
-	--SpecialSummon
+	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,29065603)
-	e1:SetTarget(c29065603.sptg)
-	e1:SetOperation(c29065603.spop)
+	e1:SetTarget(c29065603.thtg)
+	e1:SetOperation(c29065603.thop)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -34,30 +33,31 @@ function c29065603.initial_effect(c)
 	e4:SetLabelObject(e3)
 	c:RegisterEffect(e4)
 end
-function c29065603.spfil(c,e,tp) 
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:GetEquipTarget():IsSetCard(0x87ad) 
+function c29065603.thfilter(c)
+	return c:IsRace(RACE_MACHINE) and c:IsAbleToHand()
 end
-function c29065603.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(c29065603.spfil,tp,LOCATION_SZONE,0,1,nil,e,tp) end
-	local g=Duel.SelectTarget(tp,c29065603.spfil,tp,LOCATION_SZONE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_SZONE)
+function c29065603.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065603.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
 end
-function c29065603.spop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if g:GetCount()<=0 then return end
-	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+function c29065603.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c29065603.thfilter),tp,LOCATION_GRAVE,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+	end
 end
 function c29065603.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+	return rp==1-tp
 end
 function c29065603.negfilter(c)
 	return aux.disfilter1(c)
 end
 function c29065603.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and c29065603.negfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c29065603.negfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and c29065603.negfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c29065603.negfilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectTarget(tp,c29065603.negfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectTarget(tp,c29065603.negfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function c29065603.eftg(e,c)
@@ -83,25 +83,25 @@ function c29065603.disop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
 			tc:RegisterEffect(e3)
 		end
-	if e:GetHandler():IsType(TYPE_LINK) and Duel.SelectYesNo(tp,aux.Stringid(29065603,0)) then 
-		local c=e:GetHandler()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
-		e1:SetTarget(c29065603.xdistg)
-		e1:SetLabelObject(tc)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_CHAIN_SOLVING)
-		e2:SetCondition(c29065603.xdiscon)
-		e2:SetOperation(c29065603.xdisop)
-		e2:SetLabelObject(tc)
-		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
-	end
+		if e:GetHandler():IsType(TYPE_LINK) and Duel.SelectYesNo(tp,aux.Stringid(29065603,0)) then
+			local c=e:GetHandler()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetTargetRange(0,LOCATION_ONFIELD)
+			e1:SetTarget(c29065603.xdistg)
+			e1:SetLabelObject(tc)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_CHAIN_SOLVING)
+			e2:SetCondition(c29065603.xdiscon)
+			e2:SetOperation(c29065603.xdisop)
+			e2:SetLabelObject(tc)
+			e2:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e2,tp)
+		end
 	end
 end
 function c29065603.xdistg(e,c)
@@ -110,15 +110,8 @@ function c29065603.xdistg(e,c)
 end
 function c29065603.xdiscon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	return re:GetHandler():IsOriginalCodeRule(tc:GetOriginalCodeRule())
+	return rp==1-tp and re:GetHandler():IsOriginalCodeRule(tc:GetOriginalCodeRule())
 end
 function c29065603.xdisop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
-
-
-
-
-
-
-

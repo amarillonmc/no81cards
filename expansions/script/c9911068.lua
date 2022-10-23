@@ -51,6 +51,7 @@ function c9911068.thop(e,tp,eg,ep,ev,re,r,rp)
 		local b1=Duel.IsCanRemoveCounter(tp,1,1,0x1954,2,REASON_EFFECT)
 		local b2=Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil)
 		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9911068,0),aux.Stringid(9911068,1))==0) then
+			Duel.BreakEffect()
 			Duel.RemoveCounter(tp,1,1,0x1954,2,REASON_EFFECT)
 		elseif b2 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)

@@ -38,26 +38,61 @@ function c75147502.matfilter(c)
 	return c:IsLinkSetCard(0x1115) and not c:IsLinkAttribute(ATTRIBUTE_EARTH)
 end
 function c75147502.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsFaceup() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
 function c75147502.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsControler(tp) then
+	if tc:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e1:SetRange(LOCATION_ONFIELD)
+		e1:SetRange(LOCATION_MZONE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		e1:SetValue(c75147502.efilter)
 		e1:SetOwnerPlayer(tp)
 		tc:RegisterEffect(e1)
+		local b1=Duel.IsExistingMatchingCard(c75147502.seqfilter,tc:GetControler(),LOCATION_MZONE,0,1,nil)
+		local b2=Duel.IsExistingMatchingCard(c75147502.seqfilter,1-tc:GetControler(),LOCATION_MZONE,0,2,nil)
+		local b3=Duel.IsExistingMatchingCard(c75147502.seqfilter,1-tc:GetControler(),LOCATION_MZONE,0,1,nil)
+		if tc:GetSequence()<5 and not b1 and not b2 and Duel.SelectYesNo(tp,aux.Stringid(75147502,3)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+			local s=0
+			if b3 then
+				local seq=Duel.GetMatchingGroup(c75147502.seqfilter,1-tc:GetControler(),LOCATION_MZONE,0,nil):GetFirst():GetSequence()
+				if (1-tc:GetControler()==tp and seq==6) or 
+				   (1-tc:GetControler()~=tp and seq==5) then
+					s=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~0x400020)
+				else
+					s=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~0x200040)
+				end
+			else
+				s=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~0x600060)
+			end
+			if bit.band(s,0x400020)>0 then
+				if tc:GetControler()~=tp then
+					Duel.MoveSequence(tc,6)
+				else
+					Duel.MoveSequence(tc,5)
+				end
+			elseif bit.band(s,0x200040)>0 then
+				if tc:GetControler()~=tp then
+					Duel.MoveSequence(tc,5)
+				else
+					Duel.MoveSequence(tc,6)
+				end
+			end
+		end
 	end
 end
+function c75147502.seqfilter(c)
+	return c:GetSequence()>4
+end
+
 function c75147502.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end

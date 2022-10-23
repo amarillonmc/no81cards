@@ -1,7 +1,6 @@
 --绯焰悲空
 --21.06.21
-local m=11451540
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--act in set turn
 	local e0=Effect.CreateEffect(c)
@@ -34,13 +33,13 @@ function cm.actcon(e)
 	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=4*Duel.GetMatchingGroupCount(Card.IsPublic,tp,LOCATION_HAND,0,nil)
-	if chk==0 then return ct>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct and Duel.IsPlayerCanDiscardDeck(tp,ct) end
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,ct)
+	local ct=Duel.GetMatchingGroupCount(Card.IsPublic,tp,LOCATION_HAND,LOCATION_HAND,nil)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct+4 and Duel.IsPlayerCanDiscardDeck(tp,ct+4) end
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,ct+4)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local ct=4*Duel.GetMatchingGroupCount(Card.IsPublic,tp,LOCATION_HAND,0,nil)
-	if ct>0 then Duel.DiscardDeck(tp,ct,REASON_EFFECT) end
+	local ct=Duel.GetMatchingGroupCount(Card.IsPublic,tp,LOCATION_HAND,LOCATION_HAND,nil)
+	Duel.DiscardDeck(tp,ct+4,REASON_EFFECT)
 	--summon proc
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetDescription(aux.Stringid(m,0))

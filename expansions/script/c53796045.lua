@@ -24,7 +24,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_DECK,0,1,1,nil,tp,POS_FACEDOWN):GetFirst()
-		if tc and Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)~=0 and tc:IsCode(53799250,53799256,53799267,53796042,53796043,53796044,53796071) then
+		if tc and Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)~=0 and tc:IsCode(53799250,53799256,53799267,53796042,53796043,53796044,53796071,53796072) then
 			local le={tc:GetActivateEffect()}
 			for _,te in pairs(le) do
 				local e1=te:Clone()

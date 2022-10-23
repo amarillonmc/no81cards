@@ -2,8 +2,8 @@
 function c29065610.initial_effect(c)
 	c:SetSPSummonOnce(29065610)
 	--link summon
+	aux.AddLinkProcedure(c,nil,2,2,c29065610.lcheck)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,c29065610.lcheck)
 	--Equip
 	local e1=Effect.CreateEffect(c)   
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS) 
@@ -11,20 +11,23 @@ function c29065610.initial_effect(c)
 	e1:SetCondition(c29065610.eqcon)
 	e1:SetOperation(c29065610.eqop)
 	c:RegisterEffect(e1)
-	--Equip
+	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29065610,0))
-	e2:SetCategory(CATEGORY_EQUIP+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
-	e2:SetTarget(c29065610.eqtg1)
-	e2:SetOperation(c29065610.eqop1)
-	c:RegisterEffect(e2)		
+	e2:SetCondition(c29065610.chcon)
+	e2:SetTarget(c29065610.chtg)
+	e2:SetOperation(c29065610.chop)
+	c:RegisterEffect(e2)
+end
+function c29065610.lfilter(c)
+	return c:IsLinkRace(RACE_MACHINE) and c:IsLinkSetCard(0x87ad)
 end
 function c29065610.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x87ad)
+	return g:IsExists(c29065610.lfilter,1,nil)
 end
 function c29065610.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetHandler():GetMaterial():Filter(Card.IsSetCard,nil,0x7ad):GetCount()>0
@@ -50,55 +53,31 @@ function c29065610.eqop(e,tp,eg,ep,ev,re,r,rp)
 	tc=g:GetNext()
 	end
 end
-
 function c29065610.eqlimit(e,c)
 	return c==e:GetLabelObject() 
 end
-function c29065610.ckxfil(c) 
-	return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_MACHINE)
-end
-function c29065610.eqtfil(c)
-	return c:IsSetCard(0x7ad)
-end
-function c29065610.cthfil(c)
-	return c:GetEquipTarget()~=nil and c:IsAbleToDeck()
-end
-function c29065610.eqtg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29065610.ckxfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(c29065610.eqtfil,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(c29065610.cthfil,tp,LOCATION_SZONE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,0,0)
-end
-function c29065610.eqop1(e,tp,eg,ep,ev,re,r,rp)
+function c29065610.chcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g1=Duel.GetMatchingGroup(c29065610.cthfil,tp,LOCATION_SZONE,0,nil)
-	if g1:GetCount()<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local sg=g1:Select(tp,1,1,nil)
-	Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
-	local g2=Duel.GetMatchingGroup(c29065610.ckxfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
-	if g2:GetCount()<=0 then return end
-	local tc=Duel.SelectMatchingCard(tp,c29065610.eqtfil,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local ec=g2:Select(tp,1,1,nil):GetFirst()
-	if Duel.Equip(tp,ec,tc) then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
-			e1:SetCode(EFFECT_EQUIP_LIMIT)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetLabelObject(tc)
-			e1:SetValue(c29065610.eqlimit1)
-			ec:RegisterEffect(e1)
+	local rc=re:GetHandler()
+	local cseq=c:GetSequence()
+	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
+	local b1=c:IsLinkMarker(LINK_MARKER_BOTTOM_LEFT) and (cseq==5 and seq==0 or cseq==6 and seq==2)
+	local b2=c:IsLinkMarker(LINK_MARKER_BOTTOM) and (cseq==5 and seq==1 or cseq==6 and seq==3)
+	local b3=c:IsLinkMarker(LINK_MARKER_BOTTOM_RIGHT) and (cseq==5 and seq==2 or cseq==6 and seq==4)
+	return rp==tp and re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and rc:IsSetCard(0x7ad) and (b1 or b2 or b3)
+end
+function c29065610.chtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local ftg=re:GetTarget()
+	if chkc then return ftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc) end
+	if chk==0 then return not ftg or ftg(e,tp,eg,ep,ev,re,r,rp,chk) end
+	if re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then
+		e:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	end
+	if ftg then
+		ftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
-function c29065610.eqlimit1(e,c)
-	return c==e:GetLabelObject() 
+function c29065610.chop(e,tp,eg,ep,ev,re,r,rp)
+	local fop=re:GetOperation()
+	fop(e,tp,eg,ep,ev,re,r,rp)
 end
-
-
-
-
-
-
-
-

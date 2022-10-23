@@ -188,7 +188,7 @@ end
 function c72101206.seaop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local xg=e:GetLabel()
-	local g=Duel.SelectMatchingCard(tp,c72101206.seafilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,xg,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c72101206.seafilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,xg,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)

@@ -86,17 +86,19 @@ function cm.spfilter(c,e,tp)
 	return (c:IsLocation(LOCATION_HAND) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or (c:IsLocation(LOCATION_EXTRA) and c:IsXyzSummonable(nil))
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()~=e:GetLabel() and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,e,tp) and cm[0]>0
+	local val=e:GetValue()
+	return Duel.GetTurnCount()~=e:GetLabel() and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,e,tp) and cm[0]>0 and val<cm[0]
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=math.min(cm[0],10)
-	if not Duel.SelectYesNo(tp,aux.Stringid(m,ct)) then return end
+	local val=e:GetValue()
+	local ct=math.min(cm[0]-val,14)
+	if Duel.SelectOption(tp,aux.Stringid(m,ct),aux.Stringid(m,15))==1 then return end
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,e,tp)
 	if #g>0 then
 		local tc=g:GetFirst()
-		cm[0]=cm[0]-1
+		val=val+1
 		if cm[0]>0 then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -105,6 +107,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetLabel(Duel.GetTurnCount()-1)
 			e1:SetCondition(cm.spcon)
 			e1:SetOperation(cm.spop)
+			e1:SetValue(val)
 			e1:SetReset(RESET_PHASE+PHASE_STANDBY)
 			Duel.RegisterEffect(e1,tp)
 		end

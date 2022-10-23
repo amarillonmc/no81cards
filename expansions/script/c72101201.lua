@@ -93,8 +93,9 @@ function c72101201.seatg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c72101201.seaop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.SelectMatchingCard(tp,c72101201.seafilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-	if tc then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c72101201.seafilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	if #tc>0 then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 	end

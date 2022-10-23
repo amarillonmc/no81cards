@@ -75,8 +75,8 @@ function cm.ddcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp)
 end
 function cm.ddtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
 	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,c,1,tp,LOCATION_GRAVE)
 end
 function cm.ddop(e,tp,eg,ep,ev,re,r,rp)

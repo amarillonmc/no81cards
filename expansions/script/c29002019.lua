@@ -2,7 +2,7 @@
 c29002019.named_with_Arknight=1
 function c29002019.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),12,12,c29002019.ovfilter,aux.Stringid(29002019,0))
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),12,12,c29002019.ovfilter,aux.Stringid(29002019,0),12,c29002019.xyzop)
 	c:EnableReviveLimit()   
 	--indes
 	local e3=Effect.CreateEffect(c)
@@ -16,11 +16,21 @@ function c29002019.initial_effect(c)
 	e3:SetTarget(c29002019.itarget)
 	e3:SetOperation(c29002019.ioperation)
 	c:RegisterEffect(e3)  
-end
+end 
 function c29002019.ovfilter(c)
-local tp=c:GetControler()
+	local tp=c:GetControler()
 	local x=Duel.GetActivityCount(tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SPSUMMON)
-	return c:IsFaceup() and x>=12 and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and not c:IsCode(29002019)
+	return c:IsFaceup() and x>=12 and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) 
+end 
+function c29002019.xyzop(e,tp,chk)
+	if chk==0 then return true end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0) 
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 function c29002019.effcon(e)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

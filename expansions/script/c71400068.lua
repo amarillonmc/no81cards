@@ -13,18 +13,19 @@ function c71400068.initial_effect(c)
 	e0:SetCondition(c71400068.regcon)
 	e0:SetOperation(c71400068.regop)
 	c:RegisterEffect(e0)
-	--atk/def
+	--atk up
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+	e1:SetDescription(aux.Stringid(71400068,0))
+	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetType(EFFECT_TYPE_QUICK_F)
+	e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(c71400068.atktg)
-	e1:SetValue(c71400068.atkval)
+	e1:SetCondition(c71400068.con1)
+	e1:SetOperation(c71400068.op1)
 	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(71400068,0))
+	e2:SetDescription(aux.Stringid(71400068,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -53,13 +54,25 @@ function c71400068.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c71400068.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return c:IsCode(25725326) and sumtype & SUMMON_TYPE_LINK==SUMMON_TYPE_LINK
+	return c:IsCode(71400068) and sumtype & SUMMON_TYPE_LINK==SUMMON_TYPE_LINK
 end
-function c71400068.atktg(e,c)
+function c71400068.con1(e,tp,eg,ep,ev,re,r,rp)
+	local c=Duel.GetAttacker()
+	if c:IsControler(1-tp) then c=Duel.GetAttackTarget() end
+	if not c then return false end
+	e:SetLabelObject(c)
 	return c:GetMutualLinkedGroupCount()>0 and c:IsSetCard(0x714)
 end
-function c71400068.atkval(e,c)
-	return c:GetAttack()*2
+function c71400068.op1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetLabelObject()
+	if c:IsRelateToBattle() then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
+		e1:SetValue(c:GetAttack()*2)
+		c:RegisterEffect(e1)
+	end
 end
 function c71400068.filter2con(c,tp)
 	return c:IsPreviousSetCard(0x714) and c:IsType(TYPE_LINK)

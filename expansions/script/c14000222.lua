@@ -13,6 +13,7 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_EXTRA)
 	e1:SetCondition(cm.sprcon)
 	e1:SetOperation(cm.sprop)
+	e1:SetValue(SUMMON_TYPE_FUSION)
 	c:RegisterEffect(e1)
 	--self destroy
 	local e2=Effect.CreateEffect(c)
@@ -54,7 +55,7 @@ function cm.sprfilter1(c,tp,fc)
 end
 function cm.sprfilter2(c,tp,fc,fc1)
 	local g=Group.FromCards(fc1,c)
-	return ((c:IsFusionAttribute(ATTRIBUTE_EARTH) and c:IsRace(RACE_MACHINE) and c:GetOriginalLevel()>=10) or c:IsCode(14000210)) and c:IsAbleToGraveAsCost() and c:IsCanBeFusionMaterial(fc) and Duel.GetLocationCountFromEx(tp,tp,g)>0
+	return ((c:IsFusionAttribute(ATTRIBUTE_EARTH) and c:IsRace(RACE_MACHINE) and c:GetOriginalLevel()>=10) or c:IsCode(14000210)) and c:IsAbleToGraveAsCost() and c:IsCanBeFusionMaterial(fc) and Duel.GetLocationCountFromEx(tp,tp,g,fc)>0
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

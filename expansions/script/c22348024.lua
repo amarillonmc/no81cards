@@ -105,9 +105,7 @@ function c22348024.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c22348024.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local tc=Duel.GetFirstTarget()
 	local lv=e:GetLabel()
-	if not tc:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348024.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,lv,e,tp)
 	if g:GetCount()>0 then

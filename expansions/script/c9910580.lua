@@ -86,7 +86,7 @@ function c9910580.geop(e,tp,eg,ep,ev,re,r,rp,chk)
 	while tc do
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(9910580,2))
-		e1:SetCategory(CATEGORY_DISABLE)
+		e1:SetCategory(CATEGORY_POSITION)
 		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
 		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)

@@ -48,7 +48,7 @@ function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 		if ct%2==0 then
 			if Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)>0 then
 				Duel.BreakEffect()
-				Duel.Draw(tp,2,REASON_EFFECT)
+				Duel.Draw(tp,1,REASON_EFFECT)
 			end
 		else
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

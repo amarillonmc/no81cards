@@ -15,7 +15,7 @@ function c72101210.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,72101211)
+	e2:SetCountLimit(1)
 	e2:SetHintTiming(0,TIMING_MAIN_END)
 	e2:SetCondition(c72101210.tzcon)
 	e2:SetTarget(c72101210.tztg)
@@ -65,7 +65,8 @@ function c72101210.tzcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c72101210.tzfilter(c,e,tp)
-	return c:IsSetCard(0xcea) and c:IsLevel(10) and c:IsSummonable(true,nil) 
+	return c:IsSetCard(0xcea) and c:IsLevel(10) and c:IsSummonable(true,nil)
+		and c:IsType(TYPE_MONSTER)
 end
 function c72101210.tztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c72101210.tzfilter,tp,LOCATION_HAND,0,1,nil) end

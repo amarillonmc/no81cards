@@ -19,6 +19,7 @@ function c9911003.initial_effect(c)
 	c:RegisterEffect(e2)
 	--change attribute
 	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)

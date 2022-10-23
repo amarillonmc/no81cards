@@ -30,11 +30,11 @@ function cm.initial_effect(c)
 	end
 	--xyzmat SpecialSummon
 	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
-	e3:SetLabel(0)
+	--e3:SetCountLimit(1)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
@@ -135,32 +135,43 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	cm.check=50
 end
-function cm.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
+function cm.ov(c,tp)
+	local xg=Duel.GetOverlayGroup(tp,1,1)
+	xg:RemoveCard(c)
+	return #xg>0
 end
-function cm.overmatfilter(c,e,tp)
-	return Duel.GetOverlayGroup(tp,1,1):IsExists(cm.spfilter,1,c,e,tp)
+function cm.ck(c)
+	local b1=c:IsFacedown() and c:IsLocation(LOCATION_REMOVED)
+	local b2=c:IsLocation(LOCATION_DECK+LOCATION_EXTRA)
+	return c:IsType(TYPE_MONSTER) and not (b1 or b2)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local og=e:GetHandler():GetOverlayGroup():Filter(cm.spfilter,nil,e,tp)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #og>0 end
+	local c=e:GetHandler()
+	local mg=c:GetOverlayGroup():Filter(cm.ov,nil,tp)
+	if chk==0 then return #mg>0 end
 	e:SetLabel(0)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
-	local g=og:Select(tp,1,1,nil)
-	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_COST)>0 then
+	local g=mg:FilterSelect(tp,cm.ov,1,1,nil,tp)
+	if #g>0 and Duel.SendtoGrave(g,REASON_COST)>0 then
 		Duel.RaiseSingleEvent(e:GetHandler(),EVENT_DETACH_MATERIAL,e,0,0,0,0)
 		e:SetLabel(100)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_OVERLAY)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or e:GetLabel()~=100 then return end
+	local c=e:GetHandler()
+	local xg=Duel.GetOverlayGroup(tp,1,1)
+	if e:GetLabel()~=100 or #xg==0 then return end
 	e:SetLabel(0)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.GetOverlayGroup(tp,1,1):FilterSelect(tp,cm.spfilter,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,1-tp,false,false,POS_FACEUP_ATTACK)
-		Duel.ConfirmCards(1-tp,g)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
+	local g=xg:Select(tp,1,1,nil)
+	if #g>0 and Duel.SendtoGrave(g,REASON_EFFECT)>0 then
+		Duel.RaiseSingleEvent(c,EVENT_DETACH_MATERIAL,e,0,0,0,0)
+		local tc=Duel.GetOperatedGroup():Filter(cm.ck,nil):GetFirst()
+		if tc and Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0  
+			and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK,1-tp)
+			and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+			Duel.SpecialSummon(tc,0,tp,1-tp,false,false,POS_FACEUP_ATTACK)
+		end
 	end
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)

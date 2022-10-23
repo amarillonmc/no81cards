@@ -57,23 +57,24 @@ function c79029806.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local tc=Duel.SelectMatchingCard(tp,c79029806.filter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if tc then
-		local bool_a=tc:IsAbleToGrave()
-		local bool_b=tc:IsAbleToHand()
-		local op=2
-		if bool_a and bool_b then
-			op=Duel.SelectOption(tp,aux.Stringid(79029806,2),aux.Stringid(79029806,3))
-		elseif bool_a then
-			op=Duel.SelectOption(tp,aux.Stringid(79029806,2))
-		elseif bool_b then
-			op=Duel.SelectOption(tp,aux.Stringid(79029806,3))+1
-		end
-		if op==0 then
-			Duel.SendtoHand(tc,tp,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)  
-		elseif op==1 then
-			Duel.SendtoGrave(tc,REASON_EFFECT)
-		else
-		end
+		--local bool_a=tc:IsAbleToGrave()
+		--local bool_b=tc:IsAbleToHand()
+		--local op=2
+		--if bool_a and bool_b then
+		--	op=Duel.SelectOption(tp,aux.Stringid(79029806,2),aux.Stringid(79029806,3))
+		--elseif bool_a then
+		--	op=Duel.SelectOption(tp,aux.Stringid(79029806,2))
+		--elseif bool_b then
+		--	op=Duel.SelectOption(tp,aux.Stringid(79029806,3))+1
+		--end
+		--if op==0 then
+		--	Duel.SendtoHand(tc,tp,REASON_EFFECT)
+		--	Duel.ConfirmCards(1-tp,tc)  
+		--elseif op==1 then
+		--	Duel.SendtoGrave(tc,REASON_EFFECT)
+		--else
+		--end
+		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

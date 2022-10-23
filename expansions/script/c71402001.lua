@@ -55,7 +55,18 @@ function c71402001.op1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerCanSpecialSummonMonster(tp,71402002,0,TYPES_TOKEN_MONSTER,5000,5000,12,RACE_FIEND,ATTRIBUTE_LIGHT,POS_FACEUP) then
 		local token=Duel.CreateToken(tp,71402002)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetTargetRange(0,LOCATION_MZONE)
+		e1:SetValue(c71402001.atklimit)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		token:RegisterEffect(e1)
 	end
+end
+function c71402001.atklimit(e,c)
+	return c~=e:GetHandler()
 end
 function c71402001.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsPublic,tp,LOCATION_HAND,0,1,nil) end

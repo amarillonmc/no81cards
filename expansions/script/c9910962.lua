@@ -30,10 +30,10 @@ function c9910962.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then return Duel.IsExistingTarget(c9910962.filter,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g1=Duel.SelectTarget(tp,c9910962.filter,tp,LOCATION_MZONE,0,1,1,nil)
 	local res=g1:GetFirst():IsType(TYPE_SYNCHRO)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g2=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,2,nil)
 	g1:Merge(g2)
 	local tep=nil
@@ -45,7 +45,7 @@ function c9910962.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		e:SetCategory(CATEGORY_REMOVE)
 		e:SetLabel(0)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,g1:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g1,g1:GetCount(),0,0)
 end
 function c9910962.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)

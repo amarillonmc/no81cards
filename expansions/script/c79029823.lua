@@ -124,6 +124,7 @@ function c79029823.seqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsImmuneToEffect(e) or not c:IsControler(tp) or Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,79029825,0,TYPES_TOKEN_MONSTER,2100,2100,3,RACE_MACHINE,ATTRIBUTE_DARK) then return end
 	local zone=aux.SequenceToGlobal(tp,LOCATION_MZONE,c:GetSequence())
+	if zone>=65536 then zone=zone/65536 end 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	local fd=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 	Duel.Hint(HINT_ZONE,tp,fd)

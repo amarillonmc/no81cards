@@ -27,6 +27,18 @@ function c9910033.initial_effect(c)
 	e2:SetTarget(c9910033.sptg)
 	e2:SetOperation(c9910033.spop)
 	c:RegisterEffect(e2)
+	--synchro level
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_SYNCHRO_LEVEL)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(c9910033.slevel)
+	c:RegisterEffect(e3)
+end
+function c9910033.slevel(e,c)
+	local lv=aux.GetCappedLevel(e:GetHandler())
+	return (4<<16)+lv
 end
 function c9910033.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,1,e:GetHandler(),0x3950)

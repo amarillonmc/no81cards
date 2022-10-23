@@ -5,6 +5,15 @@ function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,10,2,nil,nil,99)
 	c:EnableReviveLimit()
+	--indes
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_IMMUNE_EFFECT)
+	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e0:SetRange(LOCATION_MZONE)
+	e0:SetCondition(cm.indcon)
+	e0:SetValue(cm.efilter)
+	c:RegisterEffect(e0)
 	--baseatk
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -22,6 +31,12 @@ function cm.initial_effect(c)
 	e2:SetCost(cm.indcost)
 	e2:SetOperation(cm.indop)
 	c:RegisterEffect(e2)
+end
+function cm.indcon(e)
+	return e:GetHandler():GetOverlayCount()>0
+end
+function cm.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
 end
 function cm.atkfilter(c)
 	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_EARTH) and c:GetAttack()>=0
@@ -44,14 +59,11 @@ function cm.indop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(1)
 		e1:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
-		c:RegisterFlagEffect(0,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_IMMUNE_EFFECT)
-		e2:SetValue(cm.efilter)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_UPDATE_ATTACK)
+		e2:SetValue(4000)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e2)
-		c:RegisterFlagEffect(0,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 	end
-end
-function cm.efilter(e,re)
-	return e:GetHandler()~=re:GetOwner()
 end

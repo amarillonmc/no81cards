@@ -43,9 +43,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.filter(c,e,tp,g)
 	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_EARTH)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and (c:IsLocation(LOCATION_GRAVE) and Duel.GetMZoneCount(tp,g)>0
-		or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetLocationCountFromEx(tp,tp,g)>0 or not c:IsLocation(LOCATION_EXTRA))
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=eg:Filter(cm.cfilter,nil,tp)
@@ -55,13 +53,14 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_EXTRA)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local g=eg:Filter(cm.cfilter,nil,tp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp,nil)
+		local sg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp,g)
 		if sg:GetCount()>0 then
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 		end

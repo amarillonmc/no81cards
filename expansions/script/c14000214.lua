@@ -19,23 +19,26 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--destroy replace
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EFFECT_DESTROY_REPLACE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetTarget(cm.reptg)
+	e2:SetTarget(cm.desreptg)
+	e2:SetValue(cm.desrepval)
+	e2:SetOperation(cm.desrepop)
 	c:RegisterEffect(e2)
-	--return
+	--negate
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
-	e3:SetCategory(CATEGORY_TOHAND)
+	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCode(EVENT_CHAINING)
 	e3:SetCountLimit(1)
-	e3:SetCost(cm.retcost)
-	e3:SetTarget(cm.rettg)
-	e3:SetOperation(cm.retop)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(cm.discon)
+	e3:SetCost(cm.discost)
+	e3:SetTarget(cm.distg)
+	e3:SetOperation(cm.disop)
 	c:RegisterEffect(e3)
 end
 function cm.xyzfilter(c)
@@ -48,14 +51,22 @@ function cm.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 end
-function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.repfilter(c,tp)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD)
+		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+end
+function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsReason(REASON_BATTLE+REASON_EFFECT)
+	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp)
 		and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
-	if Duel.SelectEffectYesNo(tp,c,96) then
-		c:RemoveOverlayCard(tp,1,1,REASON_EFFECT)
-		return true
-	else return false end
+	return Duel.SelectEffectYesNo(tp,c,96)
+end
+function cm.desrepval(e,c)
+	return cm.repfilter(c,e:GetHandlerPlayer())
+end
+function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_EFFECT)
+	Duel.Hint(HINT_CARD,0,m)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
@@ -78,31 +89,23 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 	end
 end
-function cm.retcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
+function cm.discon(e,tp,eg,ep,ev,re,r,rp)
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	return loc==LOCATION_HAND and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
-function cm.retfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_EARTH) and c:IsAbleToHand()
+function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function cm.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.retfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,nil,tp,LOCATION_MZONE)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,nil,1-tp,LOCATION_MZONE)
+function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return aux.nbcon(tp,re) end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
+	end
 end
-function cm.retop(e,tp,eg,ep,ev,re,r,rp)
-	local ct1=Duel.GetMatchingGroupCount(cm.retfilter,tp,LOCATION_MZONE,0,nil)
-	local ct2=Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.retfilter,tp,LOCATION_MZONE,0,1,ct1,nil)
-	if g:GetCount()>0 then
-		local ct3=Duel.SendtoHand(g,nil,REASON_EFFECT)
-		if ct2>0 and ct3>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,ct3,nil)
-			Duel.HintSelection(sg)
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		end
+function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 	end
 end
