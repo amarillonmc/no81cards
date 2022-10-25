@@ -63,7 +63,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local res=Duel.IsPlayerCanRelease(tp)
-	local tc=Duel.SelectMatchingCard(tp,cm.penfilter,tp,LOCATION_DECK,0,1,1,nil,res):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,cm.penfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,res):GetFirst()
 	if tc and Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) and tc:IsLocation(LOCATION_PZONE) then
 		local b1=tc:IsReleasableByEffect()
 		local b2=tc:IsCanAddCounter(0x1,1)

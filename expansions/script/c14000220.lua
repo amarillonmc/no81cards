@@ -103,9 +103,8 @@ end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_EFFECT)
 end
-function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+function cm.thcon(e)
+	return e:GetHandler():GetOriginalRace()==RACE_MACHINE
 end
 function cm.thfilter(c)
 	return c:IsRace(RACE_MACHINE) and c:IsAbleToHand()

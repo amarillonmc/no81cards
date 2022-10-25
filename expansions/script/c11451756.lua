@@ -35,9 +35,9 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and cm.desfilter(chkc,tp) end
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_ONFIELD,0,1,nil,tp) and (sa or sb) end
 	if c:IsLocation(LOCATION_HAND) then
-		Duel.RegisterFlagEffect(tp,m+1,0,RESET_PHASE+PHASE_END,1)
+		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
 	elseif c:IsLocation(LOCATION_REMOVED) then
-		Duel.RegisterFlagEffect(tp,m+10,0,RESET_PHASE+PHASE_END,1)
+		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
@@ -72,9 +72,9 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsPlayerCanDraw(tp,1) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (sa or sb) end
 	if c:IsLocation(LOCATION_HAND) then
-		Duel.RegisterFlagEffect(tp,m+1,0,RESET_PHASE+PHASE_END,1)
+		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
 	elseif c:IsLocation(LOCATION_REMOVED) then
-		Duel.RegisterFlagEffect(tp,m+10,0,RESET_PHASE+PHASE_END,1)
+		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)

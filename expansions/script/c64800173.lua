@@ -82,7 +82,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	else
 		local mg=mg1:Filter(Card.IsCanBeRitualMaterial,tc,tc)
-		mg:AddCard(mg2)
+		mg:Merge(mg2)
 		if tc.mat_filter then
 			mg=mg:Filter(tc.mat_filter,tc,tp)
 		else

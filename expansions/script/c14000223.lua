@@ -15,7 +15,6 @@ function cm.initial_effect(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -25,6 +24,7 @@ function cm.initial_effect(c)
 	e2:SetLabel(1)
 	c:RegisterEffect(e2)
 	local e2_1=e2:Clone()
+	e2_1:SetCategory(CATEGORY_TOHAND)
 	e2_1:SetDescription(aux.Stringid(m,1))
 	e2_1:SetLabel(2)
 	c:RegisterEffect(e2_1)
@@ -111,30 +111,42 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_ADJUST)
 		e2:SetRange(LOCATION_MZONE)
+		e2:SetCondition(cm.adjustcon)
 		e2:SetOperation(cm.adjustop)
+		e2:SetLabelObject(c)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e2)
 	end
 end
 function cm.filter(c,e)
-	return c:IsCanOverlay() and not tc:IsImmuneToEffect(e)
+	return c:IsCanOverlay() and not c:IsImmuneToEffect(e)
+end
+function cm.adjustcon(e,tp,eg,ep,ev,re,r,rp)
+	local g1=Duel.GetMatchingGroup(cm.filter,e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler(),e)
+	return g1 and #g1>0
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local phase=Duel.GetCurrentPhase()
 	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL then return end
-	local c=e:GetHandler()
+	local c=e:GetLabelObject()
+	if not c:IsLocation(LOCATION_MZONE) then return end
 	local g1=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c,e)
 	if #g1>0 then
 		local tc=g1:GetFirst()
+		local xg=Group.CreateGroup()
 		while tc do
+			tc:CancelToGrave()
 			local og=tc:GetOverlayGroup()
 			if og:GetCount()>0 then
-				Duel.SendtoGrave(og,REASON_RULE)
+				xg.Merge(og)
 			end
-			Duel.Overlay(c,Group.FromCards(tc))
 			tc=g1:GetNext()
 		end
-		Duel.Readjust()
+		if #g1>0 then
+			Duel.SendtoGrave(xg,REASON_RULE)
+			Duel.Overlay(c,g1)
+			Duel.Readjust()
+		end
 	end
 end
 function cm.efilter(e,te)

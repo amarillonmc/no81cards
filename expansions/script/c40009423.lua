@@ -44,7 +44,7 @@ function c40009423.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c40009423.tgfilter,1,nil,tp)
 end
 function c40009423.setfilter(c)
-	return c:IsSetCard(0x137) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and c:IsType(TYPE_CONTINUOUS)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and c:IsType(TYPE_CONTINUOUS)
 end
 function c40009423.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c40009423.setfilter(chkc) end

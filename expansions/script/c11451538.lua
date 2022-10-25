@@ -87,7 +87,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if #og>0 then
 			Duel.BreakEffect()
 			Duel.DisableShuffleCheck()
-			if Duel.SendtoHand(ag-og,1-tp,REASON_EFFECT) and og:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)==#sg then
+			if Duel.SendtoHand(ag-og,1-tp,REASON_EFFECT) then Duel.ShuffleHand(1-tp) end
+			if og:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)==#sg then
 				local tg=Duel.GetMatchingGroup(cm.xyzfilter,tp,LOCATION_EXTRA,0,nil,og,tp)
 				if #tg>0 then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

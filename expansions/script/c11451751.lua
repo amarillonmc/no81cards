@@ -35,9 +35,9 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,2,nil) and (sa or sb) end
 	if c:IsLocation(LOCATION_HAND) then
-		Duel.RegisterFlagEffect(tp,m+1,0,RESET_PHASE+PHASE_END,1)
+		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
 	elseif c:IsLocation(LOCATION_REMOVED) then
-		Duel.RegisterFlagEffect(tp,m+10,0,RESET_PHASE+PHASE_END,1)
+		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,tp,LOCATION_HAND)
@@ -69,9 +69,9 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (sa or sb) end
 	if c:IsLocation(LOCATION_HAND) then
-		Duel.RegisterFlagEffect(tp,m+1,0,RESET_PHASE+PHASE_END,1)
+		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
 	elseif c:IsLocation(LOCATION_REMOVED) then
-		Duel.RegisterFlagEffect(tp,m+10,0,RESET_PHASE+PHASE_END,1)
+		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)

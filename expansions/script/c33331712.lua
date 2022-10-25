@@ -57,8 +57,8 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end
 	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,2,0,0)
+	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,3,0,0)
 	local tc= g:GetFirst()
 	while tc do
 		Duel.SetChainLimit(cm.limit(tc))
