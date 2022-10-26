@@ -37,11 +37,11 @@ function c72411740.operation(e,tp,eg,ep,ev,re,r,rp)
 	local sg3=Group.Filter(sg,Card.IsType,nil,TYPE_MONSTER):GetCount()
 	local ct=Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
 	if sg1>1 then
-		Duel.BreakEffect()
+		--Duel.BreakEffect()
 		Duel.Draw(tp,3,REASON_EFFECT) end
 	if sg2>1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
 		and Duel.IsExistingMatchingCard(c72411740.filter,tp,LOCATION_DECK,0,2,nil,e,tp) and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
-			Duel.BreakEffect()
+			--Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,c72411740.filter,tp,LOCATION_DECK,0,2,2,nil,e,tp)
 			if g:GetCount()==2 then
@@ -49,7 +49,7 @@ function c72411740.operation(e,tp,eg,ep,ev,re,r,rp)
 			end
 	end
 	if sg3>1 and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) then
-		Duel.BreakEffect()
+		--Duel.BreakEffect()
 		local dg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 		Duel.Destroy(dg,REASON_EFFECT)
 	end

@@ -91,7 +91,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCountLimit(1)
 	e2:SetCondition(cm.tgcon)
 	e2:SetOperation(cm.tgop)
-	if Duel.GetCurrentPhase()==PHASE_BATTLE_START then
+	if 1~=1 then
 		e2:SetReset(RESET_PHASE+PHASE_BATTLE_START,2)
 		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE_START,0,1)
 		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE_START,0,2)

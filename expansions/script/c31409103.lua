@@ -29,11 +29,11 @@ function cm.initial_effect(c)
 	e4:SetLabel(1)
 	e4:SetCondition(cm.countcon)
 	c:RegisterEffect(e4)
-	local e5=e3:Clone()
+	local e5=e4:Clone()
 	e5:SetCode(EFFECT_DIRECT_ATTACK)
 	e5:SetLabel(2)
 	c:RegisterEffect(e5)
-	local e6=e3:Clone()
+	local e6=e4:Clone()
 	e6:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
 	e6:SetValue(DOUBLE_DAMAGE)
 	e6:SetLabel(3)
@@ -52,7 +52,7 @@ function cm.hop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 end
