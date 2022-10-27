@@ -134,6 +134,7 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCategory(te:GetCategory())
 		e1:SetType(EFFECT_TYPE_ACTIVATE)
 		e1:SetCode(EVENT_CHAINING)
+		e1:SetProperty(EFFECT_FLAG_BOTH_SIDE)
 		if con then e1:SetCondition(con) end
 		e1:SetCost(cm.addcost)
 		if tg then e1:SetTarget(tg) end
@@ -145,12 +146,8 @@ function cm.addcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
 		local xc=c:GetOverlayTarget()
-		e:SetLabelObject(xc)
-		return c:IsLocation(LOCATION_OVERLAY) and xc:IsHasEffect(m) and xc:IsControler(tp)
+		return c:IsLocation(LOCATION_OVERLAY) and xc:IsHasEffect(m) and xc:IsControler(tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 	end
-	local tc=e:GetLabelObject()
-	tc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-	e:SetLabelObject(nil)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m+1)==0
@@ -164,6 +161,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	local tc=te:GetHandler()
 	Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	tc:CreateEffectRelation(te)
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)

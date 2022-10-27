@@ -61,12 +61,21 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 			e1:SetValue(TYPE_NORMAL+TYPE_MONSTER)
 			e1:SetReset(RESET_EVENT+0x5fe0000)
 			tc:RegisterEffect(e1,true)
-			cm[tc]=e1
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_XYZ_LEVEL)
+			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			e2:SetValue(6)
+			e2:SetReset(RESET_EVENT+0x5fe0000)
+			tc:RegisterEffect(e2,true)
+			cm[tc]={e1,e2}
 		end
 		local res=Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g,tp)
 		for tc in aux.Next(g) do
 			tc:AddMonsterAttribute(0,0,0,0,0,0)
-			cm[tc]:Reset()
+			for _,se in pairs(cm[tc]) do
+				se:Reset()
+			end
 		end
 		return res
 	end
@@ -96,16 +105,23 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(TYPE_NORMAL+TYPE_MONSTER)
 		e1:SetReset(RESET_EVENT+0x5fe0000)
 		tc:RegisterEffect(e1,true)
-		cm[tc]=e1
 		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e2:SetCode(EVENT_MOVE)
-		e2:SetCountLimit(1)
-		e2:SetLabelObject(tc)
-		e2:SetOperation(cm.adjustop)
-		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_XYZ_LEVEL)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+		e2:SetValue(6)
+		e2:SetReset(RESET_EVENT+0x5fe0000)
+		tc:RegisterEffect(e2,true)
+		cm[tc]={e1,e2}
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e3:SetCode(EVENT_MOVE)
+		e3:SetCountLimit(1)
+		e3:SetLabelObject(tc)
+		e3:SetOperation(cm.adjustop)
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e3,tp)
 	end
 	local xyzg=Duel.GetMatchingGroup(cm.xyzfilter,tp,LOCATION_EXTRA,0,nil,g,tp)
 	if #xyzg>0 then
@@ -115,15 +131,20 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	else
 		for tc in aux.Next(g) do
 			tc:AddMonsterAttribute(0,0,0,0,0,0)
-			cm[tc]:Reset()
+			for _,se in pairs(cm[tc]) do
+				se:Reset()
+			end
 		end
 	end
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	tc:AddMonsterAttribute(0,0,0,0,0,0)
-	local te=cm[tc]
-	if te and aux.GetValueType(te)=="Effect" then te:Reset() end
+	if cm[tc] and aux.GetValueType(cm[tc])=="table" then
+		for _,se in pairs(cm[tc]) do
+			se:Reset()
+		end
+	end
 	e:Reset()
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
