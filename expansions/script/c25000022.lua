@@ -74,7 +74,7 @@ function c25000022.xxcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c25000022.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=true 
-	local b2=Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) 
+	local b2=Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) 
 	if chk==0 then return b1 or b2 end 
 	local op=0
 	if b1 and b2 then 
@@ -88,10 +88,10 @@ function c25000022.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c25000022.xtgfil(c,ec,tp) 
 	local seq=ec:GetSequence()
-	if c:IsControler(tp) then 
-	return math.abs(seq-c:GetSequence())<=1 and c:IsAbleToGrave()
+	if ec:IsControler(tp) then 
+		return math.abs(4-seq-c:GetSequence())<=1
 	else
-	return c:GetSequence()==4-seq and c:IsAbleToGrave()
+		return math.abs(seq-c:GetSequence())<=1
 	end
 end
 function c25000022.xxop(e,tp,eg,ep,ev,re,r,rp)
@@ -116,7 +116,7 @@ function c25000022.xxop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()<=0 then return end 
 	local tc=g:Select(tp,1,1,nil):GetFirst()
 	local dg=Duel.GetMatchingGroup(c25000022.xtgfil,tp,0,LOCATION_ONFIELD,nil,tc,tp)
-	dg:AddCard(tc)
+	--dg:AddCard(tc)
 	Duel.HintSelection(dg)
 	Duel.SendtoGrave(dg,REASON_EFFECT)
 	end

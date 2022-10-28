@@ -18,9 +18,14 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCondition(cm.regcon)
+	--e2:SetCondition(cm.regcon)
 	e2:SetOperation(cm.regop)
 	c:RegisterEffect(e2)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_MATERIAL_CHECK)
+	e4:SetValue(cm.valcheck)
+	c:RegisterEffect(e4)
 end
 cm.material_setcode=0x8
 function cm.ffilter(c,fc,sub,mg,sg)
@@ -28,6 +33,20 @@ function cm.ffilter(c,fc,sub,mg,sg)
 end
 function cm.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
+end
+function cm.valcheck(e,c)
+	local mg=c:GetMaterial()
+	local tc=mg:Filter(Card.IsFusionCode,nil,89943723):GetFirst()
+	mg:RemoveCard(tc)
+	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x9) then
+		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
+	end
+	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x1f) then
+		c:RegisterFlagEffect(1,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
+	end
+	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x8) then
+		c:RegisterFlagEffect(2,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
+	end
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
@@ -37,7 +56,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=c:GetMaterial()
 	local tc=mg:Filter(Card.IsFusionCode,nil,89943723):GetFirst()
 	mg:RemoveCard(tc)
-	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x9) then
+	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x9) or c:GetFlagEffect(0)~=0 then
 		--activate limit - xinyu
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(m,3))
@@ -50,9 +69,9 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(cm.atkop)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
-		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+		c:RegisterFlagEffect(3,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	end
-	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x1f) then
+	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x1f) or c:GetFlagEffect(1)~=0 then
 		--activate limit - xinkongjianxia
 		local e2=Effect.CreateEffect(c)
 		e2:SetDescription(aux.Stringid(m,4))
@@ -64,9 +83,9 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetOperation(cm.thop)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e2)
-		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+		c:RegisterFlagEffect(3,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 	end
-	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x8) then
+	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x8) or c:GetFlagEffect(2)~=0 then
 		--activate limit - yingxiong
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_SINGLE)
@@ -84,7 +103,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetValue(1)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e4)
-		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+		c:RegisterFlagEffect(3,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
 	end
 end
 function cm.costfilter(c)

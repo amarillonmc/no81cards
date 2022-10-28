@@ -41,8 +41,11 @@ function s.initial_effect(c)
 	e4:SetOperation(s.spop)
 	c:RegisterEffect(e4)
 end
+function s.ogfilter(c)
+	return c:GetOriginalType()&TYPE_MONSTER>0
+end
 function s.sprfilter(c,tp,sc)
-	return c:IsFaceup() and c:IsSetCard(0x460) and c:IsAbleToGraveAsCost() and c:GetEquipGroup():IsExists(Card.IsOriginalType,1,nil,TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x460) and c:IsAbleToGraveAsCost() and c:GetEquipGroup():IsExists(s.ogfilter,1,nil)
 		and Duel.GetLocationCountFromEx(tp,tp,c,sc)
 end
 function s.sprcon(e,c)
