@@ -1,6 +1,5 @@
 --反抗革命的卫兵
-local m=11451446
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,99518961)
 	c:EnableReviveLimit()
@@ -85,7 +84,7 @@ function cm.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=p and Duel.IsExistingMatchingCard(cm.filter4,p,0,LOCATION_MZONE,4,nil)
 end
 function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return true end
+	if chk==0 then return e:GetHandler():IsControlerCanBeChanged() end
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,e:GetHandler(),1,0,0)
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)

@@ -1,7 +1,6 @@
 --方舟骑士-异客
 --21.05.21
-local m=11451566
-local cm=_G["c"..m]
+local cm,m=GetID()
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--pendulum summon
@@ -91,7 +90,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetRange(LOCATION_MZONE)
 		e1:SetCode(EVENT_MOVE)
 		e1:SetLabel(fd)
-		e1:SetProperty(EFFECT_FLAG_DELAY)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_DELAY)
 		e1:SetCondition(cm.descon)
 		e1:SetOperation(cm.desop2)
 		e1:SetReset(RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_STANDARD)

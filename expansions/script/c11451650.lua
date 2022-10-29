@@ -1,7 +1,6 @@
 --将军刽子手
 --22.05.06
-local m=11451650
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()

@@ -37,7 +37,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
 function cm.ctcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
+	return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD) and e:GetHandler():IsControlerCanBeChanged()
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.GetControl(e:GetHandler(),1-tp)

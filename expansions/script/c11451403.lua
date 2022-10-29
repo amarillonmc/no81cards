@@ -1,7 +1,6 @@
 --traveler saga stray
 --21.04.10
-local m=11451403
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -165,7 +164,7 @@ function cm.reop2(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
 		g=g:Filter(Card.IsAbleToRemove,nil,tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local ct=math.min(a,#g)
+		local ct=math.min(a,#g,n1)
 		local tg=g:Select(tp,ct,ct,nil)
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.HintSelection(tg)
@@ -206,7 +205,7 @@ function cm.reop2(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(nil,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
 		g=g:Filter(Card.IsAbleToRemove,nil,1-tp,POS_FACEUP,REASON_RULE)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
-		local ct=math.min(b,#g)
+		local ct=math.min(b,#g,n2)
 		local tg=g:Select(1-tp,ct,ct,nil)
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.HintSelection(tg)
