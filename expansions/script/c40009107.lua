@@ -52,8 +52,8 @@ function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and c:GetFlagEffect(m)==0 end
-	c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.GetFlagEffect(tp,m)==0 end
+	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)

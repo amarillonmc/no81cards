@@ -57,9 +57,9 @@ function cm.AllGlobalCheck(c)
 			end
 			cm[4]=Duel.SendtoGrave
 			Duel.SendtoGrave=function(target,reason)
-				if reason&REASON_RULE==0 then
+				if reason&REASON_RULE~=0 then
 					local tg=Group.__add(target,target)
-					local g=tg:Filter(function(c)return c:IsLocation(LOCATION_OVERLAY) and c.main_peacecho and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:IsAbleToDeck()end,nil)
+					local g=tg:Filter(function(c)return c.main_peacecho and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:IsAbleToDeck()end,nil)
 					for tc in aux.Next(g) do
 						Duel.Hint(HINT_CARD,0,tc:GetOriginalCodeRule())
 						Duel.SendtoDeck(tc,nil,1,reason)
@@ -159,6 +159,15 @@ function cm.Peacecho(c,typ)
 		e6:SetTarget(cm.PeacechoDrawTarget3)
 		e6:SetOperation(cm.PeacechoDrawOperation3)
 		c:RegisterEffect(e6)
+		local e7=Effect.CreateEffect(c)
+		e7:SetType(EFFECT_TYPE_FIELD)
+		e7:SetCode(EFFECT_ACTIVATE_COST)
+		e7:SetRange(LOCATION_FZONE)
+		e7:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+		e7:SetTargetRange(1,0)
+		e7:SetTarget(cm.Peacechofieldcosttg)
+		e7:SetOperation(cm.Peacechofieldcostop)
+		c:RegisterEffect(e7)
 	end
 	local e9=Effect.CreateEffect(c)
 	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -166,6 +175,13 @@ function cm.Peacecho(c,typ)
 	e9:SetRange(LOCATION_HAND+LOCATION_DECK)
 	e9:SetOperation(cm.UpRegi)
 	c:RegisterEffect(e9)
+end
+function cm.Peacechofieldcosttg(e,te,tp)
+	return te:IsActiveType(TYPE_FIELD) and te:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function cm.Peacechofieldcostop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SendtoDeck(e:GetHandler(),nil,1,REASON_RULE)
+	e:GetHandler():ReverseInDeck()
 end
 function cm.RePeacechotg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

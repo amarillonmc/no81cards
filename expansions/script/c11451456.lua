@@ -1,6 +1,5 @@
 --波动中枢·物质波调谐器
-local m=11451456
-local cm=_G["c"..m]
+local cm,m=GetID()
 --local prime={2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509,521,523,541,547,557,563,569,571,577,587,593,599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997}
 function cm.initial_effect(c)
 	--link summon
@@ -51,15 +50,12 @@ function cm.hint(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetDescription(aux.Stringid(m,1))
 		e3:SetType(EFFECT_TYPE_FIELD)
 		e3:SetCode(EFFECT_SPSUMMON_PROC_G)
-		e3:SetCondition(cm.debcon)
+		e3:SetRange(0xff)
 		e3:SetOperation(cm.debug)
-		Duel.RegisterEffect(e3,tp)
+		e:GetHandler():RegisterEffect(e3)
 	end
 end
-function cm.debcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
-end
-function cm.debug(e,tp,eg,ep,ev,re,r,rp)
+function cm.debug(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Debug.Message("场上的表侧表示怪兽合计等级:"..g:GetSum(Card.GetLevel))
 end

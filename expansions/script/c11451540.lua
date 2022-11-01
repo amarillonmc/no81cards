@@ -33,13 +33,13 @@ function cm.actcon(e)
 	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=Duel.GetMatchingGroupCount(Card.IsPublic,tp,LOCATION_HAND,LOCATION_HAND,nil)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct+4 and Duel.IsPlayerCanDiscardDeck(tp,ct+4) end
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,ct+4)
+	local ct=Duel.GetMatchingGroupCount(Card.IsPublic,tp,LOCATION_HAND,0,nil)*4
+	if chk==0 then return ct>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct and Duel.IsPlayerCanDiscardDeck(tp,ct) end
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,ct)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetMatchingGroupCount(Card.IsPublic,tp,LOCATION_HAND,LOCATION_HAND,nil)
-	Duel.DiscardDeck(tp,ct+4,REASON_EFFECT)
+	local ct=Duel.GetMatchingGroupCount(Card.IsPublic,tp,LOCATION_HAND,0,nil)*4
+	Duel.DiscardDeck(tp,ct,REASON_EFFECT)
 	--summon proc
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetDescription(aux.Stringid(m,0))

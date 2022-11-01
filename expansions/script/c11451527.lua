@@ -58,8 +58,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	if not cm.pendulum_link then
 		cm.pendulum_link=true
-		_GetLink=Card.GetLink
-		Card.GetLink=function(tc) if tc:GetOriginalCode()==m and tc:IsLocation(LOCATION_PZONE) then return 2 else return _GetLink(tc) end end
+		_GetLinkCount=Auxiliary.GetLinkCount
+		Auxiliary.GetLinkCount=function(tc) if tc:GetOriginalCode()==m and tc:IsLocation(LOCATION_PZONE) then return 0x20001 else return _GetLinkCount(tc) end end
 	end
 end
 function cm.lcheck(g)
