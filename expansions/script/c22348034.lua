@@ -3,14 +3,14 @@ local m=22348034
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--special summon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(c22348034.sprcon)
-	e1:SetOperation(c22348034.sprop)
-	c:RegisterEffect(e1)
+--	local e1=Effect.CreateEffect(c)
+--	e1:SetType(EFFECT_TYPE_FIELD)
+--	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+--	e1:SetCode(EFFECT_SPSUMMON_PROC)
+--	e1:SetRange(LOCATION_HAND)
+--	e1:SetCondition(c22348034.sprcon)
+--	e1:SetOperation(c22348034.sprop)
+--	c:RegisterEffect(e1)
 	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22348034,2))
@@ -63,13 +63,13 @@ function c22348034.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and (Duel.IsExistingMatchingCard(c22348034.filter,tp,LOCATION_HAND,0,2,nil) or (Duel.IsPlayerCanDiscardDeckAsCost(tp,2) and Duel.IsPlayerAffectedByEffect(tp,22348041)))
+		and (Duel.IsExistingMatchingCard(c22348034.filter,tp,LOCATION_HAND,0,2,c) or (Duel.IsPlayerCanDiscardDeckAsCost(tp,2) and Duel.IsPlayerAffectedByEffect(tp,22348041)))
 end
 function c22348034.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local fe=Duel.IsPlayerAffectedByEffect(tp,22348041)
 	if Duel.IsPlayerAffectedByEffect(tp,22348041) and not Duel.IsPlayerCanDiscardDeckAsCost(tp,2) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-	local g=Duel.SelectMatchingCard(tp,c22348034.filter,tp,LOCATION_HAND,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c22348034.filter,tp,LOCATION_HAND,0,2,2,c)
 	local tc=g:GetFirst()
 	while tc do
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -81,7 +81,7 @@ function c22348034.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	tc:RegisterEffect(e1)
 		tc=g:GetNext()
 	end
-	elseif Duel.IsPlayerAffectedByEffect(tp,22348041) and not Duel.IsExistingMatchingCard(c22348034.filter,tp,LOCATION_HAND,0,2,nil) then
+	elseif Duel.IsPlayerAffectedByEffect(tp,22348041) and not Duel.IsExistingMatchingCard(c22348034.filter,tp,LOCATION_HAND,0,2,c) then
 	Duel.Hint(HINT_CARD,0,22348041)
 	fe:UseCountLimit(tp)
 	Duel.DiscardDeck(tp,2,REASON_COST)
@@ -91,7 +91,7 @@ function c22348034.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 		Duel.DiscardDeck(tp,2,REASON_COST)
 	else
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-	local g=Duel.SelectMatchingCard(tp,c22348034.filter,tp,LOCATION_HAND,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c22348034.filter,tp,LOCATION_HAND,0,2,2,c)
 	local tc=g:GetFirst()
 	while tc do
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -119,9 +119,9 @@ function c22348034.decon4(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c22348034.decost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348034.filter,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348034.filter,tp,LOCATION_HAND,0,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,c22348034.filter,tp,LOCATION_HAND,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c22348034.filter,tp,LOCATION_HAND,0,2,2,nil)
 	local tc=g:GetFirst()
 	while tc do
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -149,13 +149,16 @@ function c22348034.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
+function c22348034.negfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x700)
+end
 function c22348034.drcon1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsPublic() and not Duel.IsPlayerAffectedByEffect(tp,22348037) and rp==1-tp and Duel.IsChainDisablable(ev)
+	return c:IsPublic() and not Duel.IsPlayerAffectedByEffect(tp,22348037) and rp==1-tp and Duel.IsChainDisablable(ev) and Duel.IsExistingMatchingCard(c22348034.negfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c22348034.drcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsPublic() and Duel.IsPlayerAffectedByEffect(tp,22348037) and rp==1-tp and Duel.IsChainDisablable(ev)
+	return c:IsPublic() and Duel.IsPlayerAffectedByEffect(tp,22348037) and rp==1-tp and Duel.IsChainDisablable(ev) and Duel.IsExistingMatchingCard(c22348034.negfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c22348034.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,22348034)

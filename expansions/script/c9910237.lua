@@ -7,6 +7,7 @@ function c9910237.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCountLimit(1,9910237)
 	e1:SetTarget(c9910237.target)
 	e1:SetOperation(c9910237.operation)
 	c:RegisterEffect(e1)
@@ -17,8 +18,8 @@ function c9910237.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetCountLimit(1,9910237)
+	e2:SetCondition(c9910237.tgcon)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c9910237.tgtg)
 	e2:SetOperation(c9910237.tgop)
@@ -49,6 +50,9 @@ function c9910237.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 		end
 	end
+end
+function c9910237.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentChain()>0
 end
 function c9910237.lvfilter(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsAbleToDeck()

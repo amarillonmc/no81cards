@@ -17,7 +17,6 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,m)
-	e2:SetCondition(cm.condition)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.activate)
@@ -28,7 +27,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function cm.thfilter(c,tp)
-	return c:IsSetCard(0x9da0) and c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)
+	return c:IsSetCard(0x6410) and c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)
 		and  c:GetActivateEffect():IsActivatable(tp)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -36,8 +35,23 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,2,nil,tp)
 	local tc=g:GetFirst()
+	if tc then  
+		local b2=tc:GetActivateEffect():IsActivatable(tp)
+		if b2 then
+			if tc:IsType(TYPE_FIELD) then 
+			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+			else
+			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+			end
+			local te=tc:GetActivateEffect()
+			local tep=tc:GetControler()
+			local cost=te:GetCost()
+			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+		end
+		tc=g:GetNext()
+	end 
 	if tc then  
 		local b2=tc:GetActivateEffect():IsActivatable(tp)
 		if b2 then
@@ -54,17 +68,11 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function cm.filter0(c)
-	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
-end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(cm.filter0,tp,LOCATION_MZONE,0,1,nil)
-end
 function cm.filter1(c)
-	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x6410) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.filter2(c,e,tp)
-	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x6410) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.filter3(c)
 	return c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)

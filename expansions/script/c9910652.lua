@@ -1,4 +1,4 @@
---水滴引航标 拓界星粼号
+--光影捕捉者 弥界星烛号
 function c9910652.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)

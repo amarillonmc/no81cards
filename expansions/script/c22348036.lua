@@ -3,11 +3,22 @@ local m=22348036
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--special summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetRange(LOCATION_GRAVE)
+	e0:SetCountLimit(1,22349036)
+	e0:SetCondition(c22348036.sprcon0)
+	e0:SetOperation(c22348036.sprop)
+	c:RegisterEffect(e0)
+	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,22349036)
 	e1:SetCondition(c22348036.sprcon)
 	e1:SetOperation(c22348036.sprop)
 	c:RegisterEffect(e1)
@@ -59,17 +70,24 @@ end
 function c22348036.filter(c)
 	return not c:IsPublic()
 end
+function c22348036.sprcon0(e,c)
+	if c==nil then return true end
+	if c:IsHasEffect(EFFECT_NECRO_VALLEY) then return false end
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		and (Duel.IsExistingMatchingCard(c22348036.filter,tp,LOCATION_HAND,0,2,c) or (Duel.IsPlayerCanDiscardDeckAsCost(tp,2) and Duel.IsPlayerAffectedByEffect(tp,22348041)))
+end
 function c22348036.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and (Duel.IsExistingMatchingCard(c22348036.filter,tp,LOCATION_HAND,0,2,nil) or (Duel.IsPlayerCanDiscardDeckAsCost(tp,2) and Duel.IsPlayerAffectedByEffect(tp,22348041)))
+		and (Duel.IsExistingMatchingCard(c22348036.filter,tp,LOCATION_HAND,0,2,c) or (Duel.IsPlayerCanDiscardDeckAsCost(tp,2) and Duel.IsPlayerAffectedByEffect(tp,22348041)))
 end
 function c22348036.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local fe=Duel.IsPlayerAffectedByEffect(tp,22348041)
 	if Duel.IsPlayerAffectedByEffect(tp,22348041) and not Duel.IsPlayerCanDiscardDeckAsCost(tp,2) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-	local g=Duel.SelectMatchingCard(tp,c22348036.filter,tp,LOCATION_HAND,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c22348036.filter,tp,LOCATION_HAND,0,2,2,c)
 	local tc=g:GetFirst()
 	while tc do
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -81,7 +99,7 @@ function c22348036.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	tc:RegisterEffect(e1)
 		tc=g:GetNext()
 	end
-	elseif Duel.IsPlayerAffectedByEffect(tp,22348041) and not Duel.IsExistingMatchingCard(c22348036.filter,tp,LOCATION_HAND,0,2,nil) then
+	elseif Duel.IsPlayerAffectedByEffect(tp,22348041) and not Duel.IsExistingMatchingCard(c22348036.filter,tp,LOCATION_HAND,0,2,c) then
 	Duel.Hint(HINT_CARD,0,22348041)
 	fe:UseCountLimit(tp)
 	Duel.DiscardDeck(tp,2,REASON_COST)
@@ -91,7 +109,7 @@ function c22348036.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 		Duel.DiscardDeck(tp,2,REASON_COST)
 	else
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-	local g=Duel.SelectMatchingCard(tp,c22348036.filter,tp,LOCATION_HAND,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c22348036.filter,tp,LOCATION_HAND,0,2,2,c)
 	local tc=g:GetFirst()
 	while tc do
 	local e1=Effect.CreateEffect(e:GetHandler())

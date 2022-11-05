@@ -1,4 +1,4 @@
---休整
+
 --休整
 function c25800199.initial_effect(c)
 	local e1=Effect.CreateEffect(c)

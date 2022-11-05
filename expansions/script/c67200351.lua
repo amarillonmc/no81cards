@@ -2,7 +2,18 @@
 function c67200351.initial_effect(c)
 	--Pendulum Summon
 	aux.EnablePendulumAttribute(c) 
-
+	aux.AddCodeList(c,67200161)
+	--spsummon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(67200351,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_PZONE)
+	e1:SetCountLimit(1,67200348)
+	e1:SetCondition(c67200351.pcon)
+	e1:SetTarget(c67200351.ptg)
+	e1:SetOperation(c67200351.pop)
+	c:RegisterEffect(e1)
 	--Activate
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(67200351,3))
@@ -18,20 +29,38 @@ function c67200351.initial_effect(c)
 	c:RegisterEffect(e2)   
 end
 --
+function c67200351.pcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_PZONE,0,1,e:GetHandler(),67200161)
+end
+function c67200351.ptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+function c67200351.pop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+--
 function c67200351.cfilter(c)
-	return c:IsType(TYPE_MONSTER)
+	return c:IsType(TYPE_PENDULUM)
 end
 function c67200351.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c67200351.cfilter,1,nil) and aux.exccon(e)
+	local c=e:GetHandler()
+	return eg:IsExists(c67200351.cfilter,1,nil) and c:IsPreviousLocation(LOCATION_GRAVE)
 end
 function c67200351.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+
 end
 function c67200351.thfilter1(c,tp)
-	return c:IsType(TYPE_MONSTER) 
+	return c:IsType(TYPE_PENDULUM) 
 		and Duel.IsExistingMatchingCard(c67200351.thfilter2,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
 function c67200351.thfilter2(c,code)

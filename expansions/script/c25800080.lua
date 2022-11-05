@@ -1,7 +1,7 @@
 --指挥官2
 function c25800080.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunFun(c,c25800080.ffilter,aux.FilterBoolFunction(Card.IsSetCard,0x211),2,true)
+	aux.AddFusionProcFunFun(c,c25800080.ffilter,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),2,true)
 	
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(25800080,0))

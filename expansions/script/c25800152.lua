@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return  Duel.GetFieldGroupCount(tp,LOCATION_PZONE,LOCATION_PZONE)==2
+	return  Duel.GetFieldGroupCount(tp,LOCATION_PZONE,0)==2
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_PZONE,LOCATION_MZONE,1,nil) end

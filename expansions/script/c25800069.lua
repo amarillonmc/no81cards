@@ -1,7 +1,7 @@
---传奇布里·融合
+--
 function c25800069.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_MACHINE),2)
 	c:EnableReviveLimit()
 
 
@@ -28,6 +28,7 @@ function c25800069.tgfilter(c,e,tp)
 		and e:GetHandler():GetLinkedGroup():IsContains(c)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_FMATERIAL)
 		and Duel.IsExistingMatchingCard(c25800069.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
+		and c:IsRace(RACE_MACHINE)
 end
 function c25800069.spfilter(c,e,tp,tc)
 	return c:IsType(TYPE_FUSION) and aux.IsMaterialListCode(c,tc:GetCode())
