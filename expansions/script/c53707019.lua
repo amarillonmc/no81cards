@@ -108,6 +108,7 @@ function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,rct,tp,LOCATION_DECK)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
+	SNNM.UpConfirm()
 	local ct=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,ct,ct,nil,tp)

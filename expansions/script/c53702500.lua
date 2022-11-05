@@ -31,48 +31,35 @@ function cm.AllGlobalCheck(c)
 				Duel.DisableShuffleCheck()
 				Duel.SendtoGrave(g,reason)
 			end
-			cm[2]=Card.RemoveOverlayCard
-			Card.RemoveOverlayCard=function(card,player,min,max,reason)
-				local g=card:GetOverlayGroup()
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
-				g=g:Select(player,min,max,reason)
-				Duel.SendtoGrave(g,reason)
-				local ct=Duel.GetOperatedGroup():GetCount()
-				--if ct>0 then return 1 else return 0 end
-				return ct
-			end
-			cm[3]=Duel.RemoveOverlayCard
-			Duel.RemoveOverlayCard=function(player,ints,into,min,max,reason)
-				if ints==1 then ints=LOCATION_ONFIELD end
-				if into==1 then into=LOCATION_ONFIELD end
-				local g=Duel.GetMatchingGroup(function(c)return c:CheckRemoveOverlayCard(player,min,reason)end,player,ints,into,nil)
-				local sg=Group.CreateGroup()
-				for tc in aux.Next(g) do sg:Merge(tc:GetOverlayGroup()) end
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
-				sg=sg:Select(player,min,max,reason)
-				Duel.SendtoGrave(sg,reason)
-				local ct=Duel.GetOperatedGroup():GetCount()
-				--if ct>0 then return 1 else return 0 end
-				return ct
-			end
-			cm[4]=Duel.SendtoGrave
-			Duel.SendtoGrave=function(target,reason)
-				if reason&REASON_RULE~=0 then
-					local tg=Group.__add(target,target)
-					local g=tg:Filter(function(c)return c.main_peacecho and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:IsAbleToDeck()end,nil)
-					for tc in aux.Next(g) do
-						Duel.Hint(HINT_CARD,0,tc:GetOriginalCodeRule())
-						Duel.SendtoDeck(tc,nil,1,reason)
-						tc:ReverseInDeck()
-					end
-					return cm[4](Group.__sub(tg,g),reason)
-				else return cm[4](target,reason) end
-			end
 			--cm[2]=Card.ReverseInDeck
 			--Card.ReverseInDeck=function(card)
 				--card:RegisterFlagEffect(53707050,RESET_EVENT+0x53c0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(53702500,2))
 				--return cm[2](card)
 			--end
+			local alle5=Effect.CreateEffect(c)
+			alle5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			alle5:SetRange(LOCATION_MZONE)
+			alle5:SetCode(EFFECT_SEND_REPLACE)
+			alle5:SetTarget(cm.ThirdPeacechotg)
+			alle5:SetValue(cm.ThirdPeacechoval)
+			Duel.RegisterEffect(alle5,0)
+			local alle7=Effect.GlobalEffect()
+			alle7:SetType(EFFECT_TYPE_FIELD)
+			alle7:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+			alle7:SetTargetRange(LOCATION_OVERLAY,LOCATION_OVERLAY)
+			alle7:SetTarget(function(e,c)return c.main_peacecho and c:IsAbleToDeck()end)
+			alle7:SetValue(LOCATION_DECK)
+			Duel.RegisterEffect(alle7,0)
+			local alle8=Effect.CreateEffect(c)
+			alle8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			alle8:SetCode(EVENT_TO_DECK)
+			alle8:SetOperation(cm.ThirdPeacechoxyztd)
+			Duel.RegisterEffect(alle8,0)
+			local alle9=Effect.CreateEffect(c)
+			alle9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			alle9:SetCode(EVENT_TO_DECK)
+			alle9:SetOperation(cm.ThirdPeacechoxyztd)
+			Duel.RegisterEffect(alle9,1)
 		end
 		if c.alc_yaku then
 			local alle3=Effect.CreateEffect(c)
@@ -126,10 +113,10 @@ function cm.Peacecho(c,typ)
 	e1:SetRange(0xff)
 	e1:SetTarget(cm.RePeacechotg1)
 	e1:SetOperation(cm.RePeacechoop)
-	c:RegisterEffect(e1)
+	--c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetTarget(cm.RePeacechotg2)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	if typ==TYPE_MONSTER then
 		local e4=Effect.CreateEffect(c)
 		e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
@@ -175,6 +162,101 @@ function cm.Peacecho(c,typ)
 	e9:SetRange(LOCATION_HAND+LOCATION_DECK)
 	e9:SetOperation(cm.UpRegi)
 	c:RegisterEffect(e9)
+end
+GM_global_to_deck_check=true
+function cm.ThirdPeacechotgrepfilter(c)
+	local tp=c:GetOwner()
+	return c.main_peacecho and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:GetDestination()==LOCATION_GRAVE and ((c:IsLocation(LOCATION_DECK) and (Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetMinGroup(Card.GetSequence):GetFirst()~=c or c:IsControler(1-tp))) or (not c:IsLocation(LOCATION_DECK) and c:IsAbleToDeck()))
+end
+function cm.ThirdPeacechotg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return GM_global_to_deck_check and eg:IsExists(cm.ThirdPeacechotgrepfilter,1,nil) end
+	GM_global_to_deck_check=false
+	for i,xp in ipairs({0,1}) do
+		local xyzg=eg:Filter(function(c,p)return c:GetOverlayGroup():IsExists(function(c,p)return c.main_peacecho and c:GetOwner()==p and c:IsAbleToDeck()end,1,nil,p)end,nil,xp)
+		if #xyzg>0 then Duel.RegisterFlagEffect(xp,53707600,RESET_CHAIN,0,0) end
+	end
+	local g=eg:Filter(cm.ThirdPeacechotgrepfilter,nil)
+	local confirm=Group.__add(g:Filter(aux.NOT(Card.IsLocation),nil,LOCATION_DECK):Filter(Card.IsFacedown,nil),g:Filter(Card.IsLocation,nil,LOCATION_DECK))
+	Duel.ConfirmCards(0,confirm)
+	Duel.ConfirmCards(1,confirm)
+	for i,p in ipairs({0,1}) do
+	local pg=g:Filter(Card.IsControler,nil,p)
+	local g2=pg:Filter(Card.IsLocation,nil,LOCATION_DECK)
+	if #g2>0 then
+		if Duel.GetFlagEffect(p,53707000)==0 then Duel.ShuffleDeck(p) end
+		for tc2 in aux.Next(g2) do
+			Duel.MoveSequence(tc2,0)
+			tc2:RegisterFlagEffect(53707500,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1,1)
+		end
+	end
+	if #g2==#pg then
+		if #g2>1 and Duel.GetFlagEffect(p,53707000)==0 then Duel.SortDecktop(p,p,#g2) end
+		for i=1,#g2 do Duel.MoveSequence(Duel.GetDecktopGroup(p,1):GetFirst(),1) end
+		g2:ForEach(Card.ReverseInDeck)
+		Duel.ResetFlagEffect(p,53707000)
+	else
+		local g1=Group.__sub(pg,g2)
+		if #g1>0 then
+			for tc1 in aux.Next(g1) do
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetValue(LOCATION_DECK)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc1:RegisterEffect(e1)
+				tc1:RegisterFlagEffect(53707500,RESET_EVENT+0x13e0000,0,1)
+			end
+		end
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e2:SetCode(EVENT_TO_DECK)
+		e2:SetCountLimit(1)
+		e2:SetOperation(cm.ThirdPeacechotdop)
+		Duel.RegisterEffect(e2,p)
+		local g3=g:Filter(function(c,p)return c:IsLocation(LOCATION_DECK) and c:IsControler(1-p) and c:GetOwner()==p end,nil,p)
+		if #g3>0 then
+			for tc3 in aux.Next(g3) do tc3:RegisterFlagEffect(53707500,RESET_EVENT+0x13e0000,0,1,1) end
+			Duel.SendtoDeck(g3,p,0,REASON_EFFECT)
+		end
+	end
+	end
+	GM_global_to_deck_check=true
+	return true
+end
+function cm.ThirdPeacechoval(e,c)
+	return c:GetFlagEffect(53707500)~=0 and c:GetFlagEffectLabel(53707500)==1
+end
+function cm.ThirdPeacechotdfilter(c)
+	return c:GetFlagEffect(53707500)~=0
+end
+function cm.ThirdPeacechotdop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(cm.ThirdPeacechotdfilter,tp,LOCATION_DECK,0,nil)
+	if #g==0 then return end
+	if Duel.GetFlagEffect(tp,53707600)==0 then
+		if #g==1 then Duel.MoveSequence(g:GetFirst(),1) else
+			Duel.SortDecktop(tp,tp,#g)
+			for i=1,#g do Duel.MoveSequence(Duel.GetDecktopGroup(tp,1):GetFirst(),1) end
+		end
+		g:ForEach(Card.ResetFlagEffect,53707500)
+		g:ForEach(Card.ReverseInDeck)
+		Duel.ResetFlagEffect(tp,53707600)
+	else Duel.RegisterFlagEffect(tp,53707700,RESET_CHAIN,0,0) end
+	Duel.ResetFlagEffect(tp,53707000)
+	e:Reset()
+end
+function cm.ThirdPeacechoxyztd(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(function(c)return c.main_peacecho and c:IsPreviousLocation(LOCATION_OVERLAY)end,nil)
+	if #g==0 and Duel.GetFlagEffect(tp,53707700)==0 then return end
+	if Duel.GetFlagEffect(tp,53707700)>0 then g:Merge(Duel.GetMatchingGroup(cm.ThirdPeacechotdfilter,tp,LOCATION_DECK,0,nil)) end
+	Duel.ResetFlagEffect(tp,53707700)
+	local pg=g:Filter(Card.IsControler,nil,tp)
+	if #pg==1 then Duel.MoveSequence(pg:GetFirst(),1) else
+		Duel.SortDecktop(tp,tp,#pg)
+		for i=1,#pg do Duel.MoveSequence(Duel.GetDecktopGroup(tp,1):GetFirst(),1) end
+	end
+	g:ForEach(Card.ResetFlagEffect,53707500)
+	g:ForEach(Card.ReverseInDeck)
 end
 function cm.Peacechofieldcosttg(e,te,tp)
 	return te:IsActiveType(TYPE_FIELD) and te:IsHasType(EFFECT_TYPE_ACTIVATE)
