@@ -23,8 +23,8 @@ function c10105580.initial_effect(c)
 	e3:SetCode(EVENT_PHASE+PHASE_DRAW)
 	e3:SetCountLimit(1,10105580)
 	e3:SetCondition(c10105580.spcon)
-	e3:SetTarget(c10105580.sptg)
-	e3:SetOperation(c10105580.spop)
+	e3:SetTarget(c10105580.sptg2)
+	e3:SetOperation(c10105580.spop2)
 	e3:SetLabelObject(e2)
 	c:RegisterEffect(e3)
 --search
@@ -70,13 +70,13 @@ function c10105580.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return e:GetLabelObject():GetLabel()~=Duel.GetTurnCount() and c:GetFlagEffect(10105580)>0
 end
-function c10105580.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c10105580.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local c=e:GetHandler()
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	c:ResetFlagEffect(10105580)
 end
-function c10105580.spop(e,tp,eg,ep,ev,re,r,rp)
+function c10105580.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)

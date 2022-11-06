@@ -70,8 +70,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(function(e,re)return re:GetHandler():GetFlagEffect(m)>0 and re:GetHandler()==e:GetLabelObject() and re:GetCode()&(EVENT_SUMMON_SUCCESS+EVENT_SPSUMMON_SUCCESS)~=0 end)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
+		Duel.SpecialSummonComplete()
+		tc:CompleteProcedure()
 	end
-	Duel.SpecialSummonComplete()
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

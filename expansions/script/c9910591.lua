@@ -27,20 +27,41 @@ function c9910591.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_CHAIN_SOLVED)
+		ge2:SetCode(EVENT_CHAIN_NEGATED)
 		ge2:SetOperation(c9910591.checkop2)
 		Duel.RegisterEffect(ge2,0)
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetCode(EVENT_CHAIN_SOLVED)
+		ge3:SetOperation(c9910591.checkop3)
+		Duel.RegisterEffect(ge3,0)
 	end
 end
 function c9910591.checkop1(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if not rc:IsRelateToEffect(re) or not re:IsActiveType(TYPE_MONSTER) or re:GetLabel()==9910591 then return end
 	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
-	if loc==LOCATION_MZONE and rc:GetFlagEffect(9910591+p)==0 then
-		rc:RegisterFlagEffect(9910591+p,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+	if loc~=LOCATION_MZONE then return end
+	if rc:GetFlagEffect(9910591+p)==0 then
+		rc:RegisterFlagEffect(9910591+p,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1,1)
+	else
+		local flag=rc:GetFlagEffectLabel(9910591+p)
+		if flag then rc:SetFlagEffectLabel(9910591+p,flag+1) end
 	end
 end
 function c9910591.checkop2(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if not rc:IsRelateToEffect(re) or not re:IsActiveType(TYPE_MONSTER) or re:GetLabel()==9910591 then return end
+	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
+	if loc~=LOCATION_MZONE or rc:GetFlagEffect(9910591+p)==0 then return end
+	local flag=rc:GetFlagEffectLabel(9910591+p)
+	if flag==1 then
+		rc:ResetFlagEffect(9910591+p)
+	elseif flag then
+		rc:SetFlagEffectLabel(9910591+p,flag-1)
+	end
+end
+function c9910591.checkop3(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if not rc:IsRelateToEffect(re) or not re:IsActiveType(TYPE_MONSTER) or re:GetLabel()==9910591 then return end
 	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)

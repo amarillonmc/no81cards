@@ -24,8 +24,8 @@ function c10105582.initial_effect(c)
 	e3:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
 	e3:SetCountLimit(1,10105582)
 	e3:SetCondition(c10105582.spcon)
-	e3:SetTarget(c10105582.sptg)
-	e3:SetOperation(c10105582.spop)
+	e3:SetTarget(c10105582.sptg2)
+	e3:SetOperation(c10105582.spop2)
 	e3:SetLabelObject(e2)
 	c:RegisterEffect(e3)
 --activate limit
@@ -43,10 +43,10 @@ function c10105582.cfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsLevelAbove(10) and c:IsAbleToRemoveAsCost()
 end
 function c10105582.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
+	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(c10105582.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,c) end
 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-    local c=e:GetHandler()
+	local c=e:GetHandler()
 	local g=Duel.SelectMatchingCard(tp,c10105582.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,2,c)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
@@ -68,13 +68,13 @@ function c10105582.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return e:GetLabelObject():GetLabel()~=Duel.GetTurnCount() and c:GetFlagEffect(10105582)>0
 end
-function c10105582.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c10105582.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local c=e:GetHandler()
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	c:ResetFlagEffect(10105582)
 end
-function c10105582.spop(e,tp,eg,ep,ev,re,r,rp)
+function c10105582.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)

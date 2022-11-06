@@ -33,7 +33,7 @@ function c40009221.initial_effect(c)
 	c:RegisterEffect(e3) 
 end
 function c40009221.spcfilter(c)
-	return c:IsSetCard(0x107b) and not c:IsPublic()
+	return c:IsSetCard(0x307b) and not c:IsPublic()
 end
 function c40009221.spcon(e,c)
 	if c==nil then return true end

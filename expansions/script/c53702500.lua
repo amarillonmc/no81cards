@@ -38,7 +38,6 @@ function cm.AllGlobalCheck(c)
 			--end
 			local alle5=Effect.CreateEffect(c)
 			alle5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			alle5:SetRange(LOCATION_MZONE)
 			alle5:SetCode(EFFECT_SEND_REPLACE)
 			alle5:SetTarget(cm.ThirdPeacechotg)
 			alle5:SetValue(cm.ThirdPeacechoval)
@@ -166,7 +165,7 @@ end
 GM_global_to_deck_check=true
 function cm.ThirdPeacechotgrepfilter(c)
 	local tp=c:GetOwner()
-	return c.main_peacecho and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:GetDestination()==LOCATION_GRAVE and ((c:IsLocation(LOCATION_DECK) and (Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetMinGroup(Card.GetSequence):GetFirst()~=c or c:IsControler(1-tp))) or (not c:IsLocation(LOCATION_DECK) and c:IsAbleToDeck()))
+	return c.main_peacecho and (c:GetLeaveFieldDest()==0 and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT)) and c:GetDestination()==LOCATION_GRAVE and ((c:IsLocation(LOCATION_DECK) and (Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetMinGroup(Card.GetSequence):GetFirst()~=c or c:IsControler(1-tp))) or (not c:IsLocation(LOCATION_DECK) and c:IsAbleToDeck()))
 end
 function cm.ThirdPeacechotg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return GM_global_to_deck_check and eg:IsExists(cm.ThirdPeacechotgrepfilter,1,nil) end
