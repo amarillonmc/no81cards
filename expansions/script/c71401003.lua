@@ -49,7 +49,7 @@ function c71401003.op2(e,tp,eg,ep,ev,re,r,rp)
 		local b1=tc:IsAbleToHand()
 		local b2=not tc:IsForbidden() and tc:CheckUniqueOnField(tp)
 		local flag=0
-		if b1 and (not b2 or Duel.SelectOption(tp,1152,aux.Stringid(71401003,1))==0)) then
+		if b1 and (not b2 or Duel.SelectOption(tp,1152,aux.Stringid(71401003,1))==0) then
 			flag=Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
 		else

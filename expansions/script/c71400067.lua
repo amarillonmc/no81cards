@@ -21,12 +21,13 @@ function c71400067.initial_effect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71500067)
 	e2:SetCondition(c71400067.con2)
 	e2:SetCost(c71400067.cost2)
 	e2:SetTarget(c71400067.tg2)
 	e2:SetOperation(c71400067.op2)
-	c:RegisterEffect(e1)
+	c:RegisterEffect(e2)
 	if not c71400067.global_check then
 		c71400067.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -38,7 +39,7 @@ function c71400067.initial_effect(c)
 end
 function c71400067.spcheckop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
-	if tc:IsSummonType(SUMMON_TYPE_XYZ) and tc:IsSetCard(0x714) then Duel.RegisterFlagEffect(0,71400067,RESET_PHASE+PHASE_END,0,1) end
+	if tc:IsSummonType(SUMMON_TYPE_XYZ) and tc:IsSetCard(0x714) then Duel.RegisterFlagEffect(0,71400067,EVENT_PHASE+PHASE_END,0,1) end
 end
 function c71400067.con1(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
@@ -84,6 +85,7 @@ function c71400067.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=Duel.SelectMatchingCard(tp,c71400067.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,e:GetHandler()):GetFirst()
 	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP) then
+		local c=e:GetHandler()
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(71400067,2))
 		e1:SetType(EFFECT_TYPE_SINGLE)

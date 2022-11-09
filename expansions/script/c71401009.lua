@@ -27,7 +27,7 @@ function c71401009.initial_effect(c)
 	e2:SetOperation(c71401009.op2)
 	c:RegisterEffect(e2)
 	--remove monster
-	local e3=Effect.CreateEffect(rc)
+	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(71401009,1))
 	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
@@ -49,7 +49,7 @@ end
 function c71401009.atkval(e,c)
 	return Duel.GetMatchingGroupCount(c71401009.atkfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)*200
 end
-function c71401009.spcon1(e,tp,eg,ep,ev,re,r,rp)
+function c71401009.con2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c71401009.cost2(e,tp,eg,ep,ev,re,r,rp,chk)

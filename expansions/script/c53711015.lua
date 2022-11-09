@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(53711065)
+	e2:SetCode(53711099)
 	e2:SetRange(LOCATION_MZONE)
 	c:RegisterEffect(e2)
 end
@@ -33,7 +33,7 @@ function cm.schfilter(c,e,tp)
 	if #timeg>0 then
 		local ttct=0
 		for timec in aux.Next(timeg) do
-			local timect=timec:GetFlagEffect(53711015)
+			local timect=timec:GetFlagEffect(53711065)
 			ttct=ttct+timect
 		end
 		ltime=2*#timeg-ttct
@@ -42,7 +42,7 @@ function cm.schfilter(c,e,tp)
 	return c:IsSetCard(0x3538) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and g:CheckSubGroup(cm.fselect,cd,cd,ltime)
 end
 function cm.timefilter(c,tp)
-	return c:IsHasEffect(53711065,tp) and c:GetFlagEffect(53711015)<2
+	return c:IsHasEffect(53711099,tp) and c:GetFlagEffect(53711065)<2
 end
 function cm.spfilter(c,e,tp,cd,ct)
 	if c:IsLocation(LOCATION_HAND) then

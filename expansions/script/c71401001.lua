@@ -33,7 +33,6 @@ function c71401001.initial_effect(c)
 	c:RegisterEffect(e2a)
 	yume.ButterflyCounter()
 end
-end
 function c71401001.con1(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER)
 end
@@ -119,7 +118,7 @@ function yume.AddButterflySpell(c,id)
 	c:RegisterEffect(e1)
 end
 function yume.ButterflyPlaceTg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and c:CheckUniqueOnField(tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and e:GetHandler():CheckUniqueOnField(tp) end
 end
 function yume.ButterflyPlaceCost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end

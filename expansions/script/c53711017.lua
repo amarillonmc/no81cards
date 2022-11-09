@@ -61,7 +61,7 @@ function cm.reset(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,re,r,rp,ep,cm[0])
 	cm[0]=0
 end
-function cm.cfilter(c)
+function cm.cfilter(c,tp)
 	local typ=c:GetType()&0x7
 	return not c:IsPublic() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,typ)
 end
@@ -69,9 +69,9 @@ function cm.thfilter(c,typ)
 	return not c:IsType(typ) and c:IsSetCard(0x3538) and c:IsAbleToHand()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
 	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
 	e:SetLabel(g:GetFirst():GetType()&0x7)

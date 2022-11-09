@@ -42,13 +42,17 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local res=e:GetHandler():IsLinkState() and not Duel.IsExistingMatchingCard(function(c)return c:IsFaceup() and c:IsType(TYPE_LINK)end,tp,LOCATION_MZONE,0,1,nil)
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and res and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() then
+		local res=false
+		local lg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+		for tc in aux.Next(lg) do if tc:GetLinkedGroup():IsContains(c) then res=true end end
+		if res and not Duel.IsExistingMatchingCard(function(c)return c:IsFaceup() and c:IsType(TYPE_LINK)end,tp,LOCATION_MZONE,0,1,nil) and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(20590515,2)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=g:Select(tp,1,1,nil)
 		Duel.HintSelection(dg)
-		Duel.Destroy(dg,REASON_EFFECT)	
+		Duel.Destroy(dg,REASON_EFFECT)
+		end
 	end
 end
 function cm.spr(e,tp,eg,ep,ev,re,r,rp)

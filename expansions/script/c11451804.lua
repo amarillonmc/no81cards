@@ -97,7 +97,8 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,Group.FromCards(c,rc))
-	if chk==0 then return rc:IsLocation(LOCATION_HAND+LOCATION_ONFIELD) and rc:IsDestructable() and rc:IsRelateToEffect(re) and #g>0 end
+	if chk==0 then return rc:IsLocation(LOCATION_HAND+LOCATION_ONFIELD) and rc:IsDestructable() and rc:IsRelateToEffect(re) and #g>0 and e:GetHandler():GetFlagEffect(m)==0 end
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	local loc=(LOCATION_DECK&(c:GetLocation()))&(rc:GetLocation())
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,3,0,loc)
 end
