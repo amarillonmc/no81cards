@@ -37,7 +37,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(0,m+333,0,0,0)
 	if Duel.GetFlagEffect(0,m+333)%5==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=Duel.GetMatchingGroup(function(c)return c:IsFaceup() and c:IsAbleToDeck()end,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
+		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 		if #g>0 then
 			Duel.Hint(HINT_CARD,0,m)
 			local sg=g:RandomSelect(rp,1)
