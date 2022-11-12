@@ -1,7 +1,6 @@
 --also sprach zarathusnya
 --21.12.25
-local m=11451652
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--effect
@@ -49,7 +48,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 								pro=pro|EFFECT_FLAG_CANNOT_INACTIVATE
 								se:SetProperty(pro,pro2)
 							end
-							reg(sc,se,bool)
+							reg(sc,se,true)
 						end
 	for tc in aux.Next(g) do
 		if tc.initial_effect then

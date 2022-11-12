@@ -29,14 +29,13 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsPublic,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(cm.disfilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,0,0)
 end
-function cm.filter(c)
-	return not c:IsPublic() and c:IsLocation(LOCATION_HAND)
-end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
-	local g=Duel.SelectMatchingCard(tp,Card.IsPublic,tp,LOCATION_HAND,0,1,99,nil)
+	local max=Duel.GetMatchingGroupCount(cm.disfilter,tp,0,LOCATION_ONFIELD,nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsPublic,tp,LOCATION_HAND,0,1,max,nil)
+	if #g==0 then return end
 	g:ForEach(Card.ResetEffect,EFFECT_PUBLIC,RESET_CODE)
-	local ct=g:FilterCount(cm.filter,nil)
+	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local sg=Duel.SelectMatchingCard(tp,cm.disfilter,tp,0,LOCATION_ONFIELD,1,ct,nil)
 	if #sg==0 then return end

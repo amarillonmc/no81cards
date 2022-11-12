@@ -17,9 +17,10 @@ function c22020440.initial_effect(c)
 	--card set
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22020440,1))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetRange(LOCATION_MZONE)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,22020441)
 	e2:SetCondition(c22020440.spcon)
 	e2:SetTarget(c22020440.pentg)
@@ -45,10 +46,10 @@ function c22020440.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(eg,REASON_EFFECT)
 end
 function c22020440.cfilter(c,tp)
-	return c:GetSummonLocation()==LOCATION_HAND or c:GetSummonLocation()==LOCATION_GRAVE and c:GetPreviousControler()==1-tp
+	return c:IsSummonPlayer(1-tp) and c:IsSummonLocation(LOCATION_HAND+LOCATION_GRAVE)
 end
 function c22020440.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22020440.cfilter,1,nil,tp)
+	return eg:IsExists(c22020440.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function c22020440.penfilter(c)
 	return c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_SPELL) and not c:IsForbidden()

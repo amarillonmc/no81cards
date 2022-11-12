@@ -56,10 +56,10 @@ function cm.activate1(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local g=Duel.GetMatchingGroup(Card.IsPublic,p,LOCATION_HAND,0,nil)
 	if g:GetCount()==0 then return end
-	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+	local ct=Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	Duel.ShuffleDeck(p)
 	Duel.BreakEffect()
-	Duel.Draw(p,g:GetCount()+1,REASON_EFFECT)
+	Duel.Draw(p,ct+1,REASON_EFFECT)
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsPublic()
