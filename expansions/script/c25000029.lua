@@ -16,7 +16,8 @@ function c25000029.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCode(EVENT_FREE_CHAIN)  
+	e1:SetRange(LOCATION_MZONE) 
 	e1:SetCountLimit(1,25000029)
 	e1:SetTarget(c25000029.dstg)
 	e1:SetOperation(c25000029.dsop)  
@@ -63,8 +64,8 @@ function c25000029.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local x=g:GetCount()
 	local dg=Duel.GetDecktopGroup(tp,x)
 	if Duel.Destroy(dg,REASON_EFFECT)==x and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) then 
-	local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst() 
-	if not tc:IsDisabled() then
+		local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst() 
+		if not tc:IsDisabled() then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_DISABLE)
@@ -73,7 +74,7 @@ function c25000029.dsop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.AdjustInstantly()
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		Duel.Destroy(tc,REASON_EFFECT) 
-	end
+		end
 	end
 end
 function c25000029.sttg(e,tp,eg,ep,ev,re,r,rp,chk) 
@@ -83,10 +84,11 @@ end
 function c25000029.stop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and ((Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) or Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,nil)) then 
+	local dg=Group.CreateGroup() 
 	if Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) then 
-	local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
 	else 
-	local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_PZONE,0,1,1,nil)
+	dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_PZONE,0,1,1,nil)
 	end
 	if Duel.Destroy(dg,REASON_EFFECT)==0 then return end 
 	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)	

@@ -34,9 +34,9 @@ function c25000022.initial_effect(c)
 	e2:SetOperation(c25000022.xxop)
 	c:RegisterEffect(e2)
 end
-function c25000022.ffilter(c,fc,sub,mg,sg)
-	return ( not sg or sg:GetClassCount(Card.GetRace)==1) and c:IsFusionType(TYPE_FUSION)
-end
+function c25000022.ffilter(c,fc,sub,mg,sg)   
+	return (not sg or sg:FilterCount(aux.TRUE,c)==0 or (sg:IsExists(Card.IsRace,1,c,c:GetRace()))) and c:IsFusionType(TYPE_FUSION)  
+end 
 function c25000022.splimit(e,se,sp,st)
 	return e:GetHandler():GetLocation()~=LOCATION_EXTRA
 end

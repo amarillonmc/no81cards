@@ -22,6 +22,7 @@ function c71402001.initial_effect(c)
 	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
 	e2:SetCountLimit(1)
 	e2:SetCost(c71402001.cost2)
+	e2:SetTarget(c71402001.tg2)
 	e2:SetOperation(c71402001.op2)
 	c:RegisterEffect(e2)
 	--double tuner check
@@ -53,9 +54,10 @@ end
 function c71402001.op1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if Duel.IsPlayerCanSpecialSummonMonster(tp,71402002,0,TYPES_TOKEN_MONSTER,5000,5000,12,RACE_FIEND,ATTRIBUTE_LIGHT,POS_FACEUP) then
+		local c=e:GetHandler()
 		local token=Duel.CreateToken(tp,71402002)
-		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
-		local e1=Effect.CreateEffect(e:GetHandler())
+		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
+		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
 		e1:SetRange(LOCATION_MZONE)
@@ -63,6 +65,7 @@ function c71402001.op1(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(c71402001.atklimit)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		token:RegisterEffect(e1)
+		Duel.SpecialSummonComplete()
 	end
 end
 function c71402001.atklimit(e,c)
@@ -77,6 +80,11 @@ function c71402001.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c71402001.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,Duel.GetFirstTarget(),1,tp,LOCATION_HAND)
 end
 function c71402001.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

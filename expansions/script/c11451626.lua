@@ -1,7 +1,6 @@
 --双天法 那罗延
 --21.09.12
-local m=11451626
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--fusion
 	c:EnableReviveLimit()
@@ -118,7 +117,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1,Duel.GetCurrentChain())
 	if Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local tc=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+		local tc=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst()
 		c:SetCardTarget(tc)
 		e:GetLabelObject():AddCard(tc)
 	end

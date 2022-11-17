@@ -4,7 +4,7 @@ function cm.initial_effect(c)
 	aux.EnablePendulumAttribute(c,false)
 	--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedureLevelFree(c,nil,cm.xyzcheck,3,3)  
+	aux.AddXyzProcedureLevelFree(c,function(c)return c:IsLevelAbove(0)end,cm.xyzcheck,3,3)  
 	--remove
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))

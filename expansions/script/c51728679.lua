@@ -30,7 +30,7 @@ function c51728679.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_DISCARD+REASON_COST)
 end
 function c51728679.thfilter(c)
-	return c:IsSetCard(0x159) and c:IsAbleToHand() and not c:IsCode(51728679)
+	return c:IsSetCard(0x159) and c:IsAbleToHand() and not c:IsCode(51728679) and c:IsType(TYPE_MONSTER)
 end
 function c51728679.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c51728679.thfilter(chkc) end

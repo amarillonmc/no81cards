@@ -76,8 +76,17 @@ function c26692740.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			if effect and effect:GetCode()==EVENT_TO_GRAVE then
 				local eff=effect:Clone()
 				local eff2=effect:Clone()
+				local tg=eff:GetTarget()
 				local op=eff:GetOperation()
 				eff:SetValue(26692740)
+				eff:SetTarget(
+				function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+					if chk==0 then
+						return tg(e,tp,eg,ep,ev,re,r,1-tp,0,chkc)
+					end
+					Duel.Hint(HINT_CARD,0,26692740)
+					tg(e,tp,eg,ep,ev,re,r,1-tp,chk,chkc)
+				end)
 				eff:SetOperation(
 				function(e,tp,eg,ep,ev,re,r,rp)
 					Duel.Hint(HINT_CARD,0,26692740)
