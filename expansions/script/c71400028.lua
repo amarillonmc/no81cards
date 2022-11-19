@@ -50,7 +50,7 @@ function c71400028.filter2(c,e,tp)
 	return c:IsCode(71400030) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c71400028.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400028.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp) and aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_LMATERIAL) end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c71400028.op2(e,tp,eg,ep,ev,re,r,rp)

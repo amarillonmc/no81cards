@@ -22,6 +22,7 @@ function c71400032.initial_effect(c)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1)
 	e2:SetCondition(c71400032.con2)
+	e2:SetCost(c71400032.cost2)
 	e2:SetTarget(c71400032.tg2)
 	e2:SetOperation(c71400032.op2)
 	c:RegisterEffect(e2)
@@ -33,11 +34,21 @@ function c71400032.tg1(e,c)
 end
 function c71400032.con2(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return Duel.IsExistingMatchingCard(c71400032.filter2con,tp,LOCATION_MZONE,LOCATION_MZONE,4,nil) and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
+	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
+end
+function c71400032.filterc2(c)
+	return c:IsFaceup() and c:IsSetCard(0x714) and c:IsRace(RACE_PLANT) and c:IsAbleToGraveAsCost() and Duel.IsExistingTarget(c71400032.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
+end
+function c71400032.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400032.filterc2,tp,LOCATION_ONFIELD,0,1,c) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c71400032.filterc2,tp,LOCATION_ONFIELD,0,1,1,c)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c71400032.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c71400032.filter2(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c71400032.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return true end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local g=Duel.SelectTarget(tp,c71400032.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
@@ -57,7 +68,8 @@ function c71400032.op2(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_CANNOT_ATTACK)
 		tc:RegisterEffect(e2)
 		local g=Duel.GetMatchingGroup(c71400032.filter2a,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-		if Duel.IsExistingMatchingCard(c71400032.filter2b,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400032,1)) then
+		local lg=Duel.GetMatchingGroup(c71400032.filter2b,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		if lg:GetCount()>0 and lg:GetSum(Card.GetLink)>=4 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400032,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=g:Select(tp,1,1,nil)
@@ -68,9 +80,6 @@ function c71400032.op2(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71400032.filter2(c)
 	return c:IsRace(RACE_PLANT) and aux.NegateMonsterFilter(c)
-end
-function c71400032.filter2con(c)
-	return c:IsFaceup() and c:IsRace(RACE_PLANT)
 end
 function c71400032.filter2a(c)
 	return c:IsSetCard(0xd714) and c:IsAbleToHand()
