@@ -59,7 +59,6 @@ end
 end
 --global part
 table=require("table")
-yume.RustFlag=false
 function yume.AddYumeSummonLimit(c,ssm)
 --1=special summon monster, 0=non special summon monster
 	ssm=ssm or 0

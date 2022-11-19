@@ -14,11 +14,16 @@ function c71400002.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_GRAVE+LOCATION_MZONE,0)
+	e2:SetTargetRange(LOCATION_MZONE,0)
 	e2:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x714))
 	e2:SetValue(ATTRIBUTE_WATER)
 	e2:SetCondition(yume.YumeCon)
 	c:RegisterEffect(e2)
+	local e2g=e2:Clone()
+	e2g:SetTargetRange(LOCATION_GRAVE,0)
+	e2g:SetCondition(c71400002.gravecon)
+	c:RegisterEffect(e2g)
 	--to deck
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(71400002,0))
@@ -45,6 +50,10 @@ function c71400002.condition1(e,c)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)>0
 		and Duel.IsExistingMatchingCard(c71400002.filter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+end
+function c71400002.gravecon(e)
+	local tp=e:GetHandlerPlayer()
+	return yume.IsYumeFieldOnField(tp) and not Duel.IsPlayerAffectedByEffect(tp,EFFECT_NECRO_VALLEY)
 end
 function c71400002.target3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

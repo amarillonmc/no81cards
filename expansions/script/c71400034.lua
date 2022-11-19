@@ -58,15 +58,14 @@ function c71400034.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71400034.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400034.filter2c,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,c71400034.filter2c,1,1,REASON_COST+REASON_DISCARD,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400034.filter2c,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	Duel.DiscardHand(tp,c71400034.filter2c,1,1,REASON_COST,nil)
 end
 function c71400034.filter2c(c)
-	return c:IsSetCard(0x7714) and c:IsType(TYPE_FIELD) and c:IsDiscardable()
+	return c:IsSetCard(0x7714) and c:IsType(TYPE_FIELD) and c:IsAbleToDeckAsCost()
 end
 function c71400034.con2(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and (re:IsActiveType(TYPE_MONSTER)
-		or (re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not re:IsHasType(EFFECT_TYPE_ACTIVATE)))
+	return re:IsActiveType(TYPE_MONSTER)
 end
 function c71400034.filter2(c)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_LINK) and c:IsFaceup()
@@ -75,13 +74,16 @@ function c71400034.filter2b(c,tp)
 	return c:IsAbleToRemove(tp) and not c71400034.filter2(c)
 end
 function c71400034.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsAbleToDeck() end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
+	rc=re:GetHandler()
+	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsAbleToDeck() end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,rc,1,0,0)
 end
 function c71400034.op2(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsRelateToEffect(re) and Duel.SendtoDeck(eg,nil,2,REASON_EFFECT)==1 then
-		local g=Duel.GetMatchingGroup(c71400034.filter2b,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
-		if Duel.IsExistingMatchingCard(c71400034.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400034,2)) then
+	local rc=re:GetHandler()
+	if rc:IsRelateToEffect(re) and Duel.SendtoDeck(rc,nil,2,REASON_EFFECT)==1 then
+		local g=Duel.GetMatchingGroup(c71400034.filter2b,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler(),tp)
+		local lg=Duel.GetMatchingGroup(c71400034.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		if lg:GetCount()>0 and lg:GetSum(Card.GetLink)>=4 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400034,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local sg=g:Select(tp,1,1,nil)
