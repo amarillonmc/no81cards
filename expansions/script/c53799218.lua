@@ -32,7 +32,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
-		return ft>0 and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,num) end
+		return ft>0 and c:CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,num) end
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil,e,tp,num)
 	local t={}
 	for i=1,num do if g:CheckSubGroup(cm.fselect,1,math.min(ft,2),i) then table.insert(t,i) end end
@@ -67,12 +67,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1,true)
+			--tc:RegisterEffect(e1,true)
 			local e2=Effect.CreateEffect(e:GetHandler())
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2,true)
+			--tc:RegisterEffect(e2,true)
 		end
 		Duel.SpecialSummonComplete()
 	end

@@ -3,92 +3,92 @@ function c9910231.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_LINK),2,99,c9910231.lcheck)
 	c:EnableReviveLimit()
-	--draw
+	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DRAW+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,9910231)
-	e1:SetCost(c9910231.drcost)
-	e1:SetTarget(c9910231.drtg)
-	e1:SetOperation(c9910231.drop)
+	e1:SetCost(c9910231.spcost)
+	e1:SetTarget(c9910231.sptg)
+	e1:SetOperation(c9910231.spop)
 	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(9910231,ACTIVITY_CHAIN,c9910231.chainfilter)
+	Duel.AddCustomActivityCounter(9910231,ACTIVITY_CHAIN,c9910231.chainfilter1)
+	Duel.AddCustomActivityCounter(9910227,ACTIVITY_CHAIN,c9910231.chainfilter2)
 end
-function c9910231.chainfilter(re,tp,cid)
-	return not (re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and re:GetHandler():IsSetCard(0x955))
+function c9910231.chainfilter1(re,tp,cid)
+	local loc=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)
+	return not (re:GetHandler():IsSetCard(0x955) and re:IsActiveType(TYPE_SPELL) and bit.band(loc,LOCATION_SZONE)~=0)
+end
+function c9910231.chainfilter2(re,tp,cid)
+	local loc=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)
+	return not (re:GetHandler():IsSetCard(0x955) and re:IsActiveType(TYPE_SPELL) and bit.band(loc,LOCATION_GRAVE)~=0)
 end
 function c9910231.lcheck(g)
 	return g:IsExists(Card.IsLinkMarker,1,nil,LINK_MARKER_BOTTOM)
 		and g:IsExists(Card.IsLinkMarker,1,nil,LINK_MARKER_TOP)
-		and g:IsExists(Card.IsLinkMarker,1,nil,LINK_MARKER_TOP_LEFT)
-		and g:IsExists(Card.IsLinkMarker,1,nil,LINK_MARKER_TOP_RIGHT)
+		and g:IsExists(Card.IsLinkMarker,1,nil,LINK_MARKER_LEFT)
+		and g:IsExists(Card.IsLinkMarker,1,nil,LINK_MARKER_RIGHT)
 end
-function c9910231.drcost(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(9910231,tp,ACTIVITY_CHAIN)~=0
-end
-function c9910231.costfilter(c,mc,tp)
-	local lg=mc:GetLinkedGroup()
-	local tg=Group.FromCards(c,mc)
-	return lg:IsContains(c) and c:IsAbleToDeckOrExtraAsCost()
-end
-function c9910231.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910231.costfilter,tp,0,LOCATION_MZONE,1,c,c,tp)
-		and c:IsAbleToDeckOrExtraAsCost() end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c9910231.costfilter,tp,0,LOCATION_MZONE,1,1,c,c,tp)
-	g:AddCard(c)
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
+function c9910231.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(1)
+	return true
 end
 function c9910231.filter(c,e,tp)
-	return c:IsSetCard(0x955) and c:IsCanBeEffectTarget(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+	return c9910231.spfilter(c,e,tp) and c:IsCanBeEffectTarget(e)
 end
-function c9910231.lkfilter(c,g)
-	return c:IsSetCard(0x955) --and c:IsLinkSummonable(g,nil,g:GetCount(),g:GetCount())
+function c9910231.spfilter(c,e,tp)
+	return c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c9910231.fgoal(g,tp)
-	return Duel.IsExistingMatchingCard(c9910231.lkfilter,tp,LOCATION_EXTRA,0,1,nil,g)
+function c9910231.fselect(g)
+	return g:FilterCount(Card.IsLocation,nil,LOCATION_ONFIELD)<2 and g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<2
 end
-function c9910231.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	local mg=Duel.GetMatchingGroup(c9910231.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)
-	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if chk==0 then return Duel.IsPlayerCanDraw(1-tp,1) and Duel.IsPlayerCanSpecialSummonCount(tp,2)
-		and not Duel.IsPlayerAffectedByEffect(tp,59822133) and ct>1 and mg:CheckSubGroup(c9910231.fgoal,2,ct,tp) end
+function c9910231.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910231.spfilter(chkc,e,tp) end
+	local c=e:GetHandler()
+	local ft=Duel.GetMZoneCount(tp,c)
+	local ct=Duel.GetMatchingGroupCount(c9910231.filter,tp,LOCATION_GRAVE,0,nil,e,tp)
+	local rt=0
+	local loc=0
+	if Duel.GetCustomActivityCount(9910231,tp,ACTIVITY_CHAIN)~=0 then loc=loc+LOCATION_ONFIELD end
+	if Duel.GetCustomActivityCount(9910227,tp,ACTIVITY_CHAIN)~=0 then loc=loc+LOCATION_GRAVE end
+	local rg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,0,loc,nil)
+	if chk==0 then
+		if ct==0 then return false end
+		if e:GetLabel()~=0 then
+			e:SetLabel(0)
+			return c:IsAbleToRemoveAsCost() and ft>0
+		else
+			return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		end
+	end
+	if e:GetLabel()~=0 then
+		e:SetLabel(0)
+		if ct>1 and ft>1 and #rg>0 and Duel.SelectYesNo(tp,aux.Stringid(9910231,0)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local sg=rg:SelectSubGroup(tp,c9910231.fselect,false,1,math.min(ct,ft)-1)
+			sg:AddCard(c)
+			rt=Duel.Remove(sg,POS_FACEUP,REASON_COST)
+		else
+			rt=Duel.Remove(c,POS_FACEUP,REASON_COST)
+		end
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg1=mg:SelectSubGroup(tp,c9910231.fgoal,false,2,ct,tp)
-	Duel.SetTargetCard(sg1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg1,sg1:GetCount(),0,0)
+	local g=Duel.SelectTarget(tp,c9910231.spfilter,tp,LOCATION_GRAVE,0,rt,rt,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,g:GetCount(),0,0)
 end
-function c9910231.filter2(c,e,tp)
-	return c:IsRelateToEffect(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c9910231.drop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Draw(1-tp,1,REASON_EFFECT)==0 then return end
+function c9910231.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if ft<=0 then return end
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c9910231.filter2,nil,e,tp)
-	if #g==0 then return end
-	if #g>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-	if #g>ft then
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
+	if sg:GetCount()>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	if sg:GetCount()>ft then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		g=g:Select(tp,ft,ft,nil)
+		sg=sg:Select(tp,ft,ft,nil)
 	end
-	Duel.BreakEffect()
-	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	local og=Duel.GetOperatedGroup()
-	Duel.AdjustAll()
-	if og:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)<g:GetCount() then return end
-	local tg=Duel.GetMatchingGroup(c9910231.lkfilter,tp,LOCATION_EXTRA,0,nil,og)
-	if og:GetCount()==g:GetCount() and tg:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local rg=tg:Select(tp,1,1,nil)
-		Duel.LinkSummon(tp,rg:GetFirst(),og,nil,#og,#og)
-	end
+	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 end

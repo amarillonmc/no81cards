@@ -17,7 +17,7 @@ function c10150013.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 function c10150013.filter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,true,false) and c:GetOriginalLevel()==10 and c:IsAttribute(ATTRIBUTE_DEVINE)
+	return c:IsCanBeSpecialSummoned(e,0,tp,true,false) and c:GetOriginalLevel()==10 and c:IsAttribute(ATTRIBUTE_DIVINE)
 end
 function c10150013.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c10150013.filter(chkc,e,tp) end

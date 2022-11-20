@@ -42,20 +42,20 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsFacedown()
 end
 function cm.cfilter(c)
-	return  c:IsType(TYPE_PENDULUM) and c:IsAbleToRemove() and  c:IsFaceup() and c:IsSetCard(0x211)
+	return  c:IsType(TYPE_PENDULUM) and c:IsAbleToRemove() and  c:IsFaceup() and c:IsCode(25800150)
 end
 
 function cm.pentg0(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_EXTRA,0,nil)
 	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) 
-	or Duel.CheckLocation(tp,LOCATION_PZONE,1)) 
-	and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_EXTRA,0,2,nil) end
+	or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and g:GetCount()>=2  end  
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+end
+function cm.penop0(e,tp,eg,ep,ev,re,r,rp)	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_EXTRA,0,2,2,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-end
-function cm.penop0(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then
 		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end

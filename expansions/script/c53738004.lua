@@ -34,7 +34,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(g) do tc:RegisterFlagEffect(53738000,RESET_EVENT+RESETS_STANDARD,0,0) end
 end
 function cm.costfilter(c)
-	return c:IsSetCard(0x5532) and not c:IsPublic()
+	return c:IsSetCard(0x5532) and not c:IsLevel(8) and not c:IsPublic()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

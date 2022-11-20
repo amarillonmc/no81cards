@@ -36,7 +36,6 @@ function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and Duel.Draw(tp,1,REASON_EFFECT)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-		Duel.BreakEffect()
 		Duel.DiscardDeck(tp,2,REASON_EFFECT)
 	end
 end

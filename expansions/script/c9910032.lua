@@ -27,7 +27,7 @@ function c9910032.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DISABLE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END+TIMING_END_PHASE)
 	e3:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e3:SetCountLimit(1,9910032)
 	e3:SetCondition(c9910032.spcon)
@@ -84,7 +84,10 @@ function c9910032.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end
 function c9910032.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+	local c=e:GetHandler()
+	local b1=Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+	local b2=c:IsLocation(LOCATION_HAND) and c:IsPublic() and c:GetFlagEffect(9910001)~=0
+	return b1 or b2
 end
 function c9910032.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end

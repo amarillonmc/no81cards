@@ -6,6 +6,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_LIMIT_ZONE)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	e1:SetValue(cm.zones)
@@ -14,7 +15,7 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_REMOVED)
 	e2:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e2:SetCondition(cm.accon)
-	e2:SetCost(cm.cost)
+	e2:SetCost(cm.cost2)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -44,8 +45,17 @@ function cm.zones(e,tp,eg,ep,ev,re,r,rp)
 	if b2 and p1 then zone=zone-0x10 end
 	return zone
 end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function cm.filter(c)
+	return c:IsFaceup() and c:IsCanAddCounter(0x1,1)
+end
 function cm.penfilter(c,res)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_DECK)) and c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and (res or c:IsCanHaveCounter(0x1))
+	return (c:IsFaceup() or c:IsLocation(LOCATION_DECK)) and not c:IsHasEffect(m) and c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and (res or Duel.IsExistingMatchingCard(cm.filter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=0
@@ -64,20 +74,41 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local res=Duel.IsPlayerCanRelease(tp)
 	local tc=Duel.SelectMatchingCard(tp,cm.penfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,res):GetFirst()
-	if tc and Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) and tc:IsLocation(LOCATION_PZONE) then
-		local b1=tc:IsReleasableByEffect()
-		local b2=tc:IsCanAddCounter(0x1,1)
-		local op=0
-		if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1)) elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(m,0)) else op=Duel.SelectOption(tp,aux.Stringid(m,1))+1 end
-		if op==0 then Duel.Release(tc,REASON_EFFECT) else tc:AddCounter(0x1,1) end
+	if tc and Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(m)
+		e1:SetTargetRange(LOCATION_DECK+LOCATION_EXTRA,0)
+		e1:SetLabel(tc:GetCode())
+		e1:SetTarget(cm.dhlimit)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+		if tc:IsLocation(LOCATION_PZONE) then
+			local b1=tc:IsReleasableByEffect()
+			local b2=Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+			local op=0
+			if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1)) elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(m,0)) else op=Duel.SelectOption(tp,aux.Stringid(m,1))+1 end
+			if op==0 then Duel.Release(tc,REASON_EFFECT) else
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
+				local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+				Duel.HintSelection(g)
+				g:GetFirst():AddCounter(0x1,1)
+			end
+		end
 	end
+end
+function cm.dhlimit(e,c)
+	return c:IsCode(e:GetLabel())
 end
 function cm.accon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_GRAVE)
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,4,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x1,4,REASON_COST)
+function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,3,REASON_COST) and Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,e:GetHandler()) end
+	Duel.RemoveCounter(tp,1,0,0x1,3,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()

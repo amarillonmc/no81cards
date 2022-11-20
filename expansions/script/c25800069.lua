@@ -28,11 +28,11 @@ function c25800069.tgfilter(c,e,tp)
 		and e:GetHandler():GetLinkedGroup():IsContains(c)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_FMATERIAL)
 		and Duel.IsExistingMatchingCard(c25800069.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
-		and c:IsRace(RACE_MACHINE)
+		
 end
 function c25800069.spfilter(c,e,tp,tc)
 	return c:IsType(TYPE_FUSION) and aux.IsMaterialListCode(c,tc:GetCode())
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,tc,c)>0
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,tc,c)>0 and c:IsRace(RACE_MACHINE)
 end
 function c25800069.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc==0 then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c25800069.tgfilter(chkc,e,tp) end

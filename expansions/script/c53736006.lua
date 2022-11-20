@@ -41,7 +41,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetCountLimit(1)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetOperation(cm.desop)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 	c:RegisterEffect(e1)
 	if Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		local e2=Effect.CreateEffect(c)

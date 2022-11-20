@@ -1,6 +1,5 @@
 --烬羽的悲响·珞克莉尔
-local m=11451738
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--set
 	local e1=Effect.CreateEffect(c)
@@ -21,6 +20,8 @@ function cm.initial_effect(c)
 	e6:SetCode(EVENT_REMOVE)
 	c:RegisterEffect(e6)
 end
+local KOISHI_CHECK=false
+if Card.SetEntityCode then KOISHI_CHECK=true end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if c:IsReason(REASON_DISCARD) then
@@ -40,14 +41,20 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc and Duel.SSet(tp,tc)~=0 and c:IsRelateToEffect(e) and c:IsAbleToDeck() then
-		c:SetEntityCode(m+10,true)
-		c:ReplaceEffect(m+10,0)
-		c:EnableReviveLimit()
-		aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),true)
-		local loc=c:GetLocation()
-		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,c)
-		local g=Duel.GetFieldGroup(tp,loc,0)
-		Duel.ConfirmCards(tp,g)
+		if KOISHI_CHECK then
+			c:SetEntityCode(m+10,true)
+			c:ReplaceEffect(m+10,0)
+			c:EnableReviveLimit()
+			aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),true)
+			local loc=c:GetLocation()
+			Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,c)
+			local g=Duel.GetFieldGroup(tp,loc,0)
+			Duel.ConfirmCards(tp,g)
+		else
+			local token=Duel.CreateToken(tp,m+10)
+			Duel.SendtoDeck(token,nil,2,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,token)
+		end
 	end
 end

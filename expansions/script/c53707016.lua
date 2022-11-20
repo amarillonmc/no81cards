@@ -38,7 +38,6 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	if ct>0 and Duel.Draw(p,ct,REASON_EFFECT)==ct then
 		local tg=Duel.GetMatchingGroup(Card.IsAbleToDeck,p,LOCATION_HAND,0,nil)
 		if tg:GetCount()==0 then return end
-		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
 		local sg=tg:Select(p,ct,ct,nil)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)

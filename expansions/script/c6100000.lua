@@ -1,0 +1,103 @@
+--永远的苍风之神
+local cm,m,o=GetID()
+function cm.initial_effect(c)
+	c:EnableReviveLimit()
+	--public
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,m)
+	e1:SetOperation(cm.pbop)
+	c:RegisterEffect(e1)
+	--strong hold
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCountLimit(1,m+10000)
+	e2:SetCost(cm.ptcost)
+	e2:SetTarget(cm.pttg)
+	e2:SetOperation(cm.ptop)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCondition(cm.ptcon)
+	c:RegisterEffect(e3)
+end
+function cm.pbop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local fid=c:GetFieldID()
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,fid,66)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_PUBLIC)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e1)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetRange(LOCATION_HAND)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetOperation(cm.regop)
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_CHAIN_SOLVED)
+	e5:SetRange(LOCATION_HAND)
+	e5:SetCondition(cm.costcon)
+	e5:SetOperation(cm.costop)
+	c:RegisterEffect(e5)
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
+end
+function cm.costcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return ep~=1-tp  and c:GetFlagEffect(m)~=1 and c:IsPublic()
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
+	local c=e:GetHandler()
+	Duel.SetLP(tp,Duel.GetLP(tp)-450)
+end
+function cm.ptcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsPublic() or c:IsLocation(LOCATION_MZONE)
+end
+function cm.ptcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() end
+	Duel.Release(e:GetHandler(),REASON_COST)
+end
+function cm.pttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc:IsControler(tp) and chkc~=c end
+	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil)
+end
+function cm.ptop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_CANNOT_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e2,true)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetCode(EFFECT_CANNOT_DISEFFECT)
+		e3:SetRange(LOCATION_ONFIELD+LOCATION_GRAVE)
+		e3:SetValue(cm.efilter)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e3,true)
+	end
+end
+function cm.efilter(e,ct)
+	local te=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT)
+	return te:GetHandler()==e:GetHandler()
+end

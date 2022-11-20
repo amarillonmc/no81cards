@@ -1,6 +1,5 @@
 --魔人★双子兵装 神塔劫火
-local m=11451485
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
@@ -26,11 +25,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--effect2
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
+	e2:SetCode(EVENT_SPSUMMON)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.imcon)
 	e2:SetCost(cm.imcost)
+	e2:SetTarget(cm.imtg)
 	e2:SetOperation(cm.imop)
 	c:RegisterEffect(e2)
 	--setname
@@ -171,7 +172,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.imcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+	return Duel.GetCurrentChain()==0
 end
 function cm.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -193,33 +194,12 @@ function cm.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	c:RemoveOverlayCard(tp,2-op,2-op,REASON_COST)
 end
---[[function cm.imop(e,tp,eg,ep,ev,re,r,rp)
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_IMMUNE_EFFECT)
-	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	e2:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
-	e2:SetValue(cm.efilter)
-	e2:SetOwnerPlayer(tp)
-	e2:SetReset(RESET_CHAIN)
-	Duel.RegisterEffect(e2,tp)
-end--]]
-function cm.imop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local tc=g:GetFirst()
-	while tc do
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetCode(EFFECT_IMMUNE_EFFECT)
-		e4:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e4:SetRange(LOCATION_ONFIELD)
-		e4:SetValue(cm.efilter)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
-		e4:SetOwnerPlayer(tp)
-		tc:RegisterEffect(e4)
-		tc=g:GetNext()
-	end
+function cm.imtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,eg,eg:GetCount(),0,0)
 end
-function cm.efilter(e,re)
-	return re:GetOwner()~=e:GetOwner()
+function cm.imop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateSummon(eg)
+	Duel.SendtoGrave(eg,REASON_EFFECT)
 end

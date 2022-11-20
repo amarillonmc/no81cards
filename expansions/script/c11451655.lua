@@ -1,7 +1,6 @@
 --perfectly metamorphosis great moth
 --22.01.07
-local m=11451655
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--cannot special summon
@@ -24,6 +23,8 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 end
+local KOISHI_CHECK=false
+if Card.SetEntityCode then KOISHI_CHECK=true end
 function cm.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
@@ -41,11 +42,16 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,58192742,0,0x11,300,200,1,RACE_INSECT,ATTRIBUTE_EARTH) then
-		c:SetEntityCode(58192742,true)
-		local ini=cm.initial_effect
-		cm.initial_effect=function() end
-		c:ReplaceEffect(m,0)
-		cm.initial_effect=ini
+		if KOISHI_CHECK then
+			c:SetEntityCode(58192742,true)
+			local ini=cm.initial_effect
+			cm.initial_effect=function() end
+			c:ReplaceEffect(m,0)
+			cm.initial_effect=ini
+		else
+			Duel.SendtoGrave(c,REASON_EFFECT)
+			c=Duel.CreateToken(tp,58192742)
+		end
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 			local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,c)

@@ -19,10 +19,17 @@ function c9910482.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,9910483)
+	e2:SetCondition(c9910482.spcon1)
 	e2:SetCost(c9910482.spcost)
 	e2:SetTarget(c9910482.sptg)
 	e2:SetOperation(c9910482.spop)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCondition(c9910482.spcon2)
+	c:RegisterEffect(e3)
 	--set
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -55,6 +62,14 @@ function c9910482.penop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 	end
+end
+function c9910482.spcon1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return not c:IsPublic() or c:GetFlagEffect(9910001)==0
+end
+function c9910482.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsPublic() and c:GetFlagEffect(9910001)~=0
 end
 function c9910482.costfilter(c)
 	return c:IsSetCard(0x3950) and c:IsLevel(5) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()

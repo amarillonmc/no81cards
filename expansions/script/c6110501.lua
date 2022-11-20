@@ -36,7 +36,7 @@ function cm.lcheck(g)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x632) 
 end 
 function cm.cfilter(c)
-	return c:IsSetCard(0x632) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0x632)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_REMOVED,0,4,nil) end

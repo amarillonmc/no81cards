@@ -9,6 +9,7 @@ function cm.initial_effect(c)
 
 	--spsummon
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,1))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -19,7 +20,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOGRAVE)
+	e2:SetDescription(aux.Stringid(m,2))
+	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -47,9 +49,15 @@ if not cm.global_check then
 		cm[1]=0
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_DESTROY)
+		ge1:SetCode(EVENT_DESTROYED)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_BATTLE_DESTROYED)
+		ge2:SetCondition(cm.regcon)
+		ge2:SetOperation(cm.checkop2)
+		Duel.RegisterEffect(ge2,0)
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge3:SetCode(EVENT_PHASE_START+PHASE_DRAW)
@@ -57,13 +65,14 @@ if not cm.global_check then
 		Duel.RegisterEffect(ge3,0)
 	end
 end
-
+---
 function cm.hspfilter(c,tp,sc)
-	return   c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)  and cm[tp]>=3
+	return   c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)  and (cm[tp]>=5 or Duel.GetFlagEffect(c:GetControler(),m-1)>=1)
 end
 function cm.hspcon(e,c)
 	if c==nil then return true end
 	return Duel.CheckReleaseGroup(c:GetControler(),cm.hspfilter,1,nil,c:GetControler(),c)
+		   
 end
 function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.SelectReleaseGroup(tp,cm.hspfilter,1,1,nil,tp,c)
@@ -78,22 +87,34 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 		tc=eg:GetNext()
 	end
 end
-
+function cm.defilter(c,e)
+	local tp=e:GetHandler():GetOwner()
+	return c:IsReason(REASON_BATTLE)  and c:GetPreviousControler()==tp
+end
+function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.defilter,1,nil,e)
+end
+function cm.checkop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()   
+	Duel.RegisterFlagEffect(c:GetControler(),m-1,RESET_PHASE+PHASE_END,0,1)
+end
 function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 	cm[0]=0
 	cm[1]=0
+	 
 end
 -----2
+function cm.co2(c,tp)
+	return not (c:IsFaceup() and c:IsSetCard(0x9211)) 
+end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
-	if chk==0 then return #g>0 end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,#g,0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.co2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	local g=Duel.GetMatchingGroup(cm.co2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
-	if #g>0 then
-		Duel.SendtoGrave(g,REASON_EFFECT)
-	end
+	local g=Duel.GetMatchingGroup(cm.co2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	Duel.Destroy(g,REASON_EFFECT)
 end
 -----3
 function cm.costfilter(c,tp)

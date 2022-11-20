@@ -68,7 +68,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.thfilter(c)
-	return c:IsRace(RACE_PLANT) and c:IsLevelBelow(3) and c:IsAbleToHand()
+	return c:IsRace(RACE_PLANT) and c:IsAbleToHand()
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

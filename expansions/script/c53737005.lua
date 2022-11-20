@@ -114,36 +114,38 @@ end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0
 end
-function cm.costfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_DECK,0,1,nil,c)
-end
-function cm.rmfilter(c,rc)
-	return c:IsAbleToGrave() and c:IsSetCard(0x6531) and not Duel.IsExistingMatchingCard(cm.bfilter,tp,LOCATION_REMOVED,0,1,nil,c,rc)
-end
-function cm.bfilter(c,tc,rc)
-	local code=0
-	if rc then code=rc:GetCode() end
-	return tc:IsCode(c:GetCode(),code) and c:IsFaceup()
-end
 function cm.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
 	return true
+end
+function cm.costfilter(c,tp)
+	return c:IsSetCard(0x6531) and c:IsAbleToGraveAsCost() and not Duel.IsExistingMatchingCard(cm.bfilter,tp,LOCATION_REMOVED,0,1,nil,c:GetCode())
+end
+function cm.bfilter(c,code)
+	return c:IsCode(code) and c:IsFaceup()
+end
+function cm.rmfilter(c)
+	return c:IsType(TYPE_SPELL) and c:IsAbleToRemove()
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
-		return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_GRAVE,0,2,nil)
+		local g=Duel.GetMatchingGroup(cm.rmfilter,tp,LOCATION_GRAVE,0,nil)
+		if e:GetHandler():IsAbleToRemove() then g:AddCard(e:GetHandler()) end
+		return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_DECK,0,1,nil,tp) and #g>1
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_GRAVE,0,2,2,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+	local g=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
+	Duel.SendtoGrave(g,REASON_COST)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_MZONE+LOCATION_GRAVE)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_DECK,0,1,1,nil,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoGrave(g,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,LOCATION_GRAVE,0,nil)
+	if e:GetHandler():IsAbleToRemove() then g:AddCard(e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local sg=g:Select(tp,2,2,nil)
+	if sg:GetCount()>0 then
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
 end

@@ -63,7 +63,7 @@ function cm.caop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if #g>0 then
 		local tc=g:GetFirst()
-		local hg=Duel.GetMatchingGroup(cm.pfilter,tp,LOCATION_MZONE,0,nil,tc)
+		local hg=Duel.GetMatchingGroup(cm.pfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tc)
 		local attr=0
 		for hc in aux.Next(hg) do
 			local attr2=hc:GetAttribute()

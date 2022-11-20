@@ -10,13 +10,14 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetCountLimit(1)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetCost(cm.setcost)
 	e1:SetTarget(cm.settg)
 	e1:SetOperation(cm.setop)
 	c:RegisterEffect(e1)
 	--to grave
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_TOGRAVE)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_REMOVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -31,28 +32,27 @@ function cm.stfilter(c)
 end
 
 function cm.desfilter(c)
-	return c:IsRace(RACE_MACHINE)
+	return c:IsRace(RACE_MACHINE) and c:IsAbleToGraveAsCost()
 end
-
-function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(cm.stfilter,tp,LOCATION_DECK,0,1,nil)
-		and Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
-	 Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
-end
-
-function cm.setop(e,tp,eg,ep,ev,re,r,rp)
+function cm.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local dg=Duel.SelectMatchingCard(tp,cm.desfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
-	if dg:GetCount()==0 then return end
-	if Duel.Destroy(dg,REASON_EFFECT)~=0 then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	if dg:GetCount()>0 then
+	Duel.SendtoGrave(dg,REASON_COST)
+	end
+end
+function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingMatchingCard(cm.stfilter,tp,LOCATION_DECK,0,1,nil) end
+end
+function cm.setop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,cm.stfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #g>0 then
 		Duel.SSet(tp,g)
 	end
-  end
 end
 
 function cm.tgfilter(c,tp)

@@ -71,6 +71,11 @@ function cm.ddop(e,tp,eg,ep,ev,re,r,rp)
 	if sg:GetCount()>0 then
 		Duel.DisableShuffleCheck()
 		Duel.SendtoGrave(sg,REASON_EFFECT+REASON_REVEAL)
+		if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,1,nil)
+			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
+		end
 	end
 	Duel.ShuffleDeck(tp)
 end

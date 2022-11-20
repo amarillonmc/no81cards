@@ -1,98 +1,70 @@
---折纸使 风岭茉莉花
+--昂扬之折纸使
 function c9910045.initial_effect(c)
-	--pendulum summon
-	aux.EnablePendulumAttribute(c)
-	--to hand
+	--fusion summon
+	c:EnableReviveLimit()
+	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x3950),3,true)
+	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1,9910045)
-	e1:SetTarget(c9910045.destg)
-	e1:SetOperation(c9910045.desop)
+	e1:SetTarget(c9910045.sptg)
+	e1:SetOperation(c9910045.spop)
 	c:RegisterEffect(e1)
-	--special summon rule
+	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_SPSUMMON_PROC)
-	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCondition(c9910045.sprcon)
+	e2:SetDescription(aux.Stringid(9910045,0))
+	e2:SetCategory(CATEGORY_RELEASE)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
+	e2:SetCondition(c9910045.rlcon)
+	e2:SetTarget(c9910045.rltg)
+	e2:SetOperation(c9910045.rlop)
 	c:RegisterEffect(e2)
-	--pendulum set
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetOperation(c9910045.regop)
-	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_PHASE+PHASE_END)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1)
-	e4:SetCondition(c9910045.pencon)
-	e4:SetTarget(c9910045.pentg)
-	e4:SetOperation(c9910045.penop)
-	c:RegisterEffect(e4)
 end
-function c9910045.desfilter(c)
-	return c:GetSequence()<5
+function c9910045.spfilter(c,e,tp)
+	return c:IsSetCard(0x3950) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c9910045.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(tp) and c9910045.desfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9910045.desfilter,tp,LOCATION_SZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c9910045.desfilter,tp,LOCATION_SZONE,0,1,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_EXTRA)
-end
-function c9910045.thfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
-end
-function c9910045.desop(e,tp,eg,ep,ev,re,r,rp)
+function c9910045.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if Duel.Destroy(g,REASON_EFFECT)==2 then
-		local g2=Duel.GetMatchingGroup(c9910045.thfilter,tp,LOCATION_EXTRA,0,nil)
-		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910045,0)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=g2:Select(tp,1,1,nil)
-			Duel.SendtoHand(sg,tp,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sg)
-		end
+	if chkc then return chkc:IsLocation(LOCATION_PZONE) and c9910045.spfilter(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c9910045.spfilter,tp,LOCATION_PZONE,LOCATION_PZONE,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,c9910045.spfilter,tp,LOCATION_PZONE,LOCATION_PZONE,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+end
+function c9910045.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0
+		and c:IsRelateToEffect(e) and c:IsFaceup() then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(tc:GetBaseAttack())
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e1)
 	end
 end
-function c9910045.sprcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+function c9910045.rlcon(e,tp,eg,ep,ev,re,r,rp)
+	return not eg:IsContains(e:GetHandler())
 end
-function c9910045.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:GetSummonLocation()==LOCATION_EXTRA then
-		c:RegisterFlagEffect(9910045,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-	end
+function c9910045.rltg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,1-tp,LOCATION_MZONE,0,1,nil,REASON_RULE) end
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,1-tp,LOCATION_MZONE)
 end
-function c9910045.pencon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(9910045)~=0
-end
-function c9910045.penfilter(c)
-	return c:IsSetCard(0x3950) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
-end
-function c9910045.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
-		and Duel.IsExistingMatchingCard(c9910045.penfilter,tp,LOCATION_DECK,0,1,nil) end
-end
-function c9910045.penop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,c9910045.penfilter,tp,LOCATION_DECK,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+function c9910045.rlop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsReleasable,1-tp,LOCATION_MZONE,0,nil,REASON_RULE)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_RELEASE)
+		local sg=g:Select(1-tp,1,1,nil)
+		Duel.HintSelection(sg)
+		Duel.Release(sg,REASON_RULE)
 	end
 end

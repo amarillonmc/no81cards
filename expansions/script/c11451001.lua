@@ -1,6 +1,5 @@
 --随兴
-local m=11451001
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--random
 	local e1=Effect.CreateEffect(c)
@@ -131,6 +130,8 @@ function cm.initial_effect(c)
 		end
 	end
 end
+local KOISHI_CHECK=false
+if Card.SetCardData then KOISHI_CHECK=true end
 function cm.filter(g,f,nc,...)
 	if aux.GetValueType(f)=="function" then return g:Filter(f,nc,...) end
 	local ng=g:Clone()
@@ -154,7 +155,7 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e0:SetCode(EVENT_PHASE+PHASE_END)
 	e0:SetCountLimit(1)
-	e0:SetReset(EVENT_PHASE+PHASE_END)
+	e0:SetReset(RESET_PHASE+PHASE_END)
 	e0:SetOperation(cm.spop)
 	Duel.RegisterEffect(e0,tp)
 end
@@ -178,7 +179,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ct1=Duel.GetFlagEffectLabel(tp,m)
 	local ct2=Duel.GetFlagEffectLabel(1-tp,m)
-	if ct1==0 and ct2==0 then return end
+	if not ct1 or not ct2 or (ct1==0 and ct2==0) then return end
 	if not cm.r then
 		local result=0
 		local g=Duel.GetFieldGroup(0,0xff,0xff):RandomSelect(2,8)
@@ -199,6 +200,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ng1=Group.CreateGroup()
 	local ng2=Group.CreateGroup()
 	local ac=nil
+	local _TGetID=GetID
 	if ct1>0 then
 		local tab1={}
 		for i=1,ct1 do
@@ -208,17 +210,34 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				if int>132000000 and int<132000014 then int=int+739100000 end
 				if int==132000014 then int=460524290 end
 				if int==132000015 then int=978210027 end
-				local cc,ca,ctype=Duel.ReadCard(int,CARDDATA_CODE,CARDDATA_ALIAS,CARDDATA_TYPE)
-				if cc then
-					local dif=cc-ca
-					local real=0
-					if dif>-10 and dif<10 then
-						real=ca
-					else
-						real=cc
+				if KOISHI_CHECK then
+					local cc,ca,ctype=Duel.ReadCard(int,CARDDATA_CODE,CARDDATA_ALIAS,CARDDATA_TYPE)
+					if cc then
+						local dif=cc-ca
+						local real=0
+						if dif>-10 and dif<10 then
+							real=ca
+						else
+							real=cc
+						end
+						if ctype&TYPE_TOKEN==0 then
+							ac=real
+						end
 					end
-					if ctype&TYPE_TOKEN==0 then
-						ac=real
+				else
+					if not _G["c"..int] then
+						_G["c"..int]={}
+						_G["c"..int].__index=_G["c"..int]
+					end
+					GetID=function()
+						return _G["c"..int],int
+					end
+					if pcall(function() require("expansions/script/c"..int) end) or pcall(function() require("script/c"..int) end) then
+						_G["c"..int]=nil
+						local bool,token=pcall(Duel.CreateToken,tp,int)
+						if bool and not token:IsType(TYPE_TOKEN) then
+							ac=token:GetCode()
+						end
 					end
 				end
 			end
@@ -229,7 +248,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			g1:AddCard(Duel.CreateToken(tp,tab1[i]))
 		end
 		if #g1>0 then
-			Duel.ConfirmCards(tp,g1)
+			if KOISHI_CHECK then Duel.ConfirmCards(tp,g1) end
 			local codes={}
 			for tc in aux.Next(g1) do
 				local code=tc:GetCode()
@@ -263,17 +282,34 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				if int>132000000 and int<132000014 then int=int+739100000 end
 				if int==132000014 then int=460524290 end
 				if int==132000015 then int=978210027 end
-				local cc,ca,ctype=Duel.ReadCard(int,CARDDATA_CODE,CARDDATA_ALIAS,CARDDATA_TYPE)
-				if cc then
-					local dif=cc-ca
-					local real=0
-					if dif>-10 and dif<10 then
-						real=ca
-					else
-						real=cc
+				if KOISHI_CHECK then
+					local cc,ca,ctype=Duel.ReadCard(int,CARDDATA_CODE,CARDDATA_ALIAS,CARDDATA_TYPE)
+					if cc then
+						local dif=cc-ca
+						local real=0
+						if dif>-10 and dif<10 then
+							real=ca
+						else
+							real=cc
+						end
+						if ctype&TYPE_TOKEN==0 then
+							ac=real
+						end
 					end
-					if ctype&TYPE_TOKEN==0 then
-						ac=real
+				else
+					if not _G["c"..int] then
+						_G["c"..int]={}
+						_G["c"..int].__index=_G["c"..int]
+					end
+					GetID=function()
+						return _G["c"..int],int
+					end
+					if pcall(function() require("expansions/script/c"..int) end) or pcall(function() require("script/c"..int) end) then
+						_G["c"..int]=nil
+						local bool,token=pcall(Duel.CreateToken,1-tp,int)
+						if bool and not token:IsType(TYPE_TOKEN) then
+							ac=token:GetCode()
+						end
 					end
 				end
 			end
@@ -284,7 +320,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			g2:AddCard(Duel.CreateToken(1-tp,tab2[i]))
 		end
 		if #g2>0 then
-			Duel.ConfirmCards(1-tp,g2)
+			if KOISHI_CHECK then Duel.ConfirmCards(1-tp,g2) end
 			local codes={}
 			for tc in aux.Next(g2) do
 				local code=tc:GetCode()
@@ -309,6 +345,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoDeck(g2,1-tp,2,REASON_EFFECT)
 		end
 	end
+	GetID=_TGetID
 	--if #g1>0 then Duel.ConfirmCards(1-tp,g1) end
 	--if #g2>0 then Duel.ConfirmCards(tp,g2) end
 	if #ng1>0 then Duel.ConfirmCards(1-tp,ng1) end

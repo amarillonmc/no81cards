@@ -35,7 +35,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(g) do tc:RegisterFlagEffect(53738000,RESET_EVENT+RESETS_STANDARD,0,0) end
 end
 function cm.tdfilter(c)
-	return c:IsSetCard(0x5532) and c:IsAbleToDeck()
+	return c:IsSetCard(0x5532) and not c:IsLevel(6) and c:IsAbleToDeck()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

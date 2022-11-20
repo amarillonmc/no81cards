@@ -36,12 +36,15 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(function(c)return c:IsPreviousLocation(LOCATION_DECK) and c:IsReason(REASON_DESTROY)end,nil)
 	for tc in aux.Next(g) do tc:RegisterFlagEffect(53738000,RESET_EVENT+RESETS_STANDARD,0,0) end
 end
+function cm.tdfilter(c)
+	return (not c:IsLevel(7) or c:IsFacedown()) and c:IsAbleToDeck()
+end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsAbleToDeck() and chkc:IsControler(tp) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.tdfilter(chkc) and chkc:IsControler(tp) end
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>1 and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:GetFlagEffect(53738000)>0 or c:IsLocation(LOCATION_HAND)) end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>1 and Duel.IsExistingTarget(cm.tdfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:GetFlagEffect(53738000)>0 or c:IsLocation(LOCATION_HAND)) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.tdfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,2,PLAYER_ALL,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)

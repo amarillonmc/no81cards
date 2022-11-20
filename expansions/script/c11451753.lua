@@ -10,6 +10,11 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
+	local e3=e1:Clone()
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCondition(cm.con2)
+	c:RegisterEffect(e3)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
@@ -29,11 +34,14 @@ end
 function cm.thfilter(c)
 	return c:IsSetCard(0x9977) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil,c:GetCode())
 end
+function cm.con2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(0,11451760)>0
+end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,2,nil) and (sa or sb) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,nil) and (sa or sb) end
 	if c:IsLocation(LOCATION_HAND) then
 		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
 	elseif c:IsLocation(LOCATION_REMOVED) then

@@ -67,10 +67,10 @@ function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chkc then return chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
@@ -141,7 +141,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.Draw(tp,1,REASON_EFFECT)
 		elseif sel==1 then
-			if ct>6 then ct=6 end
 			while ct>0 do
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 				local tc=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,1,1,nil,0x1,1):GetFirst()

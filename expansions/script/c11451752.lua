@@ -11,6 +11,11 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
+	local e3=e1:Clone()
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCondition(cm.con2)
+	c:RegisterEffect(e3)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
@@ -26,6 +31,9 @@ function cm.initial_effect(c)
 end
 function cm.thfilter(c,tp)
 	return Duel.GetMZoneCount(tp,c)>0 and c:IsAbleToRemove()
+end
+function cm.con2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(0,11451760)>0
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

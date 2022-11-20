@@ -1,0 +1,156 @@
+--被 呼 唤 者
+local m=22348079
+local cm=_G["c"..m]
+function cm.initial_effect(c)
+	--link summon
+	aux.AddLinkProcedure(c,nil,1,1)
+	c:EnableReviveLimit()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetOperation(c22348079.op1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+--	e1:SetLabelObject(c)
+	c:RegisterEffect(e1)
+	--immune
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_IMMUNE_EFFECT)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetValue(c22348079.efilter)
+	c:RegisterEffect(e2)
+	--cannot release
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetCode(EFFECT_UNRELEASABLE_SUM)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+	c:RegisterEffect(e4)
+	local e5=e3:Clone()
+	e5:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	e5:SetValue(c22348079.fuslimit)
+	c:RegisterEffect(e5)
+	local e6=e3:Clone()
+	e6:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+	c:RegisterEffect(e6)
+	local e7=e3:Clone()
+	e7:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	c:RegisterEffect(e7)
+	local e8=e3:Clone()
+	e8:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	c:RegisterEffect(e8)
+	--negate
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e9:SetCode(EVENT_CHAIN_SOLVING)
+	e9:SetRange(LOCATION_MZONE)
+	e9:SetCondition(c22348079.negcon)
+	e9:SetOperation(c22348079.negop)
+	c:RegisterEffect(e9)
+	--Damage
+	local e10=Effect.CreateEffect(c)
+	e10:SetDescription(aux.Stringid(22348079,1))
+	e10:SetCategory(CATEGORY_DAMAGE)
+	e10:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e10:SetCode(EVENT_CHAINING)
+	e10:SetRange(LOCATION_MZONE)
+	e10:SetCondition(c22348079.ddcon)
+	e10:SetOperation(c22348079.ddop)
+	c:RegisterEffect(e10)
+end
+
+function c22348079.op1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,nil)
+	Duel.Release(sg,REASON_EFFECT)
+	Duel.GetControl(c,1-tp)
+	e:Reset()
+end
+function c22348079.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
+end
+function c22348079.fuslimit(e,c,sumtype)
+	return sumtype==SUMMON_TYPE_FUSION
+end
+function c22348079.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and Duel.GetFlagEffect(tp,22348079)<1
+end
+function c22348079.filter(c,code)
+	return c:IsAbleToRemove() and c:IsCode(code)
+end
+function c22348079.negop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.SelectYesNo(tp,aux.Stringid(22348079,0)) then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	Duel.RegisterFlagEffect(tp,22348079,RESET_PHASE+PHASE_END,0,1)
+	local nc=Duel.AnnounceCard(tp)
+	local g=Duel.GetMatchingGroup(c22348079.filter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil,nc)
+	local tc=g:GetFirst()
+	if tc and Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_REMOVED) then
+		local c=e:GetHandler()
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
+		e1:SetTarget(c22348079.distg1)
+		e1:SetLabelObject(tc)
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_CHAIN_SOLVING)
+		e2:SetCondition(c22348079.discon)
+		e2:SetOperation(c22348079.disop)
+		e2:SetLabelObject(tc)
+		Duel.RegisterEffect(e2,tp)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+		e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+		e3:SetTarget(c22348079.distg2)
+		e3:SetLabelObject(tc)
+		Duel.RegisterEffect(e3,tp)
+end
+end
+end
+function c22348079.distg1(e,c)
+	local tc=e:GetLabelObject()
+	if c:IsType(TYPE_SPELL+TYPE_TRAP) then
+		return c:IsOriginalCodeRule(tc:GetOriginalCodeRule())
+	else
+		return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
+	end
+end
+function c22348079.distg2(e,c)
+	local tc=e:GetLabelObject()
+	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule())
+end
+function c22348079.discon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	return re:GetHandler():IsOriginalCodeRule(tc:GetOriginalCodeRule())
+end
+function c22348079.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
+end
+function c22348079.ddcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
+end
+function c22348079.ddop(e,tp,eg,ep,ev,re,r,rp)
+		Duel.SetLP(1-tp,math.ceil(Duel.GetLP(1-tp)-1000))
+end
+
+
+
+
+
+
+
+
+
+
+
+
