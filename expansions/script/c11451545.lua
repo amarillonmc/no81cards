@@ -1,6 +1,5 @@
 --融眷之咒眼
-local m=11451545
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -75,8 +74,8 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	return rp==tp and ((re:IsActiveType(TYPE_MONSTER) and c:GetEquipTarget()==rc) or (re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc:IsSetCard(0x129) and rc~=c))
 end
-function cm.matfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x129)
+function cm.matfilter(c,e,tp)
+	return c:IsFaceup() and c:IsSetCard(0x129) and (c:IsControler(tp) or not c:IsImmuneToEffect(e))
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	--local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
@@ -86,7 +85,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,1,nil,mg)
 	local tc=g:GetFirst()

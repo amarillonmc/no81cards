@@ -89,8 +89,12 @@ function c26692740.adjustop(e,tp,eg,ep,ev,re,r,rp)
 				end)
 				eff:SetOperation(
 				function(e,tp,eg,ep,ev,re,r,rp)
-					Duel.Hint(HINT_CARD,0,26692740)
-					op(e,tp,eg,ep,ev,re,r,1-tp)
+					if Duel.IsPlayerAffectedByEffect(tp,26692740) then
+						Duel.Hint(HINT_CARD,0,26692740)
+						op(e,tp,eg,ep,ev,re,r,1-tp)
+					else
+						op(e,tp,eg,ep,ev,re,r,rp)
+					end
 				end)
 				table.insert(table_effect,eff)
 				eff2:SetValue(26692741)

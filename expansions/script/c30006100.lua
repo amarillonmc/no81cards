@@ -249,6 +249,7 @@ function cm.cyop(e,tp,eg,ep,ev,re,r,rp)
 		local op=te:GetOperation()
 		if op then
 			local re=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT)
+			if te:GetCode()==EVENT_CHAINING then ev=ev-1 end
 			op(e,tp,eg,ep,ev,re,r,rp) 
 		end
 		local code=tc
