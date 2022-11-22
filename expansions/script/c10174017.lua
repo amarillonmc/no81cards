@@ -18,6 +18,9 @@ function c10174017.initial_effect(c)
 	e1:SetTarget(c10174017.cttg)
 	e1:SetOperation(c10174017.ctop)
 	c:RegisterEffect(e1)
+	local e4 = e1:Clone()
+	e4:SetCode(EVENT_REMOVE)
+	c:RegisterEffect(e4)
 	--adjust
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -38,7 +41,7 @@ function c10174017.initial_effect(c)
 	c:RegisterEffect(e3) 
 end
 function c10174017.ctcon(e,tp,eg,ep,ev,re,r,rp)
-	return r&REASON_EFFECT~=0 and rp~=tp
+	return e:GetHandler():IsReason(REASON_EFFECT) and rp ~= tp
 end
 function c10174017.ctcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

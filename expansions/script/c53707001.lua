@@ -58,7 +58,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetLabel(0)
 		return #g>0 and count>math.min(3,#g) and Duel.GetDecktopGroup(tp,math.min(3,count)):IsExists(Card.IsAbleToHand,1,nil) and Duel.GetDecktopGroup(tp,math.min(3,count)):IsExists(Card.IsAbleToRemove,1,nil,POS_FACEDOWN)
 	end
-	SNNM.UpConfirm()
+	SNNM.UpConfirm(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg=g:SelectSubGroup(tp,cm.fselect,false,1,math.min(3,#g),count,tp)
 	Duel.ConfirmCards(1-tp,rg)
@@ -76,7 +76,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(p,d)
 	if g:GetCount()>0 then
 		if g:IsExists(cm.thfilter,1,nil) then
-			SNNM.UpConfirm()
+			SNNM.UpConfirm(tp)
 			Duel.DisableShuffleCheck()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=g:FilterSelect(tp,cm.thfilter,1,1,nil)

@@ -207,10 +207,10 @@ s.buff_code_list = {
 		["race-"] = "-Race", 
 		["att-"] = "-Attribute", 
 		["indb"] = "!BeDestroyedByBattle", 
-		["inde"] = "!BeDestroyedByEffect", 
+		["inde"] = "!BeDestroyedByEffects", 
 		["indct"] = "!BeDestroyedCountPerTurn", 
 		["ind"] = "!BeDestroyed", 
-		["im"] = "ImmuneEffect", 
+		["im"] = "UnaffectedByEffects", 
 		["fmat~"] = "!BeUsedAsFusionMaterial", 
 		["fsmat~"] = "!BeUsedAsMaterial4FusionSummon", 
 		["smat~"] = "!BeUsedAsSynchroMaterial", 
@@ -458,6 +458,11 @@ function rsef.SV_Card(reg_obj, att_obj, val_obj, flag, range, con, rst_obj, desc
 	local _, _, flag2, att_obj2 = s.switch_old_string(0, 0, flag, att_obj)
 	local flag3 = Scl.GetNumFormatProperty(flag2)
 	local lim_obj2 = s.switch_old_count_limit(lim_obj)
+	--case special summon buff
+	local owner, handler = Scl.GetRegisterInfo(reg_obj)
+	if handler:IsStatus(STATUS_SPSUMMON_STEP) then
+		range = LOCATION_MZONE
+	end
 	if flag3 & EFFECT_FLAG_UNCOPYABLE ~= 0 then
 		return Scl.CreateSingleBuffCondition(reg_obj, att_obj2, val_obj, range, con, rst_obj, desc_obj2, lim_obj2, flag2)
 	else

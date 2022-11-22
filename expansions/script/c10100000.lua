@@ -5505,7 +5505,7 @@ function Scl.AddSynchroProcedure(c, f1, f2, f3, f4, minc, maxc, gc)
 	return e1
 end
 function s.GetSynMaterials(tp, syncard)
-	local mg1 = Scl.Group_GetSynMaterials_R(tp, syncard)
+	local mg1 = Scl.GetSynMaterials_R(tp, syncard)
 	local mg2 = Duel.GetMatchingGroup(s.SExtraFilter, tp, 0xff, 0xff, mg1, syncard, tp)
 	return mg1 + mg2
 end
@@ -5572,24 +5572,24 @@ function s.SynMixCheckGoal(tp, sg, minc, ct, syncard, sg1, smat, gc, mgchk)
 end
 function s.SynMixCondition(f1,f2,f3,f4,minc,maxc,gc)
 	return  function(e,c,smat,mg1,min,max)
-				--Scl.Group_GetSynMaterials_R = aux.GetSynMaterials
+				Scl.GetSynMaterials_R = aux.GetSynMaterials
 				aux.GetSynMaterials = s.GetSynMaterials
 				s.SynMixCheckGoal_R = aux.SynMixCheckGoal
 				aux.SynMixCheckGoal = s.SynMixCheckGoal
 				local res = aux.SynMixCondition(f1,f2,f3,f4,minc,maxc,gc)(e,c,smat,mg1,min,max)
-				aux.GetSynMaterials = Scl.Group_GetSynMaterials_R 
+				aux.GetSynMaterials = Scl.GetSynMaterials_R 
 				aux.SynMixCheckGoal = s.SynMixCheckGoal_R 
 				return res
 			end
 end
 function s.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc)
 	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
-				Scl.Group_GetSynMaterials_R = aux.GetSynMaterials
+				Scl.GetSynMaterials_R = aux.GetSynMaterials
 				aux.GetSynMaterials = s.GetSynMaterials
 				s.SynMixCheckGoal_R = aux.SynMixCheckGoal
 				aux.SynMixCheckGoal = s.SynMixCheckGoal
 				local res = aux.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc)(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
-				aux.GetSynMaterials = Scl.Group_GetSynMaterials_R 
+				aux.GetSynMaterials = Scl.GetSynMaterials_R 
 				aux.SynMixCheckGoal = s.SynMixCheckGoal_R 
 				return res
 			end
@@ -6096,19 +6096,19 @@ end
 function Scl.IsReason(obj, public_reason, ...)
 	local g = Scl.Mix2Group(obj)
 	public_reason = public_reason or 0
-	local num_public_typ = Scl.GetNumFormatCardType(public_reason)
+	local num_public_rsn = Scl.GetNumFormatCardType(public_reason)
 	local res_arr = { ... }
 	if Scl.Global_Reason then 
 		for _, reason in pairs(res_arr) do
-			local num_reason = Scl.GetNumFormatCardType(public_typ)
-			if Scl.Global_Reason & (num_reason | num_public_typ) == (num_reason | num_public_typ) then 
+			local num_reason = Scl.GetNumFormatCardType(reason)
+			if Scl.Global_Reason & (num_reason | num_public_rsn) == (num_reason | num_public_rsn) then 
 				return true 
 			end
 		end
 	else
 		for _, reason in pairs(res_arr) do
-			local num_reason = Scl.GetNumFormatCardType(public_typ)
-			if g:IsExists(s.is_reason_check, 1, nil, num_reason, num_public_typ) then 
+			local num_reason = Scl.GetNumFormatCardType(reason)
+			if g:IsExists(s.is_reason_check, 1, nil, num_reason, num_public_rsn) then 
 				return true 
 			end
 		end

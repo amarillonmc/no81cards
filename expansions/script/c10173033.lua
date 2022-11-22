@@ -41,7 +41,7 @@ function c10173033.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c10173033.rs_synchro_ladian(c, sc, tp)
-	return c:IsSynchroType(TYPE_TUNER), 1
+	return c:IsSynchroType(TYPE_TOKEN), 1
 end
 function c10173033.lvval(e,c)
 	return (1<<16)+lv 

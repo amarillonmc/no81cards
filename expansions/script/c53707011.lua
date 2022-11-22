@@ -54,6 +54,7 @@ function cm.cfilter(c)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_DECK,0,3,nil) end
+	SNNM.UpConfirm(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_DECK,0,3,3,nil)
 	Duel.Remove(g,POS_FACEDOWN,REASON_COST)

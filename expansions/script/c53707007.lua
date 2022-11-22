@@ -34,7 +34,7 @@ function cm.spcfilter(c)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.spcfilter,tp,LOCATION_DECK,0,1,nil) end
-	SNNM.UpConfirm()
+	SNNM.UpConfirm(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.spcfilter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.ConfirmCards(1-tp,g)

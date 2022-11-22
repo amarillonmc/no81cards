@@ -58,7 +58,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	SNNM.UpConfirm()
+	SNNM.UpConfirm(tp)
 	if e:GetLabel()==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g1=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)

@@ -62,7 +62,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		return #tg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	end
 	local tempg,ct=tg:GetMaxGroup(Card.GetLevel)
-	SNNM.UpConfirm()
+	SNNM.UpConfirm(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg=g:SelectSubGroup(tp,cm.fselect,false,1,ct,e,tp,tg)
 	Duel.ConfirmCards(1-tp,rg)
