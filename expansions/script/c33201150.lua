@@ -241,7 +241,7 @@ function Mermaid_VHisc.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and e:GetHandler():IsPreviousLocation(LOCATION_HAND) end
 end
 function Mermaid_VHisc.setop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then 
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and e:GetHandler():IsRelateToEffect(e) then 
 		Mermaid_VHisc.sp(e:GetHandler(),tp)
 	end
 end

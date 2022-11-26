@@ -66,7 +66,7 @@ function s.setfilter(c)
 	return c.VHisc_Mermaid and not c:IsForbidden()
 end
 function s.matfilter(c)
-	return c:IsCanOverlay()
+	return c:IsCanOverlay() and not c:IsStatus(STATUS_LEAVE_CONFIRMED)
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local og=e:GetHandler():GetOverlayGroup()
