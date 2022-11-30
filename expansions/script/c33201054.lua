@@ -29,7 +29,7 @@ s.VHisc_Vampire=true
 
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) 
-		and (re:IsActiveType(TYPE_SPELL) or (re:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsType(TYPE_SPELL))
+		and (re:IsActiveType(TYPE_SPELL) or (re:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsType(TYPE_SPELL)))
 end
 function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,4,REASON_COST) and (re:GetHandler():IsAbleToHand() or re:GetHandler():IsStatus(STATUS_ACT_FROM_HAND)) end
@@ -41,7 +41,7 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,s.repop)
 end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsAbleToHand() then
+	if e:GetHandler():IsRelateToEffect(e) then
 		if e:GetHandler():IsOnField() then e:GetHandler():CancelToGrave() end
 		Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,e:GetHandler())

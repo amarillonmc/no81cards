@@ -32,32 +32,29 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(e1,0)
 		--
 		s.globle_check=true
-		_hack_ritual_check=aux.RitualUltimateFilter
+		WD_hack_ritual_check=aux.RitualUltimateFilter
 		function Auxiliary.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_equal,chk)
 			local exg=Group.CreateGroup()
 			if c:GetOriginalCode()==id then
 				exg=Duel.GetMatchingGroup(s.filter0,tp,LOCATION_EXTRA,0,nil,c)
 				if exg:GetCount()>0 then
-					local g=m1
-					m1:Merge(exg)
+					local g=Group.__add(exg,m1)
 					if Duel.GetFlagEffect(tp,id+1)~=0 then
 						Duel.RegisterFlagEffect(tp,id,RESET_EVENT+RESET_CHAIN,0,1)
 					end
-					local boolean=_hack_ritual_check(c,filter,e,tp,m1,m2,level_function,greater_or_equal,chk)
-					m1=g
-					return boolean
+					return WD_hack_ritual_check(c,filter,e,tp,g,m2,level_function,greater_or_equal,chk)
 				end
 			end
-			return _hack_ritual_check(c,filter,e,tp,m1,m2,level_function,greater_or_equal,chk)
+			return WD_hack_ritual_check(c,filter,e,tp,m1,m2,level_function,greater_or_equal,chk)
 		end
-		_hack_ritual_mat_filter=Group.Filter
+		WD_hack_ritual_mat_filter=Group.Filter
 		function Group.Filter(group,filter,card_or_group_or_nil,...)
 			local exg=Group.CreateGroup()
 			if card_or_group_or_nil and aux.GetValueType(card_or_group_or_nil)=="Card" and card_or_group_or_nil:GetOriginalCode()==id and Duel.GetFlagEffect(tp,id+1)~=0 and Duel.GetFlagEffect(tp,id)~=0 then
 				exg=Duel.GetMatchingGroup(s.filter0,card_or_group_or_nil:GetControler(),LOCATION_EXTRA,0,nil,c)
 				group:Merge(exg)
 			end
-			return _hack_ritual_mat_filter(group,filter,card_or_group_or_nil,...)
+			return WD_hack_ritual_mat_filter(group,filter,card_or_group_or_nil,...)
 		end
 	end
 end
