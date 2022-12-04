@@ -28,6 +28,12 @@ function cm.initial_effect(c)
 	e3:SetCondition(cm.damcon)
 	e3:SetOperation(cm.damop)
 	c:RegisterEffect(e3)
+	--pierce
+	local e3_1=Effect.CreateEffect(c)
+	e3_1:SetType(EFFECT_TYPE_SINGLE)
+	e3_1:SetCode(EFFECT_PIERCE)
+	e3_1:SetCondition(cm.damcon)
+	c:RegisterEffect(e3_1)
 	--negate
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))

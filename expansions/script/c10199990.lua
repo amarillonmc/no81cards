@@ -716,16 +716,20 @@ rssf.SpecialSummonToken = Scl.SpecialSummonToken
 function rstg.neg(dn_str, ex_tg)
     return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
         dn_str = dn_str or "dum"
+		local dn_str2 = s.ctgy_list[dn_str]
         local c = e:GetHandler()
         local rc = re:GetHandler()
         if chkc then return ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc) end
         if chk == 0 then return (dn_str ~= "rm" or aux.nbcon(tp, re)) and (ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)) end
-        local op_cate = rscate.cate_selhint_list[dn_str][2]
-        if op_cate and op_cate ~= 0 and rc:IsRelateToEffect(re) then
-            local res = rsop.Operation_Solve(eg, dn_str, REASON_EFFECT, { }, 0, e, tp, eg, ep, ev, re, r, rp) 
-            if res then 
-                Duel.SetOperationInfo(0, op_cate, eg, 1, 0, 0)
-            end
+        local op_cate = Scl.Category_List[dn_str2][2]
+		local ctgy_list = type(op_cate) == "number" and {op_cate} or op_cate
+        if #ctgy_list > 0 and rc:IsRelateToEffect(re) then
+			local res = rsop.Operation_Solve(eg, dn_str, REASON_EFFECT, { }, 0, e, tp, eg, ep, ev, re, r, rp) 
+			if res then
+				for ctgy in pairs(ctgy_list) do
+					Duel.SetOperationInfo(0, ctgy, eg, 1, 0, 0)
+				end
+			end
         end
         ex_tg(e, tp, eg, ep, ev, re, r, rp, 1)
     end
@@ -1323,7 +1327,10 @@ rstg.chainlimit = rstg.chnlim
 rsop.SelectYesNo = rshint.SelectYesNo 
 rsop.SelectOption = rshint.SelectOption
 rsop.eqop = rsop.Equip
-rsop.SelectOC = Scl.SetExtraSelectAndOperateParama
+
+function rsop.SelectOC(would_string, break_able, select_string)
+	return Scl.SetExtraSelectAndOperateParama(not would_string or s.ctgy_list[wolud_string], break_able, select_string)
+end
 
 rsop.CheckOperateSuccess = rsop.CheckOperateCorrectly
 

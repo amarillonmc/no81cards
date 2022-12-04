@@ -299,7 +299,7 @@ function s.create_timing_list()
 	["DuringBP"] = { EVENT_FREE_CHAIN, scl.cond_during_phase("BP") },
 	["DuringM2"] = { EVENT_FREE_CHAIN, scl.cond_during_phase("M2") },
 	["DuringEP"] = { EVENT_PHASE + PHASE_END },
-	["Move"] = { EVENT_MOVE },
+	["BeMoved"] = { EVENT_MOVE },
 	["BeSummoned"] = { EVENT_SUMMON_SUCCESS, aux.TRUE, aux.TRUE, EVENT_SPSUMMON_SUCCESS, aux.TRUE, aux.TRUE, EVENT_FLIP_SUMMON_SUCCESS, aux.TRUE, aux.TRUE },
 	["BeNormalSummoned"] = { EVENT_SUMMON_SUCCESS },
 	["BeSpecialSummoned"] = { EVENT_SPSUMMON_SUCCESS },
@@ -319,7 +319,7 @@ function s.create_timing_list()
 	["NegateNomralSummon"] = { EVENT_SUMMON_NEGATED },
 	["NegateSpecialSummon"] = { EVENT_SPSUMMON_NEGATED },
 	["NegateFlipSummon"] = { EVENT_FLIP_SUMMON_NEGATED },
-	["BeFlip"] = { EVENT_FLIP },
+	["BeFlippedFaceup"] = { EVENT_FLIP },
 	["DeclareAttack"] = { EVENT_ATTACK_ANNOUNCE },
 	["BeAttackTarget"] = { EVENT_BE_BATTLE_TARGET },
 	["AttackBeNegated"] = { EVENT_ATTACK_DISABLED },
@@ -350,7 +350,7 @@ function s.create_timing_list()
 	["BeReturned2Deck"] = { EVENT_TO_DECK },
 	["BeforeLeavingField"] = { EVENT_LEAVE_FIELD_P },
 	["LeaveField"] = { EVENT_LEAVE_FIELD },
-	["FaceupLeaveField"] = { EVENT_LEAVE_FIELD, { Card.IsPreviousPosition, POS_FACEUP } },
+	["FaceupCardLeavesField"] = { EVENT_LEAVE_FIELD, { Card.IsPreviousPosition, POS_FACEUP } },
 	["SetSpell/Trap"] = { EVENT_SSET },
 	["BeSet"] = { EVENT_SET_SCL },
 	["PositionBeChanged"] = { EVENT_CHANGE_POS },
@@ -660,9 +660,9 @@ function s.create_buff_list()
 	["OpponentTakeBattleDamageInstead"] = { EFFECT_REFLECT_BATTLE_DAMAGE },
 	["ChangeBattleDamage"] = { EFFECT_CHANGE_INVOLVING_BATTLE_DAMAGE },
 	["HalveBattleDamageYouTake"] = { EFFECT_CHANGE_INVOLVING_BATTLE_DAMAGE, false, aux.ChangeBattleDamage(0,HALF_DAMAGE) },
-	["YouTakeNoBattleDamage"] = { EFFECT_AVOID_BATTLE_DAMAGE },	
-	["YourOpponentTakesNoBattleDamage"] = { EFFECT_NO_BATTLE_DAMAGE },	
-	["NeitherPlayerTakesNoBattleDamage"] = { { "YouTakeNoBattleDamage", "YourOpponentTakesNoBattleDamage" } },	
+	["YouTakeNoBattleDamage"] = { EFFECT_AVOID_BATTLE_DAMAGE }, 
+	["YourOpponentTakesNoBattleDamage"] = { EFFECT_NO_BATTLE_DAMAGE },  
+	["NeitherPlayerTakesNoBattleDamage"] = { { "YouTakeNoBattleDamage", "YourOpponentTakesNoBattleDamage" } },  
 	["ActivateQuickPlaySpellFromHand"] = { EFFECT_QP_ACT_IN_NTPHAND },
 	["ActivateQuickPlaySpellInSetTurn"] = { EFFECT_QP_ACT_IN_SET_TURN, false,1, nil, EFFECT_FLAG_SET_AVAILABLE, EFFECT_FLAG_SET_AVAILABLE },
 	["ActivateTrapFromHand"] = { EFFECT_TRAP_ACT_IN_HAND },
@@ -3215,7 +3215,7 @@ end
 			2.extra_check_function: add an additional check to the effect cost/target, call extra_check_function(e, tp, eg, ...) to check.
 		//return list_typ, extra_check_function
 	 4.
-	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }	  
+	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }	 
 		Paramas explain: 
 			2.extra_operate_function: add an additional operate to the effect cost/target, call extra_operate_function(current list's selected card(s), all above lists's selected card(s),e, tp, eg, ...) to operate.
 		//return list_typ, extra_operate_function
@@ -3261,7 +3261,7 @@ function s.get_cost_or_target_or_operation_paramas(arr, e, tp, eg, ep, ev, re, r
 		local self_minct = type(arr[3]) == "function" and arr[3](e, tp, eg, ep, ev, re, r, rp) or arr[3]
 		local oppo_minct = type(arr[4]) == "function" and arr[4](e, tp, eg, ep, ev, re, r, rp) or arr[4] or 0
 		local self_maxct = type(arr[5]) == "function" and arr[5](e, tp, eg, ep, ev, re, r, rp) or arr[5] or self_minct
-		local oppo_maxct = type(arr[6]) == "function" and arr[6](e, tp, eg, ep, ev, re, r, rp) or arr[6] or oppo_minct	
+		local oppo_maxct = type(arr[6]) == "function" and arr[6](e, tp, eg, ep, ev, re, r, rp) or arr[6] or oppo_minct  
 		return list_typ, category_str, category, category_arr, category_str_arr, replace_operation, self_minct, self_maxct, oppo_minct, oppo_maxct
 	else
 		local extra_fun = arr[2]
@@ -3407,7 +3407,7 @@ function s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, 
 			if Scl.CheckBoolean(minct, true) then 
 				chk_minct, chk_maxct = #mandatory_group, #mandatory_group
 			end
-			return mandatory_group:CheckSubGroup(s.cost_or_target_or_operation_group_check, chk_minct, chk_maxct, e, tp, eg, ep, ev, re, r, rp, reuse_idx, used_arr2, group_filter, arr2, ...)
+			return mandatory_group:CheckSubGroup(s.cost_or_target_or_operation_group_check, chk_minct, chk_maxct, {e, tp, eg, ep, ev, re, r, rp, reuse_idx, used_arr2, group_filter}, arr2, ...)
 		end
 	end
 end
@@ -3502,7 +3502,7 @@ function s.do_cost_or_target_or_operation(e, tp, eg, ep, ev, re, r, rp, current_
 		else 
 			if need_sel then
 				Scl.SelectHint(tp, category_str)
-				mandatory_group = mandatory_group:SelectSubGroup(tp, s.cost_or_target_or_operation_group_check, false, minct, maxct, e, tp, eg, ep, ev, re, r, rp, reuse_idx, used_arr2, group_filter, arr2, ...)
+				mandatory_group = mandatory_group:SelectSubGroup(tp, s.cost_or_target_or_operation_group_check, false, minct, maxct, {e, tp, eg, ep, ev, re, r, rp, reuse_idx, used_arr2, group_filter}, arr2, ...)
 			end
 		end
 		--case6 no more cards
@@ -3544,7 +3544,9 @@ function s.do_cost_or_target_or_operation(e, tp, eg, ep, ev, re, r, rp, current_
 		return s.do_cost_or_target_or_operation(e, tp, eg, ep, ev, re, r, rp, mandatory_group, total_sel_group2, used_arr2, arr2, ...)
 	end
 end
-function s.cost_or_target_or_operation_group_check(g, e, tp, eg, ep, ev, re, r, rp, reuse_idx, used_arr, group_filter, arr1, ...)
+function s.cost_or_target_or_operation_group_check(g, parama, arr1, ...)
+	--for some shenbi reasons, koshipro will lost paramas during the spell/trap card call this function, so I must use a table to protect the paramas, but original edition ygopro don't have this problem.
+	local e, tp, eg, ep, ev, re, r, rp, reuse_idx, used_arr, group_filter = table.unpack(parama)
 	local used_arr2, used_group_this_reuse_idx = s.cost_or_target_or_operation_reuse_cards_check(used_arr, reuse_idx, g)
 	if not s.operate_filter(group_filter)(g, e, tp, eg, ep, ev, re, r, rp) then 
 		return false 
@@ -4698,7 +4700,7 @@ function Scl.ActivateSepllOrTrap(tc, actp, apply_effect, lim_zone)
 			local tg = te:GetTarget() or aux.TRUE
 			local op = te:GetOperation() or aux.TRUE
 			tg(te, actp, ceg, cep, cev, cre, cr, crp, 1)
-			op(te, actp, ceg, cep, cev, cre, cr, crp)			
+			op(te, actp, ceg, cep, cev, cre, cr, crp)		   
 		end
 		if zone == LOCATION_FZONE then
 			Duel.RaiseEvent(tc, 4179255, te, 0, tp, tp, Duel.GetCurrentChain())
@@ -5072,7 +5074,7 @@ function Scl.GetSurroundingZone(obj, lim_zone_obj, tp, contain_self)
 				srd_zone = srd_zone | zone
 			end
 		end
-	end	
+	end 
 	--ex monster zone 
 	local ex_arr = { 0x20, 0x40, 0x200000, 0x400000 }
 	local ex_arr2 = { 0x400000, 0x200000, 0x40, 0x20 }
@@ -5282,14 +5284,14 @@ end
 --[[
 	>>eg1. Scl.DefineInsideSeries(Love, "YiFanJiang")
 	will create those functions:
-	1. Love.IsSeries(c)	  -- equal to Scl.IsSeries(c, "YiFanJiang") 
+	1. Love.IsSeries(c)   -- equal to Scl.IsSeries(c, "YiFanJiang") 
 	2. Love.IsFusionSeries(c)   -- equal to Scl.IsFusionSeries(c, "YiFanJiang") 
 	3. Love.IsLinkSeries(c)  -- equal to Scl.IsLinkSeries(c, "YiFanJiang") 
 	4. Love.IsPreviousSeries(c) -- equal to Scl.IsPreviousSeries(c, "YiFanJiang")
 	5. Love.IsOriginalSeries(c) -- equal to Scl.IsOriginalSeries(c, "YiFanJiang")
-	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)	  -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
+	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)	 -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
 	11~15 Love.IsXXXXSeriesSpell(c) (XXXX can be "", "Fusion", "Link" ……, see above)		-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL)
-	16~20 Love.IsXXXXSeriesTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)	  -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_TRAP)
+	16~20 Love.IsXXXXSeriesTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)   -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_TRAP)
 	21~25 Love.IsXXXXSeriesSpellOrTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)  -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL + TYPE_TRAP)
 	>>eg2. Scl.DefineInsideSeries(Love, "YiFanJiang", 1)
 		   Scl.DefineInsideSeries(Love, "PlayGame", 2)
@@ -6821,10 +6823,10 @@ Scl.RaiseGlobalSetEvent()
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 --[[
-10100000 -- Scl's library		   QQ852415212
+10100000 -- Scl's library		  QQ852415212
 
 
-60152900 -- LaiBill's library	   QQ529508379
+60152900 -- LaiBill's library	  QQ529508379
 B2Sayaka -- "Miki Sayaka"
 
 ]]--

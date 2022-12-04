@@ -41,7 +41,7 @@ end
 function c33200801.filter(c,e,tp,lv1)
 	local lv2=c:GetLevel()
 	local lv3=lv1-lv2
-	return lv3>0 and c:IsFaceup() and not c:IsType(TYPE_TUNER) and Duel.IsExistingMatchingCard(c33200801.cfilter,tp,LOCATION_EXTRA,0,1,nil,e,lv3)
+	return lv2>0 and lv3>0 and c:IsFaceup() and not c:IsType(TYPE_TUNER) and Duel.IsExistingMatchingCard(c33200801.cfilter,tp,LOCATION_EXTRA,0,1,nil,e,lv3)
 end
 function c33200801.cfilter(c,e,lv3)
 	return c:IsType(TYPE_SYNCHRO) and c:IsLevel(lv3) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false) 
