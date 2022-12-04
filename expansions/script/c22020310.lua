@@ -7,11 +7,10 @@ function c22020310.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetCountLimit(1)
+	e1:SetCountLimit(1,22020310)
 	e1:SetCost(c22020310.cost)
 	e1:SetTarget(c22020310.target)
 	e1:SetOperation(c22020310.activate)
-	c:RegisterEffect(e1)
 	c:RegisterEffect(e1)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
@@ -102,7 +101,7 @@ function c22020310.filter1(c,e)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function c22020310.filter2(c,e,tp,m,f,gc,chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0xff1) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,gc,chkf)
 		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end

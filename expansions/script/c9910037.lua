@@ -30,17 +30,15 @@ function c9910037.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e4:SetValue(c9910037.eqlimit)
 	c:RegisterEffect(e4)
-	--pos
+	--tograve
 	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_POSITION+CATEGORY_ATKCHANGE)
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_FREE_CHAIN)
+	e5:SetCategory(CATEGORY_TOGRAVE)
+	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_SZONE)
 	e5:SetCountLimit(1,9910037)
-	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e5:SetCost(c9910037.poscost)
-	e5:SetTarget(c9910037.postg)
-	e5:SetOperation(c9910037.posop)
+	e5:SetCondition(c9910037.tgcon)
+	e5:SetTarget(c9910037.tgtg)
+	e5:SetOperation(c9910037.tgop)
 	c:RegisterEffect(e5)
 	--to hand
 	local e6=Effect.CreateEffect(c)
@@ -77,33 +75,20 @@ end
 function c9910037.tgval(e,re,rp)
 	return rp==1-e:GetHandlerPlayer() and re:IsActiveType(TYPE_MONSTER)
 end
-function c9910037.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+function c9910037.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetEquipTarget():IsSetCard(0x3950)
 end
-function c9910037.posfilter(c)
-	return c:IsFaceup() and c:IsCanTurnSet()
+function c9910037.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,1-tp,LOCATION_ONFIELD)
 end
-function c9910037.postg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910037.posfilter,tp,0,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(c9910037.posfilter,tp,0,LOCATION_MZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
-end
-function c9910037.atkfilter(c)
-	return c:IsFaceup() and c:GetBaseAttack()>0
-end
-function c9910037.posop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler():GetEquipTarget()
-	local g=Duel.GetMatchingGroup(c9910037.posfilter,tp,0,LOCATION_MZONE,nil)
-	if g:GetCount()>0 and Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)~=0 then
-		local tg=Duel.GetMatchingGroup(c9910037.atkfilter,tp,0,LOCATION_MZONE,nil)
-		local atk=tg:GetSum(Card.GetBaseAttack)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(atk)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		c:RegisterEffect(e1)
+function c9910037.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.HintSelection(sg)
+		Duel.SendtoGrave(sg,REASON_RULE)
 	end
 end
 function c9910037.thfilter(c)

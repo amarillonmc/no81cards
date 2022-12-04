@@ -1,5 +1,6 @@
 --联合演唱会
 function c22020870.initial_effect(c)
+	aux.AddCodeList(c,22020850,22020130)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

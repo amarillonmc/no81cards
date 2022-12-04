@@ -1,6 +1,5 @@
 --好多可怕的Bug啊
-local m=11451708
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -88,12 +87,18 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
+			tc:RegisterEffect(e1,true)
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
+			tc:RegisterEffect(e2,true)
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+			e3:SetValue(1)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e3,true)
 		end
 		Duel.SpecialSummonComplete()
 	end

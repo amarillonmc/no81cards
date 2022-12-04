@@ -1,4 +1,4 @@
---神工之折纸使
+--天工之折纸使
 function c9910023.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,c9910023.lcheck)

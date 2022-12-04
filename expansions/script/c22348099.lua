@@ -50,7 +50,7 @@ end
 function c22348099.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsSummonType(SUMMON_TYPE_SYNCHRO) then
-		local ct=c:GetMaterialCount()-1
+		local ct=c:GetMaterialCount()
 		c:RegisterFlagEffect(22348099,RESET_EVENT+RESETS_STANDARD+RESET_DISABLE,0,0,ct)
 	end
 end
@@ -76,14 +76,14 @@ end
 function c22348099.val(e,c)
 	local aaa=e:GetHandler():GetFlagEffectLabel(22348099)
 	if not aaa then return 0 end
-	local aaaa=(aaa+1)*700
+	local aaaa=(aaa)*700
 	return aaaa
 end
 function c22348099.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c22348099.spfilter1(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3703) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x703) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348099.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -3,7 +3,7 @@ local m=22348097
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x703),aux.NonTuner(nil),2)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),2)
 	c:EnableReviveLimit()
 	--atk up
 	local e1=Effect.CreateEffect(c)
@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,22348097)
+	e3:SetCountLimit(2,22348097)
 	e3:SetCost(c22348097.ctcost)
 	e3:SetTarget(c22348097.cttg)
 	e3:SetOperation(c22348097.ctop)

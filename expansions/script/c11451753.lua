@@ -37,31 +37,32 @@ end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(0,11451760)>0
 end
+function cm.costfilter(c)
+	return c:IsAbleToRemove() and c:IsType(TYPE_TRAP)
+end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,nil) and (sa or sb) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and (sa or sb) and Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND,0,1,c) end
 	if c:IsLocation(LOCATION_HAND) then
 		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
 	elseif c:IsLocation(LOCATION_REMOVED) then
 		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,tp,LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_HAND)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-		local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,0,nil)
-		if #rg>1 then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local tg=rg:Select(tp,2,2,nil)
-			Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
+	local rg=Duel.GetMatchingGroup(cm.costfilter,tp,LOCATION_HAND,0,aux.ExceptThisCard(e))
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local tg=rg:Select(tp,1,1,nil)
+	if Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		if #g>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
 		end
 	end
 end

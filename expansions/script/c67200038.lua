@@ -15,14 +15,6 @@ function c67200038.initial_effect(c)
 	e1:SetTarget(c67200038.atktg)
 	e1:SetOperation(c67200038.atkop)
 	c:RegisterEffect(e1) 
-	--atk up
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetValue(c67200038.val)
-	c:RegisterEffect(e2)  
 end
 function c67200038.atkfilter(c,e)
 	return c:IsType(TYPE_LINK) and (c:IsLocation(LOCATION_GRAVE) or (c:IsLocation(LOCATION_REMOVED) and c:IsFaceup()))
@@ -59,6 +51,3 @@ function c67200038.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-function c67200038.val(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsType,c:GetControler(),LOCATION_GRAVE,LOCATION_GRAVE,nil,TYPE_MONSTER)*200
-end

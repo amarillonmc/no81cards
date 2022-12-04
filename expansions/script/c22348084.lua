@@ -33,25 +33,21 @@ function c22348084.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
-function c22348084.spfilter(c,e,tp)
-	return c:IsCode(22348080) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
 function c22348084.cnfilter(c)
 	return c:IsFaceup()
 end
 function c22348084.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348083.cnfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348084.cnfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
   local tep=nil
   if Duel.GetCurrentChain()>1 then tep=Duel.GetChainInfo(Duel.GetCurrentChain()-1,CHAININFO_TRIGGERING_PLAYER) end
-  if tep and tep==1-tp then
-	  e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+  if tep and tep==1-tp and Duel.SelectYesNo(tp,aux.Stringid(22348084,2)) then
 	  e:SetLabel(1)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
   else
 	  e:SetLabel(0)
   end
 end
 function c22348084.operation(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetLabel()==0 then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 	local g=Duel.SelectMatchingCard(tp,c22348084.cnfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	if g:GetCount()>0 then
@@ -71,16 +67,22 @@ function c22348084.operation(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(RACE_ZOMBIE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
-		  if e:GetLabel()==1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c22348084.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(22348084,2)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=Duel.SelectMatchingCard(tp,c22348084.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-			if sg:GetCount()>0 then
-			   Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-			end
 		 end
-	  end
-   end
+	end
+	elseif e:GetLabel()==1 and Duel.IsExistingMatchingCard(c22348084.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local tc=g:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_CODE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetValue(22348080)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		tc=g:GetNext()
+	end
+	end
 end
 
 
