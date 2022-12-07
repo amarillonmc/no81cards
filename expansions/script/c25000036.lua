@@ -48,14 +48,16 @@ function c25000036.eftg(e,c)
 end
 function c25000036.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local b1=c:GetLinkedGroupCount()==c:GetLinkedGroup():GetClassCount(Card.GetAttribute)  
-	local b2=c:GetLinkedGroupCount()==c:GetLinkedGroup():GetClassCount(Card.GetRace) 
+	local lct=c:GetLinkedGroupCount()
+	local b1=lct>1 and lct==c:GetLinkedGroup():GetClassCount(Card.GetAttribute)
+	local b2=lct>1 and lct==c:GetLinkedGroup():GetClassCount(Card.GetRace)
 	if chk==0 then return b1 or b2 end 
 end
 function c25000036.xxop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local b1=c:GetLinkedGroupCount()==c:GetLinkedGroup():GetClassCount(Card.GetAttribute)  
-	local b2=c:GetLinkedGroupCount()==c:GetLinkedGroup():GetClassCount(Card.GetRace)	 
+	local lct=c:GetLinkedGroupCount()
+	local b1=lct>1 and lct==c:GetLinkedGroup():GetClassCount(Card.GetAttribute)
+	local b2=lct>1 and lct==c:GetLinkedGroup():GetClassCount(Card.GetRace)
 	if b1 then 
 	--negate
 	local e1=Effect.CreateEffect(c)

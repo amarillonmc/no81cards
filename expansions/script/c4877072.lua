@@ -20,7 +20,7 @@ function c4877072.initial_effect(c)
 	--to hand
 	 local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_UPDATE_LSCALE)
+	e3:SetCode(EFFECT_UPDATE_RSCALE)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_PZONE)
 	e3:SetCondition(c4877072.condition)

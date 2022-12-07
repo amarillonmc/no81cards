@@ -35,14 +35,15 @@ function cm.initial_effect(c)
 	e3:SetOperation(c22348098.thop)
 	c:RegisterEffect(e3)
 end
-function c22348098.cfilter(c,tp)
+function c22348098.cfilter(c)
+	local tp=c:GetControler()
 	return c:IsFaceup() and c:IsSetCard(0x703) and c:IsControler(tp) and c:IsAbleToGrave()
 end
 function c22348098.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c22348098.cfilter,1,nil,tp)
 end
 function c22348098.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return eg:IsExists(c22348098.cfilter,1,nil,tp) end
 	local tg=Group.Filter(eg,c22348098.cfilter,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,tg,0,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_DECK)

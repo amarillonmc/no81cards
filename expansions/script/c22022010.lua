@@ -32,7 +32,7 @@ function c22022010.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c22022010.thfilter(c)
-	return c:IsSetCard(0xff1) and c:IsAbleToHand()
+	return c:IsSetCard(0xff1) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c22022010.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22022010.thfilter,tp,LOCATION_DECK,0,1,nil) end

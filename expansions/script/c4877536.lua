@@ -83,5 +83,5 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.setfilter(c)
-	return c.SetCard_VastWitch and not c:IsType(TYPE_FIELD)
+	return c.SetCard_VastWitch and c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_FIELD)
 end

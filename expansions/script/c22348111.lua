@@ -39,13 +39,16 @@ function cm.initial_effect(c)
 end
 function c22348111.disfilter(c,seq2)
 	local seq1=aux.MZoneSequence(c:GetSequence())
-	return c:IsFaceup() and c:IsSetCard(0x704) and seq1==4-seq2
+	return c:IsFaceup() and c:IsSetCard(0x704) and seq1==4-seq2 and c:IsType(TYPE_MONSTER)
+end
+function c22348111.disfilter2(c)
+	return c:IsFaceup() and c:IsSetCard(0x704) and c:IsType(TYPE_MONSTER)
 end
 function c22348111.discon(e,tp,eg,ep,ev,re,r,rp)
 	local htp1=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
 	local htp2=Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)
 	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
-	return not Duel.IsExistingMatchingCard(c22348111.disfilter,tp,LOCATION_MZONE,0,1,nil,seq) and re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and htp1<htp2 
+	return not Duel.IsExistingMatchingCard(c22348111.disfilter,tp,LOCATION_MZONE,0,1,nil,seq) and re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and htp1<htp2 and Duel.IsExistingMatchingCard(c22348111.disfilter2,tp,LOCATION_MZONE,0,1,nil) and not re:GetHandler():IsSetCard(0x704)
 end
 function c22348111.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,22348111)

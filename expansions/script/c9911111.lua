@@ -67,11 +67,11 @@ function c9911111.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
 function c9911111.drop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
+	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if tg:GetCount()>0 then
-		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		local ct=tg:FilterCount(Card.IsLocation,nil,LOCATION_DECK)
+		local ct=Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		local g=Duel.GetOperatedGroup()
+		if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 		local ht=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 		if ct>0 and ht<ct and Duel.IsPlayerCanDraw(tp,ct-ht) and Duel.SelectYesNo(tp,aux.Stringid(9911111,2)) then
 			Duel.Draw(tp,ct-ht,REASON_EFFECT)

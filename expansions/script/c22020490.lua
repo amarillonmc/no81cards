@@ -1,5 +1,6 @@
 --人理之基 夏洛克·福尔摩斯
 function c22020490.initial_effect(c)
+	c:EnableReviveLimit()
 	--disable spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22020490,0))

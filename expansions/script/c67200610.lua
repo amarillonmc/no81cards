@@ -40,7 +40,7 @@ function c67200610.tefilter(c)
 	return c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c67200610.tetg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c67200610.tefilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c67200610.tefilter,tp,LOCATION_DECK,0,1,nil) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end
 end
 function c67200610.teop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
