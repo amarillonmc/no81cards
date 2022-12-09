@@ -55,7 +55,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
-	e1:SetLabelObject(e)
+	e1:SetLabel(ev)
 	e1:SetCondition(cm.rscon)
 	e1:SetOperation(cm.rsop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
@@ -77,7 +77,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
-	return re==e:GetLabelObject()
+	return ev==e:GetLabel()
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	re:SetOperation(cm.activate)

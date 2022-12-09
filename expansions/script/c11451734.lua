@@ -172,6 +172,26 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if sg1:IsContains(tc) and (sg3==nil or not sg3:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
 			local mat1=Duel.SelectFusionMaterial(tp,tc,mg2,nil,chkf)
 			tc:SetMaterial(mat1)
+			for matc in aux.Next(mat1) do
+				matc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+			end
+			local _GetReason=Card.GetReason
+			local _GetReasonCard=Card.GetReasonCard
+			Card.GetReason=function(c) if c:GetFlagEffect(m)>0 then return 0x40008 else return _GetReason(c) end end
+			Card.GetReasonCard=function(c) if c:GetFlagEffect(m)>0 then return tc else return _GetReasonCard(c) end end
+										--[[if c:GetFlagEffect(m)>0 then
+										local _,fusc=_GetReasonCard(c)
+										if fusc then
+											fusc:AddCard(tc)
+										else
+											local fusc=Group.FromCards(tc)
+											fusc:KeepAlive()
+										end
+										return tc,fusc
+									else return _GetReasonCard(c) end end
+			Set.equal=function(a,b)
+						local typea,typeb=aux.GetValueType(a),aux.GetValueType(b)
+						if typea=="Group" and typeb=="Card" then return a:IsContains(b) else return _equal(a,b) end end--]]
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 		else
 			local mat=Duel.SelectFusionMaterial(tp,tc,mg4,nil,chkf)

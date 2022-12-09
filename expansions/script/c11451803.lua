@@ -128,7 +128,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EVENT_CHAINING)
 		e1:SetCountLimit(1)
 		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return re==te end)
-		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) c:SetEntityCode(m,false) end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) c:SetEntityCode(m,false) Duel.ShuffleHand(tp) end)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 	end

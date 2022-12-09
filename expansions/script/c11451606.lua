@@ -1,7 +1,6 @@
 --斩机双同态
 --21.08.08
-local m=11451606
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -64,7 +63,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
-	e1:SetLabelObject(e)
+	e1:SetLabel(ev)
 	e1:SetCondition(cm.rscon)
 	e1:SetOperation(cm.rsop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
@@ -74,7 +73,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
-	return re==e:GetLabelObject()
+	return ev==e:GetLabel()
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	re:SetProperty(0)

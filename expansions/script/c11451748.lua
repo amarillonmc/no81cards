@@ -1,6 +1,5 @@
 --烬羽的悲响·珞克莉尔
-local m=11451748
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
@@ -43,6 +42,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetLabelObject(g)
 	e1:SetCondition(cm.retcon)
 	e1:SetOperation(cm.retop)
+	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_CHAIN_NEGATED)
