@@ -33,7 +33,7 @@ function cm.thop(e,tp)
 	rsop.SelectToHand(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,{})
 end
 function cm.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0xc4) and c:IsLocation(LOCATION_ONFIELD)
+	return c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)
 		and c:IsControler(tp)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)

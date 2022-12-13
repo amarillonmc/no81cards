@@ -30,7 +30,7 @@ function cm.spfilter(c,e,tp)
 	return c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.spop2(e,tp)
-	rsop.SelectSpecialSummon(tp,aux.NecroValleyFilter(cm.spfilter),tp,rsloc.hg,0,1,1,aux.ExceptThisCard(e),{0,tp,tp,false,false,POS_FACEUP,nil,{"dis,dise"}})
+	rsop.SelectSpecialSummon(tp,aux.NecroValleyFilter(cm.spfilter),tp,rsloc.hg,0,1,1,aux.ExceptThisCard(e),{0,tp,tp,false,false,POS_FACEUP,nil,{"dis,dise"}},e,tp)
 end
 function cm.repfilter(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0xc4) and c:IsLocation(LOCATION_ONFIELD)
