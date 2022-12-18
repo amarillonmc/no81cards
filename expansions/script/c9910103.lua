@@ -14,12 +14,14 @@ function c9910103.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_XMATERIAL)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
+	e2:SetCondition(c9910103.condition)
 	e2:SetValue(800)
 	c:RegisterEffect(e2)
 	--def up
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_XMATERIAL)
 	e3:SetCode(EFFECT_UPDATE_DEFENSE)
+	e3:SetCondition(c9910103.condition)
 	e3:SetValue(800)
 	c:RegisterEffect(e3)
 end
@@ -57,4 +59,7 @@ function c9910103.spop(e,tp,eg,ep,ev,re,r,rp)
 		if not c:IsRelateToEffect(e) then return end
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
+end
+function c9910103.condition(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsRace(RACE_MACHINE)
 end

@@ -2,7 +2,7 @@
 function c9910119.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910119)
@@ -20,8 +20,10 @@ function c9910119.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and c:IsAbleToDeck()
-		and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x952) end
+		and c:IsAbleToDeck() end
+end
+function c9910119.thfilter(c)
+	return c:IsAttribute(ATTRIBUTE_EARTH) and c:IsRace(RACE_MACHINE) and c:IsFaceup() and c:IsAbleToHand()
 end
 function c9910119.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -43,16 +45,17 @@ function c9910119.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 		end
 	else
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910119,0))
-		local sg=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,nil,0x952)
-		local sc=sg:GetFirst()
-		if sc then
-			Duel.ShuffleDeck(tp)
-			Duel.MoveSequence(sc,0)
-			Duel.ConfirmDecktop(tp,1)
-			if not c:IsRelateToEffect(e) then return end
-			Duel.BreakEffect()
-			Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
+		if not c:IsRelateToEffect(e) then return end
+		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT)==0 then return end
+		if Duel.IsExistingMatchingCard(c9910119.thfilter,tp,LOCATION_REMOVED,0,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(9910119,0)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local g=Duel.SelectMatchingCard(tp,c9910119.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+			if #g>0 then
+				Duel.BreakEffect()
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,g)
+			end
 		end
 	end
 end

@@ -1,4 +1,4 @@
---溯界星舞
+--云界星屑
 function c9910651.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -65,12 +65,6 @@ function c9910651.activate(e,tp,eg,ep,ev,re,r,rp)
 		xc:SetMaterial(Group.FromCards(tc))
 		Duel.Overlay(xc,Group.FromCards(tc))
 		Duel.SpecialSummon(xc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		xc:RegisterEffect(e1,true)
 		xc:CompleteProcedure()
 	end
 end

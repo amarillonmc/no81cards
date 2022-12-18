@@ -51,7 +51,7 @@ function c22348026.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.RemoveCounter(tp,1,0,0x1613,3,REASON_COST)
 end
 function c22348026.con(e,tp,eg,ep,ev,re,r,rp)  
-	return re and re:GetHandler():IsSetCard(0x613) and re:GetOwner()~=e:GetOwner()
+	return re and re:GetHandler():IsSetCard(0x613)
 end  
 function c22348026.filter1(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP)

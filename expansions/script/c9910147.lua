@@ -53,7 +53,7 @@ function c9910147.rmop(e,tp,eg,ep,ev,re,r,rp)
 		then loc=loc+LOCATION_GRAVE end
 	if loc==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local xc=xg:Select(tp,1,1,nil):GetFirst()
+	local xc=xg:FilterSelect(tp,Card.IsLocation,1,1,nil,loc):GetFirst()
 	local rc=nil
 	if not xc then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

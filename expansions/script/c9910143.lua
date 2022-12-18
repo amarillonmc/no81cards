@@ -59,7 +59,7 @@ function c9910143.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910143.atcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsAbleToEnterBP()
+	return e:GetHandler():IsRace(RACE_MACHINE) and Duel.IsAbleToEnterBP()
 end
 function c9910143.atcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

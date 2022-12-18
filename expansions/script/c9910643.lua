@@ -1,110 +1,110 @@
---死者行军-八房
+--始祖岭岩龙皇
 function c9910643.initial_effect(c)
-	--Activate
+	--xyz summon
+	aux.AddXyzProcedure(c,nil,12,2)
+	c:EnableReviveLimit()
+	--remove
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_DISABLE)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetHintTiming(TIMING_DAMAGE_STEP,TIMING_DAMAGE_STEP+TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1,9910643)
+	e1:SetCondition(aux.dscon)
+	e1:SetCost(c9910643.rmcost)
+	e1:SetTarget(c9910643.rmtg)
+	e1:SetOperation(c9910643.rmop)
 	c:RegisterEffect(e1)
-	--special summon
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_DESTROYED)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
-	e2:SetCountLimit(1,9910643)
-	e2:SetTarget(c9910643.sptg)
-	e2:SetOperation(c9910643.spop)
-	c:RegisterEffect(e2)
-	--destroy
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetOperation(c9910643.desop)
-	c:RegisterEffect(e3)
-	--destroy2
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_DESTROY)
-	e4:SetType(EFFECT_TYPE_IGNITION)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetCountLimit(1,9910644)
-	e4:SetCondition(c9910643.descon1)
-	e4:SetCost(c9910643.descost)
-	e4:SetTarget(c9910643.destg2)
-	e4:SetOperation(c9910643.desop2)
-	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_FREE_CHAIN)
-	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e5:SetCondition(c9910643.descon2)
-	c:RegisterEffect(e5)
+end
+function c9910643.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
+function c9910643.rafilter(c,res)
+	return c:GetRace()~=0 and (res or c:IsLocation(LOCATION_REMOVED))
+end
+function c9910643.disfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
+end
+function c9910643.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,nil)
+	local dg=Duel.GetMatchingGroup(c9910643.disfilter,tp,0,LOCATION_MZONE,nil)
+	if chk==0 then return #g>=4 and g:IsExists(c9910643.rafilter,1,nil,true) and #dg>0 end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,4,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,dg,1,0,0)
+end
+function c9910643.fselect(g)
+	return g:IsExists(c9910643.rafilter,1,nil,true)
+end
+function c9910643.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,nil)
+	if #g>=4 and g:IsExists(c9910643.rafilter,1,nil,true) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local rg=g:SelectSubGroup(tp,c9910643.fselect,false,4,4)
+		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
+		local og=Duel.GetOperatedGroup():Filter(c9910643.rafilter,nil,false)
+		local ct=og:GetClassCount(Card.GetRace)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		local dg=Duel.SelectMatchingCard(tp,c9910643.disfilter,tp,0,LOCATION_MZONE,1,ct,nil)
+		Duel.HintSelection(dg)
+		local tc=dg:GetFirst()
+		while tc do
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(-600)
+			tc:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_UPDATE_DEFENSE)
+			tc:RegisterEffect(e2)
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_DISABLE)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e3)
+			local e4=Effect.CreateEffect(c)
+			e4:SetType(EFFECT_TYPE_SINGLE)
+			e4:SetCode(EFFECT_DISABLE_EFFECT)
+			e4:SetValue(RESET_TURN_SET)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e4)
+			tc=dg:GetNext()
+		end
+	end
+	c:RegisterFlagEffect(9910643,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_PHASE+PHASE_END)
+	e5:SetCountLimit(1)
+	e5:SetLabelObject(c)
+	e5:SetCondition(c9910643.spcon)
+	e5:SetOperation(c9910643.spop)
+	e5:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e5,tp)
 end
 function c9910643.spfilter(c,e,tp)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsType(TYPE_MONSTER)
-		and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()~=tp
-		and c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c:IsCanBeEffectTarget(e)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsRank(12) and c:IsRace(RACE_DRAGON) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
-function c9910643.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return eg:IsContains(chkc) and c9910643.spfilter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and eg:IsExists(c9910643.spfilter,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=eg:FilterSelect(tp,c9910643.spfilter,1,1,nil,e,tp)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+function c9910643.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c9910643.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
 end
 function c9910643.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e)
-		and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_TRIGGER)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		c:SetCardTarget(tc)
-	end
-	Duel.SpecialSummonComplete()
-end
-function c9910643.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetHandler():GetCardTarget():Filter(Card.IsLocation,nil,LOCATION_MZONE)
-	if g:GetCount()>0 then
-		Duel.Destroy(g,REASON_EFFECT)
-	end
-end
-function c9910643.descon1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c9910643.filter,tp,LOCATION_ONFIELD,0,1,nil)
-end
-function c9910643.descon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9910643.filter,tp,LOCATION_ONFIELD,0,1,nil)
-end
-function c9910643.filter(c)
-	return c:IsFaceup() and c:IsCode(9910641)
-end
-function c9910643.rfilter(c,g)
-	return g:IsContains(c)
-end
-function c9910643.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tg=e:GetHandler():GetCardTarget()
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c9910643.rfilter,1,nil,tg) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(tp,c9910643.rfilter,1,1,nil,tg)
-	Duel.Release(g,REASON_COST)
-end
-function c9910643.destg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function c9910643.desop2(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
+	local c=e:GetLabelObject()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c9910643.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	local tc=g:GetFirst()
+	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0
+		and c:GetFlagEffect(9910643)~=0 and c:IsCanOverlay() and not tc:IsImmuneToEffect(e) then
+		local og=c:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+		Duel.Overlay(tc,Group.FromCards(c))
 	end
 end

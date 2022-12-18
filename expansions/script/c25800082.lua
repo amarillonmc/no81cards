@@ -32,7 +32,7 @@ function c25800082.limval(e,re,rp)
 end
 -----
 function c25800082.cfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x211) and c:IsLevelBelow(3) and c:IsControler(tp)
+	return c:IsFaceup() and c:IsSetCard(0xa211) and c:IsLevelBelow(4) and c:IsControler(tp)
 end
 function c25800082.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler()) and eg:IsExists(c25800082.cfilter,1,nil,tp)

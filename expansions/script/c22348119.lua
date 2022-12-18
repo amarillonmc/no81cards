@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,4,2,c22348119.ovfilter,aux.Stringid(22348119,0),99)
+	aux.AddXyzProcedure(c,nil,4,2,c22348119.ovfilter,aux.Stringid(22348119,0),99,c22348119.xyzoop)
 	c:EnableReviveLimit()
 	--atk
 	local e1=Effect.CreateEffect(c)
@@ -29,6 +29,10 @@ function cm.initial_effect(c)
 end
 function c22348119.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x704) and c:IsLevel(4)
+end
+function c22348119.xyzoop(e,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,22349119)==0 end
+	Duel.RegisterFlagEffect(tp,22349119,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c22348119.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end

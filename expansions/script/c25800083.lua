@@ -1,7 +1,7 @@
 --圣地亚哥·改
 function c25800083.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,25800049,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6211),1,false,false)
+	aux.AddFusionProcCode2(c,25800045,25800062,true,true)
 	--destroy
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(25800083,0))

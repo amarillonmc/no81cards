@@ -27,9 +27,11 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_MZONE)
+	e3:SetRange(LOCATION_MZONE) 
 	e3:SetHintTiming(0,TIMING_END_PHASE+TIMINGS_CHECK_MONSTER)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCountLimit(1)
+	e3:SetCondition(cm.spcon2)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
 	c:RegisterEffect(e3)
@@ -76,8 +78,11 @@ function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 ---3
+function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()~=tp 
+end
 function cm.filter(c)
-	return  c:IsSetCard(0x211) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return  c:IsSetCard(0x3212) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end
@@ -90,7 +95,7 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then	
+	if tc and tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	local c=e:GetHandler()

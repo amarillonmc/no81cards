@@ -123,19 +123,17 @@ function c22348104.efop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,22348104)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
-	--DISABLE
+	--imm
 	local e1=Effect.CreateEffect(rc)
-	e1:SetDescription(aux.Stringid(22348104,0))
-	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DISABLE+CATEGORY_TOHAND)
+	e1:SetDescription(aux.Stringid(22348103,1))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
-	e1:SetCondition(c22348104.dacon)
-	e1:SetCost(c22348104.dacost)
-	e1:SetTarget(c22348104.datg)
-	e1:SetOperation(c22348104.daop)
+	e1:SetCondition(c22348104.immcon)
+	e1:SetCost(c22348104.immcost)
+	e1:SetOperation(c22348104.immop)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
 	if not rc:IsType(TYPE_EFFECT) then
@@ -147,50 +145,31 @@ function c22348104.efop(e,tp,eg,ep,ev,re,r,rp)
 		rc:RegisterEffect(e2,true)
 	end
 end
-function c22348104.dacon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
+function c22348104.immcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp~=tp and  e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
-function c22348104.dacost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c22348104.immcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c22348104.datg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and aux.NegateMonsterFilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	Duel.SelectTarget(tp,aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+function c22348104.imfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x704)
 end
-function c22348104.hthfilter(c)
-	return c:IsSetCard(0x704) and c:IsAbleToHand()
-end
-function c22348104.daop(e,tp,eg,ep,ev,re,r,rp)
+function c22348104.immop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanBeDisabledByEffect(e) then
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e2)
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_UPDATE_ATTACK)
-		e3:SetValue(-700)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e3)
-		if tc:GetControler()==tp and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c22348104.hthfilter),tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(22348104,1)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=Duel.SelectMatchingCard(tp,c22348104.hthfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sg)
-		end
+	local g=Duel.GetMatchingGroup(c22348104.imfilter,tp,LOCATION_MZONE,0,nil)
+	local tc=g:GetFirst()
+	while tc do
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_IMMUNE_EFFECT)
+			e1:SetValue(c22348104.efilter)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+			tc:RegisterEffect(e1)
+			tc:RegisterFlagEffect(c22348104,RESET_CHAIN,0,1)
+			tc=g:GetNext()
 	end
+end
+function c22348104.efilter(e,re)
+	return e:GetHandlerPlayer()~=re:GetOwnerPlayer()
 end

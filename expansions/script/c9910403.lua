@@ -43,7 +43,7 @@ function c9910403.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9910403.filter(c,e,tp,ft)
-	return c:IsSetCard(0x6950) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x6950) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 		and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c9910403.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

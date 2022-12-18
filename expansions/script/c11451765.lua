@@ -59,22 +59,20 @@ end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.spfilter,1,nil)
 end
-function cm.tdfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x9977) and c:IsAbleToDeck()
+function cm.refilter(c)
+	return c:IsAbleToRemove() and c:IsSetCard(0x9977)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return eg:IsExists(cm.tdfilter,1,nil) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,false,true) and c:GetFlagEffect(m-10)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_GRAVE,0,1,nil) and c:GetFlagEffect(m-10)==0 end
 	c:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
-	local g=eg:Filter(cm.tdfilter,nil,tp)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 and Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) and c:IsRelateToEffect(e) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,false,true) then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.refilter),tp,LOCATION_GRAVE,0,1,1,nil)
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 and c:IsRelateToEffect(e) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,false,true) then
 		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		local te=c:GetActivateEffect()
 		te:UseCountLimit(tp,1,true)

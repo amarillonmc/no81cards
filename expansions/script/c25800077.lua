@@ -1,7 +1,7 @@
 
 function c25800077.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroMixProcedure(c,c25800077.matfilter1,nil,nil,aux.NonTuner(nil),2,99)
+	aux.AddSynchroMixProcedure(c,c25800077.matfilter1,nil,nil,aux.NonTuner(nil),1,99)
 	c:EnableReviveLimit()
 
 	aux.EnableChangeCode(c,25800080,LOCATION_MZONE+LOCATION_GRAVE)
@@ -41,7 +41,7 @@ function c25800077.remop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
 	if #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg=g:Select(tp,1,3,nil)
+		local sg=g:Select(tp,1,2,nil)
 		Duel.HintSelection(sg)
 		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end

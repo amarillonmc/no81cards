@@ -17,9 +17,6 @@ function c9911075.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911075.filter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c9911075.cfilter(c)
-	return c:IsCode(9911075,75014062) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
-end
 function c9911075.cfilter2(c)
 	return c:IsRace(RACE_ZOMBIE) and c:IsLocation(LOCATION_GRAVE)
 end

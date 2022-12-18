@@ -20,9 +20,10 @@ function cm.initial_effect(c)
 	--recover
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_RECOVER)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_DESTROYED)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
 	e2:SetCondition(cm.reccon)
 	e2:SetTarget(cm.sptg)
@@ -36,7 +37,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp)
 end
 function cm.spfilter(c,e,tp)
-	return  c:IsSetCard(0x211) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return  c:IsSetCard(0x9211) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -53,7 +54,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 -----
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x211) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x9211) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.reccon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

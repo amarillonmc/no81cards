@@ -57,7 +57,7 @@ function c9910144.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910144.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetBattleTarget()~=nil and e:GetHandler():IsDefenseAbove(0)
+	return e:GetHandler():IsRace(RACE_MACHINE) and e:GetHandler():GetBattleTarget()~=nil
 end
 function c9910144.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

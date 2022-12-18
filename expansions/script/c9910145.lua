@@ -15,19 +15,14 @@ function c9910145.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
 function c9910145.spfilter(c,e,tp)
-	return c:IsSetCard(0x952) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c9910145.xfilter(c)
-	return c9910145.spfilter(c) and c:IsType(TYPE_XYZ)
+	return c:IsCode(9910147) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c9910145.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and (c:IsAbleToDeck() or Duel.IsExistingTarget(c9910145.xfilter,tp,LOCATION_GRAVE,0,1,nil))
-		and Duel.IsExistingMatchingCard(c9910145.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c,e,tp) end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and c:IsAbleToDeck() and Duel.IsExistingMatchingCard(c9910145.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 end
 function c9910145.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -49,23 +44,11 @@ function c9910145.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 		end
 	else
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c9910145.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,c,e,tp)
-		local sc=g:GetFirst()
-		if not sc or Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-		if not c:IsRelateToEffect(e) then return end
-		Duel.BreakEffect()
-		if not sc:IsType(TYPE_XYZ) then
+		local g=Duel.SelectMatchingCard(tp,c9910145.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+		if #g>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)~=0 and c:IsRelateToEffect(e) then
+			Duel.BreakEffect()
 			Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
-		else
-			if c:IsAbleToDeck()
-				and Duel.SelectOption(tp,aux.Stringid(9910145,0),aux.Stringid(9910145,1))==0 then
-				Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
-			else
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-				Duel.Overlay(sc,Group.FromCards(c))
-			end
 		end
 	end
 end

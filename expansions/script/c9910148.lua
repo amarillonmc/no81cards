@@ -16,6 +16,7 @@ function c9910148.initial_effect(c)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e2:SetTargetRange(LOCATION_ONFIELD,0)
+	e2:SetCondition(c9910148.condition)
 	e2:SetTarget(c9910148.indtg)
 	e2:SetValue(aux.indoval)
 	c:RegisterEffect(e2)
@@ -54,6 +55,9 @@ function c9910148.spop(e,tp,eg,ep,ev,re,r,rp)
 		if not c:IsRelateToEffect(e) then return end
 		Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 	end
+end
+function c9910148.condition(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsRace(RACE_MACHINE)
 end
 function c9910148.indtg(e,c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP)

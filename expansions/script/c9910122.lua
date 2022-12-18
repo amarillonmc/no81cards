@@ -70,10 +70,11 @@ function c9910122.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(e:GetLabelObject(),REASON_EFFECT)
 end
 function c9910122.tdfilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return c:IsAttribute(ATTRIBUTE_EARTH) and c:IsRace(RACE_MACHINE) and c:IsAbleToDeck()
 end
 function c9910122.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910122.tdfilter,tp,LOCATION_GRAVE,0,2,nil) end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
+		and Duel.IsExistingMatchingCard(c9910122.tdfilter,tp,LOCATION_GRAVE,0,2,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,tp,LOCATION_GRAVE)
 end
 function c9910122.locfilter(c,sp)
@@ -81,10 +82,12 @@ function c9910122.locfilter(c,sp)
 end
 function c9910122.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c9910122.tdfilter,tp,LOCATION_GRAVE,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910122.tdfilter),tp,LOCATION_GRAVE,0,2,2,nil)
 	if g:GetCount()~=2 then return end
 	if Duel.SendtoDeck(g,nil,0,REASON_EFFECT)~=2 then return end
-	local ct=Duel.GetOperatedGroup():FilterCount(c9910122.locfilter,nil,tp)
+	local og=Duel.GetOperatedGroup()
+	if not og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then return end
+	local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK)
 	if ct~=0 then Duel.ShuffleDeck(tp) end
 	Duel.BreakEffect()
 	Duel.ConfirmDecktop(tp,1)
