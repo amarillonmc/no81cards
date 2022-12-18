@@ -1,7 +1,6 @@
 --致薰风的离风
 --21.08.04
-local m=11451608
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -38,6 +37,8 @@ function cm.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_GRAVE)
+	e5:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e5:SetCondition(aux.dscon)
 	e5:SetCost(aux.bfgcost)
 	e5:SetTarget(cm.thtg)
 	e5:SetOperation(cm.thop)

@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.smcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and Duel.GetTurnPlayer()==tp
+	return eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and Duel.GetTurnPlayer()==tp and aux.dscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cfilter(c,g)
 	return g:IsExists(Card.IsRace,1,nil,c:GetRace()) and c:IsFaceup() and c:IsAbleToGraveAsCost()
@@ -42,7 +42,7 @@ function cm.smcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(tg,REASON_COST)
 end
 function cm.sscon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsType,1,nil,TYPE_SPELL+TYPE_TRAP) and Duel.GetTurnPlayer()~=tp
+	return eg:IsExists(Card.IsType,1,nil,TYPE_SPELL+TYPE_TRAP) and Duel.GetTurnPlayer()~=tp and aux.dscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cfilter2(c,g)
 	return g:IsExists(Card.IsType,1,nil,c:GetType()&0x6) and c:IsFaceup() and c:IsAbleToGraveAsCost()
