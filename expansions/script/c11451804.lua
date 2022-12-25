@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	e3:SetTargetRange(0xff,0xff)
 	e3:SetTarget(cm.chtg)
 	e3:SetValue(33365932)
-	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
+	e3:SetRange(LOCATION_MZONE)
 	c:RegisterEffect(e3)
 	--destroy
 	local e2=Effect.CreateEffect(c)
@@ -85,7 +85,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function cm.chtg(e,c)
-	if c then return c:IsSetCard(0x32) and c:IsType(TYPE_MONSTER) end
+	if c then return c:IsRace(RACE_PYRO) and c:IsType(TYPE_MONSTER) end
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return (re:GetCode()==EVENT_SUMMON_SUCCESS or re:GetCode()==EVENT_SPSUMMON_SUCCESS) or (re:IsHasType(EFFECT_TYPE_ACTIVATE))

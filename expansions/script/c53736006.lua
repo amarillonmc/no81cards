@@ -63,6 +63,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetTurnPlayer()==tp then return end
 	Duel.Destroy(e:GetHandler(),REASON_RULE)
 end
 function cm.splimit(e,c,tp,sumtp,sumpos)
