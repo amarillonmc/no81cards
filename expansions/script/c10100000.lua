@@ -2,7 +2,7 @@
 --the old library (c10199990.lua and c10199991.lua) has gone out of service, becuase it has become a SHIT MOUNTAIN, hard for reading.
 --any problems, you can call me: QQ/VX 852415212, PLZ note sth. about YGO while you add me, otherwise I will reject your friend request.
 
-local Version_Number = "2022.11.02"
+local Version_Number = "2022.12.28"
 
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constant <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -13,7 +13,10 @@ if Scl_Library_Switch then
 	return 
 end
 Scl_Library_Switch = true 
-
+--Print version number
+Debug.Message("You are using Scl's library, Version: " .. Version_Number .. ".")
+Debug.Message("If you find any script errors, call Scl to fix them.")
+Debug.Message("His QQ/VX: 852415212, Email: 15161685390@163.com.")
 --this table's contents can be used in anywhere, commonly be used for create effects, or be used in effect's condtions/costs/targets/operations.
 Scl = { }
 --this table's contents can be used in anywhere, commonly be used for registering effect's condtions/costs/targets/operations/values.
@@ -441,7 +444,7 @@ function s.extra_reason(exr)
 	Scl.Reason_List[f] = true 
 	return f
 end
-function s.create_category_list()  
+function s.create_category_list()
 	local sg = "solve_parama"
 	local tp = "activate_player"
 	local r = "reason"
@@ -680,7 +683,8 @@ function s.create_buff_list()
 	["EquipLimit"] = { EFFECT_EQUIP_LIMIT, false, 1, nil, EFFECT_FLAG_CANNOT_DISABLE },
 	["Reveal"] = { EFFECT_PUBLIC, false, 1, nil, EFFECT_FLAG_CANNOT_DISABLE },
 	["SetMaterial"] = { EFFECT_SET_MATERIAL_SCL },
-	["CompleteProcedure"] = { EFFECT_COMPLETE_SUMMON_PROC_SCL }
+	["CompleteProcedure"] = { EFFECT_COMPLETE_SUMMON_PROC_SCL },
+	["ActivateCardFromAnyZone"] = { EFFECT_ACTIVATE_SPELL_AND_TRAP_FROM_ANY_ZONE_SCL }
 	
 	}
 
@@ -711,7 +715,6 @@ function s.create_buff_list()
 	["OpponentTakeDamageInstead"] = { EFFECT_REFLECT_DAMAGE },
 	["OpponentTakeBattleDamageInstead"] = { EFFECT_REFLECT_BATTLE_DAMAGE },
 	["GainLPInsteadOfTakingDamage"] = { EFFECT_REVERSE_DAMAGE },
-	["ActivateCardFromAnyZone"] = { EFFECT_ACTIVATE_SPELL_AND_TRAP_FROM_ANY_ZONE_SCL },
 	["AddAdditionalEffect"] = { EFFECT_ADDITIONAL_EFFECT_SCL }
 	
 	}
@@ -771,8 +774,9 @@ function s.activate_from_any_zone_costchk(e, te_or_c, tp)
 	local se_arr = { c:IsHasEffect(EFFECT_ACTIVATE_SPELL_AND_TRAP_FROM_ANY_ZONE_SCL, tp) }
 	if #se_arr == 0 then return false end 
 	for _, se in pairs(se_arr) do 
+		local act_zone = se:GetValue()
 		local cost = se:GetCost() or aux.TRUE
-		if cost(e, tp, eg, ep, ev, re, r, rp, 0) then 
+		if Scl.IsInZone(c, act_zone) and cost(e, tp, eg, ep, ev, re, r, rp, 0) then 
 			return true
 		end
 	end
@@ -2646,7 +2650,7 @@ function Scl.CreateFieldTriggerContinousEffect_PhaseOpearte(reg_obj, op_obj, tim
 		tc:RegisterFlagEffect(FLAG_PHASE_OPERATE_SCL, RESETS_SCL, EFFECT_FLAG_CLIENT_HINT, 0, fid, desc)
 	end
 	sg:KeepAlive()
-	local e1 = Scl.CreateFieldTriggerContinousEffect(reg_obj, EVENT_PHASE + phase, DESC_PHASE_OPERATION_SCL, 1, "IgnoreImmune", nil, s.phase_opearte_con(phase, atct, whos, fid, times, ex_con), s.phase_opearte_op(fun_obj, fid))
+	local e1 = Scl.CreateFieldTriggerContinousEffect(reg_obj, EVENT_PHASE + phase, DESC_PHASE_OPERATION_SCL, 1, "IgnoreUnaffected", nil, s.phase_opearte_con(phase, atct, whos, fid, times, ex_con), s.phase_opearte_op(fun_obj, fid))
 	Scl.Operation_Info[e1] = {sg, 0, 0}
 	return e1
 end
@@ -6823,10 +6827,25 @@ Scl.RaiseGlobalSetEvent()
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 --[[
+
 10100000 -- Scl's library		  QQ852415212
 
-
 60152900 -- LaiBill's library	  QQ529508379
-B2Sayaka -- "Miki Sayaka"
+			B2Sayaka -- "Miki Sayaka"
+			
 
 ]]--
+
+--<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+--<<<<<<<<<<<<<<<<<<<<<<<<<<<< Update Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+--<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+--[[
+
+2022.12.25 fix Scl.CreateFieldTriggerContinousEffect_PhaseOpearte
+			Turn the wrong flag string "IgnoreImmune" to the right string "IgnoreUnaffected".
+			
+2022.12.28 fix EFFECT_ACTIVATE_SPELL_AND_TRAP_FROM_ANY_ZONE_SCL
+			Add an zone check (current zone == activate zone) before cost check. (due to 130006007 "决斗者的最后之日" can activate in any zone.)
+--]]

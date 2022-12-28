@@ -1640,7 +1640,7 @@ end
 --Single Val Effect: Activate Trap / Quick Spell immediately
 function rsef.SV_ACTIVATE_IMMEDIATELY(reg_list, act_list, con, reset_list, flag, desc_list) 
     local act_list2 
-    local reg_owner, reg_handler = rsef.GetRegisterCard(reg_list)
+    local reg_owner, reg_handler = Scl.GetRegisterInfo(reg_list)
     if reg_handler:IsComplexType(TYPE_QUICKPLAY + TYPE_SPELL) then
         act_list2 = string.gsub(act_list, "hand", "qah")
         act_list2 = string.gsub(act_list2, "set", "qas")
@@ -1648,7 +1648,7 @@ function rsef.SV_ACTIVATE_IMMEDIATELY(reg_list, act_list, con, reset_list, flag,
         act_list2 = string.gsub(act_list, "hand", "tah")
         act_list2 = string.gsub(act_list2, "set", "tas")
     end
-    return rsef.SV_Card(reg_list, act_list2, flag, nil, con, reset_list, desc_list)
+    return rsef.SV_Card(reg_list, act_list2, 1, flag, 0xff, con, reset_list, desc_list)
 end
 --cost: tribute self 
 function rscost.releaseself(check_mzone, check_exzone)

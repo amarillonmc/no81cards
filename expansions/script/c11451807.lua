@@ -33,20 +33,28 @@ end
 function cm.immval(e,te)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
+	local eset={c:IsHasEffect(0x10000000+m)}
 	local res=(te:GetOwner()~=c)
-	if res then
-		local flag=c:GetFlagEffectLabel(m)
-		if flag then
-			c:SetFlagEffectLabel(m,flag+1)
-		else
-			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,1)
+	local ctns=false
+	if not te:IsHasType(EFFECT_TYPE_ACTIONS) then
+		for _,se in pairs(eset) do
+			if se:GetLabelObject()==te then ctns=true end
 		end
+	end
+	if res and not ctns then
+		local flag=c:GetFlagEffect(m)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(0x10000000+m)
+		e1:SetLabelObject(te)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e1,true)
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e4:SetCode(EVENT_ADJUST)
 		e4:SetOperation(cm.imcop)
 		Duel.RegisterEffect(e4,tp)
-		Duel.Readjust()
 	end
 	return res
 end
@@ -57,15 +65,15 @@ end
 function cm.fliptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local c=e:GetHandler()
-	local flag=c:GetFlagEffectLabel(m)
-	if flag then
+	local eset={c:IsHasEffect(0x10000000+m)}
+	if #eset>0 then
 		if rp>=2 then
 			if tp==0 then rp=1 end
 			if tp==1 then rp=0 end
 		end
 		Duel.SetTargetPlayer(rp)
-		Duel.SetTargetParam(flag)
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,rp,flag)
+		Duel.SetTargetParam(#eset)
+		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,rp,#eset)
 	end
 end
 function cm.flipop(e,tp,eg,ep,ev,re,r,rp)

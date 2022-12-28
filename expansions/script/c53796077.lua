@@ -109,42 +109,80 @@ function cm.adjustop1(e,tp,eg,ep,ev,re,r,rp)
 	local bool2=c:IsHasEffect(EFFECT_SPSUMMON_COST)
 	local bool3=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON)
 	local bool4=Duel.IsPlayerAffectedByEffect(tp,EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)
-	if not (bool1 or bool2 or bool3 or bool4) then return end
+	local bool5=Duel.IsPlayerAffectedByEffect(tp,EFFECT_SPSUMMON_COUNT_LIMIT)
+	if not (bool1 or bool2 or bool3 or bool4 or bool5) then return end
 	local re1={c:IsHasEffect(EFFECT_CANNOT_SPECIAL_SUMMON)}
 	local re2={c:IsHasEffect(EFFECT_SPSUMMON_COST)}
-	local re3={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON)}
-	local re4={Duel.IsPlayerAffectedByEffect(tp,EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)}
+	local re5={Duel.IsPlayerAffectedByEffect(tp,EFFECT_SPSUMMON_COUNT_LIMIT)}
 	for _,te1 in pairs(re1) do
 		local con=te1:GetCondition()
 		if not con then con=aux.TRUE end
 		g:AddCard(te1:GetOwner())
-		te1:SetCondition(cm.chcon(con))
+		te1:SetCondition(cm.chcon(con,0))
 	end
 	for _,te2 in pairs(re2) do
 		if te2:GetType()==EFFECT_TYPE_SINGLE then
 			local con=te2:GetCondition()
 			if not con then con=aux.TRUE end
 			g:AddCard(te2:GetOwner())
-			te2:SetCondition(cm.chcon(con))
+			te2:SetCondition(cm.chcon(con,0))
 		end
 		if te2:GetType()==EFFECT_TYPE_FIELD then
 			local tg=te2:GetTarget()
 			local o,h=te2:GetOwner(),te2:GetHandler()
 			if not tg then
 				if h then g:AddCard(h) else g:AddCard(o) end
-				te2:SetTarget(cm.chtg(aux.TRUE))
+				te2:SetTarget(cm.chtg(aux.TRUE,0))
 			elseif tg(te2,c,tp)==true then
 				if h then g:AddCard(h) else g:AddCard(o) end
-				te2:SetTarget(cm.chtg(tg))
+				te2:SetTarget(cm.chtg(tg,0))
 			end
 		end
 	end
+	for _,te5 in pairs(re5) do
+		local val=te5:GetValue()
+		local _,a=te5:GetLabel()
+		if a==0 then te5:SetLabel(0,val) end
+		local x,o,h=nil,te5:GetOwner(),te5:GetHandler()
+		if h then x=h else x=o end
+		local sp=Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)
+		local _,b=te5:GetLabel()
+		if sp==0 then
+			te5:SetLabel(1,b)
+			te5:SetValue(b)
+		end
+		val=te5:GetValue()
+		local l,_=te5:GetLabel()
+		if l==0 then te5:SetLabel(sp+1,b) else
+			local n=sp-l+1
+			if n==val then
+				te5:SetValue(val+1)
+				local e1=te5:Clone()
+				e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+				e1:SetReset(RESET_PHASE+PHASE_END)
+				local loc=te5:GetRange()
+				if loc~=0 then
+					e1:SetLabelObject(te5)
+					h:RegisterEffect(e1)
+					local e2=Effect.CreateEffect(c)
+					e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+					e2:SetCode(EVENT_ADJUST)
+					e2:SetLabel(loc,b)
+					e2:SetLabelObject(e1)
+					e2:SetOperation(cm.reset1)
+					Duel.RegisterEffect(e2,tp)
+				else Duel.RegisterEffect(e1,te5:GetOwnerPlayer()) end
+			end
+		end
+	end
+	local re3={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON)}
+	local re4={Duel.IsPlayerAffectedByEffect(tp,EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)}
 	for _,te3 in pairs(re3) do
 		local tg=te3:GetTarget()
 		local o,h=te3:GetOwner(),te3:GetHandler()
 		if not tg then
 			if h then g:AddCard(h) else g:AddCard(o) end
-			te3:SetTarget(cm.chtg(aux.TRUE))
+			te3:SetTarget(cm.chtg3(aux.TRUE,0))
 		elseif tg(te3,c,tp,SUMMON_TYPE_SPECIAL,POS_FACEUP,tp,e)==true then
 			if h then g:AddCard(h) else g:AddCard(o) end
 			te3:SetTarget(cm.chtg3(tg))
@@ -155,7 +193,7 @@ function cm.adjustop1(e,tp,eg,ep,ev,re,r,rp)
 		local o,h=te4:GetOwner(),te4:GetHandler()
 		if tg(te4,c,tp,tp,POS_FACEUP)==true then
 			if h then g:AddCard(h) else g:AddCard(o) end
-			te4:SetTarget(cm.chtg(tg))
+			te4:SetTarget(cm.chtg3(tg))
 		end
 	end
 	c:ResetFlagEffect(m)
@@ -164,7 +202,7 @@ function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=e:GetLabelObject()
 	g:Clear()
-	c:RegisterFlagEffect(m,0,0,0)
+	c:RegisterFlagEffect(m+500,0,0,0)
 	local bool1=c:IsHasEffect(EFFECT_CANNOT_TRIGGER)
 	local bool2=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)
 	local bool3=Duel.IsPlayerAffectedByEffect(tp,EFFECT_ACTIVATE_COST)
@@ -177,7 +215,7 @@ function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
 			local con=te1:GetCondition()
 			if not con then con=aux.TRUE end
 			g:AddCard(te1:GetOwner())
-			te1:SetCondition(cm.chcon(con))
+			te1:SetCondition(cm.chcon(con,500))
 		end
 		if te1:GetType()==EFFECT_TYPE_EQUIP then
 			local con=te1:GetCondition()
@@ -190,10 +228,10 @@ function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
 			local o,h=te1:GetOwner(),te1:GetHandler()
 			if not tg then
 				if h then g:AddCard(h) else g:AddCard(o) end
-				te1:SetTarget(cm.chtg(aux.TRUE))
+				te1:SetTarget(cm.chtg(aux.TRUE,500))
 			elseif tg(te1,c)==true then
 				if h then g:AddCard(h) else g:AddCard(o) end
-				te1:SetTarget(cm.chtg(tg))
+				te1:SetTarget(cm.chtg(tg,500))
 			end
 		end
 	end
@@ -217,32 +255,43 @@ function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
 			te3:SetTarget(cm.chtg2(tg))
 		end
 	end
-	c:ResetFlagEffect(m)
+	c:ResetFlagEffect(m+500)
 end
-function cm.chcon(_con)
+function cm.chcon(_con,t)
 	return function(e,...)
 				local x=e:GetHandler()
-				if x:IsHasEffect(m) and x:GetFlagEffect(m)<1 then return false end
+				if x:IsHasEffect(m) and x:GetFlagEffect(m+t)<1 then return false end
 				return _con(e,...)
 			end
 end
 function cm.chcon2(_con)
 	return function(e,...)
 				local x=e:GetHandler():GetEquipTarget()
-				if x:IsHasEffect(m) and x:GetFlagEffect(m)<1 then return false end
+				if x:IsHasEffect(m) and x:GetFlagEffect(m+500)<1 then return false end
 				return _con(e,...)
 			end
 end
-function cm.chtg(_tg)
+function cm.reset1(e,tp,eg,ep,ev,re,r,rp)
+	local x=e:GetLabelObject():GetHandler()
+	local te=e:GetLabelObject():GetLabelObject()
+	local loc,v=e:GetLabel()
+	if x:GetLocation()&loc==0 then
+		te:SetLabel(0,v)
+		te:SetValue(v)
+		e:GetLabelObject():Reset()
+		e:Reset()
+	end
+end
+function cm.chtg(_tg,t)
 	return function(e,c,...)
-				if c:IsHasEffect(m) and c:GetFlagEffect(m)<1 then return false end
+				if c:IsHasEffect(m) and c:GetFlagEffect(m+t)<1 then return false end
 				return _tg(e,c,...)
 			end
 end
 function cm.chtg2(_tg)
 	return function(e,te,...)
 				local x=te:GetHandler()
-				if x:IsHasEffect(m) and x:GetFlagEffect(m)<1 then return false end
+				if x:IsHasEffect(m) and x:GetFlagEffect(m+500)<1 then return false end
 				return _tg(e,te,...)
 			end
 end
