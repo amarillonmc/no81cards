@@ -100,7 +100,7 @@ end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return c:IsPosition(POS_FACEUP_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)
+	return c:IsPosition(POS_FACEUP_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,2,nil)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.DiscardHand(tp,Card.IsDiscardable,2,2,REASON_COST+REASON_DISCARD)

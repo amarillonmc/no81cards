@@ -58,7 +58,7 @@ function c22070190.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c22070190.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler(),tp,LOCATION_REASON_TOFIELD,0x1f)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,22070131,0xa3,0x4011,2500,2000,8,RACE_DRAGON,ATTRIBUTE_WIND) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then

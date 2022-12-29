@@ -17,11 +17,10 @@ function c10173077.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c10173077.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c = e:GetHandler()
 	local bool=e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND)
-	if chk==0 then return not bool or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,c) end
+	if chk==0 then return not bool or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
 	if bool then
-		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD,c)
+		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 	end
 end 
 function c10173077.cfilter(c,tp)

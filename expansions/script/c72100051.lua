@@ -14,8 +14,8 @@ function c72100051.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c72100051.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+	if chk==0 then return e:GetHandler():IsDiscardable() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c72100051.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

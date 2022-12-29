@@ -76,6 +76,7 @@ end
 
 function cm.sprcon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_ONFIELD,0,nil,tp,c)
 	return g:GetCount()>0
 end
