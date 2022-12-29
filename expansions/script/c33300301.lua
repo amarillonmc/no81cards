@@ -58,7 +58,7 @@ function cm.LinkOperation(f,minc,maxc,gf)
 			end
 end
 function cm.lcheck(c)
-	return c:IsLinkSetCard(0x562) or (c:GetOriginalCode()==33300308 and not c:IsDisabled())
+	return (c:IsLinkSetCard(0x562) and c:IsLevelBelow(4)) or (c:GetOriginalCode()==33300308 and not c:IsDisabled())
 end
 function cm.extracheck(c)
 	return c:IsFaceup() and c:GetOriginalCode()==33300308
@@ -69,14 +69,14 @@ end
 function cm.lcon(...)
 	local f=aux.GetLinkMaterials
 	aux.GetLinkMaterials=cm.GetLinkMaterials
-	local res=Auxiliary.LinkCondition(nil,2,2,cm.gf)(...)
+	local res=Auxiliary.LinkCondition(nil,1,1,cm.gf)(...)
 	aux.GetLinkMaterials=f
 	return res
 end
 function cm.ltg(...)
 	local f=aux.GetLinkMaterials
 	aux.GetLinkMaterials=cm.GetLinkMaterials
-	local res=Auxiliary.LinkTarget(nil,2,2,cm.gf)(...)
+	local res=Auxiliary.LinkTarget(nil,1,1,cm.gf)(...)
 	aux.GetLinkMaterials=f
 	return res
 end
