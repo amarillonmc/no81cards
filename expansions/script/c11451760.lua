@@ -135,6 +135,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetOperation(cm.resetop)
 			c:RegisterEffect(e2)
 			Duel.XyzSummon(tp,c,nil)
+		else
+			c:ResetFlagEffect(m-17)
 		end
 	end
 end
