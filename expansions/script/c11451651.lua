@@ -1,7 +1,6 @@
 --lavafissure of dragon palace
 --21.12.25
-local m=11451651
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -45,12 +44,12 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge2,0)
 		local ge3=ge2:Clone()
 		ge3:SetCode(EVENT_CHAIN_NEGATED)
-		c:RegisterEffect(ge3,0)
+		Duel.RegisterEffect(ge3,0)
 		local ge4=ge1:Clone()
 		ge4:SetCode(EVENT_CHAIN_NEGATED)
 		ge4:SetCondition(cm.rscon)
 		ge4:SetOperation(cm.reset)
-		c:RegisterEffect(ge4,0)
+		Duel.RegisterEffect(ge4,0)
 	end
 end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)

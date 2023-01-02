@@ -33,19 +33,21 @@ function c67200437.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c67200437.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then	 
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then	
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local g=Duel.SelectMatchingCard(tp,c67200437.pfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
 		if g:GetCount()>0 then
 			if Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)~=0 then
-				local e2=Effect.CreateEffect(c)
-				e2:SetType(EFFECT_TYPE_SINGLE)
-				e2:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-				e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-				e2:SetReset(RESET_EVENT+RESETS_REDIRECT)
-				e2:SetValue(LOCATION_HAND)
-				c:RegisterEffect(e2,true)
+				if g:GetFirst():AddCounter(0x671,2)~=0 then
+					local e2=Effect.CreateEffect(c)
+					e2:SetType(EFFECT_TYPE_SINGLE)
+					e2:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+					e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e2:SetReset(RESET_EVENT+RESETS_REDIRECT)
+					e2:SetValue(LOCATION_HAND)
+					c:RegisterEffect(e2,true)
+				end
 			end
 		end
 	end
