@@ -86,7 +86,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e2:SetLabelObject(e1)
 	e2:SetOperation(cm.tdop)
 	Duel.RegisterEffect(e2,tp)
-	local g=Duel.GetMatchingGroup(cm.ngfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAttackPos,tp,LOCATION_MZONE,LOCATION_MZONE,c)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,PLAYER_ALL,0)
 end

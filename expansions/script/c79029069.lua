@@ -26,7 +26,7 @@ function c79029069.initial_effect(c)
 end
 c79029069.named_with_KarlanTrade=true 
 function c79029069.ctfil(c)  
-	return c:IsAbleToGraveAsCost() and c:IsAttribute(ATTRIBUTE_WATER)  
+	return c:IsAbleToGraveAsCost() and c:IsAttribute(ATTRIBUTE_WATER) and (c:IsLocation(LOCATION_HAND+LOCATION_MZONE) or c.named_with_KarlanTrade)
 end 
 function c79029069.spfil(c,e,tp,g)
 	return c:IsCode(79029063,79029064) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0

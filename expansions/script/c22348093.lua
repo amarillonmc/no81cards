@@ -44,7 +44,7 @@ end
 function c22348093.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:GetControler()==tp and Duel.IsExistingMatchingCard(c22348093.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(22348093,2)) then
+		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:GetControler()==tp and Duel.IsExistingMatchingCard(c22348093.thfilter,tp,LOCATION_DECK,0,1,nil) and tc:IsLocation(LOCATION_GRAVE) and Duel.SelectYesNo(tp,aux.Stringid(22348093,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=Duel.SelectMatchingCard(tp,c22348093.thfilter,tp,LOCATION_DECK,0,1,1,nil)

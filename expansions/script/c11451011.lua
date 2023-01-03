@@ -90,7 +90,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e2:SetLabelObject(e1)
 	e2:SetOperation(cm.tdop)
 	Duel.RegisterEffect(e2,tp)
-	local g=Duel.GetMatchingGroup(cm.ngfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(cm.ngfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
@@ -106,7 +106,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local g=Duel.SelectMatchingCard(tp,cm.ngfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.ngfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,aux.ExceptThisCard(e))
 	local tc=g:GetFirst()
 	if tc then
 		Duel.HintSelection(g)

@@ -61,7 +61,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	and Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
-	if tc:IsOnField() and tc:IsRelateToEffect(e)
+	if tc:IsOnField() and tc:IsRelateToEffect(e) and c:IsRelateToEffect(e)
 	and c:IsCanBeSpecialSummoned(e,0,tp,false,false) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
