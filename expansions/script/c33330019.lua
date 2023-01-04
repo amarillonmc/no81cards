@@ -126,11 +126,11 @@ function cm.fdop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.fdfilter2),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 		local tc=g:GetFirst()
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		local te=tc:GetActivateEffect()
 		local tep=tc:GetControler()
 		local cost=te:GetCost()
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-		tc:AddCounter(cm.counter,ct)
+		if ct>0 then tc:AddCounter(cm.counter,ct) end
 	end
 end

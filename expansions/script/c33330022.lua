@@ -32,7 +32,6 @@ function cm.initial_effect(c)
 	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e4:SetCode(EVENT_LEAVE_FIELD)
-e4:SetCountLimit(1,m)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e4:SetLabelObject(e3)
 	e4:SetCondition(cm.fdcon)
@@ -104,11 +103,11 @@ function cm.fdop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.fdfilter2),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 		local tc=g:GetFirst()
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		local te=tc:GetActivateEffect()
 		local tep=tc:GetControler()
 		local cost=te:GetCost()
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-		tc:AddCounter(cm.counter,ct)
+		if ct>0 then tc:AddCounter(cm.counter,ct) end
 	end
 end

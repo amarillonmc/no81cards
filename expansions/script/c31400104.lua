@@ -76,7 +76,7 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 	aux.GCheckAdditional=aux.dncheck
 	local tg=g:SelectSubGroup(tp,cm.srgfilter,false,1,#g,e:GetHandler():GetLevel())
 	aux.GCheckAdditional=nil
-	if tg:GetCount()>0 then
+	if tg and tg:GetCount()>0 then
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tg)
 	end

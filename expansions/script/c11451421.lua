@@ -1,6 +1,5 @@
 --crad guard of dragon palace
-local m=11451421
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--effect1
 	local e1=Effect.CreateEffect(c)
@@ -70,17 +69,16 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		if Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP) then
-			local e3=Effect.CreateEffect(e:GetHandler())
-			e3:SetType(EFFECT_TYPE_FIELD)
-			e3:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
-			e3:SetTargetRange(LOCATION_ONFIELD,0)
-			e3:SetReset(RESET_PHASE+PHASE_END)
-			e3:SetTarget(function(e,c) return c:IsSetCard(0x6978) and c:IsFaceup() end)
-			e3:SetValue(function(e,re,r,rp) if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then return 1 else return 0 end end)
-			Duel.RegisterEffect(e3,tp)
-		end
+		Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 	end
+	local e3=Effect.CreateEffect(e:GetHandler())
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	e3:SetTargetRange(LOCATION_ONFIELD,0)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	e3:SetTarget(function(e,c) return c:IsSetCard(0x6978) and c:IsFaceup() end)
+	e3:SetValue(function(e,re,r,rp) if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then return 1 else return 0 end end)
+	Duel.RegisterEffect(e3,tp)
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter3,1,nil,1-tp) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)

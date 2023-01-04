@@ -35,16 +35,16 @@ function cm.initial_effect(c)
 	e3:SetOperation(c22348098.thop)
 	c:RegisterEffect(e3)
 end
-function c22348098.cfilter(c)
-	local tp=c:GetControler()
+function c22348098.cfilter(c,e)
+	local tp=e:GetHandler():GetControler()
 	return c:IsFaceup() and c:IsSetCard(0x703) and c:IsControler(tp) and c:IsAbleToGrave()
 end
 function c22348098.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22348098.cfilter,1,nil,tp)
+	return eg:IsExists(c22348098.cfilter,1,nil,e)
 end
 function c22348098.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(c22348098.cfilter,1,nil,tp) end
-	local tg=Group.Filter(eg,c22348098.cfilter,nil)
+	if chk==0 then return eg:IsExists(c22348098.cfilter,1,nil,e) end
+	local tg=Group.Filter(eg,c22348098.cfilter,nil,e)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,tg,0,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_DECK)
 end
@@ -52,7 +52,7 @@ function c22348098.spfilter(c,e,tp)
 	return c:IsSetCard(0x703) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348098.spop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Group.Filter(eg,c22348098.cfilter,nil)
+	local tg=Group.Filter(eg,c22348098.cfilter,nil,e)
 	if tg:GetCount()>0 then
 	local bbb=Duel.SendtoGrave(tg,REASON_EFFECT)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

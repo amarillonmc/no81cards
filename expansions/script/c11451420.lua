@@ -1,6 +1,5 @@
 --shrimp captain of dragon palace
-local m=11451420
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--effect1
 	local e1=Effect.CreateEffect(c)
@@ -59,15 +58,14 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		if Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP) then
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e2:SetCode(EVENT_CHAINING)
-			e2:SetOperation(cm.chainop)
-			e2:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e2,tp)
-		end
+		Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 	end
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetOperation(cm.chainop)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
 end
 function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetHandler():IsAttribute(ATTRIBUTE_WATER) and ep==tp then
