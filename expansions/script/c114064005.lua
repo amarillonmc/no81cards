@@ -1,4 +1,5 @@
 function c114064005.initial_effect(c)
+    aux.AddCodeList(c,40640057)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
     e1:SetRange(LOCATION_HAND+LOCATION_DECK)
@@ -67,7 +68,7 @@ function c114064005.repop(e,tp,eg,ep,ev,re,r,rp)
     Duel.SendtoGrave(e:GetHandler(),REASON_REPLACE+REASON_EFFECT)
 end
 function c114064005.actfilter(c)
-    return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsCode(80831721,15471265,20065322,25573054,40703222,85787173,89086566)
+    return c:IsType(TYPE_SPELL+TYPE_TRAP) and aux.IsCodeListed(c,40640057)
 end
 function c114064005.thop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.GetFlagEffect(tp,114064006)>0 then return end
@@ -103,7 +104,7 @@ end
 function c114064005.actcon(con)
     return function(e,tp,eg,ep,ev,re,r,rp)
         local c=e:GetHandler()
-        return (not con or con(e,tp,eg,ep,ev,re,r,rp)) and c:IsCode(80831721,15471265,20065322,25573054,40703222,85787173,89086566) and ((c:IsType(TYPE_TRAP) or (c:IsType(TYPE_SPELL) and c:IsType(TYPE_QUICKPLAY))) or (Duel.GetTurnPlayer()==tp and Duel.GetCurrentChain()==0 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2))) and c:IsLocation(LOCATION_DECK)
+        return (not con or con(e,tp,eg,ep,ev,re,r,rp)) and aux.IsCodeListed(c,40640057) and ((c:IsType(TYPE_TRAP) or (c:IsType(TYPE_SPELL) and c:IsType(TYPE_QUICKPLAY))) or (Duel.GetTurnPlayer()==tp and Duel.GetCurrentChain()==0 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2))) and c:IsLocation(LOCATION_DECK)
     end
 end
 function c114064005.actarget(e,te,tp)

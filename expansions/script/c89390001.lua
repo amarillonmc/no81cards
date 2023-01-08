@@ -76,7 +76,7 @@ function cm.srettg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,1,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and Duel.GetFlagEffect(tp,m)==0 then
+    if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,2,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and Duel.GetFlagEffect(tp,m)==0 then
         local copyt=cm[tp]
         local exg=Group.CreateGroup()
         for k,v in pairs(copyt) do
@@ -84,8 +84,8 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
         end
         if exg:GetClassCount(Card.GetOriginalCode)>=3 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-            local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
-            if g:GetCount()==1 then
+            local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil)
+            if g:GetCount()>0 then
                 Duel.HintSelection(g)
                 Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
                 Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)

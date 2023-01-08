@@ -91,9 +91,9 @@ function c98730113.desfilter(c)
 end
 function c98730113.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsOnField() and c98730113.desfilter(chkc) end
-    if chk==0 then return Duel.IsExistingTarget(c98730113.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+    if chk==0 then return Duel.IsExistingTarget(c98730113.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-    local g=Duel.SelectTarget(tp,c98730113.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+    local g=Duel.SelectTarget(tp,c98730113.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
     Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end

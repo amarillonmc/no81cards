@@ -86,8 +86,7 @@ function c117485040.activate2(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) then return end
     local tc=Duel.GetFirstTarget()
-    if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-        Duel.Destroy(tc,REASON_EFFECT)
+    if tc:IsRelateToEffect(e) and tc:IsFaceup() and Duel.Destroy(tc,REASON_EFFECT)>0 then
         local g=Duel.GetMatchingGroup(c117485040.filter3,tp,LOCATION_DECK,0,nil,e,tp,tc:GetCode())
         local b1=g:GetCount()>0
         local b2=Duel.IsChainNegatable(ev) and c:IsDestructable()

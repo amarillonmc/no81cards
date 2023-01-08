@@ -76,7 +76,7 @@ function cm.srettg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,1,REASON_EFFECT)>0 and cm.ckecktarget(e,tp) and Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+    if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,2,REASON_EFFECT)>0 and cm.ckecktarget(e,tp) and Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
         local chkf=tp
         local mg1=Duel.GetFusionMaterial(tp)
         local copyt=cm[tp]
