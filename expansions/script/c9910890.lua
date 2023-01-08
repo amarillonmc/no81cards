@@ -1,9 +1,16 @@
---共生试验体 辉煌战姬
+--共生试验体 龙魂教巫
 function c9910890.initial_effect(c)
 	aux.AddCodeList(c,9910871)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,c9910890.ffilter,4,true)
+	--spsummon condition
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c9910890.splimit)
+	c:RegisterEffect(e0)
 	--atk & def
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -31,6 +38,9 @@ end
 function c9910890.ffilter(c,fc,sub,mg,sg)
 	return not sg or sg:FilterCount(aux.TRUE,c)==0 or not sg:IsExists(Card.IsRace,1,c,c:GetRace())
 end
+function c9910890.splimit(e,se,sp,st)
+	return st&SUMMON_TYPE_FUSION~=SUMMON_TYPE_FUSION or (se and se:GetHandler():IsCode(9910871))
+end
 function c9910890.atkfilter(c)
 	return c:IsFaceup() and c:GetRace()~=0
 end
@@ -52,7 +62,7 @@ function c9910890.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c9910890.thop(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910890.thfilter,tp,LOCATION_REMOVED,0,1,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c9910890.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)

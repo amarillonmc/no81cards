@@ -41,7 +41,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.mfilter(c,xyzc)
-	return c:IsXyzType(TYPE_MONSTER) and c:IsXyzLevel(xyzc,7)
+	return c:IsXyzType(TYPE_MONSTER) and c:IsXyzLevel(xyzc,9)
 end
 function cm.xyzcheck(g)
 	return g:GetClassCount(Card.GetRace)==#g

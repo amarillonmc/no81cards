@@ -1,0 +1,37 @@
+local m=53752017
+local cm=_G["c"..m]
+cm.name="蓝色残酷"
+function cm.initial_effect(c)
+	aux.AddCodeList(c,22702055)
+	aux.EnableChangeCode(c,22702055,LOCATION_SZONE+LOCATION_GRAVE)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetRange(LOCATION_SZONE)
+	e1:SetCode(EVENT_REMOVE)
+	e1:SetCondition(cm.con)
+	e1:SetOperation(cm.op)
+	c:RegisterEffect(e1)
+end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsType,1,nil,TYPE_TUNER)
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local lv=eg:Filter(Card.IsType,nil,TYPE_TUNER):Filter(Card.IsLocation,nil,LOCATION_REMOVED):GetSum(Card.GetOriginalLevel)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(0,LOCATION_MZONE)
+	e1:SetValue(-lv*100)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_UPDATE_DEFENSE)
+	Duel.RegisterEffect(e2,tp)
+end

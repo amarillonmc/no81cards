@@ -1,36 +1,26 @@
 --明日的方舟·罗德岛
-c29065510.named_with_Arknight=1
 function c29065510.initial_effect(c)
 	c:EnableCounterPermit(0x10ae)
 	c:SetCounterLimit(0x10ae,9)
-	--activate
+	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_COUNTER)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetTarget(c29065510.target)
+	e1:SetCountLimit(1,29065510+EFFECT_COUNT_CODE_OATH)
 	e1:SetOperation(c29065510.activate)
 	c:RegisterEffect(e1)
-	--search
+	--spsummon
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(29065510,0))
-	e6:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e6:SetType(EFFECT_TYPE_IGNITION)
 	e6:SetRange(LOCATION_FZONE)
 	e6:SetCountLimit(1)
-	e6:SetTarget(c29065510.thtg)
-	e6:SetOperation(c29065510.thop)
-	--c:RegisterEffect(e6)
-	--Add Counter
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetRange(LOCATION_FZONE)
-	e2:SetOperation(c29065510.counter)
-	c:RegisterEffect(e2)
-	local e5=e2:Clone()
-	e2:SetCode(EVENT_REMOVE)
-	c:RegisterEffect(e5)
+	e6:SetCost(c29065510.spcost)
+	e6:SetTarget(c29065510.sptg)
+	e6:SetOperation(c29065510.spop)
+	c:RegisterEffect(e6)
 	--cannot disable summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -42,6 +32,38 @@ function c29065510.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
 	c:RegisterEffect(e4)
+end
+function c29065510.filter(c)
+	return aux.IsCodeListed(c,29065500) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+end
+function c29065510.activate(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c29065510.filter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(29065510,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+	end
+end
+function c29065510.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_COST)
+end
+function c29065510.spfilter(c,e,tp)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c29065510.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c29065510.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+end
+function c29065510.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c29065510.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 function c29065510.thfilter(c)
 	return aux.IsCodeListed(c,29065500) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
@@ -58,24 +80,9 @@ function c29065510.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c29065510.cfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_MZONE) and (c:IsPreviousSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
-end
-function c29065510.counter(e,tp,eg,ep,ev,re,r,rp)
-	local ct=eg:FilterCount(c29065510.cfilter,nil,tp)
-	if ct>0 then
-		e:GetHandler():AddCounter(0x10ae,ct)
-	end
-end
 function c29065510.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsCanAddCounter(tp,0x10ae,1,c) end
-end
-function c29065510.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		c:AddCounter(0x10ae,1)
-	end
 end
 function c29065510.cdstg(e,c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))

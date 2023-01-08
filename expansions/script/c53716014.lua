@@ -61,17 +61,18 @@ function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and rc:IsOnField()
 end
 function cm.filter(c,g)
-	return c:IsFaceup() and c:IsSetCard(0x353b) and not g:IsContains(c)
+	return c:IsFaceup() and bit.band(c:GetType(),0x20004)==0x20004 and not g:IsContains(c)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
 	local rc=re:GetHandler()
 	local cg=rc:GetColumnGroup()
 	cg:AddCard(rc)
-	if chkc then return cm.filter(chkc,cg) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD,0,1,nil,cg) and e:GetHandler():GetFlagEffect(m)==0 end
-	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+	if chkc then return cm.filter(chkc,cg) and chkc~=c end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD,0,1,c,cg) and c:GetFlagEffect(m)==0 end
+	c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,nil,cg)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,c,cg)
 	Duel.SetTargetParam(500)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500)
 end

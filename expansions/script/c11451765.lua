@@ -64,7 +64,7 @@ function cm.refilter(c)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_GRAVE,0,1,nil) and c:GetFlagEffect(m-10)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_GRAVE,0,1,nil) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,false,true) and c:GetFlagEffect(m-10)==0 end
 	c:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE)
 end

@@ -4,8 +4,8 @@ function c9910562.initial_effect(c)
 	--flag
 	Txjp.AddTgFlag(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)
 	c:EnableReviveLimit()
+	aux.AddLinkProcedure(c,nil,2,4,c9910562.lcheck)
 	--remove
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -13,7 +13,7 @@ function c9910562.initial_effect(c)
 	e1:SetCondition(c9910562.rmcon)
 	e1:SetOperation(c9910562.rmop)
 	c:RegisterEffect(e1)
-	--draw
+	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
@@ -24,17 +24,20 @@ function c9910562.initial_effect(c)
 	e2:SetTarget(c9910562.thtg)
 	e2:SetOperation(c9910562.thop)
 	c:RegisterEffect(e2)
-	--search
+	--gain LP
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DRAW)
+	e3:SetCategory(CATEGORY_RECOVER)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_MOVE)
 	e3:SetCountLimit(1,9910563)
-	e3:SetCondition(c9910562.drcon)
-	e3:SetTarget(c9910562.drtg)
-	e3:SetOperation(c9910562.drop)
+	e3:SetCondition(c9910562.rccon)
+	e3:SetTarget(c9910562.rctg)
+	e3:SetOperation(c9910562.rcop)
 	c:RegisterEffect(e3)
+end
+function c9910562.lcheck(g,lc)
+	return g:IsExists(Card.IsLinkRace,1,nil,RACE_CYBERSE)
 end
 function c9910562.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_LINK 
@@ -112,17 +115,17 @@ function c9910562.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c9910562.drcon(e,tp,eg,ep,ev,re,r,rp)
+function c9910562.rccon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsLocation(LOCATION_GRAVE) and c:IsPreviousLocation(LOCATION_REMOVED) and c:IsReason(REASON_RETURN)
 end
-function c9910562.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+function c9910562.rctg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetTargetParam(2000)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,2000)
 end
-function c9910562.drop(e,tp,eg,ep,ev,re,r,rp)
+function c9910562.rcop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+	Duel.Recover(p,d,REASON_EFFECT)
 end

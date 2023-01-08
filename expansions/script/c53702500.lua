@@ -410,7 +410,7 @@ function cm.Faceupdeckcheck(g,tp)
 	end
 end
 --
-function cm.FanippetTrap(c)
+function cm.FanippetTrap(c,t)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
@@ -421,8 +421,8 @@ function cm.FanippetTrap(c)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e4:SetTargetRange(1,1)
-	e4:SetCost(cm.GraveActCostchk)
-	e4:SetTarget(cm.GraveActCostTarget)
+	--e4:SetCost(cm.GraveActCostchk)
+	e4:SetTarget(cm.GraveActCostTarget(t))
 	e4:SetOperation(cm.GraveActCostOp)
 	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(c)
@@ -448,11 +448,41 @@ end
 function cm.GraveActCostchk(e,te,tp)
 	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 end
-function cm.GraveActCostTarget(e,te,tp)
-	return te:GetHandler()==e:GetHandler() and te:IsHasType(EFFECT_TYPE_ACTIVATE)
+function cm.GraveActCostTarget(t)
+	return
+	function(e,te,tp)
+	   local res=false
+	   for _,v in pairs(t) do
+		   if te==v then res=true end
+	   end
+	   return te:GetHandler()==e:GetHandler() and res
+	end
 end
 function cm.GraveActCostOp(e,tp,eg,ep,ev,re,r,rp)
 	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+	e1:SetOperation(cm.Fanippetrsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.Fanippetrsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+		rc:CancelToGrave(false)
+	end
 end
 function cm.FanippetTrapSPCondition(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp or ep==1-tp or re:GetHandler():IsCode(53716006)
@@ -474,41 +504,6 @@ end
 function cm.Fanippetready(e,tp)
 	e:GetLabelObject():SetStatus(STATUS_EFFECT_ENABLED,true)
 	e:Reset()
-end
-function cm.FanippetTrapSPTarget(code,dt)
-	return
-	function(e,tp,eg,ep,ev,re,r,rp,chk)
-		local c=e:GetHandler()
-		if chk==0 then return c:IsLocation(LOCATION_HAND) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,table.unpack(dt))) end
-		if not c:IsPreviousLocation(LOCATION_HAND) then
-			e:SetCategory(CATEGORY_SPECIAL_SUMMON)
-			Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-		else e:SetCategory(0) end
-		e:SetLabel(c:GetPreviousLocation())
-	end
-end
-function cm.FanippetTrapSPOperation(lpc,code,dt)
-	return
-	function(e,tp,eg,ep,ev,re,r,rp)
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or e:GetLabel()==LOCATION_HAND then return end
-		local c=e:GetHandler()
-		if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,code,0x353b,TYPES_NORMAL_TRAP_MONSTER,table.unpack(dt)) then
-			c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
-			if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
-				Duel.SetLP(tp,Duel.GetLP(tp)-lpc)
-				if e:GetLabel()==LOCATION_GRAVE then
-					local e1=Effect.CreateEffect(c)
-					e1:SetDescription(aux.Stringid(53702500,5))
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
-					e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-					e1:SetValue(LOCATION_REMOVED)
-					c:RegisterEffect(e1,true)
-				end
-			end
-		end
-	end
 end
 --
 function cm.ALCYakuNew(c,code,cf,loc,t)
@@ -2097,6 +2092,7 @@ function cm.MRSYakuSPcost(num,typ)
 		if ct>ltime then ct=ltime end
 		if chk==0 then return #g+ct>num-1 end
 		g:Merge(gdg)
+		local g1,g2=Group.CreateGroup(),Group.CreateGroup()
 		if ltime>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(c:GetOriginalCode(),3))
 			local sg=g:SelectSubGroup(tp,cm.MRSYakufselect,false,num,num,ct)
@@ -2121,26 +2117,22 @@ function cm.MRSYakuSPcost(num,typ)
 			local tc=sg:GetFirst()
 			while tc do
 				local te=tc:IsHasEffect(53711009,tp)
-				if te then
-					Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_REPLACE)
-				else
-					Duel.SendtoGrave(tc,REASON_COST+REASON_DISCARD)
-				end
+				if te then g1:AddCard(tc) else g2:AddCard(tc) end
 				tc=sg:GetNext()
 			end
+			if #g1>0 then Duel.Remove(g1,POS_FACEUP,REASON_EFFECT+REASON_REPLACE) end
+			if #g2>0 then Duel.SendtoGrave(g2,REASON_COST+REASON_DISCARD) end
 		else
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
 			local sg=Duel.SelectMatchingCard(tp,cm.MRSYakuspfilter1,tp,LOCATION_HAND+LOCATION_GRAVE,0,num,num,c,e,tp,typ)
 			local tc=sg:GetFirst()
 			while tc do
 				local te=tc:IsHasEffect(53711009,tp)
-				if te then
-					Duel.Remove(tc,POS_FACEUP,REASON_COST+REASON_REPLACE)
-				else
-					Duel.SendtoGrave(tc,REASON_COST+REASON_DISCARD)
-				end
+				if te then g1:AddCard(tc) else g2:AddCard(tc) end
 				tc=sg:GetNext()
 			end
+			if #g1>0 then Duel.Remove(g1,POS_FACEUP,REASON_EFFECT+REASON_REPLACE) end
+			if #g2>0 then Duel.SendtoGrave(g2,REASON_COST+REASON_DISCARD) end
 		end
 	end
 end
@@ -3381,4 +3373,304 @@ function cm.GCSpiritNop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 	Duel.Readjust()
 	Duel.RaiseSingleEvent(c,c:GetOriginalCode(),re,r,rp,ep,ev)
+end
+function cm.NecroceanSynchro(c,check)
+	c:EnableReviveLimit()
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(1164)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetCondition(cm.Necroceansyncon(aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99,nil,check))
+	e1:SetTarget(cm.Necroceansyntg(aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99,nil,check))
+	e1:SetOperation(cm.Necroceansynop(aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99,nil))
+	e1:SetValue(SUMMON_TYPE_SYNCHRO)
+	c:RegisterEffect(e1)
+end
+function cm.Necroceansyncon(f1,f2,f3,f4,minc,maxc,gc,check)
+	return  function(e,c,smat,mg1,min,max)
+				if c==nil then return true end
+				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
+				local minc=minc
+				local maxc=maxc
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+					if minc>maxc then return false end
+				end
+				local tp=c:GetControler()
+				local mg
+				local mgchk=false
+				if mg1 then
+					mg=mg1
+					mgchk=true
+				else
+					mg=cm.NecroceanGetSynMaterials(tp,c,e,check)
+				end
+				if smat~=nil then mg:AddCard(smat) end
+				return mg:IsExists(cm.NecroceanSynMixFilter1,1,nil,f1,f2,f3,f4,minc,maxc,c,mg,smat,gc,mgchk)
+			end
+end
+function cm.Necroceansyncon2(...)--deserted
+	local f1=aux.GetSynMaterials
+	local f2=aux.SynMixFilter1
+	aux.GetSynMaterials=cm.NecroceanGetSynMaterials
+	aux.SynMixFilter1=cm.NecroceanSynMixFilter1
+	local res=aux.SynMixCondition(aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99,nil)(...)
+	aux.GetSynMaterials=f1
+	aux.SynMixFilter1=f2
+	return res
+end
+function cm.Necroceansyntg(f1,f2,f3,f4,minc,maxc,gc,check)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
+				local minc=minc
+				local maxc=maxc
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+					if minc>maxc then return false end
+				end
+				local res=false
+				while true do
+				local g=Group.CreateGroup()
+				local mg
+				local mgchk=false
+				if mg1 then
+					mg=mg1
+					mgchk=true
+				else
+					mg=cm.NecroceanGetSynMaterials(tp,c,e,check)
+				end
+				if smat~=nil then mg:AddCard(smat) end
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
+				local c1=mg:FilterSelect(tp,cm.NecroceanSynMixFilter1,1,1,nil,f1,f2,f3,f4,minc,maxc,c,mg,smat,gc,mgchk):GetFirst()
+				g:AddCard(c1)
+				if f2 then
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
+					local c2=mg:FilterSelect(tp,cm.NecroceanSynMixFilter2,1,1,c1,f2,f3,f4,minc,maxc,c,mg,smat,c1,gc,mgchk):GetFirst()
+					g:AddCard(c2)
+					if f3 then
+						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
+						local c3=mg:FilterSelect(tp,cm.NecroceanSynMixFilter3,1,1,Group.FromCards(c1,c2),f3,f4,minc,maxc,c,mg,smat,c1,c2,gc,mgchk):GetFirst()
+						g:AddCard(c3)
+					end
+				end
+				local g4=Group.CreateGroup()
+				for i=0,maxc-1 do
+					local mg2=mg:Clone()
+					if f4 then
+						mg2=mg2:Filter(f4,g,c)
+					else
+						mg2:Sub(g)
+					end
+					local cg=mg2:Filter(cm.NecroceanSynMixCheckRecursive,g4,tp,g4,mg2,i,minc,maxc,c,g,smat,gc,mgchk)
+					if cg:GetCount()==0 then break end
+					local minct=1
+					if cm.NecroceanSynMixCheckGoal(tp,g4,minc,i,c,g,smat,gc,mgchk) then
+						minct=0
+					end
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
+					local tg=cg:Select(tp,minct,1,nil)
+					if tg:GetCount()==0 then break end
+					g4:Merge(tg)
+				end
+				g:Merge(g4)
+				if g:GetCount()>0 then
+					local sum1,sum2=g:GetSum(cm.NecroceanGetSynchroLevel,c),0
+					if g:IsExists(Card.IsHasEffect,1,nil,89818984) then sum2=g:GetSum(cm.NecroceanGetSynchroLevelFlowerCardian,c) end
+					if sum1~=c:GetLevel() and sum2~=c:GetLevel() then
+						if not Duel.SelectYesNo(tp,aux.Stringid(53702600,5)) then break end
+					else
+						g:KeepAlive()
+						e:SetLabelObject(g)
+						res=true
+						break
+					end
+				else break end
+				end
+				return res
+			end
+end
+function cm.Necroceansyntg2(...)--deserted
+	local f1=aux.GetSynMaterials
+	local f2=aux.SynMixFilter1
+	local f3=aux.SynMixFilter2
+	local f4=aux.SynMixFilter3
+	local f5=aux.SynMixFilter4
+	local f6=aux.SynMixCheck
+	local f7=aux.SynMixCheckRecursive
+	local f8=aux.SynMixCheckGoal
+	aux.GetSynMaterials=cm.NecroceanGetSynMaterials
+	aux.SynMixFilter1=cm.NecroceanSynMixFilter1
+	aux.SynMixFilter2=cm.NecroceanSynMixFilter2
+	aux.SynMixFilter3=cm.NecroceanSynMixFilter3
+	aux.SynMixFilter4=cm.NecroceanSynMixFilter4
+	aux.SynMixCheck=cm.NecroceanSynMixCheck
+	aux.SynMixCheckRecursive=cm.NecroceanSynMixCheckRecursive
+	aux.SynMixCheckGoal=cm.NecroceanSynMixCheckGoal
+	local res=aux.SynMixTarget(aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99,nil)(...)
+	aux.GetSynMaterials=f1
+	aux.SynMixFilter1=f2
+	aux.SynMixFilter2=f3
+	aux.SynMixFilter3=f4
+	aux.SynMixFilter4=f5
+	aux.SynMixCheck=f6
+	aux.SynMixCheckRecursive=f7
+	aux.SynMixCheckGoal=f8
+	return res
+end
+function cm.Necroceansynop(f1,f2,f3,f4,minct,maxc,gc)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
+				local g=e:GetLabelObject()
+				c:SetMaterial(g)
+				local rg=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+				Duel.Remove(rg,POS_FACEUP,REASON_MATERIAL+REASON_SYNCHRO)
+				Duel.SendtoGrave(Group.__sub(g,rg),REASON_MATERIAL+REASON_SYNCHRO)
+				g:DeleteGroup()
+			end
+end
+function cm.Necroceansfilter(c,syncard,e,tp,check)
+	if c:IsHasEffect(EFFECT_CANNOT_REMOVE) then return false end
+	local re1={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_REMOVE)}
+	local res=true
+	for _,v1 in ipairs(re1) do
+		local tg=v1:GetTarget()
+		if not tg or tg(v1,c,tp,REASON_MATERIAL+REASON_SYNCHRO,e) then res=false end
+	end
+	if not res then return false end
+	local flag=c:IsLevel(0)
+	if c:IsControler(tp) and flag and not check then return false end
+	local re2={c:IsHasEffect(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)}
+	for _,v2 in ipairs(re2) do
+		local val=v2:GetValue()
+		if aux.GetValueType(val)=="number" then flag=false elseif val(v2,c) then flag=false end
+	end
+	return c:IsCanBeSynchroMaterial(syncard) or flag
+end
+function cm.NecroceanGetSynMaterials(tp,syncard,e,check)
+	local mg=Duel.GetMatchingGroup(aux.SynMaterialFilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,syncard)
+	if mg:IsExists(Card.GetHandSynchro,1,nil) then
+		local mg2=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_HAND,0,nil,syncard)
+		if mg2:GetCount()>0 then mg:Merge(mg2) end
+	end
+	local mg3=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_MONSTER)
+	if not mg3:IsExists(aux.NOT(Card.IsType),1,nil,TYPE_TUNER) then
+		local exg=Duel.GetMatchingGroup(cm.Necroceansfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,syncard,e,tp,check)
+		if exg:GetCount()>0 then mg:Merge(exg) end
+	end
+	return mg
+end
+function cm.NecroceanSynMixFilter1(c,f1,f2,f3,f4,minc,maxc,syncard,mg,smat,gc,mgchk)
+	return (not f1 or f1(c,syncard)) and mg:IsExists(cm.NecroceanSynMixFilter2,1,c,f2,f3,f4,minc,maxc,syncard,mg,smat,c,gc,mgchk)
+end
+function cm.NecroceanSynMixFilter2(c,f2,f3,f4,minc,maxc,syncard,mg,smat,c1,gc,mgchk)
+	if f2 then
+		return f2(c,syncard,c1)
+			and (mg:IsExists(cm.NecroceanSynMixFilter3,1,Group.FromCards(c1,c),f3,f4,minc,maxc,syncard,mg,smat,c1,c,gc,mgchk)
+				or minc==0 and cm.NecroceanSynMixFilter4(c,nil,1,1,syncard,mg,smat,c1,nil,nil,gc,mgchk))
+	else
+		return mg:IsExists(cm.NecroceanSynMixFilter4,1,c1,f4,minc,maxc,syncard,mg,smat,c1,nil,nil,gc,mgchk)
+	end
+end
+function cm.NecroceanSynMixFilter3(c,f3,f4,minc,maxc,syncard,mg,smat,c1,c2,gc,mgchk)
+	if f3 then
+		return f3(c,syncard,c1,c2)
+			and (mg:IsExists(cm.NecroceanSynMixFilter4,1,Group.FromCards(c1,c2,c),f4,minc,maxc,syncard,mg,smat,c1,c2,c,gc,mgchk)
+				or minc==0 and cm.NecroceanSynMixFilter4(c,nil,1,1,syncard,mg,smat,c1,c2,nil,gc,mgchk))
+	else
+		return mg:IsExists(cm.NecroceanSynMixFilter4,1,Group.FromCards(c1,c2),f4,minc,maxc,syncard,mg,smat,c1,c2,nil,gc,mgchk)
+	end
+end
+function cm.NecroceanSynMixFilter4(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc,mgchk)
+	if f4 and not f4(c,syncard,c1,c2,c3) then return false end
+	local sg=Group.FromCards(c1,c)
+	sg:AddCard(c1)
+	if c2 then sg:AddCard(c2) end
+	if c3 then sg:AddCard(c3) end
+	local mg=mg1:Clone()
+	if f4 then
+		mg=mg:Filter(f4,sg,syncard)
+	else
+		mg:Sub(sg)
+	end
+	return cm.NecroceanSynMixCheck(mg,sg,minc-1,maxc-1,syncard,smat,gc,mgchk)
+end
+function cm.NecroceanSynMixCheck(mg,sg1,minc,maxc,syncard,smat,gc,mgchk)
+	local tp=syncard:GetControler()
+	local sg=Group.CreateGroup()
+	if minc<=0 and cm.NecroceanSynMixCheckGoal(tp,sg1,0,0,syncard,sg,smat,gc,mgchk) then return true end
+	if maxc==0 then return false end
+	return mg:IsExists(cm.NecroceanSynMixCheckRecursive,1,nil,tp,sg,mg,0,minc,maxc,syncard,sg1,smat,gc,mgchk)
+end
+function cm.NecroceanSynMixCheckRecursive(c,tp,sg,mg,ct,minc,maxc,syncard,sg1,smat,gc,mgchk)
+	sg:AddCard(c)
+	ct=ct+1
+	local res=cm.NecroceanSynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
+		or (ct<maxc and mg:IsExists(cm.NecroceanSynMixCheckRecursive,1,sg,tp,sg,mg,ct,minc,maxc,syncard,sg1,smat,gc,mgchk))
+	sg:RemoveCard(c)
+	ct=ct-1
+	return res
+end
+function cm.NecroceanGetSynchroLevel(c,syncard)
+	local slv=c:GetSynchroLevel(syncard)
+	if c:IsLevel(0) and c:IsLocation(LOCATION_GRAVE) then slv=1 end
+	return slv
+end
+function cm.NecroceanGetSynchroLevelFlowerCardian(c,syncard)
+	local slv=2
+	--if c:IsSynchroType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_GRAVE) then slv=1 end
+	return slv
+end
+function cm.NecroceanSynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
+	if ct<minc then return false end
+	local g=sg:Clone()
+	g:Merge(sg1)
+	if Duel.GetLocationCountFromEx(tp,tp,g,syncard)<=0 then return false end
+	if gc and not gc(g) then return false end
+	if smat and not g:IsContains(smat) then return false end
+	if not Auxiliary.MustMaterialCheck(g,tp,EFFECT_MUST_BE_SMATERIAL) then return false end
+	local hg=g:Filter(Card.IsLocation,nil,LOCATION_HAND)
+	local hct=hg:GetCount()
+	if hct>0 and not mgchk then
+		local found=false
+		for c in aux.Next(g) do
+			local he,hf,hmin,hmax=c:GetHandSynchro()
+			if he then
+				found=true
+				if hf and hg:IsExists(aux.SynLimitFilter,1,c,hf,he,syncard) then return false end
+				if (hmin and hct<hmin) or (hmax and hct>hmax) then return false end
+			end
+		end
+		if not found then return false end
+	end
+	for c in aux.Next(g) do
+		local le,lf,lloc,lmin,lmax=c:GetTunerLimit()
+		if le then
+			local lct=g:GetCount()-1
+			if lloc then
+				local llct=g:FilterCount(Card.IsLocation,c,lloc)
+				if llct~=lct then return false end
+			end
+			if lf and g:IsExists(aux.SynLimitFilter,1,c,lf,le,syncard) then return false end
+			if (lmin and lct<lmin) or (lmax and lct>lmax) then return false end
+		end
+	end
+	return true
+end
+function Intersection(t1, t2)
+	local ret = {}
+	for k, v1 in pairs(t1) do
+		local equal = false
+		for k, v2 in pairs(t2) do
+			if v1 == v2 then
+				equal = true
+				break
+			end
+		end
+		if equal then
+			table.insert(ret, v1)
+		end
+	end
+	return ret
 end

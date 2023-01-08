@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e0:SetValue(aux.FALSE)
-	c:RegisterEffect(e0)  
+	c:RegisterEffect(e0)
 	--summon with s/t
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

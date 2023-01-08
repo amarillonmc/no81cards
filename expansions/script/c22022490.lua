@@ -31,17 +31,17 @@ function c22022490.initial_effect(c)
 	e3:SetOperation(c22022490.spop1)
 	c:RegisterEffect(e3)
 end
-function c22022490.spfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x2ff1) and c:IsAbleToGraveAsCost()
+function c22022490.spfilter0(c)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xff1) and c:IsAbleToGraveAsCost()
 end
 function c22022490.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c22022490.spfilter,c:GetControler(),LOCATION_HAND,0,1,c)
+		and Duel.IsExistingMatchingCard(c22022490.spfilter0,c:GetControler(),LOCATION_HAND,0,1,c)
 end
 function c22022490.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c22022490.spfilter,tp,LOCATION_HAND,0,1,1,c)
+	local g=Duel.SelectMatchingCard(tp,c22022490.spfilter0,tp,LOCATION_HAND,0,1,1,c)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c22022490.spcon1(e,tp,eg,ep,ev,re,r,rp)

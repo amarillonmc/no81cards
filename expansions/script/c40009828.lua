@@ -5,13 +5,7 @@ cm.named_with_Amon=1
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)  
-	--cannot special summon
-	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(aux.FALSE)
-	c:RegisterEffect(e0)  
+ 
 	--summon with s/t
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -21,31 +15,23 @@ function cm.initial_effect(c)
 	e1:SetTarget(function(e,c) return e:GetHandler()~=c and c:IsLocation(LOCATION_PZONE) and c:IsType(TYPE_PENDULUM) end)
 	e1:SetValue(POS_FACEUP_ATTACK)
 	c:RegisterEffect(e1)  
-	--todeck
+	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TOEXTRA)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,m)
-	e2:SetTarget(cm.tdtg)
-	e2:SetOperation(cm.tdop)
+	e2:SetCost(cm.cost)
+	e2:SetTarget(cm.rmtg)
+	e2:SetOperation(cm.rmop)
 	c:RegisterEffect(e2)
-	--spsummon
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,2))
-	e3:SetCategory(CATEGORY_SUMMON)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_EXTRA)
-	e3:SetCountLimit(1)
-	e3:SetCondition(cm.spcon)
-	e3:SetTarget(cm.sptg)
-	e3:SetOperation(cm.spop)
-	c:RegisterEffect(e3)
+
 	--to hand
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,3))
-	e4:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_SUMMON)
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SUMMON)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_PZONE)
 	e4:SetCountLimit(1,m+1)
@@ -86,59 +72,50 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.thfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsType(TYPE_PENDULUM) and cm.Amon(c)
+function cm.costfilter(c)
+	return c:IsType(TYPE_PENDULUM) and (c:IsLocation(LOCATION_GRAVE+LOCATION_HAND) or c:IsFaceup()) 
 end
-function cm.tdfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:IsAbleToHand() and c:IsFaceup()
-end
-function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and chkc:IsControler(tp) and cm.thfilter(chkc) and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
-	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,2,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,g,1,0,0)
-	if g:GetFirst():IsLocation(LOCATION_GRAVE) then
-		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
+function cm.fselect(g,tp)
+	local sg=g:Clone()
+	local res=true
+	for c in aux.Next(sg) do
+		res=res
 	end
+	return g:GetClassCount(Card.GetLocation)==g:GetCount() and res 
 end
-function cm.cfilter(c)
-	return c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(cm.costfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,nil)
+	if chk==0 then return 
+	g:CheckSubGroup(cm.fselect,3,3,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
+	local sg=g:SelectSubGroup(tp,cm.fselect,false,3,3,tp)
+	Duel.SendtoExtraP(sg,REASON_COST)
 end
-function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tc=g:Filter(Card.IsRelateToEffect,nil,e)
-	if Duel.SendtoExtraP(tc,tp,REASON_EFFECT)~=0 then
-		local g2=Duel.GetOperatedGroup()
-		local ct=g2:FilterCount(cm.cfilter,nil)
-		local sg=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_EXTRA,0,nil)
-		if ct>0 and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			sg=sg:Select(tp,1,ct,nil)
-			Duel.BreakEffect()
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sg)
-			Duel.ShuffleDeck(tp)
-		end
+function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
+end
+function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,nil)
+	local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
+	local sg=Group.CreateGroup()
+	if g1:GetCount()>0 and ((g2:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(m,2))) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg1=g1:Select(tp,1,1,nil)
+		Duel.HintSelection(sg1)
+		sg:Merge(sg1)
 	end
-end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsFaceup() and c:GetTurnID()==Duel.GetTurnCount() 
-end
-function cm.spfilter(c)
-	return c:IsSummonable(true,nil) and c:IsType(TYPE_PENDULUM)
-end
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
-end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.Summon(tp,tc,true,nil)
+	if g2:GetCount()>0 and ((sg:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(m,3))) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg2=g2:Select(tp,1,1,nil)
+		Duel.HintSelection(sg2)
+		sg:Merge(sg2)
 	end
+	if g3:GetCount()>0 and (sg:GetCount()==0 or Duel.SelectYesNo(tp,aux.Stringid(m,5))) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg3=g3:RandomSelect(tp,1)
+		sg:Merge(sg3)
+	end
+	Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 end

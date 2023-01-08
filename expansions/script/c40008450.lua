@@ -117,11 +117,15 @@ end
 function cm.spfilter(c,e,tp)
 	return (cm.Chrono(c) or c:IsSetCard(0x126)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
 end
+function cm.ogfilter(c)
+	return c:IsOriginalCodeRule(40009582)
+end
 function cm.fdop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	local c=e:GetHandler()
 	local mg=e:GetHandler():GetReasonCard():GetMaterialCount()
-	if Duel.Recover(p,d,REASON_EFFECT) and mg>=3 then
+	local og=e:GetHandler():GetReasonCard():GetMaterial():IsExists(cm.ogfilter,1,nil)
+	if Duel.Recover(p,d,REASON_EFFECT) and (mg>=3 or og>0) then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,nil,e,tp)
 		if g2:GetCount()>0 then

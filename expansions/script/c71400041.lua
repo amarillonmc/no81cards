@@ -11,7 +11,7 @@ function c71400041.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_SSET+TIMING_BATTLE_START+TIMING_MAIN_END)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_SSET+TIMING_BATTLE_START+TIMING_MAIN_END+TIMING_BATTLE_END)
 	e1:SetRange(LOCATION_FZONE)
 	e1:SetTarget(c71400041.tg1)
 	e1:SetDescription(aux.Stringid(71400041,0))
@@ -60,29 +60,31 @@ end
 function c71400041.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.SendtoGrave(tc,REASON_EFFECT)
-		if tc:IsLocation(LOCATION_GRAVE) then
-			local p=tc:GetControler()
-			local g=Duel.GetMatchingGroup(c71400041.filter1,p,LOCATION_DECK+LOCATION_HAND,0,nil,tc:GetCode())
-			if g:GetCount()>0 then
-				Duel.BreakEffect()
-				Duel.SendtoGrave(g,REASON_EFFECT)
-				g=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+		local p=tc:GetControler()
+		local g=Duel.GetMatchingGroup(c71400041.filter1,p,LOCATION_DECK+LOCATION_HAND,0,nil,tc:GetCode())
+		if g:GetCount()>0 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+			g=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+		end
+		if g:GetCount()>0 then
+			Duel.BreakEffect()
+			Duel.SendtoGrave(tc,REASON_EFFECT)
+			if tc:IsLocation(LOCATION_GRAVE) then
+				g:AddCard(tc)
 			end
-			g:AddCard(tc)
-			local lc=g:GetFirst()
-			while lc do
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetType(EFFECT_TYPE_FIELD)
-				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-				e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-				e1:SetTargetRange(1,0)
-				e1:SetValue(c71400041.aclimit)
-				e1:SetLabel(lc:GetCode())
-				e1:SetReset(RESET_PHASE+PHASE_END)
-				Duel.RegisterEffect(e1,p)
-				lc=g:GetNext()
-			end
+		end
+		local lc=g:GetFirst()
+		while lc do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+			e1:SetTargetRange(1,0)
+			e1:SetValue(c71400041.aclimit)
+			e1:SetLabel(lc:GetCode())
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,p)
+			lc=g:GetNext()
 		end
 	end
 end

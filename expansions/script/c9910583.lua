@@ -2,7 +2,7 @@
 function c9910583.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_HANDES+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,9910583+EFFECT_COUNT_CODE_OATH)
@@ -16,17 +16,9 @@ function c9910583.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
-	e2:SetCondition(c9910583.condition1)
 	e2:SetTarget(c9910583.postg)
 	e2:SetOperation(c9910583.posop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
-	e3:SetHintTiming(TIMING_DAMAGE_STEP,TIMING_DAMAGE_STEP+TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCondition(c9910583.condition2)
-	c:RegisterEffect(e3)
 	--spsummon
 	local e4=e2:Clone()
 	e4:SetDescription(aux.Stringid(9910583,1))
@@ -34,30 +26,20 @@ function c9910583.initial_effect(c)
 	e4:SetTarget(c9910583.sptg)
 	e4:SetOperation(c9910583.spop)
 	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_FREE_CHAIN)
-	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e5:SetCondition(c9910583.condition2)
-	c:RegisterEffect(e5)
 end
 function c9910583.thfilter(c)
 	return c:IsSetCard(0xc951) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9910583.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910583.thfilter,tp,LOCATION_DECK,0,1,nil)
-		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler(),REASON_EFFECT) end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910583.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9910583.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,nil,REASON_EFFECT)~=0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c9910583.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9910583.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -72,12 +54,6 @@ function c9910583.aclimit(e,re,tp)
 	local rc=re:GetHandler()
 	return re:IsActiveType(TYPE_MONSTER) and not rc:IsLocation(LOCATION_MZONE)
 		and not rc:IsSummonableCard()
-end
-function c9910583.condition1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_MZONE,0,3,nil)
-end
-function c9910583.condition2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_MZONE,0,3,nil)
 end
 function c9910583.posfilter(c)
 	return c:IsFacedown() and c:IsSetCard(0xc951)

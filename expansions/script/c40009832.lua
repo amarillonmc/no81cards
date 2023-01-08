@@ -5,13 +5,6 @@ cm.named_with_Amon=1
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)  
-	--cannot special summon
-	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(aux.FALSE)
-	c:RegisterEffect(e0)
 	--summon with s/t
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -116,7 +109,7 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,cm.pcfilter,tp,LOCATION_DECK,0,1,2,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.pcfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local sc=g:GetFirst()
 	while sc do
 		Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)

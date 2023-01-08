@@ -43,7 +43,7 @@ function c9910646.atkval(e,c)
 	return c:GetOverlayCount()*1000
 end
 function c9910646.imcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and e:GetHandler():GetFlagEffect(9910646)
+	return ep~=tp and e:GetHandler():GetFlagEffect(9910646)==0
 end
 function c9910646.imop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -60,7 +60,7 @@ function c9910646.imop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910646.efilter(e,re)
-	return re:GetOwner()~=e:GetOwner()
+	return e:GetHandler()~=re:GetOwner()
 end
 function c9910646.valcheck(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -79,7 +79,7 @@ function c9910646.xmop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()-c:GetOverlayCount()
 	local loc=LOCATION_ONFIELD+LOCATION_GRAVE 
 	local g=Duel.GetMatchingGroup(c9910646.matfilter,tp,loc,loc,c,e)
-	if ct<=0 or ct>g:GetCount() then return end
+	if ct<=0 or ct>g:GetCount() or not c:IsType(TYPE_XYZ) or not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local sg=g:Select(tp,ct,ct,nil)
 	Duel.HintSelection(sg)

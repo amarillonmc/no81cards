@@ -10,14 +10,8 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetCost(cm.cost)
-	e1:SetTarget(SNNM.FanippetTrapSPTarget(m,{0,0,4,RACE_INSECT,ATTRIBUTE_EARTH}))
-	e1:SetOperation(SNNM.FanippetTrapSPOperation(500,m,{0,0,4,RACE_INSECT,ATTRIBUTE_EARTH}))
+	e1:SetTarget(cm.tg)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(0)
-	e2:SetCondition(function(e)return false end)
-	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
@@ -28,8 +22,8 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e4:SetTargetRange(1,0)
-	e4:SetCost(SNNM.GraveActCostchk)
-	e4:SetTarget(SNNM.GraveActCostTarget)
+	e4:SetLabelObject(e1)
+	e4:SetTarget(cm.GraveActCostTarget)
 	e4:SetOperation(SNNM.GraveActCostOp)
 	c:RegisterEffect(e4)
 end
@@ -37,8 +31,39 @@ function cm.cfilter(c)
 	return c:IsType(TYPE_CONTINUOUS) and c:IsReleasable()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and not e:GetHandler():IsLocation(LOCATION_ONFIELD) end
+	if chk==0 then return Duel.CheckLPCost(tp,500) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	Duel.PayLPCost(tp,500)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.Release(g,REASON_COST)
+end
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return (c:IsLocation(LOCATION_HAND) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x353b,TYPES_NORMAL_TRAP_MONSTER,0,0,4,RACE_INSECT,ATTRIBUTE_EARTH))) and not c:IsLocation(LOCATION_ONFIELD) end
+	if c:IsPreviousLocation(LOCATION_GRAVE) then
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+		e:SetOperation(cm.op)
+		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(53702500,5))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
+		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+		e1:SetValue(LOCATION_REMOVED)
+		c:RegisterEffect(e1,true)
+	else
+		e:SetCategory(0)
+		e:SetOperation(nil)
+	end
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) or not Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x353b,TYPES_NORMAL_TRAP_MONSTER,0,0,4,RACE_INSECT,ATTRIBUTE_EARTH) then return end
+	c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
+	Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
+end
+function cm.GraveActCostTarget(e,te,tp)
+	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
 end

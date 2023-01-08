@@ -18,7 +18,7 @@ function c9910558.initial_effect(c)
 end
 function c9910558.chcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return rp==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+	return rp==1-tp and (rc:GetType()==TYPE_SPELL or rc:GetType()==TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function c9910558.costfilter(c)
 	return c:IsSetCard(0x3951) and c:IsDiscardable()
@@ -32,22 +32,25 @@ function c9910558.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	g:AddCard(c)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
-function c9910558.thfilter(c)
-	return c:IsSetCard(0x3951) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+function c9910558.thfilter(c,tp)
+	return c:IsSetCard(0x3951) and c:IsAbleToHand()
+		and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,c:GetCode())
 end
 function c9910558.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,c9910558.repop)
 	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_HAND,0,nil)
-	local g2=Duel.GetMatchingGroup(c9910558.thfilter,tp,LOCATION_DECK,0,nil)
+	local g2=Duel.GetMatchingGroup(c9910558.thfilter,tp,LOCATION_DECK,0,nil,tp)
 	if g1:GetCount()>0 and g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910558,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg1=g1:Select(tp,1,1,nil)
 		if Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)==0 then return end
+		local g3=Duel.GetMatchingGroup(c9910558.thfilter,tp,LOCATION_DECK,0,nil,tp)
+		if g3:GetCount()==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg2=g2:Select(tp,1,1,nil)
+		local sg2=g3:Select(tp,1,1,nil)
 		Duel.SendtoHand(sg2,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg2)
 	end

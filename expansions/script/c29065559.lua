@@ -31,10 +31,14 @@ function c29065559.hspcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	return ft>0 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST)
+	return ft>0 and (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST) or Duel.GetFlagEffect(tp,29096814)==1)
 end
 function c29065559.hspop(e,tp,eg,ep,ev,re,r,rp,c)
+	if Duel.GetFlagEffect(tp,29096814)==1 then
+	Duel.ResetFlagEffect(tp,29096814)
+	else
 	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_EFFECT)
+	end
 end
 function c29065559.filter(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))

@@ -45,7 +45,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
 	local rg=Duel.GetMatchingGroup(cm.costfilter,tp,LOCATION_HAND,0,c)
-	if chk==0 then return (sa or sb) and #rg>0 and rg:CheckSubGroup(cm.fselect,1,2,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and (sa or sb) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,nil) end
 	if c:IsLocation(LOCATION_HAND) then
 		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
 	elseif c:IsLocation(LOCATION_REMOVED) then
@@ -64,16 +64,17 @@ function cm.fselect2(g,c)
 	return g:IsExists(cm.costfilter,1,c)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,0,nil)
-	--if not rg:CheckSubGroup(cm.fselect,1,2,aux.ExceptThisCard(e),tp) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local tg=rg:SelectSubGroup(tp,cm.fselect2,false,1,2,aux.ExceptThisCard(e))
-	if Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if #g>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+		local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,0,nil)
+		if #rg>1 then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local tg=rg:Select(tp,2,2,nil)
+			Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
 		end
 	end
 end

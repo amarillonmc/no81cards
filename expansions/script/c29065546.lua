@@ -26,7 +26,7 @@ function c29065546.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c29065546.cfilter(c)
-	return c:IsFaceup() and (c:IsCode(29065500,29065502) or (aux.IsCodeListed(c,29065500) or aux.IsCodeListed(c,29065502)))
+	return c:IsFaceup() and c:IsCode(29065500,29065502)
 end
 function c29065546.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c29065546.cfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -47,7 +47,7 @@ function c29065546.xspcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c29065546.xsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,29065547,0,TYPES_TOKEN_MONSTER,2000,2000,6,RACE_MACHINE,ATTRIBUTE_EARTH) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,29065547,0,TYPES_TOKEN_MONSTER,2000,2000,6,RACE_MACHINE,ATTRIBUTE_EARTH) and  Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end

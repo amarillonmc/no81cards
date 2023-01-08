@@ -35,7 +35,7 @@ function c9910155.xyzfilter(c)
 		and c:IsRace(RACE_MACHINE)
 end
 function c9910155.matg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and e:GetHandler():IsType(TYPE_XYZ)
 		and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_HAND,0,1,nil,0x952) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)

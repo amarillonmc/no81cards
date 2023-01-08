@@ -2,7 +2,7 @@
 c29065508.named_with_Arknight=1
 function c29065508.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,6,3,c29065508.ovfilter,aux.Stringid(29065508,0),3,c29065508.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x87af),6,2,c29065508.ovfilter,aux.Stringid(29065508,0),2,c29065508.xyzop)
 	c:EnableReviveLimit()
 	--Double attack
 	local e1=Effect.CreateEffect(c)
@@ -11,42 +11,55 @@ function c29065508.initial_effect(c)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
 	--Destroy
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(29065508,1))
-	e2:SetCategory(CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCountLimit(1,29065508)
-	e2:SetCost(c29065508.descost)
-	e2:SetTarget(c29065508.destg)
-	e2:SetOperation(c29065508.desop)
-	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(29065508,1))
+	e3:SetCategory(CATEGORY_DESTROY)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCost(
+		function(e,tp,eg,ep,ev,re,r,rp,chk)
+			if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+			e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+		end
+	)
+	e3:SetTarget(c29065508.destg)
+	e3:SetOperation(c29065508.desop)
+	c:RegisterEffect(e3)
 end
 function c29065508.ovfilter(c)
 	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29065508.xyzop(e,tp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST) and Duel.GetFlagEffect(tp,29065508)==0 end
+	if chk==0 then return (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST))) and Duel.GetFlagEffect(tp,29065508)==0 end
+	if Duel.GetFlagEffect(tp,29096814)==1 then
+	Duel.ResetFlagEffect(tp,29096814)
+	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_RULE)
+	else
 	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
 	Duel.RegisterFlagEffect(tp,29065508,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	end
 end
-function c29065508.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-end
-function c29065508.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
+function c29065508.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c29065508.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+	if #g>0 then
+		Duel.HintSelection(g)
+		if Duel.Destroy(g,REASON_EFFECT)==0 then return end
+		local ct=Duel.GetCurrentChain()
+		if ct<2 then return end
+		local te,tep=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		if tep==1-tp and Duel.SelectYesNo(tp,aux.Stringid(29065508,3)) then
+			Duel.BreakEffect()
+			Duel.NegateActivation(ct-1)
+		end
 	end
 end

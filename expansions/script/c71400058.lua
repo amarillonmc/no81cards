@@ -19,7 +19,6 @@ function c71400058.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400058,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1)
@@ -94,16 +93,14 @@ end
 function c71400058.filter2a(c)
 	return c:IsSetCard(0xb714) and c:IsType(TYPE_FIELD) and c:IsCanOverlay()
 end
-function c71400058.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c71400058.filter2(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c71400058.filter2,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(c71400058.filter2a,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,c71400058.filter2,tp,LOCATION_MZONE,0,1,1,nil)
+function c71400058.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400058.filter2,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(c71400058.filter2a,tp,LOCATION_GRAVE,0,1,nil) end
 	local g=Duel.GetMatchingGroup(c71400058.filter2a,tp,LOCATION_GRAVE,0,nil)
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,tp,LOCATION_GRAVE)
 end
 function c71400058.op2(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local tc=Duel.SelectMatchingCard(tp,c71400058.filter2,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
 	local g=Duel.SelectMatchingCard(tp,c71400058.filter2a,tp,LOCATION_GRAVE,0,1,1,nil)
 	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		Duel.Overlay(tc,g)

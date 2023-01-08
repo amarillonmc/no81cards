@@ -8,9 +8,7 @@ function c9910551.initial_effect(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_REMOVE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCost(c9910551.thcost)
 	e2:SetTarget(c9910551.thtg)
@@ -27,19 +25,19 @@ function c9910551.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function c9910551.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanRemove(tp) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
+	if chk==0 then return Duel.IsPlayerCanRemove(tp) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>5 end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function c9910551.thfilter(c)
-	return c:IsSetCard(0x3951) and c:IsAbleToHand()
+	return c:IsSetCard(0x3951) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c9910551.rmfilter(c)
 	return c:IsSetCard(0x3951) and c:IsAbleToRemove() and not c:IsCode(9910551)
 end
 function c9910551.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=4 then return end
-	Duel.ConfirmDecktop(tp,5)
-	local g=Duel.GetDecktopGroup(tp,5)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=5 then return end
+	Duel.ConfirmDecktop(tp,6)
+	local g=Duel.GetDecktopGroup(tp,6)
 	if g:GetCount()==0 then return end
 	Duel.DisableShuffleCheck()
 	if g:IsExists(c9910551.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(9910551,1)) then

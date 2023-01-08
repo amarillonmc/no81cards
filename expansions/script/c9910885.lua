@@ -1,9 +1,16 @@
---共生试验体 狰狞鬼豪
+--共生试验体 鳞肤魑魅
 function c9910885.initial_effect(c)
 	aux.AddCodeList(c,9910871)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,c9910885.ffilter,3,true)
+	--spsummon condition
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c9910885.splimit)
+	c:RegisterEffect(e0)
 	--atk & def
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -30,6 +37,9 @@ end
 function c9910885.ffilter(c,fc,sub,mg,sg)
 	return not sg or sg:FilterCount(aux.TRUE,c)==0 or not sg:IsExists(Card.IsRace,1,c,c:GetRace())
 end
+function c9910885.splimit(e,se,sp,st)
+	return st&SUMMON_TYPE_FUSION~=SUMMON_TYPE_FUSION or (se and se:GetHandler():IsCode(9910871))
+end
 function c9910885.atkfilter(c)
 	return c:IsFaceup() and c:GetRace()~=0
 end
@@ -46,7 +56,7 @@ function c9910885.setfilter(c)
 end
 function c9910885.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910885.setfilter,tp,LOCATION_DECK,0,1,nil) end
-	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910881,0))
+	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910885,0))
 end
 function c9910885.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

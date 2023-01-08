@@ -1,23 +1,13 @@
 --坚毅之折纸使
 function c9910022.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,4,2,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_WARRIOR),4,2,nil,nil,99)
 	c:EnableReviveLimit()
-	--xyzlimit
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
-	e0:SetValue(1)
-	c:RegisterEffect(e0)
-	--cannot target
+	--direct attack
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e1:SetCode(EFFECT_DIRECT_ATTACK)
 	e1:SetCondition(c9910022.condtion)
-	e1:SetValue(aux.tgoval)
 	c:RegisterEffect(e1)
 	--immune
 	local e2=Effect.CreateEffect(c)
@@ -128,25 +118,11 @@ end
 function c9910022.operation3(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(c9910022.filter3,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
 	Duel.ConfirmCards(tp,tg)
-	Duel.ShuffleHand(1-tp)
-	local g1=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_HAND,nil)
-	local g2=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
-	local opt=0
-	if g1:GetCount()>0 and g2:GetCount()>0 then
-		opt=Duel.SelectOption(tp,aux.Stringid(9910022,3),aux.Stringid(9910022,4))
-	elseif g1:GetCount()>0 then
-		opt=0
-	elseif g2:GetCount()>0 then
-		opt=1
-	else
-		return
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.HintSelection(g)
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
-	local sg=nil
-	if opt==0 then
-		sg=g1:RandomSelect(tp,1)
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		sg=g2:Select(tp,1,1,nil)
-	end
-	Duel.SendtoGrave(sg,REASON_EFFECT)
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 then Duel.ShuffleHand(1-tp) end
 end
