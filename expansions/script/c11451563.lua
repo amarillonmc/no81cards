@@ -1,7 +1,6 @@
 --诡雷战术 潜伏诱捕
 --21.04.22
-local m=11451563
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -94,7 +93,7 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 		g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	end
 	if Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)~=0 and rc:IsLocation(LOCATION_MZONE) and rc:IsFaceup() then
-		local og=Duel.GetOperatedGroup()
+		local og=Duel.GetOperatedGroup():Filter(Card.IsFacedown,nil)
 		local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 		if ft<=0 then return elseif ft>#og then ft=#og end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
