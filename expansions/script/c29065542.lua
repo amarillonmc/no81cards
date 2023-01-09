@@ -17,9 +17,15 @@ function c29065542.ovfilter(c)
 	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) 
 end
 function c29065542.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,29065542)==0 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST) end 
-	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_COST)
+	if chk==0 then return (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST))) and Duel.GetFlagEffect(tp,29065542)==0 end
+	if Duel.GetFlagEffect(tp,29096814)==1 then
+	Duel.ResetFlagEffect(tp,29096814)
+	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_RULE)
 	Duel.RegisterFlagEffect(tp,29065542,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	else
+	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
+	Duel.RegisterFlagEffect(tp,29065542,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	end
 end
 function c29065542.cxyzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

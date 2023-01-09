@@ -37,6 +37,7 @@ function c29065508.xyzop(e,tp,chk)
 	if Duel.GetFlagEffect(tp,29096814)==1 then
 	Duel.ResetFlagEffect(tp,29096814)
 	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_RULE)
+	Duel.RegisterFlagEffect(tp,29065508,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	else
 	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
 	Duel.RegisterFlagEffect(tp,29065508,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)

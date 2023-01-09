@@ -29,16 +29,20 @@ function c29065536.initial_effect(c)
 	c29065536.summon_effect=e2
 end
 function c29065536.cfilter(c)
-	return c:IsCode(29065521,29065523,29065536,15000129,29065537,29065549) and c:IsType(TYPE_MONSTER)
+	return c:IsCode(29065521,29065523,29065536,15000129,29065537,29065549,29096814,29080482,29039748) and c:IsType(TYPE_MONSTER)
 end
 function c29065536.hspcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	return ft>0 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST)
+	return ft>0 and (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST) or Duel.GetFlagEffect(tp,29096814)==1)
 end
 function c29065536.hspop(e,tp,eg,ep,ev,re,r,rp,c)
+	if Duel.GetFlagEffect(tp,29096814)==1 then
+	Duel.ResetFlagEffect(tp,29096814)
+	else
 	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_EFFECT)
+	end
 end
 function c29065536.ctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29065536.cfilter,tp,LOCATION_MZONE,0,1,nil) end 
