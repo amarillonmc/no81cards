@@ -54,11 +54,12 @@ function cm.initial_effect(c)
 	end
 	
 end
-function c22348128.cfilter(c,tp)
+function c22348128.cfilter(c,e)
+	local tp=e:GetHandler():GetControler()
 	return c:IsControler(tp)
 end
 function c22348128.checkcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22348128.cfilter,1,nil,tp)
+	return eg:IsExists(c22348128.cfilter,1,nil,e)
 end
 function c22348128.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -81,7 +82,7 @@ function c22348128.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348128.cgcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(1-tp,22348128)>=4
+	return Duel.GetFlagEffect(tp,22348128)>=4
 end
 function c22348128.fufilter(c)
 	return c:IsFacedown()

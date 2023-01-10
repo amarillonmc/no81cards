@@ -53,7 +53,7 @@ function cm.fselect(g,res)
 	return (res and #g~=2 and (g:IsExists(Card.IsSetCard,1,nil,0x553b) or #g==3)) or (not res and #g==3)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local cost=Duel.GetMatchingGroup(function(c)return c:GetType()&0x20004==0x20004 and c:IsReleasable()end,tp,LOCATION_ONFIELD,0,nil)
+	local cost=Duel.GetMatchingGroup(function(c)return c:GetType()&0x20004==0x20004 and c:IsReleasable()end,tp,LOCATION_ONFIELD,0,e:GetHandler())
 	local res=Duel.GetTurnPlayer()==1-tp and Duel.GetCurrentPhase()==PHASE_END
 	if chk==0 then return cost:CheckSubGroup(cm.fselect,1,3,res) and not e:GetHandler():IsForbidden() and e:GetHandler():CheckUniqueOnField(tp) and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)==0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)

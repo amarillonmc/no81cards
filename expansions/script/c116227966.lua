@@ -33,7 +33,7 @@ function cm.initial_effect(c)
     local e2=Effect.CreateEffect(c)
     e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-    e2:SetProperty(EFFECT_FLAG_DELAY)
+    e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
     e2:SetCode(EVENT_LEAVE_FIELD)
     e2:SetRange(LOCATION_GRAVE)
     e2:SetCountLimit(1,m+1)
@@ -130,6 +130,7 @@ function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
         return g:CheckSubGroup(cm.fselect,1,maxlink,tp)
     end
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE)
+    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
     if not Duel.IsPlayerCanSpecialSummonCount(tp,2) then return end

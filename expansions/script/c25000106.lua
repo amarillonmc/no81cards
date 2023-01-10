@@ -66,7 +66,7 @@ function cm.repval(e,c)
 	return false
 end
 function cm.tdfilter(c)
-	return c:GetFlagEffect(m)~=0
+	return c:GetFlagEffect(m)~=0 and c:IsLocation(LOCATION_DECK)
 end
 function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.tdfilter,1,nil)
