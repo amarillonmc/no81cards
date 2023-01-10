@@ -27,6 +27,7 @@ function cm.initial_effect(c)
     e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
     e6:SetCode(EVENT_CHAINING)
     e6:SetRange(LOCATION_MZONE)
+    e6:SetCondition(cm.limcon)
     e6:SetOperation(cm.chainop)
     c:RegisterEffect(e6)
     local e7=Effect.CreateEffect(c)
@@ -61,7 +62,7 @@ end
 function cm.limop2(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local g=c:GetMaterial()
-    if c:IsSummonType(SUMMON_TYPE_FUSION) and g:IsExists(Card.IsFusionCode,1,nil,89390000) and g:IsExists(Card.IsFusionCode,1,nil,89390001) and g:IsExists(Card.IsFusionCode,1,nil,89390002) and c:GetFlagEffect(m)~=0 then
+    if c:IsSummonType(SUMMON_TYPE_FUSION) and g:IsExists(Card.IsFusionCode,1,nil,89390000) and g:IsExists(Card.IsFusionCode,1,nil,89390001) and g:IsExists(Card.IsFusionCode,1,nil,89390002) and c:GetFlagEffect(m)>0 then
         Duel.SetChainLimitTillChainEnd(cm.chainlm)
     end
     c:ResetFlagEffect(m)

@@ -44,7 +44,7 @@ function cm.initial_effect(c)
 	e6:SetCode(m)
 	e6:SetRange(LOCATION_EXTRA)
 	c:RegisterEffect(e6)
-	Duel.AddCustomActivityCounter(cm,ACTIVITY_CHAIN,cm.chainfilter)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
 end
 function cm.chainfilter(re,tp,cid)
 	return not re:IsActiveType(TYPE_MONSTER)
@@ -55,7 +55,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cost=Duel.GetMatchingGroup(function(c)return c:GetType()&0x20004==0x20004 and c:IsReleasable()end,tp,LOCATION_ONFIELD,0,nil)
 	local res=Duel.GetTurnPlayer()==1-tp and Duel.GetCurrentPhase()==PHASE_END
-	if chk==0 then return cost:CheckSubGroup(cm.fselect,1,3,res) and not e:GetHandler():IsForbidden() and e:GetHandler():CheckUniqueOnField(tp) end
+	if chk==0 then return cost:CheckSubGroup(cm.fselect,1,3,res) and not e:GetHandler():IsForbidden() and e:GetHandler():CheckUniqueOnField(tp) and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)==0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=cost:SelectSubGroup(tp,cm.fselect,false,1,3,res)
 	local cg=g:Filter(Card.IsFacedown,nil)
@@ -337,7 +337,11 @@ function cm.chtg(_tg,res)
 end
 function cm.chval(_val,res)
 	return function(e,re,...)
-				local x=re:GetHandler()
+				local x=re
+				if aux.GetValueType(re)=="Effect" then x=re:GetHandler() else
+					local rc=Duel.CreateToken(tp,m+50)
+					re=rc:GetActivateEffect()
+				end
 				if x:IsHasEffect(m) then return res end
 				return _val(e,re,...)
 			end

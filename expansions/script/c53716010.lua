@@ -50,7 +50,7 @@ function cm.initial_effect(c)
 	e7:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)end)
 	e7:SetOperation(cm.effop)
 	c:RegisterEffect(e7)
-	Duel.AddCustomActivityCounter(cm,ACTIVITY_CHAIN,cm.chainfilter)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
 end
 function cm.chainfilter(re,tp,cid)
 	return not re:IsActiveType(TYPE_MONSTER)
@@ -103,6 +103,7 @@ function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(g) do
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(m,se+2))
+		e1:SetCategory(CATEGORY_TOGRAVE)
 		e1:SetType(EFFECT_TYPE_ACTIVATE)
 		e1:SetRange(0xff)
 		e1:SetCode(EVENT_CUSTOM+(m+50*ct))
@@ -161,7 +162,7 @@ function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 				break
 			end
 		end
-		return res and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e) and c:IsLocation(LOCATION_GRAVE+LOCATION_MZONE) and c:IsSetCard(0x353b) and c:GetType()&0x20004==0x20004 and c:GetControler()==p
+		return res and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e) and c:IsLocation(LOCATION_GRAVE+LOCATION_MZONE) and c:GetType()&0x20004==0x20004 and c:GetControler()==p
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,e)
@@ -453,7 +454,11 @@ function cm.chtg(_tg,res)
 end
 function cm.chval(_val,res)
 	return function(e,re,...)
-				local x=re:GetHandler()
+				local x=re
+				if aux.GetValueType(re)=="Effect" then x=re:GetHandler() else
+					local rc=Duel.CreateToken(tp,m+50)
+					re=rc:GetActivateEffect()
+				end
 				if x:IsHasEffect(m) then return res end
 				return _val(e,re,...)
 			end

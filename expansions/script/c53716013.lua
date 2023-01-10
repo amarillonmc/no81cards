@@ -49,7 +49,7 @@ function cm.initial_effect(c)
 	e6:SetCode(m)
 	e6:SetRange(LOCATION_EXTRA)
 	c:RegisterEffect(e6)
-	Duel.AddCustomActivityCounter(cm,ACTIVITY_CHAIN,cm.chainfilter)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
 end
 function cm.chainfilter(re,tp,cid)
 	return not re:IsActiveType(TYPE_MONSTER)
@@ -309,7 +309,11 @@ function cm.chtg(_tg,res)
 end
 function cm.chval(_val,res)
 	return function(e,re,...)
-				local x=re:GetHandler()
+				local x=re
+				if aux.GetValueType(re)=="Effect" then x=re:GetHandler() else
+					local rc=Duel.CreateToken(tp,m+50)
+					re=rc:GetActivateEffect()
+				end
 				if x:IsHasEffect(m) then return res end
 				return _val(e,re,...)
 			end

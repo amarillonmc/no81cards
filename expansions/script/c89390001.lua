@@ -84,7 +84,7 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
         end
         if exg:GetClassCount(Card.GetOriginalCode)>=3 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-            local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil)
+            local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
             if g:GetCount()>0 then
                 Duel.HintSelection(g)
                 Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
