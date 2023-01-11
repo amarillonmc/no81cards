@@ -197,12 +197,14 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	for _,te3 in pairs(re3) do
-		local cost=te3:GetCost()
-		if cost and not cost(te3,te,tp) then
-			local tg=te3:GetTarget()
-			if not tg or tg(te3,e,tp) then
-				table.insert(t1,te3)
-				table.insert(t2,5)
+		if not te3:GetLabelObject() then
+			local cost=te3:GetCost()
+			if cost and not cost(te3,te,tp) then
+				local tg=te3:GetTarget()
+				if not tg or tg(te3,e,tp) then
+					table.insert(t1,te3)
+					table.insert(t2,5)
+				end
 			end
 		end
 	end
@@ -219,12 +221,14 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	for _,te3 in pairs(ae3) do
-		local cost=te3:GetCost()
-		if cost and not cost(te3,de,tp) then
-			local tg=te3:GetTarget()
-			if not tg or tg(te3,de,tp) then
-				table.insert(t3,te3)
-				table.insert(t4,5)
+		if not te3:GetLabelObject() then
+			local cost=te3:GetCost()
+			if cost and not cost(te3,de,tp) then
+				local tg=te3:GetTarget()
+				if not tg or tg(te3,de,tp) then
+					table.insert(t3,te3)
+					table.insert(t4,5)
+				end
 			end
 		end
 	end
@@ -283,13 +287,15 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		if ret2[k]==5 then
-			local cost=v:GetCost()
-			if cost and not cost(v,te,tp) then
-				local tg=v:GetTarget()
-				if not tg then
-					v:SetTarget(cm.chtg2(aux.TRUE,false))
-				elseif tg(v,te,tp) then
-					v:SetTarget(cm.chtg2(tg,false))
+			if not v:GetLabelObject() then
+				local cost=v:GetCost()
+				if cost and not cost(v,te,tp) then
+					local tg=v:GetTarget()
+					if not tg then
+						v:SetTarget(cm.chtg2(aux.TRUE,false))
+					elseif tg(v,te,tp) then
+						v:SetTarget(cm.chtg2(tg,false))
+					end
 				end
 			end
 		end
@@ -303,13 +309,15 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		if ret4[k]==5 then
-			local cost=v:GetCost()
-			if cost and not cost(v,de,tp) then
-				local tg=v:GetTarget()
-				if not tg then
-					v:SetTarget(cm.chtg2(aux.TRUE,true))
-				elseif tg(v,de,tp) then
-					v:SetTarget(cm.chtg2(tg,true))
+			if not v:GetLabelObject() then
+				local cost=v:GetCost()
+				if cost and not cost(v,de,tp) then
+					local tg=v:GetTarget()
+					if not tg then
+						v:SetTarget(cm.chtg2(aux.TRUE,true))
+					elseif tg(v,de,tp) then
+						v:SetTarget(cm.chtg2(tg,true))
+					end
 				end
 			end
 		end
@@ -337,12 +345,12 @@ function cm.chtg(_tg,res)
 end
 function cm.chval(_val,res)
 	return function(e,re,...)
-				local x=re
-				if aux.GetValueType(re)=="Effect" then x=re:GetHandler() else
+				local x=nil
+				if aux.GetValueType(re)=="Effect" then x=re:GetHandler() elseif aux.GetValueType(re)=="Card" then
 					local rc=Duel.CreateToken(tp,m+50)
 					re=rc:GetActivateEffect()
-				end
-				if x:IsHasEffect(m) then return res end
+				else return res end
+				if x and x:IsHasEffect(m) then return res end
 				return _val(e,re,...)
 			end
 end
