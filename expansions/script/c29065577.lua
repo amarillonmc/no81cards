@@ -58,7 +58,7 @@ function c29065577.nttg(e,c)
 	return c:IsLevelAbove(5) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29065577.cfilter(c,tp)
-	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and (c:IsSummonType(SUMMON_TYPE_NORMAL) or c:IsSummonType(SUMMON_TYPE_SPECIAL)) and c:IsPreviousLocation(LOCATION_HAND+LOCATION_DECK)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and (c:IsSummonType(SUMMON_TYPE_NORMAL) or c:IsSummonType(SUMMON_TYPE_SPECIAL)) and c:IsPreviousLocation(LOCATION_HAND+LOCATION_DECK) and c:IsControler(tp)
 end
 function c29065577.counterop(e,tp,eg,ep,ev,re,r,rp)
 	if eg:IsExists(c29065577.cfilter,1,nil,tp) then

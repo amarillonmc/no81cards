@@ -1,6 +1,5 @@
 --革命的根据地
-local m=11451453
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,99518961)
 	--activate
@@ -48,8 +47,9 @@ function cm.filter3(c,e,tp)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(cm.filter1,1,nil,tp) and Duel.GetTurnPlayer()~=tp end
+	local g=eg:Filter(cm.filter1,nil,tp)
+	Duel.HintSelection(g)
 	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		local g=eg:Filter(cm.filter1,nil,tp)
 		local ct=g:GetCount()
 		if ct>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)

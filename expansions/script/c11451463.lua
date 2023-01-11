@@ -1,6 +1,5 @@
 --激跃和弦「涌」
-local m=11451463
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
@@ -115,12 +114,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if tc then tg:AddCard(sc) end
 	end
 	if not tg or #tg==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=tg:Select(tp,1,1,nil):GetFirst()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	aux.GCheckAdditional=cm.hspgcheck
-	local rg=mg:SelectSubGroup(tp,cm.hspcheck,false,1,#mg,cm.lvplus(tc),tp)
-	aux.GCheckAdditional=nil
+	local rg=Group.CreateGroup()
+	local tc=tg:GetFirst()
+	while not rg or #rg==0 do
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		tc=tg:Select(tp,1,1,nil):GetFirst()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		aux.GCheckAdditional=cm.hspgcheck
+		rg=mg:SelectSubGroup(tp,cm.hspcheck,true,1,#mg,cm.lvplus(tc),tp)
+		aux.GCheckAdditional=nil
+	end
 	local tg=rg:Filter(cm.filter5,nil)
 	if not tg or #tg==0 then
 		if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)>0 then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end

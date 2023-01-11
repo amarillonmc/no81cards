@@ -57,7 +57,7 @@ function cm.spfilter(c,e,tp)
 	return cm.Revenger(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.clfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsControlerCanBeChanged()
+	return c:IsType(TYPE_MONSTER) and c:IsControlerCanBeChanged() and c:IsFaceup()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -65,14 +65,12 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	   -- if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then loc=LOCATION_MZONE end
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil)
-			and e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)
+			and e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,false)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	if Duel.GetLP(tp)<=1000 and Duel.IsExistingMatchingCard(cm.clfilter,tp,0,LOCATION_MZONE,1,nil) then e:SetLabel(1)
-	Duel.SetOperationInfo(0,CATEGORY_CONTROL,nil,1,0,0)
-
-
+		Duel.SetOperationInfo(0,CATEGORY_CONTROL,nil,1,0,0)
 	else
 		e:SetLabel(0)
 	end
@@ -87,7 +85,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()
 		if not c:IsRelateToEffect(e) then return end
 		c:SetMaterial(nil)
-		Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+		Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)
 		c:CompleteProcedure()
 		if e:GetLabel()==1 and gg:GetCount()>0 then
 			Duel.BreakEffect()

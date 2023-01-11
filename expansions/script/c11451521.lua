@@ -1,6 +1,5 @@
 --珂拉琪残像 失焦
-local m=11451521
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
@@ -49,9 +48,11 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.CheckLocation(tp,LOCATION_PZONE,0) then num=num+1 end
 	if Duel.CheckLocation(tp,LOCATION_PZONE,1) then num=num+1 end
 	if chk==0 then return (#Group.__band(tg,eg)>0 or num>0) and eg:IsExists(cm.repfilter,1,c,tp) end
-	if Duel.GetFlagEffect(tp,m)~=0 or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then return false end
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local g=eg:Filter(cm.repfilter,c,tp)
+	if Duel.GetFlagEffect(tp,m)~=0 then return false end
+	Duel.HintSelection(g)
+	if not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then return false end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	if #g>1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		g=g:Select(tp,1,#Group.__band(tg,eg)+num,nil)

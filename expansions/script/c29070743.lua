@@ -1,7 +1,7 @@
 --方舟骑士-W
 local cm,m=GetID()
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
-	aux.AddCodeList(c,29065500)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -48,6 +48,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local fd=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0xe000e0)
 	Duel.SetTargetParam(fd)
+	Duel.Hint(HINT_ZONE,tp,fd)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -33,7 +33,7 @@ function c29058187.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_COST)
 end
 function c29058187.filter2(c)
-	return (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS)) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and not c:IsCode(29058187) and c:IsAbleToHand()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and not c:IsCode(29058187) and c:IsAbleToHand()
 end
 function c29058187.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29058187.filter2,tp,LOCATION_DECK,0,1,nil) end
@@ -55,7 +55,7 @@ function c29058187.nttg(e,c)
 	return c:IsLevelAbove(5) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29058187.cfilter(c,tp)
-	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsPreviousLocation(LOCATION_EXTRA)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsPreviousLocation(LOCATION_EXTRA) and c:IsControler(tp)
 end
 function c29058187.counterop(e,tp,eg,ep,ev,re,r,rp)
 	if eg:IsExists(c29058187.cfilter,1,nil,tp) then

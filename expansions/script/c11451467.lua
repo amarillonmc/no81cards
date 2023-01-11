@@ -1,6 +1,5 @@
 --碎灭万华音「萤」
-local m=11451467
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--change code
 	local e1=Effect.CreateEffect(c)
@@ -81,7 +80,7 @@ end
 function cm.fselect(g,ng,goal,tp)
 	if not (g:IsExists(cm.filter4,1,nil) and g:GetSum(cm.lvplus)>=goal) then
 		return false
-	elseif g:GetSum(cm.lvplus)==goal then
+	elseif g:GetSum(cm.lvplus)==goal and Duel.GetMZoneCount(tp,g)>0 then
 		return true
 	end
 	aux.GCheckAdditional=cm.hspgcheck2
@@ -193,18 +192,28 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if tc then tg:AddCard(sc) end
 	end
 	if not tg or #tg==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=tg:Select(tp,1,1,nil):GetFirst()
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,6))
-	aux.GCheckAdditional=cm.hspgcheck
-	local rg=trg:SelectSubGroup(tp,cm.hspcheck,false,1,#trg,ng,cm.lvplus(tc),tp)
-	if rg:GetSum(cm.lvplus)>cm.lvplus(tc) then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,7))
-		aux.GCheckAdditional=cm.hspgcheck2
-		local rg2=ng:SelectSubGroup(tp,cm.hspcheck2,false,1,#ng,rg,rg:GetSum(cm.lvplus)-cm.lvplus(tc),tp)
-		rg:Merge(rg2)
+	local rg,rg2=Group.CreateGroup(),Group.CreateGroup()
+	local tc=tg:GetFirst()
+	local res=false
+	while not res do
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		tc=tg:Select(tp,1,1,nil):GetFirst()
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,6))
+		aux.GCheckAdditional=cm.hspgcheck
+		rg=trg:SelectSubGroup(tp,cm.hspcheck,true,1,#trg,ng,cm.lvplus(tc),tp)
+		if rg and #rg>0 and rg:GetSum(cm.lvplus)>cm.lvplus(tc) then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,7))
+			aux.GCheckAdditional=cm.hspgcheck2
+			rg2=ng:SelectSubGroup(tp,cm.hspcheck2,true,1,#ng,rg,rg:GetSum(cm.lvplus)-cm.lvplus(tc),tp)
+			if rg2 and #rg2>0 then
+				res=true
+				rg:Merge(rg2)
+			end
+		elseif rg and #rg>0 and rg:GetSum(cm.lvplus)==cm.lvplus(tc) then
+			res=true
+		end
+		aux.GCheckAdditional=nil
 	end
-	aux.GCheckAdditional=nil
 	local tg=rg:Filter(cm.filter5,nil)
 	if not tg or #tg==0 then
 		if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)>0 then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end
