@@ -39,6 +39,9 @@ end
 function cm.filter2(c)
 	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove()
 end
+function cm.filter22(c,e)
+	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
+end
 function cm.filter3(c,e,tp)
 	return c:IsSetCard(0x97a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
@@ -104,7 +107,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local mg=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,nil)
+	local mg=Duel.GetMatchingGroup(cm.filter22,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,nil,e)
 	local sg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_DECK,0,nil,e,tp)
 	local tg=Group.CreateGroup()
 	for sc in aux.Next(sg) do

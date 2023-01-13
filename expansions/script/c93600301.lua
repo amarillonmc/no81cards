@@ -61,7 +61,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	--material
 	local e5=Effect.CreateEffect(c)
-    e1:SetDescription(aux.Stringid(m,1))
+	e1:SetDescription(aux.Stringid(m,1))
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_BATTLE_START)
 	e5:SetCondition(cm.effcon)
@@ -217,13 +217,13 @@ function cm.xcon(e)
 		end  
 		local tc=Duel.GetFieldCard(rp,loc,zone)
 		local sg=Group.CreateGroup()
-		sg:AddCard(tc)
+		if tc then sg:AddCard(tc) end
 		if zone~=21 and zone~=22 then
 			sg=Duel.GetMatchingGroup(cm.seqfilter,rp,LOCATION_ONFIELD,0,nil,zone)
 		end
 		if loc==LOCATION_FZONE then 
 			tc=Duel.GetFieldCard(rp,loc,0)
-			sg=Group.FromCards(tc)
+			if tc then sg=Group.FromCards(tc) end
 		end
 		if zone==22 then
 			local xcg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)

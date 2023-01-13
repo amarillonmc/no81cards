@@ -12,6 +12,24 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(0x10000000+m)
+	e1:SetLabelObject(re)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	rc:RegisterEffect(e1,true)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
@@ -39,6 +57,13 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end--]]
 	local g=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0xff,0xff,nil,ac)
 	local reg=Card.RegisterEffect
+	local ctl=Effect.SetCountLimit
+	Effect.SetCountLimit=function(se,ct,code)
+							if se:GetType()&EFFECT_TYPE_IGNITION>0 and (not code or code==0) then
+								cm[se]=true
+							end
+							ctl(se,ct,code)
+						end
 	Card.RegisterEffect=function(sc,se,bool)
 							if se:GetType()&EFFECT_TYPE_IGNITION>0 and sc:GetOriginalType()&TYPE_MONSTER>0 then
 								se:SetType(EFFECT_TYPE_QUICK_O)
@@ -49,6 +74,17 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 								se:SetProperty(pro,pro2)
 							end
 							reg(sc,se,true)
+							if cm[se] then
+								cm[se]=nil
+								local eset={sc:IsHasEffect(0x10000000+m)}
+								if #eset>0 then
+									local ct=0
+									for _,ee in pairs(eset) do
+										if ee:GetLabelObject():GetOperation()==se:GetOperation() then ct=ct+1 end
+									end
+									se:UseCountLimit(sc:GetControler(),ct)
+								end
+							end
 						end
 	for tc in aux.Next(g) do
 		if tc.initial_effect then
@@ -60,4 +96,5 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Card.RegisterEffect=reg
+	Effect.SetCountLimit=ctl
 end

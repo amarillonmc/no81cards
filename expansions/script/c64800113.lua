@@ -31,7 +31,7 @@ end
 --e1
 function c64800113.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_SYNCHRO) not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,c)
+	return c:IsSummonType(SUMMON_TYPE_SYNCHRO) and not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,c)
 end
 function c64800113.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
