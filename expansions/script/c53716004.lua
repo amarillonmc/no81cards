@@ -370,7 +370,7 @@ function cm.indtg(e,c)
 	local ct1=aux.GetColumn(e:GetHandler())
 	local ct2=aux.GetColumn(c)
 	if not ct1 or not ct2 then return false end
-	return math.abs(ct1-ct2)==0 and c:GetSequence()<5
+	return math.abs(ct1-ct2)==0
 end
 function cm.setfilter(c)
 	return c:IsSetCard(0x353b) and bit.band(c:GetType(),0x20004)==0x20004 and c:IsSSetable()
