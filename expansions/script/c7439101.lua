@@ -108,24 +108,27 @@ function cm.initial_effect(c)
 				sg:AddCard(tc)
 				cg:RemoveCard(tc)
 			end
+			--Duel.HintSelection(g)
 			Duel.HintSelection(sg)
 			return sg
 		end
 		_SendtoDeck=Duel.SendtoDeck
 		function Duel.SendtoDeck(tg,tp,seq,reason)
-			local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
-			if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
-				if not tp and aux.GetValueType(tg)=="Card" and tg:GetFlagEffectLabel(7439100)==7439100+id then 
-					return _SendtoDeck(tg,1-tg:GetControler(),seq,reason)  
-				end
-				if not tp and aux.GetValueType(tg)=="Group" then 
-					local sg=tg:Filter(cm.rfilter,nil,7439100+id)
-					if sg and sg:GetCount()>0 then
-						tg:Sub(sg)
-						if tg and tg:GetCount()>0 then
-							_SendtoDeck(tg,tp,seq,reason)
+			if Duel.GetCurrentChain()~=0 then
+				local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
+				if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
+					if not tp and aux.GetValueType(tg)=="Card" and tg:GetFlagEffectLabel(m)==7439100+id and tg:IsLocation(LOCATION_DECK) then 
+						return _SendtoDeck(tg,1-tg:GetControler(),seq,reason)  
+					end
+					if not tp and aux.GetValueType(tg)=="Group" then 
+						local sg=tg:Filter(cm.rfilter,nil,7439100+id):Filter(Card.IsLocation,nil,LOCATION_DECK)
+						if sg and sg:GetCount()>0 then
+							tg:Sub(sg)
+							if tg and tg:GetCount()>0 then
+								_SendtoDeck(tg,tp,seq,reason)
+							end
+							return _SendtoDeck(sg,1-sg:GetFirst():GetControler(),seq,reason) 
 						end
-						return _SendtoDeck(sg,1-sg:GetFirst():GetControler(),seq,reason) 
 					end
 				end
 			end
@@ -133,19 +136,21 @@ function cm.initial_effect(c)
 		end
 		_SendtoHand=Duel.SendtoHand
 		function Duel.SendtoHand(tg,tp,reason)
-			local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
-			if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
-				if not tp and aux.GetValueType(tg)=="Card" and tg:GetFlagEffectLabel(7439100)==7439100+id and cm.rfilter(tg,7439100+id) then 
-					return _SendtoHand(tg,1-tg:GetControler(),reason) 
-				end
-				if not tp and aux.GetValueType(tg)=="Group" then 
-					local sg=tg:Filter(cm.rfilter,nil,7439100+id)
-					if sg and sg:GetCount()>0 then
-						tg:Sub(sg)
-						if tg and tg:GetCount()>0 then
-							_SendtoHand(tg,tp,reason) 
+			if Duel.GetCurrentChain()~=0 then
+				local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
+				if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
+					if not tp and aux.GetValueType(tg)=="Card" and tg:GetFlagEffectLabel(m)==7439100+id and tg:IsLocation(LOCATION_HAND) then 
+						return _SendtoHand(tg,1-tg:GetControler(),reason) 
+					end
+					if not tp and aux.GetValueType(tg)=="Group" then 
+						local sg=tg:Filter(cm.rfilter,nil,7439100+id):Filter(Card.IsLocation,nil,LOCATION_HAND)
+						if sg and sg:GetCount()>0 then
+							tg:Sub(sg)
+							if tg and tg:GetCount()>0 then
+								_SendtoHand(tg,tp,reason) 
+							end
+							return _SendtoHand(sg,1-sg:GetFirst():GetControler(),reason) 
 						end
-						return _SendtoHand(sg,1-sg:GetFirst():GetControler(),reason) 
 					end
 				end
 			end
@@ -259,34 +264,164 @@ function cm.initial_effect(c)
 					if finish and Party_time_roll(1,2)==1 then return end
 					if not cg or cg:GetCount()<=0 then return end
 					local cg2=cg:Clone()
-					if aux.GetValueType(ag)=="Group" then 
+					if aux.GetValueType(ag)=="Group" and Duel.GetFlagEffect(0,7439099)==0 then 
 						ag=ag:Filter(cm.rfilter,nil,7439100+id)
 						if ag:GetCount()~=0 then
 							cg2:Merge(ag) 
 						end
 					end
 					local tc=Party_time_RandomSelect(cg2,0,1):GetFirst()
+					if cm.Party_time(tc) and not cg:IsContains(tc) then cg:AddCard(tc) end
 					--sg:AddCard(tc)
 					return tc
 				end
 			end
 			return _SelectUnselect(cg,sg,tp,finish,cancel,min,max)
 		end
-		_DiscardHand=Duel.DiscardHand
-		function Duel.DiscardHand(tp,f,min,max,reason,cg,...)
-			local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
-			local ag=Party_time_table[7439100+id]
-			if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
-				local g=Duel.GetMatchingGroup(f,tp,LOCATION_HAND,0,cg,...)
-				if not g or g:GetCount()<=0 then return false end
-				if aux.GetValueType(ag)=="Group" then 
-					ag=ag:Filter(cm.rfilter,nil,7439100+id)
-					if ag:GetCount()~=0 then
-						g:Merge(ag) 
+		_SelectSubGroup=Group.SelectSubGroup
+		function Group.SelectSubGroup(g,tp,f,cancelable,min,max,...)
+			if Duel.GetCurrentChain()~=0 then
+				local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
+				local ag=Party_time_table[7439100+id]
+				if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
+					if aux.GetValueType(ag)=="Group" then 
+						ag=ag:Filter(cm.rfilter,nil,7439100+id)
+						if ag:GetCount()~=0 then
+							--
+							aux.SubGroupCaptured=Group.CreateGroup()
+							local min=min or 1
+							local max=max or #g
+							local ext_params={...}
+							local sg=Group.CreateGroup()
+							local fg=Duel.GrabSelectedCard()
+							if #fg>max or min>max or #(g+fg)<min then return nil end
+							for tc in aux.Next(fg) do
+								local tc=fg:SelectUnselect(sg,tp,false,false,min,max)
+							end
+							sg:Merge(fg)
+							g:Merge(ag)
+							local finish=(#sg>=min and #sg<=max and f(sg,...))
+							while #sg<max do
+								local cg=Group.CreateGroup()
+								local eg=g:Clone()
+								local eg1=g:Clone()
+								local eg2=eg:Filter(cm.rfilter,nil,7439100+id)
+								local sg1=sg:Clone()
+								local sg2=sg:Filter(cm.rfilter,nil,7439100+id)
+								if not aux.GCheckAdditional then 
+									eg:Sub(eg2)
+									eg1:Sub(eg2)
+									sg1:Sub(sg2)
+									for c in aux.Next(eg-sg1) do
+										if not cg:IsContains(c) then
+											if aux.CheckGroupRecursiveCapture(c,sg1,eg1,f,min,max,ext_params) then
+												cg:Merge(aux.SubGroupCaptured)
+											else
+												eg1:RemoveCard(c)
+											end
+										end
+									end
+									cg:Merge(ag)
+								else
+									for c in aux.Next(g-sg) do
+										if not cg:IsContains(c) then
+											if aux.CheckGroupRecursiveCapture(c,sg,eg1,f,min,max,ext_params) then
+												cg:Merge(aux.SubGroupCaptured)
+											else
+												eg1:RemoveCard(c)
+											end
+										end
+									end
+								end
+								cg:Sub(sg)
+								finish=#sg>=min and #sg<=max and (f(sg1,...) or f(sg,...))
+								if #cg==0 then break end
+								local cancel=not finish and cancelable
+								Duel.RegisterFlagEffect(0,7439099,RESET_CHAIN,0,1)
+								local tc=cg:SelectUnselect(sg,tp,finish,cancel,min,max)
+								Duel.ResetFlagEffect(0,7439099)
+								if not tc then finish=true break end
+								if not fg:IsContains(tc) then
+									if not sg:IsContains(tc) then
+										sg:AddCard(tc)
+										if #sg==max then finish=true end
+									else
+										sg:RemoveCard(tc)
+									end
+								elseif cancelable then
+									return nil
+								end
+							end
+							if finish then
+								return sg
+							else
+								local cg=Group.__add(g,ag)
+								if (not sg or sg:GetCount()<min) and #cg>0 and not aux.GCheckAdditional then 
+									sg=Party_time_RandomSelect(cg,0,Party_time_roll(min,max)) 
+									return sg 
+								end
+								return nil
+							end
+						end
 					end
 				end
-				local sg=Party_time_RandomSelect(g,0,Party_time_roll(min,max))
-				return Duel.SendtoGrave(sg,reason+REASON_DISCARD)
+			end
+			return _SelectSubGroup(g,tp,f,cancelable,min,max,...)
+		end
+		--_CheckGroupRecursiveCapture=aux.CheckGroupRecursiveCapture
+		--function aux.CheckGroupRecursiveCapture(c,sg,g,f,min,max,ext_params)
+		--	if Duel.GetCurrentChain()~=0 and Duel.GetFlagEffect(0,7439099)~=0 then
+		--		local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
+		--		local ag=Party_time_table[7439100+id]
+		--		if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
+		--			sg:AddCard(c)
+		--			local sg2=sg:Clone()
+		--			local pg=sg:Filter(cm.rfilter,nil,7439100+id)
+		--			sg2:Sub(pg)
+		--			if aux.GCheckAdditional and (c:GetFlagEffectLabel(7439100)~=id and not aux.GCheckAdditional(sg2,c,g,f,min,max,ext_params) ) then
+		--				sg:RemoveCard(c)
+		--				return false
+		--			end
+		--			local res=#sg>=min and #sg<=max and f(sg2,table.unpack(ext_params))
+		--			if res then
+		--				aux.SubGroupCaptured:Clear()
+		--				aux.SubGroupCaptured:Merge(sg)
+		--			else
+		--				res=#sg<max and g:IsExists(aux.				CheckGroupRecursiveCapture,1,sg2,sg,g,f,min,max,ext_params)
+		--			end
+		--			sg:RemoveCard(c)
+		--			return res
+		--		end
+		--	end
+		--	return _CheckGroupRecursiveCapture(c,sg,g,f,min,max,ext_params)
+		--end
+		_IsCanBeRitualMaterial=Card.IsCanBeRitualMaterial
+		function Card.IsCanBeRitualMaterial(c,sc)
+			if Duel.GetCurrentChain()~=0 then
+				local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
+				if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 and aux.GetValueType(sc)=="Card" and sc:GetFlagEffectLabel(7439100)==7439100+id then
+					sc:ResetFlagEffect(7439100)
+				end
+			end
+			return _IsCanBeRitualMaterial(c,sc)
+		end
+		_DiscardHand=Duel.DiscardHand
+		function Duel.DiscardHand(tp,f,min,max,reason,cg,...)
+			if Duel.GetCurrentChain()~=0 then
+				local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
+				local ag=Party_time_table[7439100+id]
+				if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
+					local g=Duel.GetMatchingGroup(f,tp,LOCATION_HAND,0,cg,...)
+					if not g or g:GetCount()<=0 then return false end
+					if aux.GetValueType(ag)=="Group" then 
+						ag=ag:Filter(cm.rfilter,nil,7439100+id)
+						if ag:GetCount()~=0 then
+							g:Merge(ag) 
+						end
+					end
+					local sg=Party_time_RandomSelect(g,0,Party_time_roll(min,max))
+					return Duel.SendtoGrave(sg,reason+REASON_DISCARD)
+				end
 			end
 			return _DiscardHand(tp,f,min,max,reason,cg,...)
 		end

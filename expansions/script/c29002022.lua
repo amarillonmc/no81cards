@@ -41,10 +41,6 @@ function c29002022.xyzop(e,tp,chk)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function c29002022.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,29002022)==0 end
-	Duel.RegisterFlagEffect(tp,29002022,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
-end
 function c29002022.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)

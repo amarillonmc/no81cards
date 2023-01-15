@@ -34,9 +34,8 @@ end
 function cm.filter(c)
 	return c:IsAttribute(ATTRIBUTE_DARK)
 end
-function cm.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_equal,chk)
-	if bit.band(c:GetType(),0x81)~=0x81 or (filter and not filter(c,e,tp,chk))
-		or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
+function cm.rtf(c,filter,e,tp,m1,m2,level_function,greater_or_equal)
+	if bit.band(c:GetType(),0x81)~=0x81 or (filter and not filter(c,e,tp)) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
 	local mg=m1:Filter(Card.IsCanBeRitualMaterial,c,c)
 	if m2 then
 		mg:Merge(m2)
@@ -52,31 +51,35 @@ function cm.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_e
 	aux.GCheckAdditional=nil
 	return res
 end
-function cm.spfilter3(c,e,tp,mg)
-	return cm.DragWizard(c) and bit.band(c:GetType(),0x81)==0x81 and c:IsAbleToGrave()
-		and Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_GRAVE,0,1,nil,cm.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
-end
-function cm.spfilter4(c)
-	return cm.DragWizard(c) and bit.band(c:GetType(),0x81)==0x81 and c:IsAbleToGrave()
-	   -- and Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_GRAVE,0,1,nil,cm.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
+function cm.f3(c,filter,e,tp,m1,m2,level_function,greater_or_equal,rg)
+	local mchk=cm.DragWizard(c) and bit.band(c:GetType(),0x81)==0x81 and c:IsAbleToGrave() 
+	if mchk and cm.rtf(c,filter,e,tp,m1,m2,level_function,greater_or_equal) then
+		rg:AddCard(c)
+	end
+	return mchk and #rg>0
 end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local mg=Duel.GetRitualMaterial(tp)  
-		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and Duel.IsExistingMatchingCard(cm.spfilter4,tp,LOCATION_DECK,0,1,nil)
+		local mg=Duel.GetRitualMaterial(tp) 
+		local rg=Duel.GetMatchingGroup(cm.rtf,tp,LOCATION_GRAVE,0,nil,cm.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
+		return Duel.IsExistingMatchingCard(cm.f3,tp,LOCATION_DECK,0,1,nil,cm.filter,e,tp,mg,mg2,Card.GetLevel,"Greater",rg)
 	end
-	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE) 
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE) 
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function cm.rtop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local mg=Duel.GetRitualMaterial(tp)
+	local mg=Duel.GetRitualMaterial(tp) 
+	local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.rtf),tp,LOCATION_GRAVE,0,nil,cm.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local ag=Duel.SelectMatchingCard(tp,cm.spfilter4,tp,LOCATION_DECK,0,1,1,nil)
-	if ag:GetCount()>0 and Duel.SendtoGrave(ag,REASON_EFFECT)~=0 then
+	local ag=Duel.SelectMatchingCard(tp,cm.f3,tp,LOCATION_DECK,0,1,1,nil,cm.filter,e,tp,mg,mg2,Card.GetLevel,"Greater",rg)
+	if #ag>0 and Duel.SendtoGrave(ag,REASON_EFFECT)~=0 then
+		local agc=ag:GetFirst()
+		if agc:IsLocation(LOCATION_GRAVE) and agc:IsAttribute(ATTRIBUTE_DARK) and agc:IsType(TYPE_RITUAL) then
+			rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.rtf),tp,LOCATION_GRAVE,0,nil,cm.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
+		end
+		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(aux.RitualUltimateFilter),tp,LOCATION_GRAVE,0,1,1,nil,cm.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
+		local tg=rg:FilterSelect(tp,aux.NecroValleyFilter(cm.rtf),1,1,nil,cm.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
 		local tc=tg:GetFirst()
 		if tc then
 			mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)

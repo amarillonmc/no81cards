@@ -48,7 +48,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(tg,REASON_EFFECT) 
 end
 function s.dfilter(c,tp)
-	return c:IsPreviousControler(1-tp) and c:IsComplexReason(REASON_EFFECT+REASON_DESTROY)
+	return c:IsPreviousControler(1-tp) and c:IsReason(REASON_EFFECT)
 end
 function s.damcon(e,tp,eg)
 	return eg:IsExists(s.dfilter,1,nil,tp)

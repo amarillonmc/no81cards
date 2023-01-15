@@ -7,11 +7,16 @@ function cm.initial_effect(c)
     e1:SetCode(EVENT_FREE_CHAIN)
     e1:SetHintTiming(0,TIMING_END_PHASE)
     e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+    e1:SetCondition(cm.condition)
     e1:SetOperation(cm.activate)
     c:RegisterEffect(e1)
 end
 function cm.actfilter(c)
-    return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9d)
+    return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9d) and not c:IsCode(m)
+end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+    local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+    return g:IsExists(cm.actfilter,1,nil)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
@@ -50,7 +55,7 @@ function cm.actcon(con)
     end
 end
 function cm.cfilter(c)
-    return c:IsSetCard(0x9d) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+    return c:IsSetCard(0x9d) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function cm.costchk(e,te_or_c,tp)
     return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE,0,1,nil)
