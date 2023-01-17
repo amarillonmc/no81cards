@@ -130,7 +130,6 @@ function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
         return g:CheckSubGroup(cm.fselect,1,maxlink,tp)
     end
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE)
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
     if not Duel.IsPlayerCanSpecialSummonCount(tp,2) then return end
@@ -147,15 +146,6 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
         local tc=sg:GetFirst()
         while tc do
             Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
-            local e1=Effect.CreateEffect(e:GetHandler())
-            e1:SetType(EFFECT_TYPE_SINGLE)
-            e1:SetCode(EFFECT_DISABLE)
-            e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-            tc:RegisterEffect(e1)
-            local e2=e1:Clone()
-            e2:SetCode(EFFECT_DISABLE_EFFECT)
-            e2:SetValue(RESET_TURN_SET)
-            tc:RegisterEffect(e2)
             tc=sg:GetNext()
         end
         Duel.SpecialSummonComplete()

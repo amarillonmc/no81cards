@@ -45,7 +45,7 @@ function cm.filter(c)
 end
 function cm.spfilter(c,e,tp,check)
 	return (c:IsCode(40009960) or aux.IsCodeListed(c,40009960) and c:IsType(TYPE_MONSTER)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and (check or cm.DragonicOverlord(c)) and not c:IsCode(m)
+		and (check or c:IsCode(40009960)) and not c:IsCode(m)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

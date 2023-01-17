@@ -53,14 +53,14 @@ end
 function c83000069.tgfilter(c)
 	return c:IsRace(RACE_ZOMBIE) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
-function c83000069.spfilter(c,e,tp)
+function c83000069.thfilter(c,e,tp)
 	return c:IsSetCard(0xbe) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c83000069.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local g=Duel.GetMatchingGroup(c83000069.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
 		return g:GetClassCount(Card.GetCode)>1
-			and Duel.IsExistingMatchingCard(c83000069.spfilter,tp,LOCATION_DECK,0,1,nil) 
+			and Duel.IsExistingMatchingCard(c83000069.thfilter,tp,LOCATION_DECK,0,1,nil) 
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
@@ -72,11 +72,12 @@ function c83000069.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tg1=g:SelectSubGroup(tp,aux.dncheck,false,2,2)
 	if Duel.SendtoGrave(tg1,REASON_EFFECT)~=0 and tg1:IsExists(Card.IsLocation,2,nil,LOCATION_GRAVE)
 		then Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c83000069.spfilter,tp,LOCATION_DECK,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+		local g=Duel.SelectMatchingCard(tp,c83000069.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		local tc=g:GetFirst()
+		if tc then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
+		end
 	end
 end
 function c83000069.thcon(e,tp,eg,ep,ev,re,r,rp)
@@ -84,14 +85,16 @@ function c83000069.thcon(e,tp,eg,ep,ev,re,r,rp)
 	if tc:GetFlagEffectLabel(83000069)~=e:GetLabel() then
 		e:Reset()
 		return false
-	else return true end
+	else 
+		return true 
+	end
 end
 function c83000069.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(e:GetLabelObject(),nil,REASON_EFFECT)
 end
 -----------
 function c83000069.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsAttack(800) and c:IsDefense(1000) and and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsAttack(800) and c:IsDefense(1000) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c83000069.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

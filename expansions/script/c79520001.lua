@@ -53,6 +53,7 @@ function c79520001.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c79520001.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,nil) 
 	if g:GetCount()<=0 then return end
 	local og=g:Select(tp,1,1,nil)

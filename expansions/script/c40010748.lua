@@ -42,7 +42,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	local rc=g:GetFirst()
-	if rc and Duel.SendtoHand(rc,nil,REASON_EFFECT)~=0 and rc:IsLocation(LOCATION_HAND) and bit.band(rc:GetCode(),40009960)>0 then
+	if rc and Duel.SendtoHand(rc,nil,REASON_EFFECT)~=0 and rc:IsLocation(LOCATION_HAND) and rc:GetCode()==40009960 then
 		Duel.ConfirmCards(1-tp,rc)
 		local g2=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND,0,nil,e,tp)
 		if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
