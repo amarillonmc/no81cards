@@ -35,7 +35,7 @@ function cm.thfilter(c)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local b1=Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_REMOVED,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+	local b1=Duel.IsExistingMatchingCard(nil,tp,LOCATION_REMOVED,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 	local g1=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_GRAVE,0,nil)
 	local g2=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,nil)
 	local b2=#g1>0 and #g2>0
@@ -51,7 +51,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if op==0 then
 		e:SetDescription(aux.Stringid(m,2))
 		e:SetCategory(CATEGORY_DESTROY)
-		local g3=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)
+		local g3=Duel.GetMatchingGroup(nil,tp,LOCATION_REMOVED,0,nil)
 		local g4=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g3,1,tp,LOCATION_REMOVED)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g4,1,0,0)
@@ -66,7 +66,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local ct,op=e:GetLabel()
 	if op==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local rg=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,ct,nil)
+		local rg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,ct,nil)
 		if #rg>0 and Duel.SendtoGrave(rg,REASON_EFFECT+REASON_RETURN)~=0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)

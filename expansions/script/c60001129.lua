@@ -38,7 +38,7 @@ function Color_Song.AddCount(c)
 		extraCount = {4,4}
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
 		e1:SetCountLimit(1)
 		e1:SetOperation(Color_Song.AddCount_Op)
 		Duel.RegisterEffect(e1,0)
@@ -48,6 +48,8 @@ end
 function Color_Song.AddCount_Op(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m-1)>=4 then Color_Song.AddC(tp) end
 	if Duel.GetFlagEffect(1-tp,m-1)>=4 then Color_Song.AddC(1-tp) end
+	Duel.ResetFlagEffect(tp,m-1)
+	Duel.ResetFlagEffect(1-tp,m-1)
 end
 function Color_Song.AddC(tp)
 	if not Color_Song.AddCount_check then return end
@@ -185,7 +187,7 @@ function Color_Song.UseEffect(e,tp)
 			Color_Song.Hunter_Op(e,tp)
 		end
 		Duel.RegisterFlagEffect(tp,m+opval[op]-1,RESET_PHASE+PHASE_END,0,1)
-		Duel.RegisterFlagEffect(tp,m-1,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(tp,m-1,RESET_PHASE+PHASE_DRAW,0,1)
 	end
 end
 --Orange

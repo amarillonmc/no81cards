@@ -26,6 +26,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP + EFFECT_FLAG_DELAY)
+	e2:SetCondition(function(e) return e:GetHandler():GetFlagEffect(id)>0 end)
 	e2:SetOperation(s.negop)
 	c:RegisterEffect(e2)
 	--special summon other
@@ -50,19 +51,19 @@ function s.spfilter(c)
 	return c:IsSetCard(0x144e) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 --function s.MZFilter(c, tp)
---	return c:IsLocation(LOCATION_MZONE) and c:GetSequence() < 5 and c:IsControler(tp)
+--  return c:IsLocation(LOCATION_MZONE) and c:GetSequence() < 5 and c:IsControler(tp)
 --end
 --function s.ChkfMMZ(sumcount)
---	return function(sg, e, tp, mg)
---		return sg:FilterCount(s.MZFilter, nil, tp) + Duel.GetLocationCount(tp, LOCATION_MZONE) >= sumcount
---	end
+--  return function(sg, e, tp, mg)
+--	  return sg:FilterCount(s.MZFilter, nil, tp) + Duel.GetLocationCount(tp, LOCATION_MZONE) >= sumcount
+--  end
 --end
 function s.spcost(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,nil) end
---	if chk == 0 then
---		return Duel.GetLocationCount(tp, LOCATION_MZONE) > -2 and #rg > 1 and
---			rg:CheckSubGroup(s.ChkfMMZ(1), 2, 2, tp) 
---	end
+--  if chk == 0 then
+--	  return Duel.GetLocationCount(tp, LOCATION_MZONE) > -2 and #rg > 1 and
+--		  rg:CheckSubGroup(s.ChkfMMZ(1), 2, 2, tp) 
+--  end
 	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,2,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
@@ -77,7 +78,7 @@ function s.spop(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.GetLocationCountFromEx(tp)>0 and Duel.SpecialSummon(c, 1, tp, tp, true, true, POS_FACEUP) ~= 0 then
 		c:CompleteProcedure()
---		c:RegisterFlagEffect(id, RESET_EVENT + RESETS_STANDARD, 0, 0)
+		c:RegisterFlagEffect(id, RESET_EVENT + RESETS_STANDARD, 0, 0)
 	end
 end
 function s.negop(e, tp, eg, ep, ev, re, r, rp)

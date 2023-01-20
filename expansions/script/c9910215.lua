@@ -23,28 +23,14 @@ end
 function c9910215.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAINING)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetOperation(c9910215.chop)
-	e1:SetLabel(0)
+	e1:SetOperation(c9910215.operation)
 	Duel.RegisterEffect(e1,tp)
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_END)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	e2:SetOperation(c9910215.operation)
-	e2:SetLabelObject(e1)
-	Duel.RegisterEffect(e2,tp)
-end
-function c9910215.chop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentChain()==2 and re then
-		if rp==tp then e:SetLabel(1) else e:SetLabel(2) end
-	end
 end
 function c9910215.operation(e,tp,eg,ep,ev,re,r,rp)
-	local lab=e:GetLabelObject():GetLabel()
-	e:GetLabelObject():SetLabel(0)
-	if lab==1 then
+	if Duel.GetCurrentChain()~=2 then return end
+	if rp==tp then
 		local dg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 		if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT)
 			and dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910215,0)) then
@@ -57,7 +43,7 @@ function c9910215.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(sg,REASON_EFFECT)
 		end
 	end
-	if lab==2 and Duel.GetFlagEffect(tp,9910215)<3 then
+	if rp~=tp and Duel.GetFlagEffect(tp,9910215)<3 then
 		Duel.Hint(HINT_CARD,0,9910215)
 		Duel.Draw(tp,1,REASON_EFFECT)
 		Duel.RegisterFlagEffect(tp,9910215,RESET_PHASE+PHASE_END,0,1)
