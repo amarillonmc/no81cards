@@ -104,7 +104,7 @@ function cm.actarget(e,te,tp)
 end
 function cm.accost(e,te,tp)
 	local count=e:GetHandler():GetEquipCount()
-	return Duel.IsPlayerCanDiscardDeck(tp,count)
+	return Duel.IsPlayerCanDiscardDeckAsCost(tp,count)
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	if c15004386[0] then return end
