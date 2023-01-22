@@ -65,11 +65,13 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		count=count-1
 	end
 	local cg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if count<5 and cg and cg:GetCount()>0 and Duel.IsExistingMatchingCard(cm.thfilter,c:GetOwner(),LOCATION_DECK,0,cg:GetCount(),nil)
-			and Duel.SelectYesNo(c:GetOwner(),aux.Stringid(m,3)) then
+	local g=Duel.GetMatchingGroup(cm.thfilter,c:GetOwner(),LOCATION_DECK,0,nil)
+	if count<5 and cg and cg:GetCount()>0 and
+		   g:CheckSubGroup(aux.dncheck,cg:GetCount(),cg:GetCount()) and Duel.SelectYesNo(c:GetOwner(),aux.Stringid(m,3)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,c:GetOwner(),HINTMSG_ATOHAND)
-		local sg=Duel.SelectMatchingCard(c:GetOwner(),cm.thfilter,c:GetOwner(),LOCATION_DECK,0,cg:GetCount(),cg:GetCount(),nil)
+		--local sg=Duel.SelectMatchingCard(c:GetOwner(),cm.thfilter,c:GetOwner(),LOCATION_DECK,0,cg:GetCount(),cg:GetCount(),nil)
+		local sg=g:SelectSubGroup(c:GetOwner(),aux.dncheck,false,cg:GetCount(),cg:GetCount())
 		if sg:GetCount()>0 then
 			Duel.SendtoHand(sg,c:GetOwner(),REASON_EFFECT)
 			Duel.ConfirmCards(1-c:GetOwner(),sg)

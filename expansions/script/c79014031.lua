@@ -14,14 +14,13 @@ function c79014031.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,79014031)
+	e1:SetProperty(EFFECT_FLAG_DELAY) 
 	e1:SetTarget(c79014031.thtg)
 	e1:SetOperation(c79014031.thop)
 	c:RegisterEffect(e1)
 end
 function c79014031.thfilter(c)
-	return c:IsType(TYPE_SPIRIT) and c:IsLevel(4) and not c:IsCode(79014031) and c:IsAbleToHand()
+	return c:IsType(TYPE_SPIRIT) and c:IsRace(RACE_FAIRY) and c:IsLevel(4) and not c:IsCode(79014031) and c:IsAbleToHand()
 end
 function c79014031.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79014031.thfilter,tp,LOCATION_DECK,0,1,nil) end

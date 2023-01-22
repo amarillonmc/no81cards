@@ -7,6 +7,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
+	e1:SetCountLimit(1,22348141)
 	e1:SetCondition(c22348141.condition)
 	e1:SetCost(c22348141.cost)
 	e1:SetTarget(c22348141.target)
@@ -26,16 +27,20 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_REMOVE)
 	e3:SetCountLimit(1,22349141)
+	e3:SetCondition(c22348141.effcon)
 	e3:SetTarget(c22348141.efftg)
 	e3:SetOperation(c22348141.effop)
 	c:RegisterEffect(e3)
+	c22348141.SetCard_diyuemo=true
 end
 function c22348141.handcon(e)
 	return Duel.IsEnvironment(94585852)
 end
-
+function c22348141.effcon(e,tp,eg,ep,ev,re,r,rp)
+	return re:GetHandler().SetCard_diyuemo
+end
 function c22348141.cfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0x705) and c:IsAbleToRemoveAsCost()
+	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c.SetCard_diyuemo and c:IsAbleToRemoveAsCost()
 end
 function c22348141.condition(e,tp,eg,ep,ev,re,r,rp)
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
@@ -60,7 +65,7 @@ function c22348141.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348141.efffilter(c,e,tp,eg,ep,ev,re,r,rp)
-	if not (c:IsSetCard(0x705) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove())
+	if not (c.SetCard_diyuemo and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove())
 	then return false end
 	local te=c.onfield_effect
 	if not te then return false end
@@ -68,16 +73,30 @@ function c22348141.efffilter(c,e,tp,eg,ep,ev,re,r,rp)
 	return not tg or tg and tg(e,tp,eg,ep,ev,re,r,rp,0)
 end
 function c22348141.efftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348141.efffilter,tp,LOCATION_DECK+LOCATION_MZONE,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	if chk==0 then return (not (g:GetCount()==1 and g:GetFirst():IsCode(22348136)) and
+	Duel.IsExistingMatchingCard(c22348141.efffilter,tp,LOCATION_DECK+LOCATION_MZONE,0,1,nil,e,tp,eg,ep,ev,re,r,rp))
+	or((g:GetCount()==1 and g:GetFirst():IsCode(22348136)) and
+	Duel.IsExistingMatchingCard(c22348141.efffilter,tp,LOCATION_DECK+LOCATION_MZONE,0,1,g,e,tp,eg,ep,ev,re,r,rp))
+	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK+LOCATION_MZONE)
 end
 function c22348141.effop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c22348141.efffilter,tp,LOCATION_DECK+LOCATION_MZONE,0,1,1,nil,e,tp)
-	local tc=g:GetFirst()
+	if g:GetCount()==1 and g:GetFirst():IsCode(22348136) then
+	local tg=Duel.SelectMatchingCard(tp,c22348141.efffilter,tp,LOCATION_DECK+LOCATION_MZONE,0,1,1,g,e,tp)
+	local tc=tg:GetFirst()
 	local te=tc.onfield_effect
 	local op=te:GetOperation()
 	if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 and op then op(e,tp,eg,ep,ev,re,r,rp) end
+	else
+	local tg=Duel.SelectMatchingCard(tp,c22348141.efffilter,tp,LOCATION_DECK+LOCATION_MZONE,0,1,1,nil,e,tp)
+	local tc=tg:GetFirst()
+	local te=tc.onfield_effect
+	local op=te:GetOperation()
+	if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 and op then op(e,tp,eg,ep,ev,re,r,rp) end
+	end
 end
 
 

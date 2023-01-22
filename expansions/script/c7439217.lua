@@ -28,7 +28,6 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_TOHAND)
 	e3:SetDescription(aux.Stringid(m,2))
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
@@ -81,12 +80,11 @@ function cm.thfilter(c,tid)
 	return c:GetTurnID()==tid and not c:IsReason(REASON_RETURN) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local tid=Duel.GetTurnCount()
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(1-tp) and cm.thfilter(chkc,tid) end
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local tid=Duel.GetTurnCount()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,0,LOCATION_GRAVE,1,1,nil,tid)
 	if #g>0 then

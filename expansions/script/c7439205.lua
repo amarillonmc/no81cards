@@ -52,11 +52,11 @@ function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,1-tp,LOCATION_HAND)
 end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local c=e:GetHandler()
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter1,c:GetOwner(),LOCATION_HAND,0,1,1,nil,e,c:GetOwner())
-	if g:GetCount()>0 and Duel.SpecialSummon(g,0,c:GetOwner(),c:GetOwner(),false,false,POS_FACEUP)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if Duel.GetLocationCount(c:GetOwner(),LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,c:GetOwner(),HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(c:GetOwner(),cm.spfilter1,c:GetOwner(),LOCATION_HAND,0,1,1,nil,e,c:GetOwner())
+	if g:GetCount()>0 and Duel.SpecialSummon(g,0,c:GetOwner(),c:GetOwner(),false,false,POS_FACEUP)>0 and Duel.GetLocationCount(c:GetOwner(),LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.spfilter2,c:GetOwner(),LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,c:GetOwner()) and Duel.SelectYesNo(c:GetOwner(),aux.Stringid(m,3)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,c:GetOwner(),HINTMSG_SPSUMMON)

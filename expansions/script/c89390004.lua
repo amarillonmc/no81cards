@@ -118,17 +118,18 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,2,REASON_EFFECT)>0 then
         Duel.BreakEffect()
-        local g1=Duel.GetDecktopGroup(tp,2)
-        local g2=Duel.GetDecktopGroup(1-tp,2)
+        local g1=Duel.GetDecktopGroup(tp,1)
+        local g2=Duel.GetDecktopGroup(1-tp,1)
         g1:Merge(g2)
         Duel.DisableShuffleCheck()
-        if Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)>0 then
+        if Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)>0 and Duel.GetFlagEffect(tp,m)==0 then
             local ct=Duel.GetCurrentChain()
             if type(cm[ct+1])=="table" then
                 local re,rp=table.unpack(cm[ct+1])
                 if rp==tp then
                     Duel.BreakEffect()
                     Duel.Draw(tp,1,REASON_EFFECT)
+                    Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
                 end
             end
         end

@@ -46,6 +46,7 @@ function cm.initial_effect(c)
 	e4:SetLabelObject(e3)
 	c:RegisterEffect(e4)
 	c22348143.onfield_effect=e2
+	c22348143.SetCard_diyuemo=true
 	
 end
 function c22348143.ovfilter(c)
@@ -60,7 +61,7 @@ function c22348143.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,600)
 end
 function c22348143.cfilter(c)
-	return c:IsSetCard(0x705) and c:IsLocation(LOCATION_REMOVED)
+	return c.SetCard_diyuemo and c:IsLocation(LOCATION_REMOVED)
 end
 function c22348143.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

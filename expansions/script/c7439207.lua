@@ -53,9 +53,9 @@ function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local c=e:GetHandler()
+	if Duel.GetLocationCount(c:GetOwner(),LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,c:GetOwner(),HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(c:GetOwner(),cm.spfilter1,c:GetOwner(),LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,c:GetOwner())
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,c:GetOwner(),c:GetOwner(),false,false,POS_FACEUP)

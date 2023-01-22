@@ -45,7 +45,7 @@ function c79014035.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end 
 function c79014035.sumfil(c)
-	return c:IsSummonable(true,nil) and c:IsType(TYPE_SPIRIT) and c:IsLevel(4) 
+	return c:IsSummonable(true,nil) and c:IsRace(RACE_FAIRY) and c:IsType(TYPE_SPIRIT) and c:IsLevel(4) 
 end
 function c79014035.musck(c) 
 	return c:IsCode(79014036,79014037) 

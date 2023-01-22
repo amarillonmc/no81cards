@@ -31,6 +31,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(c22348139.desop)
 	c:RegisterEffect(e3)
 	c22348139.onfield_effect=e3
+	c22348139.SetCard_diyuemo=true
 end
 function cm.srfilter(c)
 	return c:IsAbleToRemove() and c:IsSetCard(0x45) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND))

@@ -14,14 +14,13 @@ function c79014033.initial_effect(c)
 	e1:SetCategory(CATEGORY_SUMMON)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,79014033)
+	e1:SetProperty(EFFECT_FLAG_DELAY) 
 	e1:SetTarget(c79014033.sumtg)
 	e1:SetOperation(c79014033.sumop)
 	c:RegisterEffect(e1)
 end
 function c79014033.sumfil(c)
-	return c:IsSummonable(true,nil) and c:IsType(TYPE_SPIRIT) and not c:IsCode(79014033)
+	return c:IsSummonable(true,nil) and c:IsRace(RACE_FAIRY) and c:IsType(TYPE_SPIRIT) and not c:IsCode(79014033)
 end
 function c79014033.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c79014033.sumfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end 

@@ -122,14 +122,14 @@ function c79014037.xxop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(c79014037.damval)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,tp) 
-	c:SetHint(CHINT_NUMBER,flag*500)
+	c:SetHint(CHINT_NUMBER,flag*800)
 	end 
 end 
 function c79014037.damval(e,re,val,r,rp,rc) 
 	local x=e:GetLabel() 
-	if x*500>val then 
+	if x*800>val then 
 	return 0   
-	else return val-x*500 end
+	else return val-x*800 end
 end
 
 

@@ -36,6 +36,9 @@ function cm.initial_effect(c)
 	e6:SetCode(EVENT_REMOVE)
 	c:RegisterEffect(e6)
 end
+function cm.tgfilter(c)
+	return c:GetSequence()<5
+end
 function cm.movfilter1(c,seq,e)
 	return c:GetSequence()<seq and not c:IsImmuneToEffect(e)
 end
@@ -43,7 +46,7 @@ function cm.movfilter2(c,seq,e)
 	return not c:IsImmuneToEffect(e)
 end
 function cm.movfilter3(c,seq,e)
-	return c:GetSequence()>seq and not c:IsImmuneToEffect(e)
+	return c:GetSequence()>seq and not c:IsImmuneToEffect(e) and c:GetSequence()<5
 end
 function cm.centerfilter1(c,e)
 	local seq=c:GetSequence()+1
@@ -90,7 +93,7 @@ end
 function cm.movop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)+Duel.GetLocationCount(1-tp,LOCATION_MZONE)==0 then
-		local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 		return false
 	end

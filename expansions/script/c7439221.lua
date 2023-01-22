@@ -46,8 +46,8 @@ end
 function cm.slop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD+LOCATION_HAND)>=8 then
-		local b1=Duel.GetFieldGroupCount(1-c:GetOwner(),0,LOCATION_DECK)>=5
-		local b2=Duel.GetFieldGroupCount(1-c:GetOwner(),0,LOCATION_HAND)>=2
+		local b1=Duel.GetFieldGroupCount(c:GetOwner(),0,LOCATION_DECK)>=5
+		local b2=Duel.GetFieldGroupCount(c:GetOwner(),0,LOCATION_HAND)>=2
 		local g3=Duel.GetMatchingGroup(Card.IsControlerCanBeChanged,c:GetOwner(),0,LOCATION_MZONE,nil)
 		local b3=g3:GetCount()>0
 		if not b1 and not b2 and not b3 then return end

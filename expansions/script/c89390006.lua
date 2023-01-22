@@ -5,7 +5,7 @@ function cm.initial_effect(c)
     c:SetSPSummonOnce(m)
     c:EnableReviveLimit()
     aux.AddFusionProcFunRep(c,cm.ffilter,2,true)
-    aux.AddContactFusionProcedure(c,cm.mfilter,LOCATION_DECK,0,Duel.Remove,POS_FACEUP,REASON_COST)
+    aux.AddContactFusionProcedure(c,cm.mfilter,LOCATION_DECK,0,Duel.Remove,POS_FACEUP,REASON_COST+REASON_MATERIAL)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_SINGLE)
     e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -60,30 +60,19 @@ function cm.ffilter(c,fc,sub,mg,sg)
 end
 function cm.mfilter(c)
     local tp=c:GetControler()
-    local copyt=cm[tp]
-    local exg=Group.CreateGroup()
-    for k,v in pairs(copyt) do
-        if k and v then exg:AddCard(k) end
-    end
-    return exg:IsExists(Card.IsFusionCode,1,nil,c:GetFusionCode()) and c:IsAbleToRemoveAsCost()
+    local rc=c:GetFusionCode()
+    return cm[tp][rc] and cm[tp][rc]>=2 and c:IsAbleToRemoveAsCost()
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
     return e:GetHandler():GetMaterial():IsExists(Card.IsFusionCode,1,nil,89390004)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-    local ac=Duel.AnnounceCard(tp,TYPE_MONSTER,OPCODE_ISTYPE)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+    local tg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+    if tg:GetCount()<=0 then return end
+    local ac=tg:GetFirst():GetCode()
     c:SetHint(CHINT_CARD,ac)
-    local e1=Effect.CreateEffect(c)
-    e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-    e1:SetCode(EVENT_CHAIN_SOLVING)
-    e1:SetRange(LOCATION_MZONE)
-    e1:SetLabel(ac)
-    e1:SetCondition(cm.discon)
-    e1:SetOperation(cm.disop)
-    e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_SELF_TURN)
-    c:RegisterEffect(e1)
     local e2=Effect.CreateEffect(c)
     e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
     e2:SetCode(EVENT_ADJUST)
@@ -92,12 +81,6 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
     e2:SetOperation(cm.adjustop)
     e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_SELF_TURN)
     c:RegisterEffect(e2)
-end
-function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-    return re:GetHandler():IsCode(e:GetLabel())
-end
-function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-    Duel.Remove(re:GetHandler(),POS_FACEUP,REASON_EFFECT)
 end
 function cm.adjfilter(c,code)
     return c:IsFaceup() and c:IsCode(code)
@@ -139,13 +122,14 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-    local rc=re:GetHandler()
-    if re:IsActiveType(TYPE_MONSTER) and rc:IsRace(RACE_PSYCHO) then
-        cm[rp][rc]=1
+    if re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsRace(RACE_PSYCHO) then
+        local rc=re:GetHandler():GetCode()
+        if cm[rp][rc] then cm[rp][rc]=cm[rp][rc]+1 else cm[rp][rc]=1 end
     end
 end
 function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
-    cm[rp][re:GetHandler()]=nil
+    local rc=re:GetHandler():GetCode()
+    if cm[rp][rc] then cm[rp][rc]=cm[rp][rc]-1 else cm[rp][rc]=nil end
 end
 function cm.clearop(e,tp,eg,ep,ev,re,r,rp)
     cm[0]={}

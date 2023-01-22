@@ -85,13 +85,13 @@ function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=c:GetOverlayGroup()
 	local tc=g:GetFirst()
-	return c:GetFlagEffectLabel(m)~=nil and (g:GetCount()==0 or c:GetFlagEffectLabel(m)~=tc:GetOriginalCode() or g:GetCount()>1)
+	return c:GetFlagEffectLabel(m)~=nil and (g:GetCount()==0 or c:GetFlagEffectLabel(m)~=tc:GetOriginalCode() or g:GetCount()>1) and c:GetFlagEffect(15000097)==0
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=c:GetOverlayGroup()
 	local tc=g:GetFirst()
-	if tc:GetOriginalCode()==c:GetFlagEffectLabel(m) then return end
+	if tc and tc:GetOriginalCode()==c:GetFlagEffectLabel(m) then return end
 	local cid=c:GetFlagEffectLabel(15010096)
 	c:ResetEffect(cid,RESET_COPY)
 	c:ResetFlagEffect(m)
@@ -109,6 +109,7 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 Debug.Message("跟你打的话，用这张比较好")
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)  
 	local g=Duel.SelectMatchingCard(tp,cm.mtfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)  
+	c:RegisterFlagEffect(15000097,RESET_PHASE+PHASE_END,0,99)
 	if g:GetCount()>0 then  
 		Duel.Overlay(c,g)
 	end  
@@ -128,6 +129,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			while tc:GetOverlayCount()>1 do
 				tc:RemoveOverlayCard(p,1,1,REASON_RULE)
 			end
+			if tc:GetFlagEffect(15000097)~=0 then tc:ResetFlagEffect(15000097) end
 			tc=g:GetNext()
 		end
 	end

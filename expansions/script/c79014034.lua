@@ -41,7 +41,8 @@ function c79014034.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(79014034,0))
 	end 
 	local g=Duel.SelectTarget(tp,c79014034.thfil1,tp,LOCATION_MZONE,0,1,1,nil) 
-	local g1=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil) 
+	local g1=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil)
+	g:Merge(g1) 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
 end 
 function c79014034.acop(e,tp,eg,ep,ev,re,r,rp)
