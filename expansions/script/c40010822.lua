@@ -41,13 +41,15 @@ function cm.checkfilter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and cm.filter(chkc) end
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	if chk==0 then 
 		local check=Duel.IsExistingMatchingCard(cm.checkfilter,tp,LOCATION_MZONE,0,1,nil)
 		return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil,e,tp,check) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,nil) end
+		and g:GetClassCount(Card.GetCode)>=3 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,3,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,3,0,0)
+	local tg=g:SelectSubGroup(tp,aux.dncheck,false,3,3)
+	Duel.SetTargetCard(tg)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,tg,tg:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
