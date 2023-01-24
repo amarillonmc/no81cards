@@ -49,7 +49,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sfilter(c,e,tp)
 	return cm.SilverThorn(c) and c:IsType(TYPE_PENDULUM) and (c:IsAbleToHand()
-		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))) and not c:IsCode(m)
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.sfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end

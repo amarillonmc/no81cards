@@ -49,6 +49,8 @@ function c22348148.recfilter(c,tp)
 	return c:IsControler(tp) and c:IsFaceup() and c:IsSetCard(0x45) and c:IsPreviousControler(tp)
 end
 function c22348148.recon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tp=c:GetControler()
 	return eg:IsExists(c22348148.recfilter,1,e:GetHandler(),tp) and e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED)
 end
 function c22348148.regop(e,tp,eg,ep,ev,re,r,rp)

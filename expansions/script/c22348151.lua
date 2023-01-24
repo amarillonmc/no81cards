@@ -272,7 +272,7 @@ function cm.cefilter(c,tc,ct,e,tp)
 end
 function cm.cfilter(c,e,tp)
 	local ct=Duel.GetMatchingGroupCount(cm.cgfilter,tp,LOCATION_GRAVE,0,nil)
-	return c:IsRace(RACE_BEAST+RACE_BEASTWARRIOR+RACE_WINDBEAST)
+	return c:IsType(TYPE_XYZ) 
 		and c:IsCanBeEffectTarget(e) and c:IsFaceup()
 		and Duel.IsExistingMatchingCard(cm.cefilter,tp,LOCATION_EXTRA,0,1,nil,c,ct,e,tp)
 end
@@ -309,7 +309,7 @@ function cm.tgefilter(c,tc,e,tp,rank)
 		and Duel.GetLocationCountFromEx(tp,tp,tc,c)>0
 end
 function cm.tgfilter(c,e,tp,rank)
-	return c:IsRace(RACE_BEAST+RACE_BEASTWARRIOR+RACE_WINDBEAST)
+	return c:IsType(TYPE_XYZ) 
 		and Duel.IsExistingMatchingCard(cm.tgefilter,tp,LOCATION_EXTRA,0,1,nil,c,e,tp,rank)
 end
 function cm.uptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
