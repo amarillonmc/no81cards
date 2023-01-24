@@ -222,17 +222,6 @@ function c4058.initial_effect(c)
     e23:SetTarget(aux.TargetBoolFunction(Card.IsCode,93217231,80678380,16067089,1683982))
     e23:SetTargetRange(LOCATION_HAND,0)
     c:RegisterEffect(e23)
-    --activate cost
-    local e24=Effect.CreateEffect(c)
-    e24:SetType(EFFECT_TYPE_FIELD)
-    e24:SetCode(EFFECT_ACTIVATE_COST)
-    e24:SetRange(LOCATION_ONFIELD)
-    e24:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e24:SetTargetRange(1,0)
-    e24:SetCost(c4058.costchk)
-    e24:SetTarget(c4058.costtg)
-    e24:SetOperation(c4058.costop2)
-    c:RegisterEffect(e24)
     --special summon
     local e25=Effect.CreateEffect(c)
     e25:SetType(EFFECT_TYPE_FIELD)
@@ -251,7 +240,7 @@ function c4058.splimit(e,se,sp,st)
     return e:GetHandler():GetLocation()~=LOCATION_EXTRA
 end
 function c4058.spfilter(c)
-    return c:IsFusionSetCard(0x50) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToGrave()
+    return c:IsFusionSetCard(0x50) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToGraveAsCost()
 end
 function c4058.fselect(c,tp,mg,sg,tc)
     sg:AddCard(c)
@@ -276,11 +265,11 @@ function c4058.sprop(e,tp,eg,ep,ev,re,r,rp,c)
     local sg=Group.CreateGroup()
     while sg:GetClassCount(Card.GetCode)<4 do
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-        local g=mg:FilterSelect(tp,c4058.fselect,1,1,sg,tp,mg,sg)
+        local g=mg:FilterSelect(tp,c4058.fselect,1,1,sg,tp,mg,sg,c)
         mg:Remove(Card.IsCode,nil,g:GetFirst():GetCode())
         sg:Merge(g)
     end
-    Duel.SendtoGrave(sg,nil,2,REASON_EFFECT+REASON_MATERIAL)
+    Duel.SendtoGrave(sg,nil,2,REASON_COST+REASON_MATERIAL)
 end
 function c4058.efilter(e,te)
     return te:GetOwner()~=e:GetOwner()
@@ -386,10 +375,10 @@ function c4058.condition2(e,tp,eg,ep,ev,re,r,rp)
     return eg:GetCount()==1 and tc:IsRace(RACE_REPTILE) and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
 end
 function c4058.filter3(c,e,tp,lv)
-    return (c:GetLevel()==lv or c:GetRank()==lv) and c:IsRace(RACE_REPTILE) and c:IsCanBeSpecialSummoned(e,nil,tp,false,false,POS_FACEUP)
+    return (c:GetLevel()==lv or c:GetRank()==lv) and c:IsRace(RACE_REPTILE) and c:IsCanBeSpecialSummoned(e,nil,tp,false,false,POS_FACEUP) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c4058.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(c4058.filter3,tp,LOCATION_EXTRA,0,1,nil,e,tp,eg:GetFirst():GetLevel()) and Duel.GetLocationCountFromEx(tp)>0 end
+    if chk==0 then return Duel.IsExistingMatchingCard(c4058.filter3,tp,LOCATION_EXTRA,0,1,nil,e,tp,eg:GetFirst():GetLevel()) end
     e:SetLabel(eg:GetFirst():GetLevel())
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
@@ -496,24 +485,6 @@ function c4058.activate6(e,tp,eg,ep,ev,re,r,rp)
     local sc=e:GetLabelObject()
     if sg:GetCount()~=3 or sc:IsFacedown() or not sc:IsRace(RACE_REPTILE) or sc:IsControler(1-tp) then return end
     Duel.Destroy(sg,REASON_EFFECT)
-end
-function c4058.costtg(e,te,tp)
-    local tc=te:GetHandler()
-    return tc:IsLocation(LOCATION_HAND)
-end
-function c4058.costchk(e,te_or_c,tp)
-    return Duel.GetFlagEffect(tp,16067089)==0
-end
-function c4058.costop2(e,tp,eg,ep,ev,re,r,rp)
-    --oath effects
-    local e1=Effect.CreateEffect(e:GetHandler())
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-    e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-    e1:SetTargetRange(1,0)
-    e1:SetValue(c4058.aclimit)
-    e1:SetReset(RESET_PHASE+PHASE_END)
-    Duel.RegisterEffect(e1,tp)
 end
 function c4058.aclimit(e,re,tp)
     return re:GetHandler():IsLocation(LOCATION_HAND+LOCATION_DECK) and re:GetHandler():IsCode(e:GetHandler():GetCode())
