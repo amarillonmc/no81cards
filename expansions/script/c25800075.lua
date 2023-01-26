@@ -2,6 +2,7 @@
 local m=25800075
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddMaterialCodeList(c,25800156,25800037,25800010)
 	--fusion material
 	c:EnableReviveLimit()
 	--synchro summon

@@ -1,7 +1,8 @@
 --械龙铠·多线程数据流
 function c75124535.initial_effect(c)
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_CYBERSE),aux.FilterBoolFunction(Card.IsCode,75124533),1,1);
-	c:EnableReviveLimit();
+	aux.AddMaterialCodeList(c,75124533)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_CYBERSE),aux.FilterBoolFunction(Card.IsCode,75124533),1,1)
+	c:EnableReviveLimit()
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(75124535,0))

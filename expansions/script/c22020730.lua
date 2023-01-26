@@ -1,5 +1,6 @@
 --无明三段突
 function c22020730.initial_effect(c)
+	aux.AddMaterialCodeList(c,22020690)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.FilterBoolFunction(Card.IsCode,22020690),1,1)
 	c:EnableReviveLimit()
@@ -50,6 +51,7 @@ function c22020730.initial_effect(c)
 	e7:SetOperation(c22020730.rpop)
 	c:RegisterEffect(e7)
 end
+c22020730.material_type=TYPE_SYNCHRO
 function c22020730.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)

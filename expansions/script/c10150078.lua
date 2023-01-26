@@ -1,5 +1,6 @@
 --救世工具龙
 function c10150078.initial_effect(c)
+	aux.AddMaterialCodeList(c,21159309,2403771)
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,c10150078.mfilter1,c10150078.mfilter2,nil,aux.NonTuner(nil),1,1)
 	c:EnableReviveLimit()   
@@ -47,6 +48,7 @@ function c10150078.initial_effect(c)
 	e4:SetOperation(c10150078.spop2)
 	c:RegisterEffect(e4)
 end
+c10150078.material_type=TYPE_SYNCHRO
 function c10150078.spfilter(c,e,tp)
 	return c:IsCode(2403771) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

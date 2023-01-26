@@ -2,6 +2,7 @@ local m=15000917
 local cm=_G["c"..m]
 cm.name="传说未来圣罚 圣修暗凯·无限命运"
 function cm.initial_effect(c)
+	aux.AddMaterialCodeList(c,15000907)
 	c:EnableReviveLimit()
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)
@@ -61,6 +62,7 @@ function cm.initial_effect(c)
 	e7:SetOperation(cm.atop)
 	c:RegisterEffect(e7)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.matfilter1(c,syncard)
 	return c:IsSynchroType(TYPE_TUNER) or (c:IsSynchroType(TYPE_PENDULUM) and c:IsSetCard(0x5f3e))
 end

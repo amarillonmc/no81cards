@@ -1,5 +1,6 @@
 --人理世境 两仪式
 function c22021920.initial_effect(c)
+	aux.AddMaterialCodeList(c,22021900)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_LIGHT),aux.FilterBoolFunction(Card.IsCode,22021900),1,1)
 	c:EnableReviveLimit()

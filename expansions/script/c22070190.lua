@@ -1,5 +1,6 @@
 --星尘龙·天才
 function c22070190.initial_effect(c)
+	aux.AddMaterialCodeList(c,44508094)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_SYNCHRO),aux.FilterBoolFunction(Card.IsCode,44508094),1,1)
 	c:EnableReviveLimit()
@@ -33,6 +34,7 @@ function c22070190.initial_effect(c)
 	e3:SetOperation(c22070190.atop)
 	c:RegisterEffect(e3)
 end
+c22070190.material_type=TYPE_SYNCHRO
 function c22070190.eftg(e,c)
 	return c:IsType(TYPE_SYNCHRO) and c:IsFaceup()
 end

@@ -1,5 +1,6 @@
 --神代丰的铁骑 暴风铃鹿
 function c64800103.initial_effect(c)
+	aux.AddMaterialCodeList(c,64800097)
 	--synchro summon
 	c:EnableReviveLimit()
 	aux.AddSynchroMixProcedure(c,c64800103.matfilter1,nil,nil,c64800103.matfilter2,1,99)

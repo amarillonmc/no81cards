@@ -1,5 +1,6 @@
 --黄金骑士 坂田金时
 function c22022330.initial_effect(c)
+	aux.AddMaterialCodeList(c,22022310)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.FilterBoolFunction(Card.IsCode,22022310),1,1)
 	c:EnableReviveLimit()

@@ -1,5 +1,6 @@
 --救世妖精龙
 function c10150079.initial_effect(c)
+	aux.AddMaterialCodeList(c,21159309,25862681)
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,c10150079.mfilter1,c10150079.mfilter2,nil,aux.NonTuner(nil),1,1)
 	c:EnableReviveLimit()
@@ -36,6 +37,7 @@ function c10150079.initial_effect(c)
 	e3:SetOperation(c10150079.spop)
 	c:RegisterEffect(e3)
 end
+c10150079.material_type=TYPE_SYNCHRO
 function c10150079.spfilter(c,e,tp)
 	return c:IsCode(25862681) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

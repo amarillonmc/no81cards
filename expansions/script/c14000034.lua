@@ -2,6 +2,7 @@
 local m=14000034
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddMaterialCodeList(c,14000021)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.FilterBoolFunction(Card.IsCode,14000021),1,1)
 	c:EnableReviveLimit()

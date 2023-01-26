@@ -1,5 +1,6 @@
 --不灭之诚
 function c22020740.initial_effect(c)
+	aux.AddMaterialCodeList(c,22020720)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.FilterBoolFunction(Card.IsCode,22020720),1,1)
 	c:EnableReviveLimit()
@@ -62,6 +63,7 @@ function c22020740.initial_effect(c)
 	e7:SetOperation(c22020740.rpop)
 	c:RegisterEffect(e7)
 end
+c22020740.material_type=TYPE_SYNCHRO
 function c22020740.condition(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()
 	return Duel.GetLP(tp)<Duel.GetLP(1-tp)

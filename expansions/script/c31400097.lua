@@ -2,6 +2,7 @@ local m=31400097
 local cm=_G["c"..m]
 cm.name="云魔物-三角气流"
 function cm.initial_effect(c)
+	aux.AddMaterialCodeList(c,80825553)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

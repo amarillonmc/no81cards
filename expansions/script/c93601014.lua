@@ -2,6 +2,7 @@
 local m=93601014
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddMaterialCodeList(c,99070951)
 	c:SetSPSummonOnce(m)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsCode,99070951),aux.NonTuner(nil),1)

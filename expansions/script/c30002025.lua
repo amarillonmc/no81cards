@@ -1,5 +1,6 @@
 --PSY骨架王·Σ
 function c30002025.initial_effect(c)
+	aux.AddMaterialCodeList(c,49036338)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xc1),aux.FilterBoolFunction(Card.IsCode,49036338),1,1)
 	c:EnableReviveLimit()

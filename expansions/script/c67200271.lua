@@ -1,5 +1,6 @@
 --觊觎封缄的魔主 莉克修玛
 function c67200271.initial_effect(c)
+	aux.AddMaterialCodeList(c,67200270)
 	c:EnableReviveLimit()
 	--pendulum
 	aux.EnablePendulumAttribute(c,false)
