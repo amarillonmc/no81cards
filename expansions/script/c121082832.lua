@@ -10,6 +10,7 @@ function c121082832.initial_effect(c)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
+    e1:SetCountLimit(1,121082832+EFFECT_COUNT_CODE_DUEL+EFFECT_COUNT_CODE_OATH)
     e1:SetTarget(c121082832.target)
     c:RegisterEffect(e1)
 end

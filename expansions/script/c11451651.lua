@@ -142,9 +142,11 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	local g=eg:Filter(cm.cfilter,nil,tp)
 	local tg=g:Filter(Card.IsAbleToHand,nil)
-	if chk==0 then return e:GetHandler():IsAbleToDeck() and #tg>0 end
+	if chk==0 then return c:IsAbleToDeck() and #tg>0 and c:GetFlagEffect(m+1)==0 end
+	c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tg,1,tp,LOCATION_GRAVE)

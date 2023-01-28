@@ -20,7 +20,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    local g=Duel.GetMatchingGroup(cm.actfilter,tp,0xff,0xff,nil)
+    local g=Duel.GetMatchingGroup(cm.actfilter,tp,0xff,0,nil)
     for tc in aux.Next(g) do
         local e0=Effect.CreateEffect(c)
         e0:SetType(EFFECT_TYPE_FIELD)

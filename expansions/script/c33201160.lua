@@ -83,6 +83,12 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 			local g=Duel.SelectMatchingCard(tp,s.matfilter,tp,0,LOCATION_ONFIELD,1,1,e:GetHandler())
 			if g:GetCount()>0 then
+				for mc in aux.Next(g) do
+					local mg=mc:GetOverlayGroup()
+					if mg:GetCount()~=0 then
+						Duel.Overlay(e:GetHandler(),mg)
+					end
+				end
 				Duel.Overlay(e:GetHandler(),g)
 			end
 		end

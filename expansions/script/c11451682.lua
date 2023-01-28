@@ -1,6 +1,5 @@
 --狂战的牛头人
-local m=11451682
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--pendulum summon
 	c:EnableReviveLimit()
@@ -43,24 +42,40 @@ function cm.initial_effect(c)
 		ge1:SetCode(EVENT_BE_BATTLE_TARGET)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
-		local ge2=Effect.CreateEffect(c)
-		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_BECOME_TARGET)
-		ge2:SetOperation(cm.checkop2)
-		Duel.RegisterEffect(ge2,0)
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetCode(EVENT_BECOME_TARGET)
+		ge3:SetOperation(cm.checkop3)
+		Duel.RegisterEffect(ge3,0)
+		local ge6=Effect.CreateEffect(c)
+		ge6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge6:SetCode(EVENT_ADJUST)
+		ge6:SetOperation(cm.checkop6)
+		Duel.RegisterEffect(ge6,0)
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttackTarget()
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 end
-function cm.checkop2(e,tp,eg,ep,ev,re,r,rp)
+function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:Filter(Card.IsOnField,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 		end
 	end
+end
+function cm.checkop6(e,tp,eg,ep,ev,re,r,rp)
+	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if #tg>0 then
+		for tc in aux.Next(tg) do
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+		end
+	end
+end
+function cm.ctgfilter(c)
+	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(m)==0
 end
 function cm.GetLinkCount(c)
 	if c:GetFlagEffect(m)>0 then

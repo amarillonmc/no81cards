@@ -1,6 +1,5 @@
 --牛头人的饕宴
-local m=11451683
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -29,7 +28,25 @@ function cm.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_BECOME_TARGET)
 	e3:SetCondition(cm.con2)
+	e3:SetOperation(cm.desop1)
 	c:RegisterEffect(e3)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetRange(LOCATION_SZONE)
+	e5:SetCode(EVENT_CHAIN_SOLVED)
+	e5:SetOperation(cm.desop2)
+	e5:SetLabelObject(e3)
+	c:RegisterEffect(e5)
+	local e7=e5:Clone()
+	e7:SetCode(EVENT_CHAIN_NEGATED)
+	c:RegisterEffect(e7)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetCode(EVENT_BATTLED)
+	e6:SetOperation(cm.desop3)
+	e6:SetLabelObject(e3)
+	c:RegisterEffect(e6)
 	--destroy sub
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -48,9 +65,31 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_BECOME_TARGET)
+		ge2:SetCode(EVENT_CHAINING)
 		ge2:SetOperation(cm.checkop2)
-		Duel.RegisterEffect(ge2,0)
+		--Duel.RegisterEffect(ge2,0)
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetCode(EVENT_BECOME_TARGET)
+		ge3:SetOperation(cm.checkop3)
+		--ge3:SetLabelObject(ge2)
+		Duel.RegisterEffect(ge3,0)
+		local ge4=Effect.CreateEffect(c)
+		ge4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge4:SetCode(EVENT_CHAIN_END)
+		ge4:SetOperation(cm.checkop4)
+		ge4:SetLabelObject(ge2)
+		--Duel.RegisterEffect(ge4,0)
+		local ge5=Effect.CreateEffect(c)
+		ge5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge5:SetCode(EVENT_CHAIN_NEGATED)
+		ge5:SetOperation(cm.checkop5)
+		--Duel.RegisterEffect(ge5,0)
+		local ge6=Effect.CreateEffect(c)
+		ge6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge6:SetCode(EVENT_ADJUST)
+		ge6:SetOperation(cm.checkop6)
+		Duel.RegisterEffect(ge6,0)
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
@@ -58,12 +97,52 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	tc:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 function cm.checkop2(e,tp,eg,ep,ev,re,r,rp)
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return end
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	if not g or #g==0 then return end
+	e:SetLabel(ev)
+	local tg=g:Filter(Card.IsOnField,nil)
+	if #tg>0 then
+		for tc in aux.Next(tg) do
+			tc:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD,0,1)
+		end
+	end
+end
+function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
+	--local lab=e:GetLabelObject():GetLabel()
+	--if lab~=ev-1 then return end
 	local tg=eg:Filter(Card.IsOnField,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
 			tc:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD,0,1)
 		end
 	end
+end
+function cm.checkop4(e,tp,eg,ep,ev,re,r,rp)
+	e:GetLabelObject():SetLabel(0)
+end
+function cm.checkop5(e,tp,eg,ep,ev,re,r,rp)
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return end
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	if not g or #g==0 then return end
+	e:SetLabel(ev)
+	local tg=g:Filter(Card.IsOnField,nil)
+	if #tg>0 then
+		for tc in aux.Next(tg) do
+			tc:ResetFlagEffect(m-1)
+		end
+	end
+end
+function cm.checkop6(e,tp,eg,ep,ev,re,r,rp)
+	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if #tg>0 then
+		for tc in aux.Next(tg) do
+			tc:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD,0,1)
+		end
+	end
+end
+function cm.ctgfilter(c)
+	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(m-1)==0
 end
 function cm.tgfilter(c,e)
 	return c:IsCanBeEffectTarget(e) and c:GetFlagEffect(m-1)==0
@@ -111,6 +190,34 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=g:Select(tp,1,1,nil)
 		Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+	end
+end
+function cm.desop1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsLocation(LOCATION_SZONE) and c:IsFaceup() then
+		e:SetLabelObject(re)
+		e:SetLabel(0)
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+	end
+end
+function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if re==e:GetLabelObject():GetLabelObject() and c:GetFlagEffect(m)>0 then
+		if Duel.GetCurrentPhase()==PHASE_DAMAGE and not Duel.IsDamageCalculated() then
+			e:GetLabelObject():SetLabel(1)
+		else
+			if c:IsHasEffect(EFFECT_DISABLE) then return end
+			if not c:IsDisabled() then cm.spop(e,tp,eg,ep,ev,re,r,rp) end
+		end
+	end
+end
+function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local des=e:GetLabelObject():GetLabel()
+	e:GetLabelObject():SetLabel(0)
+	if c:IsHasEffect(EFFECT_DISABLE) then return end
+	if des==1 and not c:IsDisabled() then
+		cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
