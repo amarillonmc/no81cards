@@ -30,6 +30,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+		if chk==0 then return true end
 	 Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
 end
 function cm.ckfilter1(c)

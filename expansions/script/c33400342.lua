@@ -59,14 +59,18 @@ end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	if  Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) and  Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_CARD,0,m)
-		local g=Group.CreateGroup()
+		local ec=re:GetHandler()
+		local g=Group.CreateGroup()			   
 		Duel.ChangeTargetCard(ev,g)
-		Duel.ChangeChainOperation(ev,aux.NULL)
+		Duel.ChangeChainOperation(ev,cm.cgefilter(tp))
+		Duel.SendtoDeck(ec,nil,SEQ_DECKTOP,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g2=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)
-		Duel.SendtoGrave(g2,REASON_EFFECT)
-		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+		Duel.SendtoGrave(g2,REASON_EFFECT)	
 	end
+end
+function cm.cgefilter(tp)
+	 Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 end
 
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -150,7 +154,7 @@ function cm.tgop2(e,tp,eg,ep,ev,re,r,rp)
 						if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 					end
 					Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
-				end				  
+				end		 
 			end
 		end
 	if key==1 then 
@@ -169,10 +173,9 @@ function cm.tgop2(e,tp,eg,ep,ev,re,r,rp)
 			 if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) then 
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 				local g4=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil)
-				local tc=g4:GetFirst()
 				local ck=Duel.SelectOption(tp,aux.Stringid(m,3),aux.Stringid(m,4))
-				if ck==0 then Duel.SendtoDeck(tc,nil,0,REASON_EFFECT) end 
-				if ck==1 then Duel.SendtoDeck(tc,nil,1,REASON_EFFECT) end			 
+				if ck==0 then Duel.SendtoDeck(g4,nil,0,REASON_EFFECT) end 
+				if ck==1 then Duel.SendtoDeck(g4,nil,1,REASON_EFFECT) end		  
 			 end
 		end
 		if tc:IsCode(ac) then  

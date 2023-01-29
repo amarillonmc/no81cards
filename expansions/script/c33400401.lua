@@ -25,7 +25,7 @@ function c33400401.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c33400401.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsSetCard,1,nil,0x6343) or eg:IsExists(Card.IsSetCard,1,nil,0x5343) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==1
+	return (eg:IsExists(Card.IsSetCard,1,nil,0x6343) or eg:IsExists(Card.IsSetCard,1,nil,0x5343)) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==1
 end
 function c33400401.spfilter1(c,e,tp)
 	return c:IsLevelBelow(4) and (c:IsSetCard(0xc342) or c:IsSetCard(0x5342)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -40,8 +40,15 @@ function c33400401.spop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c33400401.spfilter1,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c33400401.desfilter1,tp,LOCATION_ONFIELD,0,1,nil) then 
+		   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		   local g2=Duel.SelectMatchingCard(tp,c33400401.desfilter1,tp,LOCATION_ONFIELD,0,1,1,nil)
+		   Duel.Destroy(g2,REASON_EFFECT)
+		end
 	end
+end
+function c33400401.desfilter1(c)
+	return  c:IsSetCard(0x6343,0x5343,0x5342)
 end
 
 function c33400401.thcon(e,tp,eg,ep,ev,re,r,rp)

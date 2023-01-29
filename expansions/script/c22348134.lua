@@ -70,7 +70,7 @@ function c22348134.cgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
-function c22348134.spfilter(c,e,ep)
+function c22348134.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c22348134.cgtarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -83,11 +83,11 @@ function c22348134.cgoperation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,c22348134.spop)
 end
 function c22348134.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(ep,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,ep,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(ep,c22348134.spfilter,ep,LOCATION_GRAVE,0,1,1,nil,e,ep)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c22348134.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,ep,ep,false,false,POS_FACEUP)
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 

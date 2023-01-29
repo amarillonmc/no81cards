@@ -124,7 +124,7 @@ function c113652145.fop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c113652145.tgcon(e,tp,eg,ep,ev,re,r,rp)
     local tc=eg:GetFirst()
-    return eg:GetCount()==1 and tc:IsPreviousLocation(LOCATION_DECK+LOCATION_EXTRA) and tc:IsControler(tp) and tc:IsType(TYPE_MONSTER) and c:IsFaceup()
+    return eg:GetCount()==1 and tc:IsPreviousLocation(LOCATION_DECK+LOCATION_EXTRA) and tc:IsControler(tp) and tc:IsType(TYPE_MONSTER) and tc:IsFaceup()
 end
 function c113652145.tgfilter(c)
     return c:IsFaceup() and c:IsSetCard(0x23) and c:GetEquipCount()==0
@@ -213,10 +213,10 @@ function c113652145.rfilter(c)
 end
 function c113652145.rcon(e,tp,eg,ep,ev,re,r,rp)
     return bit.band(r,REASON_COST)~=0 and re:IsHasType(0x7e0) and re:IsActiveType(TYPE_XYZ)
-        and Duel.IsExistingMatchingCard(c113652145.rfilter,tp,LOCATION_DECK,0,1,nil)
+        and Duel.IsExistingMatchingCard(c113652145.rfilter,tp,LOCATION_DECK,0,bit.band(ev,0xffff),nil)
 end
 function c113652145.rop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-    local g=Duel.SelectMatchingCard(tp,c113652145.rfilter,tp,LOCATION_DECK,0,1,bit.band(ev,0xffff),nil)
+    local g=Duel.SelectMatchingCard(tp,c113652145.rfilter,tp,LOCATION_DECK,0,bit.band(ev,0xffff),bit.band(ev,0xffff),nil)
     Duel.SendtoGrave(g,REASON_EFFECT)
 end

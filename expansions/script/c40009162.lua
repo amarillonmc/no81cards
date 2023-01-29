@@ -58,7 +58,7 @@ function cm.cfilter(c)
 	return cm.BLASTERBlade(c) and c:IsAbleToDeckAsCost()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (e:GetHandler():IsReleasable() and e:GetHandler():IsLocation(LOCATION_MZONE)) or (e:GetHandler():IsAbleToRemoveAsCost() and e:GetHandler():IsLocation(LOCATION_GRAVE)) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return ((e:GetHandler():IsReleasable() and e:GetHandler():IsLocation(LOCATION_MZONE)) or (e:GetHandler():IsAbleToRemoveAsCost() and e:GetHandler():IsLocation(LOCATION_GRAVE))) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	if e:GetHandler():IsLocation(LOCATION_MZONE) then
