@@ -46,7 +46,7 @@ end
 function c60001168.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:Filter(c60001168.setter,nil):GetFirst()
 	while tc do
-		tc:RegisterFlagEffect(60001168,RESET_PHASE+PHASE_END,0,1)
+		tc:RegisterFlagEffect(60001168,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		tc=eg:GetNext()
 	end
 end
@@ -66,7 +66,7 @@ function c60001168.wxop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c60001168.filter,tp,LOCATION_DECK,0,nil,tp)
 	Duel.NegateSummon(eg)
-	if Duel.Destroy(eg,REASON_EFFECT)>0 and c:GetFlagEffect(60001168)>0 and c:IsLocation(LOCATION_SZONE) and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(60001168,2)) then
+	if Duel.Destroy(eg,REASON_EFFECT)>0 and c:GetFlagEffect(60001168)>0 and c:(c:IsLocation(LOCATION_SZONE) or c:IsPreviousLocation(LOCATION_SZONE)) and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(60001168,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 		local tc=g:FilterSelect(tp,c60001168.filter,1,1,nil,tp):GetFirst()
 		if tc then
@@ -101,6 +101,9 @@ function c60001168.hsop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e1)
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+				tc:RegisterEffect(e2)
 			end
 		end
 	end

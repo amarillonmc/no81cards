@@ -47,7 +47,7 @@ end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:Filter(cm.setter,nil):GetFirst()
 	while tc do
-		tc:RegisterFlagEffect(60001168,RESET_PHASE+PHASE_END,0,1)
+		tc:RegisterFlagEffect(60001168,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		tc=eg:GetNext()
 	end
 end
@@ -95,6 +95,9 @@ function cm.hsop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e1)
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+				tc:RegisterEffect(e2)
 			end
 		end
 	end

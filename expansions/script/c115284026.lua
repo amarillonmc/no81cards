@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then
-        local g=Duel.GetMatchingGroup(Card.IsDiscardable,tp,LOCATION_HAND,0,nil,REASON_EFFECT)
+        local g=Duel.GetMatchingGroup(Card.IsDiscardable,tp,LOCATION_HAND,0,e:GetHandler(),REASON_EFFECT)
         return g:GetCount()>=2 and g:FilterCount(Card.IsSetCard,nil,0xef)>0 and Duel.IsPlayerCanDraw(tp,3)
     end
     Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,2)
@@ -23,7 +23,7 @@ function cm.filter(c,e,tp)
     return c:IsSetCard(0xef) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-    local g=Duel.GetMatchingGroup(Card.IsDiscardable,tp,LOCATION_HAND,0,nil,REASON_EFFECT)
+    local g=Duel.GetMatchingGroup(Card.IsDiscardable,tp,LOCATION_HAND,0,e:GetHandler(),REASON_EFFECT)
     if g:GetCount()<2 or g:FilterCount(Card.IsSetCard,nil,0xef)==0 or not Duel.IsPlayerCanDraw(tp,3) then return end
     Duel.Hint(HINT_SELECTMSG,p,HINTMSG_DISCARD)
     local sg1=g:FilterSelect(tp,Card.IsSetCard,1,1,nil,0xef)
@@ -39,7 +39,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
     end
     if n==2 and Duel.GetMZoneCount(tp)>0 then
         Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
-        local sg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+        local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
         if sg and sg:GetCount()>0 then
             Duel.BreakEffect()
             Duel.SpecialSummon(sg,0,tp,tp,true,false,POS_FACEUP)

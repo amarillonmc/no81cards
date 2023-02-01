@@ -45,7 +45,7 @@ end
 function c60001169.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:Filter(c60001169.setter,nil):GetFirst()
 	while tc do
-		tc:RegisterFlagEffect(60001168,RESET_PHASE+PHASE_END,0,1)
+		tc:RegisterFlagEffect(60001168,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		tc=eg:GetNext()
 	end
 end
@@ -61,7 +61,7 @@ function c60001169.wxop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if not Duel.NegateActivation(ev) then return end
 	if (rc:IsType(TYPE_FIELD) and rc:IsRelateToEffect(re) and rc:IsCanTurnSet() or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) then
-		if c:GetFlagEffect(60001168)>0 and c:IsLocation(LOCATION_SZONE) and rc:IsRelateToEffect(re) and Duel.SelectYesNo(tp,aux.Stringid(60001169,2)) then
+		if c:GetFlagEffect(60001168)>0 and (c:IsLocation(LOCATION_SZONE) or c:IsPreviousLocation(LOCATION_SZONE)) and rc:IsRelateToEffect(re) and Duel.SelectYesNo(tp,aux.Stringid(60001169,2)) then
 			rc:CancelToGrave()
 			Duel.MoveToField(rc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
 			Duel.ChangePosition(rc,POS_FACEDOWN)
@@ -91,6 +91,9 @@ function c60001169.hsop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e1)
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+				tc:RegisterEffect(e2)
 			end
 		end
 	end

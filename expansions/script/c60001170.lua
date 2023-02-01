@@ -45,7 +45,7 @@ end
 function c60001170.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:Filter(c60001170.setter,nil):GetFirst()
 	while tc do
-		tc:RegisterFlagEffect(60001168,RESET_PHASE+PHASE_END,0,1)
+		tc:RegisterFlagEffect(60001168,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		tc=eg:GetNext()
 	end
 end
@@ -66,7 +66,7 @@ function c60001170.wxop(e,tp,eg,ep,ev,re,r,rp)
 	local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
 	local sg=Group.CreateGroup()
 	local c=e:GetHandler()
-	if Duel.NegateActivation(ev) and c:GetFlagEffect(60001168)>0 and c:IsLocation(LOCATION_SZONE) and #g1>0 and #g2>0 and #g3>0 and Duel.SelectYesNo(tp,aux.Stringid(60001170,2)) then
+	if Duel.NegateActivation(ev) and c:GetFlagEffect(60001168)>0 and (c:IsLocation(LOCATION_SZONE) or c:IsPreviousLocation(LOCATION_SZONE)) and #g1>0 and #g2>0 and #g3>0 and Duel.SelectYesNo(tp,aux.Stringid(60001170,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg1=g1:Select(tp,1,1,nil)
 		Duel.HintSelection(sg1)
@@ -103,6 +103,9 @@ function c60001170.hsop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e1)
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+				tc:RegisterEffect(e2)
 			end
 		end
 	end

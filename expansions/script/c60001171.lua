@@ -30,7 +30,7 @@ end
 function c60001171.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:Filter(c60001171.setter,nil):GetFirst()
 	while tc do
-		tc:RegisterFlagEffect(60001168,RESET_PHASE+PHASE_END,0,1)
+		tc:RegisterFlagEffect(60001168,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		tc=eg:GetNext()
 	end
 end
