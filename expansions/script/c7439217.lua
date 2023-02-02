@@ -88,7 +88,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,0,LOCATION_GRAVE,1,1,nil,tid)
 	if #g>0 then
-		Duel.SendtoHand(g:GetFirst(),nil,REASON_EFFECT)
+		Duel.SendtoHand(g:GetFirst(),e:GetHandler():GetOwner(),REASON_EFFECT)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)

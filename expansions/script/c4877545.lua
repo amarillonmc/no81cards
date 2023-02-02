@@ -127,7 +127,7 @@ function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 		 local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	 Duel.Draw(p,d,REASON_EFFECT)
 	end
-	if bit.band(sel,2)~=0 then
+	if bit.band(sel,2)~=0 and c:IsRelateToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 		if g:GetCount()>0 then

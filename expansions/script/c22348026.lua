@@ -54,7 +54,7 @@ function c22348026.con(e,tp,eg,ep,ev,re,r,rp)
 	return re and re:GetHandler():IsSetCard(0x613)
 end  
 function c22348026.filter1(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup()
 end
 function c22348026.filter2(c)
 	return c:IsSetCard(0x613) and c:IsAbleToGrave() and c:IsType(TYPE_SPELL+TYPE_TRAP)
