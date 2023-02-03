@@ -51,7 +51,7 @@ function c33200956.refilter(c)
 	return not c:IsLocation(LOCATION_HAND)
 end
 function c33200956.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local mg=Duel.GetRitualMaterial(tp):Filter(c33200951.refilter,nil)
+	local mg=Duel.GetRitualMaterial(tp):Filter(c33200956.refilter,nil)
 	local mg2=Duel.GetMatchingGroup(Card.IsReleasable,tp,LOCATION_PZONE,0,e:GetHandler())
 	mg:Merge(mg2)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 and mg:GetCount()>0 end
