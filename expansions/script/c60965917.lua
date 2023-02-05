@@ -45,14 +45,14 @@ function c60965917.initial_effect(c)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	c:RegisterEffect(e3)
 	--
-	local e4=Effect.CreateEffect(c)
-	e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetTargetRange(1,0)
-	e4:SetTarget(c60965917.sumlimit)
-	c:RegisterEffect(e4)
+	--local e4=Effect.CreateEffect(c)
+	--e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	--e4:SetType(EFFECT_TYPE_FIELD)
+	--e4:SetRange(LOCATION_SZONE)
+	--e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	--e4:SetTargetRange(1,0)
+	--e4:SetTarget(c60965917.sumlimit)
+	--c:RegisterEffect(e4)
 
 	end
 end

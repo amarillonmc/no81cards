@@ -45,7 +45,7 @@ function c79029520.initial_effect(c)
 	e3:SetOperation(c79029520.spop1)
 	c:RegisterEffect(e3)
 end
-aux.xyz_number[79029520]=62
+c79029520.xyz_number=62
 function c79029520.atkval(e,c)
 	return c:GetOverlayCount()*500
 end

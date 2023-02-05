@@ -21,8 +21,14 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetCode(EFFECT_CANNOT_TRIGGER)
 	e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e1:SetLabelObject(e)
-	e1:SetTarget(cm.aclimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTarget(cm.aclimit)
+	local te=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
+	if te~=e then
+		e1:SetTarget(cm.aclimit2)
+		Duel.RegisterEffect(e1,tp)
+		return
+	end
 	Duel.RegisterEffect(e1,tp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -41,7 +47,10 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.aclimit(e,c)
 	local te=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
-	return c:GetFlagEffect(m)>0 and c:GetFlagEffect(m-1)==0 and (not te or te~=e:GetLabelObject())
+	return c:GetFlagEffect(m)>0 and c:GetFlagEffect(m-1)==0 and (not te or te~=e:GetLabelObject() or te:GetFieldID()~=e:GetLabelObject():GetFieldID())
+end
+function cm.aclimit2(e,c)
+	return c:GetFlagEffect(m)>0
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()

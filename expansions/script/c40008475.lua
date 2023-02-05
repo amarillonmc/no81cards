@@ -127,7 +127,7 @@ function cm.fdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and (mg>=3 or og>0) then
+		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and (mg>=3 or e:GetHandler():GetReasonCard():GetMaterial():IsExists(cm.ogfilter,1,nil)) then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,nil,e,tp)
 			if g2:GetCount()>0 then

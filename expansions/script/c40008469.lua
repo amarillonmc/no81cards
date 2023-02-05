@@ -122,7 +122,7 @@ function cm.fdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local mg=e:GetHandler():GetReasonCard():GetMaterialCount()
 	local og=e:GetHandler():GetReasonCard():GetMaterial():IsExists(cm.ogfilter,1,nil)
-		if Duel.DiscardDeck(tp,3,REASON_EFFECT)~=0 and (mg>=3 or og>0) then
+		if Duel.DiscardDeck(tp,3,REASON_EFFECT)~=0 and (mg>=3 or e:GetHandler():GetReasonCard():GetMaterial():IsExists(cm.ogfilter,1,nil)) then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,nil,e,tp)
 			if g2:GetCount()>0 then

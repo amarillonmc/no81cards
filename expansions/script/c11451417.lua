@@ -1,6 +1,5 @@
 --gathering of dragon palace
-local m=11451417
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -157,7 +156,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetMatchingGroupCount(cm.drfilter,tp,LOCATION_MZONE,0,nil)
-	if chk==0 then return ct~=0 and Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return ct>=2 and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)

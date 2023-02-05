@@ -38,7 +38,7 @@ function c79029521.initial_effect(c)
 	e5:SetCode(EVENT_BECOME_TARGET)
 	c:RegisterEffect(e5)
 end
-aux.xyz_number[79029521]=69
+c79029521.xyz_number=69
 function c79029521.effilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end

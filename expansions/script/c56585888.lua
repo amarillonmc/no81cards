@@ -1,4 +1,4 @@
---ハーピィ・ハーピスト
+--鹰身信徒
 function c56585888.initial_effect(c)
 	--change name
 	aux.EnableChangeCode(c,76812113,LOCATION_MZONE+LOCATION_GRAVE)

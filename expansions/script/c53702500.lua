@@ -2653,7 +2653,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(0,53702700,0,0,0)
 	local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,nil)
 	local reg=Card.RegisterEffect
-	local rstg=Duel.GetMatchingGroup(function(c)return _G["c"..c:GetOriginalCode()].Snnm_Ef_Rst end,0,0xff,0xff,nil)
+	local rstg=Duel.GetMatchingGroup(function(c)return c.Snnm_Ef_Rst end,0,0xff,0xff,nil)
 	local rstt={}
 	for rstc in aux.Next(rstg) do if not cm.IsInTable(rstc:GetOriginalCode(),rstt) then table.insert(rstt,rstc:GetOriginalCode()) end end
 	local code=e:GetHandler():GetOriginalCode()
@@ -3953,4 +3953,242 @@ function Intersection(t1, t2)
 		end
 	end
 	return ret
+end
+EFFECT_MULTI_SUMMONABLE=53753099
+function cm.MultiDual(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_DUAL_SUMMONABLE)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetRange(0xff)
+	e2:SetOperation(cm.MultiDualCheck)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL+53753000)
+	c:RegisterEffect(e2)
+	--[[local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_SUMMON_COST)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetOperation(cm.MultiDualReset)
+	c:RegisterEffect(e3)--]]
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_MULTI_SUMMONABLE)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetRange(LOCATION_MZONE)
+	c:RegisterEffect(e4)
+end
+function cm.MultiDualReset(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetLabelObject()
+	local ct=c:GetFlagEffect(53753000)
+	if not c:IsHasEffect(53753050) then cm.MultiDualLabel(c,ct) end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetOperation(cm.MultiDualSum)
+	c:RegisterEffect(e1)
+end
+function cm.MultiDualSum(e,tp,eg,ep,ev,re,r,rp)
+	e:Reset()
+	local c=e:GetHandler()
+	c:ResetEffect(EFFECT_DUAL_STATUS,RESET_CODE)
+end
+function cm.MultiDualCheck(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(0,53753099)>0 then return end
+	Duel.RegisterFlagEffect(0,53753099,0,0,0)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SUMMON_COST)
+	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1:SetTarget(function(e,c,tp)
+		e:SetLabelObject(c)
+		return true 
+	end)
+	e1:SetOperation(cm.MultiDualReset)
+	Duel.RegisterEffect(e1,tp)
+	local e3=Effect.CreateEffect(e:GetHandler())
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_ADJUST)
+	e3:SetOperation(cm.DualSummonableCheck)
+	Duel.RegisterEffect(e3,tp)
+	func1=Card.IsDualState
+	Card.IsDualState=function(tc)
+		return cm.IsHasDualStatus(tc) or cm.MultiDualCount(tc)==1
+	end
+	func2=Card.EnableDualState
+	Card.EnableDualState=function(tc)
+		tc:ResetFlagEffect(53753000)
+		cm.MultiDualLabel(tc,0)
+	end
+end
+function cm.MultiDualLabel(c,ct)
+	local ex=Effect.CreateEffect(c)
+	ex:SetType(EFFECT_TYPE_SINGLE)
+	if ct<10 then
+		ex:SetDescription(aux.Stringid(53702600,ct+6))
+		ex:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
+	else ex:SetProperty(EFFECT_FLAG_SINGLE_RANGE) end
+	ex:SetCode(0x10000000+53753000)
+	ex:SetRange(LOCATION_MZONE)
+	ex:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(ex)
+end
+function cm.DualSummonableCheck(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_MZONE,LOCATION_MZONE,nil,EFFECT_DUAL_SUMMONABLE)
+	for tc in aux.Next(g) do
+		local le={tc:IsHasEffect(EFFECT_DUAL_SUMMONABLE)}
+		for _,v in pairs(le) do
+			local con=v:GetCondition()
+			if not con then con=aux.TRUE end
+			v:SetCondition(cm.Dualchcon(con))
+		end
+	end
+	g=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_MZONE,LOCATION_MZONE,nil,EFFECT_DUAL_STATUS)
+	for tc in aux.Next(g) do
+		local le={tc:IsHasEffect(EFFECT_DUAL_STATUS)}
+		for _,v in pairs(le) do
+			if v:GetOwner()~=tc then
+				local e1=v:Clone()
+				e1:SetCode(53753050)
+				if v:GetType()&EFFECT_TYPE_FIELD~=0 and (not v:GetRange() or v:GetRange()==0) then Duel.RegisterEffect(e1,v:GetOwnerPlayer()) else v:GetOwner():RegisterEffect(e1,true) end
+				v:Reset()
+			end
+		end
+	end
+	g=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_MZONE,LOCATION_MZONE,nil,53753050)
+	for tc in aux.Next(g) do
+		local ct=tc:GetFlagEffect(53753000)
+		tc:ResetFlagEffect(53753000)
+		for i=1,ct do tc:RegisterFlagEffect(53753098,RESET_EVENT+RESETS_STANDARD,0,0) end
+	end
+	g=Duel.GetMatchingGroup(aux.NOT(Card.IsHasEffect),tp,LOCATION_MZONE,LOCATION_MZONE,nil,53753050)
+	for tc in aux.Next(g) do
+		local ct=tc:GetFlagEffect(53753098)
+		tc:ResetFlagEffect(53753098)
+		for i=0,ct-1 do cm.MultiDualLabel(tc,i) end
+	end
+end
+function cm.Dualchcon(_con)
+	return function(e,...)
+			   local x=e:GetHandler()
+			   if (cm.MultiDualCount(x)>0 or x:IsHasEffect(53753050)) and not x:IsHasEffect(EFFECT_MULTI_SUMMONABLE) then return false end
+			   return _con(e,...)
+		   end
+end
+function cm.DualState(e_or_c)
+	if aux.GetValueType(e_or_c)=="Effect" then e_or_c=e_or_c:GetHandler() end
+	return cm.IsHasDualStatus(e_or_c) or cm.MultiDualCount(e_or_c)>0
+end
+function cm.TerState(e_or_c)
+	if aux.GetValueType(e_or_c)=="Effect" then e_or_c=e_or_c:GetHandler() end
+	return cm.MultiDualCount(e_or_c)>1
+end
+function cm.IsTerState(e_or_c)
+	if aux.GetValueType(e_or_c)=="Effect" then e_or_c=e_or_c:GetHandler() end
+	return cm.MultiDualCount(e_or_c)==2
+end
+function cm.QuadState(e_or_c)
+	if aux.GetValueType(e_or_c)=="Effect" then e_or_c=e_or_c:GetHandler() end
+	return cm.MultiDualCount(e_or_c)>2
+end
+function cm.IsQuadState(e_or_c)
+	if aux.GetValueType(e_or_c)=="Effect" then e_or_c=e_or_c:GetHandler() end
+	return cm.MultiDualCount(e_or_c)==3
+end
+function cm.MultiDualCount(c)
+	local ct=c:GetFlagEffect(53753000)+Duel.GetFlagEffect(c:GetControler(),53753000)
+	if ct==0 and cm.IsHasDualStatus(c) then ct=1 end
+	if c:IsDisabled() then ct=0 end
+	return ct
+end
+function cm.multi_summon_count(mg)
+	local ct=0
+	for tc in aux.Next(mg) do
+		local ctc=SNNM.MultiDualCount(tc)
+		if tc:IsDualState() then ctc=1 end
+		ct=ct+ctc
+	end
+	return ct
+end
+function cm.multi_summon_count_down(c)
+	if cm.IsHasDualStatus(c) then
+		c:ResetEffect(EFFECT_DUAL_STATUS,RESET_CODE)
+		c:ResetEffect(53753050,RESET_CODE)
+	else
+		local ct=c:GetFlagEffect(53753000)
+		c:ResetFlagEffect(53753000)
+		for i=0,ct-2 do SNNM.MultiDualLabel(c,i) end
+	end
+end
+function cm.IsHasDualStatus(c)
+	return c:IsHasEffect(EFFECT_DUAL_STATUS) or c:IsHasEffect(53753050)
+end
+function cm.AlmondimenLevel4(c,atk)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCondition(cm.DualState)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCondition(cm.TerState)
+	c:RegisterEffect(e2)
+	local e3=e1:Clone()
+	e3:SetCondition(cm.QuadState)
+	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_SUMMON)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetRange(LOCATION_GRAVE)
+	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e4:SetCost(aux.bfgcost)
+	e4:SetTarget(cm.Almondimensumtg)
+	e4:SetOperation(cm.Almondimensumop)
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_SUMMON_SUCCESS)
+	e5:SetCondition(cm.Almondimencon)
+	e5:SetOperation(cm.Almondimenatk(atk))
+	c:RegisterEffect(e5)
+	return e1,e2,e3,e4,e5
+end
+function cm.Almondimensumfilter(c)
+	return c:IsType(TYPE_DUAL) and c:IsSummonable(true,nil)
+end
+function cm.Almondimensumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.Almondimensumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
+end
+function cm.Almondimensumop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.Almondimensumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.Summon(tp,tc,true,nil)
+	end
+end
+function cm.Almondimencon(e,tp,eg,ep,ev,re,r,rp)
+	return cm.DualState(e:GetHandler())
+end
+function cm.Almondimenatk(atk)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+		local c=e:GetHandler()
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_COPY_INHERIT)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(atk)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_UPDATE_DEFENSE)
+		c:RegisterEffect(e2)
+	end
 end

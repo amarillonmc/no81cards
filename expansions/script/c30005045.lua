@@ -2,6 +2,7 @@
 local m=30005045
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,30005000)
 	c:EnableReviveLimit()
 	--Release
 	local e0=Effect.CreateEffect(c)
@@ -19,8 +20,8 @@ function cm.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e5:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e5:SetCode(EVENT_TO_HAND)
-	e5:SetCountLimit(1,m)
-	e5:SetCondition(cm.spcon)
+	--e5:SetCountLimit(1,m)
+	e5:SetCondition(cm.tgcon)
 	e5:SetCost(cm.tgcost)
 	e5:SetTarget(cm.tgtg)
 	e5:SetOperation(cm.tgop)
@@ -51,8 +52,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 --Release
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsReason(REASON_DRAW)
+function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	local ct=Duel.GetFlagEffect(e:GetHandlerPlayer(),m+m)
+	return not e:GetHandler():IsReason(REASON_DRAW) and ct==0
 end
 function cm.costfilter(c,tp)
 	return c:IsType(TYPE_RITUAL) and (c:IsControler(tp) and c:IsLocation(LOCATION_HAND) or c:IsFaceup())
@@ -78,6 +80,7 @@ function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectTarget(tp,Card.IsReleasableByEffect,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,1,0,0)
+	Duel.RegisterFlagEffect(tp,m+m,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -203,6 +206,9 @@ end
 function cm.rgcheck(g)
 	return g:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)<=99
 end
+function cm.extra(c)
+	return c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)
+end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetRitualMaterial(tp)
@@ -214,7 +220,7 @@ function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		aux.RGCheckAdditional=nil
 		return res
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_SZONE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function cm.rtop(e,tp,eg,ep,ev,re,r,rp)
 	local m=Duel.GetRitualMaterial(tp)

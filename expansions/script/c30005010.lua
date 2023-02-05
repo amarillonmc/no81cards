@@ -2,18 +2,19 @@
 local m=30005010
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-c:EnableReviveLimit()
-	  --ritual summon
+	aux.AddCodeList(c,30005000)
+	c:EnableReviveLimit()
+	--to hand
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,1))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RELEASE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.operation)
+	e1:SetCost(cm.tthcost)
+	e1:SetTarget(cm.tthtg)
+	e1:SetOperation(cm.tthop)
 	c:RegisterEffect(e1)
- --tohand
+	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
 	e2:SetCategory(CATEGORY_TOHAND)
@@ -22,24 +23,41 @@ c:EnableReviveLimit()
 	e2:SetCode(EVENT_RELEASE)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
+	local e8=e2:Clone()
+	e8:SetCode(EVENT_DISCARD)
+	c:RegisterEffect(e8)
 	c:RegisterEffect(e2)
---
+	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCountLimit(1,m+2)
-	e3:SetCondition(cm.spcon)
+	--e3:SetCondition(cm.spcon)
 	e3:SetTarget(cm.rtg)
 	e3:SetOperation(cm.rtop)
 	c:RegisterEffect(e3)
-	--indes
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e4:SetOperation(cm.indop)
-	c:RegisterEffect(e4) 
 end
+--to hand
+function cm.tthcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return not c:IsPublic() end
+end
+function cm.th(c,code)
+	return c:IsCode(code) and c:IsAbleToHand()
+end
+function cm.tthtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.th,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,30005000) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+end
+function cm.tthop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.th),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,30005000)
+	if #g==0 then return end
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,g)
+end 
+--
 function cm.mfilterf(c,tp,mg,rc)
 	if c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5 then
 		Duel.SetSelectedCard(c)
@@ -109,14 +127,14 @@ end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetRitualMaterial(tp)  
-		return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(aux.RitualUltimateFilter),tp,LOCATION_HAND+LOCATION_REMOVED,0,1,nil,nil,e,tp,mg,mg2,Card.GetLevel,"Greater")
+		return Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,nil,nil,e,tp,mg,mg2,Card.GetLevel,"Greater")
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_REMOVED)
 end
 function cm.rtop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetRitualMaterial(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(aux.RitualUltimateFilter),tp,LOCATION_HAND+LOCATION_REMOVED,0,1,1,nil,nil,e,tp,mg,mg2,Card.GetLevel,"Greater")
+	local tg=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,1,nil,nil,e,tp,mg,mg2,Card.GetLevel,"Greater")
 	local tc=tg:GetFirst()
 	if tc then
 		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)

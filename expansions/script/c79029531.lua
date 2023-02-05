@@ -40,7 +40,7 @@ function c79029531.initial_effect(c)
 	e1:SetValue(c79029531.splimit)
 	c:RegisterEffect(e1)
 end
-aux.xyz_number[79029531]=106
+c79029531.xyz_number=106
 function c79029531.splimit(e,se,sp,st)
 	return se:GetHandler():IsSetCard(0x95) and se:GetHandler():IsType(TYPE_SPELL)
 end

@@ -159,10 +159,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsLocation(LOCATION_EXTRA)
 		and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.t),tp,LOCATION_GRAVE,0,1,c) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.t),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.t),tp,LOCATION_GRAVE,0,1,5,nil)
 		if g:GetCount()>0 then
 			Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		end
 	end
 end
 
+
+
+  

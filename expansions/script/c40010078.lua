@@ -8,7 +8,7 @@ end
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,cm.ffilter,2,true)  
+	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsRace,RACE_WARRIOR),2,true)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -36,40 +36,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e3)
 end
-cm.loaded_metatable_list=cm.loaded_metatable_list or {}
-function cm.load_metatable(code)
-	local m1=_G["c"..code]
-	if m1 then return m1 end
-	local m2=cm.loaded_metatable_list[code]
-	if m2 then return m2 end
-	_G["c"..code]={}
-	if pcall(function() dofile("expansions/script/c"..code..".lua") end) or pcall(function() dofile("script/c"..code..".lua") end) then
-		local mt=_G["c"..code]
-		_G["c"..code]=nil
-		if mt then
-			cm.loaded_metatable_list[code]=mt
-			return mt
-		end
-	else
-		_G["c"..code]=nil
-	end
-end
-function cm.check_fusion_set_BLASTER(c)
-	if c:IsHasEffect(6205579) then return false end
-	local codet={c:GetFusionCode()}
-	for j,code in pairs(codet) do
-		local mt=cm.load_metatable(code)
-		if mt then
-			for str,v in pairs(mt) do
-				if type(str)=="string" and str:find("_BLASTER") and v then return true end
-			end
-		end
-	end
-	return false
-end
-function cm.ffilter(c)
-	return cm.check_fusion_set_BLASTER(c)
-end
+
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
@@ -100,11 +67,11 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tg=Duel.GetFirstMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,nil)
 	if tg then
-		if Duel.SendtoHand(tg,nil,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_GRAVE,0,1,nil) then
+		if Duel.SendtoHand(tg,nil,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) then
 			Duel.ConfirmCards(1-tp,tg)
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_GRAVE,0,1,1,nil)
+			local sg=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		end
 	end

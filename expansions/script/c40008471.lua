@@ -121,7 +121,7 @@ end
 function cm.fdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local mg=e:GetHandler():GetReasonCard():GetMaterialCount()
-	local og=e:GetHandler():GetReasonCard():GetMaterial():IsExists(cm.ogfilter,1,nil)
+	--local og=e:GetHandler():GetReasonCard():GetMaterial():IsExists(cm.ogfilter,1,nil)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	local tc=g:GetFirst()
 	while tc do
@@ -133,20 +133,14 @@ function cm.fdop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e3)
 		tc=g:GetNext()
 	end
-
-
-
-
-
-		if (mg>=3 or og>0) then
+	if (mg>=3 or e:GetHandler():GetReasonCard():GetMaterial():IsExists(cm.ogfilter,1,nil)) then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,nil,e,tp)
-			if g2:GetCount()>0 then
-				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				local sg=g2:Select(tp,1,1,nil)
-				Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-			end
+		if g2:GetCount()>0 then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=g2:Select(tp,1,1,nil)
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 		end
-
+	end
 end

@@ -1,15 +1,20 @@
 --海燕
 --21.09.02
-local m=11451631
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetCost(cm.cost)
-	e0:SetOperation(cm.activate)
 	c:RegisterEffect(e0)
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e10:SetCode(EVENT_ADJUST)
+	e10:SetRange(LOCATION_FZONE)
+	e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e10:SetCondition(cm.condition0)
+	e10:SetOperation(cm.operation0)
+	c:RegisterEffect(e10)
 	--deck
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m+1,0))
@@ -68,7 +73,7 @@ function cm.initial_effect(c)
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_SINGLE)
 	e7:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e7:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e7:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e7:SetRange(LOCATION_FZONE)
 	e7:SetValue(1)
 	c:RegisterEffect(e7)
@@ -90,9 +95,20 @@ function cm.initial_effect(c)
 	e9:SetValue(cm.actlimit)
 	c:RegisterEffect(e9)
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+function cm.condition0(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(m)==0
+end
+function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ct=c:GetTurnCounter()
+	ct=ct+1
+	c:SetTurnCounter(ct)
+	if ct==1 then Duel.SendtoGrave(c,REASON_RULE) end
+end
+function cm.operation0(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,2))
+	local c=e:GetHandler()
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 	--to grave
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
@@ -105,16 +121,6 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,4)
 	c:SetTurnCounter(0)
 	c:RegisterEffect(e1)
-end
-function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=c:GetTurnCounter()
-	ct=ct+1
-	c:SetTurnCounter(ct)
-	if ct==1 then Duel.SendtoGrave(c,REASON_RULE) end
-end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,2))
 end
 function cm.setlimit(e,c,tp)
 	return c:IsType(TYPE_FIELD)
@@ -129,19 +135,19 @@ function cm.filter1(c)
 	return c:IsSetCard(0x1979) and c:IsAbleToHand()
 end
 function cm.flag(e,tp,code)
-	return e:GetHandler():GetFlagEffect(code)>0 or Duel.IsExistingMatchingCard(cm.ffilter,tp,0,LOCATION_MZONE,1,nil,code)
+	return e:GetHandler():GetFlagEffect(code)>0 or Duel.IsExistingMatchingCard(cm.ffilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,code)
 end
 function cm.ffilter(c,code)
 	return c:GetFlagEffect(code)>0 and c:IsHasEffect(11451675)
 end
 function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
-	return cm.flag(e,tp,m+1) and eg:IsExists(cm.cfilter1,1,nil,tp)
+	return cm.flag(e,tp,m+1) and eg:IsExists(cm.cfilter1,1,nil,1-tp)
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	local g=Duel.GetMatchingGroup(cm.filter1,1-tp,LOCATION_DECK,0,nil)
-	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
-	local hg=g:Select(1-tp,1,1,nil)
+	local g=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local hg=g:Select(tp,1,1,nil)
 	Duel.SendtoHand(hg,nil,REASON_EFFECT)
 	Duel.ConfirmCards(tp,hg)
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
@@ -150,18 +156,18 @@ function cm.cfilter2(c,tp)
 	return c:IsPreviousLocation(LOCATION_HAND) and c:IsPreviousControler(tp) and not (c:IsLocation(LOCATION_HAND) and c:IsControler(tp))
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
-	return cm.flag(e,tp,m+2) and eg:IsExists(cm.cfilter2,1,nil,tp)
+	return cm.flag(e,tp,m+2) and eg:IsExists(cm.cfilter2,1,nil,1-tp)
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	Duel.Draw(1-tp,1,REASON_EFFECT)
+	Duel.Draw(tp,1,REASON_EFFECT)
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
 end
 function cm.cfilter3(c,tp)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp)
 end
 function cm.condition3(e,tp,eg,ep,ev,re,r,rp)
-	return cm.flag(e,tp,m+3) and eg:IsExists(cm.cfilter3,1,nil,tp)
+	return cm.flag(e,tp,m+3) and eg:IsExists(cm.cfilter3,1,nil,1-tp)
 end
 function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
@@ -176,22 +182,33 @@ function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev)
+	return ep==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
+	local bool=Duel.IsChainNegatable(ev)
+	if not bool then e:Reset() return end
+	Duel.Hint(HINT_CARD,0,m)
 	Duel.NegateActivation(ev)
-	Duel.SetChainLimit(function(e,p1,p2)
-							local con=e:GetCondition()
-							return not con or con(e,p1,eg,ep,ev,re,r,rp)
-						end)
+	local _IsChainNegatable=Duel.IsChainNegatable
+	Duel.IsChainNegatable=function(ct) if ct==ev then return false else return _IsChainNegatable(ev) end end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetOperation(cm.resop)
+	Duel.RegisterEffect(e1,tp)
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
+	e:Reset()
+end
+local _IsChainNegatable=Duel.IsChainNegatable
+function cm.resop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.IsChainNegatable=_IsChainNegatable
 	e:Reset()
 end
 function cm.cfilter4(c,tp)
 	return c:IsPreviousLocation(LOCATION_SZONE) and c:IsPreviousControler(tp) and c:GetPreviousSequence()<5
 end
 function cm.condition4(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(cm.cfilter4,nil,tp)
+	local g=eg:Filter(cm.cfilter4,nil,1-tp)
 	if not cm.flag(e,tp,m+4) or #g==0 then return false end
 	local lab=0
 	for tc in aux.Next(g) do
@@ -209,7 +226,7 @@ function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
 	local dg=Group.CreateGroup()
 	for i=0,4 do
 		if lab&(1<<i)~=0 then
-			local g=Duel.GetMatchingGroup(cm.desfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,i)
+			local g=Duel.GetMatchingGroup(cm.desfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,1-tp,i)
 			if #g>0 then dg:Merge(g) end
 		end
 	end
@@ -231,7 +248,7 @@ function cm.disval(e)
 	local table={1<<0|1<<8|1<<20|1<<28,1<<1|1<<9|1<<19|1<<27|1<<5|1<<22,1<<2|1<<10|1<<18|1<<26,1<<3|1<<11|1<<17|1<<25|1<<6|1<<21,1<<4|1<<12|1<<16|1<<24}
 	for i=0,4 do
 		local j=i
-		if tp~=0 then j=4-i end
+		if tp==0 then j=4-i end
 		if lab&(1<<i)~=0 then val=val+table[j+1] end
 	end
 	return val
@@ -240,24 +257,24 @@ function cm.cfilter5(c,tp)
 	return c:IsPreviousControler(tp)
 end
 function cm.condition5(e,tp,eg,ep,ev,re,r,rp)
-	return cm.flag(e,tp,m+5) and eg:IsExists(cm.cfilter5,1,nil,tp)
+	return cm.flag(e,tp,m+5) and eg:IsExists(cm.cfilter5,1,nil,1-tp)
 end
 function cm.operation5(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	Duel.DiscardDeck(1-tp,3,REASON_EFFECT)
+	Duel.DiscardDeck(tp,3,REASON_EFFECT)
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
 end
 function cm.cfilter6(c,tp)
 	return c:IsPreviousLocation(LOCATION_EXTRA) and c:IsPreviousControler(tp)
 end
 function cm.condition6(e,tp,eg,ep,ev,re,r,rp)
-	return cm.flag(e,tp,m+6) and eg:IsExists(cm.cfilter6,1,nil,tp)
+	return cm.flag(e,tp,m+6) and eg:IsExists(cm.cfilter6,1,nil,1-tp)
 end
 function cm.operation6(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	local tg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND,0,nil)
+	local tg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_HAND,nil)
 	if #tg>0 then
-		local sg=tg:RandomSelect(tp,1)
+		local sg=tg:RandomSelect(1-tp,1)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 	end
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())

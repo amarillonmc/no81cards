@@ -1,4 +1,4 @@
---樱小路亚十礼
+--随风流雪之月神
 function c9910077.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),4,2)
@@ -10,7 +10,7 @@ function c9910077.initial_effect(c)
 	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(c9910077.effcon)
-	e1:SetValue(aux.tgoval)
+	e1:SetValue(c9910077.evalue)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -20,7 +20,7 @@ function c9910077.initial_effect(c)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e2:SetCondition(c9910077.effcon)
 	e2:SetTarget(c9910077.tglimit)
-	e2:SetValue(aux.tgoval)
+	e2:SetValue(c9910077.evalue)
 	c:RegisterEffect(e2)
 	--change attribute
 	local e3=Effect.CreateEffect(c)
@@ -35,6 +35,9 @@ function c9910077.initial_effect(c)
 end
 function c9910077.effcon(e)
 	return e:GetHandler():GetOverlayCount()>0
+end
+function c9910077.evalue(e,re,rp)
+	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and rp==1-e:GetHandlerPlayer()
 end
 function c9910077.tglimit(e,c)
 	return c:IsAttribute(e:GetHandler():GetAttribute())

@@ -1,7 +1,6 @@
 --风雨咏叹调
 --22.07.03
-local m=11451638
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -26,7 +25,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c,tp)
-	return c:IsCode(11451631) and not c:IsForbidden() and (c:GetActivateEffect():IsActivatable(tp,true,true) or c:CheckActivateEffect(false,false,false)~=nil)
+	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) --and (c:GetActivateEffect():IsActivatable(tp,true,true) or c:CheckActivateEffect(false,false,false)~=nil)
 end
 function cm.filter0(c)
 	return (not c:IsLocation(LOCATION_REMOVED) or c:IsFaceup()) and c:IsCanBeFusionMaterial()
@@ -175,7 +174,13 @@ function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
-		local te=tc:GetActivateEffect()
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		if fc then
+			Duel.SendtoGrave(fc,REASON_RULE)
+			Duel.BreakEffect()
+		end
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		--[[local te=tc:GetActivateEffect()
 		if te:IsActivatable(tp,true,true) and (not tc:CheckActivateEffect(false,false,false) or Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0) then
 			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 			if fc then
@@ -198,6 +203,6 @@ function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 			local cost=te:GetCost()
 			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 			Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
-		end
+		end--]]
 	end
 end

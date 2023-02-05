@@ -13,13 +13,17 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetRange(LOCATION_FZONE)
 	e1:SetCondition(cm.limcon)
 	e1:SetOperation(cm.limop)
 	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetCondition(cm.limcon2)
+	c:RegisterEffect(e2)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetRange(LOCATION_MZONE)
+	e5:SetRange(LOCATION_FZONE)
 	e5:SetCode(EVENT_CHAIN_END)
 	e5:SetCondition(cm.limcon)
 	e5:SetOperation(cm.limop2)
@@ -27,9 +31,9 @@ function cm.initial_effect(c)
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e6:SetCode(EVENT_CHAINING)
-	e6:SetRange(LOCATION_MZONE)
+	e6:SetRange(LOCATION_FZONE)
 	e6:SetOperation(cm.chainop)
-	c:RegisterEffect(e6)
+	--c:RegisterEffect(e6)
 	--immune effect
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
@@ -105,14 +109,31 @@ end
 function cm.limcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0 and Duel.GetFlagEffect(tp,m)>0
 end
+function cm.limcon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0 and Duel.GetFlagEffect(tp,m)>0 and eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER)
+end
 function cm.limop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetCurrentChain()==0 then
 		Duel.SetChainLimitTillChainEnd(cm.chainlm)
-	elseif Duel.GetCurrentChain()>0 then
+	elseif Duel.GetCurrentChain()==1 then
 		e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_ACTIVATING)
+		e1:SetOperation(cm.resetop)
+		e1:SetReset(RESET_CHAIN)
+		Duel.RegisterEffect(e1,tp)
+		local e2=e1:Clone()
+		e2:SetCode(EVENT_BREAK_EFFECT)
+		Duel.RegisterEffect(e2,tp)
 	end
 end
+function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():ResetFlagEffect(m)
+	e:Reset()
+end
 function cm.limop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if c:GetFlagEffect(m)~=0 then
 		Duel.SetChainLimitTillChainEnd(cm.chainlm)
 	end

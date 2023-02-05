@@ -36,7 +36,7 @@ function c79029562.initial_effect(c)
 	e3:SetOperation(c79029562.rop)
 	c:RegisterEffect(e3)
 end
-aux.xyz_number[79029562]=73
+c79029562.xyz_number=73
 function c79029562.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local a=Duel.GetAttacker()
 	local d=Duel.GetAttackTarget()

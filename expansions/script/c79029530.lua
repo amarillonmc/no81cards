@@ -37,7 +37,7 @@ function c79029530.initial_effect(c)
 	e3:SetOperation(c79029530.atkop)
 	c:RegisterEffect(e3)
 end
-aux.xyz_number[79029530]=39
+c79029530.xyz_number=39
 function c79029530.condition(e,tp,eg,ep,ev,re,r,rp,chk)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and ep~=tp
 end

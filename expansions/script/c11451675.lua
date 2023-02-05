@@ -1,7 +1,6 @@
 --风雨启示者 惊潮
 --22.07.03
-local m=11451675
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--fusion material
 	aux.AddFusionProcCodeFun(c,m-40,aux.FilterBoolFunction(Card.IsType,TYPE_SPELL+TYPE_TRAP),1,true,true)

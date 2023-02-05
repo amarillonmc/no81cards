@@ -4,7 +4,7 @@ function c84610007.initial_effect(c)
     local e1=Effect.CreateEffect(c)
     e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-    e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+    e1:SetProperty(EFFECT_FLAG_DELAY)
     e1:SetCode(EVENT_SUMMON_SUCCESS)
     e1:SetCost(c84610007.spcost)   
     e1:SetTarget(c84610007.sptg)
@@ -17,7 +17,6 @@ function c84610007.initial_effect(c)
     local e3=Effect.CreateEffect(c)
     e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e3:SetType(EFFECT_TYPE_QUICK_O)
-    e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e3:SetCode(EVENT_FREE_CHAIN)
     e3:SetRange(LOCATION_MZONE)
     e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -35,7 +34,6 @@ function c84610007.initial_effect(c)
     c:RegisterEffect(e4)
     --set
     local e5=Effect.CreateEffect(c)
-    e5:SetCategory(CATEGORY_REMOVE)
     e5:SetType(EFFECT_TYPE_QUICK_O)
     e5:SetCode(EVENT_FREE_CHAIN)
     e5:SetRange(LOCATION_GRAVE)
@@ -66,14 +64,13 @@ function c84610007.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c84610007.spop(e,tp,eg,ep,ev,re,r,rp)
-    if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+    if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsExistingMatchingCard(c84610007.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
     local g=Duel.SelectMatchingCard(tp,c84610007.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
     local tc=g:GetFirst()
     Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 end
 function c84610007.sccon(e,tp,eg,ep,ev,re,r,rp)
-    local ph=Duel.GetCurrentPhase()
     return Duel.GetTurnPlayer()~=tp and e:GetHandler():GetFlagEffect(84610007)<1
 end
 function c84610007.scfilter1(c,e,tp,mc)
@@ -84,12 +81,11 @@ end
 function c84610007.scfilter2(c,mg)
     return c:IsSynchroSummonable(nil,mg)
 end
-function c84610007.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsLocation(LOCATION_DECK) and chkc:IsControler(tp) and c84610007.scfilter1(chkc,e,tp,e:GetHandler()) end
+function c84610007.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
         and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-        and Duel.IsExistingTarget(c84610007.scfilter1,tp,LOCATION_DECK,0,1,nil,e,tp,e:GetHandler()) end
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+        and Duel.IsExistingMatchingCard(c84610007.scfilter1,tp,LOCATION_DECK,0,1,nil,e,tp,e:GetHandler()) end
+    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
     e:GetHandler():RegisterFlagEffect(84610007,RESET_CHAIN,0,1)
 end
 function c84610007.scop(e,tp,eg,ep,ev,re,r,rp)
@@ -108,7 +104,9 @@ function c84610007.scop(e,tp,eg,ep,ev,re,r,rp)
     tc:RegisterEffect(e2)
     Duel.SpecialSummonComplete()
     if not c:IsRelateToEffect(e) then return end
+    Duel.RaiseEvent(c,EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
     local mg=Group.FromCards(c,tc)
+    if mg:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)<2 then return end
     local g=Duel.GetMatchingGroup(c84610007.scfilter2,tp,LOCATION_EXTRA,0,nil,mg)
     if g:GetCount()>0 then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

@@ -1,6 +1,5 @@
 --烈星壳·炎魔
 function c79029552.initial_effect(c)
-	aux.AddMaterialCodeList(c,85475641)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsCode,85475641),aux.NonTuner(Card.IsAttribute,ATTRIBUTE_FIRE),1)
 	c:EnableReviveLimit()   

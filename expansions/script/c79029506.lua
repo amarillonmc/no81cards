@@ -59,7 +59,7 @@ function c79029506.initial_effect(c)
 	e7:SetOperation(c79029506.spop)
 	c:RegisterEffect(e7)
 end
-aux.xyz_number[79029506]=5
+c79029506.xyz_number=5
 function c79029506.atkval(e,c)
 	local g=e:GetHandler():GetOverlayGroup()
 	return g:GetCount()*1500

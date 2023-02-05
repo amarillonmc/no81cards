@@ -46,7 +46,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function cm.matfilter(c)
-	return c:IsLinkRace(RACE_FIEND) and not c:IsLinkType(TYPE_LINK)
+	return cm.Diablotherhood(c) and not c:IsCode(m)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)

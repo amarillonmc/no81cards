@@ -2,16 +2,17 @@
 local m=30005040
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,30005000)
 	c:EnableReviveLimit()
-	--ritual summon
+	--copyeffect
 	local e0=Effect.CreateEffect(c)
 	--e0:SetDescription(aux.Stringid(m,1))
-	e0:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RELEASE)
 	e0:SetType(EFFECT_TYPE_IGNITION)
+	e0:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e0:SetRange(LOCATION_HAND)
 	e0:SetCountLimit(1,m)
-	e0:SetTarget(cm.target)
-	e0:SetOperation(cm.operation)
+	e0:SetTarget(cm.cptg)
+	e0:SetOperation(cm.cpop)
 	c:RegisterEffect(e0)
 	--ritual oblation
 	local e1=Effect.CreateEffect(c)
@@ -30,10 +31,42 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_REMOVED)
 	e3:SetCountLimit(1,m+1)
-	e3:SetCondition(cm.spcon)
+	--e3:SetCondition(cm.spcon)
 	e3:SetTarget(cm.rtg)
 	e3:SetOperation(cm.rtop)
 	c:RegisterEffect(e3)
+end
+--copyeffect
+function cm.cpfilter(c)
+	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() then return false end
+	return c:IsCode(30005000) and c:CheckActivateEffect(false,true,false)~=nil
+end
+function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then
+		local te=e:GetLabelObject()
+		local tg=te:GetTarget()
+		return tg and tg(e,tp,eg,ep,ev,re,r,rp,0,chkc)
+	end
+	if chk==0 then return Duel.IsExistingTarget(cm.cpfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,cm.cpfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
+	Duel.ClearTargetCard()
+	g:GetFirst():CreateEffectRelation(e)
+	local tg=te:GetTarget()
+	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
+	te:SetLabelObject(e:GetLabelObject())
+	e:SetLabelObject(te)
+	Duel.ClearOperationInfo(0)
+	Duel.SetOperationInfo(0,CATEGORY_GRAVE_ACTION,g,1,0,0)
+end
+function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	if not te then return end
+	if not te:GetHandler():IsRelateToEffect(e) then return end
+	e:SetLabelObject(te:GetLabelObject())
+	local op=te:GetOperation()
+	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 end
 --ritual summon
 function cm.mfilterf(c,tp,mg,rc)
@@ -132,7 +165,7 @@ end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetRitualMaterial(tp)  
-		return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(aux.RitualUltimateFilter),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,nil,e,tp,mg,mg2,Card.GetLevel,"Greater")
+		return Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,nil,e,tp,mg,mg2,Card.GetLevel,"Greater")
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_REMOVED)
 end

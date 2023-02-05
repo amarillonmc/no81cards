@@ -50,15 +50,15 @@ end
 function c9910152.rmfilter(c)
 	return c:IsSetCard(0x952) and c:IsType(TYPE_SPELL) and c:IsAbleToRemove()
 end
-function c9910152.matfilter1(c)
-	return c:IsFaceup() and c:IsSetCard(0x952) and c:IsType(TYPE_XYZ)
+function c9910152.matfilter1(c,e)
+	return c:IsFaceup() and c:IsSetCard(0x952) and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
 end
 function c9910152.matfilter2(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x952) and c:IsCanOverlay()
 end
 function c9910152.matcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9910152.rmfilter,tp,LOCATION_GRAVE,0,1,nil)
-		and Duel.IsExistingMatchingCard(c9910152.matfilter1,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.IsExistingMatchingCard(c9910152.matfilter1,tp,LOCATION_MZONE,0,1,nil,e)
 		and Duel.IsExistingMatchingCard(c9910152.matfilter2,tp,LOCATION_DECK,0,1,nil)
 end
 function c9910152.matop(e,tp,eg,ep,ev,re,r,rp)
@@ -68,7 +68,7 @@ function c9910152.matop(e,tp,eg,ep,ev,re,r,rp)
 		local g1=Duel.SelectMatchingCard(tp,c9910152.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 		if g1:GetCount()==0 or Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		local g2=Duel.SelectMatchingCard(tp,c9910152.matfilter1,tp,LOCATION_MZONE,0,1,1,nil)
+		local g2=Duel.SelectMatchingCard(tp,c9910152.matfilter1,tp,LOCATION_MZONE,0,1,1,nil,e)
 		if g2:GetCount()==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 		local g3=Duel.SelectMatchingCard(tp,c9910152.matfilter2,tp,LOCATION_DECK,0,1,1,nil)

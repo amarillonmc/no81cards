@@ -1,7 +1,6 @@
 --风雨开拓者 逆星
 --22.07.03
-local m=11451677
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DECK_REVERSE_CHECK)
 	--fusion material

@@ -55,7 +55,7 @@ function c79029505.initial_effect(c)
 	e6:SetValue(1)
 	c:RegisterEffect(e6)
 end
-aux.xyz_number[79029505]=88
+c79029505.xyz_number=88
 function c79029505.sprfilter(c)
 	return c:GetOriginalLevel()==10 and c:IsFaceup() and c:IsCanOverlay()
 end
