@@ -28,20 +28,20 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.xyzop)
 	c:RegisterEffect(e2)
 end
-function cm.filter(c,tp)
-	return c:IsFaceup() and not c:IsType(TYPE_TOKEN)
-		and (c:IsControler(tp) or c:IsAbleToChangeControler()) and c:IsRace(RACE_MACHINE)
+function cm.filter1(c)
+	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsCanOverlay()
 end
 function cm.efilter(c,e)
 	return c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_REMOVED,0,1,nil,tp) and Duel.IsExistingTarget(cm.filter,tp,0,LOCATION_MZONE,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_REMOVED,0,1,nil)
+		and Duel.IsExistingTarget(Card.IsCanOverlay,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g1=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_REMOVED,0,1,1,nil,tp)
+	local g1=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_REMOVED,0,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g2=Duel.SelectTarget(tp,cm.filter,tp,0,LOCATION_MZONE,1,1,nil,tp)
+	local g2=Duel.SelectTarget(tp,Card.IsCanOverlay,tp,0,LOCATION_MZONE,1,1,nil,tp)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
