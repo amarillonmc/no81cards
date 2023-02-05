@@ -27,7 +27,7 @@ end
 function c88990268.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local g=Duel.GetMatchingGroup(c88990268.filter,tp,LOCATION_DECK,0,nil)
-		return g:GetClassCount(Card.GetCode)>=2
+		return #g>=2
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
@@ -39,11 +39,9 @@ function c88990268.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,sg)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SET)
 		local tg=sg:RandomSelect(1-tp,1)
-			if tg:GetCount()>0 then
-				Duel.DisableShuffleCheck()
-				Duel.SendtoHand(tg,nil,REASON_EFFECT)
-			end
-		Duel.ShuffleDeck(tp)
-		Duel.SSet(tp,tg:GetFirst())
+		local tc=tg:GetFirst()
+		Duel.SSet(tp,tc)
+		sg:RemoveCard(tc)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end
 end

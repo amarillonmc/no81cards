@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.ovfilter(c)
-	return c:IsFaceup() and not c:IsCode(m) and c:GetOverlayCount()==0
+	return c:IsFaceup() and not c:IsCode(m) and c:GetOverlayCount()==0 and c:IsType(TYPE_XYZ)
 end
 function cm.atkval(e,c)
 	return c:GetOverlayCount()*500

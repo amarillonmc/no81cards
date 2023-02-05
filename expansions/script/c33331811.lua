@@ -35,7 +35,7 @@ function c33331811.accost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(x) 
 end 
 function c33331811.rlfil2(c) 
-	return c:IsFaceup() and c:IsRace(RACE_WYRM) and c:IsReleasable()
+	return  c:IsRace(RACE_WYRM) and c:IsReleasable() --and c:IsFaceup() 
 end 
 function c33331811.accost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33331811.rlfil2,tp,LOCATION_MZONE+LOCATION_HAND,0,1,nil) end  

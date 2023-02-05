@@ -52,7 +52,7 @@ end
 function c127541563.distg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return re:GetHandler():IsCanTurnSet() and not re:GetHandler():IsType(TYPE_PENDULUM) end
     Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-    if re:GetHandler():IsRelateToEffect(re) then
+    if re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsLocation(LOCATION_MZONE) then
         Duel.SetOperationInfo(0,CATEGORY_POSITION,eg,1,0,0)
     end
 end
@@ -60,25 +60,25 @@ function c127541563.disop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local rc=re:GetHandler()
     if not c:IsRelateToEffect(e) then return end
-    if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) then
+    if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) and rc:IsCanTurnSet() then
         rc:CancelToGrave()
         Duel.ChangePosition(eg,POS_FACEDOWN_DEFENSE)
-        local tc=eg:GetFirst()
-        tc:CancelToGrave()
-        c:SetCardTarget(tc)
-        e:SetLabelObject(tc)
+        local rev=EVENT_SSET
+        if rc:IsLocation(LOCATION_MZONE) then rev=EVENT_MSET end
+        Duel.RaiseEvent(rc,rev,e,REASON_EFFECT,tp,tp,0)
+        c:SetCardTarget(rc)
         local e1=Effect.CreateEffect(c)
         e1:SetType(EFFECT_TYPE_SINGLE)
         e1:SetCode(EFFECT_CANNOT_TRIGGER)
         e1:SetReset(RESET_LEAVE)
         e1:SetCondition(c127541563.rcon)
         e1:SetValue(1)
-        tc:RegisterEffect(e1)
+        rc:RegisterEffect(e1)
         local e2=e1:Clone()
         e2:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
-        tc:RegisterEffect(e2)
-        c:RegisterFlagEffect(127541563,RESET_LEAVE,0,1,c:GetFieldID(),nil)
-        tc:RegisterFlagEffect(127541563,RESET_LEAVE,0,1,c:GetFieldID(),nil)
+        rc:RegisterEffect(e2)
+        c:RegisterFlagEffect(127541563,0,0,1,c:GetFieldID(),nil)
+        rc:RegisterFlagEffect(127541563,0,0,1,c:GetFieldID(),nil)
     end
 end
 function c127541563.rcon(e)
@@ -112,6 +112,8 @@ function c127541563.desop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local g=Duel.GetMatchingGroup(c127541563.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c,c:GetFlagEffectLabel(127541563))
     if Duel.Destroy(g,REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c127541563.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(127541563,2)) then
+        c:ResetFlagEffect(127541563)
+        g:ForEach(function (c) c:ResetFlagEffect(127541563) end)
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
         local tg=Duel.SelectMatchingCard(tp,c127541563.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
         if not tg then return end

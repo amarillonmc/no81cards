@@ -38,7 +38,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local a=1
 	if sg:GetFirst():GetControler()==tp then a=0 end
 	e:SetTargetRange(POS_FACEUP_ATTACK,a)
-	Duel.SendtoGrave(g,REASON_COST)
+	Duel.SendtoGrave(sg,REASON_COST)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

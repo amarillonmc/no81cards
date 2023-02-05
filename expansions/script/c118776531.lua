@@ -3,7 +3,6 @@ function c118776531.initial_effect(c)
     e1:SetCategory(CATEGORY_SUMMON)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetCondition(c118776531.sumcon)
     e1:SetTarget(c118776531.target1)
     e1:SetOperation(c118776531.activate)
     c:RegisterEffect(e1)
@@ -43,7 +42,7 @@ function c118776531.initial_effect(c)
 end
 function c118776531.sumcon(e,tp,eg,ep,ev,re,r,rp)
     local ph=Duel.GetCurrentPhase()
-    return ph==PHASE_MAIN1 or ph==PHASE_MAIN2 or Duel.GetTurnPlayer()~=tp
+    return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
 function c118776531.sumfilter(c)
     return c:IsSetCard(0xf9) and c:IsSummonable(true,nil,1)
