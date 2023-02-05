@@ -62,7 +62,7 @@ function c116839253.initial_effect(c)
     e7:SetRange(LOCATION_GRAVE)
     e7:SetCode(EVENT_FREE_CHAIN)
     e7:SetCondition(aux.exccon)
-    e7:SetCost(c116839253.thcost)
+    e7:SetCost(aux.bfgcost)
     e7:SetTarget(c116839253.thtg)
     e7:SetOperation(c116839253.thop)
     c:RegisterEffect(e7)
@@ -155,10 +155,6 @@ function c116839253.tfop(e,tp,eg,ep,ev,re,r,rp)
     local cost=te:GetCost()
     if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
     Duel.RaiseEvent(tc,116839253,te,0,tp,tp,Duel.GetCurrentChain())
-end
-function c116839253.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
-    Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c116839253.thfilter(c)
     return c:IsSetCard(0xc1) and c:IsAbleToHand() and not c:IsCode(116839253)
