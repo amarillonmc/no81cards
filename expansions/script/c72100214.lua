@@ -7,7 +7,7 @@ function c72100214.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,72100214+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,72100214)
 	e1:SetCost(c72100214.cost)
 	e1:SetTarget(c72100214.target)
 	e1:SetOperation(c72100214.operation)
@@ -19,7 +19,7 @@ function c72100214.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCountLimit(1,72110214+EFFECT_COUNT_CODE_OATH)
+	e2:SetCountLimit(1,72110214)
 	e2:SetCondition(aux.exccon)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c72100214.drtg)
@@ -27,7 +27,7 @@ function c72100214.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c72100214.cfilter(c)
-	return c:IsAttribute(RACE_SPELLCASTER) and c:IsAbleToGraveAsCost()
+	return c:IsRace(RACE_SPELLCASTER) and c:IsAbleToGraveAsCost()
 end
 function c72100214.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c72100214.cfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -44,8 +44,8 @@ function c72100214.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c72100214.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.GetFirstMatchingCard(c72100214.filter,tp,LOCATION_DECK,0,nil)
-	if tc then
+	local tc=Duel.SelectMatchingCard(tp,c72100214.filter,tp,LOCATION_DECK,0,1,1,nil)
+	if tc:GetCount()>0 then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 	end

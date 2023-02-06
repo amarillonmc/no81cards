@@ -205,14 +205,16 @@ function cm.resop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.cfilter4(c,tp)
-	return c:IsPreviousLocation(LOCATION_SZONE) and c:IsPreviousControler(tp) and c:GetPreviousSequence()<5
+	return c:IsPreviousLocation(LOCATION_SZONE) and c:GetPreviousSequence()<5 --and c:IsPreviousControler(tp)
 end
 function cm.condition4(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.cfilter4,nil,1-tp)
 	if not cm.flag(e,tp,m+4) or #g==0 then return false end
 	local lab=0
 	for tc in aux.Next(g) do
-		lab=lab|1<<tc:GetPreviousSequence()
+		local seq=tc:GetPreviousSequence()
+		if tc:IsPreviousControler(tp) then seq=4-seq end
+		lab=lab|1<<seq
 	end
 	e:SetLabel(lab)
 	return true

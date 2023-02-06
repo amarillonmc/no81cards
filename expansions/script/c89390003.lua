@@ -98,6 +98,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
     local gy=Duel.SelectMatchingCard(tp,cm.gyfilter,tp,LOCATION_REMOVED,0,1,dc,nil)
     if #gy==0 then return end
+    Duel.HintSelection(gy)
     local yc=Duel.SendtoDeck(gy,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
     if yc<=0 then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

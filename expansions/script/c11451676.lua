@@ -55,6 +55,7 @@ function cm.cfcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cfop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,1)
+	if not g or #g==0 then return end
 	Duel.ConfirmCards(tp,g)
 	local tc=g:GetFirst()
 	local opt=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))

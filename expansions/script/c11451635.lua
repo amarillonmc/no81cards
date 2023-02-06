@@ -107,7 +107,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c,tp)
-	return c:IsCode(11451631) and not c:IsForbidden() and (c:GetActivateEffect():IsActivatable(tp,true,true) or c:CheckActivateEffect(false,false,false)~=nil)
+	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) --and (c:GetActivateEffect():IsActivatable(tp,true,true) or c:CheckActivateEffect(false,false,false)~=nil)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
@@ -117,7 +117,17 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
-		local te=tc:GetActivateEffect()
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		if fc then
+			Duel.SendtoGrave(fc,REASON_RULE)
+			Duel.BreakEffect()
+		end
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		if fc and tc:IsLocation(LOCATION_FZONE) then
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+			Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
+		end
+		--[[local te=tc:GetActivateEffect()
 		if te:IsActivatable(tp,true,true) and (not tc:CheckActivateEffect(false,false,false) or Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0) then
 			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 			if fc then
@@ -148,7 +158,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
 			end
 			Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
-		end
+		end--]]
 	end
 end
 function cm.actfilter(c)
