@@ -98,7 +98,7 @@ function c115682705.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c115682705.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsAbleToDeck() end
-    if chk==0 then return true end
+    if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
     local g=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,5,nil)
     Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)

@@ -109,6 +109,13 @@ function c22348144.effop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 and op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end
 end
+function c22348144.desop(e,tp,eg,ep,ev,re,r,rp)  
+	if e:GetLabelObject():GetLabel()~=0 then return end  
+	local tc=e:GetHandler():GetFirstCardTarget()  
+	if tc and tc:IsLocation(LOCATION_MZONE) then  
+		Duel.Destroy(tc,REASON_EFFECT)  
+	end  
+end  
 
 
 
