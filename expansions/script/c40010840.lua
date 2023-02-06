@@ -64,7 +64,7 @@ function cm.setcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter2,1,nil,tp)
 end
 function cm.setfilter(c)
-	return cm.BlueDeathster(c) and c:GetType()==0x20002 and c:IsSSetable()
+	return cm.BlueDeathster(c) and c:GetType()==0x20002 and c:IsSSetable() and not c:IsCode(m)
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) end
