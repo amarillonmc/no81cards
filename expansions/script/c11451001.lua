@@ -97,11 +97,8 @@ function cm.initial_effect(c)
 				local og=oc:GetOverlayGroup()
 				og=og:Select(sp,min,max,nil)
 				local e=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
-				local dc=og:GetFirst()
-				local c=nil
-				if dc then c=dc:GetOverlayTarget() end
 				local ct=Duel.SendtoGrave(og,r)
-				if c and e then Duel.RaiseSingleEvent(c,EVENT_DETACH_MATERIAL,e,0,0,0,0) end
+				if ct>0 and e then Duel.RaiseSingleEvent(oc,EVENT_DETACH_MATERIAL,e,0,0,0,0) end
 				return ct
 			else
 				return _CRemoveOverlayCard(oc,sp,min,max,r)
@@ -181,7 +178,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ct2=Duel.GetFlagEffectLabel(1-tp,m)
 	if not ct1 or not ct2 or (ct1==0 and ct2==0) then return end
 	if not cm.r then
-		local result=0
+		--[[local result=0
 		local g=Duel.GetFieldGroup(0,0xff,0xff):RandomSelect(2,8)
 		local ct={}
 		local c=g:GetFirst()
@@ -193,7 +190,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			result=result+(ct[g:RandomSelect(2,1):GetFirst()]<<(3*i))
 		end
 		g:DeleteGroup()
-		cm.r=result&0xffffffff
+		cm.r=result&0xffffffff--]]
+		cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
 	end
 	local g1=Group.CreateGroup()
 	local g2=Group.CreateGroup()
@@ -248,7 +246,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			g1:AddCard(Duel.CreateToken(tp,tab1[i]))
 		end
 		if #g1>0 then
-			if KOISHI_CHECK then Duel.ConfirmCards(tp,g1) end
+			--if KOISHI_CHECK then Duel.ConfirmCards(tp,g1) end
 			local codes={}
 			for tc in aux.Next(g1) do
 				local code=tc:GetCode()
@@ -320,7 +318,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			g2:AddCard(Duel.CreateToken(1-tp,tab2[i]))
 		end
 		if #g2>0 then
-			if KOISHI_CHECK then Duel.ConfirmCards(1-tp,g2) end
+			--if KOISHI_CHECK then Duel.ConfirmCards(1-tp,g2) end
 			local codes={}
 			for tc in aux.Next(g2) do
 				local code=tc:GetCode()

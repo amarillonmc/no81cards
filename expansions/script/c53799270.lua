@@ -30,8 +30,9 @@ function cm.con(e,tp)
 	Duel.DisableActionCheck(true) 
 	local dc=Duel.CreateToken(1-tp,m)
 	local res=dc:GetActivateEffect():IsActivatable(1-tp,false,false)
-	Duel.DisableActionCheck(false) 
-	return res
+	Duel.DisableActionCheck(false)
+	local ph=Duel.GetCurrentPhase()
+	return res and Duel.GetTurnPlayer()==tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

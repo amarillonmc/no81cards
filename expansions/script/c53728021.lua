@@ -1,6 +1,7 @@
 local m=53728021
 local cm=_G["c"..m]
 cm.name="大征啼鸟 歼星激流"
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_MACHINE),2)
 	SNNM.AnouguryLink(c)

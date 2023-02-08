@@ -19,7 +19,7 @@ function c98920185.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetCountLimit(1,78990928)
+	e2:SetCountLimit(1,98930185)
 	e2:SetCondition(c98920185.rscon)
 	c:RegisterEffect(e2)
 end

@@ -41,17 +41,28 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() then
-		local res=false
-		local lg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-		for tc in aux.Next(lg) do if tc:GetLinkedGroup():IsContains(c) then res=true end end
+		local z=0x0
+		local lg=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_SZONE,0,nil,EFFECT_LINK_SPELL_KOISHI)
+		for tc in aux.Next(lg) do
+			local seq=tc:GetSequence()
+			local le={tc:IsHasEffect(EFFECT_LINK_SPELL_KOISHI)}
+			for _,v in pairs(le) do
+				local val=v:GetValue()
+				if aux.GetValueType(val)=="function" then val=val(v,c,tp) end
+				if val&0x40~=0 then z=z|(1<<(seq-1)) end
+				if val&0x80~=0 then z=z|(1<<seq) end
+				if val&0x100~=0 then z=z|(1<<(seq+1)) end
+			end
+		end
+		local res=c:IsLinkState() or z&(1<<(c:GetSequence()))~=0
+		local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 		if res and not Duel.IsExistingMatchingCard(function(c)return c:IsFaceup() and c:IsType(TYPE_LINK)end,tp,LOCATION_MZONE,0,1,nil) and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(20590515,2)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=g:Select(tp,1,1,nil)
-		Duel.HintSelection(dg)
-		Duel.Destroy(dg,REASON_EFFECT)
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local dg=g:Select(tp,1,1,nil)
+			Duel.HintSelection(dg)
+			Duel.Destroy(dg,REASON_EFFECT)
 		end
 	end
 end
@@ -66,8 +77,7 @@ function cm.spr(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return e:GetLabelObject():GetLabel()~=Duel.GetTurnCount() and tp==Duel.GetTurnPlayer() and c:GetFlagEffect(m)>0
+	return e:GetLabelObject():GetLabel()~=Duel.GetTurnCount() and tp==Duel.GetTurnPlayer() and e:GetHandler():GetFlagEffect(m)>0
 end
 function cm.thfilter(c)
 	return c:IsRace(RACE_PYRO) and c:IsAbleToHand()
