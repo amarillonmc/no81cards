@@ -52,10 +52,11 @@ function c87470001.xtdop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c) 
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
 	e1:SetCode(EVENT_CHAIN_END) 
-	e1:SetLabelObject(cg) 
+	e1:SetLabel(c:GetFieldID(),tc:GetFieldID())
+	e1:SetLabelObject(tc) 
 	e1:SetCondition(c87470001.tdcon) 
 	e1:SetOperation(c87470001.tdop) 
-	Duel.RegisterEffect(e1,tp) 
+	Duel.RegisterEffect(e1,tp)
 	--disable search
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -92,13 +93,17 @@ function c87470001.tdcon(e,tp,eg,ep,ev,re,r,rp)
 end 
 function c87470001.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	local cg=e:GetLabelObject()  
+	local tc=e:GetLabelObject()
+	local lab1,lab2=e:GetLabel()
+	local cg=Group.CreateGroup()
+	if lab1==c:GetFieldID() then cg:AddCard(c) end
+	if lab2==tc:GetFieldID() then cg:AddCard(tc) end
 	Duel.Hint(HINT_CARD,0,87470001) 
 	Duel.SendtoDeck(cg,nil,2,REASON_EFFECT) 
 	e:Reset() 
 end 
 function c87470001.dsrtg(e,c) 
-	return c:IsCode(e:GetLabel())   
+	return c:IsCode(e:GetLabel()) and c:IsLocation(LOCATION_DECK)
 end 
 function c87470001.xckfil(c,code)
 	return c:IsCode(code) 

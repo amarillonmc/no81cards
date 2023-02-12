@@ -26,7 +26,7 @@ function c9910217.initial_effect(c)
 end
 function c9910217.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local race=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)
-	return Duel.GetTurnPlayer()~=tp and race&RACE_PSYCHO>0
+	return Duel.GetTurnPlayer()~=tp and re:IsActiveType(TYPE_MONSTER) and race&RACE_PSYCHO>0
 end
 function c9910217.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

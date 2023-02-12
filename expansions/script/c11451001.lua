@@ -344,9 +344,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	GetID=_TGetID
-	--if #g1>0 then Duel.ConfirmCards(1-tp,g1) end
-	--if #g2>0 then Duel.ConfirmCards(tp,g2) end
+	g1=g1:Filter(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+	g2=g2:Filter(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+	ng1=ng1:Filter(Card.IsLocation,nil,LOCATION_HAND)
+	ng2=ng2:Filter(Card.IsLocation,nil,LOCATION_HAND)
+	if #g1>0 then Duel.ConfirmCards(1-tp,g1) end
+	if #g2>0 then Duel.ConfirmCards(tp,g2) end
 	if #ng1>0 then Duel.ConfirmCards(1-tp,ng1) end
 	if #ng2>0 then Duel.ConfirmCards(tp,ng2) end
-	--e:Reset()
 end

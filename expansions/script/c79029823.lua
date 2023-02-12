@@ -31,6 +31,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP) 
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,79029823)
 	e3:SetCost(c79029823.seqcost)
@@ -60,8 +61,7 @@ end
 function cm.copyfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xa991) and c:IsType(TYPE_MONSTER)
 end
-function cm.copytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and cm.copyfilter(chkc) end
+function cm.copytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc) 
 	if chk==0 then return Duel.IsExistingTarget(cm.copyfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,cm.copyfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler())

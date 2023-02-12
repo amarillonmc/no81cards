@@ -52,7 +52,7 @@ function c9910238.tdop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910238.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local race=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)
-	return race&RACE_PSYCHO>0 and re:GetHandler()~=e:GetHandler()
+	return re:IsActiveType(TYPE_MONSTER) and race&RACE_PSYCHO>0 and re:GetHandler()~=e:GetHandler()
 end
 function c9910238.filter(c,e,tp,ft)
 	return c:IsSetCard(0x955) and c:IsType(TYPE_MONSTER)

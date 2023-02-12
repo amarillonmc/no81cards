@@ -59,7 +59,7 @@ function c9910232.imop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910232.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local race=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)
-	return race&RACE_PSYCHO>0 and re:GetHandler()~=e:GetHandler()
+	return re:IsActiveType(TYPE_MONSTER) and race&RACE_PSYCHO>0 and re:GetHandler()~=e:GetHandler()
 end
 function c9910232.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
