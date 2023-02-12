@@ -2,7 +2,7 @@
 --the old library (c10199990.lua and c10199991.lua) has gone out of service, becuase it has become a SHIT MOUNTAIN, hard for reading.
 --any problems, you can call me: QQ/VX 852415212, PLZ note sth. about YGO while you add me, otherwise I will reject your friend request.
 
-local Version_Number = "2022.12.28"
+local Version_Number = "2023.02.09"
 
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constant <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -370,13 +370,22 @@ function s.create_timing_list()
 	["BeUsedAsLinkMaterial&BeSent2GY"] = { EVENT_BE_MATERIAL, { s.material_to_gy_or_be_banished("Link", "GY") } },
 	["BeUsedAsLinkMaterial&BeSent2GY/Banished"] = { EVENT_BE_MATERIAL, { s.material_to_gy_or_be_banished("Link", "GY,Banished") } },
 	["BeTributed"] = { EVENT_RELEASE },
-	["BeTarget"] = { EVENT_BECOME_TARGET },
-	["BeTarget"] = { EVENT_BECOME_TARGET },
+	["BeEffectTarget"] = { EVENT_BECOME_TARGET },
 	["ActivateEffect"] = { EVENT_CHAINING },	
 	["BeforeEffectResolving"] = { EVENT_CHAIN_SOLVING },	
 	["AfterEffectResolving"] = { EVENT_CHAIN_SOLVED },  
 	["ChainEnd"] = { EVENT_CHAIN_END },
-	["NegateActivation"] = { EVENT_CHAIN_NEGATED }
+	["NegateActivation"] = { EVENT_CHAIN_NEGATED },
+	["TakeDamage"] = { EVENT_DAMAGE },
+	["YouTakeDamage"] = { EVENT_DAMAGE, scl.cond_check_rp(0) },
+	["OpponentTakesDamage"] = { EVENT_DAMAGE, scl.cond_check_rp(1) },
+	["InflictDamage2Opponent"] = { EVENT_DAMAGE, scl.cond_check_rp(1) },
+	["TakeBattleDamage"] = { EVENT_BATTLE_DAMAGE },
+	["YouTakeBattleDamage"] = { EVENT_BATTLE_DAMAGE, scl.cond_check_rp(0) },
+	["OpponentTakesBattleDamage"] = { EVENT_DAMAGE, scl.cond_check_rp(1) },
+	["TakeEffectDamage"] = { EVENT_DAMAGE, scl.cond_check_r(0, "Effect") },
+	["YouTakeEffectDamage"] = { EVENT_DAMAGE, aux.AND(scl.cond_check_r(0, "Effect"), scl.cond_check_rp(0)) },
+	["OpponentTakesEffectDamage"] = { EVENT_DAMAGE, aux.AND(scl.cond_check_r(0, "Effect"), scl.cond_check_rp(1)) }
 	
 	}
 
@@ -617,7 +626,7 @@ function s.create_buff_list()
 	["!BeDestroyedByEffects"] = { EFFECT_INDESTRUCTABLE_EFFECT },
 	["!BeDestroyedByBattle/Effects"] = { { "!BeDestroyedByBattle", "!BeDestroyedByEffects" } },
 	["UnaffectedByEffects"] = { EFFECT_IMMUNE_EFFECT, scl.value_unaffected_by_other_card_effects },
-	["SpecialSumCondition"] = { EFFECT_SPSUMMON_CONDITION },
+	["SpecialSummonCondition"] = { EFFECT_SPSUMMON_CONDITION },
 	["!BeUsedAsFusionMaterial"] = { EFFECT_CANNOT_BE_FUSION_MATERIAL },
 	["!BeUsedAsMaterial4FusionSummon"] = { EFFECT_CANNOT_BE_FUSION_MATERIAL, s.cannot_be_fusion_summon_material_value },
 	["!BeUsedAsSynchroMaterial"] = { EFFECT_CANNOT_BE_SYNCHRO_MATERIAL },
@@ -1680,7 +1689,7 @@ end
 -->>register 1 buff on the card c, the condition will forbid it be fusion material in any time any where.
 -->>eg2. Scl.CreateSingleBuffCondition(c, "!FusionMaterial,!SynchroMaterial", 1)
 -->>register 2 buff on the card c, the condition will forbid it be fusion and synchro material in any time any where.
--->>eg3. Scl.CreateSingleBuffCondition(c, "SpecialSumCondition", aux.FALSE)
+-->>eg3. Scl.CreateSingleBuffCondition(c, "SpecialSummonCondition", aux.FALSE)
 -->>register 1 buff on the card c, the condition will forbid it be speical summoned from any where in any time.
 function Scl.CreateSingleBuffCondition(reg_obj, att_obj, val_obj, rng, con, rst_obj, desc_obj, lim_obj, flag)
 	local flag2 = Scl.GetNumFormatProperty(flag)
@@ -1891,14 +1900,14 @@ end
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
---Creat a Spell/Trap's activate effect. 
+--Create a Spell/Trap's activate effect. 
 --code default == EVENT_FREE_CHAIN 
 --desc_obj default == DESC_ACTIVATE_SCL
 --if the register handler is a Trap or Quick Play Spell, tmg_obj will automatic set to { 0, TIMINGS_CHECK_MONSTER + TIMING_END_PHASE }.
 --other parama format : see Scl.CreateEffect
 --//return effect, effect id
 -->>eg1. Scl.CreateActivateEffect(c, nil, nil, {1, "Oath"}, "Search,Add2Hand", nil, nil, nil, s.tg, s.op)
--->>register a activate effect to card c, it can only activate once per turn, it is an searcher.
+-->>register an activate effect to card c, it can only activate once per turn, it is an searcher.
 -->>return effect, effect id
 function Scl.CreateActivateEffect(reg_obj, code, desc_obj, lim_obj, ctgy, flag, con, cost, tg, op, tmg_obj, rst_obj)
 	local _, handler = Scl.GetRegisterInfo(reg_obj)
@@ -2541,7 +2550,7 @@ end
 --//return effect
 -->>eg1. Scl.CreateSingleTriggerContinousEffect_DestroyReplace(c, 1, LOCATION_MZONE, nil, s.tg, s.op)
 -->>If card c is destroyed by any ways except replace, you can do s.tg and s.op to replace the destroy.
-function Scl.CreateSingleTriggerContinousEffect_DestroyReplace(reg_obj, lim_obj, rng, repfilter, tg, op, con, rst_obj, flag)
+function Scl.CreateSingleTriggerContinousEffect_DestroyReplace(reg_obj, lim_obj, rng, repfilter, tg, op, con, flag, rst_obj)
 	local flag2 = Scl.GetNumFormatProperty(flag)
 	local e1 = Scl.CreateSingleTriggerContinousEffect(reg_obj, EFFECT_DESTROY_REPLACE, nil, lim_obj, flag2 | EFFECT_FLAG_SINGLE_RANGE, con, op, rst_obj)
 	e1:SetTarget(s.create_single_trigger_continous_effect_destroy_replace_tg(repfilter or aux.TRUE, tg))
@@ -2581,9 +2590,9 @@ end
 --//return effect
 -->>eg1. Scl.CreateFieldTriggerContinousEffect_DestroyReplace(c, 1, LOCATION_MZONE, nil, s.tg, s.op)
 -->>If a card(s) meet s.tg(chk == 0) is destroyed by any ways except replace, you can do s.tg and s.op to replace the destroy.
-function Scl.CreateFieldTriggerContinousEffect_DestroyReplace(reg_obj, lim_obj, range, repfilter, tg, op, con, force, flag, rst_obj)
+function Scl.CreateFieldTriggerContinousEffect_DestroyReplace(reg_obj, lim_obj, rng, repfilter, tg, op, con, force, flag, rst_obj)
 	repfilter = repfilter or aux.TRUE 
-	local e1 = Scl.CreateFieldTriggerContinousEffect(reg_obj, EFFECT_DESTROY_REPLACE, nil, lim_obj, nil, range, con, op, rst_obj)
+	local e1 = Scl.CreateFieldTriggerContinousEffect(reg_obj, EFFECT_DESTROY_REPLACE, nil, lim_obj, nil, rng, con, op, rst_obj)
 	e1:SetValue(s.create_field_trigger_continous_effect_destroy_replace_value(repfilter))
 	e1:SetTarget(s.create_field_trigger_continous_effect_destroy_replace_tg(repfilter, tg, force))
 	local g = Group.CreateGroup()
@@ -2921,9 +2930,9 @@ end
 --Nested function
 --value for "this card cannot be special summoned from extra, except by Scl.Summon_Type_List[sum_str][1]"
 --usually use in EFFECT_SPSUMMON_CONDITION.
--->>eg1. scl.value_spsummon_from_extra("LinkSummon")(e, se, sp, st)
+-->>eg1. scl.value_special_summon_from_extra("LinkSummon")(e, se, sp, st)
 -->>"This card cannot be special summoned from extra, except by Link Summon".
-function scl.value_spsummon_from_extra(sum_str)
+function scl.value_special_summon_from_extra(sum_str)
 	return function(e, se, sp, st)
 		local st2 = Scl.Summon_Type_List[sum_str]
 		return not e:GetHandler():IsLocation(LOCATION_EXTRA) or st & st2 == st2
@@ -2931,7 +2940,7 @@ function scl.value_spsummon_from_extra(sum_str)
 end
 --Value for "this card can only be special summoned by card effect".
 --usually use in EFFECT_SPSUMMON_CONDITION.
-function scl.value_spsummon_by_card_effects(e, se, sp, st)
+function scl.value_special_summon_by_card_effects(e, se, sp, st)
 	--ygocore's official script has bug when VS EFFECT_SPSUMMON_PROC
 	--return se:IsHasType(EFFECT_TYPE_ACTIONS)
 	return not se:IsHasProperty(EFFECT_FLAG_UNCOPYABLE)
@@ -2939,9 +2948,9 @@ end
 --Nested function
 --value for "include a reason (battle/cost/material/effect ...)"
 --will call Scl.IsReason(nil, ...) to check if "r" include your point reason(s), paramas see Scl.IsReason
--->>eg1. scl.value_reason(0, REASON_BATTLE/"Battle")
+-->>eg1. scl.value_check_r(0, REASON_BATTLE/"Battle")
 -->>check if r include REASON_BATTLE
-function scl.value_reason(...)  
+function scl.value_check_r(...)  
 	local arr = { ... }
 	return function(e, re, r, rp)
 		local c = e:GetHandler()
@@ -2987,7 +2996,7 @@ function scl.value_unaffected_by_other_untarget_effects(e, re)
 	return true
 end
 --value for "immune to your opponent's card's effects that do not target this card".
-function scl.value_unaffected_by_opponents_untarget_effects(e, re)
+function scl.value_unaffected_by_opponents_untarget_self_effects(e, re)
 	local c = e:GetHandler()
 	local ec = re:GetHandler()
 	if re:GetHandlerPlayer() == e:GetHandlerPlayer() or ec:IsHasCardTarget(c) or (re:IsHasType(EFFECT_TYPE_ACTIONS) and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(re)) then return false
@@ -3883,6 +3892,31 @@ function scl.cost_once_per_chain(flag_code, player_lim)
 		end
 	end
 end 
+--Nested function
+--condition: if player_idx == 0, check rp == tp, else check rp ~= tp
+function scl.cond_check_rp(player_idx)
+	return function(e, tp, eg, ep, ev, re, r, rp)
+		if player_idx == 0 then 
+			return rp == tp 
+		elseif player_idx == 1 then
+			return rp ~= tp
+		end
+		return false
+	end
+end
+--Nested function
+--will call Scl.IsReason(nil, ...) to check if "r" include your point reason(s), paramas see Scl.IsReason
+-->>eg1. scl.cond_check_r(0, REASON_EFFECT/"Effect")
+-->>check if "r" has REASON_EFFECT
+function scl.cond_check_r(...)
+	local arr = { ... }
+	return function(e, tp, eg, ep, ev, re, r, rp)
+		Scl.Global_Reason = r
+		local res = Scl.IsReason(nil, table.unpack(arr))
+		Scl.Global_Reason = nil
+		return res
+	end
+end
 --condition: during your turn
 function scl.cond_during_your_turn(e)
 	return Duel.GetTurnPlayer() == e:GetHandlerPlayer()
@@ -3891,6 +3925,10 @@ end
 function scl.cond_during_opponents_turn(e)
 	return Duel.GetTurnPlayer() ~= e:GetHandlerPlayer()
 end 
+--condition: previous faceup
+function scl.cond_previous_faceup(e)
+	return e:GetHandler():IsPreviousPosition(POS_FACEUP)
+end
 --Nested function
 --condition: in XXX Phase
 --the format of ... : phase_str1, player1, phase_str2, player2, ... ("Or" check)
@@ -3937,34 +3975,8 @@ function scl.cond_during_phase(...)
 			if not res then 
 				return false 
 			end
+			return true
 		end
-		return true
-	end
-end
---Nested function
---condtion: because of ... reason(s)
---will call Scl.IsReason(c, ...) to check if the effect handler include your point reason(s), paramas see Scl.IsReason
--->>eg1. scl.cond_reason(REASON_BATTLE)
--->>check if the effect handler include the battle reason.
-function scl.cond_is_reason(...)
-	local reason_arr = { ... }
-	return function(e)
-		return Scl.IsReason(e:GetHandler(), table.unpack(reason_arr))
-	end
-end
---Nested function
---condition: previous faceup leaves the field, because of ... reason(s)
---will call Scl.IsReason(c, ...) to check if the effect handler include your point reason(s), paramas see Scl.IsReason
--->>eg1. scl.cond_previous_faceup(REASON_BATTLE)
--->>check if the effect handler is faceup leaves the field, because of battle.
-function scl.cond_faceup_leaves(...)
-	local reason_arr = { ... }
-	return function(e)
-		local c = e:GetHandler()
-		if #reason_arr > 0 and not Scl.IsReason(c, table.unpack(reason_arr)) then 
-			return false
-		end
-		return c:IsPreviousPosition(POS_FACEUP)
 	end
 end
 --Nested function
@@ -3990,9 +4002,9 @@ end
 --Nested function
 --condition: is special summoned from "zone_obj"
 --player (default == nil): if == 0, means from your zone(s), if == 1, means from your opponent's zone(s), if == nil, means from any player's zone(s).
--->>eg1. scl.con_is_spsummon_from("Hand", player)
+-->>eg1. scl.cond_is_special_summon_from("Hand")
 -->>check if this card is special summon from hand.
-function scl.con_is_spsummon_from(zone_obj, player)
+function scl.cond_is_special_summon_from(zone_obj, player)
 	return function(e)
 		local c = e:GetHandler()
 		return c:IsSummonType(SUMMON_TYPE_SPECIAL) and Scl.IsPreviouslyInZone(c, zone_obj) and (not player or (player == 0 and c:IsPreviousControler(tp)) or (player == 1 and c:IsPreviousControler(1 - tp)))
@@ -5362,6 +5374,19 @@ function s.get_target_releate_filter(c, filter, ...)
 	if not c:IsRelateToChain() then return false end
 	return filter(c, ...)
 end
+--Get target player and that num-format value for an effect that register player target information in Effect.SetTarget
+--//return target player, target value
+--[[
+	>>eg1. 	Duel.SetTargetPlayer(tp)
+			Duel.SetTargetParam(1000)
+			Scl.GetPlayerTargetParamas()
+	>> return tp, 1000
+--]]
+function Scl.GetPlayerTargetParamas()
+	local player, value = Duel.GetChainInfo(0, CHAININFO_TARGET_PLAYER, CHAININFO_TARGET_PARAM)
+    Duel.Draw(p,d,REASON_EFFECT)
+	return player, value
+end
 --Add normal summon or set procedure
 --parama see Scl.AddNormalSummonProcedure and Scl.AddNormalSetProcedure
 --//return summon effect
@@ -5492,7 +5517,15 @@ function s.summon_count_limit_tg(sum_typ_str)
 		return c:IsCode(e:GetHandler():GetOriginalCodeRule()) and sum_typ & sum_typ2 == sum_typ2
 	end
 end
---speical "aux.AddSynchroMixProcedure"
+--Special add fusion material record
+--now equal to Auxiliary.AddFusionProcMixRep + EnableReviveLimit()
+-->>eg1. Scl.SetFusionMaterial(c, false, false, 114514, 1, 3, s.filter, 2, 2)
+-->>this fusion monster needs 1~3 monsters witch name is 114514, and 2 other monsters meets s.filter(c, fc) as materials to fusion summon it.
+function Scl.SetFusionMaterial(c, instant_fusion_able, replace_name_able, ...)
+	c:EnableReviveLimit()
+	return aux.AddFusionProcMixRep(c, instant_fusion_able, replace_name_able, ...)
+end
+--Speical "aux.AddSynchroMixProcedure"
 --can call some scl's custom functions in the procedure, like extra synchro material, dark synchro, custom level synchro, custom synchro material action, and so on
 --return summon effect
 function Scl.AddSynchroProcedure(c, f1, f2, f3, f4, minc, maxc, gc)
@@ -6848,4 +6881,7 @@ Scl.RaiseGlobalSetEvent()
 			
 2022.12.28 fix EFFECT_ACTIVATE_SPELL_AND_TRAP_FROM_ANY_ZONE_SCL
 			Add an zone check (current zone == activate zone) before cost check. (due to 130006007 "决斗者的最后之日" can activate in any zone.)
+			
+2022.02.09 fix some format error cause the library cannot be correct read.
+
 --]]

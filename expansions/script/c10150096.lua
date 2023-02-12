@@ -73,10 +73,11 @@ function cm.act(e,tp)
 		local code,race,att,lv,atk,def=table.unpack(mat)
 		local tk=Duel.CreateToken(tp,86871615)  
 		local e1=rsef.SV_LIMIT({c,tk,true},"ress",nil,nil,rsreset.est-RESET_TOFIELD)
-		rscf.QuickBuff({c,tk,true},"code",code,"lv",lv,"race",race,"att",att,"batk",atk,"bdef",def,"rst",rsreset.est-RESET_TOFIELD)
-		Duel.SpecialSummonStep(tk,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+		Scl.AddSingleBuff(nil, "=Name", code, "=Level", lv, "=Race", race, "=Attribute", att, "=BaseATK", atk, "=BaseDEF", def, "Reset", RESETS_SCL - RESET_TOFIELD)
+		--rscf.QuickBuff({c,tk,true},"code",code,"lv",lv,"race",race,"att",att,"batk",atk,"bdef",def,"rst",rsreset.est-RESET_TOFIELD)
+		Scl.SpecialSummonStep(tk,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	end
-	Duel.SpecialSummonComplete()
+	Scl.SpecialSummonComplete()
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	if not c:IsLocation(LOCATION_EXTRA) then return false end

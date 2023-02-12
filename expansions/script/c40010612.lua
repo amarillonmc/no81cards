@@ -57,13 +57,13 @@ function cm.spgfilter(c,e,tp)
 	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_ROCK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local lg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		local sg=Duel.GetMatchingGroup(cm.spgfilter,tp,LOCATION_HAND,0,nil,e,tp)
-		if Duel.SendtoGrave(g,REASON_EFFECT)>0 then
-			if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and lg:GetClassCount(Card.GetLevel)>=3 then
+		if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
+			local lg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil)
+			if sg:GetCount()>0 and lg:GetClassCount(Card.GetLevel)>=3 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 				local spg=sg:Select(tp,1,1,nil)

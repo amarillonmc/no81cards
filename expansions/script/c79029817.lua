@@ -79,7 +79,7 @@ function c79029817.dsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029817.xyzfilter(c,g)
-	return c:IsRace(RACE_MACHINE) and c:IsXyzSummonable(g)
+	return c:IsRace(RACE_MACHINE) and c:IsXyzSummonable(g,1,99)
 end
 function c79029817.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_MZONE,0,nil,0xa991)
@@ -92,7 +92,7 @@ function c79029817.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=g:Select(tp,1,1,nil)
-		Duel.XyzSummon(tp,tg:GetFirst(),xg)
+		Duel.XyzSummon(tp,tg:GetFirst(),xg,1,99)
 	end
 end
 

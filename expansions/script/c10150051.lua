@@ -1,5 +1,6 @@
 --邪心英雄 堕影魔王
 function c10150051.initial_effect(c)
+	aux.AddCodeList(c,94820406)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFun(c,10150070,aux.FilterBoolFunction(Card.IsRace,RACE_FIEND),1,true,true)
@@ -74,14 +75,19 @@ function c10150051.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetRange(LOCATION_MZONE)
 		e2:SetCode(EFFECT_IMMUNE_EFFECT)
 		e2:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,2)
+		e2:SetCondition(c10150051.econ)
 		e2:SetValue(c10150051.efilter)
 		e2:SetOwnerPlayer(tp)
 		tc:RegisterEffect(e2)
 	end
 end
+function c10150051.econ(e)
+	return Duel.GetCurrentPhase() ~= PHASE_MAIN2
+end
 function c10150051.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function c10150051.splimit(e,se,sp,st)
-	return st==SUMMON_TYPE_FUSION+0x10
+	return se:GetHandler():IsCode(94820406)
+		or Duel.IsPlayerAffectedByEffect(sp,72043279) and st&SUMMON_TYPE_FUSION==SUMMON_TYPE_FUSION
 end

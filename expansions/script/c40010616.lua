@@ -31,13 +31,13 @@ function cm.thfilter(c)
 	return aux.IsCodeListed(c,40010618) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local lg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		local tg=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
-		if Duel.SendtoGrave(g,REASON_EFFECT)>0 then
-			if tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and lg:GetClassCount(Card.GetLevel)>=3 then
+		if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
+			local lg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil)
+			if tg:GetCount()>0 and lg:GetClassCount(Card.GetLevel)>=3 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local stg=tg:Select(tp,1,1,nil)

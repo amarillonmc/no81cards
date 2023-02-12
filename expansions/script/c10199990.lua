@@ -666,8 +666,8 @@ end
 function rssf.SpecialSummonEither(sum_card, sum_eff, sum_typ, sum_pl, loc_pl, ignore_con, ignore_revie, pos, sum_zone)
 	return Scl.SpecialSummon2EitherFieldStep(sum_card, sum_typ, sum_pl, ignore_con, ignore_revie, pos, sum_zone) 
 end
-rsval.spconfe = scl.value_spsummon_from_extra("SpecialSummon")
-rsval.spconbe = scl.value_spsummon_by_card_effects
+rsval.spconfe = scl.value_special_summon_from_extra("SpecialSummon")
+rsval.spconbe = scl.value_special_summon_by_card_effects
 function rsval.indbae(str1, str2)
 	if not str1 and not str2 then 
 		str1 = "Battle"
@@ -931,7 +931,7 @@ rscon.turns = scl.cond_during_your_turn
 rscon.turno = scl.cond_during_opponents_turn
 rscon.phmp = scl.cond_during_phase("M1,M2")
 rscon.phbp = scl.cond_during_phase("BP")
-rscon.prepup = scl.cond_faceup_leaves()
+rscon.prepup = scl.cond_previous_faceup
 function rstg.chnlim(sp, op)
 	return function(g, e, tp)
 		Duel.SetChainLimit(rsval.chainlimit(sp, op, g))

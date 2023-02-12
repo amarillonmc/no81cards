@@ -72,13 +72,15 @@ function cm.thfilter(c,e,tp)
 	return c:IsType(TYPE_MONSTER) and aux.IsCodeListed(c,40010618) and not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local lg=Duel.GetMatchingGroup(cm.cgfilter,tp,LOCATION_GRAVE,0,nil)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) and lg:GetClassCount(Card.GetLevel)>=3 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		local lg=Duel.GetMatchingGroup(cm.cgfilter,tp,LOCATION_GRAVE,0,nil)
+		if lg:GetClassCount(Card.GetLevel)>=3 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
 end
 function cm.fusop(e,tp,eg,ep,ev,re,r,rp)
