@@ -44,7 +44,8 @@ function c22348061.tgfilter(c)
 	return c:IsAbleToGrave() and c:IsFacedown()
 end
 function c22348061.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c22348061.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(c22348061.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 	if chk==0 then return #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end
@@ -53,11 +54,11 @@ function c22348061.spfilter(c,e,tp)
 end
 function c22348061.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c22348061.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c22348061.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.HintSelection(g)
-		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:GetControler()==tp and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(22348061,2)) then
+		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsPreviousControler(tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(22348061,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g2=Duel.SelectMatchingCard(tp,c22348061.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		local tc2=g2:GetFirst()
