@@ -28,12 +28,13 @@ function cm.initial_effect(c)
 	--juo gai
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(60151124,2))
-	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_TOGRAVE)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
 	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCountLimit(1)
 	e3:SetTarget(c60151124.tdtg)
 	e3:SetOperation(c60151124.tdop)
 	c:RegisterEffect(e3)
@@ -139,13 +140,14 @@ function c60151124.regop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60151124.tdtgfilter(c,tp)
-	return c:IsSetCard(0x9b23) and c:IsAbleToRemove() 
-		and Duel.IsExistingTarget(c60151124.tdtgfilter2,tp,LOCATION_DECK,0,1,nil,c)
+	return c:IsSetCard(0x9b23) and c:IsAbleToRemove()
+		and Duel.IsExistingMatchingCard(c60151124.tdtgfilter2,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
-function c60151124.tdtgfilter2(c,tc)
-	return c:IsSetCard(0x9b23) and (c:IsAbleToGrave() or c:IsAbleToHand()) and c:GetCode()~=tc:GetCode()
+function c60151124.tdtgfilter2(c,code)
+	return c:IsSetCard(0x9b23) and (c:IsAbleToGrave() or c:IsAbleToHand()) and not c:IsCode(code)
 end
 function c60151124.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c60151124.tdtgfilter(chkc,tp) end
 	if chk==0 then return Duel.IsExistingTarget(c60151124.tdtgfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,c60151124.tdtgfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
@@ -158,7 +160,7 @@ function c60151124.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-			local g=Duel.SelectTarget(tp,c60151124.tdtgfilter2,tp,LOCATION_DECK,0,1,1,nil,tc)
+			local g=Duel.SelectMatchingCard(tp,c60151124.tdtgfilter2,tp,LOCATION_DECK,0,1,1,nil,tc:GetCode())
 			local tc2=g:GetFirst()
 			if tc2:IsAbleToHand() and tc2:IsAbleToGrave() then
 				if Duel.SelectYesNo(tp,aux.Stringid(60151124,3)) then
