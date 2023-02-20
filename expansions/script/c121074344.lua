@@ -1,61 +1,48 @@
---闪光之宣告者
-local m=121074344
-local cm=_G["c"..m]
-function cm.initial_effect(c)
-    --Negate summon
+--閃光の宣告者
+function c121074344.initial_effect(c)
+    --Negate
     local e1=Effect.CreateEffect(c)
-    e1:SetDescription(aux.Stringid(m,1))
+    e1:SetDescription(aux.Stringid(121074344,0))
     e1:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_TOHAND)
     e1:SetType(EFFECT_TYPE_QUICK_O)
-    e1:SetRange(LOCATION_HAND)
     e1:SetCode(EVENT_SUMMON)
-    e1:SetCondition(cm.discon)
-    e1:SetCost(cm.discost)
-    e1:SetTarget(cm.distg)
-    e1:SetOperation(cm.disop)
+    e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+    e1:SetRange(LOCATION_HAND)
+    e1:SetCondition(c121074344.discon)
+    e1:SetCost(c121074344.discost)
+    e1:SetTarget(c121074344.distg)
+    e1:SetOperation(c121074344.disop)
     c:RegisterEffect(e1)
     local e2=e1:Clone()
     e2:SetCode(EVENT_FLIP_SUMMON)
     c:RegisterEffect(e2)
-    local e4=e1:Clone()
-    e4:SetDescription(aux.Stringid(m,0))
-    e4:SetCountLimit(1,117960683)
-    e4:SetCost(cm.discost2)
-    c:RegisterEffect(e4)
-    local e5=e4:Clone()
-    e5:SetCode(EVENT_FLIP_SUMMON)
-    c:RegisterEffect(e5)
 end
-function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-    return tp~=ep and Duel.GetCurrentChain()==0
+function c121074344.discon(e,tp,eg,ep,ev,re,r,rp)
+    return ep~=tp and Duel.GetCurrentChain()==0
 end
-function cm.costfilter(c)
-    return c:IsRace(RACE_FAIRY) and c:IsAbleToGraveAsCost()
+function c121074344.costfilter(c,tp)
+    return (c:IsRace(RACE_FAIRY) and c:IsLocation(LOCATION_HAND) or (c:IsCode(117960683) and Duel.GetFlagEffect(tp,117960683)==0)) 
+        and c:IsAbleToGraveAsCost()
 end
-function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c121074344.discost(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
-    if chk==0 then return c:IsAbleToGraveAsCost() and 
-        Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND,0,1,c) end
+    if chk==0 then return c:IsAbleToGraveAsCost() 
+        and Duel.IsExistingMatchingCard(c121074344.costfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,c,tp) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-    local g=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_HAND,0,1,1,c)
+    local g=Duel.SelectMatchingCard(tp,c121074344.costfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,c,tp)
+    local tc=g:GetFirst()
+    if tc:IsLocation(LOCATION_DECK) then
+        Duel.RegisterFlagEffect(tp,10458,RESET_PHASE+PHASE_END,0,1)
+    end 
     g:AddCard(c)
     Duel.SendtoGrave(g,REASON_COST)
 end
-function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c121074344.distg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end
-    Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
-    Duel.SetOperationInfo(0,CATEGORY_TOHAND,eg,eg:GetCount(),0,0)
+    Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,1,0,0)
+    Duel.SetOperationInfo(0,CATEGORY_TOHAND,eg,1,0,0)
 end
-function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-    Duel.NegateSummon(eg)
+function c121074344.disop(e,tp,eg,ep,ev,re,r,rp)
+    Duel.NegateSummon(eg:GetFirst())
     Duel.SendtoHand(eg,nil,REASON_EFFECT)
-end
-function cm.dcostfilter(c)
-    return c:IsCode(117960683) and c:IsAbleToGraveAsCost()
-end
-function cm.discost2(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(cm.dcostfilter,tp,LOCATION_DECK,0,1,nil) end
-    local tc=Duel.GetFirstMatchingCard(cm.dcostfilter,tp,LOCATION_DECK,0,nil)
-    Duel.SendtoGrave(Group.FromCards(c,tc),REASON_COST)
 end

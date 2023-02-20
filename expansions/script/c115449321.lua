@@ -113,10 +113,10 @@ function cm.spoperation(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function cm.repfilter(c,tp)
-    return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xb5) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+    return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0xb5) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function cm.desfilter(c)
-    return c:IsControler(tp) and c:IsFaceup() and c:IsSetCard(0xb5) and c:IsAbleToDeck()
+    return c:IsFaceup() and c:IsSetCard(0xb5) and c:IsAbleToDeck()
 end
 function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
@@ -125,6 +125,7 @@ function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if Duel.SelectEffectYesNo(tp,c,96) then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
         local sg=Duel.SelectMatchingCard(tp,cm.desfilter,tp,LOCATION_REMOVED,0,1,g:GetCount(),nil)
+        sg:KeepAlive()
         e:SetLabelObject(sg)
         return true
     else return false end

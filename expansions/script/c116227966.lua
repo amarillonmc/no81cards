@@ -73,7 +73,6 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
     c:CreateEffectRelation(te)
-    local c=e:GetHandler()
     local ev0=Duel.GetCurrentChain()+1
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

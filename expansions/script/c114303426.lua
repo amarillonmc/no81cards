@@ -33,12 +33,6 @@ function c114303426.initial_effect(c)
     e4:SetTarget(c114303426.actarget)
     e4:SetOperation(c114303426.costop)
     c:RegisterEffect(e4)
-    local e5=Effect.CreateEffect(c)
-    e5:SetType(EFFECT_TYPE_FIELD)
-    e5:SetCode(EFFECT_SPSUMMON_PROC_G)
-    e5:SetRange(LOCATION_DECK)
-    e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
-    c:RegisterEffect(e5)
 end
 function c114303426.cfilter(c,tp)
     return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:GetPreviousControler()==tp and c:IsSetCard(0xaa)
@@ -94,11 +88,36 @@ function c114303426.activate(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function c114303426.actarget(e,te,tp)
+    e:SetLabelObject(te)
     return te:GetHandler()==e:GetHandler()
 end
 function c114303426.costop(e,tp,eg,ep,ev,re,r,rp)
+    local te=e:GetLabelObject()
     local c=e:GetHandler()
-    Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+    Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+    c:CreateEffectRelation(te)
+    local ev0=Duel.GetCurrentChain()+1
+    local e1=Effect.CreateEffect(c)
+    e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+    e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+    e1:SetCode(EVENT_CHAIN_SOLVED)
+    e1:SetCountLimit(1)
+    e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+    e1:SetOperation(c114303426.rsop)
+    e1:SetReset(RESET_CHAIN)
+    Duel.RegisterEffect(e1,tp)
+    local e2=e1:Clone()
+    e2:SetCode(EVENT_CHAIN_NEGATED)
+    Duel.RegisterEffect(e2,tp)
+end
+function c114303426.rsop(e,tp,eg,ep,ev,re,r,rp)
+    local rc=re:GetHandler()
+    if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+        rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+    end
+    if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+        rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+    end
 end
 function c114303426.condition2(e,tp,eg,ep,ev,re,r,rp)
     return c114303426.condition(e,tp,eg,ep,ev,re,r,rp) and not Duel.IsExistingMatchingCard(aux.NOT(Card.IsSetCard),tp,LOCATION_EXTRA,0,1,nil,0xaa)

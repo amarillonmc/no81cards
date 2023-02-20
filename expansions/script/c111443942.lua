@@ -1,89 +1,172 @@
---影依回转
-local m=111443942
-local cm=_G["c"..m]
-function cm.initial_effect(c)
+--影依の廻転
+function c111443942.initial_effect(c)
+    --Activate
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetHintTiming(0,TIMING_END_PHASE)
-    e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
-    e1:SetCondition(cm.condition)
-    e1:SetOperation(cm.activate)
+    e1:SetCountLimit(1,111443942+EFFECT_COUNT_CODE_OATH)
+    e1:SetTarget(c111443942.target)
+    e1:SetOperation(c111443942.operation)
     c:RegisterEffect(e1)
+    --plus effect
+    if not c111443942.global_check then
+        c111443942.global_check=true
+        local ge1=Effect.CreateEffect(c)
+        ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+        ge1:SetCode(EVENT_ADJUST)
+        ge1:SetOperation(c111443942.sdop)
+        Duel.RegisterEffect(ge1,0)
+    end
 end
-function cm.actfilter(c)
-    return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9d) and not c:IsCode(m)
+function c111443942.filter(c)
+    return c:IsSetCard(0x9d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsCode(111443942)
 end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-    local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-    return g:IsExists(cm.actfilter,1,nil)
+function c111443942.target(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return Duel.IsExistingMatchingCard(c111443942.filter,tp,LOCATION_DECK,0,1,nil) end
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+function c111443942.operation(e,tp,eg,ep,ev,re,r,rp)
+    Duel.RegisterFlagEffect(tp,111443942,RESET_PHASE+PHASE_END,0,1)
+end
+
+function c111443942.cfilter(c,tp)
+    return c:GetPreviousControler()==tp
+        and (c:IsPreviousLocation(LOCATION_DECK) or c:GetSummonLocation()==LOCATION_DECK
+            or (c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK))
+            or c:IsLocation(LOCATION_DECK)) and not c:IsReason(REASON_DRAW)
+end
+function c111443942.con(e,tp,eg,ep,ev,re,r,rp)
+    return eg:IsExists(c111443942.cfilter,1,nil,tp)
+end
+function c111443942.op(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    local g=Duel.GetMatchingGroup(cm.actfilter,tp,0xff,0,nil)
-    for tc in aux.Next(g) do
-        local e0=Effect.CreateEffect(c)
-        e0:SetType(EFFECT_TYPE_FIELD)
-        e0:SetCode(EFFECT_SPSUMMON_PROC_G)
-        e0:SetRange(LOCATION_DECK)
-        e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
-        e0:SetReset(RESET_PHASE+PHASE_END)
-        tc:RegisterEffect(e0,true)
-        local e1=Effect.CreateEffect(c)
-        e1:SetType(EFFECT_TYPE_FIELD)
-        e1:SetCode(EFFECT_ACTIVATE_COST)
-        e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
-        e1:SetReset(RESET_PHASE+PHASE_END)
-        e1:SetCost(cm.costchk)
-        e1:SetTargetRange(1,0)
-        e1:SetTarget(cm.actarget)
-        e1:SetOperation(cm.costop)
-        Duel.RegisterEffect(e1,tp)
-        local ae=tc:GetActivateEffect():Clone()
-        local con=ae:GetCondition()
-        ae:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_ACTIVATE)
-        ae:SetCondition(cm.actcon(con))
-        ae:SetRange(LOCATION_DECK)
-        ae:SetReset(RESET_PHASE+PHASE_END)
-        tc:RegisterEffect(ae,true)
+    local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+    if g:GetCount()<=1 then return end
+    c:RegisterFlagEffect(111443942,RESET_PHASE+PHASE_END,0,1)
+end
+
+function c111443942.disop(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
+    local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+    if g:GetCount()<=1 then return end
+    if c:GetFlagEffect(111443942)~=0 and Duel.IsExistingMatchingCard(c111443942.filter,tp,LOCATION_DECK,0,2,nil) then
+        local sg=Duel.GetMatchingGroup(c111443942.filter,tp,LOCATION_DECK,0,nil)
+        Duel.ConfirmCards(tp,sg)
+        c:ResetFlagEffect(111443942)
     end
 end
-function cm.actcon(con)
-    return function(e,tp,eg,ep,ev,re,r,rp)
-        local c=e:GetHandler()
-        return (not con or con(e,tp,eg,ep,ev,re,r,rp)) and c:IsSetCard(0x9d) and ((c:IsType(TYPE_TRAP) or (c:IsType(TYPE_SPELL) and c:IsType(TYPE_QUICKPLAY))) or (Duel.GetTurnPlayer()==tp and Duel.GetCurrentChain()==0 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2))) and c:IsLocation(LOCATION_DECK)
+
+function c111443942.sdop(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler():GetOwner()
+    local g=Duel.GetMatchingGroup(c111443942.filter,c,LOCATION_DECK,LOCATION_DECK,nil)
+    local tc=g:GetFirst()
+    while tc do
+        if tc:GetFlagEffect(111443942)==0 then
+            local code=tc:GetOriginalCode()
+            local ae=tc:GetActivateEffect()
+            local e1=Effect.CreateEffect(tc)
+            e1:SetType(EFFECT_TYPE_ACTIVATE)
+            e1:SetCode(ae:GetCode())
+            e1:SetCategory(ae:GetCategory())
+            e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+ae:GetProperty())
+            e1:SetRange(LOCATION_DECK)
+            e1:SetCountLimit(1,code+EFFECT_COUNT_CODE_OATH)
+            e1:SetCondition(c111443942.sfcon)
+            e1:SetTarget(c111443942.sftg)
+            e1:SetOperation(c111443942.sfop)
+            e1:SetReset(RESET_EVENT+0x1fe0000)
+            tc:RegisterEffect(e1)
+            --activate cost
+            local e2=Effect.CreateEffect(tc)
+            e2:SetType(EFFECT_TYPE_FIELD)
+            e2:SetCode(EFFECT_ACTIVATE_COST)
+            e2:SetRange(LOCATION_DECK)
+            e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_UNCOPYABLE)
+            e2:SetTargetRange(LOCATION_DECK,0)
+            e2:SetCost(c111443942.costchk)
+            e2:SetTarget(c111443942.costtg)
+            e2:SetOperation(c111443942.costop)
+            e2:SetReset(RESET_EVENT+0x1fe0000)
+            tc:RegisterEffect(e2)
+            tc:RegisterFlagEffect(111443942,RESET_EVENT+0x1fe0000,0,1)
+        end
+        tc=g:GetNext()
     end
 end
-function cm.cfilter(c)
+
+--deck activate
+function c111443942.sfcon(e,tp,eg,ep,ev,re,r,rp)
+    return Duel.GetFlagEffect(tp,111443942)>0 and Duel.GetFlagEffect(tp,e:GetHandler():GetOriginalCode())==0
+end
+function c111443942.sftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+    local ae=e:GetHandler():GetActivateEffect()
+    local fcon=ae:GetCondition()
+    local fcos=ae:GetCost()
+    local ftg=ae:GetTarget()
+    if chk==0 then
+        return (not fcon or fcon(e,tp,eg,ep,ev,re,r,rp))
+            and (not fcos or fcos(e,tp,eg,ep,ev,re,r,rp,0))
+            and (not ftg or ftg(e,tp,eg,ep,ev,re,r,rp,0))
+            and e:GetHandler():IsSetCard(0x9d) and e:GetHandler():IsType(TYPE_SPELL+TYPE_TRAP)
+    end
+    if fcos then
+        fcos(e,tp,eg,ep,ev,re,r,rp,1)
+    end
+    if ftg then
+        ftg(e,tp,eg,ep,ev,re,r,rp,1)
+    end
+    Duel.RegisterFlagEffect(tp,e:GetHandler():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
+end
+function c111443942.sfop(e,tp,eg,ep,ev,re,r,rp)
+    local ae=e:GetHandler():GetActivateEffect()
+    local fop=ae:GetOperation()
+    if fop then
+        fop(e,tp,eg,ep,ev,re,r,rp)
+    end
+end
+
+--activate field
+function c111443942.costfilter(c)
     return c:IsSetCard(0x9d) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
-function cm.costchk(e,te_or_c,tp)
-    return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE,0,1,nil)
+function c111443942.costchk(e,te_or_c,tp)
+    local tp=e:GetHandler():GetControler()
+    return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+        and Duel.IsExistingMatchingCard(c111443942.costfilter,tp,LOCATION_GRAVE,0,1,nil)
 end
-function cm.actarget(e,te,tp)
-    local tc=te:GetHandler()
-    e:SetLabelObject(tc)
-    return cm.actfilter(tc) and tc:IsLocation(LOCATION_DECK)
+function c111443942.costtg(e,te,tp)
+    e:SetLabelObject(te)
+    return te:GetHandler():IsLocation(LOCATION_DECK) and te:GetHandler()==e:GetHandler()
 end
-function cm.costop(e,tp,eg,ep,ev,re,r,rp)
-    local tc=e:GetLabelObject()
-    if Duel.GetFlagEffect(tp,tc:GetCode()+1)>0 then return end
+function c111443942.costop(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-    local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+    local g=Duel.SelectMatchingCard(tp,c111443942.costfilter,tp,LOCATION_GRAVE,0,1,1,nil)
     if g:GetCount()>0 then
-        Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+        local te=e:GetLabelObject()
+        Duel.SendtoDeck(g,nil,0,REASON_EFFECT)
+        Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+        c:CreateEffectRelation(te)
+        local ev0=Duel.GetCurrentChain()+1
+        local e1=Effect.CreateEffect(c)
+        e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+        e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+        e1:SetCode(EVENT_CHAIN_SOLVED)
+        e1:SetCountLimit(1)
+        e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+        e1:SetOperation(c111443942.rsop)
+        e1:SetReset(RESET_CHAIN)
+        Duel.RegisterEffect(e1,tp)
+        local e2=e1:Clone()
+        e2:SetCode(EVENT_CHAIN_NEGATED)
+        Duel.RegisterEffect(e2,tp)
     end
-    Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-    Duel.RegisterFlagEffect(tp,tc:GetCode()+1,RESET_PHASE+PHASE_END,0,1)
-    local e1=Effect.CreateEffect(tc)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-    e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-    e1:SetTargetRange(1,0)
-    e1:SetValue(cm.aclimit)
-    e1:SetReset(RESET_PHASE+PHASE_END)
-    Duel.RegisterEffect(e1,tp)
 end
-function cm.aclimit(e,re,tp)
-    return re:GetHandler():IsLocation(LOCATION_DECK) and re:GetHandler():IsCode(e:GetHandler():GetCode())
+function c111443942.rsop(e,tp,eg,ep,ev,re,r,rp)
+    local rc=re:GetHandler()
+    if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+        rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+    end
+    if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+        rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+    end
 end
