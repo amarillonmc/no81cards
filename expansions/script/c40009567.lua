@@ -1,6 +1,6 @@
 --焰之巫女 蕾尤
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009567)
+local m , cm = rscf.DefineCard(40009567,"BlazeMaiden")
 function cm.initial_effect(c)
 	local e1 = rsfwh.OvelayFun(c,m)
 	local e2,e3 = rsfwh.SummonFun(c,m,CATEGORY_DRAW,cm.drtg,cm.drop,0,cm.drtg2,cm.drop)

@@ -2,17 +2,7 @@
 function c98920005.initial_effect(c)
 		--link summon
 	aux.AddLinkProcedure(c,nil,2,2,c98920005.lcheck)
-	c:EnableReviveLimit()   
-   --extra material
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetTargetRange(0,LOCATION_MZONE)
-	e1:SetCondition(c98920005.spcon)
-	e1:SetValue(c98920005.matval)
-	c:RegisterEffect(e1)   
+	c:EnableReviveLimit()	
  --search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98920005,0))
@@ -41,14 +31,6 @@ end
 function c98920005.lcheck(g,lc)
 	return g:GetClassCount(Card.GetCode)==1
 end
-function c98920005.spcon(e)
-	return Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0
-		and Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
-end
-function c98920005.matval(e,lc,mg,c,tp)
-	if e:GetHandler()~=lc then return false,nil end
-	return true,not mg or not mg:IsExists(Card.IsControler,100,nil,1-tp)
-end
 function c98920005.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
@@ -65,6 +47,26 @@ function c98920005.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e1:SetTargetRange(1,0)
+		e1:SetValue(c98920005.aclimit)
+		e1:SetLabel(g:GetFirst():GetCode())
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_SUMMON_SUCCESS)
+		e2:SetOperation(c98920005.regop)
+		e2:SetLabelObject(e1)
+		e2:SetLabel(g:GetFirst():GetCode())
+		e2:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e2,tp)
+		local e3=e2:Clone()
+		e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(e3,tp)
 	end
 end
 function c98920005.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -86,5 +88,15 @@ function c98920005.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c98920005.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function c98920005.aclimit(e,re,tp)
+	return re:GetHandler():IsCode(e:GetLabel())
+end
+function c98920005.regop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	if tc:IsSummonPlayer(tp) and tc:IsCode(e:GetLabel()) then
+		e:GetLabelObject():Reset()
+		e:Reset()
 	end
 end

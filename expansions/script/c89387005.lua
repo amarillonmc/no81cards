@@ -49,6 +49,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
         local sg=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
         local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,sg)
         if g and g:GetCount()>0 then
             Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
@@ -67,31 +68,33 @@ function cm.splimit(e,c)
     return not c:IsSetCard(0x9c)
 end
 function cm.rmtg(e,c)
-    return c:IsCode(1050186,2273734,13851202,26057276,38667773,63274863,65056481,75878039,86466163,99668578)
+    return c:IsCode(1050186,2273734,13851202,26057276,38667773,63274863,65056481,75878039,86466163,99668578,42822433,79210531)
 end
 function cm.regfilter(c,tc)
     return c:GetOriginalCode()==tc:GetOriginalCode()
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
     local rc=re:GetHandler()
-    if not rc:IsCode(1050186,2273734,13851202,26057276,38667773,63274863,65056481,75878039,86466163,99668578) then return end
-    Duel.RegisterFlagEffect(rp,rc:GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
-    local g=Duel.GetMatchingGroup(cm.regfilter,rp,0xff,0,nil,rc)
-    for tc in aux.Next(g) do
-        if tc:GetFlagEffect(m)>0 then return end
-        local e1=re:Clone()
-        e1:SetCode(EVENT_SUMMON_SUCCESS)
-        e1:SetCondition(cm.regcondition)
-        e1:SetCost(cm.regcost)
-        e1:SetCountLimit(1,tc:GetOriginalCode()+100000000)
-        tc:RegisterEffect(e1)
-        local e2=e1:Clone()
-        e2:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
-        tc:RegisterEffect(e2)
-        local e3=e1:Clone()
-        e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-        tc:RegisterEffect(e3)
-        tc:RegisterFlagEffect(m,0,0,1)
+    if not rc:IsCode(1050186,2273734,13851202,26057276,38667773,63274863,65056481,75878039,86466163,99668578,42822433,79210531) then return end
+    if re:IsHasType(EFFECT_TYPE_SINGLE) and (re:GetCode()==EVENT_SUMMON_SUCCESS or re:GetCode()==EVENT_FLIP_SUMMON_SUCCESS or re:GetCode()==EVENT_SPSUMMON_SUCCESS) then
+        Duel.RegisterFlagEffect(rp,rc:GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
+        local g=Duel.GetMatchingGroup(cm.regfilter,rp,0xff,0,nil,rc)
+        for tc in aux.Next(g) do
+            if tc:GetFlagEffect(m)>0 then return end
+            local e1=re:Clone()
+            e1:SetCode(EVENT_SUMMON_SUCCESS)
+            e1:SetCondition(cm.regcondition)
+            e1:SetCost(cm.regcost)
+            e1:SetCountLimit(1,tc:GetOriginalCode()+100000000)
+            tc:RegisterEffect(e1)
+            local e2=e1:Clone()
+            e2:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+            tc:RegisterEffect(e2)
+            local e3=e1:Clone()
+            e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+            tc:RegisterEffect(e3)
+            tc:RegisterFlagEffect(m,0,0,1)
+        end
     end
 end
 function cm.regcondition(e,tp,eg,ep,ev,re,r,rp)

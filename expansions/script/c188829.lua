@@ -92,7 +92,7 @@ function c188829.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function c188829.discon(e,tp,eg,ep,ev,re,r,rp)
 	local tg=e:GetHandler():GetEquipTarget()
-	return tg and tg:IsAttribute(ATTRIBUTE_DARK) and tp~=ep and Duel.GetCurrentChain()==0 and eg:FilterCount(Card.IsPreviousLocation,nil,LOCATION_HAND|LOCATION_GRAVE)>0 
+	return tg and tg:IsAttribute(ATTRIBUTE_DARK) and tp~=ep and Duel.GetCurrentChain()==0  
 end
 function c188829.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(188829)==0 end
@@ -103,7 +103,7 @@ function c188829.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c188829.disop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return false end
-	local mg=eg:Filter(Card.IsPreviousLocation,nil,LOCATION_HAND|LOCATION_GRAVE)
+	local mg=eg 
 	Duel.NegateSummon(mg)
 	Duel.Remove(mg,POS_FACEUP,REASON_EFFECT)
 end

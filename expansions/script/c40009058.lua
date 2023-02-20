@@ -16,14 +16,14 @@ function cm.initial_effect(c)
 	--draw
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	--e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_SPECIAL_SUMMON+CATEGORY_ATKCHANGE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1)
 	e2:SetCondition(cm.con)
-	--e2:SetTarget(cm.tg)
-	e2:SetOperation(cm.op)
+	e2:SetTarget(cm.drtg)
+	e2:SetOperation(cm.drop)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -64,40 +64,54 @@ end
 function cm.con(e,tp,eg,ep,ev,re,r,rp,chk)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetLabel()==1
 end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_DISABLE)
-	e1:SetTargetRange(0,LOCATION_MZONE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	--e1:SetValue(500)
-	e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_SET_ATTACK_FINAL)
-	e2:SetValue(1)
-	Duel.RegisterEffect(e2,tp)
-	local e3=e1:Clone()
-	e3:SetCode(EFFECT_SET_DEFENSE_FINAL)
-	e3:SetValue(1)
-	Duel.RegisterEffect(e3,tp)
-	local e4=e1:Clone()
-	e4:SetCode(EFFECT_REMOVE_RACE)
-	e4:SetValue(RACE_ALL)
-	Duel.RegisterEffect(e4,tp)
-	local e5=e1:Clone()
-	e5:SetCode(EFFECT_REMOVE_ATTRIBUTE)
-	e5:SetValue(0xff)
-	Duel.RegisterEffect(e5,tp)
-	local e6=e1:Clone()
-	e6:SetCode(EFFECT_CHANGE_TYPE)
-	e6:SetValue(TYPE_MONSTER)
-	Duel.RegisterEffect(e6,tp)
-	local e7=e1:Clone()
-	e7:SetCode(EFFECT_CHANGE_CODE)
-	e7:SetValue(40010415)
-	Duel.RegisterEffect(e7,tp)
+function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
+function cm.spfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	if Duel.Draw(p,d,REASON_EFFECT)>0 then
+		local sg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND,0,nil,e,tp)
+		if sg:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+			 then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sc=sg:Select(tp,1,1,nil)
+			local tc=sg:GetFirst()
+			if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_SET_ATTACK)
+				e1:SetValue(99999)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+				local e2=Effect.CreateEffect(e:GetHandler())
+				e2:SetDescription(aux.Stringid(m,1))
+				e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+				e2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+				e2:SetCode(EVENT_BATTLE_DAMAGE)
+				e2:SetCondition(cm.wincon)
+				e2:SetOperation(cm.winop)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e2)
+			end
+			Duel.SpecialSummonComplete()
+		end
+	end
+end
+function cm.wincon(e,tp,eg,ep,ev,re,r,rp)
+	return ep~=tp and Duel.GetAttackTarget()==nil
+end
+function cm.winop(e,tp,eg,ep,ev,re,r,rp)
+	--local WIN_REASON_FLYING_ELEPHANT=0x1e
+	Duel.Win(tp,WIN_REASON_FLYING_ELEPHANT)
+end
+
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
 end

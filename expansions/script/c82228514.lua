@@ -15,8 +15,9 @@ function c82228514.initial_effect(c)
 	e1:SetOperation(c82228514.op)  
 	c:RegisterEffect(e1)  
 end
+c82228514.SetCard_01_JLW=true
 function c82228514.con(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0x291)  and Duel.GetLP(1-tp)>3500
+	return e:GetHandler():GetOverlayGroup():IsExists(function(c) return c.SetCard_01_JLWand end,1,nil)  and Duel.GetLP(1-tp)>3500
 end
 function c82228514.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local g=e:GetHandler():GetOverlayGroup()

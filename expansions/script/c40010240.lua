@@ -1,6 +1,6 @@
 --伐楼利拿·希望概像
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40010240)
+local m , cm = rscf.DefineCard(40010240,"Vairina")
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	local e1 = rsef.SV_Card(c,"atkex",cm.val,"sr",LOCATION_MZONE)
@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 
 end
 function cm.rsfwh_ex_ritual(c)
-	return ((c:IsSetCard(0x6f1b) or c:IsSetCard(0xcf1b)) and c:GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF )
+	return ((c:CheckSetCard("Vairina","BlazeMaiden") and c:GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF )
 end
 function cm.val(e,c)
 	return c:GetOverlayCount()

@@ -1,7 +1,8 @@
 --焰之巫女 扎拉
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009770)
+local m , cm = rscf.DefineCard(40009770,"BlazeMaiden")
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40009579)
 	--synchro summon
 	c:EnableReviveLimit()
 	aux.AddSynchroMixProcedure(c,cm.matfilter1,nil,nil,aux.NonTuner(Card.IsAttribute,ATTRIBUTE_FIRE),1,99)   
@@ -27,7 +28,7 @@ function cm.initial_effect(c)
 end
 
 function cm.matfilter1(c)
-	return c:IsSynchroType(TYPE_TUNER) or (c:IsLevel(3) and c:IsSetCard(0x6f1b))
+	return c:IsSynchroType(TYPE_TUNER) or (c:IsLevel(3) and c:CheckSetCard("BlazeMaiden"))
 end
 function cm.costfilter(c)
 	return c:IsType(TYPE_RITUAL) and c:IsDiscardable()
@@ -37,7 +38,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,cm.costfilter,1,1,REASON_COST+REASON_DISCARD)
 end
 function cm.spfilter(c,e,tp)
-	return ((c:IsSetCard(0xcf1b) and c:IsType(TYPE_RITUAL)) or c:IsCode(40009579)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,false)
+	return ((c:CheckSetCard("Vairina") and c:IsType(TYPE_RITUAL)) or c:IsCode(40009579)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and cm.spfilter(chkc,e,tp) end
@@ -68,5 +69,5 @@ function cm.tgop(e,tp)
 	rsop.SelectOperate("tf",tp,aux.NecroValleyFilter(cm.tffilter),tp,LOCATION_GRAVE,0,1,1,nil,{},e,tp)
 end
 function cm.tffilter(c,e,tp)
-	return c:IsSetCard(0xaf1b) and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0
+	return c:CheckSetCard("BlazeTalisman") and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0
 end

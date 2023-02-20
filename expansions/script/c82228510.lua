@@ -21,6 +21,7 @@ function c82228510.initial_effect(c)
 	e2:SetOperation(c82228510.desop)  
 	c:RegisterEffect(e2)   
 end  
+c82228510.SetCard_01_JLW=true
 function c82228510.ntcon(e,c,minc)  
 	if c==nil then return true end  
 	return minc==0 and c:GetLevel()>4 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0  
@@ -50,7 +51,7 @@ function c82228510.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function c82228510.cfilter(c)  
-	return c:IsSetCard(0x291) and c:IsDiscardable()  
+	return c.SetCard_01_JLWand and c:IsDiscardable()  
 end  
 function c82228510.descost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(c82228510.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end  

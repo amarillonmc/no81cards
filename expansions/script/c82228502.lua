@@ -23,6 +23,7 @@ function c82228502.initial_effect(c)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)  
 	c:RegisterEffect(e3)  
 end  
+c82228502.SetCard_01_JLW=true 
 function c82228502.ntcon(e,c,minc)  
 	if c==nil then return true end  
 	return minc==0 and c:GetLevel()>4 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0  
@@ -52,7 +53,7 @@ function c82228502.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function c82228502.filter(c)  
-	return c:IsSetCard(0x291) and c:IsDiscardable(REASON_EFFECT)  
+	return c.SetCard_01_JLW and c:IsDiscardable(REASON_EFFECT)  
 end  
 function c82228502.drtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)  

@@ -1,66 +1,83 @@
---红莲炎龙(注：狸子DIY)
+--混沌NO.142857 百万航行者 超大变形
 function c77770002.initial_effect(c)
-	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	--xyz summon
+	aux.AddXyzProcedure(c,c77770002.mfilter,7,6,c77770002.ovfilter,aux.Stringid(77770002,0),7,c77770002.xyzop)
 	c:EnableReviveLimit()
-	--special summon
+	--atk
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e1:SetCondition(c77770002.spcon)
-	e1:SetTarget(c77770002.sptg)
-	e1:SetOperation(c77770002.spop)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(c77770002.atkval)
 	c:RegisterEffect(e1)
-		--special summon
+	--destroy
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetCondition(c77770002.spcon2)
-	e2:SetTarget(c77770002.sptg2)
-	e2:SetOperation(c77770002.spop2)
+	e2:SetDescription(aux.Stringid(77770002,1))
+	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCountLimit(1,77770002)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCost(c77770002.cost)
+	e2:SetTarget(c77770002.target)
+	e2:SetOperation(c77770002.operation)
 	c:RegisterEffect(e2)
-	end
-function c77770002.cfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsRace(RACE_DRAGON)
+	--spsummon limit
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e3:SetValue(c77770002.splimit)
+	c:RegisterEffect(e3)
+	--immune
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_IMMUNE_EFFECT)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetValue(c77770002.efilter)
+	c:RegisterEffect(e4)
 end
-function c77770002.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c77770002.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler())
+aux.xyz_number[77770002]=142857
+function c77770002.splimit(e,se,sp,st)
+	return not se or  not se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
-function c77770002.spfilter(c,e,tp)
-	return c:IsType(TYPE_TUNER) and c:IsRace(RACE_FIEND) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+
+function c77770002.ovfilter(c)
+	return c:IsFaceup() and c:IsCode(89990016) and c:GetOverlayCount()==7
 end
-function c77770002.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c77770002.spfilter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c77770002.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c77770002.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+function c77770002.xyzop(e,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,77770002)==0 end
+	Duel.RegisterFlagEffect(tp,77770002,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
-function c77770002.spop(e,tp,eg,ep,ev,re,r,rp)
+function c77770002.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
+end
+function c77770002.atkval(e,c)
+	return c:GetOverlayCount()*1500
+end
+function c77770002.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
+function c77770002.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+end
+function c77770002.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	end
-end
-function c77770002.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsReason(REASON_EFFECT) and re:IsActiveType(TYPE_MONSTER)
-		and c:IsReason(REASON_DESTROY) and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_MZONE)
-end
-function c77770002.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,PLAYER_ALL,800)
-end
-function c77770002.spop2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		Duel.Damage(tp,800,REASON_EFFECT)
-		Duel.Damage(1-tp,800,REASON_EFFECT)
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and tc:GetBaseAttack()>=0 and tc:IsPreviousLocation(LOCATION_MZONE) and c:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
+		e1:SetValue(tc:GetBaseAttack())
+		c:RegisterEffect(e1)
 	end
 end

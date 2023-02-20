@@ -26,6 +26,7 @@ function c82228504.initial_effect(c)
 	e3:SetOperation(c82228504.atkop)  
 	c:RegisterEffect(e3) 
 end  
+c82228504.SetCard_01_JLW=true 
 function c82228504.damcon(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()  
 	return ep~=tp and c==Duel.GetAttacker() and Duel.GetAttackTarget() and Duel.GetAttackTarget():IsDefensePos()  

@@ -20,6 +20,7 @@ function c82228507.initial_effect(c)
 	e2:SetOperation(c82228507.thop)  
 	c:RegisterEffect(e2)	
 end  
+c82228507.SetCard_01_JLW=true
 function c82228507.ntcon(e,c,minc)  
 	if c==nil then return true end  
 	return minc==0 and c:GetLevel()>4 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0  
@@ -49,7 +50,7 @@ function c82228507.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function c82228507.thfilter(c)  
-	return c:IsSetCard(0x291) and not c:IsCode(82228507) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return c.SetCard_01_JLWand and not c:IsCode(82228507) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end  
 function c82228507.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(c82228507.thfilter,tp,LOCATION_DECK,0,1,nil) end  

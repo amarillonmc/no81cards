@@ -1,11 +1,11 @@
 --焰之巫女 帕拉玛
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009792)
+local m , cm = rscf.DefineCard(40009792,"BlazeMaiden")
 function cm.initial_effect(c)
 		--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6f1b),aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_FIRE),true)
-	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,LOCATION_MZONE,aux.tdcfop(c))
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,"BlazeMaiden"),aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_FIRE),true)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,LOCATION_MZONE,Duel.SendtoGrave,REASON_COST)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -30,7 +30,7 @@ end
 
 
 function cm.thfilter(c)
-	return c:IsSetCard(0x6f1b) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:CheckSetCard("BlazeTalisman") and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -55,5 +55,5 @@ function cm.tgop(e,tp)
 	rsop.SelectOperate("tf",tp,aux.NecroValleyFilter(cm.tffilter),tp,LOCATION_GRAVE,0,1,1,nil,{},e,tp)
 end
 function cm.tffilter(c,e,tp)
-	return c:IsSetCard(0x7f1b) and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0
+	return c:CheckSetCard("BlazeTalisman") and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0
 end

@@ -32,7 +32,7 @@ function cm.acon(e,tp,eg,ep,ev,re,r,rp)
 	return at and at:IsControler(tp)
 end
 function cm.afilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x6f1b) and c:GetSummonType() == SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF 
+	return c:IsFaceup() and c:CheckSetCard("BlazeMaiden") and c:GetSummonType() == SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF 
 end
 function cm.aop(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c = e:GetHandler()

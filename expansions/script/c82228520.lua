@@ -17,11 +17,12 @@ function c82228520.initial_effect(c)
 	e2:SetValue(aux.indoval)  
 	c:RegisterEffect(e2) 
 end
+c82228520.SetCard_01_JLW=true
 function c82228520.indtg(e,c)  
-	return c:IsSetCard(0x291) and c:IsType(TYPE_MONSTER)  
+	return c.SetCard_01_JLWand and c:IsType(TYPE_MONSTER)  
 end  
 function c82228520.filter(c)  
-	return c:IsSetCard(0x291) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()  
+	return c.SetCard_01_JLWand and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()  
 end  
 function c82228520.target(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(c82228520.filter,tp,LOCATION_DECK,0,1,nil) end  
@@ -37,5 +38,5 @@ function c82228520.activate(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function c82228520.tgtg(e,c)  
-	return c:IsSetCard(0x291)  
+	return c.SetCard_01_JLWand  
 end  

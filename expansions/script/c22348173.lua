@@ -20,6 +20,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,22348173)
 	e2:SetCondition(c22348173.spcon)
 	e2:SetTarget(c22348173.sptg)
@@ -44,7 +45,7 @@ function c22348173.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348173.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsCode,1,nil,22348157)
+	return not eg:IsContains(e:GetHandler()) and eg:IsExists(Card.IsCode,1,nil,22348157)
 end
 function c22348173.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

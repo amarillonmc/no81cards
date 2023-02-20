@@ -31,6 +31,7 @@ function c82228497.initial_effect(c)
 	e2:SetOperation(c82228497.sumop)  
 	c:RegisterEffect(e2)   
 end  
+c82228497.SetCard_01_JLW=true 
 function c82228497.rfilter(c)  
 	return c:IsAbleToDeckOrExtraAsCost() 
 end  
@@ -42,7 +43,7 @@ function c82228497.otcon(e,c,minc)
 end  
 function c82228497.ottg(e,c)  
 	local mi,ma=c:GetTributeRequirement()  
-	return mi<=2 and ma>=2 and c:IsSetCard(0x291)  
+	return mi<=2 and ma>=2 and c.SetCard_01_JLWand   
 end  
 function c82228497.otop(e,tp,eg,ep,ev,re,r,rp,c)  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)  
@@ -50,7 +51,7 @@ function c82228497.otop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoDeck(g,nil,2,REASON_COST) 
 end  
 function c82228497.sumfilter(c)  
-	return c:IsSetCard(0x291) and c:IsSummonable(true,nil)  
+	return c.SetCard_01_JLW and c:IsSummonable(true,nil)  
 end  
 function c82228497.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp 

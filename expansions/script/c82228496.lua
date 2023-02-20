@@ -38,6 +38,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.thop)  
 	c:RegisterEffect(e3)  
 end
+cm.SetCard_01_JLW=true 
 function cm.ovfilter(c)  
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x291) and not c:IsCode(m)
 end  
@@ -49,7 +50,7 @@ function cm.mtcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)  
 end  
 function cm.mtfilter(c)  
-	return c:IsSetCard(0x291)  
+	return c.SetCard_01_JLW  
 end  
 function cm.mttg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ)  
@@ -101,7 +102,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thfilter(c)  
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x291) and c:IsAbleToHand() and not c:IsCode(m)  
+	return c:IsType(TYPE_MONSTER) and c.SetCard_01_JLW and c:IsAbleToHand() and not c:IsCode(m)  
 end  
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.thfilter(chkc) end  

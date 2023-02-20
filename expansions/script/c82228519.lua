@@ -19,6 +19,7 @@ function c82228519.initial_effect(c)
 	e2:SetOperation(c82228519.op)  
 	c:RegisterEffect(e2)   
 end   
+c82228519.SetCard_01_JLW=true
 function c82228519.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return true end  
 	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))  
@@ -28,7 +29,8 @@ function c82228519.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD)  
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)  
 	e1:SetTargetRange(LOCATION_MZONE,0)  
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x291))  
+	e1:SetTarget(function(e,c) 
+	return c.SetCard_01_JLWand end)  
 	e1:SetValue(c82228519.efilter)  
 	e1:SetReset(RESET_PHASE+PHASE_END)   
 	Duel.RegisterEffect(e1,tp)  

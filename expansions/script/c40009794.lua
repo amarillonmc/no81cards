@@ -1,6 +1,6 @@
 --焰之巫女 阿露娜
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009794)
+local m , cm = rscf.DefineCard(40009794,"BlazeMaiden")
 function cm.initial_effect(c)
 		--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,cm.lcheck)
@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 		{cm.tffilter,"tf",LOCATION_GRAVE }),cm.tgop)
 end
 function cm.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x6f1b)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,"BlazeMaiden")
 end
 function cm.thfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsAbleToHand()
@@ -77,5 +77,5 @@ function cm.tgop(e,tp)
 	rsop.SelectOperate("tf",tp,aux.NecroValleyFilter(cm.tffilter),tp,LOCATION_GRAVE,0,1,1,nil,{},e,tp)
 end
 function cm.tffilter(c,e,tp)
-	return c:IsSetCard(0x7f1b) and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0
+	return c:CheckSetCard("BlazeTalisman") and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0
 end

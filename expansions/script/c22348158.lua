@@ -4,9 +4,16 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.AddCodeList(c,22348157)
 	--Activate
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e0)
+	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetDescription(aux.Stringid(22348158,0))
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_FZONE)
+	e1:SetCountLimit(1)
 	e1:SetTarget(c22348158.tstg)
 	e1:SetOperation(c22348158.tsop)
 	c:RegisterEffect(e1)
@@ -17,13 +24,14 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_MACHINE))
-	e2:SetValue(400)
+	e2:SetValue(c22348158.val)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
 	e3:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e3)
 	--special summon
 	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(22348158,1))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetCode(EVENT_MOVE)
@@ -33,6 +41,13 @@ function cm.initial_effect(c)
 	e4:SetOperation(c22348158.spop)
 	c:RegisterEffect(e4)
 end
+function c22348158.atkfilter(c)
+	return c:IsFaceup() and c:IsCode(22348157)
+end
+function c22348158.val(e,c)
+	return Duel.GetMatchingGroupCount(c22348158.atkfilter,c:GetControler(),LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)*200
+end
+
 function c22348158.tsfilter(c)
 	return c:IsCode(22348157) and not c:IsForbidden()
 end

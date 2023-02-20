@@ -4192,3 +4192,35 @@ function cm.Almondimenatk(atk)
 		c:RegisterEffect(e2)
 	end
 end
+function cm.GelidimenFilpSummon(c,cost,op)
+	if c:GetFlagEffect(53754000)<1 then
+		c:RegisterFlagEffect(53754000,0,0,0)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_FLIPSUMMON_COST)
+		e1:SetTargetRange(0xff,0xff)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetLabelObject(c)
+		e1:SetTarget(function(e,c,tp)return c==e:GetLabelObject()end)
+		e1:SetCost(cost)
+		e1:SetOperation(op)
+		Duel.RegisterEffect(e1,0)
+	end
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_ADJUST)
+	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetRange(0xff)
+	e2:SetOperation(cm.GelidimenCheck)
+	c:RegisterEffect(e2)
+end
+function cm.GelidimenCheck(e,tp,eg,ep,ev,re,r,rp)
+	local le={e:GetHandler():IsHasEffect(EFFECT_FLIPSUMMON_COST)}
+	for _,v in pairs(le) do
+		if v:GetOwner():GetFlagEffect(53754000)>0 then
+			local e1=v:Clone()
+			v:Reset()
+			Duel.RegisterEffect(e1,e:GetHandler():GetControler())
+		end
+	end
+end

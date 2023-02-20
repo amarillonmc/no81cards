@@ -21,17 +21,19 @@ function c82228505.initial_effect(c)
 	e2:SetCode(EFFECT_EXTRA_SUMMON_COUNT)  
 	e2:SetRange(LOCATION_MZONE)  
 	e2:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)  
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x291))  
+	e2:SetTarget(function(e,c) 
+	return c.SetCard_01_JLWand end)  
 	c:RegisterEffect(e2) 
 end
+c82228505.SetCard_01_JLW=true
 function c82228505.lcheck(g,lc)  
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x291)  
+	return g:IsExists(function(c) return c.SetCard_01_JLWand end,1,nil)  
 end  
 function c82228505.spcon(e,tp,eg,ep,ev,re,r,rp)  
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)  
 end  
 function c82228505.spfilter(c,e,tp)  
-	return c:IsSetCard(0x291) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)  
+	return c.SetCard_01_JLWand and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)  
 end  
 function c82228505.sptg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0  

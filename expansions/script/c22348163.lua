@@ -11,7 +11,6 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e1:SetCountLimit(1,22348163)
 	e1:SetTarget(c22348163.sptg)
 	e1:SetOperation(c22348163.spop)
 	c:RegisterEffect(e1)
@@ -23,7 +22,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,22349163)
+	e2:SetCountLimit(1,22348163)
 	e2:SetCondition(c22348163.lscon)
 	e2:SetTarget(c22348163.lstg)
 	e2:SetOperation(c22348163.lsop)
@@ -40,7 +39,7 @@ function c22348163.sprfilter1(c)
 	return c:IsCode(22348157) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND))
 end
 function c22348163.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
+	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and 
 	(
 	(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c22348163.sprfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,2,nil) and Duel.IsExistingMatchingCard(c22348163.sprfilter1,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil)) 
@@ -63,12 +62,22 @@ function c22348163.spop(e,tp,eg,ep,ev,re,r,rp,c)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 	elseif Duel.IsExistingMatchingCard(c22348163.sprfilter1,tp,LOCATION_MZONE,0,1,nil) then
-	local g1=Duel.SelectMatchingCard(tp,c22348163.sprfilter1,tp,LOCATION_MZONE,0,1,1,nil)
-	local g2=Duel.SelectMatchingCard(tp,c22348163.sprfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,g1)
-	local g=Group.__add(g1,g2)
-	if #g>0 and Duel.Destroy(g,REASON_EFFECT)==2 and (c:IsLocation(LOCATION_HAND) or c:IsLocation(LOCATION_GRAVE)) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	end
+	local g1=Duel.SelectMatchingCard(tp,c22348163.sprfilter1,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+		if not g1:GetFirst():IsLocation(LOCATION_MZONE) then
+		local g2=Duel.SelectMatchingCard(tp,c22348163.sprfilter,tp,LOCATION_MZONE,0,1,1,g1)
+		local g=Group.__add(g1,g2)
+		if #g>0 and Duel.Destroy(g,REASON_EFFECT)==2 and (c:IsLocation(LOCATION_HAND) or c:IsLocation(LOCATION_GRAVE)) then
+			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		end
+		else
+		local g2=Duel.SelectMatchingCard(tp,c22348163.sprfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,g1)
+		local g=Group.__add(g1,g2)
+		if #g>0 and Duel.Destroy(g,REASON_EFFECT)==2 and (c:IsLocation(LOCATION_HAND) or c:IsLocation(LOCATION_GRAVE)) then
+			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		end
+		end
+
+
 	elseif Duel.IsExistingMatchingCard(c22348163.sprfilter,tp,LOCATION_MZONE,0,1,nil) then
 	local g1=Duel.SelectMatchingCard(tp,c22348163.sprfilter1,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
 	local g2=Duel.SelectMatchingCard(tp,c22348163.sprfilter,tp,LOCATION_MZONE,0,1,1,g1)
@@ -98,7 +107,7 @@ end
 function c22348163.lsop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c22348163.spfilter2,tp,LOCATION_GRAVE+LOCATION_SZONE,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348163.spfilter2),tp,LOCATION_GRAVE+LOCATION_SZONE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.SelectYesNo(tp,aux.Stringid(22348163,2)) and Duel.IsExistingMatchingCard(c22348163.filter,tp,LOCATION_EXTRA,0,1,nil) then
 	local tg=Duel.SelectMatchingCard(tp,c22348163.filter,tp,LOCATION_EXTRA,0,1,1,nil)
 	local tc=tg:GetFirst()

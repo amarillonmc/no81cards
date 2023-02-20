@@ -29,8 +29,9 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.thop)  
 	c:RegisterEffect(e3)   
 end
+cm.SetCard_01_JLW=true 
 function cm.thfilter(c)  
-	return c:IsSetCard(0x291) and c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToHand()  
+	return c.SetCard_01_JLW and c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToHand()  
 end  
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and cm.thfilter(chkc) end  

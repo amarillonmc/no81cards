@@ -1,98 +1,75 @@
---创生原核
+--耀曙龙 亨耶索勒
 function c9910808.initial_effect(c)
-	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6951),2,true)
-	--to hand
+	--destroy
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910808)
-	e1:SetCondition(c9910808.thcon1)
-	e1:SetCost(c9910808.thcost)
-	e1:SetTarget(c9910808.regtg)
-	e1:SetOperation(c9910808.regop)
+	e1:SetCost(c9910808.descost)
+	e1:SetTarget(c9910808.destg)
+	e1:SetOperation(c9910808.desop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCondition(c9910808.thcon2)
+	--level
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_DESTROYED)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,9910809)
+	e2:SetTarget(c9910808.lvtg)
+	e2:SetOperation(c9910808.lvop)
 	c:RegisterEffect(e2)
-	--release
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_RELEASE)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_RELEASE)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,9910809)
-	e3:SetCondition(c9910808.rlcon)
-	e3:SetTarget(c9910808.rltg)
-	e3:SetOperation(c9910808.rlop)
-	c:RegisterEffect(e3)
 end
-function c9910808.thcon1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(9910808)==0
+function c9910808.descost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return not c:IsPublic() end
+	c:RegisterFlagEffect(9910808,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,66)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_PUBLIC)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e1)
 end
-function c9910808.thcon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(9910808)~=0
+function c9910808.desfilter(c,tp)
+	local flag=c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5
+	return Duel.IsExistingMatchingCard(c9910808.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
 end
-function c9910808.thcfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsReleasable()
+function c9910808.setfilter(c,flag)
+	return c:IsCode(9910807) and c:IsSSetable(flag)
 end
-function c9910808.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9910808.thcfilter,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(tp,c9910808.thcfilter,1,1,nil,tp)
-	Duel.Release(g,REASON_COST)
+function c9910808.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(c9910808.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,e:GetHandler(),tp)
+	if chk==0 then return #g>0 end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-function c9910808.regtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x6951) end
+function c9910808.desop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,c9910808.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e),tp)
+	if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+		local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910808.setfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,false)
+		if sg:GetCount()>0 then
+			Duel.SSet(tp,sg:GetFirst())
+		end
+	end
 end
-function c9910808.regop(e,tp,eg,ep,ev,re,r,rp)
+function c9910808.lvtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	getmetatable(e:GetHandler()).announce_filter={TYPE_MONSTER,OPCODE_ISTYPE,TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT,OPCODE_AND}
+	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
+	Duel.SetTargetParam(ac)
+	Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,0)
+end
+function c9910808.lvop(e,tp,eg,ep,ev,re,r,rp)
+	local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_PHASE+PHASE_END)
-	e1:SetCountLimit(1)
-	e1:SetCondition(c9910808.thcon)
-	e1:SetOperation(c9910808.thop)
-	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CHANGE_LEVEL)
+	e1:SetTargetRange(0xff,0xff)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsOriginalCodeRule,ac))
+	e1:SetReset(RESET_PHASE+PHASE_END,2)
+	e1:SetValue(12)
 	Duel.RegisterEffect(e1,tp)
-end
-function c9910808.thfilter(c)
-	return c:IsSetCard(0x6951) and c:IsAbleToHand()
-end
-function c9910808.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9910808.thfilter,tp,LOCATION_DECK,0,1,nil)
-end
-function c9910808.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,9910808)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910808.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
-end
-function c9910808.rlcfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp
-end
-function c9910808.rlcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c9910808.rlcfilter,1,e:GetHandler(),tp)
-end
-function c9910808.rltg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsReleasableByEffect() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsReleasableByEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectTarget(tp,Card.IsReleasableByEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,1,0,0)
-end
-function c9910808.rlop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.Release(tc,REASON_EFFECT)
-	end
-	e:GetHandler():RegisterFlagEffect(9910808,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
 end

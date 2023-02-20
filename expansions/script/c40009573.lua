@@ -1,7 +1,8 @@
 --焰之护符 骤阳之进化
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009573)
+local m , cm = rscf.DefineCard(40009573,"BlazeTalisman")
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40009579)
 	--activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
@@ -20,7 +21,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.cfilter(c)
-	return c:IsSetCard(0x6f1b) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+	return c:CheckSetCard("BlazeMaiden") and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
@@ -40,7 +41,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT) > 0 then
 		Duel.ConfirmCards(1-tp,tc)
-		if tc:IsLocation(LOCATION_HAND) and not tc:IsCode(40009579) and not tc:IsSetCard(0xcf1b) then
+		if tc:IsLocation(LOCATION_HAND) and not tc:IsCode(40009579) and not tc:CheckSetCard("Vairina") then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)

@@ -25,12 +25,13 @@ function c82228501.initial_effect(c)
 	e2:SetOperation(c82228501.th2op)  
 	c:RegisterEffect(e2)  
 end  
+c82228501.SetCard_01_JLW=true 
 function c82228501.thcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end  
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)  
 end  
 function c82228501.thfilter(c)  
-	return c:IsSetCard(0x291) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()  
+	return c.SetCard_01_JLW and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()  
 end  
 function c82228501.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(c82228501.thfilter,tp,LOCATION_DECK,0,1,nil) end  

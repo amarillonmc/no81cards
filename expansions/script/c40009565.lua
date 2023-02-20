@@ -1,12 +1,12 @@
 --焰之巫女 萝娜
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009565)
+local m , cm = rscf.DefineCard(40009565,"BlazeMaiden")
 function cm.initial_effect(c)
 	local e1 = rsfwh.OvelayFun(c,m)
 	local e2,e3 = rsfwh.SummonFun(c,m,CATEGORY_SEARCH+CATEGORY_TOHAND,cm.thtg,cm.thop,0,cm.tftg,cm.tfop)
 end
 function cm.filter(c)
-	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x7f1b)
+	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0xaf1b)
 end
 function cm.thfilter(c)
 	return cm.filter(c) and c:IsAbleToHand()

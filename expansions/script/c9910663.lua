@@ -40,7 +40,7 @@ function c9910663.costfilter(c,e,tp)
 	return c:IsDiscardable() and Duel.IsExistingMatchingCard(c9910663.spfilter,tp,LOCATION_HAND,0,1,c,e,tp)
 end
 function c9910663.spfilter(c,e,tp)
-	return c:IsLevelBelow(9) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelBelow(6) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910663.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)

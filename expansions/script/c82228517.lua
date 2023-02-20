@@ -22,6 +22,7 @@ function c82228517.initial_effect(c)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)  
 	c:RegisterEffect(e2)  
 end  
+c82228517.SetCard_01_JLW=true
 function c82228517.ntcon(e,c,minc)  
 	if c==nil then return true end  
 	return minc==0 and c:GetLevel()>4 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0  
@@ -58,7 +59,7 @@ function c82228517.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c82228517.filter,tp,0,LOCATION_MZONE,1,nil) end  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)  
 	local g=Duel.SelectTarget(tp,c82228517.filter,tp,0,LOCATION_MZONE,1,1,nil)  
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)	
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)   
 end  
 function c82228517.operation(e,tp,eg,ep,ev,re,r,rp)  
 	local tc=Duel.GetFirstTarget()  

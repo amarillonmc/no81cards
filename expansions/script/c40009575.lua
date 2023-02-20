@@ -1,6 +1,6 @@
 --焰之巫女的祈祷
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009575)
+local m , cm = rscf.DefineCard(40009575,"BlazeMaiden")
 function cm.initial_effect(c)
 	aux.AddCodeList(c,40009579)
 	--Activate
@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.cfilter(c)
-	return c:IsSetCard(0x6f1b) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:CheckSetCard("BlazeMaiden") and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c = e:GetHandler()
@@ -64,7 +64,7 @@ function cm.spop(e,tp)
 	Duel.SpecialSummonComplete()
 end
 function cm.exfilter0(c)
-	return c:IsSetCard(0x6f1b) and c:IsLevelAbove(1) and c:IsAbleToGrave()
+	return c:CheckSetCard("BlazeMaiden") and c:IsLevelAbove(1) and c:IsAbleToGrave()
 end
 function cm.filter(c,e,tp)
 	return c:IsRace(RACE_DRAGON)

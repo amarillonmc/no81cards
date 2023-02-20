@@ -1,6 +1,6 @@
 --焰之护符 阳光之惩戒
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009681)
+local m , cm = rscf.DefineCard(40009681,"BlazeTalisman")
 function cm.initial_effect(c)
 	local e1 = rsef.A(c)
 	local e2 = rsef.I(c,{m,0},{1,m},nil,nil,LOCATION_SZONE,
@@ -10,7 +10,7 @@ function cm.initial_effect(c)
 		rsop.target(cm.tffilter,"dum"),cm.op2)
 end
 function cm.cfilter(c)
-	return c:IsSetCard(0x6f1b) or (c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_FIRE))
+	return c:CheckSetCard("BlazeMaiden") or (c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_FIRE))
 end
 function cm.op1(e,tp)
 	local c = e:GetHandler()

@@ -41,7 +41,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thfilter(c,check)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
-		and ((check and c:IsRace(RACE_FAIRY)) or cm.AngelArmy(c))
+		and ((check and c:IsRace(RACE_FAIRY) and c:IsLevelBelow(4)) or cm.AngelArmy(c))
 end
 function cm.checkfilter(c)
 	return c:IsType(TYPE_LINK) and c:IsFaceup()

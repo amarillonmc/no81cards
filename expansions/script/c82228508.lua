@@ -29,6 +29,7 @@ function c82228508.initial_effect(c)
 	e2:SetOperation(c82228508.thop)  
 	c:RegisterEffect(e2)  
 end 
+c82228508.SetCard_01_JLW=true
 function c82228508.discost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end  
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)  
@@ -81,7 +82,7 @@ function c82228508.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return (c:IsReason(REASON_BATTLE) or (c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==1-tp))
 end  
 function c82228508.thfilter(c,e,tp)  
-	return c:IsSetCard(0x291) and not c:IsCode(82228508)
+	return c.SetCard_01_JLWand and not c:IsCode(82228508)
 end   
 function c82228508.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c82228508.thfilter(chkc,e,tp) end  

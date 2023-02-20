@@ -1,6 +1,6 @@
 --焰之巫女 米玲
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009711)
+local m , cm = rscf.DefineCard(40009711,"BlazeMaiden")
 function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_FIRE),3,2,nil,nil,99)
@@ -26,7 +26,7 @@ function cm.tgop(e,tp)
 	rsop.SelectOperate("tf",tp,aux.NecroValleyFilter(cm.tffilter),tp,LOCATION_GRAVE,0,1,1,nil,{},e,tp)
 end
 function cm.tffilter(c,e,tp)
-	return c:IsSetCard(0x7f1b) and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0
+	return c:CheckSetCard("BlazeTalisman") and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0
 end
 function cm.tfop(e,tp)
 	local tc = rscf.GetTargetCard()
@@ -34,7 +34,7 @@ function cm.tfop(e,tp)
 	Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x6f1b) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:CheckSetCard("BlazeMaiden") and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function cm.thop(e,tp)
 	rsop.SelectOperate("th",tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,{})

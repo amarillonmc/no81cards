@@ -44,8 +44,9 @@ function c82228516.initial_effect(c)
 	e5:SetOperation(c82228516.op2)  
 	c:RegisterEffect(e5)  
 end  
+c82228516.SetCard_01_JLW=true
 function c82228516.mfilter(c,xyzc)  
-	return c:IsFaceup() and c:IsXyzType(TYPE_XYZ) and c:IsSetCard(0x291)  
+	return c:IsFaceup() and c:IsXyzType(TYPE_XYZ) and c.SetCard_01_JLWand  
 end  
 function c82228516.xyzcheck(g)  
 	return g:GetClassCount(Card.GetRank)==1  
@@ -63,7 +64,7 @@ function c82228516.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(ct)
 end  
 function c82228516.filter(c,e,tp)  
-	return c:IsSetCard(0x291) and c:IsLevel(8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)  
+	return c.SetCard_01_JLWand and c:IsLevel(8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)  
 end 
 function c82228516.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -87,7 +88,7 @@ function c82228516.con2(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_XYZ)
 end  
 function c82228516.filter2(c,e,tp)  
-	return c:IsSetCard(0x291) and c:IsType(TYPE_XYZ) and not c:IsCode(82228516) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)  
+	return c.SetCard_01_JLWand and c:IsType(TYPE_XYZ) and not c:IsCode(82228516) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)  
 end  
 function c82228516.tg2(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.GetLocationCountFromEx(tp)>0  

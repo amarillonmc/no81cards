@@ -9,6 +9,7 @@ function c82228500.initial_effect(c)
 	e1:SetOperation(c82228500.ntop)  
 	c:RegisterEffect(e1)  
 end  
+c82228500.SetCard_01_JLW=true 
 function c82228500.ntcon(e,c,minc)  
 	if c==nil then return true end  
 	return minc==0 and c:GetLevel()>4 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0  

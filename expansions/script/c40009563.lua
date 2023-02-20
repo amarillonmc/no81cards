@@ -1,6 +1,6 @@
 --焰之巫女 宗妮
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009563)
+local m , cm = rscf.DefineCard(40009563,"BlazeMaiden")
 function cm.initial_effect(c)
 	local e1 = rsfwh.OvelayFun(c,m)
 	local e2,e3 = rsfwh.SummonFun(c,m,CATEGORY_SEARCH+CATEGORY_TOHAND,cm.thtg,cm.thop,0,cm.thtg2,cm.thop2)
@@ -24,7 +24,7 @@ function cm.thfilter2(c)
 	return c:IsRace(RACE_DRAGON) and c:IsType(TYPE_RITUAL) and c:IsAbleToHand()
 end
 function cm.thfilter3(c)
-	return c:IsSetCard(0x8f1b)  and c:IsAbleToHand()
+	return c:IsSetCard(0xcf1b)  and c:IsAbleToHand()
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk == 0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.thfilter3,tp,LOCATION_DECK,0,1,nil) end

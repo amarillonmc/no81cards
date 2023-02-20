@@ -44,6 +44,10 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	c:RegisterEffect(e2) 
+	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
+end
+function cm.counterfilter(c)
+	return cm.Diablotherhood(c)
 end
 function cm.matfilter(c)
 	return cm.Diablotherhood(c) and not c:IsCode(m)
@@ -55,10 +59,21 @@ function cm.cfilter(c)
 	return c:IsFacedown() and c:IsAbleToRemoveAsCost(POS_FACEDOWN)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_EXTRA,0,3,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_EXTRA,0,3,nil) and Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_EXTRA,0,nil)
 	local rg=g:RandomSelect(tp,3)
 	Duel.Remove(rg,POS_FACEDOWN,REASON_COST)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.splimit)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.splimit(e,c)
+	return not cm.Diablotherhood(c)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCode(40009560) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)

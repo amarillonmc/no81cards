@@ -1,6 +1,6 @@
 --焰之护符 拂晓之卵
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009569)
+local m , cm = rscf.DefineCard(40009569,"BlazeTalisman")
 function cm.initial_effect(c)
 	--activate
 	local e0=Effect.CreateEffect(c)
@@ -36,7 +36,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.tffilter(c)
-	return not c:IsCode(m) and c:IsSetCard(0x7f1b) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and not c:IsForbidden()
+	return not c:IsCode(m) and c:CheckSetCard("BlazeTalisman") and c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and not c:IsForbidden()
 end
 function cm.tfop(e,tp)
 	local g = Duel.GetMatchingGroup(cm.tffilter,tp,LOCATION_DECK,0,nil)

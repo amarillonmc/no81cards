@@ -2,6 +2,7 @@
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
 local m , cm = rscf.DefineCard(40009683)
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40009579)
 	local e1 = rsef.SV_Card(c,"code",40009579,"sr",rsloc.hg)
 	local e2 = rsef.QO_NegateEffect(c,nil,{1,m},LOCATION_MZONE,
 		rscon.dis("m"),rscost.cost(cm.resfilter,"res"),"sp",nil,
@@ -16,7 +17,7 @@ function cm.resfilter(c,e,tp)
 	return c:IsReleasable() and c:IsSummonType(SUMMON_TYPE_RITUAL) 
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x6f1b,0x8f1b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelAbove(1)
+	return c:CheckSetCard("BlazeMaiden","Vairina") and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelAbove(1)
 end
 function cm.gcheck(g,e,tp)
 	return g:GetSum(Card.GetLevel) == 9 and Duel.GetMZoneCount(tp,e:GetHandler(),tp) >= #g

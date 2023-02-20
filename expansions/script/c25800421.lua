@@ -28,7 +28,7 @@ function cm.filter1(c,e)
 end
 function cm.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c))
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf) and c:IsSetCard(0x211)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf) and c:IsType(TYPE_PENDULUM)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

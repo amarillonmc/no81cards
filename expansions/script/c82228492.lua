@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.splimit)  
 	c:RegisterEffect(e2) 
 end
+cm.SetCard_01_JLW=true 
 function cm.cfilter(c,zone)  
 	local seq=c:GetSequence()  
 	if c:IsControler(1) then seq=seq+16 end  

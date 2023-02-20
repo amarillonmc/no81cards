@@ -20,6 +20,7 @@ function c82228511.initial_effect(c)
 	e2:SetOperation(c82228511.spop)  
 	c:RegisterEffect(e2)  
 end 
+c82228511.SetCard_01_JLW=true
 function c82228511.ntcon(e,c,minc)  
 	if c==nil then return true end  
 	return minc==0 and c:GetLevel()>4 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0  
@@ -49,7 +50,7 @@ function c82228511.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function c82228511.spfilter(c)  
-	return c:IsFaceup() and c:IsSetCard(0x291)
+	return c:IsFaceup() and c.SetCard_01_JLWand
 end  
 function c82228511.spcon(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.IsExistingMatchingCard(c82228511.spfilter,tp,LOCATION_MZONE,0,2,nil)

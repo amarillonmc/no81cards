@@ -1,167 +1,111 @@
---创生融合
+--天体震荡
 function c9910807.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(c9910807.target)
 	e1:SetOperation(c9910807.activate)
 	c:RegisterEffect(e1)
-	--to hand
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCode(EVENT_PHASE+PHASE_END)
-	e2:SetCountLimit(1)
-	e2:SetCondition(c9910807.thcon)
-	e2:SetCost(c9910807.thcost)
-	e2:SetTarget(c9910807.thtg)
-	e2:SetOperation(c9910807.thop)
-	c:RegisterEffect(e2)
 end
-function c9910807.exconfilter(c)
-	return c:IsSetCard(0x6951) and c:IsType(TYPE_FUSION) and c:IsFaceup()
+function c9910807.filter(c,e,tp,m)
+	if bit.band(c:GetType(),0x81)~=0x81 or not c:IsRace(RACE_DRAGON+RACE_SEASERPENT+RACE_WYRM)
+		or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
+	if c.mat_filter then
+		m=m:Filter(c.mat_filter,c,tp)
+	else
+		m=m:Filter(aux.TRUE,c)
+	end
+	local b1=Duel.GetMZoneCount(tp)>0 and m:CheckWithSumGreater(Card.GetRitualLevel,c:GetLevel(),c)
+	local b2=Duel.GetMZoneCount(tp)<=0 and m:IsExists(c9910807.filter2,1,nil,tp,m,c)
+	return b1 or b2
 end
-function c9910807.excon(tp)
-	return Duel.IsExistingMatchingCard(c9910807.exconfilter,tp,LOCATION_MZONE,0,1,nil)
+function c9910807.filter2(c,tp,m,mc)
+	if Duel.GetMZoneCount(tp,c)<=0 then return false end
+	local dm=m:Filter(aux.TRUE,c)
+	local dlv=mc:GetLevel()-c:GetRitualLevel(mc)
+	return dlv<=0 or dm:CheckSubGroup(c9910807.gselect,1,#dm,dlv,mc)
 end
-function c9910807.filter1(c,e)
-	return not c:IsImmuneToEffect(e)
+function c9910807.gselect(g,dlv,mc)
+	return g:GetSum(Card.GetRitualLevel,mc)<mc:GetLevel() and g:CheckWithSumGreater(Card.GetRitualLevel,dlv,mc)
 end
-function c9910807.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x6951) and (not f or f(c))
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+function c9910807.mfilter1(c)
+	return c:GetLevel()>0
 end
-function c9910807.fexfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToGrave()
+function c9910807.mfilter2(c)
+	return c:GetLevel()>0 and c:IsFaceup() and c:IsReleasable()
 end
-function c9910807.frcheck(tp,sg,fc)
-	return sg:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=1
-end
-function c9910807.gcheck(sg)
-	return sg:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=1
+function c9910807.mfilter3(c,e)
+	return c:GetLevel()>0 and not c:IsImmuneToEffect(e) and c:IsDestructable(e)
 end
 function c9910807.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp)
-		if c9910807.excon(tp) then
-			local mg2=Duel.GetMatchingGroup(c9910807.fexfilter,tp,LOCATION_DECK,0,nil)
-			if mg2:GetCount()>0 then
-				mg1:Merge(mg2)
-				aux.FCheckAdditional=c9910807.frcheck
-				aux.GCheckAdditional=c9910807.gcheck
-			end
-		end
-		local res=Duel.IsExistingMatchingCard(c9910807.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
-		aux.FCheckAdditional=nil
-		aux.GCheckAdditional=nil
-		if not res then
-			local ce=Duel.GetChainMaterial(tp)
-			if ce~=nil then
-				local fgroup=ce:GetTarget()
-				local mg2=fgroup(ce,e,tp)
-				local mf=ce:GetValue()
-				res=Duel.IsExistingMatchingCard(c9910807.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg2,mf,chkf)
-			end
-		end
-		return res
+		local mg1=Duel.GetMatchingGroup(c9910807.mfilter1,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+		local mg2=Duel.GetMatchingGroup(c9910807.mfilter2,tp,LOCATION_EXTRA,0,nil)
+		mg1:Merge(mg2)
+		return Duel.IsExistingMatchingCard(c9910807.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,mg1)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+end
+function c9910807.thfilter(c)
+	return c:IsSetCard(0x6954) and c:IsAbleToHand()
 end
 function c9910807.activate(e,tp,eg,ep,ev,re,r,rp)
-	local chkf=tp
-	local mg1=Duel.GetFusionMaterial(tp):Filter(c9910807.filter1,nil,e)
-	local exmat=false
-	if c9910807.excon(tp) then
-		local mg2=Duel.GetMatchingGroup(c9910807.fexfilter,tp,LOCATION_DECK,0,nil)
-		if mg2:GetCount()>0 then
-			mg1:Merge(mg2)
-			exmat=true
+	local res=false
+	local mg1=Duel.GetMatchingGroup(c9910807.mfilter3,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,e)
+	local mg2=Duel.GetMatchingGroup(c9910807.mfilter2,tp,LOCATION_EXTRA,0,nil)
+	mg1:Merge(mg2)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910807.filter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,mg1)
+	local tc=g:GetFirst()
+	if tc then
+		if tc.mat_filter then
+			mg1=mg1:Filter(c.mat_filter,tc,tp)
+		else
+			mg1=mg1:Filter(aux.TRUE,tc)
 		end
-	end
-	if exmat then
-		aux.FCheckAdditional=c9910807.frcheck
-		aux.GCheckAdditional=c9910807.gcheck
-	end
-	local sg1=Duel.GetMatchingGroup(c9910807.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
-	aux.FCheckAdditional=nil
-	aux.GCheckAdditional=nil
-	local mg2=nil
-	local sg2=nil
-	local ce=Duel.GetChainMaterial(tp)
-	if ce~=nil then
-		local fgroup=ce:GetTarget()
-		mg2=fgroup(ce,e,tp)
-		local mf=ce:GetValue()
-		sg2=Duel.GetMatchingGroup(c9910807.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg2,mf,chkf)
-	end
-	if sg1:GetCount()>0 or (sg2~=nil and sg2:GetCount()>0) then
-		local sg=sg1:Clone()
-		if sg2 then sg:Merge(sg2) end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tg=sg:Select(tp,1,1,nil)
-		local tc=tg:GetFirst()
-		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
-			if exmat then
-				aux.FCheckAdditional=c9910807.frcheck
-				aux.GCheckAdditional=c9910807.gcheck
+		if Duel.GetMZoneCount(tp)>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910807,0))
+			local mat=mg1:SelectWithSumGreater(tp,Card.GetRitualLevel,tc:GetLevel(),tc)
+			res=c9910807.ritual(tc,tp,mat)
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910807,2))
+			local mat=mg1:FilterSelect(tp,c9910807.filter2,1,1,nil,tp,mg1,tc)
+			local sc=mat:GetFirst()
+			local dlv=tc:GetLevel()-sc:GetRitualLevel(tc)
+			if dlv>0 then
+				mg1:RemoveCard(sc)
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910807,3))
+				local dg1=mg1:SelectSubGroup(tp,c9910807.gselect,false,1,#mg1,dlv,tc)
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910807,0))
+				local dg2=dg1:SelectWithSumGreater(tp,Card.GetRitualLevel,dlv,tc)
+				mat:Merge(dg2)
 			end
-			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
-			aux.FCheckAdditional=nil
-			aux.GCheckAdditional=nil
-			tc:SetMaterial(mat1)
-			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
-			Duel.BreakEffect()
-			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
-		else
-			local mat2=Duel.SelectFusionMaterial(tp,tc,mg2,nil,chkf)
-			local fop=ce:GetOperation()
-			fop(ce,e,tp,tc,mat2)
+			res=c9910807.ritual(tc,tp,mat)
 		end
+	end
+	if res and tc:IsCode(9910803) and Duel.IsExistingMatchingCard(c9910807.thfilter,tp,LOCATION_DECK,0,1,nil)
+		and Duel.SelectYesNo(tp,aux.Stringid(9910807,1)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,c9910807.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end
+function c9910807.ritual(tc,tp,mat)
+	tc:SetMaterial(mat)
+	local mat1=mat:Filter(Card.IsLocation,nil,LOCATION_HAND+LOCATION_MZONE)
+	local mat2=mat:Filter(Card.IsLocation,nil,LOCATION_EXTRA)
+	local dct=0
+	if #mat1>0 then dct=Duel.Destroy(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL) end
+	if #mat2>0 then Duel.SendtoGrave(mat2,REASON_RELEASE+REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL) end
+	if dct==#mat1 then
+		Duel.BreakEffect()
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		tc:CompleteProcedure()
+		return true
 	end
-end
-function c9910807.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
-end
-function c9910807.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
-	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
-end
-function c9910807.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then 
-		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 then return false end
-		local g=Duel.GetDecktopGroup(tp,3)
-		local result=g:FilterCount(Card.IsAbleToHand,nil)>0
-		return result
-	end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
-end
-function c9910807.thop(e,tp,eg,ep,ev,re,r,rp)
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	Duel.ConfirmDecktop(p,3)
-	local g=Duel.GetDecktopGroup(p,3)
-	if #g>0 then
-		Duel.DisableShuffleCheck()
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
-		local sc=g:Select(p,1,1,nil):GetFirst()
-		if sc:IsAbleToHand() then
-			Duel.SendtoHand(sc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-p,sc)
-			Duel.ShuffleHand(p)
-		else
-			Duel.SendtoGrave(sc,REASON_RULE)
-		end
-	end
-	if #g>1 then
-		Duel.SortDecktop(tp,tp,#g-1)
-		for i=1,#g-1 do
-			local dg=Duel.GetDecktopGroup(tp,1)
-			Duel.MoveSequence(dg:GetFirst(),1)
-		end
-	end
+	return false
 end

@@ -27,7 +27,9 @@ function cm.initial_effect(c)
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_ATKCHANGE)
-	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e3:SetRange(LOCATION_HAND)
 	e3:SetCondition(c22348157.spcon1)
 	e3:SetTarget(c22348157.sptg1)
@@ -65,7 +67,7 @@ function c22348157.spcon1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c22348157.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end

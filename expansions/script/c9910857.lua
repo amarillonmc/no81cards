@@ -78,7 +78,7 @@ function c9910857.rmop(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetCode(EFFECT_UPDATE_LEVEL)
 	e1:SetTargetRange(0xff,0)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsCode,9910850))
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	e1:SetValue(-ct)
 	Duel.RegisterEffect(e1,tp)
 end

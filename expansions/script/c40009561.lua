@@ -1,12 +1,12 @@
 --焰之巫女 莉诺
 if not pcall(function() require("expansions/script/c40008000") end) then require("script/c40008000") end
-local m , cm = rscf.DefineCard(40009561)
+local m , cm = rscf.DefineCard(40009561,"BlazeMaiden")
 if rsfwh then return end
 rsfwh = cm 
 cm.attach_list = { }
 
 function rsfwh.OvelayFun(c,code)
-	local e1 = rscf.AddSpecialSummonProcdure(c,LOCATION_HAND,cm.ovcon,nil,cm.ovop,nil,{1,code+100},SUMMON_VALUE_SELF)
+	local e1 = rscf.AddSpecialSummonProcdure(c,LOCATION_HAND,cm.ovcon,nil,cm.ovop,{m,6},{1,code+100},SUMMON_VALUE_SELF)
 	return e1
 end
 function cm.ovcon(e,c,tp)
@@ -16,7 +16,14 @@ function cm.ovfilter(c)
 	return c:IsCanOverlay() and c:IsFaceup() and cm.ovtfilter(c) and Duel.GetMZoneCount(tp,c,tp) > 0
 end
 function cm.ovtfilter(c)
-	return c:IsSetCard(0x7f1b) and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS)
+	return c:CheckSetCard("BlazeMaiden") and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS)
+end
+function cm.npfilter(c)
+	return c:IsFaceup() and c:IsOriginalCodeRule(40010232)
+end
+function cm.npcon(e,tp,eg,ep,ev,re,r,rp)
+   -- return not Duel.IsExistingMatchingCard(cm.npfilter,tp,LOCATION_MZONE,0,1,nil)
+	return not Duel.IsPlayerAffectedByEffect(tp,40010232)
 end
 function cm.ovop(e,tp)
 	local c = e:GetHandler()
@@ -25,7 +32,7 @@ function cm.ovop(e,tp)
 	Duel.Overlay(c,og)
 	local mc = og:GetFirst()
 	cm.attach_list[c] = mc
-	local e1 = rsef.FC_PhaseLeave({c,tp},c,nil,nil,PHASE_END,cm.ovlop,rsrst.std_ntf)
+	--local e1 = rsef.FC_PhaseLeave({c,tp},c,nil,cm.npcon,PHASE_END,cm.ovlop,rsrst.std_ntf)
 end
 function cm.ovlop(g,e,tp)
 	local tc = g:GetFirst()
@@ -37,6 +44,40 @@ function cm.ovlop(g,e,tp)
 	end
 	for mc in aux.Next(og) do
 		Duel.MoveToField(mc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	end
+	Duel.SendtoGrave(tc,REASON_EFFECT)
+end
+function rsfwh.OvelayFun2(c,code)
+	local e1 = rscf.AddSpecialSummonProcdure(c,LOCATION_HAND,cm.ovcon3,nil,cm.ovop3,{m,5},{1,code+100},SUMMON_VALUE_SELF)
+	return e1
+end
+function cm.ovcon3(e,c,tp)
+	return Duel.IsExistingMatchingCard(cm.ovfilter3,tp,LOCATION_ONFIELD,0,1,nil)
+end
+function cm.ovfilter3(c)
+	return c:IsCanOverlay() and c:IsFaceup() and c:CheckSetCard("BlazeMaiden","Vairina") and Duel.GetMZoneCount(tp,c,tp) > 0 and c:IsSummonType(SUMMON_VALUE_SELF)
+end
+function cm.ovop3(e,tp)
+	local c = e:GetHandler()
+	cm.attach_list[c] = nil
+	local og,mc = rsop.SelectSolve("xmat",tp,cm.ovfilter3,tp,LOCATION_MZONE,0,1,1,nil,{})
+	local mat = mc:GetOverlayGroup()
+	if #mat > 0 then
+		Duel.Overlay(c, mat)
+	end
+	Duel.Overlay(c, og)
+	cm.attach_list[c] = mc
+	mc:RegisterFlagEffect(m+300,rsrst.std,0,1)
+	local e1 = rsef.FC_PhaseLeave({c,tp},c,nil,nil,PHASE_END,cm.ovlop3,rsrst.std_ntf)
+end
+function cm.ovlop3(g,e,tp)
+	local tc = g:GetFirst()
+	local mc =  cm.attach_list[e:GetHandler()]
+	local og = tc:GetOverlayGroup()
+	if mc:GetFlagEffect(m+300) > 0 and og:IsContains(mc) and Duel.GetLocationCount(tp,LOCATION_MZONE) > 0 then
+		og:RemoveCard(mc)
+		Duel.SpecialSummon(mc,0,tp,tp,false,false,POS_FACEUP)
+		Duel.Overlay(mc,og)
 	end
 	Duel.SendtoGrave(tc,REASON_EFFECT)
 end
@@ -166,13 +207,13 @@ function cm.erfop(tg,op,sum_loc,sum_filter)
 			ritc:SetMaterial(Group.FromCards(matc))
 			Duel.Overlay(ritc,matc)
 			Duel.BreakEffect()
-			Duel.SpecialSummon(ritc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+			Duel.SpecialSummon(ritc,SUMMON_TYPE_RITUAL+SUMMON_VALUE_SELF,tp,tp,false,true,POS_FACEUP)
 			local e1 = rsef.FC_PhaseLeave({ritc,tp},ritc,nil,nil,PHASE_END,cm.ovlop2(matc),rsrst.std)
 			local code = ritc:GetOriginalCodeRule()
 			matc:RegisterFlagEffect(m,rsrst.std,0,1)
 			ritc:RegisterFlagEffect(code,rsrst.std,0,1)
 			Duel.RegisterFlagEffect(tp,code,rsrst.ep,0,1)
-			local tc = ritc:GetOverlayGroup():Filter(Card.IsSetCard,nil,0x7f1b):GetFirst()
+			local tc = ritc:GetOverlayGroup():Filter(Card.IsSetCard,nil,"BlazeTalisman"):GetFirst()
 			cm.attach_list[ritc] = tc
 		end
 		sum_filter = f
@@ -185,7 +226,7 @@ function cm.ovlop2(matc)
 		if og:IsContains(matc) and matc:GetFlagEffect(m) > 0 then 
 			if matc:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0 then
 				Duel.MoveToField(matc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-			elseif matc:IsSetCard(0x6f1b) and matc:IsType(TYPE_MONSTER) and rscf.spfilter2()(matc,e,tp) then 
+			elseif matc:CheckSetCard("BlazeMaiden") and matc:IsType(TYPE_MONSTER) and rscf.spfilter2()(matc,e,tp) then 
 				local matg2 = og - matc
 				Duel.SpecialSummon(matc,0,tp,tp,false,false,POS_FACEUP)
 				if #matg2 > 0 then 
@@ -207,9 +248,10 @@ end
 function cm.initial_effect(c)
 	local e1 = rsfwh.OvelayFun(c,m)
 	local e2,e3 = rsfwh.SummonFun(c,m,CATEGORY_SEARCH+CATEGORY_TOHAND,cm.thtg,cm.thop,CATEGORY_SPECIAL_SUMMON,cm.sptg,cm.spop)
+rsfwh.OvelayFun2(c,m)
 end
 function cm.filter(c)
-	return not c:IsCode(m) and c:IsSetCard(0x6f1b) and c:IsType(TYPE_MONSTER)
+	return not c:IsCode(m) and c:CheckSetCard("BlazeMaiden") 
 end
 function cm.thfilter(c)
 	return cm.filter(c) and c:IsAbleToHand()

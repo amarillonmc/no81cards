@@ -1,6 +1,6 @@
 --焰之护符 戏法之星
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009571)
+local m , cm = rscf.DefineCard(40009571,"BlazeTalisman")
 function cm.initial_effect(c)
 	--activate
 	local e0=Effect.CreateEffect(c)
@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and ((c:IsSetCard(0x6f1b) and c:IsType(TYPE_MONSTER)) or (c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_FIRE)))
+	return c:IsFaceup() and ((c:CheckSetCard("BlazeMaiden") and c:IsType(TYPE_MONSTER)) or (c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_FIRE)))
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
@@ -49,7 +49,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 		rc:RegisterEffect(e1,true)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_ADD_SETCODE)
-		e2:SetValue(0x7f1b)
+		e2:SetValue("BlazeTalisman")
 		rc:RegisterEffect(e2,true)
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,false)
 	end

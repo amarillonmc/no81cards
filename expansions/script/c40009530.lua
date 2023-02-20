@@ -2,14 +2,10 @@
 local m=40009530
 local cm=_G["c"..m]
 cm.named_with_Dragonic=1
-cm.named_with_Vanquisher=1
-function cm.Dragonic(c)
+cm.named_with_DragonicVanquisher=1
+function cm.DragonicVanquisher(c)
 	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_Dragonic
-end
-function cm.Vanquisher(c)
-	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_Vanquisher
+	return m and m.named_with_DragonicVanquisher
 end
 function cm.initial_effect(c)
 	--xyz summon
@@ -27,13 +23,6 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.rmtg)
 	e1:SetOperation(cm.rmop)
 	c:RegisterEffect(e1)
-	--summon success
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCondition(cm.sumcon)
-	e2:SetOperation(cm.sumsuc)
-	c:RegisterEffect(e2)
 	--spsummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
@@ -58,37 +47,37 @@ function cm.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEDOWN,REASON_COST)
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0
-		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,nil) end
-	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,0,nil)
-	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
-	g1:AddCard(g2)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g1,g1:GetCount(),0,0)
+	if chk==0 then 
+		local h1=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
+		local h2=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
+		return h1>0 and h2>0 end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,PLAYER_ALL,0)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g1=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
-	local g2=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
-	local rg=Group.FromCards(g1,g2)
-	if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)~=0 then
+	local h1=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
+	local h2=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,LOCATION_HAND)
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)~=0 then
 		local fid=c:GetFieldID()
 		local og=Duel.GetOperatedGroup()
 		local oc=og:GetFirst()
 		while oc do
-			oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE_START,0,1,fid)
+			oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
 			oc=og:GetNext()
 		end
 		og:KeepAlive()
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(m,2))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e1:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetCountLimit(1)
 		e1:SetLabel(fid)
 		e1:SetLabelObject(og)
 		e1:SetCondition(cm.retcon)
 		e1:SetOperation(cm.retop)
-		e1:SetReset(RESET_PHASE+PHASE_BATTLE_START)
+		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 	end
 end
@@ -117,44 +106,14 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 		tc=sg:GetNext()
 	end
 end
-
-function cm.sumcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
-end
-function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetValue(cm.atkval)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_UPDATE_DEFENSE)
-	Duel.RegisterEffect(e2,tp)
-	local e3=Effect.CreateEffect(e:GetHandler())
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_IMMUNE_EFFECT)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetValue(cm.efilter)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	e3:SetOwnerPlayer(tp)
-	Duel.RegisterEffect(e3,tp)
-end
-function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(nil,0,LOCATION_REMOVED,LOCATION_REMOVED,nil)*200
-end
-function cm.efilter(e,re)
-	return re:GetOwnerPlayer()~=e:GetHandlerPlayer() and re:IsActiveType(TYPE_MONSTER)
-end
 function cm.filter1(c)
-	return c:IsFaceup() and (cm.Dragonic(c) and cm.Vanquisher(c))
+	return c:IsFaceup() and cm.DragonicVanquisher(c)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.filter1(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_MZONE,0,1,nil) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_MZONE,0,1,nil) and c:IsCanBeSpecialSummoned(e,0,tp,false,true) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,cm.filter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED)
@@ -171,9 +130,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 		c:SetMaterial(Group.FromCards(tc))
 		Duel.Overlay(c,Group.FromCards(tc))
-		if Duel.SpecialSummon(c,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)~=0 then
+		if Duel.SpecialSummon(c,SUMMON_TYPE_XYZ,tp,tp,false,true,POS_FACEUP)~=0 then
 			c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1)
 			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetDescription(aux.Stringid(m,1))
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e2:SetCode(EVENT_PHASE+PHASE_END)
 			e2:SetCountLimit(1)

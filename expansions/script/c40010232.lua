@@ -2,6 +2,7 @@
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
 local m , cm = rscf.DefineCard(40010232)
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40009579)
 	c:EnableReviveLimit()
 	local e1 = rsef.SV_Card(c,"code",40009579,"sr",rsloc.hg)
 	--atk
@@ -14,14 +15,14 @@ function cm.initial_effect(c)
 	e2:SetValue(800)
 	c:RegisterEffect(e2)
 	--destroy
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EFFECT_SEND_REPLACE)
-	e4:SetCondition(cm.atkcon)
-	e4:SetTarget(cm.reptg)
-	e4:SetValue(cm.repval)
-	c:RegisterEffect(e4)
+	--local e4=Effect.CreateEffect(c)
+	--e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	--e4:SetRange(LOCATION_MZONE)
+	--e4:SetCode(EFFECT_SEND_REPLACE)
+	--e4:SetCondition(cm.atkcon)
+	--e4:SetTarget(cm.reptg)
+	--e4:SetValue(cm.repval)
+	--c:RegisterEffect(e4)
 	--Negate
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
@@ -35,11 +36,18 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.distg)
 	e3:SetOperation(cm.disop)
 	c:RegisterEffect(e3)
-
+	--change effect type
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e0:SetCode(m)
+	e0:SetRange(LOCATION_MZONE)
+	e0:SetTargetRange(1,0)
+	c:RegisterEffect(e0)
 
 end
 function cm.filter(c)
-	return c:IsFaceup() and (c:IsSetCard(0x6f1b) or c:IsSetCard(0x8f1b)) and c:GetSummonType() == SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF 
+	return c:IsFaceup() and c:CheckSetCard("BlazeMaiden","Vairina") and c:GetSummonType() == SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF 
 end
 function cm.atkcon(e)
 	return Duel.IsExistingMatchingCard(cm.filter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
@@ -50,7 +58,7 @@ function cm.repfilter(c,tp)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return bit.band(r,REASON_EFFECT)~=0 and re and re:IsActiveType(TYPE_MONSTER)
-		and (re:GetHandler():IsSetCard(0x6f1b) or re:GetHandler():IsSetCard(0x8f1b)) and eg:IsExists(cm.repfilter,1,nil,tp) end
+		and (re:GetHandler():CheckSetCard("BlazeMaiden") or re:GetHandler():CheckSetCard("Vairina")) and eg:IsExists(cm.repfilter,1,nil,tp) end
 	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		local g=eg:Filter(cm.repfilter,nil,tp)
 		local ct=g:GetCount()

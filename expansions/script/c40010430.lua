@@ -4,6 +4,7 @@ local m , cm = rscf.DefineCard(40010430)
 local m=40010430
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40009579)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON)
@@ -30,7 +31,7 @@ function cm.handcon(e)
 	return Duel.IsExistingMatchingCard(cm.handfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and (c:IsSetCard(0x6f1b) or (c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_RITUAL)))
+	return c:IsFaceup() and (c:CheckSetCard("BlazeMaiden") or (c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_RITUAL)))
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -44,7 +45,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.desfilter(c,e,tp)
-	return c:IsFaceup() and (c:IsSetCard(0x6f1b) or (c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_RITUAL))) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP)
+	return  (c:CheckSetCard("BlazeMaiden") or c:CheckSetCard("Vairina")) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ec=re:GetHandler()

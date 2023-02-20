@@ -22,6 +22,7 @@ function c82228503.initial_effect(c)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)  
 	c:RegisterEffect(e3)	
 end  
+c82228503.SetCard_01_JLW=true 
 function c82228503.ntcon(e,c,minc)  
 	if c==nil then return true end  
 	return minc==0 and c:GetLevel()>4 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0  
@@ -51,7 +52,7 @@ function c82228503.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function c82228503.tg2filter(c)  
-	return c:IsSetCard(0x291) and c:IsAbleToGrave() and c:IsType(TYPE_MONSTER) 
+	return c.SetCard_01_JLW and c:IsAbleToGrave() and c:IsType(TYPE_MONSTER) 
 end  
 function c82228503.tg2tg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(c82228503.tg2filter,tp,LOCATION_DECK,0,1,nil) end  

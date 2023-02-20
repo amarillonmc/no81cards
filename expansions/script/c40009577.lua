@@ -1,6 +1,6 @@
 --伐楼利拿
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009577)
+local m , cm = rscf.DefineCard(40009577,"Vairina")
 function cm.initial_effect(c)
 	local e1 = rsfwh.OvelayFun(c,m)
 	--special summon
@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	rsfwh.ExtraEffect(e2)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x6f1b) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_SELF,tp,false,false)
+	return c:CheckSetCard("BlazeMaiden") and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_SELF,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -1,6 +1,6 @@
 --伐楼利拿·阿勒克斯
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
-local m , cm = rscf.DefineCard(40009798)
+local m , cm = rscf.DefineCard(40009798,"Vairina")
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--act limit
@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 
 end
 function cm.rsfwh_ex_ritual(c)
-	return c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and c:IsSetCard(0x7f1b)
+	return c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS) and c:CheckSetCard("BlazeTalisman")
 end
 
 function cm.accon(e,tp)
@@ -24,7 +24,7 @@ function cm.accon(e,tp)
 end
 
 function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
-	if (re:GetHandler():IsSetCard(0x6f1b) or re:GetHandler():IsSetCard(0x7f1b) or re:GetHandler():IsSetCard(0x8f1b)) then
+	if re:GetHandler():CheckSetCard("BlazeTalisman","Vairina","BlazeMaiden") then
 		Duel.SetChainLimit(cm.chainlm)
 	end
 end

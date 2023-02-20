@@ -21,6 +21,7 @@ function c82228499.initial_effect(c)
 	e2:SetOperation(c82228499.operation)  
 	c:RegisterEffect(e2)  
 end  
+c82228499.SetCard_01_JLW=true 
 function c82228499.ntcon(e,c,minc)  
 	if c==nil then return true end  
 	return minc==0 and c:GetLevel()>4 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0  
@@ -50,7 +51,7 @@ function c82228499.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function c82228499.filter(c,e,tp)  
-	return c:IsSetCard(0x291) and not c:IsCode(82228499) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)  
+	return c.SetCard_01_JLW and not c:IsCode(82228499) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)  
 end  
 function c82228499.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c82228499.filter(chkc,e,tp) end  
