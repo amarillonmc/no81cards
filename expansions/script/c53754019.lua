@@ -59,7 +59,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local cp={}
 		local func=Card.RegisterEffect
 		Card.RegisterEffect=function(tc,e,f)
-			if e:GetRange()&LOCATION_SZONE~=0 and e:GetProperty()&EFFECT_FLAG_UNCOPYABLE==0 then table.insert(cp,e:Clone()) end
+			if e:GetRange()==LOCATION_SZONE and e:GetProperty()&EFFECT_FLAG_UNCOPYABLE==0 then table.insert(cp,e:Clone()) end
 			return func(tc,e,f)
 		end
 		Duel.CreateToken(tp,tc:GetOriginalCode())

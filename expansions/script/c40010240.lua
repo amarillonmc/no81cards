@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 
 end
 function cm.rsfwh_ex_ritual(c)
-	return ((c:CheckSetCard("Vairina","BlazeMaiden") and c:GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF )
+	return c:CheckSetCard("Vairina","BlazeMaiden") and c:GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF 
 end
 function cm.val(e,c)
 	return c:GetOverlayCount()

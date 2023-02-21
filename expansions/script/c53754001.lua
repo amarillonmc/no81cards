@@ -94,26 +94,11 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetCode(EFFECT_DIRECT_ATTACK)
 			e1:SetTargetRange(0,LOCATION_MZONE)
-			e1:SetTarget(function(e,c)
-				local le={c:IsHasEffect(EFFECT_CANNOT_SELECT_BATTLE_TARGET)}
-				local res=true
-				for _,v in pairs(le) do
-					if v:GetLabel()~=m then
-						local val=v:GetValue()
-						if not val or val(v,sc) then
-							res=false
-							break
-						end
-					end
-				end
-				return res
-			end)
 			Duel.RegisterEffect(e1,tp)
 			local e2=e1:Clone()
-			e2:SetLabel(m)
 			e2:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
 			e2:SetLabelObject(e1)
-			e2:SetValue(cm.atklimit)
+			e2:SetValue(function(e,c)return c==sc end)
 			Duel.RegisterEffect(e2,tp)
 			local e3=Effect.CreateEffect(c)
 			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -136,25 +121,6 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e4)
 	end
-end
-function cm.atktg(e,c)
-	local tc=e:GetLabelObject()
-	local le={c:IsHasEffect(EFFECT_CANNOT_SELECT_BATTLE_TARGET)}
-	local res=true
-	for _,v in pairs(le) do
-		if v:GetLabel()~=m then
-			local val=v:GetValue()
-			if not val or val(v,tc) then
-				res=false
-				break
-			end
-		end
-	end
-	return res
-end
-function cm.atklimit(e,c)
-	local tc=e:GetLabelObject():GetLabelObject()
-	return c==tc
 end
 function cm.reset(e,tp,eg,ep,ev,re,r,rp)
 	e:GetLabelObject():GetLabelObject():Reset()

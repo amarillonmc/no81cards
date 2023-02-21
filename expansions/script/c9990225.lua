@@ -50,7 +50,6 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,g1)
 	g1:Merge(g2)
 	Duel.HintSelection(g1)
-	Duel.Destroy(g1,REASON_EFFECT)
 	local c=e:GetHandler()
 	if c:IsFacedown() or not c:IsRelateToEffect(e) or c:GetAttack()<2000 or c:IsStatus(STATUS_BATTLE_DESTROYED) then
 		return
