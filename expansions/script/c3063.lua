@@ -36,7 +36,7 @@ function c3063.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCountLimit(1,3065)
-	e4:SetCost(c3063.sgcost)
+	e4:SetCost(aux.bfgcost) 
 	e4:SetTarget(c3063.sgtg)
 	e4:SetOperation(c3063.sgop)
 	c:RegisterEffect(e4)
@@ -81,7 +81,7 @@ function c3063.desop(e,tp,eg,ep,ev,re,r,rp)
 			if (opt==0 and tc:IsType(TYPE_MONSTER)) or (opt==1 and tc:IsType(TYPE_SPELL)) or (opt==2 and tc:IsType(TYPE_TRAP)) then
 				 d1=d1+1
 			end 
-		end		 
+		end   
 		tc=sg:GetNext()
 	end
 	if d1>0 then
@@ -98,20 +98,14 @@ end
 function c3063.sgfilter(c)
 	return c:IsSetCard(0x1012) and c:IsAbleToGrave()
 end
-function c3063.sgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
-end
 function c3063.sgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chkc then return chkc:GetControler(tp) and chkc:GetLocation(LOCATION_DECK) end
-	if chk==0 then return Duel.IsExistingTarget(c3063.sgfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectTarget(tp,c3063.sgfilter,tp,LOCATION_DECK,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(c3063.sgfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c3063.sgop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) then
-		Duel.SendtoGrave(tc,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c3063.sgfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end

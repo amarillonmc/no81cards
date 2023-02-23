@@ -76,23 +76,22 @@ function c3057.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function c3057.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local tg=Duel.GetChainInfo(tp,CHAININFO_TARGET_CARDS)
 	local sg=tg:Filter(Card.IsRelateToEffect,nil,e)
 	Duel.Destroy(sg,REASON_EFFECT)
-	Duel.BreakEffect()
 	sg=Duel.GetOperatedGroup()
-	local d1=0
+	local d1=tp
 	local tc=sg:GetFirst()
 	while tc do
 		if tc then
-			if tc:GetPreviousControler()~=0 then 
+			if tc:GetPreviousControler()==tp then 
 				d1=d1+1 
 			end
 		end
 		tc=sg:GetNext()
 	end
 	if d1>0 then 
-		Duel.Draw(1,d1,REASON_EFFECT) 
+		Duel.Draw(tp,d1,REASON_EFFECT) 
 	end
 end
 function c3057.afilter(c)

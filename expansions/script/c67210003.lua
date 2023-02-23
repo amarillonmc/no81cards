@@ -24,11 +24,11 @@ end
 function c67210003.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c67210003.filter,1,nil,nil,tp)
 end
-function c67210003.unfilter(c,e,tp)
-	return c:GetSummonPlayer()==1-tp and not c:GetSequence()<=4
+function c67210003.unfilter(c)
+	return c:GetSequence()>4
 end
 function c67210003.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return not eg:IsExists(c67210003.unfilter,1,nil,nil,tp) end
+	if chk==0 then return not eg:IsExists(c67210003.unfilter,1,nil) end
 end
 function c67210003.seqfilter(c,seq)
 	return c:GetSequence()==seq

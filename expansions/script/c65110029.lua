@@ -7,15 +7,24 @@ function c65110029.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMING_END_PHASE+TIMING_EQUIP)
+	e1:SetCondition(c65110029.condition)
 	e1:SetTarget(c65110029.target)
 	e1:SetOperation(c65110029.operation)
 	c:RegisterEffect(e1)
+end
+function c65110029.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x831)
+end
+function c65110029.condition(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
+	local sg=g:Filter(Card.IsFaceup,nil)
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or Duel.GetMatchingGroupCount(c65110029.cfilter,tp,LOCATION_MZONE,0,nil)>0
 end
 function c65110029.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsOnField() and c65110029.filter(chkc) and chkc~=e:GetHandler() end
 	if chk==0 then return Duel.IsExistingTarget(c65110029.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c65110029.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,14,e:GetHandler())
+	local g=Duel.SelectTarget(tp,c65110029.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function c65110029.operation(e,tp,eg,ep,ev,re,r,rp)
