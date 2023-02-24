@@ -27,25 +27,28 @@ function c98920405.rlevel(e,c)
 end
 function c98920405.costfilter(c,e,tp,g,ft,sg)
 	local lv=c:GetLevel()
-	return c:IsSetCard(0x3a) and c:IsType(TYPE_RITUAL) and Duel.GetMatchingGroup(c98920405.spfilter,tp,LOCATION_DECK,0,nil,e,tp):CheckWithSumEqual(Card.GetLevel,lv,1,3)
+	return c:IsSetCard(0x3a) and c:IsType(TYPE_RITUAL) and Duel.GetMatchingGroup(c98920405.spfilter,tp,LOCATION_DECK,LOCATION_DECK,nil,e,tp):CheckWithSumEqual(Card.GetLevel,lv,1,3)
 end
 function c98920405.spfilter(c,e,tp)
 	return c:IsSetCard(0x3a) and not c:IsType(TYPE_RITUAL) and c:IsAbleToHand() and c:IsLevelAbove(1)
 end
 function c98920405.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
+	local tp=e:GetOwner():GetControler()
 	if chk==0 then return Duel.IsExistingMatchingCard(c98920405.costfilter,tp,LOCATION_DECK,0,1,nil) and c:IsDiscardable() end
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c98920405.costfilter,tp,LOCATION_DECK,0,1,1,nil)
 	e:SetLabel(g:GetFirst():GetLevel())
-	Duel.SendtoGrave(g,REASON_COST)	
+	Duel.SendtoGrave(g,REASON_COST) 
 end
 function c98920405.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	local tp=e:GetOwner():GetControler()
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c98920405.spop(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetOwner():GetControler()
 	local g=Duel.GetMatchingGroup(c98920405.spfilter,tp,LOCATION_DECK,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg=g:SelectWithSumEqual(tp,Card.GetLevel,e:GetLabel(),1,3)
