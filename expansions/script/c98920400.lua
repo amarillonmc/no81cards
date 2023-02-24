@@ -106,8 +106,11 @@ function c98920400.desop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetTargetRange(1,0)
-	e1:SetTarget(c98920400.splimit)
+	e1:SetTarget(c98920400.splimit1)
 	Duel.RegisterEffect(e1,tp)
+end
+function c98920400.splimit1(e,c)
+	return c:IsLocation(LOCATION_EXTRA)
 end
 function c98920400.valcheck(e,c,tp)
 	local tp=e:GetOwner():GetControler()
@@ -123,7 +126,4 @@ function c98920400.thfilter(c)
 end
 function c98920400.indcon(e)
 	return ep==tp and Duel.IsExistingMatchingCard(c98920400.thfilter,tp,LOCATION_GRAVE,0,1,nil)
-end
-function c98920400.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return c:IsLocation(LOCATION_EXTRA)
 end

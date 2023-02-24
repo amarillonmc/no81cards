@@ -3,7 +3,7 @@ function c98920352.initial_effect(c)
 	c:SetSPSummonOnce(98920352)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xef),aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_DARK),true)
+	aux.AddFusionProcFun2(c,c98920352.matfilter,aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_DARK),true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_ONFIELD,LOCATION_ONFIELD,Duel.SendtoGrave,REASON_COST)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
@@ -37,6 +37,9 @@ function c98920352.initial_effect(c)
 	e3:SetTarget(c98920352.destg)
 	e3:SetOperation(c98920352.desop)
 	c:RegisterEffect(e3)
+end
+function c98920352.matfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xef)
 end
 function c98920352.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION 

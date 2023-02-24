@@ -48,7 +48,7 @@ function cm.initial_effect(c)
 		function Duel.SelectTarget(sp,f,p,s,o,min,max,nc,...)
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local e=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
-				local tgf=function(c,...) return f(c,...) and c:IsCanBeEffectTarget(e) end
+				local tgf=function(c,...) return (not f or f(c,...)) and c:IsCanBeEffectTarget(e) end
 				local g=Duel.GetMatchingGroup(tgf,p,s,o,nc,...)
 				local tg=g:Select(sp,min,max,nc)
 				Duel.SetTargetCard(tg)

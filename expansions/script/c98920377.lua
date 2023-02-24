@@ -59,10 +59,12 @@ function c98920377.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c98920377.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98920377,1))then
-		   Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.SelectYesNo(tp,aux.Stringid(98920377,1)) then
+		   local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c98920377.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+		   if g:GetCount()>0 then		
+			  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			  Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		   end
 		end
 	end
 end
