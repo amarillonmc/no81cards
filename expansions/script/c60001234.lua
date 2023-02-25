@@ -10,8 +10,8 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e3:SetCode(EFFECT_SUMMON_PROC)
-	e3:SetCondition(cm.otcon)
-	e3:SetOperation(cm.otop)
+	e3:SetCondition(cm.sumcon)
+	e3:SetOperation(cm.sumop)
 	e3:SetValue(SUMMON_TYPE_ADVANCE)
 	c:RegisterEffect(e3)
 	--进化
@@ -24,22 +24,24 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.drop)
 	c:RegisterEffect(e4)  
 end
-function cm.otcon(e,c,minc)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return c:GetLevel()>6 and minc<=2
-		and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.CheckTribute(c,2))
-		or c:GetLevel()>=1 and c:GetLevel()<=6 and minc<=1
-			and Duel.GetLocationCount(tp,LOCATION_MZONE)>-1 and Duel.CheckTribute(c,1)
+function cm.cfilter(c,tp)
+	return (c:IsControler(tp) or c:IsFaceup())
 end
-function cm.otop(e,tp,eg,ep,ev,re,r,rp,c)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local ct=-ft
-	if ct<=1 then ct=1 end 
-	if c:GetLevel()>6 and ct<2 then ct=2 end 
-	local g=Duel.SelectTribute(tp,c,ct,99)
-	c:SetMaterial(g)
-	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
+function cm.sumcon(e,c,minc)
+	if c==nil then return true end
+	local min=1
+	if minc>=1 then min=minc end
+	local tp=c:GetControler()
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
+	return c:IsLevelAbove(5) and Duel.CheckTribute(c,min,10,mg)
+end
+function cm.sumop(e,tp,eg,ep,ev,re,r,rp,c,minc)
+	local min=1
+	if minc>=1 then min=minc end
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
+	local sg=Duel.SelectTribute(tp,c,min,10,mg)
+	c:SetMaterial(sg)
+	Duel.Release(sg,REASON_SUMMON+REASON_MATERIAL)
 end
 function cm.mgfilter(c,e,tp,fusc)
 	return bit.band(c:GetReason(),0x12)==0x12 and c:GetReasonCard()==fusc

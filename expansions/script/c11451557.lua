@@ -1,7 +1,6 @@
 --诡雷战队V -变革者-
 --21.04.24
-local m=11451557
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
@@ -39,6 +38,17 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCondition(cm.con2)
 	c:RegisterEffect(e3)
+end
+if not Duel.GetMustMaterial then
+	function Duel.GetMustMaterial(tp,code)
+		local g=Group.CreateGroup()
+		local ce={Duel.IsPlayerAffectedByEffect(tp,code)}
+		for _,te in ipairs(ce) do
+			local tc=te:GetHandler()
+			if tc then g:AddCard(tc) end
+		end
+		return g
+	end
 end
 function cm.matfilter(c)
 	return c:IsAttribute(ATTRIBUTE_FIRE) or cm.fdfilter(c)
@@ -80,7 +90,7 @@ function cm.LinkCondition(f,minc,maxc,gf)
 					if not cm.LConditionFilter(lmat,f,c) then return false end
 					mg:AddCard(lmat)
 				end
-				local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 				if fg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(fg)
 				return mg:CheckSubGroup(cm.LCheckGoal,minc,maxc,tp,c,gf,lmat)
@@ -105,7 +115,7 @@ function cm.LinkTarget(f,minc,maxc,gf)
 					if not cm.LConditionFilter(lmat,f,c) then return false end
 					mg:AddCard(lmat)
 				end
-				local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 				Duel.SetSelectedCard(fg)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
 				local cancel=Duel.IsSummonCancelable()

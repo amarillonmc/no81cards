@@ -42,10 +42,12 @@ function c9911167.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3958) and c:IsType(TYPE_XYZ)
 end
 function c9911167.xyzop(e,tp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9911167.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.GetFlagEffect(tp,9911167)==0
+		and Duel.IsExistingMatchingCard(c9911167.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9911167.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
+	Duel.RegisterFlagEffect(tp,9911167,RESET_PHASE+PHASE_END,0,1)
 end
 function c9911167.imcon(e)
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0x3958)

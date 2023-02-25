@@ -21,9 +21,9 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,m)
 	e3:SetCondition(aux.exccon)
-	e2:SetCost(cm.thcost)
-	e2:SetTarget(cm.target)
-	e2:SetOperation(cm.activate)
+	e2:SetCost(cm.thcost2)
+	e2:SetTarget(cm.target2)
+	e2:SetOperation(cm.activate2)
 	c:RegisterEffect(e2)
 end
 function cm.cfilter(c)
@@ -38,7 +38,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 	end
 end
-function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.thcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(703897,tp,ACTIVITY_SPSUMMON)==0
 		and aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,0) end
 	aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,1)
@@ -60,7 +60,7 @@ end
 function cm.fcheck(tp,sg,fc)
 	return sg:GetCount()<=2 and sg:IsExists(Card.IsFusionCode,1,nil,68468459)
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp)
@@ -80,7 +80,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(cm.filter1,nil,e)
 	local mg2=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_DECK,0,nil)

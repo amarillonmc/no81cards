@@ -40,6 +40,17 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 end
+if not Duel.GetMustMaterial then
+	function Duel.GetMustMaterial(tp,code)
+		local g=Group.CreateGroup()
+		local ce={Duel.IsPlayerAffectedByEffect(tp,code)}
+		for _,te in ipairs(ce) do
+			local tc=te:GetHandler()
+			if tc then g:AddCard(tc) end
+		end
+		return g
+	end
+end
 function cm.mfilter(c,xyzc)
 	return c:IsXyzType(TYPE_MONSTER) and (c:IsRank(9) or (c:IsXyzLevel(xyzc,9) and xyzc:GetFlagEffect(m-17)>0))
 end
@@ -101,7 +112,7 @@ function cm.XyzLevelFreeCondition(f,gf,minct,maxct)
 				else
 					mg=Duel.GetMatchingGroup(aux.XyzLevelFreeFilter,tp,LOCATION_MZONE,0,nil,c,f)
 				end
-				local sg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 				if sg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(sg)
 				aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)

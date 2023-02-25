@@ -52,9 +52,9 @@ function c98920010.costfilter(c,ec)
 end
 function c98920010.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c98920010.costfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,c) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c98920010.costfilter,tp,LOCATION_DECK,0,1,nil,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local cg=Duel.SelectMatchingCard(tp,c98920010.costfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,c)
+	local cg=Duel.SelectMatchingCard(tp,c98920010.costfilter,tp,LOCATION_DECK,0,1,1,nil,c)
 	Duel.SendtoGrave(cg,REASON_COST)
 	e:SetLabelObject(cg:GetFirst())
 end

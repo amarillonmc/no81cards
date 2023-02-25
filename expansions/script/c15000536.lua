@@ -68,6 +68,7 @@ function cm.pop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,lv,nil)
 		if g:GetCount()>0 then
 			Duel.SpecialSummon(g,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)
+			g:GetFirst():CompleteProcedure()
 		end
 	end
 end

@@ -44,6 +44,17 @@ function cm.initial_effect(c)
 	e6:SetValue(0x6d)
 	c:RegisterEffect(e6)
 end
+if not Duel.GetMustMaterial then
+	function Duel.GetMustMaterial(tp,code)
+		local g=Group.CreateGroup()
+		local ce={Duel.IsPlayerAffectedByEffect(tp,code)}
+		for _,te in ipairs(ce) do
+			local tc=te:GetHandler()
+			if tc then g:AddCard(tc) end
+		end
+		return g
+	end
+end
 function cm.spfilter(c,sc)
 	return c:IsCanBeXyzMaterial(sc) and ((c:IsFaceup() and (c:IsXyzLevel(sc,8) or (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY)))) or (c:IsLocation(LOCATION_HAND) and (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY))))
 end
@@ -66,7 +77,7 @@ function cm.spcon(e,c,og,min,max)
 	else
 		mg=g
 	end
-	local sg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+	local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 	if sg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
 	Duel.SetSelectedCard(sg)
 	aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
@@ -88,7 +99,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	else
 		mg=g
 	end
-	local sg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+	local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 	Duel.SetSelectedCard(sg)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local cancel=Duel.IsSummonCancelable()

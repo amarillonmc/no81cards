@@ -62,6 +62,17 @@ function cm.initial_effect(c)
 		Auxiliary.GetLinkCount=function(tc) if tc:GetOriginalCode()==m and tc:IsLocation(LOCATION_PZONE) then return 0x20001 else return _GetLinkCount(tc) end end
 	end
 end
+if not Duel.GetMustMaterial then
+	function Duel.GetMustMaterial(tp,code)
+		local g=Group.CreateGroup()
+		local ce={Duel.IsPlayerAffectedByEffect(tp,code)}
+		for _,te in ipairs(ce) do
+			local tc=te:GetHandler()
+			if tc then g:AddCard(tc) end
+		end
+		return g
+	end
+end
 function cm.lcheck(g)
 	return g:GetClassCount(Card.GetLinkRace)==1 and g:GetClassCount(Card.GetCode)==g:GetCount()
 end
@@ -91,7 +102,7 @@ function cm.LinkCondition(f,minc,maxc,gf)
 					if not Auxiliary.LConditionFilter(lmat,f,c,e) then return false end
 					mg:AddCard(lmat)
 				end
-				local fg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 				if fg:IsExists(Auxiliary.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(fg)
 				return mg:CheckSubGroup(Auxiliary.LCheckGoal,minc,maxc,tp,c,gf,lmat)

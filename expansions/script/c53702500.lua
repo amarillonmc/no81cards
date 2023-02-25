@@ -2431,7 +2431,7 @@ function cm.LinkCondition(f,minc,maxc,gf,code)
 					if not aux.LConditionFilter(lmat,f,c,e) then return false end
 					mg:AddCard(lmat)
 				end
-				local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 				if fg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(fg)
 				return mg:CheckSubGroup(aux.LCheckGoal,minc,maxc,tp,c,gf,lmat)
@@ -2456,7 +2456,7 @@ function cm.LinkTarget(f,minc,maxc,gf)
 					if not cm.LConditionFilter(lmat,f,c,e) then return false end
 					mg:AddCard(lmat)
 				end
-				local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 				Duel.SetSelectedCard(fg)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
 				local cancel=Duel.IsSummonCancelable()
@@ -4222,5 +4222,65 @@ function cm.GelidimenCheck(e,tp,eg,ep,ev,re,r,rp)
 			v:Reset()
 			Duel.RegisterEffect(e1,e:GetHandler():GetControler())
 		end
+	end
+end
+function cm.RabbitTeam(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_DECK)
+	e1:SetCondition(cm.RabbitTeamspcon)
+	e1:SetOperation(cm.RabbitTeamspop)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetRange(0xff)
+	e2:SetOperation(cm.RabbitTeamCheck)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL+53755000)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCondition(cm.RabbitTeamrecon)
+	e3:SetValue(LOCATION_DECK)
+	c:RegisterEffect(e3)
+end
+function cm.RabbitTeamspcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local num=53755000
+	for i=1,4 do if c["Rabbit_Team_Number_"..i] then num=num+i end end
+	return Duel.GetFlagEffect(tp,num)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+end
+function cm.RabbitTeamspop(e,tp,eg,ep,ev,re,r,rp,c)
+	local num=53755000
+	for i=1,4 do if c["Rabbit_Team_Number_"..i] then num=num+i end end
+	local ct=Duel.GetFlagEffect(tp,num)
+	Duel.ResetFlagEffect(tp,num)
+	for i=1,ct-1 do Duel.RegisterFlagEffect(tp,num,RESET_PHASE+PHASE_END,0,1) end
+	Duel.ShuffleDeck(tp)
+end
+function cm.RabbitTeamrecon(e)
+	local c=e:GetHandler()
+	return c:GetReasonPlayer()~=c:GetControler()
+end
+function cm.RabbitTeamCheck(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(0,53755000)>0 then return end
+	Duel.RegisterFlagEffect(0,53755000,0,0,0)
+	f=Duel.ConfirmDecktop
+	Duel.ConfirmDecktop=function(tp,ct)
+		local g=Duel.GetDecktopGroup(tp,ct)
+		local t={}
+		for tc in aux.Next(g) do
+			for i=1,4 do
+				if tc["Rabbit_Team_Number_"..i] and not cm.IsInTable(i,t) then table.insert(t,i) end
+			end
+		end
+		for _,v in ipairs(t) do Duel.RegisterFlagEffect(tp,53755000+v,RESET_PHASE+PHASE_END,0,1) end
+		return f(tp,ct)
 	end
 end

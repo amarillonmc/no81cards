@@ -10,7 +10,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--SearchCard
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetRange(LOCATION_SZONE)
@@ -42,8 +42,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e7)
 	
 end
-function c43990003.filter(c)
-	return c:IsSetCard(0x166) and c:IsAbleToHand() 
+function c43990003.filter(c,e,tp,ft)
+	return c:IsSetCard(0x166) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c43990003.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
@@ -57,14 +57,23 @@ function c43990003.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c43990003.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	Duel.ConfirmDecktop(p,5)
 	local g=Duel.GetDecktopGroup(p,5)
 	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
-		local sg=g:FilterSelect(tp,c43990003.filter,1,1,nil,e,tp)
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-p,sg)
-		Duel.ShuffleDeck(p)
+	   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
+		local sg=g:FilterSelect(tp,c43990003.filter,1,1,nil,e,tp,ft)
+		local tc=sg:GetFirst()
+		if tc then
+		if ft>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+			and (not tc:IsAbleToHand() or Duel.SelectOption(tp,1190,1152)==1) then
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		else
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		end
+	   end
+
 	end
 end
 function c43990003.cfilter(c,tp)

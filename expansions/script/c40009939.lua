@@ -32,8 +32,8 @@ function cm.Foreigner(c)
 	return m and m.named_with_Foreigner
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=re:GetHandler()
-	if e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER+TYPE_TRAP+TYPE_SPELL) and cm.Foreigner(tc) then 
+
+	if e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER+TYPE_TRAP+TYPE_SPELL) and cm.Foreigner(re:GetHandler()) then 
 		e:SetLabel(1)
 	end
 	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and (re:IsActiveType(TYPE_MONSTER+TYPE_TRAP+TYPE_SPELL) or re:IsHasType(EFFECT_TYPE_ACTIVATE))

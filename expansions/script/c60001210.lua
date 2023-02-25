@@ -9,8 +9,8 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e3:SetCode(EFFECT_SUMMON_PROC)
-	e3:SetCondition(cm.otcon)
-	e3:SetOperation(cm.otop)
+	e3:SetCondition(cm.sumcon)
+	e3:SetOperation(cm.sumop)
 	e3:SetValue(SUMMON_TYPE_ADVANCE)
 	c:RegisterEffect(e3)
 	--进化
@@ -44,31 +44,42 @@ function cm.initial_effect(c)
 	  --  Duel.RegisterEffect(ge1,0)
   --  end
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_HAND) 
 	e4:SetCountLimit(1)
+	e4:SetCost(cm.spcost)
+	e4:SetCondition(cm.spcon2)
 	e4:SetTarget(cm.target)
 	e4:SetOperation(cm.op)
 	c:RegisterEffect(e4)
 end
 cm.named_with_treasure=true 
-function cm.otcon(e,c,minc)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return c:GetLevel()>6 and minc<=2
-		and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.CheckTribute(c,2))
-		or c:GetLevel()>=1 and c:GetLevel()<=6 and minc<=1
-			and Duel.GetLocationCount(tp,LOCATION_MZONE)>-1 and Duel.CheckTribute(c,1)
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_PUBLIC)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+	c:RegisterEffect(e1)
 end
-function cm.otop(e,tp,eg,ep,ev,re,r,rp,c)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local ct=-ft
-	if ct<=1 then ct=1 end 
-	if c:GetLevel()>6 and ct<2 then ct=2 end 
-	local g=Duel.SelectTribute(tp,c,ct,99)
-	c:SetMaterial(g)
-	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
+function cm.cfilter(c,tp)
+	return (c:IsControler(tp) or c:IsFaceup())
+end
+function cm.sumcon(e,c,minc)
+	if c==nil then return true end
+	local min=1
+	if minc>=1 then min=minc end
+	local tp=c:GetControler()
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
+	return c:IsLevelAbove(5) and Duel.CheckTribute(c,min,10,mg)
+end
+function cm.sumop(e,tp,eg,ep,ev,re,r,rp,c,minc)
+	local min=1
+	if minc>=1 then min=minc end
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
+	local sg=Duel.SelectTribute(tp,c,min,10,mg)
+	c:SetMaterial(sg)
+	Duel.Release(sg,REASON_SUMMON+REASON_MATERIAL)
 end
 function cm.mgfilter(c,e,tp,fusc)
 	return bit.band(c:GetReason(),0x12)==0x12 and c:GetReasonCard()==fusc
@@ -162,14 +173,18 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND,0,nil,e,tp)
 	if g:GetCount()<1 then return end
 	local sg=g:Select(tp,1,1,nil)
 	Duel.SpecialSummon(sg,0,tp,tp,true,false,POS_FACEUP)
 	Duel.RegisterFlagEffect(tp,60001211,RESET_PHASE+PHASE_END,0,1000)
+	
 end
-
+function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp and Duel.GetCurrentChain()==0
+end
 
 
 

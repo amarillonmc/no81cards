@@ -54,6 +54,17 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge6,0)
 	end
 end
+if not Duel.GetMustMaterial then
+	function Duel.GetMustMaterial(tp,code)
+		local g=Group.CreateGroup()
+		local ce={Duel.IsPlayerAffectedByEffect(tp,code)}
+		for _,te in ipairs(ce) do
+			local tc=te:GetHandler()
+			if tc then g:AddCard(tc) end
+		end
+		return g
+	end
+end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttackTarget()
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
@@ -112,7 +123,7 @@ function cm.LinkCondition(f,minc,maxc,gf)
 					if not Auxiliary.LConditionFilter(lmat,f,c,e) then return false end
 					mg:AddCard(lmat)
 				end
-				local fg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 				if fg:IsExists(Auxiliary.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(fg)
 				return mg:CheckSubGroup(cm.LCheckGoal,minc,maxc,tp,c,gf,lmat)
@@ -137,7 +148,7 @@ function cm.LinkTarget(f,minc,maxc,gf)
 					if not Auxiliary.LConditionFilter(lmat,f,c,e) then return false end
 					mg:AddCard(lmat)
 				end
-				local fg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 				Duel.SetSelectedCard(fg)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
 				local cancel=Duel.IsSummonCancelable()
