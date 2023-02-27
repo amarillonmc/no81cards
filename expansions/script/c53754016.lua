@@ -215,7 +215,7 @@ function cm.solving(e,tp,eg,ep,ev,re,r,rp)
 		local le={tc:IsHasEffect(EFFECT_IMMUNE_EFFECT)}
 		for _,v in pairs(le) do
 			local val=v:GetValue()
-			if not val or val(v,re) then
+			if not val or val(v,re,ev) then
 				tc:RegisterFlagEffect(m+50,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 				break
 			end

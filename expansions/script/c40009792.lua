@@ -4,7 +4,7 @@ local m , cm = rscf.DefineCard(40009792,"BlazeMaiden")
 function cm.initial_effect(c)
 		--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,"BlazeMaiden"),aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_FIRE),true)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(cm.ffilter),aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_FIRE),true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,LOCATION_MZONE,Duel.SendtoGrave,REASON_COST)
 	--to hand
 	local e1=Effect.CreateEffect(c)
@@ -27,7 +27,9 @@ function cm.initial_effect(c)
 		{cm.tffilter,"tf",LOCATION_GRAVE }),cm.tgop)
 end
 
-
+function cm.ffilter(c)
+	return c:CheckSetCard("BlazeMaiden")
+end
 
 function cm.thfilter(c)
 	return c:CheckSetCard("BlazeTalisman") and c:IsType(TYPE_SPELL) and c:IsAbleToHand()

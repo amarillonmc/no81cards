@@ -4,9 +4,12 @@ local cm=_G["c"..m]
 cm.named_with_linkjoker=1
 function cm.linkjoker(c)
 	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_linkjoker
+	return m and (m.named_with_linkjoker or (Duel.IsPlayerAffectedByEffect(c:GetControler(),40010218) and m.named_with_Reverse and c:IsLocation(LOCATION_MZONE+LOCATION_HAND)))
 end
-
+function cm.Reverse(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Reverse
+end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,cm.matfilter,2)
@@ -33,7 +36,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function cm.matfilter(c)
-	return cm.linkjoker(c)
+	return cm.linkjoker(c) or (Duel.IsPlayerAffectedByEffect(tp,40010218) and cm.Reverse(c))
 end
 function cm.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end

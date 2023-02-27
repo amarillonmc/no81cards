@@ -47,37 +47,8 @@ function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	--local g1=g:SelectSubGroup(tp,aux.dlvcheck,false,1,1)
 	local g=Duel.SelectMatchingCard(tp,cm.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.ChangePosition(g1,POS_FACEDOWN_ATTACK)
-			local tc=g1:GetFirst()
-		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
-		e1:SetReset(RESET_PHASE+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetCondition(cm.flipcon)
-		e1:SetOperation(cm.flipop)
-		e1:SetLabelObject(tc)
-		Duel.RegisterEffect(e1,tp)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_CANNOT_FLIP_SUMMON)
-		--e2:SetCondition(cm.rcon)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		Duel.RegisterEffect(e2,tp)
-		local e3=Effect.CreateEffect(e:GetHandler())
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-		Duel.RegisterEffect(e3,tp)
-end
-function cm.flipcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	return tc:IsFacedown() and Duel.GetTurnPlayer()==tc:GetControler() and tc:GetFlagEffect(m)~=0 and Duel.GetFlagEffect(tp,40010160)==0
-end
-function cm.flipop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	Duel.ChangePosition(tc,POS_FACEUP_ATTACK)
+	Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelAbove(1)
@@ -132,7 +103,7 @@ function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if g1:GetCount()>0 then
 		Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
 	end
-	if (not c:GetOriginalCode(40009487)) and c:GetOverlayGroup():IsExists(cm.grfilter,1,nil) and c:IsRelateToEffect(e) then
+	if (not c:GetOriginalCode(40009487)) and c:GetOverlayGroup():IsExists(cm.grfilter,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local sc=sg:FilterSelect(tp,cm.toexfilter,1,1,nil,tp):GetFirst()
 		if sc and Duel.SendtoDeck(sc,nil,0,REASON_EFFECT)>0 and sc:IsLocation(LOCATION_EXTRA) and c:IsFaceup() and c:IsControler(tp) and not c:IsImmuneToEffect(e) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and c:IsCanBeXyzMaterial(sc) and sc:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 then

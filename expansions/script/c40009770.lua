@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 end
 
 function cm.matfilter1(c)
-	return c:IsSynchroType(TYPE_TUNER) or (c:IsLevel(3) and c:CheckSetCard("BlazeMaiden"))
+	return c:IsSynchroType(TYPE_TUNER) or c:CheckSetCard("BlazeMaiden")
 end
 function cm.costfilter(c)
 	return c:IsType(TYPE_RITUAL) and c:IsDiscardable()
@@ -38,7 +38,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,cm.costfilter,1,1,REASON_COST+REASON_DISCARD)
 end
 function cm.spfilter(c,e,tp)
-	return ((c:CheckSetCard("Vairina") and c:IsType(TYPE_RITUAL)) or c:IsCode(40009579)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,false)
+	return ((c:CheckSetCard("Vairina") and c:IsType(TYPE_RITUAL)) or c:IsCode(40009579)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and cm.spfilter(chkc,e,tp) end
@@ -51,7 +51,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,true,true,POS_FACEUP)
 	end
 	tc:CompleteProcedure()
 end

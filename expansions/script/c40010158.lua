@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 cm.named_with_linkjoker=1
 function cm.linkjoker(c)
 	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_linkjoker
+	return m and (m.named_with_linkjoker or (Duel.IsPlayerAffectedByEffect(c:GetControler(),40010218) and m.named_with_Reverse and c:IsLocation(LOCATION_MZONE+LOCATION_HAND)))
 end
 function cm.Reverse(c)
 	local m=_G["c"..c:GetCode()]
@@ -37,8 +37,8 @@ function cm.initial_effect(c)
 
 
 end
-function cm.matfilter(c)
-	return cm.linkjoker(c)
+function cm.matfilter(c,tp)
+	return cm.linkjoker(c) or (Duel.IsPlayerAffectedByEffect(tp,40010218) and cm.Reverse(c))
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
@@ -55,7 +55,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter(c,tp)
-	return c:IsControler(tp) and cm.linkjoker(c) and c:IsType(TYPE_LINK) and c:IsSummonType(SUMMON_TYPE_LINK) and c:IsLinkAbove(3)
+	return c:IsControler(tp) and (cm.linkjoker(c) or (Duel.IsPlayerAffectedByEffect(tp,40010218) and cm.Reverse(c))) and c:IsType(TYPE_LINK) and c:IsSummonType(SUMMON_TYPE_LINK) and c:IsLinkAbove(3)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp) 

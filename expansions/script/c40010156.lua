@@ -5,7 +5,7 @@ cm.named_with_linkjoker=1
 cm.named_with_Reverse=1
 function cm.linkjoker(c)
 	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_linkjoker
+	return m and (m.named_with_linkjoker or (Duel.IsPlayerAffectedByEffect(c:GetControler(),40010218) and m.named_with_Reverse and c:IsLocation(LOCATION_MZONE+LOCATION_HAND)))
 end
 function cm.Reverse(c)
 	local m=_G["c"..c:GetCode()]
@@ -51,14 +51,14 @@ function cm.matfilter(c)
 end
 function cm.spfilter(c,e,tp)
 	return cm.Reverse(c) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
-		and ((c:IsLocation(LOCATION_HAND) or c:IsLocation(LOCATION_DECK) or c:IsLocation(LOCATION_GRAVE)) and Duel.GetMZoneCount(tp)>0
-			or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0) and not cm.linkjoker(c)
+		 and not cm.linkjoker(c)
 end
 function cm.posfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)

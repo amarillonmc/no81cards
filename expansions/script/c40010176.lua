@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 cm.named_with_linkjoker=1
 function cm.linkjoker(c)
 	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_linkjoker
+	return m and (m.named_with_linkjoker or (Duel.IsPlayerAffectedByEffect(c:GetControler(),40010218) and m.named_with_Reverse and c:IsLocation(LOCATION_MZONE+LOCATION_HAND)))
 end
 function cm.initial_effect(c)
 	--Negate

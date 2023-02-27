@@ -16,7 +16,7 @@ function cm.ovfilter(c)
 	return c:IsCanOverlay() and c:IsFaceup() and cm.ovtfilter(c) and Duel.GetMZoneCount(tp,c,tp) > 0
 end
 function cm.ovtfilter(c)
-	return c:CheckSetCard("BlazeMaiden") and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS)
+	return c:CheckSetCard("BlazeTalisman") and c:IsComplexType(TYPE_SPELL+TYPE_CONTINUOUS)
 end
 function cm.npfilter(c)
 	return c:IsFaceup() and c:IsOriginalCodeRule(40010232)
