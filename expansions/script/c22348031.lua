@@ -54,6 +54,14 @@ function cm.initial_effect(c)
 	e7:SetRange(LOCATION_SZONE+LOCATION_HAND)
 	e7:SetCondition(c22348031.actcon2)
 	c:RegisterEffect(e7)
+	--send replace
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_TO_GRAVE_REDIRECT_CB)
+	e8:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e8:SetCondition(c22348031.repcon)
+	e8:SetOperation(c22348031.repop)
+	c:RegisterEffect(e8)
 end
 function c22348031.filter(c)
 	return not c:IsPublic()
@@ -173,6 +181,21 @@ function c22348031.actcon2(e)
 	local d=Duel.GetAttackTarget()
 	return ((a and c22348031.cfilter(a,tp)) or (d and c22348031.cfilter(d,tp))) and c:IsPublic() and Duel.IsPlayerAffectedByEffect(tp,22348037)
 end
+function c22348031.repcon(e)
+	local c=e:GetHandler()
+	return c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_DESTROY) and Duel.IsPlayerAffectedByEffect(tp,22348039)
+end
+function c22348031.repop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetCode(EFFECT_CHANGE_TYPE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+	c:RegisterEffect(e1)
+end
+
 
 
 

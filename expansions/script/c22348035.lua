@@ -3,14 +3,14 @@ local m=22348035
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--special summon
---	local e1=Effect.CreateEffect(c)
---	e1:SetType(EFFECT_TYPE_FIELD)
---	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
---	e1:SetCode(EFFECT_SPSUMMON_PROC)
---	e1:SetRange(LOCATION_HAND)
---	e1:SetCondition(c22348035.sprcon)
---	e1:SetOperation(c22348035.sprop)
---	c:RegisterEffect(e1)
+--  local e1=Effect.CreateEffect(c)
+--  e1:SetType(EFFECT_TYPE_FIELD)
+--  e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+--  e1:SetCode(EFFECT_SPSUMMON_PROC)
+--  e1:SetRange(LOCATION_HAND)
+--  e1:SetCondition(c22348035.sprcon)
+--  e1:SetOperation(c22348035.sprop)
+--  c:RegisterEffect(e1)
 	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22348035,2))
@@ -56,6 +56,14 @@ function cm.initial_effect(c)
 	e7:SetRange(LOCATION_SZONE+LOCATION_HAND)
 	e7:SetCondition(c22348035.drcon2)
 	c:RegisterEffect(e7)
+	--send replace
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_TO_GRAVE_REDIRECT_CB)
+	e8:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e8:SetCondition(c22348035.repcon)
+	e8:SetOperation(c22348035.repop)
+	c:RegisterEffect(e8)
 end
 function c22348035.filter(c)
 	return not c:IsPublic()
@@ -161,6 +169,21 @@ end
 function c22348035.target(e,c)
 	return c:IsSetCard(0x700) and c:IsFaceup()
 end
+function c22348035.repcon(e)
+	local c=e:GetHandler()
+	return c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_DESTROY) and Duel.IsPlayerAffectedByEffect(tp,22348039)
+end
+function c22348035.repop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetCode(EFFECT_CHANGE_TYPE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+	c:RegisterEffect(e1)
+end
+
 
 
 

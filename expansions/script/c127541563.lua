@@ -131,7 +131,6 @@ function c127541563.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end
     local g=Duel.GetMatchingGroup(c127541563.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK)
 end
 function c127541563.spfilter(c,e,tp)
     return c:IsSetCard(0x103) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

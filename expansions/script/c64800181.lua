@@ -30,7 +30,6 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1,m+200)
 	e2:SetCondition(cm.con)
-	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.activate)
 	c:RegisterEffect(e2)
 end
@@ -79,14 +78,15 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetEquipTarget()
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	local ec=e:GetHandler():GetEquipTarget()
+	return ec and ec:IsLevelAbove(1)
 end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_EQUIP)
-	e3:SetCode(EFFECT_UPDATE_LEVEL)
+	e3:SetCode(EFFECT_CHANGE_LEVEL)
 	e3:SetValue(10)
 	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e3)
@@ -94,14 +94,6 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_EQUIP)
 	e2:SetCode(EFFECT_DIRECT_ATTACK)
-	e2:SetCondition(cm.dircon)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e2)
 end
-function cm.dircon(e)
-	return e:GetHandler():GetEquipTarget():GetControler()==e:GetHandlerPlayer()
-end
-
-
-
-
