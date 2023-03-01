@@ -31,7 +31,7 @@ function c118776531.initial_effect(c)
     e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
     e4:SetProperty(EFFECT_FLAG_DELAY)
     e4:SetCode(EVENT_TO_GRAVE)
-    e4:SetCountLimit(1,10467)
+    e4:SetCountLimit(1,118776532)
     e4:SetCondition(c118776531.thcon)
     e4:SetTarget(c118776531.thtg)
     e4:SetOperation(c118776531.thop)
@@ -268,4 +268,3 @@ Effect.SetValue=function(effect,value)
     return sv(effect,0)
 end
 ]]
-

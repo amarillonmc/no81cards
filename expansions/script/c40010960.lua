@@ -142,7 +142,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local tg=g:Select(tp,1,1,nil)
 			Duel.HintSelection(tg)  
-			Duel.Destroy(g,REASON_EFFECT)   
+			Duel.Destroy(tg,REASON_EFFECT)   
 		end
 	end
 end
