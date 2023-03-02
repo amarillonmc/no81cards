@@ -174,7 +174,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 		rc:SetStatus(STATUS_LEAVE_CONFIRMED,false)
 	end
-	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 	end
 	re:Reset()

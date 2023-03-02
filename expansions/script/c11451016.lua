@@ -77,6 +77,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsLocation(LOCATION_SZONE) or c:IsStatus(STATUS_LEAVE_CONFIRMED) then return end
 	if c:IsRelateToEffect(e) then
 		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
 		if fc then
@@ -102,6 +103,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ConfirmCards(1-tp,sg)
 			end
 		end
+	else
+		c:CancelToGrave(false)
 	end
 end
 function cm.atkfilter(c)
