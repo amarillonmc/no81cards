@@ -24,7 +24,6 @@ function c11612611.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.spcon)
@@ -39,18 +38,19 @@ function c11612611.initial_effect(c)
 	e3:SetOperation(cm.matop)
 	c:RegisterEffect(e3)
 	e0:SetLabelObject(e3)
-	--tohand
+	--copy
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,3))
-	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e4:SetCode(EVENT_RELEASE)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1,m+1)
-	e4:SetTarget(cm.thtg)
-	e4:SetOperation(cm.thop)
+	e4:SetCost(cm.copycost)
+	e4:SetCondition(cm.cpcon)
+	e4:SetTarget(cm.cptg)
+	e4:SetOperation(cm.cpop)
 	c:RegisterEffect(e4)
-
 end
 function cm.matcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and e:GetLabel()==1
@@ -76,23 +76,29 @@ function cm.efilter(e,te)
 end
 --2
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(m)>0 and Duel.GetTurnPlayer()==1-tp
+	local ph=Duel.GetCurrentPhase()
+	return e:GetHandler():GetFlagEffect(m)>0 and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
 end
 function cm.etfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:IsReleasable()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.etfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.etfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.SelectTarget(tp,cm.etfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.etfilter,tp,LOCATION_MZONE,0,1,nil) end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,cm.etfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	local code=tc:GetCode()
+	if tc:IsFaceup() then -- tc:IsRelateToEffect(e) and
 		Duel.Release(tc,REASON_EFFECT)
 		if aux.NecroValleyFilter()(tc) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,false,POS_FACEUP)
+			tc:CompleteProcedure()
+			if tc:IsSetCard(0x154) then
+				tc:RegisterFlagEffect(code,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+			end
 		end
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -111,18 +117,64 @@ function cm.aclimit(e,re,tp)
 	return re:GetActivateLocation()==LOCATION_MZONE and tp==e:GetHandlerPlayer() 
 end
 --03
-function cm.thfilter(c)
-	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(m)
+function cm.copycost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(1)
+	return true
 end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function cm.cpcon(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and rp==1-tp
 end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+function cm.filter1(c)
+	return c:CheckActivateEffect(true,true,false)
+end
+function cm.filter2(c,e,tp,eg,ep,ev,re,r,rp)
+		if c:CheckActivateEffect(true,true,false) then return true end
+		local te=c:GetActivateEffect()
+		--if te:GetCode()~=EVENT_CHAINING then return false end
+		local tg=te:GetTarget()
+		if not tg then return true end
+		local res=false
+		if not pcall(function() res=tg(e,tp,eg,ep,ev,re,r,rp,0) end) then return false end
+		return res
+end
+function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then
+		local te=e:GetLabelObject()
+		local tg=te:GetTarget()
+		return te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and (not tg or tg(e,tp,eg,ep,ev,re,r,rp,0,chkc))
 	end
+	if chk==0 then
+		if e:GetLabel()==0 then return false end
+		e:SetLabel(0)
+		return cm.filter2(re:GetHandler(),e,tp,eg,ep,ev,re,r,rp)
+	end
+	e:SetLabel(0)
+	local tc=re:GetHandler()
+	local te,ceg,cep,cev,cre,cr,crp
+	local fchain=cm.filter1(tc)
+	if fchain then
+		te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(true,true,true)
+	else
+		te=tc:GetActivateEffect()
+	end
+	e:SetCategory(te:GetCategory())
+	e:SetProperty(te:GetProperty())
+	local tg=te:GetTarget()
+	if tg then
+		if fchain then
+			tg(e,tp,ceg,cep,cev,cre,cr,crp,1)
+		else
+			tg(e,tp,eg,ep,ev,re,r,rp,1)
+		end
+	end
+	te:SetLabelObject(e:GetLabelObject())
+	e:SetLabelObject(te)
+end
+function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	if not te then return end
+	e:SetLabelObject(te:GetLabelObject())
+	local op=te:GetOperation()
+	e:GetHandler():ReleaseEffectRelation(e)
+	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 end

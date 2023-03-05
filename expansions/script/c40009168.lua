@@ -39,7 +39,7 @@ function cm.gvfilter(c)
 	return c:IsFaceup() and cm.BLASTERBlade(c) and c:IsAbleToGrave() 
 end
 function cm.spfilter(c,e,tp)
-	return (cm.SAVER(c) or c:IsCode(82593786)) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return (cm.SAVER(c) or c:IsCode(82593786)) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,ec,c,0x60)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingTarget(cm.gvfilter,tp,LOCATION_MZONE,0,1,nil) 
@@ -71,12 +71,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE)
-			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+			
 			and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp)
 			if g:GetCount()>0 then
-				Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
+				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP,0x60)
 			end
 		end
 	end

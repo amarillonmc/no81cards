@@ -20,131 +20,139 @@ function cm.initial_effect(c)
 	--e1:SetRange(LOCATION_MZONE)
 	e1:SetValue(cm.xyzlv)
 	c:RegisterEffect(e1) 
-	--tograve
+ 
+	--activate
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	--e2:SetHintTiming(0,TIMING_BATTLE_START+TIMING_BATTLE_END)
 	e2:SetCountLimit(1,m)
-	e2:SetCondition(cm.descon)
-	e2:SetTarget(cm.destg)
-	e2:SetOperation(cm.desop)
-	c:RegisterEffect(e2)   
-	--activate
+	--e2:SetCondition(cm.xyzcon1)
+	e2:SetCost(cm.xyzcost)
+	e2:SetTarget(cm.xyztg)
+	e2:SetOperation(cm.xyzop)
+	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMING_BATTLE_START+TIMING_BATTLE_END)
-	e3:SetCountLimit(1,m+1)
-	e3:SetCondition(cm.xyzcon1)
-	e3:SetCost(cm.xyzcost)
-	e3:SetTarget(cm.xyztg1)
-	e3:SetOperation(cm.xyzop1)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_MATERIAL_CHECK)
+	e3:SetValue(cm.valcheck)
+	e3:SetLabelObject(e2)
 	c:RegisterEffect(e3)
-	--activate
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e4:SetCountLimit(1,m+1)
-	e4:SetCondition(cm.xyzcon2)
-	e4:SetCost(cm.xyzcost)
-	e4:SetTarget(cm.xyztg2)
-	e4:SetOperation(cm.xyzop2)
-	c:RegisterEffect(e4)
+
 end
+
 function cm.xyzlv(e,c,rc)
 	return c:GetRank()
 end
-function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,40010501)
-end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
-	if #g>0 then
-		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
+
+function cm.valcheck(e,c)
+	local g=c:GetMaterial()
+	if g:IsExists(Card.IsCode,1,nil,40010906) then
+		e:GetLabelObject():SetLabel(1)
+	else
+		e:GetLabelObject():SetLabel(0)
 	end
 end
-function cm.xyzcon1(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	if Duel.GetTurnPlayer()==tp then
-		return (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
-	end
-end
-function cm.xyzcon2(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	return Duel.GetTurnPlayer()~=tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
-end
+
 function cm.xyzcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
 	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
 end
-function cm.xyzfilter1(c,e,tp)
-	return cm.Rebellionform(c) and e:GetHandler():IsCanBeXyzMaterial(c)
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
+function cm.xyzfilter1(c,e,tp,mc)
+	return c:IsType(TYPE_XYZ) and (cm.Rebellionform(c) or (cm.Skyform(c) and mc:GetOverlayGroup():IsExists(Card.IsCode,1,nil,40010906))) and mc:IsCanBeXyzMaterial(c)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
-function cm.xyztg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCountFromEx(tp,tp,e:GetHandler())>-1
-		and aux.MustMaterialCheck(e:GetHandler(),tp,EFFECT_MUST_BE_XMATERIAL)
-		and Duel.IsExistingMatchingCard(cm.xyzfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+function cm.xyzfilter2(c,e,tp,mc)
+	return c:IsType(TYPE_XYZ) and (cm.Skyform(c) or (cm.Rebellionform(c) and mc:GetOverlayGroup():IsExists(Card.IsCode,1,nil,40010906))) and mc:IsCanBeXyzMaterial(c)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
-function cm.xyzop1(e,tp,eg,ep,ev,re,r,rp)
+function cm.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if Duel.GetLocationCountFromEx(tp,tp,c)<=-1 or not aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) then return end
-	if c:IsFacedown() or not c:IsRelateToEffect(e) or c:IsControler(1-tp) or c:IsImmuneToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.xyzfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-	local sc=g:GetFirst()
-	if sc then
-		local mg=c:GetOverlayGroup()
-		if mg:GetCount()~=0 then
-			Duel.Overlay(sc,mg)
-		end
-		sc:SetMaterial(Group.FromCards(c))
-		Duel.Overlay(sc,Group.FromCards(c))
-		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
-		sc:CompleteProcedure()
+
+
+	if Duel.GetTurnPlayer()==tp then
+		if chk==0 then return aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(cm.xyzfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp,c) end
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	else
+		if chk==0 then return aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(cm.xyzfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c) end
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 	end
 end
-function cm.xyzfilter2(c,e,tp)
-	return cm.Skyform(c) and e:GetHandler():IsCanBeXyzMaterial(c)
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
-end
-function cm.xyztg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCountFromEx(tp,tp,e:GetHandler())>-1
-		and aux.MustMaterialCheck(e:GetHandler(),tp,EFFECT_MUST_BE_XMATERIAL)
-		and Duel.IsExistingMatchingCard(cm.xyzfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-end
-function cm.xyzop2(e,tp,eg,ep,ev,re,r,rp)
+function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCountFromEx(tp,tp,c)<=-1 or not aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) then return end
-	if c:IsFacedown() or not c:IsRelateToEffect(e) or c:IsControler(1-tp) or c:IsImmuneToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.xyzfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-	local sc=g:GetFirst()
-	if sc then
-		local mg=c:GetOverlayGroup()
-		if mg:GetCount()~=0 then
-			Duel.Overlay(sc,mg)
+	if c:IsFaceup() and c:IsRelateToEffect(e) and c:IsControler(tp) and not c:IsImmuneToEffect(e) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		if Duel.GetTurnPlayer()==tp then
+			local g=Duel.SelectMatchingCard(tp,cm.xyzfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,c)
+			local tc=g:GetFirst()
+			if tc then
+				local mg=c:GetOverlayGroup()
+				if mg:GetCount()>0 then
+					Duel.Overlay(tc,mg)
+				end
+				tc:SetMaterial(Group.FromCards(c))
+				Duel.Overlay(tc,Group.FromCards(c))
+				if Duel.SpecialSummonStep(tc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)~=0 then
+					tc:CompleteProcedure()
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+					e1:SetCode(EVENT_PHASE+PHASE_END)
+					e1:SetCountLimit(1)
+					e1:SetRange(LOCATION_MZONE)
+					e1:SetCondition(cm.op1con)
+					e1:SetOperation(cm.op1op)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+					e1:SetLabelObject(c)
+					tc:RegisterEffect(e1)
+				end
+				c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+				Duel.SpecialSummonComplete()
+			end
+		else
+			local g=Duel.SelectMatchingCard(tp,cm.xyzfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,c)
+			local tc=g:GetFirst()
+			if tc then
+				local mg=c:GetOverlayGroup()
+				if mg:GetCount()>0 then
+					Duel.Overlay(tc,mg)
+				end
+				tc:SetMaterial(Group.FromCards(c))
+				Duel.Overlay(tc,Group.FromCards(c))
+				if Duel.SpecialSummonStep(tc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)~=0 then
+					tc:CompleteProcedure()
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+					e1:SetCode(EVENT_PHASE+PHASE_END)
+					e1:SetCountLimit(1)
+					e1:SetRange(LOCATION_MZONE)
+					e1:SetCondition(cm.op1con)
+					e1:SetOperation(cm.op1op)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+					e1:SetLabelObject(c)
+					tc:RegisterEffect(e1)
+				end
+				c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+				Duel.SpecialSummonComplete()
+			end
 		end
+	end
+end
+function cm.op1con(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetLabelObject():GetFlagEffect(m)>0
+end
+function cm.op1op(e,tp,eg,ep,ev,re,r,rp)
+	local sc=e:GetLabelObject()
+	local c=e:GetHandler()
+	if not c:GetOverlayGroup():IsContains(sc) then return end
+	if Duel.SendtoDeck(sc,tp,0,REASON_EFFECT)>0 and sc:IsLocation(LOCATION_EXTRA) then
+		if not aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) then return end
+		if not (c:IsFaceup() and not c:IsImmuneToEffect(e)) then return end
+		local mg=c:GetOverlayGroup()
+		if mg:GetCount()>0 then Duel.Overlay(sc,mg) end
 		sc:SetMaterial(Group.FromCards(c))
 		Duel.Overlay(sc,Group.FromCards(c))
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)

@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	e4:SetCategory(CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_DESTROYED)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e4:SetTarget(cm.target)
 	e4:SetOperation(cm.operation)
 	c:RegisterEffect(e4)
@@ -46,7 +46,7 @@ end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_CARD,0,m)
-		Duel.NegateEffect(ev)	 
+		Duel.NegateEffect(ev)	
 	end
 end
 ---

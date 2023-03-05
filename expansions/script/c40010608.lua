@@ -2,7 +2,7 @@
 local m=40010608
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	aux.AddCodeList(c,40010499)	
+	aux.AddCodeList(c,40010499) 
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -32,7 +32,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function cm.thfilter(c)
-	return (aux.IsCodeListed(c,40010499) or c:IsCode(40010499)) and not c:IsCode(m) and c:IsAbleToHand()
+	return ((aux.IsCodeListed(c,40010499) and c:IsType(TYPE_MONSTER)) or c:IsCode(40010499)) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

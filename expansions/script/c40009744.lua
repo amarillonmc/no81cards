@@ -2,7 +2,7 @@
 local m=40009744
 local cm=_G["c"..m]
 cm.named_with_MagiaDoll=1
-cm.named_with_MagiaDollD=1
+--cm.named_with_MagiaDollD=1
 function cm.initial_effect(c)
 	aux.AddCodeList(c,40009730)
 	--pendulum summon

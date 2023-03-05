@@ -1,9 +1,9 @@
 --星光波普龙
 local m=40009734
 local cm=_G["c"..m]
-cm.named_with_MagiaDollD=1
+--cm.named_with_MagiaDollD=1
 function cm.initial_effect(c)
-	aux.AddCodeList(c,40009730)
+	aux.AddCodeList(c,40009730,40009732)
 	c:EnableReviveLimit()
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
@@ -56,7 +56,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
 function cm.thfilter(c)
-	return (cm.MagiaDoll(c) or (aux.IsCodeListed(c,40009730) and c:IsType(TYPE_MONSTER))) and c:IsAbleToHand() and not c:IsCode(m)
+	return ((cm.MagiaDoll(c) and c:IsType(TYPE_PENDULUM)) or (aux.IsCodeListed(c,40009730) and c:IsType(TYPE_MONSTER))) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeck()

@@ -2,6 +2,7 @@
 function c29068155.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
+	aux.AddCodeList(c,29065500)
 	c:SetSPSummonOnce(29068155)
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x87af),2,2)
 	--change name

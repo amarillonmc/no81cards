@@ -68,7 +68,7 @@ end
 function cm.immval(e,te)
 	local tc=te:GetOwner()
 	return tc~=e:GetHandler() and te:IsActiveType(TYPE_MONSTER) and te:IsActivated()
-		and te:GetActivateLocation()==LOCATION_MZONE and tc:IsSummonLocation(LOCATION_EXTRA) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
+		and te:GetActivateLocation()==LOCATION_MZONE and tc:IsSummonLocation(LOCATION_EXTRA)
 end
 --02
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)

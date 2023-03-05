@@ -1,26 +1,24 @@
 --明日的方舟·罗德岛
 function c29065510.initial_effect(c)
 	c:EnableCounterPermit(0x10ae)
-	c:SetCounterLimit(0x10ae,9)
-	--Activate
+	--activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_COUNTER)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,29065510+EFFECT_COUNT_CODE_OATH)
 	e1:SetOperation(c29065510.activate)
 	c:RegisterEffect(e1)
-	--spsummon
-	local e6=Effect.CreateEffect(c)
-	e6:SetDescription(aux.Stringid(29065510,0))
-	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e6:SetType(EFFECT_TYPE_IGNITION)
-	e6:SetRange(LOCATION_FZONE)
-	e6:SetCountLimit(1)
-	e6:SetCost(c29065510.spcost)
-	e6:SetTarget(c29065510.sptg)
-	e6:SetOperation(c29065510.spop)
-	c:RegisterEffect(e6)
+	--add counter
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetOperation(c29065510.ctop)
+	c:RegisterEffect(e2)
+	local e5=e2:Clone()
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e5)
 	--cannot disable summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -33,12 +31,21 @@ function c29065510.initial_effect(c)
 	e4:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
 	c:RegisterEffect(e4)
 end
+c29065510.counter_add_list={0x10ae}
+function c29065510.ctfilter(c)
+	return c:IsFaceup() and ((c:IsCode(29065500)) or (aux.IsCodeListed(c,29065500)))
+end
+function c29065510.ctop(e,tp,eg,ep,ev,re,r,rp)
+	if eg:IsExists(c29065510.ctfilter,1,nil) then
+		e:GetHandler():AddCounter(0x10ae,1)
+	end
+end
 function c29065510.filter(c)
-	return aux.IsCodeListed(c,29065500) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return ((c:IsCode(29065500)) or (aux.IsCodeListed(c,29065500))) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c29065510.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c29065510.filter,tp,LOCATION_DECK,0,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(29065510,0)) then
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(77103950,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)

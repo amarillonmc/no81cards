@@ -4262,7 +4262,6 @@ function cm.RabbitTeamspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local ct=Duel.GetFlagEffect(tp,num)
 	Duel.ResetFlagEffect(tp,num)
 	for i=1,ct-1 do Duel.RegisterFlagEffect(tp,num,RESET_PHASE+PHASE_END,0,1) end
-	Duel.ShuffleDeck(tp)
 end
 function cm.RabbitTeamrecon(e)
 	local c=e:GetHandler()
@@ -4271,16 +4270,14 @@ end
 function cm.RabbitTeamCheck(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(0,53755000)>0 then return end
 	Duel.RegisterFlagEffect(0,53755000,0,0,0)
-	f=Duel.ConfirmDecktop
+	cm[55]=Duel.ConfirmDecktop
 	Duel.ConfirmDecktop=function(tp,ct)
-		local g=Duel.GetDecktopGroup(tp,ct)
-		local t={}
-		for tc in aux.Next(g) do
-			for i=1,4 do
-				if tc["Rabbit_Team_Number_"..i] and not cm.IsInTable(i,t) then table.insert(t,i) end
-			end
+		if ct<5 then
+			local g=Duel.GetDecktopGroup(tp,ct)
+			local t={}
+			for tc in aux.Next(g) do for i=1,4 do if tc["Rabbit_Team_Number_"..i] and not cm.IsInTable(i,t) then table.insert(t,i) end end end
+			for _,v in ipairs(t) do Duel.RegisterFlagEffect(tp,53755000+v,RESET_PHASE+PHASE_END,0,1) end
 		end
-		for _,v in ipairs(t) do Duel.RegisterFlagEffect(tp,53755000+v,RESET_PHASE+PHASE_END,0,1) end
-		return f(tp,ct)
+		return cm[55](tp,ct)
 	end
 end

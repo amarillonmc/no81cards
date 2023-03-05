@@ -10,6 +10,7 @@ function c25800062.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,25800062)
+	e1:SetCost(c25800062.thcost)
 	e1:SetCondition(c25800062.hspcon)
 	e1:SetTarget(c25800062.sumtg)
 	e1:SetOperation(c25800062.sumop)
@@ -19,6 +20,10 @@ function c25800062.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x211)
 end
 ----
+function c25800062.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
 function c25800062.hspcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end

@@ -42,7 +42,7 @@ function cm.ntcon(e,c,minc)
 end
 ---2
 function cm.thfilter(c)
-	return ((c:IsSetCard(0x211) and c:IsType(TYPE_PENDULUM)) or (c:IsSetCard(0x3212) and c:IsType(TYPE_SPELL+TYPE_TRAP))) and c:IsAbleToHand()
+	return  c:IsSetCard(0x3212) and c:IsType(TYPE_PENDULUM+TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -61,7 +61,7 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function cm.filter(c)
-	return  c:IsSetCard(0x211) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return  c:IsSetCard(0x3212) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end

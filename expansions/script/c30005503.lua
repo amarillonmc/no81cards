@@ -7,20 +7,25 @@ function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcMix(c,false,false,cm.fus1,cm.fus2,cm.fus3,cm.fus4,cm.fus5)
 	--Effect 1
-	local e02=Effect.CreateEffect(c)
-	e02:SetType(EFFECT_TYPE_SINGLE)
-	e02:SetCode(EFFECT_FUSION_SUBSTITUTE)
-	e02:SetCondition(cm.subcon)
-	c:RegisterEffect(e02)
+	local e51=Effect.CreateEffect(c)
+	e51:SetDescription(aux.Stringid(m,0))
+	e51:SetType(EFFECT_TYPE_QUICK_O)
+	e51:SetCode(EVENT_FREE_CHAIN)
+	e51:SetRange(LOCATION_MZONE)
+	e51:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e51:SetCountLimit(1)
+	e51:SetTarget(cm.nmtg)
+	e51:SetOperation(cm.nmop)
+	c:RegisterEffect(e51)  
 	--Effect 2 
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(cm.thcon)
-	e1:SetTarget(cm.thtg)
-	e1:SetOperation(cm.thop)
+	e1:SetCondition(cm.uthcon)
+	e1:SetTarget(cm.uthtg)
+	e1:SetOperation(cm.uthop)
 	c:RegisterEffect(e1) 
 	local e12=Effect.CreateEffect(c)
 	e12:SetType(EFFECT_TYPE_SINGLE)
@@ -61,8 +66,36 @@ function cm.fus5(c)
 	return c:IsFusionType(TYPE_EFFECT)
 end
 --Effect 1
-function cm.subcon(e)
-	return e:GetHandler():IsLocation(LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
+function cm.nf(c)
+	if c:GetType()&TYPE_MONSTER==0 then return false end
+	return Duel.IsExistingMatchingCard(cm.nf1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c)
+end
+function cm.nf1(c,ec)
+	return c:IsFaceup() and not c:IsCode(ec:GetCode())
+end
+function cm.nmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.nf,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,1,nil) end
+end
+function cm.nmop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,cm.nf,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
+	local tc=g:GetFirst()
+	local name=tc:GetCode()
+	if tc then
+		Duel.ConfirmCards(1-tp,tc)
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
+		local tcc=Duel.SelectMatchingCard(tp,cm.nf1,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tc):GetFirst()
+		if tcc==nil or tcc:IsFacedown() or tcc:IsImmuneToEffect(e) then return false end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetCode(EFFECT_CHANGE_CODE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(name)
+		tcc:RegisterEffect(e1)
+	end
 end
 --Effect 2
 function cm.fus7(c)
@@ -70,62 +103,50 @@ function cm.fus7(c)
 end
 function cm.valcheck(e,c)
 	local g=e:GetHandler():GetMaterial()
-	if g:IsExists(Card.IsType,1,nil,TYPE_FUSION) 
-		and g:IsExists(Card.IsCode,1,nil,30005500)
-		and g:IsExists(Card.IsCode,1,nil,30005501)
-		and g:IsExists(Card.IsCode,1,nil,30005502) then
+	if #g>=5 then
 		e:GetLabelObject():SetLabel(#g)
 	else
 		e:GetLabelObject():SetLabel(0)
 	end
 end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.uthcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return  c:IsSummonType(SUMMON_TYPE_FUSION) and e:GetLabel()==5
+	return  c:IsSummonType(SUMMON_TYPE_FUSION) and e:GetLabel()>=5
 end
-function cm.filter1(c,e,tp,mg,f,chkf)
-	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial()
-		and mg:IsExists(cm.filter2,1,c,e,tp,c,f,chkf)
+function cm.filter1(c)
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsCanBeFusionMaterial()
 end
-function cm.filter2(c,e,tp,mc,f,chkf)
-	local mg=Group.FromCards(c,mc)
-	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial()
-		and Duel.IsExistingMatchingCard(cm.ffilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg,f,chkf)
+function cm.filter2(c,e,tp,m,chkf)
+	if not c:IsType(TYPE_FUSION) then return false end
+	local min,max=aux.GetMaterialListCount(c)
+	return min==2 and max==2 and c:CheckFusionMaterial(m,nil,chkf)
 end
-function cm.ffilter(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c))
-		and c:CheckFusionMaterial(m,nil,chkf)
-end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.uthtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local chkf=tp
-		local mg1=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_DECK,0,nil)
-		local res=mg1:IsExists(cm.filter1,1,nil,e,tp,mg1,nil,chkf)
-		return res
+		local chkf=tp|0x200
+		local mg=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil)
+		return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg,chkf)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_EXTRA)
 end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local chkf=tp
-	local mg1=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_DECK,0,nil)
-	local g1=mg1:Filter(cm.filter1,nil,e,tp,mg1,nil,chkf)
-	if #g1>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FMATERIAL)
-		local sg1=mg1:FilterSelect(tp,cm.filter1,1,1,nil,e,tp,mg1,nil,chkf)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FMATERIAL)
-		local sg2=mg1:FilterSelect(tp,cm.filter2,1,1,nil,e,tp,sg1:GetFirst(),nil,chkf)
-		sg1:Merge(sg2)
+function cm.uthop(e,tp,eg,ep,ev,re,r,rp)
+	local chkf=tp|0x200
+	local mg=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil)
+	local sg=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg,chkf)
+	if sg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local sg=Duel.SelectMatchingCard(tp,cm.ffilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,sg1,nil,chkf)
-		local tc=sg:GetFirst()
-		Duel.SendtoHand(sg1,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg1)
+		local tg=sg:Select(tp,1,1,nil)
+		local tc=tg:GetFirst()
+		local mat=Duel.SelectFusionMaterial(tp,tc,mg,nil,chkf)
+		if #mat==0 then return false end
+		Duel.SendtoHand(mat,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,mat)
 		Duel.ConfirmCards(1-tp,tc)
 	end
 end
 --Effect 3 
 function cm.cfilter(c)
-	return c:IsType(TYPE_FUSION) and  c:IsSummonType(SUMMON_TYPE_FUSION)
+	return c:IsType(TYPE_FUSION) and c:IsSummonType(SUMMON_TYPE_FUSION)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil)
@@ -146,6 +167,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) 
 		and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 
 		and c:IsLocation(LOCATION_EXTRA) then
+		Duel.DisableShuffleCheck()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.tf,tp,LOCATION_DECK,0,1,1,nil)
 		if #g>0 then

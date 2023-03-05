@@ -25,7 +25,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and Duel.IsPlayerAffectedByEffect(tp,40010330) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg=g:Select(tp,1,1,nil):GetFirst() 
 		Duel.Remove(sg,POS_FACEUP,REASON_COST)
@@ -42,7 +42,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.filter(c)
-	return c:IsLevel(6) and c:IsRace(RACE_ZOMBIE) and c:IsAbleToHand()
+	return c:IsLevel(6) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_ZOMBIE) and c:IsAbleToHand() and c:IsAttack(2000)
 end
 function cm.atkfilter(c)
 	return c:IsFaceup() and cm.MagicCombineDemon(c)

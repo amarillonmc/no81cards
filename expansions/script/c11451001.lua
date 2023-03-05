@@ -143,8 +143,8 @@ function cm.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(0,m)==0 then
-		Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1)
-		Duel.RegisterFlagEffect(1,m,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,2)
+		Duel.RegisterFlagEffect(1,m,RESET_PHASE+PHASE_END,0,2)
 	end
 	local e0=Effect.CreateEffect(e:GetHandler())
 	e0:SetDescription(aux.Stringid(m,0))
@@ -152,7 +152,7 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e0:SetCode(EVENT_PHASE+PHASE_END)
 	e0:SetCountLimit(1)
-	e0:SetReset(RESET_PHASE+PHASE_END)
+	e0:SetReset(RESET_PHASE+PHASE_END,2)
 	e0:SetOperation(cm.spop)
 	Duel.RegisterEffect(e0,tp)
 end

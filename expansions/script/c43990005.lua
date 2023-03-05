@@ -55,17 +55,15 @@ end
 function c43990005.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local chk1=e:GetLabel()&1>0
 	local chk2=e:GetLabel()&2>0
-	if chk==0 then return chk1 and Duel.IsExistingMatchingCard(c43990005.thfilter,tp,LOCATION_GRAVE,0,1,nil)
-		or chk2 and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c43990005.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)) end
+	if chk==0 then return (chk1 and Duel.IsExistingMatchingCard(c43990005.thfilter,tp,LOCATION_DECK,0,1,nil)) or (chk2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c43990005.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)) end
 	e:SetCategory(0)
 	if chk1 then
-		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	end
 	if chk2 then
-		e:SetCategory(e:GetCategory()|(CATEGORY_TOHAND+CATEGORY_SEARCH))
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+		e:SetCategory(e:GetCategory()|(CATEGORY_SPECIAL_SUMMON))
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 	end
 end
 function c43990005.effop(e,tp,eg,ep,ev,re,r,rp)

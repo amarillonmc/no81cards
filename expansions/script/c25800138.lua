@@ -20,11 +20,17 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetDescription(aux.Stringid(m,1)) 
 	e2:SetCategory(CATEGORY_TOGRAVE) 
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetCountLimit(1,m)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.activate)
 	c:RegisterEffect(e2) 
+	local e3=e1:Clone()
+	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetCountLimit(1,m)
+	e3:SetTarget(cm.thtg)
+	e3:SetOperation(cm.thop)
+	c:RegisterEffect(e3)
 end
 
 function cm.mfilter(c)
@@ -62,3 +68,28 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end 
+---
+function cm.thfilter(c)
+	return (c:IsSetCard(0x5211) or (c:IsSetCard(0x211) and c:IsType(TYPE_PENDULUM))) and c:IsAbleToHand()
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
+		Duel.ConfirmCards(1-tp,g)
+		Duel.ShuffleDeck(tp)
+		Duel.ShuffleHand(tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+		if sg:GetCount()>0 then
+			Duel.BreakEffect()
+			Duel.SendtoDeck(sg,nil,1,REASON_EFFECT)
+		end
+	end
+end

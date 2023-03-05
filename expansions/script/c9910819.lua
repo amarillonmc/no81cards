@@ -28,21 +28,23 @@ function c9910819.initial_effect(c)
 	e3:SetOperation(c9910819.spop)
 	c:RegisterEffect(e3)
 end
+function c9910819.costfilter(c)
+	return (bit.band(c:GetType(),0x81)==0x81 or c:IsSetCard(0x6951)) and c:IsDiscardable()
+end
 function c9910819.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910819.costfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,c9910819.costfilter,1,1,REASON_DISCARD+REASON_COST)
 end
 function c9910819.thfilter(c)
 	return bit.band(c:GetType(),0x81)==0x81 and c:IsRace(RACE_DRAGON+RACE_SEASERPENT+RACE_WYRM) and c:IsAbleToHand()
-		and (not c:IsLocation(LOCATION_REMOVED) or c:IsFaceup())
 end
 function c9910819.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910819.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_REMOVED)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910819.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9910819.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910819.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c9910819.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)

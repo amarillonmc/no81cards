@@ -7,6 +7,7 @@ fu.lib = true
 --------------------------------------------------------------------------"Effect Function"
 function fu.ef.Creat(c,f,v,rc)
 --Creat Effect
+	--Delete nil
 	local s = {}
 	for i,F in pairs(f) do
 		if type(F) == "string" and not v[i] then
@@ -19,6 +20,7 @@ function fu.ef.Creat(c,f,v,rc)
 			v[j] = v[j+1] or nil
 		end
 	end
+	--Check clone
 	s = {}
 	local t = 1
 	for i,V in pairs(v) do
@@ -30,13 +32,14 @@ function fu.ef.Creat(c,f,v,rc)
 	if #s == 1 and f[s[1] ] == "DES" then s = {};t = 1 end
 	local e = {}
 	local V = table.move(v,1,#v,1,{})
+	--Set and Register effect
 	for i = 1,t do
 		for _,S in ipairs(s) do
 			V[S] = v[S][i]
 		end
 		e[i] = fu.ef.Set(fu.eff.CRE(fu.sf.GetCardTable(c)[1]),f,V)
 	end
-	if rc then fu.ef.Register(e,rc)end
+	if rc then fu.ef.Register(e,rc) end
 	return table.unpack(e)
 end
 function fu.ef.Set(e,f,v)

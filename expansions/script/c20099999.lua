@@ -5,6 +5,7 @@ fu.var = true
 fu.ef = { }  --"Effect Function"
 fu.sf = { }  --"Support Function"
 fu.df = { }  --"Duel Function"
+fu.gf = { }  --"Group Function"
 --Hint Variable
 fu.des = {
 	["TH"] = 1190   ,  --加入手卡
@@ -27,6 +28,10 @@ fu.cod = {
 	["TG"] = EVENT_TO_GRAVE  ,
 	["TH"] = EVENT_TO_HAND   ,
 	["RE"] = EVENT_REMOVE   ,
+	["PS"] = EVENT_SUMMON   ,
+	["SS"] = EVENT_SUMMON_SUCCESS   ,
+	["PSP"] = EVENT_SPSUMMON   ,
+	["SP"] = EVENT_SPSUMMON_SUCCESS   ,
 }
 --property Variable
 fu.pro = {
@@ -46,6 +51,7 @@ fu.ran = {
 	["M"] = LOCATION_MZONE  ,
 	["S"] = LOCATION_SZONE  ,
 	["F"] = LOCATION_FZONE  ,
+	["OF"] = LOCATION_OVERLAY   ,
 	["O"] = LOCATION_OVERLAY	,
 	["P"] = LOCATION_PZONE 
 }
@@ -90,11 +96,26 @@ fu.eff = {
 	CLO   = Effect.Clone,
 }
 --------------------------------------"Duel Function"
-fu.df = {
-	GMG  = function(f,tp,loc1,loc2,c,...) return Duel.GetMatchingGroup(f,tp,fu.sf.ran(loc1),fu.sf.ran(loc2),c,...) end,
-	IEMC = function(f,tp,loc1,loc2,n,c,...) return Duel.IsExistingMatchingCard(f,tp,fu.sf.ran(loc1),fu.sf.ran(loc2),n,c,...) end,
-	IET  = function(f,tp,loc1,loc2,n,c,...) return Duel.IsExistingTarget(f,tp,fu.sf.ran(loc1),fu.sf.ran(loc2),n,c,...) end,
-}
+function fu.df.GG(tp,loc1,loc2)
+	return Duel.GetFieldGroup(tp,fu.sf.ran(loc1),fu.sf.ran(loc2))
+end
+--------------------------------------"Group Function"
+function fu.gf.GF(g,f,v,c,n) --(group, filter, filter value, not c, is more than n)
+	if c then g = g:Filter(aux.TRUE,c) end
+	f = type(f) =="table" and f or { f }
+	v = type(v) =="table" and v or { v }
+	for i,F in pairs(f) do
+		if F then 
+			local V = v[i] and (type(v[i]) =="table" and v[i] or {v[i]}) or {}
+			g = g:Filter(F,nil,table.unpack(V))
+		end
+	end
+	if n then return #g >= n end
+	return g
+end
+function fu.gf.GGF(tp,loc1,loc2,f,v,c,n)
+	return fu.gf.GF(fu.df.GG(tp,loc1,loc2),f,v,c,n)
+end
 --------------------------------------"Support Function"
 function fu.sf.Not_All_nil(...)
 	local v = {...}

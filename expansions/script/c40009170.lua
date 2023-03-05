@@ -31,14 +31,7 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.atkktg)
 	e3:SetOperation(cm.atkop)
 	c:RegisterEffect(e3)  
-	--atk up
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EFFECT_UPDATE_ATTACK)
-	e4:SetValue(cm.value)
-	c:RegisterEffect(e4)
+
 	--special summon
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,1))

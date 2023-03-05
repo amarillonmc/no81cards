@@ -46,6 +46,9 @@ end
 function c9911168.tgfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3958)
 end
+function c9911168.limfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
+end
 function c9911168.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ct=c9911168.getct(tp)
 	if ct<=0 then return end
@@ -53,17 +56,32 @@ function c9911168.activate(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	Duel.DisableShuffleCheck()
 	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then
+		local gt=0
 		local og=Duel.GetOperatedGroup()
 		if #og<=0 then return end
 		Duel.HintSelection(og)
 		local tg=og:Filter(c9911168.tgfilter,nil)
-		if #tg>0 then Duel.SendtoGrave(tg,REASON_EFFECT+REASON_RETURN) end
+		if #tg>0 then gt=Duel.SendtoGrave(tg,REASON_EFFECT+REASON_RETURN) end
 		og:Sub(tg)
 		aux.PlaceCardsOnDeckBottom(tp,og)
+		local mg=Duel.GetMatchingGroup(c9911168.limfilter,tp,0,LOCATION_MZONE,nil)
+		if gt>0 and #mg>0 and Duel.SelectYesNo(tp,aux.Stringid(9911168,0)) then
+			Duel.BreakEffect()
+			local sg=mg:Select(tp,1,gt,nil)
+			local tc=sg:GetFirst()
+			while tc do
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_CANNOT_TRIGGER)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1,true)
+				tc=sg:GetNext()
+			end
+		end
 	end
 end
 function c9911168.handcon(e)
-	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
+	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)==0
 end
 function c9911168.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return aux.exccon(e) and Duel.GetTurnPlayer()==tp

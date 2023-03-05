@@ -1,4 +1,4 @@
---航空舰舰装-XTB2D
+--航空舰舰装-
 local m=25800272
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -21,8 +21,8 @@ function cm.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCountLimit(1,m)
 	e4:SetCondition(cm.uncon)
-	e4:SetTarget(cm.target)
-	e4:SetOperation(cm.operation)
+	e4:SetTarget(cm.tetg)
+	e4:SetOperation(cm.teop)
 	c:RegisterEffect(e4)
 end
 ----2
@@ -47,19 +47,17 @@ function cm.uncon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsPreviousLocation(LOCATION_PZONE) 
 end
-function cm.filter(c)
-	return  c:IsSetCard(0x211) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+function cm.tefilter(c)
+	return c:IsSetCard(0x211) and c:IsType(TYPE_PENDULUM)
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
+function cm.tetg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tefilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK)
 end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	if not (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
-	local c=e:GetHandler()
-	local tc=g:GetFirst()
-	if tc and Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) and c:IsFaceup() and c:IsRelateToEffect(e) then
+function cm.teop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
+	local g=Duel.SelectMatchingCard(tp,cm.tefilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoExtraP(g,nil,REASON_EFFECT)
 	end
 end

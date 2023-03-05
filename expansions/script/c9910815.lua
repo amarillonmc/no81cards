@@ -25,7 +25,7 @@ function c9910815.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910815.cfilter(c)
-	return c:IsFaceup() and c:GetOriginalType()&0x81>0
+	return c:IsFaceup() and bit.band(c:GetOriginalType(),0x81)==0x81
 end
 function c9910815.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9910815.cfilter,tp,LOCATION_ONFIELD,0,1,nil)

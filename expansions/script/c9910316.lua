@@ -50,8 +50,9 @@ function c9910316.thfilter(c)
 	return c:IsFaceup() and c:IsAbleToHand()
 end
 function c9910316.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910316.tgfilter(chkc,tp,eg) end
-	if chk==0 then return Duel.IsExistingTarget(c9910316.tgfilter,tp,LOCATION_MZONE,0,1,nil,tp,eg,e:GetHandler())
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910316.tgfilter(chkc,tp,eg,c) end
+	if chk==0 then return Duel.IsExistingTarget(c9910316.tgfilter,tp,LOCATION_MZONE,0,1,nil,tp,eg,c)
 		and Duel.GetFlagEffect(tp,9910316)==0 end
 	Duel.RegisterFlagEffect(tp,9910316,RESET_CHAIN,0,1)
 	if eg:GetCount()==1 then
@@ -59,7 +60,7 @@ function c9910316.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		e:SetLabel(eg:GetFirst():GetAttribute())
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		local g=Duel.SelectTarget(tp,c9910316.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,tp,eg,e:GetHandler())
+		local g=Duel.SelectTarget(tp,c9910316.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,tp,eg,c)
 		e:SetLabel(g:GetFirst():GetAttribute())
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_ONFIELD)

@@ -1,38 +1,35 @@
---煌天龙的终章裁决
+--正义的神裁
 local cm,m,o=GetID()
 if not pcall(function() require("expansions/script/c20000101") end) then require("script/c20000101") end
 function cm.initial_effect(c)
 	aux.AddCodeList(c,20000100)
-	local e1={fu_judg.E(c)}
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(cm.con2)
-	e2:SetOperation(cm.op2)
-	c:RegisterEffect(e2)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(cm.con1)
+	e1:SetTarget(cm.tg1)
+	e1:SetOperation(cm.op1)
+	c:RegisterEffect(e1)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.glof)
 end
-function cm.con2(e,tp,eg,ep,ev,re,r,rp)
-	local a=Duel.GetAttacker()
-	return a:IsControler(tp) and a:IsSummonType(SUMMON_TYPE_ADVANCE) and Duel.IsExistingMatchingCard(Card.IsCanChangePosition,tp,0,LOCATION_MZONE,1,nil)
+function cm.con1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)>0
 end
-function cm.op2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,m)
-	local g=Duel.GetMatchingGroup(Card.IsCanChangePosition,tp,0,LOCATION_MZONE,nil)
-	local b=Duel.GetFieldGroup(tp,LOCATION_MZONE,0):Filter(Card.IsFaceup,nil):IsExists(Card.IsCode,1,nil,20000100)
-	for tc in aux.Next(g) do
-		if Duel.ChangePosition(tc,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)~=0 and b then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-			e1:SetValue(0)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-			local e2=e1:Clone()
-			e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
-		end
-	end
+function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_MZONE,0,nil,20000100)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp) and #g>0 end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(#g)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,#g)
+end
+function cm.op1(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_MZONE,0,nil,20000100)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,#g,REASON_EFFECT)
+end
+function cm.glof(c)
+	return not c:IsCode(20000100)
 end

@@ -142,6 +142,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) 
 		and Duel.SendtoDeck(c,nil,SEQ_DECKBOTTOM,REASON_EFFECT)>0 
 		and c:IsLocation(LOCATION_DECK) then
+		Duel.DisableShuffleCheck()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.tf,tp,LOCATION_DECK,0,1,1,nil)
 		if #g>0 then

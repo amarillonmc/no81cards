@@ -1,31 +1,41 @@
 --方舟骑士-阿米娅
 c29065500.named_with_Arknight=1
 function c29065500.initial_effect(c)
-	aux.AddCodeList(c,29065500)
+	--summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(6616912,0))
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_SUMMON_PROC)
+	e0:SetCondition(c29065500.ntcon)
+	c:RegisterEffect(e0)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29065500,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,29065500)
 	e1:SetTarget(c29065500.thtg)
 	e1:SetOperation(c29065500.thop)
 	c:RegisterEffect(e1)   
-	local e3=e1:Clone()
-	e3:SetCode(EVENT_SUMMON_SUCCESS)
-	c:RegisterEffect(e3)
+	c29065500.summon_effect=e1
 	--copy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29065500,0)) 
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,29065503)
+	e2:SetCountLimit(1,29065501)
 	e2:SetCost(c29065500.cocost)
 	e2:SetTarget(c29065500.cotg)
 	e2:SetOperation(c29065500.coop)
 	c:RegisterEffect(e2) 
+end
+function c29065500.ntcon(e,c,minc)
+	if c==nil then return true end
+	return minc==0 and c:IsLevelAbove(5)
+		and Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0
+		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c29065500.thfilter(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
@@ -43,7 +53,7 @@ function c29065500.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c29065500.efil(c,e,tp,eg,ep,ev,re,r,rp) 
-	if not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and not c:IsPublic() and not c:IsCode(29065500) then return false end 
+	if not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and not c:IsPublic() then return false end 
 	local m=_G["c"..c:GetCode()]
 	if not m then return false end 
 	local te=m.summon_effect	if not te then return false end

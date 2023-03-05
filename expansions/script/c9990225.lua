@@ -1,4 +1,4 @@
---小哥爱打胶（B站up)
+--小哥爱打胶
 local m=9990225
 local cm=_G["c"..m]
 function cm.initial_effect(c)

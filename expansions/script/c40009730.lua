@@ -1,7 +1,12 @@
 --假面的奇术师 哈利
 local m=40009730
 local cm=_G["c"..m]
-cm.named_with_MagiaDollD=1
+--cm.named_with_MagiaDollD=1
+cm.named_with_Harri=1
+function cm.MagiaDoll(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_MagiaDoll
+end
 function cm.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,cm.lcheck)
@@ -38,10 +43,6 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.negop)
 	c:RegisterEffect(e3)
 end
-function cm.MagiaDoll(c)
-	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_MagiaDoll
-end
 function cm.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkType,1,nil,TYPE_PENDULUM)
 end
@@ -58,10 +59,8 @@ function cm.spfilter3(c,e,tp)
 end
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
-		and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp)
-		and Duel.IsExistingMatchingCard(cm.spfilter3,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
+		and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_DECK+LOCATION_EXTRA)
 end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if not (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end

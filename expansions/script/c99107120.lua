@@ -1,3 +1,4 @@
+--武装龙·万雷 LV10000
 function c99107120.initial_effect(c)
 	c:EnableReviveLimit()
 	--special summon condition
@@ -40,13 +41,13 @@ function c99107120.initial_effect(c)
 	e5:SetTarget(c99107120.target)
 	e5:SetOperation(c99107120.activate)
 	c:RegisterEffect(e5)
-	--immune
+	--cannot target
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_SINGLE)
-	e6:SetCode(EFFECT_IMMUNE_EFFECT)
 	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e6:SetRange(LOCATION_MZONE)
-	e6:SetValue(c99107120.efilter)
+	e6:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e6:SetValue(aux.tgoval)
 	c:RegisterEffect(e6)
 	--indes
 	local e7=Effect.CreateEffect(c)
@@ -67,13 +68,21 @@ function c99107120.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(ct)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,2)
 end
 function c99107120.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local g=Duel.GetMatchingGroup(c99107120.filter,tp,LOCATION_REMOVED,0,nil)
 	local ct=g:GetClassCount(Card.GetCode)
 	Duel.Draw(p,ct,REASON_EFFECT)
-end
+		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,p,LOCATION_HAND,0,nil)
+		if g:GetCount()<2 then return end
+		Duel.ShuffleHand(p)
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
+		local sg=g:Select(p,2,2,nil)
+		aux.PlaceCardsOnDeckBottom(p,sg)
+	end
 function c99107120.spfilter(c,att)
 	return c:IsCode(att) and c:IsAbleToRemoveAsCost()
 end
@@ -107,7 +116,4 @@ function c99107120.atkcon(e)
 	local tp=e:GetHandlerPlayer()
 	local g=Duel.GetMatchingGroup(c99107120.atkfilter,tp,LOCATION_REMOVED,0,nil)
 	return g:GetClassCount(Card.GetCode)>=4
-end
-function c99107120.efilter(e,re)
-	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated() 
 end

@@ -2,6 +2,7 @@
 local cm,m=GetID()
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,29065500)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

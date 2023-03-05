@@ -1,7 +1,15 @@
 --传承鸽 波普
 local m=40009732
 local cm=_G["c"..m]
-cm.named_with_MagiaDollD=1
+--cm.named_with_MagiaDollD=1
+function cm.MagiaDoll(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_MagiaDoll
+end
+function cm.Harri(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Harri
+end
 function cm.initial_effect(c)
 	aux.AddCodeList(c,40009730)
 	--draw
@@ -37,7 +45,7 @@ function cm.MagiaDoll(c)
 	return m and m.named_with_MagiaDoll
 end
 function cm.cfilter1(c)
-	return (cm.MagiaDoll(c) or (aux.IsCodeListed(c,40009730) and c:IsType(TYPE_MONSTER))) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemoveAsCost()
+	return ((cm.MagiaDoll(c) and c:IsType(TYPE_PENDULUM)) or (aux.IsCodeListed(c,40009730) and c:IsType(TYPE_MONSTER))) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemoveAsCost()
 end
 function cm.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_GRAVE+LOCATION_ONFIELD+LOCATION_EXTRA,0,3,nil) end
@@ -67,7 +75,7 @@ function cm.lfilter(c,mc)
 	return c:IsCode(40009730) and c:IsType(TYPE_LINK) and c:GetLinkedGroup():IsContains(mc)
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.lfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e:GetHandler())
+	return e:GetHandler():IsLinkState()
 end
 function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -85,7 +93,7 @@ function cm.spfilter2(c,e,tp)
 	return c:IsCode(40009734) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true,POS_FACEUP,tp)
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsCode(40009730) and c:IsType(TYPE_LINK)
+	return c:IsFaceup() and cm.Harri(c) and c:IsType(TYPE_LINK)
 end
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp) end

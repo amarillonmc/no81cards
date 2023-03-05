@@ -15,6 +15,7 @@ end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if #g<1 then return end
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+	if Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)==0 then return end
 	fu_kurusu.RH(e,tp,eg,ep,ev,re,r,rp)
 end

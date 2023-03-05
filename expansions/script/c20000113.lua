@@ -1,35 +1,38 @@
---裁决的圣堂 高洁城堡
+--神裁煌印·高洁城堡
 local cm,m,o=GetID()
 if not pcall(function() require("expansions/script/c20000101") end) then require("script/c20000101") end
 function cm.initial_effect(c)
-	local e1={fu_judg.F(c)}
+	local e1={fu_judg.F(c,m)}
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_DESTROY_REPLACE)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_FZONE)
-	e2:SetTarget(cm.tg)
-	e2:SetValue(cm.val)
-	e2:SetOperation(cm.op)
+	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetCountLimit(1)
+	e2:SetCost(fu_judg.Fcos2)
+	e2:SetTarget(cm.tg2)
+	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
 end
-function cm.tgf(c,tp)
-	return c:IsControler(tp) and c:IsType(TYPE_MONSTER) and c:IsSummonType(SUMMON_TYPE_ADVANCE)
-		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
-end
+--e2
 function cm.tgf2(c)
-	return c:IsSetCard(0x3fd1) and (c:GetType()==0x20002 or c:IsType(TYPE_FIELD)) and c:IsAbleToGrave()
+	return c:GetType()==0x20002 and c:IsAbleToDeck()
 end
-function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return eg:IsExists(cm.tgf,1,nil,tp) and Duel.IsExistingMatchingCard(cm.tgf2,tp,LOCATION_REMOVED,0,1,nil) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,3) and Duel.IsExistingTarget(cm.tgf2,tp,LOCATION_GRAVE,0,3,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectTarget(tp,cm.tgf2,tp,LOCATION_GRAVE,0,3,3,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,3,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,3)
 end
-function cm.val(e,c)
-	return cm.tgf(c,e:GetHandlerPlayer())
-end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.tgf2,tp,LOCATION_REMOVED,0,1,1,nil)
-	Duel.SendtoGrave(g1,REASON_EFFECT+REASON_RETURN+REASON_REPLACE)
-	Duel.Hint(HINT_CARD,0,m)
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
+	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	if not tg or tg:FilterCount(Card.IsRelateToEffect,nil,e)~=3 then return end
+	if Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)==3 then
+		Duel.BreakEffect()
+		Duel.Draw(tp,3,REASON_EFFECT)
+	end
 end

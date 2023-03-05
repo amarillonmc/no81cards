@@ -5,13 +5,14 @@ function cm.initial_effect(c)
 	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
 	--Effect 1
 	local e02=Effect.CreateEffect(c)   
+	e02:SetDescription(aux.Stringid(30005508,0))
 	e02:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e02:SetType(EFFECT_TYPE_IGNITION)
 	e02:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e02:SetCountLimit(1,m)
 	e02:SetTarget(cm.fstg)
 	e02:SetOperation(cm.fsop)
-	c:RegisterEffect(e02) 
+	c:RegisterEffect(e02)   
 	--Effect 2  
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
@@ -108,6 +109,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) 
 		and Duel.SendtoDeck(c,nil,SEQ_DECKBOTTOM,REASON_EFFECT)>0 
 		and c:IsLocation(LOCATION_DECK) then
+		Duel.DisableShuffleCheck()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.tf,tp,LOCATION_DECK,0,1,1,nil)
 		if #g>0 then

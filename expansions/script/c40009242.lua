@@ -67,7 +67,7 @@ function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.damcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and e:GetHandler():GetCounter(0x1f1b)>0
+	return ep~=tp and e:GetHandler():GetCounter(0x1f1b)>0 and Duel.GetAttacker()==e:GetHandler()
 end
 function cm.damop(e,tp)
 	Duel.Hint(HINT_CARD,0,m)

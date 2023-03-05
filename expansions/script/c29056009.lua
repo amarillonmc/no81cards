@@ -78,7 +78,7 @@ function c29056009.pcop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function c29056009.splimit(e,c)
+function c29056009.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and bit.band(sumtype,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c29056009.checkfilter(c)

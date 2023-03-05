@@ -74,20 +74,17 @@ function c33332000.disspop(e,tp,eg,ep,ev,re,r,rp)
 end  
 function c33332000.sctfil(c) 
 	return c:IsCanOverlay() and c:IsRace(RACE_PSYCHO) and c:IsLevelAbove(1) 
-end 
-function c33332000.sctgck(g,tp) 
-	return g:CheckWithSumGreater(Card.GetLevel,9)  
-end 
+end  
 function c33332000.psptg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local g=Duel.GetMatchingGroup(c33332000.sctfil,tp,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:CheckSubGroup(c33332000.sctgck,1,99,tp) end 
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:CheckWithSumGreater(Card.GetLevel,9) end 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0) 
 end 
 function c33332000.pspop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
 	local g=Duel.GetMatchingGroup(c33332000.sctfil,tp,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and g:CheckSubGroup(c33332000.sctgck,1,99,tp) then 
-		local sg=g:SelectSubGroup(tp,c33332000.sctgck,false,1,99,tp)
+	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and g:CheckWithSumGreater(Card.GetLevel,9) then 
+		local sg=g:SelectWithSumGreater(tp,Card.GetLevel,9)
 		Duel.Overlay(c,sg) 
 	end 
 end 

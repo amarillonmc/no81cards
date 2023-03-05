@@ -37,6 +37,7 @@ function c98920424.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c98920424.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
+	local c=e:GetHandler()
 	if not aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) then return end
 	if tc:IsFacedown() or not tc:IsRelateToEffect(e) or tc:IsControler(1-tp) or tc:IsImmuneToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -62,5 +63,5 @@ function c98920424.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function c98920424.splimit(e,c)
-	return not c:IsRace(RACE_FIEND)
+	return not c:IsSetCard(0x8d) and c:IsLocation(LOCATION_EXTRA)
 end

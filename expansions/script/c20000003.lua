@@ -14,7 +14,5 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)>0 then
-		fu_kurusu.RH(e,tp,eg,ep,ev,re,r,rp)
-	end
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)>0 then fu_kurusu.RH(e,tp,eg,ep,ev,re,r,rp) end
 end

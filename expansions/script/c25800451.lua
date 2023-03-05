@@ -14,25 +14,15 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE) 
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(2,m)
 	e2:SetTarget(cm.destg2)
 	e2:SetOperation(cm.desop2)
 	c:RegisterEffect(e2)
-	  local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,0))
-	e3:SetCategory(CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_SZONE) 
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetCountLimit(1)
-	e3:SetTarget(cm.destg)
-	e3:SetOperation(cm.desop)
-	c:RegisterEffect(e3)
+
 end
 ---2
 function cm.filter2(c)
-	return  c:IsSetCard(0x3212) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return  (c:IsSetCard(0x3212) or c:IsCode(25800150)) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end
@@ -54,29 +44,6 @@ function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 	end
 end
----3
-function cm.filter(c)
-	return  c:IsSetCard(0x211) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
-end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() end
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_PZONE,0,1,nil) and 
-	 Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil)end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_PZONE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then 
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
-	local c=e:GetHandler()
-	local fc=g:GetFirst()
-	if fc and Duel.MoveToField(fc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) and c:IsFaceup() and c:IsRelateToEffect(e) then
-	end
-	end
-end
+
 
 

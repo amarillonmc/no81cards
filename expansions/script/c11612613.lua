@@ -30,7 +30,7 @@ function c11612613.initial_effect(c)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.descon)
-	e2:SetCost(cm.descost)
+	--e2:SetCost(cm.descost)
 	e2:SetTarget(cm.destg)
 	e2:SetOperation(cm.desop)
 	c:RegisterEffect(e2)
@@ -45,11 +45,11 @@ function c11612613.initial_effect(c)
 	--03
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetType(EFFECT_TYPE_IGNITION)
-	e4:SetRange(LOCATION_GRAVE)
+	e4:SetCategory(CATEGORY_REMOVE)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_BATTLE_DESTROYING)
 	e4:SetCountLimit(1,m+1)
-	e4:SetCondition(aux.exccon)
-	e4:SetCost(aux.bfgcost)
+	e4:SetCondition(aux.bdocon)
 	e4:SetTarget(cm.thtg)
 	e4:SetOperation(cm.thop)
 	c:RegisterEffect(e4)
@@ -95,24 +95,39 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(cg,REASON_EFFECT)
 	end
 end
-function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,nil,1,e:GetHandler()) end
-	local g=Duel.SelectReleaseGroupEx(tp,nil,1,1,e:GetHandler())
-	Duel.Release(g,REASON_COST)
-end
+--function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
+--  if chk==0 then return Duel.CheckReleaseGroupEx(tp,nil,1,e:GetHandler()) end
+--  local g=Duel.SelectReleaseGroupEx(tp,nil,1,1,e:GetHandler())
+--  Duel.Release(g,REASON_COST)
+--end
 --03
 function cm.thfilter(c)
-	return c:IsSetCard(0x154) or c:IsType(TYPE_RITUAL) and c:IsAbleToDeck() and not c:IsCode(m)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED+LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp)  end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,2,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	if not Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)  then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
+	local tc=g:GetFirst() 
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then
+		if tc:CheckActivateEffect(true,true,true)~=nil and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+			local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(true,true,true)
+			Duel.ClearTargetCard()
+			tc:CreateEffectRelation(e)
+			local tg=te:GetTarget()
+			if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
+			te:SetLabelObject(e:GetLabelObject())
+			e:SetLabelObject(te)
+			local te=e:GetLabelObject()
+			if not te then return end
+			if not te:GetHandler():IsRelateToEffect(e) then return end
+			e:SetLabelObject(te:GetLabelObject())
+			local op=te:GetOperation()
+			if op then op(e,tp,eg,ep,ev,re,r,rp) end
+		end
 	end
 end

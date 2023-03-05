@@ -60,7 +60,7 @@ function c29065559.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c29065559.filter),tp,LOCATION_GRAVE,0,1,3,nil)
 	if g:GetCount()>0 and Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0
-		and Duel.IsExistingMatchingCard(c29065559.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) then
+		and Duel.IsExistingMatchingCard(c29065559.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(2857636,1)) then
 		Duel.BreakEffect()
 		Duel.ShuffleDeck(tp)
 		Duel.Draw(tp,1,REASON_EFFECT)

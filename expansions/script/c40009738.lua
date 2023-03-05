@@ -1,7 +1,7 @@
 --命运的发牌手 杰奎琳
 local m=40009738
 local cm=_G["c"..m]
-cm.named_with_MagiaDollD=1
+--cm.named_with_MagiaDollD=1
 function cm.initial_effect(c)
 	aux.AddCodeList(c,40009730)
 	--special summon

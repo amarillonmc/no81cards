@@ -42,7 +42,7 @@ end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasCategory(CATEGORY_FUSION_SUMMON)
 end
-function cm.thfilter2(c,id)
+function cm.thfilter2(c)
 	local b1=c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)
 	return c:GetReason()&(REASON_FUSION+REASON_MATERIAL)==(REASON_FUSION+REASON_MATERIAL) and c:IsType(TYPE_MONSTER) and b1 
 		and c:IsAbleToDeck()

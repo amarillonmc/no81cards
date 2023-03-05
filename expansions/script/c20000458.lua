@@ -3,6 +3,12 @@ local cm,m,o=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,20000455)
 	c:EnableReviveLimit()
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e0:SetCondition(cm.con0)
+	e0:SetOperation(cm.op0)
+	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -21,12 +27,21 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_IMMUNE_EFFECT)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetValue(cm.val3)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,m)
+	e3:SetCost(cm.cos3)
+	e3:SetTarget(cm.tg3)
+	e3:SetOperation(cm.op3)
 	c:RegisterEffect(e3)
+end
+--e0
+function cm.con0(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_GRAVE)
+end
+function cm.op0(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(24,0,aux.Stringid(m,0))
 end
 --e1
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
@@ -49,7 +64,6 @@ function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,cm.tgf2,tp,LOCATION_GRAVE,0,1,1,nil)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(24,0,aux.Stringid(m,0))
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) then
@@ -111,7 +125,29 @@ function cm.op2_op4(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 --e3
-function cm.val3(e,te)
-	local lv=Duel.GetMatchingGroup(Card.IsPublic,e:GetHandlerPlayer(),LOCATION_HAND,0,nil):Filter(Card.IsRace,nil,RACE_SPELLCASTER):GetSum(Card.GetLevel)
-	return te:GetOwner()~=e:GetHandler() and te:IsActiveType(TYPE_MONSTER) and te:IsActivated() and te:GetOwner():IsLevelBelow(lv) and te:GetOwner():IsLevelAbove(1)
+function cm.cosf3(c,g)
+	return c:IsPublic() and c:IsLocation(LOCATION_HAND) and g:IsExists(Card.IsCode,1,nil,c:GetCode())
+end
+function cm.cos3(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0):Filter(Card.IsAbleToHand,nil)
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,cm.cosf3,1,nil,g) end
+	g=Duel.SelectReleaseGroupEx(tp,cm.cosf3,1,1,nil,g)
+	Duel.Release(g,REASON_COST)
+	e:SetLabel(g:GetFirst():GetCode())
+end
+function cm.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function cm.op3(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	local c=e:GetLabel()
+	if Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP_DEFENSE)==0 or not c then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	c=Duel.GetFieldGroup(tp,LOCATION_DECK,0):Filter(Card.IsAbleToHand,nil):FilterSelect(tp,Card.IsCode,1,1,nil,c):GetFirst()
+	if not c then return end
+	Duel.BreakEffect()
+	Duel.SendtoHand(c,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,c)
 end

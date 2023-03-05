@@ -2,7 +2,7 @@
 c29065508.named_with_Arknight=1
 function c29065508.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x87af),6,2,c29065508.ovfilter,aux.Stringid(29065508,0),2,c29065508.xyzop)
+	aux.AddXyzProcedure(c,nil,6,3,c29065508.ovfilter,aux.Stringid(29065508,0),3,c29065508.xyzop)
 	c:EnableReviveLimit()
 	--Double attack
 	local e1=Effect.CreateEffect(c)
