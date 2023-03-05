@@ -44,7 +44,7 @@ function c20579535.resetcount(e,tp,eg,ep,ev,re,r,rp)
 end
 function c20579535.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=re:GetHandler()
-	if tc:IsSetCard(0x90) and tc:GetLocation()==LOCATION_GRAVE 
+	if (re:IsHasType(EFFECT_TYPE_TRIGGER_O) or re:IsHasType(EFFECT_TYPE_TRIGGER_F)) and tc:IsSetCard(0x90) and tc:GetLocation()==LOCATION_GRAVE 
 	   and not tc:IsCode(20579535) and tc:GetPreviousLocation()==LOCATION_DECK then
 	   c20579535.count=c20579535.count+1
 	   c20579535[c20579535.count]=re

@@ -31,7 +31,7 @@ function c115848157.initial_effect(c)
 end
 
 function c115848157.darklawcon(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetFieldGroupCount(e:GetHandler():GetControler(),LOCATION_GRAVE,0)==0
+    return Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)==0
 end
 function c115848157.darklawcost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end

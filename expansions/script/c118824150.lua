@@ -132,4 +132,3 @@ function c118824150.rvop(e,tp,eg,ep,ev,re,r,rp)
         Duel.SpecialSummonComplete()
     end
 end
-

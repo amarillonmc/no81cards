@@ -92,7 +92,7 @@ function c121082832.chop(e,tp,eg,ep,ev,re,r,rp)
     if not c:IsLocation(LOCATION_DECK+LOCATION_HAND) then return end
     local g=Duel.GetFieldGroup(tp,LOCATION_HAND,LOCATION_HAND)
     if g:GetCount()>0 then Duel.SendtoDeck(g,nil,2,REASON_RULE) end
-    if c:GetActivateEffect():IsActivatable(tp) and Duel.SelectYesNo(tp,aux.Stringid(121082832,0)) then  
+    if c:GetActivateEffect():IsActivatable(tp) then  
         Duel.SSet(tp,c)
         c:RegisterFlagEffect(121082832,RESET_EVENT+0x1fe0000,0,1)
         --cannot activate
