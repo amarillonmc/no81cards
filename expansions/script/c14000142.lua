@@ -1,5 +1,5 @@
 --节点神经圆弧
-local m=14000141
+local m=14000142
 local cm=_G["c"..m]
 cm.named_with_Circlia=1
 function cm.initial_effect(c)
@@ -83,9 +83,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function cm.indcon(,c)
+function cm.indcon(c)
 	return cm.CIR(c) and c:IsFaceup()
 end
 function cm.condition(e)
-	return Duel.GetMatchingGroupCount(cm.indcon,e:GetHandlerPlayer(),LOCATION_MZONE,0)>0
+	return Duel.GetMatchingGroupCount(cm.indcon,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)>0
 end
