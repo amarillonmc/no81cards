@@ -12,7 +12,7 @@ function c64800148.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1,64800129)
+	e1:SetCountLimit(1,64800148)
 	e1:SetTarget(c64800148.rmtg)
 	e1:SetOperation(c64800148.rmop)
 	c:RegisterEffect(e1)
@@ -32,7 +32,7 @@ end
 function c64800148.gtfilter(c,att)
 	return c:IsAttribute(att) and c:IsAbleToRemove()
 end
-function c64800148.rmtfilter1(c)
+function c64800148.rmtfilter1(c,tp)
 	return  c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(c64800148.gtfilter,tp,LOCATION_GRAVE,0,1,nil,c:GetAttribute()) and c:IsAbleToRemove()
 end
 function c64800148.rmfilter2(c)
@@ -44,7 +44,7 @@ function c64800148.gfilter(c)
 end
 function c64800148.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c64800148.rmtfilter1,tp,0,LOCATION_MZONE+LOCATION_GRAVE,1,nil)
+	if chk==0 then return Duel.IsExistingTarget(c64800148.rmtfilter1,tp,0,LOCATION_MZONE+LOCATION_GRAVE,1,nil,tp)
 		and Duel.IsExistingTarget(c64800148.rmfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rmg=Duel.SelectMatchingCard(tp,c64800148.gfilter,tp,LOCATION_GRAVE,0,1,1,nil)
