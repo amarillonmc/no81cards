@@ -44,7 +44,7 @@ function c22348194.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(c22348194.filter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SelectTarget(tp,c22348194.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.SelectTarget(tp,c22348194.filter,tp,0,LOCATION_ONFIELD,1,1,nil)
 end
 function c22348194.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

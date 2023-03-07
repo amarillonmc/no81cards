@@ -76,34 +76,7 @@ function c117179181.initial_effect(c)
     e7:SetTarget(c117179181.atktg)
     e7:SetOperation(c117179181.atkop)
     c:RegisterEffect(e7)
-    if not c117179181.global_check then
-        c117179181.global_check=true
-        c117179181[0]=false
-        c117179181[1]=false
-        local ge0=Effect.CreateEffect(c)
-        ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-        ge0:SetCode(EVENT_CHAINING)
-        ge0:SetOperation(aux.chainreg)
-        c:RegisterEffect(ge0,0)
-        local ge1=Effect.CreateEffect(c)
-        ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-        ge1:SetCode(EVENT_CHAIN_SOLVING)
-        ge1:SetOperation(c117179181.checkop)
-        Duel.RegisterEffect(ge1,0)
-        local ge2=Effect.CreateEffect(c)
-        ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-        ge2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-        ge2:SetOperation(c117179181.clear)
-        Duel.RegisterEffect(ge2,0)
-    end
-end
-
-function c117179181.checkop(e,tp,eg,ep,ev,re,r,rp)
-    c117179181[1-ep]=true
-end
-function c117179181.clear(e,tp,eg,ep,ev,re,r,rp)
-    c117179181[0]=false
-    c117179181[1]=false
+    Duel.AddCustomActivityCounter(117179181,ACTIVITY_CHAIN,aux.FALSE)
 end
 
 --description
@@ -140,7 +113,7 @@ end
 
 --spsummon
 function c117179181.spcon(e,tp,eg,ep,ev,re,r,rp)
-    return re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+    return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function c117179181.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -156,7 +129,7 @@ end
 
 --spsummon & pset
 function c117179181.sscon(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)==0 or c117179181[e:GetHandler():GetControler()]
+    return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)==0 or Duel.GetCustomActivityCount(117179181,1-tp,ACTIVITY_CHAIN)>0
 end
 function c117179181.ssfilter(c,e,tp)
     return c:IsSetCard(0x108) and not c:IsCode(117179181) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

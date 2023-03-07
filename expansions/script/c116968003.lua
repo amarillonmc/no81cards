@@ -1,10 +1,11 @@
---教导的始祖 艾莉西亚
+--教导的始祖 艾莉西娅
 local m=116968003
 local cm=_G["c"..m]
 function cm.initial_effect(c)
     c:EnableReviveLimit()
     aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x145),aux.FilterBoolFunction(Card.IsSummonLocation,LOCATION_EXTRA),true)
     aux.AddContactFusionProcedure(c,cm.cfilter,LOCATION_MZONE,LOCATION_MZONE,Duel.SendtoGrave,REASON_COST+REASON_MATERIAL)
+    aux.EnablePendulumAttribute(c,false)
     local e0=Effect.CreateEffect(c)
     e0:SetType(EFFECT_TYPE_SINGLE)
     e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)

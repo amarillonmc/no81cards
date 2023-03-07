@@ -14,7 +14,7 @@ function cm.initial_effect(c)
 	--level
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_LVCHANGE+CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCost(aux.bfgcost)
@@ -22,6 +22,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.lvop)
 	c:RegisterEffect(e2)
 end
+cm.has_text_type=TYPE_DUAL
 function cm.filter0(c)
 	return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_PLANT) and c:IsType(TYPE_DUAL) and c:IsCanBeFusionMaterial() and c:IsAbleToGrave()
 end

@@ -7,7 +7,6 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCategory(CATEGORY_LVCHANGE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
 	e1:SetCondition(aux.IsDualState)
@@ -33,16 +32,16 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_DUAL_STATUS)
 	e3:SetCondition(cm.dscon)
 	c:RegisterEffect(e3)
+	--search
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,2))
-	e4:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_BE_MATERIAL)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCondition(cm.bmcon)
-	e4:SetTarget(cm.bmtg)
-	e4:SetOperation(cm.bmop)
-	c:RegisterEffect(e4) 
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_HAND)
+	e4:SetCost(cm.thcost)
+	e4:SetTarget(cm.thtg)
+	e4:SetOperation(cm.thop)
+	c:RegisterEffect(e4)
 end
 function cm.lvfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_PLANT) and c:GetLevel()>0
@@ -88,22 +87,22 @@ end
 function cm.dscon(e)
 	return e:GetHandler():IsLevelAbove(2)
 end
-function cm.bmcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	return c and c:IsPreviousLocation(LOCATION_ONFIELD) and (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED)) and (r==REASON_FUSION or c:IsReason(REASON_FUSION)) and c:GetPreviousLevelOnField()>=2 and bit.band(TYPE_EFFECT,c:GetPreviousTypeOnField())~=0
+	if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
-function cm.ffilter(c)
+function cm.thfilter(c)
 	return c:IsCode(24094653) and c:IsAbleToHand()
 end
-function cm.bmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.ffilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
-function cm.bmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.ffilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+function cm.thop(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tg=Duel.GetFirstMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	if tg then
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 end

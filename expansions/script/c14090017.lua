@@ -7,7 +7,6 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCategory(CATEGORY_LVCHANGE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
 	e1:SetCondition(aux.IsDualState)
@@ -35,15 +34,15 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_DUAL_STATUS)
 	e3:SetCondition(cm.dscon)
 	c:RegisterEffect(e3)
+	--special summon
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,2))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_BE_MATERIAL)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCondition(cm.bmcon)
-	e4:SetTarget(cm.bmtg)
-	e4:SetOperation(cm.bmop)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_HAND)
+	e4:SetCondition(cm.spcon)
+	e4:SetTarget(cm.sptg)
+	e4:SetOperation(cm.spop)
 	c:RegisterEffect(e4)
 	if not cm.global_check then
 		cm.global_check=true
@@ -112,18 +111,20 @@ end
 function cm.dscon(e)
 	return e:GetHandler():IsLevelAbove(3)
 end
-function cm.bmcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c and c:IsPreviousLocation(LOCATION_ONFIELD) and (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED)) and (r==REASON_FUSION or c:IsReason(REASON_FUSION)) and c:GetPreviousLevelOnField()>=3 and bit.band(TYPE_EFFECT,c:GetPreviousTypeOnField())~=0
+function cm.cfilter(c)
+	return c:IsFaceup() and c:IsRace(RACE_PLANT)
 end
-function cm.bmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	return #g>0 and #g==Duel.GetMatchingGroupCount(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function cm.bmop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()  
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end

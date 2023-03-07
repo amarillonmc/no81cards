@@ -29,7 +29,7 @@ end
 function cm.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.cf,tp,LOCATION_GRAVE,0,nil,e,tp)
-	if chk==0 then return c:IsAbleToRemoveAsCost() and g:GetClassCount(Card.GetCode)>2 end
+	if chk==0 then return c:IsAbleToRemoveAsCost() and Duel.GetMZoneCount(tp,c)>0 and g:GetClassCount(Card.GetCode)>2 end
 	if #g==3 and g:GetClassCount(Card.GetCode)==3 then
 		g:AddCard(c)
 		Duel.Remove(g,POS_FACEUP,REASON_COST)
@@ -41,8 +41,7 @@ function cm.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,40010936,0,TYPES_TOKEN_MONSTER,3000,3000,100,RACE_PLANT,ATTRIBUTE_DARK) end
+	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,40010936,0,TYPES_TOKEN_MONSTER,3000,3000,100,RACE_PLANT,ATTRIBUTE_DARK) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	Duel.SetChainLimit(aux.FALSE)

@@ -58,7 +58,6 @@ function c98940000.initial_effect(c)
 	e3:SetCountLimit(1,98950000)
 	e3:SetCondition(c98940000.atkcon1)
 	e3:SetCost(c98940000.thcost)
-	--e3:SetTarget(c98940000.thtg)
 	e3:SetOperation(c98940000.thop)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
@@ -90,15 +89,21 @@ end
 function c98940000.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_SPELL+TYPE_FIELD)
-		c:RegisterEffect(e1)
-		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		Duel.MoveSequence(c,5)
+		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		if fc then
+			Duel.SendtoGrave(fc,REASON_RULE)
+			Duel.BreakEffect()
+		end	 
+		if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
+		   local e1=Effect.CreateEffect(c)
+		   e1:SetCode(EFFECT_CHANGE_TYPE)
+		   e1:SetType(EFFECT_TYPE_SINGLE)
+		   e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		   e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+		   e1:SetValue(TYPE_SPELL+TYPE_FIELD)
+		   c:RegisterEffect(e1)
+		   Duel.MoveSequence(c,5)
+	   end
 	end
 end
 function c98940000.effectfilter(e,ct)
@@ -117,7 +122,7 @@ function c98940000.op(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(98940000,2)) then
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c98940000.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c98940000.spfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()~=0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
@@ -130,7 +135,7 @@ function c98940000.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c98940000.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if e:GetHandler():IsRelateToEffect(e) then		
+	if e:GetHandler():IsRelateToEffect(e) then	
 		if Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 		and Duel.IsExistingMatchingCard(c98940000.cfilter,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.IsExistingMatchingCard(c98940000.dfilter,tp,0,LOCATION_MZONE,1,nil)
