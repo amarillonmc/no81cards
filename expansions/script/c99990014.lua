@@ -115,11 +115,11 @@ function c99990014.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c99990014.cfilter(c,tp)
+function c99990014.dfilter(c,tp)
 	return c:IsSetCard(0xdd) and c:IsControler(tp) and c:IsFaceup()
 end
 function c99990014.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c99990014.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
+	return eg:IsExists(c99990014.dfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function c99990014.thfilter(c)
 	return aux.IsCodeListed(c,89631139) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()

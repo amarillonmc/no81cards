@@ -27,7 +27,7 @@ function c79029818.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetHintTiming(0,TIMING_END_PHASE+TIMINGS_CHECK_MONSTER)
-	e3:SetCountLimit(1,09029818)
+	e3:SetCountLimit(1,19029818)
 	e3:SetCost(aux.bfgcost)
 	e3:SetTarget(c79029818.sctg)
 	e3:SetOperation(c79029818.scop)
@@ -60,7 +60,7 @@ function c79029818.dsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c79029818.scfilter(c,g)
-	return c:IsSetCard(0x107a) and c:IsSynchroSummonable(g)
+	return c:IsSetCard(0xa991) and c:IsSynchroSummonable(nil,g,1,99)
 end
 function c79029818.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_MZONE,0,nil,0xa991)
@@ -73,7 +73,7 @@ function c79029818.scop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:Select(tp,1,1,nil)
-		Duel.SynchroSummon(tp,sg:GetFirst(),nil,xg)
+		Duel.SynchroSummon(tp,sg:GetFirst(),nil,xg,1,99)
 	end
 end
 

@@ -30,10 +30,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function cm.cfilter1(c)
-	return c:GetSequence()>=5
+	return c:GetSequence()<5
 end
 function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)==5 and not Duel.IsExistingMatchingCard(cm.cfilter1,tp,0,LOCATION_MZONE,1,nil)
+	return Duel.IsExistingMatchingCard(cm.cfilter1,tp,0,LOCATION_MZONE,5,nil)
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)>1 

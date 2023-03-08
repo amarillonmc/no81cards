@@ -132,15 +132,19 @@ function c22348036.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 end
 function c22348036.decon1(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandler():GetControler()
 	return not Duel.IsPlayerAffectedByEffect(tp,22348037) and not Duel.IsPlayerAffectedByEffect(tp,22348038)
 end
 function c22348036.decon2(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandler():GetControler()
 	return not Duel.IsPlayerAffectedByEffect(tp,22348037) and Duel.IsPlayerAffectedByEffect(tp,22348038)
 end
 function c22348036.decon3(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandler():GetControler()
 	return Duel.IsPlayerAffectedByEffect(tp,22348037) and not Duel.IsPlayerAffectedByEffect(tp,22348038)
 end
 function c22348036.decon4(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandler():GetControler()
 	return Duel.IsPlayerAffectedByEffect(tp,22348037) and Duel.IsPlayerAffectedByEffect(tp,22348038)
 end
 

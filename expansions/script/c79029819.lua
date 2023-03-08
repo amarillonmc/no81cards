@@ -75,8 +75,8 @@ function c79029819.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local tc=Duel.SelectMatchingCard(tp,c79029819.filter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if tc then
-		local bool_a=tc:IsAbleToGrave()
-		local bool_b=tc:IsAbleToHand()
+		local bool_a=tc:IsAbleToHand()
+		local bool_b=tc:IsAbleToGrave()
 		local op=2
 		if bool_a and bool_b then
 			op=Duel.SelectOption(tp,aux.Stringid(79029819,2),aux.Stringid(79029819,3))
@@ -155,7 +155,7 @@ function c79029819.spfilter2(c,e,tp)
 end
 function c79029819.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=e:GetLabelObject():GetLabelObject()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return not e:GetHandler():IsPreviousLocation(LOCATION_OVERLAY) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and g and g:IsExists(c79029819.spfilter2,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
