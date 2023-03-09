@@ -10,6 +10,15 @@ function c67200608.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(aux.ritlimit)
 	c:RegisterEffect(e1) 
+	--hyper pendulum splimit
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetRange(LOCATION_PZONE)
+	e0:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
+	e0:SetTargetRange(1,0)
+	e0:SetTarget(c67200608.splimit)
+	c:RegisterEffect(e0)
 	--token
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(67200608,1))
@@ -35,6 +44,10 @@ function c67200608.initial_effect(c)
 	e4:SetTarget(c67200608.thtg)
 	e4:SetOperation(c67200608.thop)
 	c:RegisterEffect(e4)	 
+end
+--
+function c67200608.splimit(e,c,tp,sumtp,sumpos)
+	return bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 --
 function c67200608.cfilter2(c,tp)

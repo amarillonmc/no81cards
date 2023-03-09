@@ -56,6 +56,22 @@ function cm.initial_effect(c)
 	e6:SetCondition(cm.descon)
 	e6:SetOperation(cm.desop)
 	c:RegisterEffect(e6)
+	if not cm.global_check then
+		cm.global_check=true
+		local _IsActiveType=Effect.IsActiveType
+		local _GetActiveType=Effect.GetActiveType
+		function Effect.GetActiveType(e)
+			local cost=e:GetCost()
+			if cost and cost==cm.cost then
+				return TYPE_TRAP
+			end
+			return _GetActiveType(e)
+		end
+		function Effect.IsActiveType(e,typ)
+			local typ2=e:GetActiveType()
+			return typ&typ2~=0
+		end
+	end
 end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end

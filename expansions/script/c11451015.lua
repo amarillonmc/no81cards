@@ -53,6 +53,19 @@ function cm.initial_effect(c)
 		ge1:SetCondition(cm.regcon)
 		ge1:SetOperation(cm.regop)
 		--Duel.RegisterEffect(ge1,0)
+		local _IsActiveType=Effect.IsActiveType
+		local _GetActiveType=Effect.GetActiveType
+		function Effect.GetActiveType(e)
+			local cost=e:GetCost()
+			if cost and cost==cm.cost then
+				return TYPE_TRAP
+			end
+			return _GetActiveType(e)
+		end
+		function Effect.IsActiveType(e,typ)
+			local typ2=e:GetActiveType()
+			return typ&typ2~=0
+		end
 	end
 end
 local KOISHI_CHECK=false
