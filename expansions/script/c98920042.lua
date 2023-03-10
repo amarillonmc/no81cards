@@ -5,7 +5,7 @@ function c98920042.initial_effect(c)
 	c:EnableReviveLimit()
 --to deck
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW+CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
@@ -57,7 +57,17 @@ function c98920042.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local sg=g:SelectSubGroup(tp,aux.TRUE,false,1,#g)
 	aux.GCheckAdditional=nil
 	Duel.SetTargetCard(sg)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,#sg,0,0)
+	local ct=sg:GetCount()
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+	if ct>1 then
+		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	end
+	if ct>3 then
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	end
+	if ct>5 then
+		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	end
 end
 function c98920042.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)

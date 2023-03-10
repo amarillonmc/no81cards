@@ -85,7 +85,7 @@ function c29056009.checkfilter(c)
 	return c:IsFaceup() and c:IsCode(29065500)
 end
 function c29056009.xthfilter(c)
-	return aux.IsCodeListed(c,29065500) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return (c:IsCode(29065500) or aux.IsCodeListed(c,29065500)) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c29056009.xthfilter1(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)

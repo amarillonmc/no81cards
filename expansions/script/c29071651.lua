@@ -41,7 +41,7 @@ function c29071651.checkfilter(c)
 	return c:IsFaceup() and c:IsCode(29065500)
 end
 function c29071651.spfilter(c,e,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_HAND) or (aux.IsCodeListed(c,29065500) and c:IsLocation(LOCATION_DECK) and Duel.IsExistingMatchingCard(c29071651.checkfilter,tp,LOCATION_ONFIELD,0,1,nil)))
+	return ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLocation(LOCATION_HAND)) or ((c:IsCode(29065500) or aux.IsCodeListed(c,29065500)) and c:IsLocation(LOCATION_DECK) and Duel.IsExistingMatchingCard(c29071651.checkfilter,tp,LOCATION_ONFIELD,0,1,nil))
 end
 function c29071651.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

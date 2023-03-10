@@ -36,15 +36,17 @@ function c79029500.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c79029500.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil) end
-	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_DECK,0,1,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil) end 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
 end
 function c79029500.thop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local tc=Duel.GetFirstTarget()
-	Duel.SendtoHand(tc,tp,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_DECK,0,nil) 
+	if g:GetCount()>0 then 
+		local tc=g:Select(tp,1,1,nil):GetFirst() 
+		Duel.SendtoHand(tc,tp,REASON_EFFECT) 
+		Duel.ConfirmCards(1-tp,tc) 
+	end 
 end
 
 function c79029500.efilter(e,te)

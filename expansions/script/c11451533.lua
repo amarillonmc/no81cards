@@ -73,7 +73,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE_START,0,2)
 	else
 		e2:SetReset(RESET_PHASE+PHASE_BATTLE_START)
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE_START,0,1)
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE_START,0,1,c:GetFieldID())
 	end
 	Duel.RegisterEffect(e2,tp)
 end

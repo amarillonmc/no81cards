@@ -82,6 +82,7 @@ function cm.cfilter(c,seq2)
 end
 cm[0]=0
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	if rp~=tp then return end
 	local loc,seq,id=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE,CHAININFO_CHAIN_ID)
 	seq=aux.MZoneSequence(seq)
 	if id~=cm[0] and re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_SZONE,0,1,nil,seq) then
