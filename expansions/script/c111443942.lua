@@ -121,6 +121,7 @@ function c111443942.sdop(e,tp,eg,ep,ev,re,r,rp)
             e2:SetTarget(c111443942.costtg)
             e2:SetOperation(c111443942.costop)
             e2:SetReset(RESET_EVENT+0x1fe0000)
+            e2:SetLabel(111443942)
             tc:RegisterEffect(e2)
             tc:RegisterFlagEffect(111443942,RESET_EVENT+0x1fe0000,0,1)
         end
@@ -137,11 +138,12 @@ function c111443942.sftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     local fcon=ae:GetCondition()
     local fcos=ae:GetCost()
     local ftg=ae:GetTarget()
+    local c=e:GetHandler()
     if chk==0 then
         return (not fcon or fcon(e,tp,eg,ep,ev,re,r,rp))
             and (not fcos or fcos(e,tp,eg,ep,ev,re,r,rp,0))
             and (not ftg or ftg(e,tp,eg,ep,ev,re,r,rp,0))
-            and e:GetHandler():IsSetCard(0x9d) and e:GetHandler():IsType(TYPE_SPELL+TYPE_TRAP)
+            and c:IsSetCard(0x9d) and c:IsType(TYPE_SPELL+TYPE_TRAP)
     end
     if fcos then
         fcos(e,tp,eg,ep,ev,re,r,rp,1)
@@ -204,4 +206,14 @@ function c111443942.rsop(e,tp,eg,ep,ev,re,r,rp)
     if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
         rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
     end
+end
+
+local re=Card.RegisterEffect
+Card.RegisterEffect=function(c,e)
+    if c111443942.filter(c) and c:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_FIELD) and not e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetLabel()~=111443942 then
+        local tg=e:GetTarget()
+        if not tg then tg=aux.TRUE end
+        e:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk) if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) and not c:IsStatus(STATUS_CHAINING) end tg(e,tp,eg,ep,ev,re,r,rp,1) end)
+    end
+    re(c,e)
 end

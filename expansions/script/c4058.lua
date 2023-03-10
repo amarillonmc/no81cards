@@ -432,6 +432,7 @@ function c4058.adop(e,tp,eg,ep,ev,re,r,rp)
             e2:SetTarget(c4058.actarget)
             e2:SetOperation(c4058.costop)
             e2:SetReset(RESET_EVENT+0x1fe0000)
+            e2:SetLabel(4058)
             tc:RegisterEffect(e2)
             tc:RegisterFlagEffect(4058,RESET_EVENT+0x1fe0000,0,1)
         end
@@ -512,4 +513,14 @@ function c4058.regop(e,tp,eg,ep,ev,re,r,rp)
             Duel.RegisterFlagEffect(tc:GetSummonPlayer(),4058,RESET_PHASE+PHASE_END,0,1)
         end
     end
+end
+
+local re=Card.RegisterEffect
+Card.RegisterEffect=function(c,e)
+    if c:IsType(TYPE_TRAP) and c:IsCode(16067089,93217231,80678380,1683982) and c:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_FIELD) and not e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetLabel()~=4058 then
+        local tg=e:GetTarget()
+        if not tg then tg=aux.TRUE end
+        e:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk) if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) and not c:IsStatus(STATUS_CHAINING) end tg(e,tp,eg,ep,ev,re,r,rp,1) end)
+    end
+    re(c,e)
 end

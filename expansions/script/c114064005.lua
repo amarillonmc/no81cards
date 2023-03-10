@@ -223,6 +223,7 @@ function c114064005.sdop(e,tp,eg,ep,ev,re,r,rp)
             e2:SetTarget(c114064005.costtg)
             e2:SetOperation(c114064005.costop)
             e2:SetReset(RESET_EVENT+0x1fe0000)
+            e2:SetLabel(114064005)
             tc:RegisterEffect(e2)
             tc:RegisterFlagEffect(114064005,RESET_EVENT+0x1fe0000,0,1)
         end
@@ -354,4 +355,14 @@ function c114064005.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c114064005.sumlimit(e,c)
     return c:IsCode(e:GetLabel())
+end
+
+local re=Card.RegisterEffect
+Card.RegisterEffect=function(c,e)
+    if c114064005.kufilter(c) and c:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_FIELD) and not e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetLabel()~=114064005 then
+        local tg=e:GetTarget()
+        if not tg then tg=aux.TRUE end
+        e:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk) if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) and not c:IsStatus(STATUS_CHAINING) end tg(e,tp,eg,ep,ev,re,r,rp,1) end)
+    end
+    re(c,e)
 end
