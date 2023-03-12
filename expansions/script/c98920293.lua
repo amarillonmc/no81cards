@@ -65,5 +65,5 @@ end
 function c98920293.chainfilter(re,tp,cid)
 	local rc=re:GetHandler()
 	local loc=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)
-	return not (re:IsActiveType(TYPE_MONSTER) and not re:IsRace(RACE_FAIRY))
+	return not (re:IsActiveType(TYPE_MONSTER) and not rc:IsRace(RACE_FAIRY))
 end

@@ -84,7 +84,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return ft>1 end
+	if chk==0 then return ft>=1 end
 end
 function cm.refilter(c)
 	return c:IsAbleToRemove() and c:IsSetCard(0x9977) and c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
@@ -92,7 +92,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=math.abs(Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)-Duel.GetFieldGroupCount(tp,0,LOCATION_HAND))
 	if e:GetHandler():IsLocation(LOCATION_HAND) then ct=math.abs(Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)-Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)-1) end
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_HAND+LOCATION_MZONE,LOCATION_HAND+LOCATION_MZONE,ct,nil) end
+	if chk==0 then return ct>0 and Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_HAND+LOCATION_MZONE,LOCATION_HAND+LOCATION_MZONE,ct,nil) end
 	Duel.RegisterFlagEffect(0,11451760,RESET_CHAIN,0,1)
 	Duel.RegisterFlagEffect(0,11451761,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,ct,PLAYER_ALL,LOCATION_HAND+LOCATION_MZONE)

@@ -108,7 +108,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.atkfilter(c)
-	return c:IsType(TYPE_FUSION) or c:IsSetCard(0x6977)
+	return c:IsType(TYPE_PENDULUM) or c:IsSetCard(0x5977)
 end
 function cm.fcon(e)
 	return e:GetHandler():GetSequence()==5

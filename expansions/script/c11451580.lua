@@ -38,7 +38,8 @@ function cm.filter(c,re)
 	return c:IsCanOverlay() and c:IsRelateToEffect(re)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 end
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	local op=0
 	local rc=re:GetHandler()
 	local b1=e:GetHandler():IsType(TYPE_XYZ) and rc:IsCanOverlay() and rc:IsRelateToEffect(re)
@@ -88,8 +89,8 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return loc&LOCATION_ONFIELD>0 and re:GetHandler():IsControler(1-tp)
+	local loc,p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_PLAYER)
+	return loc&LOCATION_ONFIELD>0 and p~=tp
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)

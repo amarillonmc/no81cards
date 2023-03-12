@@ -168,7 +168,7 @@ function cm.TojiEquip(ec,e,tp,eg,ep,ev,re,r,rp)
 			e3:SetRange(LOCATION_SZONE)
 			e3:SetLabelObject(ec)
 			e3:SetCondition(cm.con3)
-			e3:SetCountLimit(2,m+10001)
+			e3:SetCountLimit(1)
 			e3:SetOperation(cm.op3)
 			token:RegisterEffect(e3)
 	return true
