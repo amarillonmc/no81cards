@@ -12,21 +12,20 @@ function c10700451.initial_effect(c)
 	c:RegisterEffect(e1)	
 end
 function c10700451.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c10700451.filter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c10700451.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_DECK)
 end
 function c10700451.mfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x71) and c:IsRace(RACE_FAIRY)
 end
-function c10700451.filter(c,e,tp,chk)
-	return c:IsSetCard(0x71) and c:IsType(TYPE_MONSTER)
-		and (c:IsAbleToHand() or chk and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP))
+function c10700451.filter(c,e,tp)
+	return c:IsSetCard(0x71) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (Duel.IsExistingMatchingCard(c10700451.mfilter,tp,LOCATION_MZONE,0,1,nil) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,0x04)>0))
 end
 function c10700451.activate(e,tp,eg,ep,ev,re,r,rp)
 	local b=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c10700451.mfilter,tp,LOCATION_MZONE,0,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c10700451.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp,b)
+	local g=Duel.SelectMatchingCard(tp,c10700451.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then
 		if b and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)

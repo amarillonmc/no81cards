@@ -34,13 +34,15 @@ function c98920007.efilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:IsActiveType(TYPE_MONSTER)
 end
 function c98920007.filter(c)
-	return c:IsSetCard(0x71) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and
-	Duel.GetMatchingGroupCount(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,nil)>=c:GetLevel()
+	return c98920007.opfilter(c) and Duel.GetMatchingGroupCount(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,nil)>=c:GetLevel()
 end
 function c98920007.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c98920007.filter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,tp,LOCATION_GRAVE)
+end
+function c98920007.opfilter(c)
+	return c:IsSetCard(0x71) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c98920007.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c98920007.filter,tp,LOCATION_DECK,0,nil)
@@ -50,12 +52,13 @@ function c98920007.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,minn,maxn,nil)
 		if tg:GetCount()>0 and Duel.SendtoDeck(tg,nil,nil,REASON_EFFECT) then
-			local ct=tg:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA)
-			if g:IsExists(Card.IsLevel,1,nil,ct) then
+			local ct=tg:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+			local ng=Duel.GetMatchingGroup(c98920007.opfilter,tp,LOCATION_DECK,0,nil)
+			if ng:IsExists(Card.IsLevel,1,nil,ct) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-				g=g:FilterSelect(tp,Card.IsLevel,1,1,nil,ct)
-				if #g>0 and Duel.SendtoHand(g,nil,2,REASON_EFFECT) then
-					Duel.ConfirmCards(1-tp,g)
+				ng=ng:FilterSelect(tp,Card.IsLevel,1,1,nil,ct)
+				if #ng>0 and Duel.SendtoHand(ng,nil,2,REASON_EFFECT) then
+					Duel.ConfirmCards(1-tp,ng)
 				end
 			end
 		end

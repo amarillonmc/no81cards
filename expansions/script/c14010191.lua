@@ -40,7 +40,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsAttackPos()
+	return e:GetHandler():IsDefensePos()
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end

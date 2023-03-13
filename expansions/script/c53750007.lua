@@ -220,7 +220,7 @@ function cm.spelltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.negop2(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentChain()==e:GetLabel() then Duel.NegateEffect(0) end
+	if Duel.GetCurrentChain()==e:GetLabel() then Duel.NegateEffect(e:GetLabel()) end
 end
 function cm.spellop(e,tp,eg,ep,ev,re,r,rp)
 	local t={e:GetLabelObject():GetActivateEffect()}

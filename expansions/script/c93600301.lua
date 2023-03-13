@@ -301,13 +301,13 @@ function  cm.xop(e)
 		end 
 		local tc=Duel.GetFieldCard(rp,loc,zone)
 		local sg=Group.CreateGroup()
-		sg:AddCard(tc)
+		if tc then sg:AddCard(tc) end
 		if zone~=21 and zone~=22 then
 			sg=Duel.GetMatchingGroup(cm.seqfilter,rp,LOCATION_ONFIELD,0,nil,zone)
 		end
 		if loc==LOCATION_FZONE then 
 			tc=Duel.GetFieldCard(rp,loc,0)
-			sg=Group.FromCards(tc)
+			if tc then sg:AddCard(tc) end
 		end
 		if zone==22 then
 			local xcg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)

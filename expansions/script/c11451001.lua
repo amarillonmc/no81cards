@@ -11,6 +11,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	if not GO_RANDOM then
 		GO_RANDOM=true
+		cm[0]=0
+		cm[1]=0
 		local _SelectMatchingCard=Duel.SelectMatchingCard
 		local _SelectReleaseGroup=Duel.SelectReleaseGroup
 		local _SelectReleaseGroupEx=Duel.SelectReleaseGroupEx
@@ -118,8 +120,9 @@ function cm.initial_effect(c)
 				if aux.GetValueType(nc)=="Card" then ng:RemoveCard(nc) end
 				if aux.GetValueType(nc)=="Group" then ng:Sub(nc) end
 				Duel.Hint(HINT_CARD,0,m)
-				local ct=Duel.GetFlagEffectLabel(sp,m)
-				Duel.SetFlagEffectLabel(sp,m,ct+1)
+				--local ct=Duel.GetFlagEffectLabel(sp,m)
+				--Duel.SetFlagEffectLabel(sp,m,ct+1)
+				cm[sp]=cm[sp]+1
 				return ng:RandomSelect(sp,1)
 			else
 				return _Select(g,sp,min,max,nc)
@@ -174,8 +177,10 @@ function cm.roll(min,max)
 	return cm.r
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local ct1=Duel.GetFlagEffectLabel(tp,m)
-	local ct2=Duel.GetFlagEffectLabel(1-tp,m)
+	local ct1=cm[tp]--Duel.GetFlagEffectLabel(tp,m)
+	local ct2=cm[1-tp]--Duel.GetFlagEffectLabel(1-tp,m)
+	--Duel.SetFlagEffectLabel(tp,m,0)
+	--Duel.SetFlagEffectLabel(1-tp,m,0)
 	if not ct1 or not ct2 or (ct1==0 and ct2==0) then return end
 	if not cm.r then
 		--[[local result=0
@@ -203,11 +208,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local tab1={}
 		for i=1,ct1 do
 			while not ac do
-				local int=cm.roll(1,132000015)
+				local int=cm.roll(1,132000016)
 				--continuously updated
 				if int>132000000 and int<132000014 then int=int+739100000 end
 				if int==132000014 then int=460524290 end
 				if int==132000015 then int=978210027 end
+				if int==132000016 then int=250000000 end
 				if KOISHI_CHECK then
 					local cc,ca,ctype=Duel.ReadCard(int,CARDDATA_CODE,CARDDATA_ALIAS,CARDDATA_TYPE)
 					if cc then
@@ -275,11 +281,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local tab2={}
 		for i=1,ct2 do
 			while not ac do
-				local int=cm.roll(1,132000015)
+				local int=cm.roll(1,132000016)
 				--continuously updated
 				if int>132000000 and int<132000014 then int=int+739100000 end
 				if int==132000014 then int=460524290 end
 				if int==132000015 then int=978210027 end
+				if int==132000016 then int=250000000 end
 				if KOISHI_CHECK then
 					local cc,ca,ctype=Duel.ReadCard(int,CARDDATA_CODE,CARDDATA_ALIAS,CARDDATA_TYPE)
 					if cc then

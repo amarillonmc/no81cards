@@ -20,17 +20,17 @@ function c19198170.linkfilter(c)
 	return c:IsLevelBelow(4) and c:IsSetCard(0x71)
 end
 --summon
-function c19198170.mfilter(c)
-	return c:IsSetCard(0x71)
+function c19198170.mfilter(c,e,tp)
+	return c:IsSetCard(0x71) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 	   
 end
 function c19198170.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c19198170.mfilter,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c19198170.mfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,0x04)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c19198170.sumop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c19198170.mfilter,tp,LOCATION_HAND,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c19198170.mfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then
 	   Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
