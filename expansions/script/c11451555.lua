@@ -1,7 +1,6 @@
 --诡雷战队 突击队
 --21.04.22
-local m=11451555
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--equip
 	local e1=Effect.CreateEffect(c)
@@ -35,7 +34,7 @@ function cm.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function cm.equipfd(c,tp,tc)
-	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
+	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) return true end
 	if not Duel.Equip(tp,tc,c,false) then return false end
 	--Add Equip limit
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
@@ -104,7 +103,7 @@ function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tab={e:GetLabel()}
-	Duel.Damage(tp,tab[2]*400,REASON_EFFECT)
+	if Duel.Damage(tp,tab[2]*400,REASON_EFFECT)<=0 then return end
 	local dg=Group.CreateGroup()
 	for i=0,4 do
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))

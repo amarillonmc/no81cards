@@ -1,7 +1,6 @@
 --诡雷战队K -局外者-
 --21.04.24
-local m=11451560
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
@@ -49,7 +48,7 @@ function cm.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function cm.equipfd(c,tp,tc)
-	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
+	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) return true end
 	if not Duel.Equip(tp,tc,c,false) then return false end
 	--Add Equip limit
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
