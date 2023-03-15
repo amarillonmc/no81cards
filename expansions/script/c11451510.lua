@@ -35,6 +35,20 @@ function cm.initial_effect(c)
 	e4:SetCondition(cm.chcon)
 	e4:SetOperation(cm.chop)
 	c:RegisterEffect(e4)
+	--reset
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_EVENT_PLAYER)
+	e5:SetCode(EVENT_BE_MATERIAL)
+	e5:SetOperation(cm.resop)
+	e5:SetLabelObject(e1)
+	--c:RegisterEffect(e5)
+end
+function cm.resop(e,tp,eg,ep,ev,re,r,rp)
+	local re=e:GetLabelObject()
+	re:SetOperation(cm.activate)
+	re:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	re:SetLabel(0)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ev>1
@@ -52,6 +66,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local g=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
+		if e:IsHasType(EFFECT_TYPE_QUICK_O) then g:RemoveCard(e:GetHandler()) end
 		for tc in aux.Next(g) do
 			tc:AddMonsterAttribute(TYPE_NORMAL,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,1200,2200)
 			local e1=Effect.CreateEffect(e:GetHandler())
@@ -85,7 +100,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
-	e1:SetLabel(ev)
+	e1:SetLabel(ev+1)
 	e1:SetCondition(cm.rscon)
 	e1:SetOperation(cm.rsop)
 	e1:SetReset(RESET_PHASE+PHASE_END)

@@ -26,7 +26,7 @@ function cm.inmop1(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3531))
 	e1:SetValue(cm.efilter)
 	e1:SetLabelObject(re)
-	e1:SetReset(RESET_EVENT+RESET_CHAIN)
+	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
 	e:SetLabelObject(e1)
 end
