@@ -89,7 +89,9 @@ function cm.cfilter(c)
 	return c:IsFaceup() and cm.Maelstrom(c)
 end
 function cm.limcon(e)
-	return Duel.IsExistingMatchingCard(cm.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
+	local ph=Duel.GetCurrentPhase()
+	local tp=e:GetHandlerPlayer()
+	return Duel.IsExistingMatchingCard(cm.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil) and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
 function cm.aclimit(e,re,tp)
 	return re:IsActiveType(TYPE_MONSTER)
