@@ -40,8 +40,12 @@ function cm.poop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=Duel.GetFirstTarget()
 	local c=e:GetHandler()
 	if tc:IsRelateToEffect(e) and cm.pofilter(tc,c) then
-		if tc:IsFaceup() then Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE) end
-		if tc:IsFacedown() then Duel.ChangePosition(tc,POS_FACEUP_ATTACK) end
+	    local x=0
+		if tc:IsFaceup() then
+		    Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+		    x=1
+		end
+		if tc:IsFacedown() and x==0 then Duel.ChangePosition(tc,POS_FACEUP_ATTACK) end
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)

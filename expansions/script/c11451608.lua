@@ -80,6 +80,16 @@ function cm.slop(e,tp,eg,ep,ev,re,r,rp)
 			local sg=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_EXTRA,0,1,1,nil,mg)
 			if #sg>0 then
 				local tc=sg:GetFirst()
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+				e1:SetCountLimit(1)
+				e1:SetOperation(cm.handop)
+				e1:SetReset(RESET_CHAIN)
+				Duel.RegisterEffect(e1,tp)
+				local e2=e1:Clone()
+				e2:SetCode(EVENT_SPSUMMON_NEGATED)
+				Duel.RegisterEffect(e2,tp)
 				if tc:IsSynchroSummonable(nil,mg) then
 					Duel.SynchroSummon(tp,tc,nil,mg)
 				else
@@ -88,6 +98,9 @@ function cm.slop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+end
+function cm.handop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ShuffleHand(tp)
 end
 function cm.etarget(e,c)
 	return c:IsFaceup() and c:IsSetCard(0x10)

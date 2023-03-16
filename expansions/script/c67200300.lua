@@ -45,7 +45,7 @@ function c67200300.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c67200300.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
+	if not c:IsRelateToEffect(e) or not Duel.IsExistingMatchingCard(c67200300.penfilter,tp,LOCATION_DECK,0,1,nil) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local g=Duel.SelectMatchingCard(tp,c67200300.penfilter,tp,LOCATION_DECK,0,1,1,nil)

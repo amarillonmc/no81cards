@@ -61,7 +61,7 @@ function c9310055.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetLabelObject(e)
 	e1:SetCondition(c9310055.rscon)
 	e1:SetOperation(c9310055.rsop)
-	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9310055.activate(e,tp,eg,ep,ev,re,r,rp)
