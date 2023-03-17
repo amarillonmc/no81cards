@@ -72,7 +72,7 @@ end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct1=e:GetLabel()-Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 	local ct2=e:GetLabel()-Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
-	if chk==0 then return ct1>0 and Duel.IsPlayerCanDraw(tp,ct1) and ct2>0 and Duel.IsPlayerCanDraw(1-tp,ct2) end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,ct2)
 end

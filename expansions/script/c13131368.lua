@@ -67,15 +67,18 @@ end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-end 
+end
+function cm.rmfilter(c)
+	return c:IsDefensePos() and c:IsAbleToRemove()
+end
 function cm.remtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_MZONE,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,0,LOCATION_MZONE,1,nil) end
+	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end
 function cm.remop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_MZONE,nil) 
+	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_MZONE,nil) 
 	local x=Duel.Remove(g,POS_DEFENSE,REASON_EFFECT)
 	if e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,57707471) and x>0 then 
 		Duel.BreakEffect()

@@ -259,22 +259,24 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				table.insert(codes,code)
 			end
 			table.sort(codes)
-			local afilter={codes[1],OPCODE_ISCODE}
-			if #codes>1 then
-				for i=2,#codes do
-					table.insert(afilter,codes[i])
-					table.insert(afilter,OPCODE_ISCODE)
-					table.insert(afilter,OPCODE_OR)
+			if aux.GetValueType(codes[1])=="number" then
+				local afilter={codes[1],OPCODE_ISCODE}
+				if #codes>1 then
+					for i=2,#codes do
+						table.insert(afilter,codes[i])
+						table.insert(afilter,OPCODE_ISCODE)
+						table.insert(afilter,OPCODE_OR)
+					end
 				end
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+				local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
+				--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+				--local sg=g1:SelectSubGroup(tp,aux.TRUE,false,1,1)
+				ng1=g1:Filter(Card.IsCode,nil,ac)
+				g1:Sub(ng1)
+				Duel.SendtoHand(ng1,tp,REASON_EFFECT)
+				Duel.SendtoDeck(g1,tp,2,REASON_EFFECT)
 			end
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-			local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
-			--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			--local sg=g1:SelectSubGroup(tp,aux.TRUE,false,1,1)
-			ng1=g1:Filter(Card.IsCode,nil,ac)
-			g1:Sub(ng1)
-			Duel.SendtoHand(ng1,tp,REASON_EFFECT)
-			Duel.SendtoDeck(g1,tp,2,REASON_EFFECT)
 		end
 	end
 	if ct2>0 then
@@ -332,22 +334,24 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				table.insert(codes,code)
 			end
 			table.sort(codes)
-			local afilter={codes[1],OPCODE_ISCODE}
-			if #codes>1 then
-				for i=2,#codes do
-					table.insert(afilter,codes[i])
-					table.insert(afilter,OPCODE_ISCODE)
-					table.insert(afilter,OPCODE_OR)
+			if aux.GetValueType(codes[1])=="number" then
+				local afilter={codes[1],OPCODE_ISCODE}
+				if #codes>1 then
+					for i=2,#codes do
+						table.insert(afilter,codes[i])
+						table.insert(afilter,OPCODE_ISCODE)
+						table.insert(afilter,OPCODE_OR)
+					end
 				end
+				Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CODE)
+				local ac=Duel.AnnounceCard(1-tp,table.unpack(afilter))
+				--Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
+				--local sg=g2:SelectSubGroup(1-tp,aux.TRUE,false,1,1)
+				ng2=g2:Filter(Card.IsCode,nil,ac)
+				g2:Sub(ng2)
+				Duel.SendtoHand(ng2,1-tp,REASON_EFFECT)
+				Duel.SendtoDeck(g2,1-tp,2,REASON_EFFECT)
 			end
-			Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CODE)
-			local ac=Duel.AnnounceCard(1-tp,table.unpack(afilter))
-			--Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
-			--local sg=g2:SelectSubGroup(1-tp,aux.TRUE,false,1,1)
-			ng2=g2:Filter(Card.IsCode,nil,ac)
-			g2:Sub(ng2)
-			Duel.SendtoHand(ng2,1-tp,REASON_EFFECT)
-			Duel.SendtoDeck(g2,1-tp,2,REASON_EFFECT)
 		end
 	end
 	GetID=_TGetID
