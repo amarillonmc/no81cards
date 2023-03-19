@@ -98,7 +98,8 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 		if ft<=0 then return elseif ft>#og then ft=#og end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		for i=1,ft do
-			local tc=og:Select(tp,1,1,nil):GetFirst()
+			local tc=og:GetFirst()
+			if #og>1 then tc=og:Select(tp,1,1,nil):GetFirst() end
 			og:RemoveCard(tc)
 			if Duel.Equip(tp,tc,rc,false,true) then
 				local e1=Effect.CreateEffect(c)

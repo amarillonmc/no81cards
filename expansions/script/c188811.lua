@@ -34,14 +34,14 @@ function c188811.initial_effect(c)
 	e4:SetCategory(CATEGORY_EQUIP)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
 	e4:SetCode(EVENT_TO_GRAVE)
-	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e4:SetCountLimit(1,188811)
 	e4:SetTarget(c188811.xeqtg)
 	e4:SetOperation(c188811.xeqop)
 	c:RegisterEffect(e4)
 end
 function c188811.eqlimit(e,c)
-	return (c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT)) or e:GetHandler():GetEquipTarget()==c
+	return (c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_WATER)) or e:GetHandler():GetEquipTarget()==c
 end
 function c188811.filter(c)
 	local ct1,ct2=c:GetUnionCount()

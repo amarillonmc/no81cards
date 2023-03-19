@@ -82,7 +82,7 @@ function c25000045.cgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetHandler():GetEquipTarget()
 	if not tc then return end
 	local p=tc:GetControler()
-	if Duel.GetControl(tc,1-p) then
+	if Duel.GetControl(tc,1-p)~=0 then
 		Duel.BreakEffect()
 		Duel.Destroy(c,REASON_EFFECT)
 	end

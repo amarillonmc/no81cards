@@ -25,8 +25,9 @@ function c188813.initial_effect(c)
 	c:RegisterEffect(e2)	 
 	--ac
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_SZONE)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
+	e3:SetCode(EVENT_EQUIP) 
+	e3:SetProperty(EFFECT_FLAG_DELAY) 
 	e3:SetCountLimit(1,188813)
 	e3:SetCondition(c188813.accon)
 	e3:SetTarget(c188813.actg)
@@ -74,8 +75,8 @@ function c188813.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
 end
 function c188813.accon(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():GetEquipTarget()==nil then return false end
-	return e:GetHandler():GetEquipTarget():IsType(TYPE_UNION)
+	local eqg=e:GetHandler():GetEquipGroup()
+	return eqg:IsExists(Card.IsType,1,nil,TYPE_UNION) 
 end
 function c188813.acfilter(c,tp)
 	return c:IsCode(188812) and c:GetActivateEffect():IsActivatable(tp)

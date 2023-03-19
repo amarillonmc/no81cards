@@ -92,14 +92,16 @@ function c79034037.thfil(c)
 	return c:IsAbleToHand() and c:IsSetCard(0xca9) and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c79034037.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c79034037.thfil,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	local g=Duel.SelectMatchingCard(tp,c79034037.thfil,tp,LOCATION_DECK,0,1,1,nil,e,tp)  
-	Duel.SetTargetCard(g)
+	if chk==0 then return Duel.IsExistingMatchingCard(c79034037.thfil,tp,LOCATION_DECK,0,1,nil) end 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_DECK)
 end
 function c79034037.spop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	Duel.SendtoHand(tc,tp,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,tc)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(c79034037.thfil,tp,LOCATION_DECK,0,nil) 
+	if g:GetCount()>0 then 
+		local tc=g:Select(tp,1,1,nil):GetFirst()  
+		Duel.SendtoHand(tc,tp,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc) 
+	end 
 end
 

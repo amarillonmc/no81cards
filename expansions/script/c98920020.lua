@@ -21,9 +21,9 @@ function c98920020.initial_effect(c)
 	e1:SetOperation(c98920020.thop)
 	c:RegisterEffect(e1)
 end
-function c98920020.spfilter(c,e,tp)	
+function c98920020.spfilter(c,e,tp) 
 	local mg=Group.FromCards(c,mc)
-	return c:IsSetCard(0x107a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
+	return c:IsSetCard(0x107a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevel(4)
 end
 function c98920020.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

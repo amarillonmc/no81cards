@@ -1,5 +1,8 @@
 --机甲上尉 雷诺
 function c188809.initial_effect(c)
+	--link summon
+	aux.AddLinkProcedure(c,nil,2,2,c188809.lcheck)
+	c:EnableReviveLimit()
 	--to hand or grave
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(188809,0))
@@ -21,8 +24,11 @@ function c188809.initial_effect(c)
 	e2:SetOperation(c188809.eqop)
 	c:RegisterEffect(e2)
 end
+function c188809.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x36)
+end
 function c188809.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x36) and (c:IsAbleToHand() or c:IsAbleToGrave())
+	return c:IsSetCard(0x36) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function c188809.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c188809.cfilter,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) end
