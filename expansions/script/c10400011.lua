@@ -4,8 +4,6 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--level up
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(10400011,0))
-	e2:SetCategory(CATEGORY_LVCHANGE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,10400011)
@@ -13,11 +11,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(10400011,1))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,100000120)
+	e1:SetCountLimit(1,10410011)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCost(c10400011.cost)
 	e1:SetTarget(c10400011.target)
@@ -26,7 +23,7 @@ function cm.initial_effect(c)
 end
 function c10400011.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(74644400,2))
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(10400011,0))
 	local lv=Duel.AnnounceNumber(tp,1,2,3,4)
 	if c:IsFaceup() and c:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(c)
@@ -39,13 +36,13 @@ function c10400011.lvop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c10400011.cfilter(c)
-	return  c:IsType(TYPE_FIELD) and c:IsAbleToGraveAsCost() and c:IsFaceup()
+	return c:IsType(TYPE_FIELD) and c:IsAbleToGraveAsCost() and c:IsFaceup()
 end
 function c10400011.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c10400011.cfilter,tp,LOCATION_SZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c10400011.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c10400011.cfilter,tp,LOCATION_SZONE,0,1,1,nil)
-	Duel.SendtoGrave(g,1)
+	local g=Duel.SelectMatchingCard(tp,c10400011.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c10400011.filter2(c,e,tp)
 	return c:IsType(TYPE_TUNER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x3680)

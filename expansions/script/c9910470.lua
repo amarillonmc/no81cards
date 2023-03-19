@@ -7,7 +7,6 @@ function c9910470.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1,9910470+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c9910470.target)
 	e1:SetOperation(c9910470.activate)
 	c:RegisterEffect(e1)
@@ -26,7 +25,7 @@ function c9910470.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local rec=Duel.GetCounter(p,1,1,0x1950)*500
 	if Duel.Recover(p,rec,REASON_EFFECT)<=0 then return end
-	if not Duel.IsExistingMatchingCard(c9910470.cfilter,p,LOCATION_ONFIELD,0,2,nil) then return end
+	if Duel.GetCounter(tp,1,1,0x1950)<5 then return end
 	local c=e:GetHandler()
 	if c:IsFaceup() and c:IsRelateToEffect(e) and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		c:CancelToGrave()
@@ -114,6 +113,7 @@ function c9910470.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCountLimit(1)
 			e1:SetCondition(c9910470.retcon)
 			e1:SetOperation(c9910470.retop)
+			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
@@ -143,11 +143,7 @@ function c9910470.retop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 		local sg=g:FilterSelect(tp,Card.IsAbleToHand,1,1,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		g:Sub(sg)
-		e:GetLabelObject():Sub(sg)
-		if g:GetCount()==0 then
-			g:DeleteGroup()
-			e:Reset()
-		end
 	end
+	g:DeleteGroup()
+	e:Reset()
 end

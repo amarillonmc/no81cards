@@ -30,6 +30,14 @@ function cm.initial_effect(c)
 	e2:SetTarget(c22348121.destg)
 	e2:SetOperation(c22348121.desop)
 	c:RegisterEffect(e2)
+	--adjust
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCode(EVENT_ADJUST)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetOperation(c22348121.adjustop)
+	c:RegisterEffect(e3)
 	if not c22348121.global_check then
 		c22348121.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -40,6 +48,25 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 	
+end
+function c22348121.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	local phase=Duel.GetCurrentPhase()
+	local c=e:GetHandler()
+	local flaga=Duel.GetFlagEffect(e:GetHandler(),22348121)
+	local flagb=Duel.GetFlagEffect(e:GetHandler(),22349121)
+	local ct=Duel.GetFlagEffect(e:GetHandler(),22348121)-Duel.GetFlagEffect(e:GetHandler(),22349121)
+	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL then return end
+	if flaga and flagb then
+	Card.ResetFlagEffect(c,22350121)
+	local ct=flaga-flagb
+	local ex=Effect.CreateEffect(c)
+	ex:SetType(EFFECT_TYPE_SINGLE)
+	if ct<12 then
+	c:RegisterFlagEffect(22350121,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(22348121,ct+2))
+	else
+	c:RegisterFlagEffect(22350121,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(22348121,15))
+	end
+	end
 end
 function c22348121.checkfilter(c)
 	return c:IsSetCard(0x2a) and c:IsType(TYPE_MONSTER)

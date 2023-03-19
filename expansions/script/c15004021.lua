@@ -60,7 +60,7 @@ function cm.sp2con(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and bit.band(c:GetPreviousAttributeOnField(),ATTRIBUTE_DARK)~=0
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x6f30) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(15004021)
+	return c:IsSetCard(0x6f30) and c:IsType(TYPE_MONSTER) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0x6f30,c:GetType(),c:GetAttack(),c:GetDefense(),c:GetLevel(),c:GetRace(),ATTRIBUTE_DARK)) and not c:IsCode(15004021)
 end
 function cm.sp2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -72,7 +72,16 @@ function cm.sp2op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		if Duel.IsPlayerCanSpecialSummonMonster(tp,g:GetFirst():GetCode(),0x6f30,g:GetFirst():GetType(),g:GetFirst():GetAttack(),g:GetFirst():GetDefense(),g:GetFirst():GetLevel(),g:GetFirst():GetRace(),ATTRIBUTE_DARK) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		local b1=g:GetFirst():IsCanBeSpecialSummoned(e,0,tp,false,false)
+		local b2=Duel.IsPlayerCanSpecialSummonMonster(tp,g:GetFirst():GetCode(),0x6f30,g:GetFirst():GetType(),g:GetFirst():GetAttack(),g:GetFirst():GetDefense(),g:GetFirst():GetLevel(),g:GetFirst():GetRace(),ATTRIBUTE_DARK)
+		local op=0
+		if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))
+		elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(m,1))
+		else op=Duel.SelectOption(tp,aux.Stringid(m,2))+1 end
+		if op==0 then
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		end
+		if op==1 then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
@@ -88,8 +97,8 @@ function cm.sp2op(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_DISABLE+RESET_PHASE+PHASE_STANDBY)
 			--e2:SetReset(RESET_PHASE+PHASE_END,2)
 			g:GetFirst():RegisterEffect(e2)
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function cm.caop(e,tp,eg,ep,ev,re,r,rp)

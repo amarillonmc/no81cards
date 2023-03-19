@@ -16,13 +16,14 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,2))
+	e4:SetCategory(CATEGORY_ATKCHANGE)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCountLimit(1,m)
+	e4:SetCountLimit(1)
 	e4:SetCondition(cm.uncon)
-	e4:SetTarget(cm.tetg)
-	e4:SetOperation(cm.teop)
+	e4:SetTarget(cm.atktg)
+	e4:SetOperation(cm.atkop1)
 	c:RegisterEffect(e4)
 end
 ----2
@@ -47,17 +48,23 @@ function cm.uncon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsPreviousLocation(LOCATION_PZONE) 
 end
-function cm.tefilter(c)
-	return c:IsSetCard(0x211) and c:IsType(TYPE_PENDULUM)
+function cm.atkfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x5212)
 end
-function cm.tetg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tefilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK)
+function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.atkfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(cm.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.SelectTarget(tp,cm.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
-function cm.teop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
-	local g=Duel.SelectMatchingCard(tp,cm.tefilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoExtraP(g,nil,REASON_EFFECT)
+function cm.atkop1(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(2500)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
 	end
 end

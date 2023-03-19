@@ -83,12 +83,12 @@ function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=Duel.GetDecktopGroup(tp,1):GetFirst()
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,1) and tc:IsAbleToHand() end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and tc:IsAbleToHand() end
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local at=Duel.GetAttacker()
-	if not Duel.IsPlayerCanDiscardDeck(tp,1) then return end
+	if not Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 then return end
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()

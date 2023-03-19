@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_DISABLE)
+	e2:SetCategory(CATEGORY_RELEASE+CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	--e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	--disable
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_DISABLE)
+	e3:SetCategory(CATEGORY_RELEASE+CATEGORY_DISABLE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
@@ -105,6 +105,10 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,0,0)
+end
+function cm.csfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect() and c:IsAttribute(ATTRIBUTE_DARK)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -132,5 +136,12 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e3)
 		end
+	end
+	local sg=Duel.GetMatchingGroup(cm.csfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
+	if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		local sg2=sg:Select(tp,1,1,nil)
+		Duel.Release(sg2,REASON_EFFECT)
 	end
 end

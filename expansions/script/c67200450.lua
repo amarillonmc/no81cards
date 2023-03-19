@@ -7,13 +7,13 @@ function c67200450.initial_effect(c)
 	aux.AddXyzProcedure(c,nil,7,2,c67200450.ovfilter,aux.Stringid(67200450,0),2,c67200450.xyzop)
 	--Draw
 	local e0=Effect.CreateEffect(c)
-	e0:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TOEXTRA)
+	e0:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e0:SetType(EFFECT_TYPE_IGNITION)
 	e0:SetRange(LOCATION_PZONE)
 	e0:SetCountLimit(1,67200450)
 	e0:SetCost(c67200450.setcost)
-	e0:SetTarget(c67200450.tgtg)
-	e0:SetOperation(c67200450.tgop)
+	e0:SetTarget(c67200450.drtg)
+	e0:SetOperation(c67200450.drop)
 	c:RegisterEffect(e0)
 	--pendulum 
 	local e4=Effect.CreateEffect(c)
@@ -43,32 +43,16 @@ function c67200450.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SendtoDeck(c,nil,2,REASON_COST)
 end
-function c67200450.tgfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:IsAbleToGrave()
+function c67200450.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-function c67200450.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c67200450.tgfilter,tp,LOCATION_DECK,0,1,nil) end
-	--Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
-	--Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK)
+function c67200450.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
 end
-function c67200450.tgop(e,tp,eg,ep,ev,re,r,rp)
---
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c67200450.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		local th=g:GetFirst():IsAbleToGrave()
-		local op=0
-		if th then op=Duel.SelectOption(tp,aux.Stringid(67200450,1),aux.Stringid(67200450,2))
-		elseif th then op=0
-		else op=1 end
-		if op==0 then
-			Duel.SendtoGrave(g,REASON_EFFECT)
-		else
-			Duel.SendtoExtraP(g,tp,REASON_EFFECT)
-		end
-	end
-end
-
 --go to P zone
 function c67200450.pencon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

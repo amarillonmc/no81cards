@@ -49,15 +49,9 @@ if not cm.global_check then
 		cm[1]=0
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_DESTROYED)
+		ge1:SetCode(EVENT_BATTLE_DESTROYED)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
-		local ge2=Effect.CreateEffect(c)
-		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_BATTLE_DESTROYED)
-		ge2:SetCondition(cm.regcon)
-		ge2:SetOperation(cm.checkop2)
-		Duel.RegisterEffect(ge2,0)
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge3:SetCode(EVENT_PHASE_START+PHASE_DRAW)
@@ -67,7 +61,7 @@ if not cm.global_check then
 end
 ---
 function cm.hspfilter(c,tp,sc)
-	return   c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)  and (cm[tp]>=5 or Duel.GetFlagEffect(c:GetControler(),m-1)>=1)
+	return   c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)  and cm[tp]>=2
 end
 function cm.hspcon(e,c)
 	if c==nil then return true end

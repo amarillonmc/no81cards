@@ -36,7 +36,7 @@ function c9911167.mfilter(c)
 	return c:IsRank(4)
 end
 function c9911167.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3958) and c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x3958) and c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS and c:IsAbleToGraveAsCost()
 end
 function c9911167.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3958) and c:IsType(TYPE_XYZ)
@@ -52,8 +52,9 @@ end
 function c9911167.imcon(e)
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0x3958)
 end
-function c9911167.efilter(e,re)
-	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
+function c9911167.efilter(e,te,ev)
+	return te:IsActiveType(TYPE_MONSTER) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
+		and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE
 end
 function c9911167.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP) end

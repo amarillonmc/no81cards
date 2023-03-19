@@ -37,7 +37,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp):Filter(Card.IsOnField,nil)
-		local mg2=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_DECK,0,nil)
+		local mg2=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil)
 		mg1:Merge(mg2)
 		aux.FCheckAdditional=cm.fcheck
 		local res=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
@@ -58,7 +58,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(cm.filter1,nil,e)
-	local mg2=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_DECK,0,nil)
+	local mg2=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil)
 	mg1:Merge(mg2)
 	aux.FCheckAdditional=cm.fcheck
 	local sg1=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)

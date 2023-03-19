@@ -68,5 +68,5 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.splimit(e,c)
-	return not c:IsLevelBelow(4) and not c:IsLocation(LOCATION_EXTRA)
+	return not c:IsLevelBelow(4) 
 end

@@ -8,8 +8,9 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,10400010)
+	e1:SetCountLimit(1,10400010+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c10400010.hspcon)
+	e1:SetOperation(c10400010.hspop)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
 	--to hand
@@ -18,7 +19,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,10400010)
+	e2:SetCountLimit(1,10410010)
 	e2:SetCost(c10400010.cost)
 	e2:SetTarget(c10400010.target)
 	e2:SetOperation(c10400010.operation)
@@ -31,18 +32,23 @@ function c10400010.filter(c)
 	return c:IsType(TYPE_FIELD)
 end
 function c10400010.cfilter(c)
-	return  c:IsType(TYPE_FIELD) and c:IsAbleToGraveAsCost() and c:IsFaceup()
+	return c:IsType(TYPE_FIELD) and c:IsAbleToGraveAsCost() and c:IsFaceup()
 end
 function c10400010.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c10400010.cfilter,tp,LOCATION_SZONE,0,1,nil) end
+	if chk==0 then return Duel.GetFlagEffect(tp,10400010)==0 and
+		Duel.IsExistingMatchingCard(c10400010.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c10400010.cfilter,tp,LOCATION_SZONE,0,1,1,nil)
-	Duel.SendtoGrave(g,1)
+	local g=Duel.SelectMatchingCard(tp,c10400010.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
+	Duel.RegisterFlagEffect(tp,10400010,RESET_PHASE+PHASE_END,0,0)
 end
 function c10400010.hspcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return not Duel.IsExistingMatchingCard(c10400010.filter,tp,LOCATION_FZONE,0,1,nil)
+	return Duel.GetFlagEffect(tp,10400010)==0 and not Duel.IsExistingMatchingCard(c10400010.filter,tp,LOCATION_FZONE,0,1,nil)
+end
+function c10400010.hspop(e,tp,eg,ep,ev,re,r,rp,c)
+	Duel.RegisterFlagEffect(tp,10400010,RESET_PHASE+PHASE_END,0,0)
 end
 
 function c10400010.filter2(c)

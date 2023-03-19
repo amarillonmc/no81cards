@@ -76,7 +76,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	Duel.SSet(tp,c)
-	if Duel.Destroy(tc,REASON_EFFECT)>0 and not (tc:IsLocation(LOCATION_HAND+LOCATION_DECK) or tc:IsLocation(LOCATION_REMOVED) and tc:IsFacedown()) and aux.NecroValleyFilter()(tc) then
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and not (tc:IsLocation(LOCATION_HAND+LOCATION_DECK) or tc:IsLocation(LOCATION_REMOVED) and tc:IsFacedown()) and aux.NecroValleyFilter()(tc) then
 		if tc:IsType(TYPE_MONSTER) and (not tc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or tc:IsLocation(LOCATION_EXTRA) and tc:IsFaceup() and Duel.GetLocationCountFromEx(tp,tp,nil,tc)>0) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
@@ -89,7 +89,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 end
 --03
 function cm.thfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end

@@ -3,11 +3,6 @@ function c9910443.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,9,2,c9910443.ovfilter,aux.Stringid(9910443,0),2,c9910443.xyzop)
 	c:EnableReviveLimit()
-	--attack limit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
-	c:RegisterEffect(e1)
 	--atk
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -15,7 +10,7 @@ function c9910443.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetCondition(c9910443.atkcon)
-	e2:SetValue(2500)
+	e2:SetValue(1000)
 	c:RegisterEffect(e2)
 	--destroy
 	local e3=Effect.CreateEffect(c)
@@ -24,26 +19,27 @@ function c9910443.initial_effect(c)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(2)
 	e3:SetCondition(c9910443.descon)
 	e3:SetCost(c9910443.descost)
 	e3:SetTarget(c9910443.destg)
 	e3:SetOperation(c9910443.desop)
 	c:RegisterEffect(e3)
+	Duel.AddCustomActivityCounter(9910443,ACTIVITY_CHAIN,c9910443.chainfilter)
+end
+function c9910443.chainfilter(re,tp,cid)
+	return not (re:GetHandler():IsSetCard(0x952) and re:IsActiveType(TYPE_MONSTER)
+		and Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)==LOCATION_HAND)
 end
 function c9910443.ovfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsType(TYPE_XYZ)
 end
 function c9910443.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,9910443)==0
-		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	if chk==0 then return (Duel.GetCustomActivityCount(9910443,tp,ACTIVITY_CHAIN)~=0 or Duel.GetCustomActivityCount(9910443,1-tp,ACTIVITY_CHAIN)~=0) and Duel.GetFlagEffect(tp,9910443)==0 end
 	Duel.RegisterFlagEffect(tp,9910443,RESET_PHASE+PHASE_END,0,1)
 end
 function c9910443.atkcon(e)
-	local ph=Duel.GetCurrentPhase()
-	local tp=Duel.GetTurnPlayer()
-	return tp==e:GetHandler():GetControler() and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
 end
 function c9910443.descon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and re:IsActiveType(TYPE_MONSTER)

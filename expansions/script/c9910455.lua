@@ -2,25 +2,50 @@
 function c9910455.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,9910455+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,9910455)
 	e1:SetTarget(c9910455.target)
 	e1:SetOperation(c9910455.activate)
 	c:RegisterEffect(e1)
+	--fusion
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,9910471)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c9910455.sptg)
+	e2:SetOperation(c9910455.spop)
+	c:RegisterEffect(e2)
 end
-function c9910455.filter1(c,e)
-	return c:IsOnField() and not c:IsImmuneToEffect(e)
-end
-function c9910455.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c))
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+function c9910455.filter(c)
+	return c:IsCode(9910451,9910453) and c:IsAbleToHand()
 end
 function c9910455.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910455.filter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9910455.activate(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9910455.filter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end
+function c9910455.filter1(c,e)
+	return not c:IsImmuneToEffect(e)
+end
+function c9910455.filter2(c,e,tp,m,f,chkf)
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x9950) and (not f or f(c))
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+end
+function c9910455.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp):Filter(Card.IsOnField,nil)
+		local mg1=Duel.GetFusionMaterial(tp)
 		local res=Duel.IsExistingMatchingCard(c9910455.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -35,8 +60,7 @@ function c9910455.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
-function c9910455.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
+function c9910455.spop(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c9910455.filter1,nil,e)
 	local sg1=Duel.GetMatchingGroup(c9910455.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
@@ -67,55 +91,5 @@ function c9910455.activate(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
-		if tc:IsSetCard(0x9950) and c:IsFaceup() and c:IsRelateToEffect(e)
-			and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
-			c:CancelToGrave()
-			local e1=Effect.CreateEffect(c)
-			e1:SetDescription(aux.Stringid(9910455,0))
-			e1:SetCategory(CATEGORY_COUNTER)
-			e1:SetType(EFFECT_TYPE_QUICK_O)
-			e1:SetCode(EVENT_CHAINING)
-			e1:SetRange(LOCATION_SZONE)
-			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-			e1:SetCountLimit(1)
-			e1:SetTarget(c9910455.cttg)
-			e1:SetOperation(c9910455.ctop)
-			c:RegisterEffect(e1)
-		end
-	end
-end
-function c9910455.cfilter1(c,tp,col)
-	return c:IsSetCard(0x9950) and c:IsFaceup() and aux.GetColumn(c,tp)==col
-end
-function c9910455.cfilter2(c,tp,col)
-	return c:IsCanAddCounter(0x1950,1) and aux.GetColumn(c,tp)==col
-end
-function c9910455.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local flag=true
-	local loc,seq,p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE,CHAININFO_TRIGGERING_CONTROLER)
-	local col=0
-	if loc&LOCATION_MZONE~=0 then
-		col=aux.MZoneSequence(seq)
-	elseif loc&LOCATION_SZONE~=0 then
-		if seq>4 then flag=false end
-		col=aux.SZoneSequence(seq)
-	else
-		flag=false
-	end
-	if flag and p==1-tp then col=4-col end
-	if chk==0 then return flag
-		and Duel.IsExistingMatchingCard(c9910455.cfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,col)
-		and Duel.IsExistingMatchingCard(c9910455.cfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,col) end
-	e:SetLabel(col+1)
-end
-function c9910455.ctop(e,tp,eg,ep,ev,re,r,rp)
-	local label=e:GetLabel()
-	if not label or label==0 then return end
-	local g=Duel.GetMatchingGroup(c9910455.cfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,label-1)
-	local tc=g:GetFirst()
-	while tc do
-		tc:AddCounter(0x1950,1)
-		tc=g:GetNext()
 	end
 end

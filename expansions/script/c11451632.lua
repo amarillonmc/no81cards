@@ -38,6 +38,7 @@ function cm.initial_effect(c)
 	--set
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11451631,6))
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
@@ -116,15 +117,28 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
-		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-		if fc then
-			Duel.SendtoGrave(fc,REASON_RULE)
-			Duel.BreakEffect()
-		end
-		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-		if fc and tc:IsLocation(LOCATION_FZONE) then
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
-			Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
+		if not Duel.IsPlayerAffectedByEffect(tp,11451676) or Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0 then
+			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+			if fc then
+				Duel.SendtoGrave(fc,REASON_RULE)
+				Duel.BreakEffect()
+			end
+			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+			if fc and tc:IsLocation(LOCATION_FZONE) then
+				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+				Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
+			end
+		else
+			local fc=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
+			if fc then
+				Duel.SendtoGrave(fc,REASON_RULE)
+				Duel.BreakEffect()
+			end
+			Duel.MoveToField(tc,tp,1-tp,LOCATION_FZONE,POS_FACEUP,true)
+			if fc and tc:IsLocation(LOCATION_FZONE) then
+				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+				Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
+			end
 		end
 		--[[local te=tc:GetActivateEffect()
 		if te:IsActivatable(tp,true,true) and (not tc:CheckActivateEffect(false,false,false) or Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0) then
@@ -165,16 +179,20 @@ function cm.actfilter(c)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and (code1==11451631 or code2==11451631)
 end
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.actfilter,1,nil) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
+	return eg:IsExists(cm.actfilter,1,nil) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND)) and Duel.GetCurrentChain()<=3
 end
 function cm.setfilter(c)
-	return c:IsCode(11451638) and c:IsSSetable()
+	return c:IsCode(11451638) and c:IsAbleToHand()
 end
 function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if #g>0 then Duel.SSet(tp,g:GetFirst()) end
+	if #g>0 then 
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end

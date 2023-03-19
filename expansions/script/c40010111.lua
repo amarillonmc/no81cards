@@ -1,8 +1,7 @@
 --顶峰超越之剑 崇高巴斯提昂
 local m=40010111
 local cm=_G["c"..m]
-cm.named_with_KeterSanctuary=1
-cm.named_with_Bastion=1
+
 function cm.KeterSanctuary(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_KeterSanctuary
@@ -10,7 +9,6 @@ end
 
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	c:SetUniqueOnField(1,0,m)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -30,15 +28,15 @@ function cm.initial_effect(c)
 	e3:SetCondition(cm.sprcon2)
 	e3:SetOperation(cm.sprop2)
 	c:RegisterEffect(e3) 
-	--attribute
+	--draw
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_CHANGE_LEVEL)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetTarget(cm.indtg)
-	e4:SetTargetRange(LOCATION_MZONE+LOCATION_HAND,0)
-	e4:SetValue(8)
-	c:RegisterEffect(e4)  
+	e4:SetDescription(aux.Stringid(m,0))
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e4:SetCost(cm.copycost)
+	e4:SetOperation(cm.copyoperation)
+	c:RegisterEffect(e4)
 	--immune effect
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
@@ -48,26 +46,20 @@ function cm.initial_effect(c)
 	e5:SetTarget(cm.etarget1)
 	e5:SetValue(cm.efilter1)
 	c:RegisterEffect(e5)
-	--immune effect
+	--negate
 	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_FIELD)
-	e6:SetCode(EFFECT_IMMUNE_EFFECT)
+	e6:SetDescription(aux.Stringid(m,1))
+	e6:SetCategory(CATEGORY_NEGATE+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_CHAINING)
+	e6:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e6:SetRange(LOCATION_MZONE)
-	e6:SetTargetRange(LOCATION_MZONE,0)
-	e6:SetCondition(cm.immcon2)
-	e6:SetTarget(cm.etarget2)
-	e6:SetValue(cm.efilter2)
+	e6:SetCountLimit(1)
+	e6:SetCondition(cm.discon)
+	e6:SetTarget(cm.distg)
+	e6:SetOperation(cm.disop)
 	c:RegisterEffect(e6)
-	--atk
-	local e7=Effect.CreateEffect(c)
-	e7:SetType(EFFECT_TYPE_FIELD)
-	e7:SetRange(LOCATION_MZONE)
-	e7:SetTargetRange(LOCATION_MZONE,0)
-	e7:SetCode(EFFECT_UPDATE_ATTACK)
-	e7:SetCondition(cm.immcon2)
-	e7:SetTarget(cm.atktg)
-	e7:SetValue(2000)
-	c:RegisterEffect(e7)
+
 end
 function cm.sprfilter(c)
 	return c:IsFaceup() and c:IsAbleToGraveAsCost() and c:IsRace(RACE_WARRIOR)
@@ -105,33 +97,56 @@ function cm.sprop2(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.SelectReleaseGroup(tp,Card.IsCode,1,1,nil,40009559)
 	Duel.Release(g,REASON_COST)
 end
-function cm.indtg(e,c)
-	return c:IsRace(RACE_WARRIOR) and c~=e:GetHandler()
-end
+
 function cm.etarget1(e,c)
 	return c:IsRace(RACE_WARRIOR) 
 end
 function cm.efilter1(e,re)
 	return re:GetOwnerPlayer()~=e:GetHandlerPlayer() and re:IsActiveType(TYPE_TRAP)
 end
-function cm.imfilter(c)
-	return c:IsFaceup() and cm.KeterSanctuary(c)
+function cm.filter(c)
+	return c:IsCode(40009559) and c:IsAbleToRemoveAsCost()
 end
-function cm.immcon2(e)
-	local ct=0
-	local g=Duel.GetMatchingGroup(cm.imfilter,tp,LOCATION_MZONE,0,nil)
-	for i,type in ipairs({TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK}) do
-		if g:IsExists(Card.IsType,1,nil,type) then ct=ct+1 end
+function cm.copycost(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	e:SetLabel(g:GetFirst():GetOriginalCode())
+end
+function cm.copyoperation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local code=e:GetLabel()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetCode(EFFECT_CHANGE_CODE)
+		e1:SetValue(code)
+		c:RegisterEffect(e1)
+		c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
 	end
-	return ct>=3
 end
-function cm.etarget2(e,c)
-	return c:IsRace(RACE_WARRIOR) 
+function cm.discon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
-function cm.efilter2(e,re)
-	return re:GetOwnerPlayer()~=e:GetHandlerPlayer() and re:IsActiveType(TYPE_SPELL)
+function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tc=Duel.GetDecktopGroup(tp,1):GetFirst()
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and tc:IsAbleToHand() end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
-function cm.atktg(e,c)
-	return cm.KeterSanctuary(c)
+function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ConfirmDecktop(tp,1)
+	local g=Duel.GetDecktopGroup(tp,1)
+	local tc=g:GetFirst()
+	if tc:IsLevelAbove(8) and tc:IsAbleToHand() then
+		Duel.DisableShuffleCheck()
+		if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then
+			Duel.ShuffleHand(tp)
+			Duel.NegateActivation(ev)
+		end
+	else
+		Duel.MoveSequence(tc,1)
+	end
 end
-

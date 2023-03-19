@@ -117,15 +117,28 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
-		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-		if fc then
-			Duel.SendtoGrave(fc,REASON_RULE)
-			Duel.BreakEffect()
-		end
-		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-		if fc and tc:IsLocation(LOCATION_FZONE) then
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
-			Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
+		if not Duel.IsPlayerAffectedByEffect(tp,11451676) or Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0 then
+			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+			if fc then
+				Duel.SendtoGrave(fc,REASON_RULE)
+				Duel.BreakEffect()
+			end
+			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+			if fc and tc:IsLocation(LOCATION_FZONE) then
+				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+				Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
+			end
+		else
+			local fc=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
+			if fc then
+				Duel.SendtoGrave(fc,REASON_RULE)
+				Duel.BreakEffect()
+			end
+			Duel.MoveToField(tc,tp,1-tp,LOCATION_FZONE,POS_FACEUP,true)
+			if fc and tc:IsLocation(LOCATION_FZONE) then
+				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+				Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
+			end
 		end
 		--[[local te=tc:GetActivateEffect()
 		if te:IsActivatable(tp,true,true) and (not tc:CheckActivateEffect(false,false,false) or Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0) then
@@ -166,7 +179,7 @@ function cm.actfilter(c)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and (code1==11451631 or code2==11451631)
 end
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.actfilter,1,nil) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
+	return eg:IsExists(cm.actfilter,1,nil) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND)) and Duel.GetCurrentChain()<=3
 end
 function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler(),REASON_EFFECT) end

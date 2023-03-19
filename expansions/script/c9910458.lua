@@ -73,8 +73,8 @@ function c9910458.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9910458.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,zone) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+		and Duel.IsExistingMatchingCard(c9910458.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,zone) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function c9910458.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
@@ -84,7 +84,7 @@ function c9910458.spop(e,tp,eg,ep,ev,re,r,rp)
 			zone=bit.replace(zone,0x1,i)
 		end
 	end
-	local g=Duel.SelectMatchingCard(tp,c9910458.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,zone)
+	local g=Duel.SelectMatchingCard(tp,c9910458.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp,zone)
 	local tc=g:GetFirst()
 	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)~=0 and tc:IsOnField() then
 		local seq=tc:GetSequence()

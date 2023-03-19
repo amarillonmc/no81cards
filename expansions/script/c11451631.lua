@@ -145,11 +145,11 @@ function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	local g=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local hg=g:Select(tp,1,1,nil)
-	Duel.SendtoHand(hg,nil,REASON_EFFECT)
-	Duel.ConfirmCards(tp,hg)
+	Duel.SSet(tp,hg)
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
 end
 function cm.cfilter2(c,tp)

@@ -121,14 +121,12 @@ function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetValue(3)
 		e4:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e4,tp)
-	elseif tc:IsType(TYPE_SPELL) then
-		if Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then
-			Duel.SendtoDeck(tc,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
-			Duel.Draw(tp,1,REASON_EFFECT)
-			Duel.Draw(1-tp,1,REASON_EFFECT)
-		end
+	elseif tc:IsType(TYPE_SPELL) and Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then
+		Duel.SendtoDeck(tc,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
+		Duel.Draw(tp,1,REASON_EFFECT)
+		Duel.Draw(1-tp,1,REASON_EFFECT)
 	else
-		if tc:IsSSetable() and Duel.SelectYesNo(tp,aux.Stringid(m,6)) then
+		if Duel.SelectYesNo(tp,aux.Stringid(m,6)) then
 			Duel.SSet(tp,tc)
 		end
 	end

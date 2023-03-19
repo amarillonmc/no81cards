@@ -53,8 +53,7 @@ end
 function c9910060.xyzop(e,tp,chk)
 	local g=Duel.GetMatchingGroup(c9910060.cfilter,tp,LOCATION_GRAVE,0,nil)
 	local sg=Group.CreateGroup()
-	if chk==0 then return Duel.GetCustomActivityCount(9910060,tp,ACTIVITY_CHAIN)~=0
-		and Duel.GetFlagEffect(tp,9910060)==0 and g:IsExists(c9910060.selector,1,nil,tp,g,sg,1) end
+	if chk==0 then return (Duel.GetCustomActivityCount(9910060,tp,ACTIVITY_CHAIN)~=0 or Duel.GetCustomActivityCount(9910060,1-tp,ACTIVITY_CHAIN)~=0) and Duel.GetFlagEffect(tp,9910060)==0 and g:IsExists(c9910060.selector,1,nil,tp,g,sg,1) end
 	for i=1,2 do
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local g1=g:FilterSelect(tp,c9910060.selector,1,1,nil,tp,g,sg,i)

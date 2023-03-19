@@ -98,6 +98,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function cm.chfliter(c) 
+	return c:IsType(TYPE_MONSTER) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsLocation(LOCATION_MZONE)
+end 
 --GlobalEffect
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetCurrentPhase()==PHASE_END and eg:Filter(cm.chfliter,nil):GetCount()>0 then

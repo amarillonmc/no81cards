@@ -6,10 +6,7 @@ function cm.KeterSanctuary(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_KeterSanctuary
 end
-function cm.Bastion(c)
-	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_Bastion
-end
+
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -45,7 +42,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)	
 end
 function cm.cfilter2(c)
-	return c:IsFaceup() and cm.Bastion(c)
+	return c:IsFaceup() and c:IsCode(40009559)
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return  not Duel.IsExistingMatchingCard(cm.cfilter2,tp,LOCATION_ONFIELD,0,1,nil)

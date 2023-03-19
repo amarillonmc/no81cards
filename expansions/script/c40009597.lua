@@ -6,10 +6,6 @@ function cm.KeterSanctuary(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_KeterSanctuary
 end
-function cm.Bastion(c)
-	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_Bastion
-end
 function cm.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
@@ -74,7 +70,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and cm.Bastion(c)
+	return c:IsFaceup() and c:IsCode(40009559)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)

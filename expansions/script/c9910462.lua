@@ -2,7 +2,7 @@
 function c9910462.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+CATEGORY_COUNTER)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_HAND)
@@ -15,17 +15,20 @@ function c9910462.initial_effect(c)
 	c:RegisterEffect(e1)
 	--negate
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_COUNTER)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetCategory(CATEGORY_NEGATE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
 	e2:SetCondition(c9910462.negcon)
+	e2:SetCost(c9910462.negcost)
+	e2:SetTarget(c9910462.negtg)
 	e2:SetOperation(c9910462.negop)
 	c:RegisterEffect(e2)
 end
 function c9910462.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	return Duel.GetTurnPlayer()~=tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c9910462.tgfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x9950) and c:IsAbleToGrave()
@@ -48,36 +51,34 @@ function c9910462.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		Duel.SendtoGrave(g,REASON_EFFECT)
-		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
-		if ct~=2 then
-			Duel.BreakEffect()
-			local lp=Duel.GetLP(tp)
-			Duel.SetLP(tp,lp-2000)
-			local sg=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,0x1950,1)
-			if sg:GetCount()==0 or not Duel.SelectYesNo(tp,aux.Stringid(9910462,0)) then return end
-			for i=1,2 do
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-				local tc=sg:Select(tp,1,1,nil):GetFirst()
-				tc:AddCounter(0x1950,1)
-			end
-		end
 	end
 end
 function c9910462.negcon(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and rc and rc:IsControler(1-tp)
-		and Duel.IsChainDisablable(ev) and e:GetHandler():GetFlagEffect(9910462)<=0
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+		and ep~=tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev)
+end
+function c9910462.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1950,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x1950,2,REASON_COST)
+end
+function c9910462.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+end
+function c9910462.setfilter(c)
+	return c:IsSetCard(0x9950) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function c9910462.negop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local rc=re:GetHandler()
-	if Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON) then return end
-	if not rc:IsCanRemoveCounter(tp,0x1950,1,REASON_EFFECT) then return end
-	Duel.HintSelection(Group.FromCards(c))
-	if Duel.SelectYesNo(tp,aux.Stringid(9910462,1)) then
-		Duel.Hint(HINT_CARD,0,9910462)
-		rc:RemoveCounter(tp,0x1950,1,REASON_EFFECT)
-		Duel.NegateEffect(ev)
-		c:RegisterFlagEffect(9910462,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	if Duel.NegateActivation(ev) and Duel.CheckLPCost(tp,2000)
+		and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c9910462.setfilter),tp,LOCATION_GRAVE,0,1,nil)
+		and Duel.SelectYesNo(tp,aux.Stringid(9910462,0)) then
+		Duel.BreakEffect()
+		Duel.PayLPCost(tp,2000)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910462.setfilter),tp,LOCATION_GRAVE,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SSet(tp,g)
+			Duel.ConfirmCards(1-tp,g)
+		end
 	end
 end

@@ -57,21 +57,15 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.actfilter(c,tp)
 	return cm.Maelstrom(c) and c:GetType()==0x20002
-		and c:GetActivateEffect():IsActivatable(tp)
+		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function cm.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,tp) end
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.actfilter),tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,tp)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		local te=tc:GetActivateEffect()
-		local tep=tc:GetControler()
-		local cost=te:GetCost()
-		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-	end
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local tc=Duel.SelectMatchingCard(tp,cm.actfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,tp):GetFirst()
+	if tc then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) end
 end

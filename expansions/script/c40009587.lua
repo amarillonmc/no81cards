@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,40009588)
+	e2:SetCost(cm.thcost)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
@@ -43,6 +44,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+end
+function cm.cfilter(c)
+	return c:IsLevelAbove(8) and not c:IsPublic()
+end
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.ShuffleHand(tp)
 end
 function cm.thfilter(c)
 	return cm.KeterSanctuary(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()

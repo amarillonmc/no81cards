@@ -74,5 +74,12 @@ function cm.damop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsControler(tp) then
 		Duel.CalculateDamage(tc,nil,true)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(0,1)
+		e1:SetReset(RESET_PHASE+PHASE_DAMAGE)
+		Duel.RegisterEffect(e1,tp)
 	end
 end

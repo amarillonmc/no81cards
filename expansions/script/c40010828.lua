@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--search
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetDescription(aux.Stringid(m,2))
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
@@ -42,7 +42,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)	
 end
 function cm.thcon1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) and not r==REASON_SYNCHRO 
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) --and not r==REASON_SYNCHRO 
 end
 function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

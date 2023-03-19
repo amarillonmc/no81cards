@@ -13,14 +13,15 @@ function c9910460.initial_effect(c)
 	e1:SetTarget(c9910460.sptg)
 	e1:SetOperation(c9910460.spop)
 	c:RegisterEffect(e1)
-	--negate
+	--recover
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_COUNTER)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetCategory(CATEGORY_RECOVER)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c9910460.negcon)
-	e2:SetOperation(c9910460.negop)
+	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e2:SetCountLimit(1)
+	e2:SetTarget(c9910460.rctg)
+	e2:SetOperation(c9910460.rcop)
 	c:RegisterEffect(e2)
 end
 function c9910460.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -43,38 +44,68 @@ function c9910460.ctfilter(c)
 	g:Merge(c:GetColumnGroup())
 	return c:IsCanAddCounter(0x1950,1) and g:IsExists(c9910460.cfilter,1,nil)
 end
+function c9910460.disfilter(c)
+	return c:GetCounter(0x1950)>0 and aux.NegateMonsterFilter(c)
+end
 function c9910460.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local g=Duel.GetMatchingGroup(c9910460.ctfilter,tp,0,LOCATION_MZONE,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910460,0)) then
-			local tc=g:GetFirst()
-			while tc do
-				tc:AddCounter(0x1950,1)
-				tc=g:GetNext()
-			end
+	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	local g1=Duel.GetMatchingGroup(c9910460.ctfilter,tp,0,LOCATION_MZONE,nil)
+	local g2=Duel.GetMatchingGroup(c9910460.disfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local off=1
+	local ops={}
+	local opval={}
+	if g1:GetCount()>0 then
+		ops[off]=aux.Stringid(9910460,0)
+		opval[off-1]=1
+		off=off+1
+	end
+	if g2:GetCount()>0 then
+		ops[off]=aux.Stringid(9910460,1)
+		opval[off-1]=2
+		off=off+1
+	end
+	ops[off]=aux.Stringid(9910460,2)
+	opval[off-1]=3
+	off=off+1
+	local op=Duel.SelectOption(tp,table.unpack(ops))
+	if opval[op]==1 then
+		Duel.BreakEffect()
+		local sc=g1:GetFirst()
+		while sc do
+			sc:AddCounter(0x1950,1)
+			sc=g1:GetNext()
 		end
+	elseif opval[op]==2 then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+		local sg=g2:Select(tp,1,1,nil)
+		Duel.HintSelection(sg)
+		local tc=sg:GetFirst()
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e2)
 	end
 end
-function c9910460.negcon(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc and rc:IsControler(1-tp)
-		and Duel.IsChainDisablable(ev) and e:GetHandler():GetFlagEffect(9910460)<=0
+function c9910460.rctg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1000)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
-function c9910460.negop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local rc=re:GetHandler()
-	if Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON) then return end
-	if not rc:IsCanRemoveCounter(tp,0x1950,1,REASON_EFFECT) then return end
-	Duel.HintSelection(Group.FromCards(c))
-	if Duel.SelectYesNo(tp,aux.Stringid(9910460,1)) then
-		Duel.Hint(HINT_CARD,0,9910460)
-		rc:RemoveCounter(tp,0x1950,1,REASON_EFFECT)
-		if Duel.NegateEffect(ev) and c:IsCanAddCounter(0x1950,1)
-			and Duel.SelectYesNo(tp,aux.Stringid(9910460,0)) then
-			Duel.BreakEffect()
-			c:AddCounter(0x1950,1)
-		end
-		c:RegisterFlagEffect(9910460,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-	end
+function c9910460.rcop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	if p==tp and Duel.IsPlayerAffectedByEffect(tp,9910467) then d=2*d end
+	Duel.Recover(p,d,REASON_EFFECT)
 end
