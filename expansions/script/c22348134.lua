@@ -3,30 +3,30 @@ local m=22348134
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--Activate
---	local e1=Effect.CreateEffect(c)
---	e1:SetCategory(CATEGORY_TOGRAVE)
---	e1:SetType(EFFECT_TYPE_ACTIVATE)
---	e1:SetCode(EVENT_FREE_CHAIN)
---	e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_END_PHASE,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
---	e1:SetCost(c22348134.cost)
---	e1:SetTarget(c22348134.target)
---	e1:SetOperation(c22348134.activate)
---	c:RegisterEffect(e1)
---	local e2=e1:Clone()
---	e2:SetRange(LOCATION_DECK+LOCATION_HAND)
---	c:RegisterEffect(e2)
+--  local e1=Effect.CreateEffect(c)
+--  e1:SetCategory(CATEGORY_TOGRAVE)
+--  e1:SetType(EFFECT_TYPE_ACTIVATE)
+--  e1:SetCode(EVENT_FREE_CHAIN)
+--  e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_END_PHASE,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+--  e1:SetCost(c22348134.cost)
+--  e1:SetTarget(c22348134.target)
+--  e1:SetOperation(c22348134.activate)
+--  c:RegisterEffect(e1)
+--  local e2=e1:Clone()
+--  e2:SetRange(LOCATION_DECK+LOCATION_HAND)
+--  c:RegisterEffect(e2)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(TIMING_DRAW_PHASE)
+	e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_END_PHASE,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCost(c22348134.cost)
 	e1:SetTarget(c22348134.target)
 	e1:SetOperation(c22348134.activate)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetRange(LOCATION_DECK)
-	e2:SetCost(c22348134.cost)
 	c:RegisterEffect(e2)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
@@ -99,12 +99,9 @@ function c22348134.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c22348134.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348134.tgfilter,tp,LOCATION_HAND,0,1,nil) and c:GetFlagEffect(22348134)==0  end
-	c:RegisterFlagEffect(22348134,RESET_CHAIN,0,1)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348134.tgfilter,tp,LOCATION_HAND,0,1,c) and Duel.GetFlagEffect(tp,22348134)==0  end
+	Duel.RegisterFlagEffect(tp,22348134,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND)
-	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		Duel.SetChainLimit(c22348134.limit)
-	end
 end
 function c22348134.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -112,10 +109,6 @@ function c22348134.activate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
-end
-function c22348134.limit(e,ep,tp)
-	local c=e:GetHandler()
-	return not (c:IsCode(22348134) and e:IsHasType(EFFECT_TYPE_ACTIVATE))
 end
 function c22348134.cgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

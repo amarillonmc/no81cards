@@ -1,10 +1,12 @@
+--多元魔導書廊エトワール
 function c115632163.initial_effect(c)
     c:EnableCounterPermit(0x1)
+    --Activate
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_CHAIN_END+TIMING_END_PHASE)
     c:RegisterEffect(e1)
+    --Add counter
     local e2=Effect.CreateEffect(c)
     e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
     e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -19,6 +21,7 @@ function c115632163.initial_effect(c)
     e3:SetCondition(c115632163.ctcon)
     e3:SetOperation(c115632163.ctop)
     c:RegisterEffect(e3)
+    --atkup
     local e4=Effect.CreateEffect(c)
     e4:SetType(EFFECT_TYPE_FIELD)
     e4:SetCode(EFFECT_UPDATE_ATTACK)
@@ -27,35 +30,33 @@ function c115632163.initial_effect(c)
     e4:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_SPELLCASTER))
     e4:SetValue(c115632163.atkval)
     c:RegisterEffect(e4)
-    local e8=Effect.CreateEffect(c)
-    e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-    e8:SetCode(EVENT_LEAVE_FIELD_P)
-    e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-    e8:SetOperation(c115632163.regop)
-    c:RegisterEffect(e8)
+    --search
     local e5=Effect.CreateEffect(c)
     e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
     e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
     e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
-    e5:SetCode(EVENT_TO_GRAVE)
+    e5:SetCode(EVENT_LEAVE_FIELD)
     e5:SetCondition(c115632163.thcon)
     e5:SetTarget(c115632163.thtg)
     e5:SetOperation(c115632163.thop)
-    e5:SetLabelObject(e8)
     c:RegisterEffect(e5)
+    --act in hand
     local e6=Effect.CreateEffect(c)
     e6:SetType(EFFECT_TYPE_SINGLE)
     e6:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
     c:RegisterEffect(e6)
+    --cannot set
     local e7=Effect.CreateEffect(c)
     e7:SetType(EFFECT_TYPE_SINGLE)
     e7:SetCode(EFFECT_CANNOT_SSET)
     c:RegisterEffect(e7)
-end
-function c115632163.ctcon(e,tp,eg,ep,ev,re,r,rp)
-    if not re then return false end
-    local c=re:GetHandler()
-    return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and c:IsSetCard(0x306e) and e:GetHandler():GetFlagEffect(1)>0
+    --remove type
+    local e8=Effect.CreateEffect(c)
+    e8:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+    e8:SetType(EFFECT_TYPE_SINGLE)
+    e8:SetCode(EFFECT_REMOVE_TYPE)
+    e8:SetValue(TYPE_QUICKPLAY)
+    c:RegisterEffect(e8)
 end
 function c115632163.ctcon(e,tp,eg,ep,ev,re,r,rp)
     if not re then return false end
@@ -68,14 +69,9 @@ end
 function c115632163.atkval(e,c)
     return e:GetHandler():GetCounter(0x1)*100
 end
-function c115632163.regop(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
-    local ct=c:GetCounter(0x1)
-    e:SetLabel(ct)
-end
 function c115632163.thcon(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    local ct=e:GetLabelObject():GetLabel()
+    local ct=c:GetCounter(0x1)
     e:SetLabel(ct)
     return ct>0 and c:IsLocation(LOCATION_GRAVE) and c:IsReason(REASON_DESTROY)
 end

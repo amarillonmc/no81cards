@@ -80,7 +80,7 @@ function cm.sel2ffilter(c,x)
 	return c:IsFaceup() and c:IsHasEffect(15004002) and ((not c:IsDisabled()) or (x==1))
 end
 function cm.rmfilter(c)
-	return ((not c:IsCode(15004002) and not c:IsCode(15004003)) or c:IsFacedown())
+	return ((not c:IsCode(15004002) and not c:IsCode(15004003)) or c:IsFacedown()) and c:IsAbleToRemove(c:GetControler(),POS_FACEDOWN,REASON_RULE)
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetLabel()
@@ -118,14 +118,14 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.tkcon(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetLabel()
-	return Duel.GetMatchingGroupCount(cm.selffilter,tp,LOCATION_SZONE,LOCATION_SZONE,nil,1)~=0 and Duel.GetMatchingGroupCount(cm.sel2ffilter,tp,LOCATION_SZONE,LOCATION_SZONE,nil,0)~=0 and not Duel.IsExistingMatchingCard(Card.IsCode,p,LOCATION_MZONE,0,1,nil,15004003)
+	return Duel.GetMatchingGroupCount(cm.selffilter,tp,LOCATION_SZONE,LOCATION_SZONE,nil,1)~=0 and Duel.GetMatchingGroupCount(cm.sel2ffilter,tp,LOCATION_SZONE,LOCATION_SZONE,nil,0)~=0 and not Duel.IsExistingMatchingCard(Card.IsCode,p,LOCATION_MZONE,0,1,nil,15004003) and Duel.GetLocationCount(p,LOCATION_MZONE)>0
 end
 function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetLabel()
-	if Duel.IsPlayerCanSpecialSummonMonster(p,15004003,nil,0x4011,0,0,11,RACE_AQUA,ATTRIBUTE_LIGHT) then
+	if Duel.IsPlayerCanSpecialSummonMonster(p,15004003,nil,0x4011,0,0,11,RACE_AQUA,ATTRIBUTE_LIGHT,POS_FACEUP_ATTACK) then
 		local code=15004003
 		local token=Duel.CreateToken(p,code)
-		if Duel.SpecialSummonStep(token,0,p,p,false,false,POS_FACEUP) then
+		if Duel.SpecialSummonStep(token,0,p,p,false,false,POS_FACEUP_ATTACK) then
 			--atkdef
 			local e1=Effect.CreateEffect(token)
 			e1:SetType(EFFECT_TYPE_SINGLE)  
