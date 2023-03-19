@@ -1,7 +1,6 @@
 --诡雷战阵 机装要塞
 --21.04.22
-local m=11451565
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -89,7 +88,7 @@ end
 function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
-	if chk==0 then return c:IsType(TYPE_FIELD) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true) and not c:IsHasEffect(EFFECT_NECRO_VALLEY) and #g>0 end
+	if chk==0 then return c:IsType(TYPE_FIELD) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true) and not c:IsHasEffect(EFFECT_NECRO_VALLEY) and #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,c,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK)
 end
@@ -110,7 +109,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 		Duel.RaiseEvent(c,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 		local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
-		if #g>0 then
+		if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local tg=g:Select(tp,1,1,nil)
 			Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
