@@ -126,7 +126,7 @@ function cm.actarget2(e,te,tp)
 	return not cm[te]
 end
 function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
-	if cm[0] then return end
+	if cm[0] or cm[te] then return end
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	local tg=te:GetTarget() or aux.TRUE
@@ -134,13 +134,16 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 				if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
 				if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
 				tg(e,tp,eg,ep,ev,re,r,rp,1)
-				local extg=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_HAND+LOCATION_SZONE,0,nil,m)
+				local exc=nil
+				if e:IsHasType(EFFECT_TYPE_ACTIVATE) then exc=e:GetHandler() end
+				local extg=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_HAND+LOCATION_SZONE,0,exc,m)
 				if #extg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 					local g=extg:Select(tp,1,#extg,nil)
 					if #g>0 and Duel.SendtoGrave(g,REASON_COST)>0 then
 						Duel.Hint(HINT_CARD,0,m)
 						g:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451779,3))
+						if g:IsContains(e:GetHandler()) then e:GetHandler():CreateEffectRelation(e) end
 						local e2=Effect.CreateEffect(c)
 						e2:SetType(EFFECT_TYPE_FIELD)
 						e2:SetCode(EFFECT_IMMUNE_EFFECT)
@@ -194,7 +197,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil) or Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,1,nil)
+	local g1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil)
 	local g2=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if #g1>0 and (#g2==0 or Duel.SelectOption(tp,aux.Stringid(11451779,0),aux.Stringid(11451779,1))==0) then

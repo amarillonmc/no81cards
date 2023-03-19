@@ -64,9 +64,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local rg=Duel.GetMatchingGroup(cm.rfilter,tp,LOCATION_HAND,0,nil)
 	if #rg>0 and Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)>0 then
 		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
-		for tc in aux.Next(og) do
-			og:ForEach(Card.RegisterFlagEffect,11451771,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451771,2))
-		end
+		og:ForEach(Card.RegisterFlagEffect,11451771,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451771,2))
 		og:KeepAlive()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(11451771,3))
@@ -170,7 +168,7 @@ function cm.filter6(c)
 end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
-	if not g:IsExists(cm.filter6,1,nil) then
+	if g and not g:IsExists(cm.filter6,1,nil) then
 		g:DeleteGroup()
 		e:Reset()
 		return false
