@@ -82,6 +82,7 @@ function c18155051.activate2(e,tp,eg,ep,ev,re,r,rp,chk)
 		local sc=xg:SelectSubGroup(tp,c18155051.spgck2,0,1,1,e,tp,rg) 
 		if not sc then return end
 		local zc=sc:GetFirst()
+		zc:SetMaterial(rg)
 		Duel.SpecialSummon(zc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		zc:CompleteProcedure()   
 	end 

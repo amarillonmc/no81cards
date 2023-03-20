@@ -23,7 +23,7 @@ function c18155061.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c18155061.tgf1(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x7bc2) or c:IsType(TYPE_FUSION+TYPE_SYNCHRO)
+	return c:IsFaceup() and c:IsSetCard(0x7bc2) or c:IsFaceup() and c:IsType(TYPE_FUSION+TYPE_SYNCHRO)
 end
 function c18155061.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c18155061.tgf1(chkc,tp) end
