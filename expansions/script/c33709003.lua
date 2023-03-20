@@ -51,7 +51,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():AddCounter(0x1441,1)
 end
-function cm.repfilter(c)
+function cm.repfilter(c,re)
 	local code=re:GetHandler():GetOriginalCode()
 	return (c:IsFaceup() or not c:IsLocation(LOCATION_ONFIELD)) and code>=m and code<=33709016
 		and c:IsAbleToRemove() and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED)
@@ -61,7 +61,7 @@ function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.repfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,c,e) and c:IsCanRemoveCounter(0x1441,2,REASON_EFFECT+REASON_REPLACE) end
 	if Duel.SelectEffectYesNo(tp,c,96) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESREPLACE)
-		local g=Duel.SelectMatchingCard(tp,cm.repfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,c)
+		local g=Duel.SelectMatchingCard(tp,cm.repfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,c,e)
 		e:SetLabelObject(g:GetFirst())
 		g:GetFirst():SetStatus(STATUS_DESTROY_CONFIRMED,true)
 		return true
