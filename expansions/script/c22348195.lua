@@ -42,7 +42,7 @@ function c22348195.cfilter(c,tp)
 	return c:IsSetCard(0x2a) and c:IsReason(REASON_COST) and c:IsControler(tp)
 end
 function c22348195.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22348195.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
+	return eg:IsExists(c22348195.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler()) and re:IsActivated()
 end
 function c22348195.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

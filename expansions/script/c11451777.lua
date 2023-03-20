@@ -49,7 +49,19 @@ function cm.initial_effect(c)
 		ge3:SetCode(EVENT_ATTACK_ANNOUNCE)
 		ge3:SetOperation(cm.clear)
 		Duel.RegisterEffect(ge3,0)
+		local ge5=Effect.CreateEffect(c)
+		ge5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge5:SetCode(EVENT_ADJUST)
+		ge5:SetCondition(cm.con5)
+		ge5:SetOperation(cm.check5)
+		Duel.RegisterEffect(ge5,0)
 	end
+end
+function cm.con5(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1
+end
+function cm.check5(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.RegisterFlagEffect(0,11451771,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.rfilter(c)
 	return c:GetFlagEffect(11451771)>0
@@ -87,7 +99,7 @@ function cm.clear2(e,tp,eg,ep,ev,re,r,rp)
 	BATTLE_CARD_CHECK={}
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE
+	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE and Duel.GetFlagEffect(0,11451771)>0
 end
 function cm.nfilter(c)
 	return c~=Duel.GetAttacker() and c~=Duel.GetAttackTarget()

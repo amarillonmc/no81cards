@@ -54,6 +54,21 @@ function cm.initial_effect(c)
 		ge2:SetOperation(cm.clear)
 		Duel.RegisterEffect(ge2,0)
 	end
+	if not cm.global_check then
+		cm.global_check=true
+		local ge5=Effect.CreateEffect(c)
+		ge5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge5:SetCode(EVENT_ADJUST)
+		ge5:SetCondition(cm.con5)
+		ge5:SetOperation(cm.check5)
+		Duel.RegisterEffect(ge5,0)
+	end
+end
+function cm.con5(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1
+end
+function cm.check5(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.RegisterFlagEffect(0,11451771,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.rfilter(c)
 	return c:GetFlagEffect(11451771)>0
@@ -96,7 +111,7 @@ function cm.clear2(e,tp,eg,ep,ev,re,r,rp)
 	BATTLE_CARD_CHECK={}
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE
+	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE and Duel.GetFlagEffect(0,11451771)>0
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
