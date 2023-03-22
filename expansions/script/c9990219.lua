@@ -1,4 +1,3 @@
---凶相剑恶  
 function c9990219.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -28,8 +27,7 @@ function c9990219.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9990219.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9990219.filter,tp,LOCATION_MZONE,0,1,nil)
-		and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
+	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c9990219.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9990219.costfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end

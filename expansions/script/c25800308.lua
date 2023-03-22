@@ -34,8 +34,9 @@ function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function cm.sprfilter(c,tp,g,sc)   
-	return (c:GetOriginalAttribute()&ATTRIBUTE_WATER~=0 and c:GetOriginalLevel()==4 and c:IsLocation(LOCATION_SZONE)) 
-	 or (c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsLevel(4) and c:IsAttribute(ATTRIBUTE_WATER)) 
+	return ((c:GetOriginalAttribute()&ATTRIBUTE_WATER~=0 and c:GetOriginalLevel()==4 and c:IsLocation(LOCATION_SZONE)) 
+	 or (c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsLevel(4) and c:IsAttribute(ATTRIBUTE_WATER))) 
+and c:IsCanBeXyzMaterial(nil)
 end 
 function cm.spgckfil(g,e,tp) 
 	return Duel.GetLocationCountFromEx(tp,tp,g,nil)
