@@ -107,7 +107,8 @@ function c119828752.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
         and Duel.IsExistingTarget(c119828752.filter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil) end
     Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-    Duel.SelectTarget(tp,c119828752.filter1,tp,LOCATION_MZONE,0,1,1,nil)
+    local g=Duel.SelectTarget(tp,c119828752.filter1,tp,LOCATION_MZONE,0,1,1,nil)
+    Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
 end
 function c119828752.operation(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end

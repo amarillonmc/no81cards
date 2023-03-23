@@ -303,7 +303,6 @@ function c4058.exfilter(c,e,tp,lv)
 end
 function c4058.drop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
     if eg:IsExists(c4058.sufilter,1,nil,e,tp) then
         local g=eg:Filter(c4058.sufilter,nil,e,tp)
         local tc=g:GetFirst()

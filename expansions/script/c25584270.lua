@@ -28,6 +28,7 @@ function c25584270.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e2:SetCost(c25584270.cost)
 	e2:SetCondition(c25584270.pencon)
 	e2:SetTarget(c25584270.pentg)
 	e2:SetOperation(c25584270.penop)
@@ -88,7 +89,6 @@ function c25584270.spcon(e,tp,eg,ep,ev,re,r,rp)
 		and d:IsRelateToBattle() and (d:IsAbleToHandAsCost() or d:IsAbleToExtraAsCost())
 end
 function c25584270.spop(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message("222")
 	local c=e:GetHandler()
 	local a,d=Duel.GetBattleMonster(tp)
 	local g=Group.CreateGroup()
@@ -106,18 +106,60 @@ function c25584270.spop(e,tp,eg,ep,ev,re,r,rp)
 		c:CompleteProcedure()
 	end
 end
+function c25584270.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToHandAsCost,tp,LOCATION_PZONE,0,nil)
+	if g:GetCount()>0 and not Duel.CheckLocation(tp,LOCATION_SZONE,0) and not Duel.CheckLocation(tp,LOCATION_SZONE,4) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_COST)
+		return true
+	end
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(25584270,3)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_COST)
+	end
+end
 function c25584270.pencon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsFaceup()
 end
 function c25584270.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToHandAsCost,tp,LOCATION_PZONE,0,nil)
+	if chk==0 then return Duel.CheckLocation(tp,LOCATION_SZONE,0) or Duel.CheckLocation(tp,LOCATION_SZONE,4) or Duel.IsExistingMatchingCard(Card.IsAbleToHandAsCost,tp,LOCATION_PZONE,0,1,nil) end
 end
 function c25584270.penop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
-	end
+	if not c:IsRelateToEffect(e) then return end
+	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+	--local b1=Duel.CheckLocation(tp,LOCATION_SZONE,0) or (not Duel.CheckLocation(tp,LOCATION_SZONE,0) and Duel.GetFieldCard(tp,LOCATION_SZONE,0):IsAbleToHand())
+	--local b2=Duel.CheckLocation(tp,LOCATION_SZONE,4) or (not Duel.CheckLocation(tp,LOCATION_SZONE,0) and Duel.GetFieldCard(tp,LOCATION_SZONE,4):IsAbleToHand())
+	--local s=0
+	--if b1 then
+	--	s=0x100
+	--	s=s+0x1
+	--end
+	--if b2 then
+	--	s=s+0x1000
+	--	s=s+0x10
+	--end
+	--if s==0 then return false end
+	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+	--local seq=Duel.SelectField(tp,1,LOCATION_SZONE+LOCATION_PZONE,0,~s)
+	--if bit.band(seq,0x100)>0 or bit.band(seq,0x1)>0 then
+	--	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,0)
+	--	if tc then
+	--		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	--	end
+	--	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true,seq)
+	--elseif bit.band(s,0x1000)>0 or bit.band(seq,0x10)>0 then
+	--	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,4)
+	--	if tc then
+	--		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	--	end
+	--	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true,seq)
+	--end
 end
 function c25584270.check(e,tp)
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)

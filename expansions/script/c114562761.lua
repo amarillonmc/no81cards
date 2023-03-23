@@ -120,6 +120,7 @@ function c114562761.thfilter(c)
 end
 function c114562761.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c114562761.thfilter,tp,LOCATION_GRAVE,0,2,nil) end
+    Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,2,tp,LOCATION_GRAVE)
 end
 function c114562761.thop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)

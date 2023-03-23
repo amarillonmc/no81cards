@@ -27,6 +27,7 @@ function c98920103.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
 	e2:SetCondition(c98920103.discon)
 	e2:SetCost(c98920103.discost)
 	e2:SetTarget(c98920103.distg)
@@ -85,6 +86,6 @@ function c98920103.disop(e,tp,eg,ep,ev,re,r,rp)
 					Duel.ConfirmCards(1-tp,sc)
 				end
 		  end
-		end	  
+		end   
 	end
 end

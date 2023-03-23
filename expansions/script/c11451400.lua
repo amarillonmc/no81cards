@@ -1,7 +1,6 @@
 --traveler saga encounter
---21.04.09
-local m=11451400
-local cm=_G["c"..m]
+--23.02.23
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -21,11 +20,11 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return #eg==1 and eg:GetFirst():IsControler(1-tp)
 end
 function cm.filter(c,e,tp,zone)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c,zone)>0
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,tp,zone) and Duel.GetLocationCountFromEx(tp,tp,nil,c,zone)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc=eg:GetFirst()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp,rc:GetColumnZone(LOCATION_MZONE,tp)) end
+	if chk==0 then return rc:IsLocation(LOCATION_MZONE) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp,rc:GetColumnZone(LOCATION_MZONE,tp)) end
 	rc:CreateEffectRelation(e)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end

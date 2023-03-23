@@ -13,6 +13,7 @@ function cm.initial_effect(c)
 		GO_RANDOM=true
 		cm[0]=0
 		cm[1]=0
+		cm.blacklist={}
 		local _SelectMatchingCard=Duel.SelectMatchingCard
 		local _SelectReleaseGroup=Duel.SelectReleaseGroup
 		local _SelectReleaseGroupEx=Duel.SelectReleaseGroupEx
@@ -176,6 +177,12 @@ function cm.roll(min,max)
 	end
 	return cm.r
 end
+function cm.list(code)
+	for _,codes in pairs(cm.blacklist) do
+		if codes==code then return true end
+	end
+	return false
+end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ct1=cm[tp]--Duel.GetFlagEffectLabel(tp,m)
 	local ct2=cm[1-tp]--Duel.GetFlagEffectLabel(1-tp,m)
@@ -205,6 +212,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ac=nil
 	local _TGetID=GetID
 	if ct1>0 then
+		ct1=math.min(ct1,85)
 		local tab1={}
 		for i=1,ct1 do
 			while not ac do
@@ -224,7 +232,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 						else
 							real=cc
 						end
-						if ctype&TYPE_TOKEN==0 then
+						if ctype&TYPE_TOKEN==0 and not cm.list(real) then
 							ac=real
 						end
 					end
@@ -280,6 +288,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if ct2>0 then
+		ct2=math.min(ct2,85)
 		local tab2={}
 		for i=1,ct2 do
 			while not ac do
@@ -299,7 +308,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 						else
 							real=cc
 						end
-						if ctype&TYPE_TOKEN==0 then
+						if ctype&TYPE_TOKEN==0 and not cm.list(real) then
 							ac=real
 						end
 					end

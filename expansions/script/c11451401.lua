@@ -1,7 +1,6 @@
 --traveler saga outrun
---21.04.10
-local m=11451401
-local cm=_G["c"..m]
+--23.02.23
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -29,6 +28,7 @@ end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return eg:IsExists(cm.filter,1,c,tp) end
+	Duel.HintSelection(Group.FromCards(c))
 	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		local g=eg:Filter(cm.filter,c,tp)
 		if #g>1 then
@@ -66,4 +66,5 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.thfilter,nil)
 	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
+	e:Reset()
 end

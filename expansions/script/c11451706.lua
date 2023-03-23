@@ -1,6 +1,5 @@
 --大型废件
-local m=11451706
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Stuck
 	local EFFECT_STUCK=11451695
@@ -35,7 +34,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,g)
 	if Duel.SendtoDeck(g,nil,2,REASON_COST)>0 then
 		local tg=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_DECK,0,1,2,nil)
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.SendtoHand(tg,nil,REASON_RULE)
 		Duel.ConfirmCards(1-tp,tg)
 	end
 end

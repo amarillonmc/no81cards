@@ -128,6 +128,7 @@ function c98730117.thfilter(c)
 end
 function c98730117.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c98730117.thfilter,tp,LOCATION_REMOVED,0,2,nil) end
+    Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,2,tp,LOCATION_GRAVE)
 end
 function c98730117.thop(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end

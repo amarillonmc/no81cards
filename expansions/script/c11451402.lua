@@ -1,7 +1,6 @@
 --traveler saga tribute
---21.04.10
-local m=11451402
-local cm=_G["c"..m]
+--23.02.23
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -40,11 +39,8 @@ function cm.costcon(e)
 	cm[0]=false
 	return true
 end
-function cm.refilter(c,e)
-	return c:IsReleasable()
-end
 function cm.costchk(e,te,tp)
-	return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_MZONE,0,1,nil,te)
+	return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.costtg(e,te,tp)
 	e:SetLabelObject(te)
