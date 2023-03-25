@@ -35,26 +35,24 @@ function c98950010.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c98950010.spfilter1(c,e,tp,tc)
-	return (c:IsSetCard(0xf) and c:IsSetCard(0x8)) and not c:IsSetCard(0x3008) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,tc,c)>0
+	return (c:IsSetCard(0xf) and c:IsSetCard(0x8)) and not c:IsSetCard(0x3008) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,tc,c)>=0
 end
 function c98950010.gvfilter(c,e,tp)
 	return c:IsFaceup() and c:IsSetCard(0xf) and not c:IsType(TYPE_FUSION)
 end
 function c98950010.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c98950010.gvfilter(chkc,ft) end
-	if chk==0 then return ft>-1 and Duel.IsExistingTarget(c98950010.gvfilter,tp,LOCATION_MZONE,0,1,nil,ft)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c98950010.gvfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c98950010.gvfilter,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.IsExistingMatchingCard(c98950010.spfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectTarget(tp,c98950010.gvfilter,tp,LOCATION_MZONE,0,1,1,nil,ft)
+	local g=Duel.SelectTarget(tp,c98950010.gvfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c98950010.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE)
-			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			and Duel.IsExistingMatchingCard(c98950010.spfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,c98950010.spfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)

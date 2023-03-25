@@ -36,7 +36,7 @@ function c98920173.splimit(e,c,sump,sumtype,sumpos,targetp)
 	return bit.band(sumtype,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c98920173.cfilter2(c,e,tp)
-	return c:IsSetCard(0x9c,0xc4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x9c,0xc4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(98920173)
 end
 function c98920173.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

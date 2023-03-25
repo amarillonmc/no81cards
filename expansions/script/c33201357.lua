@@ -10,6 +10,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetHintTiming(0,TIMING_END_PHASE)
 	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.eqtg)
@@ -39,8 +40,11 @@ function cm.eqfilter(c,tp)
 	return c:IsFaceup() and (c:IsControler(tp) or c:IsAbleToChangeControler())
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and chkc:IsAbleToDeck() end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler(),tp) end
+		and Duel.IsExistingTarget(cm.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler(),tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+	local g=Duel.SelectTarget(tp,cm.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,e:GetHandler(),tp)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,0,0)
 end
 function cm.eqlimit(e,c)
@@ -59,13 +63,11 @@ function cm.equip_monster(c,tp,tc)
 	tc:RegisterEffect(e1)
 end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler(),tp) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,e:GetHandler(),tp)
-	Duel.HintSelection(g)
 	local c=e:GetHandler()
-	local tc=g:GetFirst()
-	cm.equip_monster(c,tp,tc)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+		cm.equip_monster(c,tp,tc)
+	end
 end
 function cm.atkval(e,c)
 	local atk=0

@@ -33,7 +33,6 @@ function c115072031.initial_effect(c)
     c:RegisterEffect(e3)
     --
     local e4=Effect.CreateEffect(c)
-    e4:SetProperty(EFFECT_FLAG_CLIENT_HINT)
     e4:SetType(EFFECT_TYPE_SINGLE)
     e4:SetCode(EFFECT_ADD_FUSION_SETCODE)
     e4:SetRange(LOCATION_MZONE)
@@ -44,11 +43,10 @@ end
 function c115072031.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_HAND,0,1,e:GetHandler()) end
     local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_HAND,0,1,1,e:GetHandler())
-    Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+    Duel.SendtoGrave(g,REASON_COST)
 end
 function c115072031.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-        and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c115072031.spfilter(c,e,tp)
@@ -56,7 +54,7 @@ function c115072031.spfilter(c,e,tp)
 end
 function c115072031.spop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    if c:IsRelateToEffect(e) then
+    if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 then
         Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
         if Duel.IsExistingMatchingCard(c115072031.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)
             and Duel.SelectYesNo(tp,aux.Stringid(115072031,1)) then
