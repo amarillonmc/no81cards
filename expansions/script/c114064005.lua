@@ -2,11 +2,10 @@
 function c114064005.initial_effect(c)
     --change control
     local e1=Effect.CreateEffect(c)
+    e1:SetCategory(CATEGORY_CONTROL)
     e1:SetType(EFFECT_TYPE_QUICK_O)
-    e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e1:SetRange(LOCATION_MZONE)
-    e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetHintTiming(TIMING_BATTLE_PHASE)
+    e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
     e1:SetCondition(c114064005.adcon)
     e1:SetCost(c114064005.cost)
     e1:SetTarget(c114064005.adtg)
@@ -54,19 +53,17 @@ function c114064005.initial_effect(c)
 end
 
 function c114064005.adcon(e,tp,eg,ep,ev,re,r,rp)
-    return (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
-        and not e:GetHandler():IsStatus(STATUS_CHAINING)
+    local c=e:GetHandler()
+    return c==Duel.GetAttacker() or c==Duel.GetAttackTarget()
 end
 function c114064005.cost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():GetFlagEffect(114064005)==0 end
     e:GetHandler():RegisterFlagEffect(114064005,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1)
 end
 function c114064005.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chkc then return false end
     local c=e:GetHandler()
     local bc=c:GetBattleTarget()
     if chk==0 then return bc and bc:IsOnField() and c:IsAbleToChangeControler() and bc:IsAbleToChangeControler() end
-    Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(114064005,0))
     Duel.SetOperationInfo(0,CATEGORY_CONTROL,g,2,0,0)
 end
 function c114064005.adop(e,tp,eg,ep,ev,re,r,rp)
