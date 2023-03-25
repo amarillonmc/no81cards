@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 end
 --xyz
 function cm.ovfilter(c)
-	return c:IsFaceup() and (c:IsLevelAbove(12) or (c:GetType()&TYPE_XYZ==TYPE_XYZ and c:IsRankAbove(12)))
+	return c:IsFaceup() and c:IsSetCard(0x308) and  (c:IsLevelAbove(12) or (c:GetType()&TYPE_XYZ==TYPE_XYZ and c:IsRankAbove(12)))
 end
 --e1
 function cm.cos1(e,tp,eg,ep,ev,re,r,rp,chk)
