@@ -56,7 +56,7 @@ function s.cfilter(c,tc)
 	if not tc:IsLevelAbove(1) and not tc:IsType(TYPE_XYZ) then return false end
 	local stat_c=(c:IsType(TYPE_XYZ)) and c:GetRank() or c:GetLevel()
 	local stat_tc=(tc:IsType(TYPE_XYZ)) and tc:GetRank() or tc:GetLevel()
-	return c:IsFaceup() and c:IsSetCard(0x460) and stat_c>stat_tc
+	return c:IsFaceup() and stat_c>stat_tc
 		and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
