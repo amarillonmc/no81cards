@@ -88,6 +88,7 @@ function c118817732.xyzop(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
     Duel.Hint(HINT_OPSELECTED,1-c:GetControler(),aux.Stringid(118817732,0))
     c:SetMaterial(xyzg)
     Duel.Overlay(c,xyzg)
+    Duel.ShuffleHand(tp)
 end
 
 function c118817732.tgcon(e,tp,eg,ep,ev,re,r,rp)

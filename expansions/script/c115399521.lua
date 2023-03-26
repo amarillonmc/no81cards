@@ -135,7 +135,7 @@ function c115399521.chop(e,tp,eg,ep,ev,re,r,rp)
     local b2=Duel.IsExistingMatchingCard(c115399521.tnfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c)
     local b3=Duel.IsExistingMatchingCard(c115399521.atfilter,tp,LOCATION_ONFIELD,0,1,nil)
     local b4=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-    if not (b1 or b2 or not b3 or b4) then return end
+    if not (b1 and b2 and not b3 and b4) then return end
     local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(c115399521.cfilter,nil,e,tp,c)
     if g:GetCount()>0 and Duel.GetLocationCountFromEx(tp,tp,g,c)>0 and Duel.GetFlagEffect(tp,115399521)==0 and Duel.SelectYesNo(tp,aux.Stringid(115399521,0))then
         Duel.RegisterFlagEffect(tp,115399521,RESET_CHAIN,0,1)

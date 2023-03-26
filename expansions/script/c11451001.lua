@@ -124,7 +124,9 @@ function cm.initial_effect(c)
 				--local ct=Duel.GetFlagEffectLabel(sp,m)
 				--Duel.SetFlagEffectLabel(sp,m,ct+1)
 				cm[sp]=cm[sp]+1
-				return ng:RandomSelect(sp,1)
+				local tg=ng:RandomSelect(sp,1)
+				Duel.ConfirmCards(sp,tg)
+				return tg
 			else
 				return _Select(g,sp,min,max,nc)
 			end
