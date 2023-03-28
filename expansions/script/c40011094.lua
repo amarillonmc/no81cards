@@ -1,5 +1,5 @@
---王冠圣域的圣佑40011094
-local m=40009774
+--王冠圣域的圣佑
+local m=40011094
 local cm=_G["c"..m]
 cm.named_with_KeterSanctuary=1
 function cm.KeterSanctuary(c)

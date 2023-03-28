@@ -97,15 +97,12 @@ function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_DECK,0,1,nil) end
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,m)
-	local g=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_DECK,0,nil)
-	if #g>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		if tc:IsLocation(LOCATION_DECK) then
-			Duel.ShuffleDeck(tp)
-			Duel.MoveSequence(tc,0)
-			Duel.ConfirmDecktop(tp,1)
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
+	local g=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.ShuffleDeck(tp)
+		Duel.MoveSequence(tc,SEQ_DECKTOP)
+		Duel.ConfirmDecktop(tp,1)
 	end
 end

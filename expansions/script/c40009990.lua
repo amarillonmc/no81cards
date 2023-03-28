@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	e2:SetCountLimit(1,m+1000)
 	e2:SetHintTiming(TIMING_MAIN_END,0)
 	e2:SetCost(aux.bfgcost)
-	e2:SetCondition(cm.condition)
+	e2:SetCondition(cm.condition1)
 	e2:SetOperation(cm.actop)
 	c:RegisterEffect(e2)
 	
@@ -52,7 +52,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
