@@ -75,14 +75,14 @@ function c600032.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RegisterFlagEffect(600032,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1)
 end
 function c600032.filter1(c)
-	return c:GetType()==TYPE_TRAP and (c:IsSetCard(0x4c) or c:IsSetCard(0x89)) and c:IsAbleToDeck()
+	return c:GetType()==TYPE_TRAP and (c:IsSetCard(0x4c) or c:IsSetCard(0x89)) and c:IsAbleToDeckAsCost()
 		and c:CheckActivateEffect(false,true,false)~=nil
 end
 function c600032.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()==0 then return false end
 		e:SetLabel(0)
-		return  Duel.IsExistingMatchingCard(c600032.filter1,tp,LOCATION_GRAVE,0,1,nil)
+		return Duel.IsExistingMatchingCard(c600032.filter1,tp,LOCATION_GRAVE,0,1,nil)
 	end
 	e:SetLabel(0)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
@@ -116,6 +116,7 @@ function c600032.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetLabel(0)
 		return Duel.IsExistingMatchingCard(c600032.filter2,tp,LOCATION_GRAVE,0,1,nil,e,tp,eg,ep,ev,re,r,rp)
 	end
+	e:SetLabel(0)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,c600032.filter2,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()

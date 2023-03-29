@@ -1,6 +1,5 @@
 --食大食蚁兽螳蛉
-local m=11451474
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--cannot special summon
@@ -63,15 +62,19 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,e:GetHandler()) end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() and c:IsDisabled() then
+		Duel.NegateEffect(0)
+		return
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e))
 	if #g==0 then return end
 	local tc=g:GetFirst()
-	if tc==c then c:CancelToGrave() end
+	--if tc==c then c:CancelToGrave() end
 	if Duel.SendtoHand(tc,1-tp,REASON_EFFECT)>0 then
 		if tc:IsPreviousLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
 		if not tc:IsLocation(LOCATION_HAND) or not tc:IsControler(1-tp) then return end

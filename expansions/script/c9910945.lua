@@ -38,15 +38,16 @@ function c9910945.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910945.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_CHAIN_SOLVING)
-		e1:SetCondition(c9910945.negcon)
-		e1:SetOperation(c9910945.negop)
-		e1:SetReset(RESET_CHAIN)
-		Duel.RegisterEffect(e1,tp)
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCondition(c9910945.negcon)
+	e1:SetOperation(c9910945.negop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
 end
 function c9910945.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)

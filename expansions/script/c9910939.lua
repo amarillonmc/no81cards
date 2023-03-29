@@ -39,16 +39,17 @@ function c9910939.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910939.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-		e1:SetTargetRange(LOCATION_ONFIELD,0)
-		e1:SetValue(1)
-		e1:SetReset(RESET_CHAIN)
-		Duel.RegisterEffect(e1,tp)
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e1:SetTargetRange(LOCATION_ONFIELD,0)
+	e1:SetValue(1)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
 end
 function c9910939.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local loc=LOCATION_GRAVE

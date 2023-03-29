@@ -15,8 +15,9 @@ end
 Scl_Library_Switch = true 
 --Print version number
 Debug.Message("You are using Scl's library, Version: " .. Version_Number .. ".")
-Debug.Message("If you find any script errors, call Scl to fix them.")
-Debug.Message("His QQ/VX: 852415212, Email: 15161685390@163.com.")
+Debug.Message("If you find any script errors, Scl won't fix them.")
+Debug.Message("Do NOT contact him and try to fix c10100000.lua yourself.")
+--Debug.Message("His QQ/VX: 852415212, Email: 15161685390@163.com.")
 --this table's contents can be used in anywhere, commonly be used for create effects, or be used in effect's condtions/costs/targets/operations.
 Scl = { }
 --this table's contents can be used in anywhere, commonly be used for registering effect's condtions/costs/targets/operations/values.
@@ -3228,7 +3229,7 @@ end
 			2.extra_check_function: add an additional check to the effect cost/target, call extra_check_function(e, tp, eg, ...) to check.
 		//return list_typ, extra_check_function
 	 4.
-	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }	 
+	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }	
 		Paramas explain: 
 			2.extra_operate_function: add an additional operate to the effect cost/target, call extra_operate_function(current list's selected card(s), all above lists's selected card(s),e, tp, eg, ...) to operate.
 		//return list_typ, extra_operate_function
@@ -4716,7 +4717,7 @@ function Scl.ActivateSepllOrTrap(tc, actp, apply_effect, lim_zone)
 			local tg = te:GetTarget() or aux.TRUE
 			local op = te:GetOperation() or aux.TRUE
 			tg(te, actp, ceg, cep, cev, cre, cr, crp, 1)
-			op(te, actp, ceg, cep, cev, cre, cr, crp)		   
+			op(te, actp, ceg, cep, cev, cre, cr, crp)		  
 		end
 		if zone == LOCATION_FZONE then
 			Duel.RaiseEvent(tc, 4179255, te, 0, tp, tp, Duel.GetCurrentChain())
@@ -5305,7 +5306,7 @@ end
 	3. Love.IsLinkSeries(c)  -- equal to Scl.IsLinkSeries(c, "YiFanJiang") 
 	4. Love.IsPreviousSeries(c) -- equal to Scl.IsPreviousSeries(c, "YiFanJiang")
 	5. Love.IsOriginalSeries(c) -- equal to Scl.IsOriginalSeries(c, "YiFanJiang")
-	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)	 -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
+	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)	-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
 	11~15 Love.IsXXXXSeriesSpell(c) (XXXX can be "", "Fusion", "Link" ……, see above)		-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL)
 	16~20 Love.IsXXXXSeriesTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)   -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_TRAP)
 	21~25 Love.IsXXXXSeriesSpellOrTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)  -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL + TYPE_TRAP)
@@ -5377,14 +5378,14 @@ end
 --Get target player and that num-format value for an effect that register player target information in Effect.SetTarget
 --//return target player, target value
 --[[
-	>>eg1. 	Duel.SetTargetPlayer(tp)
+	>>eg1.  Duel.SetTargetPlayer(tp)
 			Duel.SetTargetParam(1000)
 			Scl.GetPlayerTargetParamas()
 	>> return tp, 1000
 --]]
 function Scl.GetPlayerTargetParamas()
 	local player, value = Duel.GetChainInfo(0, CHAININFO_TARGET_PLAYER, CHAININFO_TARGET_PARAM)
-    Duel.Draw(p,d,REASON_EFFECT)
+	Duel.Draw(p,d,REASON_EFFECT)
 	return player, value
 end
 --Add normal summon or set procedure
@@ -6851,7 +6852,7 @@ s.record_previous_inside_series()
 s.previous_xyz_material_record()
 s.record_official_filter()
 s.add_current_effect_check()
-s.add_type_normal_spell_or_trap_scl()
+--s.add_type_normal_spell_or_trap_scl()
 Scl.RaiseGlobalSetEvent()
 
 
@@ -6861,9 +6862,9 @@ Scl.RaiseGlobalSetEvent()
 
 --[[
 
-10100000 -- Scl's library		  QQ852415212
+10100000 -- Scl's library		 QQ852415212
 
-60152900 -- LaiBill's library	  QQ529508379
+60152900 -- LaiBill's library	 QQ529508379
 			B2Sayaka -- "Miki Sayaka"
 			
 

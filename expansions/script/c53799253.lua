@@ -24,10 +24,10 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetCode(EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(0,1)
-	e1:SetTarget(function(e,c,tp,sumtp,sumpos)return (sumpos&POS_ATTACK)>0 end)
+	e1:SetTarget(cm.splimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	local e2=Effect.CreateEffect(e:GetHandler())
@@ -38,6 +38,9 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetLabelObject(e1)
 	Duel.RegisterEffect(e2,tp)
+end
+function cm.splimit(e,c,tp,sumtp,sumpos)
+	return (sumpos&POS_ATTACK)>0
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsPosition,1,nil,POS_DEFENSE)
