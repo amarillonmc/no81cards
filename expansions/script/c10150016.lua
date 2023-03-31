@@ -54,10 +54,10 @@ function c10150016.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(c,nil,0,REASON_COST)
 end
 function c10150016.spfilter1(c,e,tp)
-	return c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,130,tp,false,false) and Duel.IsExistingMatchingCard(c10150016.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode(),c:GetRace())
+	return c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false) and Duel.IsExistingMatchingCard(c10150016.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode(),c:GetRace())
 end
 function c10150016.spfilter2(c,e,tp,code,race)
-	return c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,130,tp,false,false) and c:IsRace(race) and not c:IsCode(code)
+	return c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false) and c:IsRace(race) and not c:IsCode(code)
 end
 function c10150016.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler(),tp)>=2 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.IsExistingMatchingCard(c10150016.spfilter1,tp,LOCATION_DECK,0,1,nil,e,tp) end
@@ -73,7 +73,7 @@ function c10150016.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.SelectMatchingCard(tp,c10150016.spfilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp,tc:GetCode(),tc:GetRace())
 	sg:AddCard(tc)
 	for sc in aux.Next(sg) do
-		Duel.SpecialSummonStep(sc,130,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummonStep(sc,SUMMON_VALUE_GLADIATOR,tp,tp,false,false,POS_FACEUP)
 		sc:RegisterFlagEffect(sc:GetOriginalCode(),RESET_EVENT+0x1ff0000,0,0)
 	end
 	Duel.SpecialSummonComplete()

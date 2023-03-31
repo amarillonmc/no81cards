@@ -43,14 +43,12 @@ function c10150018.repop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c10150018.spfilter),tp,0x13,0,1,1,nil,e,tp,c)
 	local tc=g:GetFirst()
 	if tc then
-		local stp= c:IsSetCard(0x19) and 130 or 0
-		Duel.SpecialSummon(tc,stp,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(tc,SUMMON_VALUE_GLADIATOR,tp,tp,false,false,POS_FACEUP)
 		if stp==130 then
 		   tc:RegisterFlagEffect(tc:GetOriginalCode(),RESET_EVENT+0x1ff0000,0,0)
 		end
 	end
 end
 function c10150018.spfilter(c,e,tp,rc)
-	local stp= c:IsSetCard(0x19) and 130 or 0
-	return not c:IsCode(rc:GetCode()) and c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,stp,tp,false,false)
+	return not c:IsCode(rc:GetCode()) and c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false)
 end

@@ -67,7 +67,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		return true  
 	end  
 	return false  
-end  
+end 
 function cm.repval(e,c)  
 	return cm.repfilter(c,e:GetHandlerPlayer())  
 end
@@ -75,16 +75,25 @@ function cm.ovcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end  
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)  
 end
+function cm.xyzfilter(c,e)
+	return c:IsCanOverlay()
+end
 function cm.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)  
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end  
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())  
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end  
+	local g=Duel.GetMatchingGroup(cm.xyzfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())  
 end  
 function cm.ovop(e,tp,eg,ep,ev,re,r,rp)  
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())  
-	if g:GetCount()>0 then  
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)  
-		local sg=g:Select(tp,1,1,nil)  
+	local g=Duel.GetMatchingGroup(cm.xyzfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())  
+	if g:GetCount()>0 and e:GetHandler():IsRelateToEffect(e) then  
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+		local sg=g:Select(tp,1,1,cm.xyzfilter)  
 		Duel.HintSelection(sg)  
-		Duel.Overlay(e:GetHandler(),sg)  
+		local tc=sg:GetFirst()
+		local og=tc:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+		Duel.Overlay(e:GetHandler(),Group.FromCards(tc))
 	end  
 end
+

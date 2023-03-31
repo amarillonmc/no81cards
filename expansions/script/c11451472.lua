@@ -1,6 +1,5 @@
 --蚁蚀的溶穴
-local m=11451472
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -120,7 +119,7 @@ function cm.getsetcard(c)
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffectLabel(m)==0 and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetOriginalCode(),cm.getsetcard(c),c:GetOriginalType(),math.max(0,c:GetTextAttack()),math.max(0,c:GetTextDefense()),c:GetOriginalLevel(),c:GetOriginalRace(),c:GetOriginalAttribute()) end
+	if chk==0 then return c:GetFlagEffectLabel(m)==0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end--Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetOriginalCode(),cm.getsetcard(c),c:GetOriginalType(),math.max(0,c:GetTextAttack()),math.max(0,c:GetTextDefense()),c:GetOriginalLevel(),c:GetOriginalRace(),c:GetOriginalAttribute()) end
 	c:SetFlagEffectLabel(m,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end

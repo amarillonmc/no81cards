@@ -35,7 +35,7 @@ function c10150006.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(c,nil,2,REASON_COST)
 end
 function c10150006.filter(c,e,tp)
-	return not c:IsCode(10150006) and c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,130,tp,false,false)
+	return not c:IsCode(10150006) and c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false)
 end
 function c10150006.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
@@ -48,12 +48,12 @@ function c10150006.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c10150006.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then
-		Duel.SpecialSummon(tc,130,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(tc,SUMMON_VALUE_GLADIATOR,tp,tp,false,false,POS_FACEUP)
 		tc:RegisterFlagEffect(tc:GetOriginalCode(),RESET_EVENT+0x1ff0000,0,0)
 	end
 end
 function c10150006.spfilter1(c,e,tp)
-	return c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,130,tp,false,false)
+	return c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false)
 end
 function c10150006.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -73,7 +73,7 @@ function c10150006.spop1(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabel()==1 and ft>=2 and not Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c10150006.spfilter1,tp,LOCATION_HAND,0,1,ct,nil,e,tp)
-	if g:GetCount()>0 and Duel.SpecialSummon(g,130,tp,tp,false,false,POS_FACEUP)~=0 then
+	if g:GetCount()>0 and Duel.SpecialSummon(g,SUMMON_VALUE_GLADIATOR,tp,tp,false,false,POS_FACEUP)~=0 then
 	   for tc in aux.Next(g) do
 		   tc:RegisterFlagEffect(tc:GetOriginalCode(),RESET_EVENT+0x1ff0000,0,0)
 		   local e1=Effect.CreateEffect(e:GetHandler())
