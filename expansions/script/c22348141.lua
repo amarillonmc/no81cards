@@ -13,12 +13,6 @@ function cm.initial_effect(c)
 	e1:SetTarget(c22348141.target)
 	e1:SetOperation(c22348141.activate)
 	c:RegisterEffect(e1)
-	--act in hand
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	e2:SetCondition(c22348141.handcon)
-	c:RegisterEffect(e2)
 	--apply effect
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(22349141,0))
