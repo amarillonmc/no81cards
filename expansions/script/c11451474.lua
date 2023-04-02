@@ -47,7 +47,7 @@ function cm.spfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
 function cm.thfilter(c)
-	return c:IsRace(RACE_INSECT) and c:GetOriginalType()&0x1==0x1
+	return c:IsRace(RACE_INSECT) and c:GetOriginalType()&0x1>0
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
@@ -62,7 +62,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil) end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -71,7 +71,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		return
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e))
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,1,nil)
 	if #g==0 then return end
 	local tc=g:GetFirst()
 	--if tc==c then c:CancelToGrave() end

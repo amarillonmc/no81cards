@@ -14,7 +14,7 @@ function c98921015.tgfilter(c,tp)
 	return c:IsAbleToGrave() and Duel.IsExistingMatchingCard(c98921015.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetLevel())
 end
 function c98921015.thfilter(c,lv)
-	return (c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER)) and c:IsLevel(lv) and c:IsAbleToHand()
+	return (c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL)) and c:IsLevel(lv) and c:IsAbleToHand()
 end
 function c98921015.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c98921015.tgfilter,tp,LOCATION_EXTRA,0,1,nil,tp) end
