@@ -126,7 +126,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.tgsfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) and
-	Duel.IsExistingMatchingCard(cm.opafilter,tp,LOCATION_MZONE,0,1,nil) then
+	Duel.IsExistingMatchingCard(cm.opafilter,tp,LOCATION_MZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 		local g=Duel.SelectMatchingCard(tp,cm.opafilter,tp,LOCATION_MZONE,0,1,1,nil)

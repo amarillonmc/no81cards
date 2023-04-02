@@ -12,7 +12,7 @@ function c11626311.initial_effect(c)
 end
 c11626311.SetCard_YM_Crypticinsect=true 
 function c11626311.filter(c)
-	return c.SetCard_YM_Crypticinsect and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return c.SetCard_YM_Crypticinsect and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 function c11626311.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c11626311.filter(chkc) end

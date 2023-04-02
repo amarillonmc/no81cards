@@ -85,20 +85,18 @@ GM_global_to_deck_check=true
 function cm.zonelimit(e)
 	local tp=e:GetHandlerPlayer()
 	local zone=0
-	if Duel.GetFieldCard(tp,LOCATION_MZONE,2) or Duel.GetFieldCard(tp,LOCATION_MZONE,0) then else zone=zone|0x2 end
-	if Duel.GetFieldCard(tp,LOCATION_MZONE,3) or Duel.GetFieldCard(tp,LOCATION_MZONE,1) then else zone=zone|0x4 end
-	if Duel.GetFieldCard(tp,LOCATION_MZONE,4) or Duel.GetFieldCard(tp,LOCATION_MZONE,2) then else zone=zone|0x8 end
+	for i=1,3 do
+		if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<i)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i-1))>0 then
+			zone=zone|(1<<i)
+		end
+	end
 	return zone
 end
 function cm.splimit(e,c,tp)
 	local zone_check=false
 	for i=1,3 do
-		if Duel.GetFieldCard(tp,LOCATION_MZONE,i) then
-		else
-			if Duel.GetFieldCard(tp,LOCATION_MZONE,i+1) or Duel.GetFieldCard(tp,LOCATION_MZONE,i-1) then 
-			else
-				zone_check=true
-			end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<i)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i-1))>0 then
+			zone_check=true
 		end
 	end
 	if not zone_check or Duel.GetLocationCount(tp,LOCATION_MZONE)<2   
@@ -112,12 +110,12 @@ function cm.sumlimit(e,c,tp)
 	local a=c:GetTributeRequirement()
 	for i=1,3 do
 		if Duel.GetFieldCard(tp,LOCATION_MZONE,i) then
-			if not Duel.GetFieldCard(tp,LOCATION_MZONE,i):IsReleasable(c) or Duel.GetFieldCard(tp,LOCATION_MZONE,i+1) or Duel.GetFieldCard(tp,LOCATION_MZONE,i-1) or a==0 then
+			if not Duel.GetFieldCard(tp,LOCATION_MZONE,i):IsReleasable(c) or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))==0 or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i-1))==0 or a==0 then
 			else
 				zone_check=true
 			end
 		else
-			if Duel.GetFieldCard(tp,LOCATION_MZONE,i+1) or Duel.GetFieldCard(tp,LOCATION_MZONE,i-1) then 
+			if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<i)==0 or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))==0 or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i-1))==0 then 
 			else
 				zone_check=true
 			end
@@ -272,10 +270,11 @@ function cm.tokencon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.actfilter,1,nil,tp)
 end
 function cm.tokentg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,7429401,0,TYPES_TOKEN_MONSTER,1500,500,3,RACE_SEASERPENT,ATTRIBUTE_WATER,POS_FACEUP_ATTACK) end
-	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,2,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,0,0)
+	local ft=math.min(Duel.GetLocationCount(tp,LOCATION_MZONE),2)
+	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,ft,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,ft,0,0)
 end
 function cm.atkfilter(c)
 	return c:IsFaceup() and c:IsCode(7429401)
@@ -288,9 +287,68 @@ function cm.tokenfilter2(c)
 end
 function cm.tokenop2(e,tp,eg,ep,ev,re,r,rp)
 	local eg=e:GetLabelObject()
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=1
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,7429401,0,TYPES_TOKEN_MONSTER,1500,500,3,RACE_SEASERPENT,ATTRIBUTE_WATER,POS_FACEUP_ATTACK) then return end
+	local ft=math.min(Duel.GetLocationCount(tp,LOCATION_MZONE),2)
+	if ft<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,7429401,0,TYPES_TOKEN_MONSTER,1500,500,3,RACE_SEASERPENT,ATTRIBUTE_WATER,POS_FACEUP_ATTACK) then return end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+	if ft==1 then
+		Duel.Hint(HINT_CARD,0,m)
+		if e:GetLabel()~=1 then
+			local token1=Duel.CreateToken(tp,7429401)
+			Duel.SpecialSummonStep(token1,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UNRELEASABLE_SUM)
+			e1:SetValue(1)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			token1:RegisterEffect(e1,true)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+			token1:RegisterEffect(e2,true)
+			local e3=e2:Clone()
+			e3:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+			token1:RegisterEffect(e3,true)
+			local e4=e2:Clone()
+			e4:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+			token1:RegisterEffect(e4,true)
+			local e5=e2:Clone()
+			e5:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+			token1:RegisterEffect(e5,true)
+			Duel.SpecialSummonComplete()
+		else
+			local token1=Duel.CreateToken(tp,7429412)
+			Duel.SpecialSummonStep(token1,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UNRELEASABLE_SUM)
+			e1:SetValue(1)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			token1:RegisterEffect(e1,true)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+			token1:RegisterEffect(e2,true)
+			local e3=e2:Clone()
+			e3:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+			token1:RegisterEffect(e3,true)
+			local e4=e2:Clone()
+			e4:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+			token1:RegisterEffect(e4,true)
+			local e5=e2:Clone()
+			e5:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+			token1:RegisterEffect(e5,true)
+			Duel.SpecialSummonComplete()
+		end
+		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+		for tc in aux.Next(g) do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(-500)
+			tc:RegisterEffect(e1)
+		end
+		return
+	end
 	if e:GetLabel()==0 then
 		Duel.Hint(HINT_CARD,0,m)
 		local token1=Duel.CreateToken(tp,7429401)
@@ -421,14 +479,24 @@ function cm.tokenop2(e,tp,eg,ep,ev,re,r,rp)
 			token2:RegisterEffect(e5,true)
 		Duel.SpecialSummonComplete()
 	end
-	local g=Duel.GetMatchingGroup(cm.atkfilter,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
 	for tc in aux.Next(g) do
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(500)
+		e1:SetValue(-500)
 		tc:RegisterEffect(e1)
 	end
+	--local g=Duel.GetMatchingGroup(cm.atkfilter,tp,LOCATION_MZONE,0,nil)
+	--for tc in aux.Next(g) do
+	--  local e1=Effect.CreateEffect(e:GetHandler())
+	--  e1:SetType(EFFECT_TYPE_SINGLE)
+	--  e1:SetCode(EFFECT_UPDATE_ATTACK)
+	--  e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	--  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	--  e1:SetValue(500)
+	--  tc:RegisterEffect(e1)
+	--end
 end

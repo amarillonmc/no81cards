@@ -94,16 +94,14 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-			local sg=g:RandomSelect(1-tp,1)
-			Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
+			Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 		end
 	end
 	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
 			local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 			if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-				local sg=g:RandomSelect(1-tp,1)
-				Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
+				Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 			end
 			op(e,tp,eg,ep,ev,re,r,rp)
 		end

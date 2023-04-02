@@ -46,7 +46,7 @@ function c9910443.descon(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsChainNegatable(ev)
 end
 function c9910443.cfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x952) and c:IsAbleToRemoveAsCost()
 end
 function c9910443.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Group.CreateGroup()

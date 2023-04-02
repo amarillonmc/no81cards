@@ -136,7 +136,7 @@ function c11626301.htdop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c11626301.hxtgecon(e,tp,eg,ep,ev,re,r,rp) 
-	return eg:IsExists(Card.IsControler,1,nil,tp)
+	return eg:IsExists(Card.IsControler,1,nil,tp) and not Duel.GetCurrentPhase()==PHASE_END 
 end 
 function c11626301.pbfil(c) 
 	return not c:IsPublic() and c:IsAbleToDeck() and not c.SetCard_YM_Crypticinsect  
@@ -145,9 +145,9 @@ function c11626301.hxtgeop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	if eg:IsExists(Card.IsControler,1,nil,tp) then 
 		Duel.Hint(HINT_CARD,0,11626301) 
-		Duel.Draw(tp,1,REASON_RULE+REASON_EFFECT) 
-		if Duel.IsExistingMatchingCard(c11626301.pbfil,tp,LOCATION_HAND,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>=7 then 
-		local sg=Duel.SelectMatchingCard(tp,c11626301.pbfil,tp,LOCATION_HAND,0,1,1,nil) 
+		Duel.Draw(tp,1,REASON_EFFECT) 
+		if Duel.IsExistingMatchingCard(c11626301.pbfil,tp,LOCATION_HAND,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>=8 then 
+		local sg=Duel.GetMatchingGroup(c11626301.pbfil,tp,LOCATION_HAND,0,nil):RandomSelect(tp,1)
 		Duel.ConfirmCards(1-tp,sg)
 		Duel.SendtoDeck(sg,nil,1,REASON_EFFECT) 
 		end 

@@ -1,13 +1,8 @@
 --永夏的零落
+require("expansions/script/c9910950")
 local m=11451639
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	--flag
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e0:SetCode(EVENT_REMOVE)
-	e0:SetOperation(cm.flag)
-	c:RegisterEffect(e0)
 	--change effect
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -23,12 +18,6 @@ function cm.initial_effect(c)
 		ge1:SetCode(EVENT_TO_DECK)
 		ge1:SetOperation(cm.check)
 		Duel.RegisterEffect(ge1,0)
-	end
-end
-function cm.flag(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsReason(REASON_EFFECT) then
-		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
 	end
 end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
@@ -52,6 +41,7 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	local ph,ph2=Duel.GetCurrentPhase(),Duel.GetCurrentPhase()
 	if ph==PHASE_BATTLE then ph2=PHASE_BATTLE_STEP else ph2=PHASE_END end
 	if Duel.GetFlagEffect(0,m)>=7 then Duel.SkipPhase(Duel.GetTurnPlayer(),ph,RESET_PHASE+ph2,1) end
+	QutryYx.ExtraEffectSelect(e,tp,true)
 end
 function cm.filter(c)
 	return c:IsFacedown() and c:IsAbleToDeck()

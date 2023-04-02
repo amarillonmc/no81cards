@@ -147,9 +147,9 @@ function c11626305.hxtheop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	if eg:IsExists(Card.IsControler,1,nil,tp) then 
 		Duel.Hint(HINT_CARD,0,11626305) 
-		Duel.Draw(tp,1,REASON_RULE+REASON_EFFECT) 
-		if Duel.IsExistingMatchingCard(c11626305.pbfil,tp,LOCATION_HAND,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>=7 then 
-		local sg=Duel.SelectMatchingCard(tp,c11626305.pbfil,tp,LOCATION_HAND,0,1,1,nil) 
+		Duel.Draw(tp,1,REASON_EFFECT) 
+		if Duel.IsExistingMatchingCard(c11626305.pbfil,tp,LOCATION_HAND,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>=8 then 
+		local sg=Duel.GetMatchingGroup(cm.pbfil,tp,LOCATION_HAND,0,nil):RandomSelect(tp,1)
 		Duel.ConfirmCards(1-tp,sg)
 		Duel.SendtoDeck(sg,nil,1,REASON_EFFECT) 
 		end 

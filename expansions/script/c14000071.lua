@@ -14,10 +14,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--draw
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_DRAW+CATEGORY_TOGRAVE)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_TOEXTRA+CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(cm.drtg)
@@ -58,20 +59,32 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsAbleToDeck() and c:IsType(TYPE_FUSION)
+	return c:IsFaceup() and c:IsType(TYPE_FUSION)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and cm.filter(chkc) end
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingTarget(cm.filter,tp,LOCATION_REMOVED,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_REMOVED,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc then return end
-	if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
+	local res=false
+	if tc:IsAbleToDeck() and (not tc:IsAbleToGrave() or Duel.SelectOption(tp,aux.Stringid(m,1),1191)==0) then
+		if Duel.SendtoDeck(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_EXTRA) then
+			Duel.ConfirmCards(1-tp,tc)
+			res=true
+		end
+	else
+		if Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)>0 and tc:IsLocation(LOCATION_GRAVE) then
+			res=true
+		end
+	end
+	if res then
 		Duel.BreakEffect()
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end

@@ -116,7 +116,7 @@ function c11626307.accost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST) 
 end
 function c11626307.actg2(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(c11626307.dpbfil,tp,LOCATION_DECK,0,2,nil) and Duel.IsPlayerCanDraw(tp,1) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(c11626307.dpbfil,tp,LOCATION_DECK,0,2,nil) and Duel.IsPlayerCanDraw(tp,2) end 
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_DECK) 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK) 
 end 

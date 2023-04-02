@@ -1,4 +1,6 @@
 --隐匿虫 苍蝇
+local m=11626303
+local cm=_G["c"..m]
 function c11626303.initial_effect(c)
 	--to deck 
 	local e1=Effect.CreateEffect(c) 
@@ -110,6 +112,11 @@ function c11626303.htdop(e,tp,eg,ep,ev,re,r,rp)
 		--
 		if Duel.GetFlagEffect(tp,1111114)==0 then 
 			Duel.RegisterFlagEffect(tp,1111114,0,0,0)
+			if not cm.gchk then
+				cm.gchk=true
+				cm[0]=3
+				cm[1]=3
+			end
 			local e1=Effect.CreateEffect(c)  
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
 			e1:SetCode(EVENT_CHAINING)  
@@ -140,16 +147,19 @@ function c11626303.pbfil(c)
 	return not c:IsPublic() and c:IsAbleToDeck() and not c.SetCard_YM_Crypticinsect  
 end 
 function c11626303.hxtgeop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler() 
-	if rp==tp then 
-		Duel.Hint(HINT_CARD,0,11626303) 
-		Duel.Draw(tp,1,REASON_RULE+REASON_EFFECT) 
-		if Duel.IsExistingMatchingCard(c11626303.pbfil,tp,LOCATION_HAND,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>=7 then 
-		local sg=Duel.SelectMatchingCard(tp,c11626303.pbfil,tp,LOCATION_HAND,0,1,1,nil) 
-		Duel.ConfirmCards(1-tp,sg)
-		Duel.SendtoDeck(sg,nil,1,REASON_EFFECT) 
+	if cm[rp]<=1 then
+		cm[rp]=3
+		local c=e:GetHandler() 
+		if rp==tp then 
+			Duel.Hint(HINT_CARD,0,11626303) 
+			Duel.Draw(tp,1,REASON_EFFECT) 
+			if Duel.IsExistingMatchingCard(c11626303.pbfil,tp,LOCATION_HAND,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>=8 then 
+			local sg=Duel.GetMatchingGroup(cm.pbfil,tp,LOCATION_HAND,0,nil):RandomSelect(tp,1)
+			Duel.ConfirmCards(1-tp,sg)
+			Duel.SendtoDeck(sg,nil,1,REASON_EFFECT) 
+			end 
 		end 
-	end 
+	else cm[rp]=cm[rp]-1 end
 end 
 function c11626303.damval(e,re,val,r,rp)
 	if r&REASON_EFFECT~=0 and re then

@@ -35,7 +35,7 @@ end
 function c9910056.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910056.filter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,2,2,nil)
-	if g:GetCount()>0 and Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0 then
+	if g:GetCount()==2 and Duel.SendtoDeck(g,nil,2,REASON_EFFECT)==2 then
 		Duel.BreakEffect()
 		Duel.ShuffleDeck(tp)
 		Duel.Draw(tp,1,REASON_EFFECT)

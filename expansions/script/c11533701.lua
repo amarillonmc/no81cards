@@ -10,7 +10,7 @@ function c11533701.initial_effect(c)
 	c:RegisterEffect(e1) 
 	--rl rm td 
 	local e1=Effect.CreateEffect(c) 
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_REMOVE) 
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_RELEASE+CATEGORY_REMOVE) 
 	e1:SetType(EFFECT_TYPE_IGNITION) 
 	e1:SetRange(LOCATION_HAND) 
 	e1:SetCountLimit(1,11533701) 
@@ -49,35 +49,54 @@ function c11533701.rrtcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end 
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end 
+function c11533701.srfil(c)  
+	return c:IsAbleToHand() and c:IsSetCard(0xb4)   
+end 
 function c11533701.rrfil(c) 
-	if not c:IsSetCard(0xb4) then return false end 
-	if not c:IsType(TYPE_MONSTER) then return false end  
-	return c:IsAbleToRemove() or c:IsAbleToGrave() 
+	if not c:IsSetCard(0xb4) then return false end  
+	return c:IsAbleToRemove() or c:IsReleasable() or c:IsAbleToGrave() 
 end 
 function c11533701.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11533701.rrfil,tp,LOCATION_DECK,0,1,nil) end 
-	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533701.srfil,tp,LOCATION_DECK,0,1,nil) end 
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK) 
 end 
 function c11533701.rrtop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(c11533701.rrfil,tp,LOCATION_DECK,0,nil) 
+	local g=Duel.GetMatchingGroup(c11533701.srfil,tp,LOCATION_DECK,0,nil) 
 	if g:GetCount()>0 then 
-		local tc=g:Select(tp,1,1,nil):GetFirst()  
-		local b1=tc:IsAbleToGrave()
+		local sg=g:Select(tp,1,1,nil) 
+		Duel.SendtoHand(sg,tp,REASON_EFFECT) 
+		Duel.ConfirmCards(1-tp,sg) 
+		if Duel.IsExistingMatchingCard(c11533701.rrfil,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11533701,4)) then 
+		Duel.BreakEffect() 
+		local tc=Duel.SelectMatchingCard(tp,c11533701.rrfil,tp,LOCATION_HAND,0,1,1,nil):GetFirst() 
+		local b1=tc:IsReleasable()
 		local b2=tc:IsAbleToRemove() 
+		local b3=tc:IsAbleToGrave()  
 		local op=0 
-		if b1 and b2 then 
-			op=Duel.SelectOption(tp,aux.Stringid(11533701,1),aux.Stringid(11533701,2))
-		elseif b1 then 
-			op=Duel.SelectOption(tp,aux.Stringid(11533701,1))
-		elseif b2 then 
-			op=Duel.SelectOption(tp,aux.Stringid(11533701,2))+1 
-		end 
-		if op==0 then 
-			Duel.SendtoGrave(tc,REASON_EFFECT)  
-		elseif op==1 then 
-			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+			if b1 and b2 and b3 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11533701,1),aux.Stringid(11533701,2),aux.Stringid(11533701,3))
+			elseif b1 and b2 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11533701,1),aux.Stringid(11533701,2))
+			elseif b2 and b3 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11533701,2),aux.Stringid(11533701,3))+1 
+			elseif b1 and b3 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11533701,2),aux.Stringid(11533701,3)) 
+				if op==1 then op=op+1 end 
+			elseif b1 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11533701,1)) 
+			elseif b2 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11533701,2))+1 
+			elseif b3 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11533701,3))+2		 
+			end 
+			if op==0 then 
+				Duel.Release(tc,REASON_EFFECT)  
+			elseif op==1 then 
+				Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+			elseif op==2 then 
+				Duel.SendtoGrave(tc,REASON_EFFECT)
+			end 
 		end 
 	end 
 end 
@@ -95,7 +114,7 @@ function c11533701.rmop(e,tp,eg,ep,ev,re,r,rp)
 	if g1:GetCount()>0 then 
 		Duel.ConfirmCards(1-tp,g1) 
 		if Duel.SelectYesNo(tp,aux.Stringid(11533701,0)) then 
-			Duel.SendtoGrave(g1,POS_FACEUP,REASON_EFFECT)   
+			Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)   
 		end
 	end 
 	local g2=Duel.GetDecktopGroup(1-tp,1) 

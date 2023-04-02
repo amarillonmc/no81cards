@@ -42,6 +42,14 @@ function cm.initial_effect(c)
 		local e2=e1:Clone()
 		Duel.RegisterEffect(e2,1)
 	end
+	if not BATTLE_PHASE_CHECK then
+		BATTLE_PHASE_CHECK=0
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_PHASE_START+PHASE_BATTLE_START)
+		ge1:SetOperation(function() BATTLE_PHASE_CHECK=BATTLE_PHASE_CHECK+1 end)
+		Duel.RegisterEffect(ge1,0)
+	end
 	if not cm.global_check then
 		cm.global_check=true
 		local ge3=Effect.CreateEffect(c)
@@ -99,19 +107,24 @@ function cm.clear2(e,tp,eg,ep,ev,re,r,rp)
 	BATTLE_CARD_CHECK={}
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE and Duel.GetFlagEffect(0,11451771)>0
+	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE --and Duel.GetFlagEffect(0,11451771)>0
 end
 function cm.nfilter(c)
 	return c~=Duel.GetAttacker() and c~=Duel.GetAttackTarget()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local check1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
+	local check2=Duel.GetCurrentPhase()==PHASE_BATTLE_STEP and Duel.GetAttackTarget() and Duel.GetFlagEffect(tp,m)==0 and #g>0
+	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and (check1 or check2) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if Duel.GetCurrentPhase()==PHASE_BATTLE_STEP and Duel.GetAttacker() and Duel.GetFlagEffect(tp,m)==0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	local check1=c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	local check2=Duel.GetCurrentPhase()==PHASE_BATTLE_STEP and Duel.GetAttackTarget() and Duel.GetFlagEffect(tp,m)==0 and #g>0
+	if check2 and (not check1 or Duel.SelectYesNo(tp,aux.Stringid(m,0))) then
 		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_BATTLE_STEP,0,1)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local tg=g:Select(tp,1,1,nil)
@@ -140,19 +153,10 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.drop2(e,tp,eg,ep,ev,re,r,rp)
-	if #BATTLE_CARD_CHECK>0 then
-		local hash={}
-		local class=0
-		for i=1,#BATTLE_CARD_CHECK do
-			local code=BATTLE_CARD_CHECK[i]
-			if not hash[code] and (i~=#BATTLE_CARD_CHECK or Duel.GetAttacker()~=e:GetHandler()) then
-				class=class+1
-				hash[code]=1
-			elseif hash[code] then
-				hash[code]=hash[code]+1
-			end
-		end
+	if BATTLE_PHASE_CHECK>0 then
+		local class=BATTLE_PHASE_CHECK
 		if class>0 then
+			class=math.ceil(class/2)
 			local tg=Group.CreateGroup()
 			Duel.Draw(tp,class,REASON_EFFECT)
 			tg:Merge(Duel.GetOperatedGroup())
@@ -180,6 +184,7 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
+	if not g then return end
 	local sg=g:Filter(cm.filter6,nil)
 	g:DeleteGroup()
 	Duel.SendtoHand(g,tp,REASON_EFFECT)

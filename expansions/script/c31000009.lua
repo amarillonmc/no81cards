@@ -83,14 +83,26 @@ function c31000009.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	local gc=Duel.GetMatchingGroupCount(filter,tp,LOCATION_MZONE,0,nil)
 	if chk==0 then return Duel.GetFieldGroup(tp,0,LOCATION_HAND):GetCount()>=gc end
-	e:SetLabel(gc)
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,0,0,1-tp,e:GetLabel())
 end
 
 function c31000009.operation(e,tp,eg,ep,ev,re,r,rp)
+	local filter=function(c)
+		return c:IsSetCard(0x308)
+	end
+	local retop=function(e,tp,eg,ep,ev,re,r,rp)
+		local sg=e:GetLabelObject()
+		for rc in aux.Next(sg) do
+			if rc:GetFlagEffectLabel(31000009)~=e:GetLabel() then
+				sg:RemoveCard(rc)
+			end
+		end
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+	end
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
-	if g:GetCount()>=e:GetLabel() then
-		local sg=g:RandomSelect(1-tp,e:GetLabel())
+	local gc=Duel.GetMatchingGroupCount(filter,tp,LOCATION_MZONE,0,nil)
+	if g:GetCount()>=gc then
+		local sg=g:RandomSelect(1-tp,gc)
 		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 		sg:KeepAlive()
 		local c=e:GetHandler()
@@ -101,23 +113,13 @@ function c31000009.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCountLimit(1)
 		e1:SetLabel(fid)
 		e1:SetLabelObject(sg)
-		e1:SetOperation(c31000009.retop)
+		e1:SetOperation(retop)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 		for rc in aux.Next(sg) do
 			rc:RegisterFlagEffect(31000009,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
 		end
 	end
-end
-
-function c31000009.retop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=e:GetLabelObject()
-	for rc in aux.Next(sg) do
-		if rc:GetFlagEffectLabel(31000009)~=e:GetLabel() then
-			sg:RemoveCard(rc)
-		end
-	end
-	Duel.SendtoHand(sg,nil,REASON_EFFECT)
 end
 
 function c31000009.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

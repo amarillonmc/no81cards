@@ -19,22 +19,27 @@ function c29065509.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCountLimit(1,29065509)
+	e2:SetCountLimit(1)
+	e2:SetCost(c29065509.decost)
 	e2:SetTarget(c29065509.destg)
 	e2:SetOperation(c29065509.desop)
 	c:RegisterEffect(e2)
+end
+function c29065509.decost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c29065509.ovfilter(c)
 	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29065509.xyzop(e,tp,chk)
-	if chk==0 then return (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST))) and Duel.GetFlagEffect(tp,29065509)==0 end
+	if chk==0 then return (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,3,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST))) and Duel.GetFlagEffect(tp,29065509)==0 end
 	if Duel.GetFlagEffect(tp,29096814)==1 then
 	Duel.ResetFlagEffect(tp,29096814)
-	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_RULE)
+	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
 	Duel.RegisterFlagEffect(tp,29065509,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	else
-	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
+	Duel.RemoveCounter(tp,1,0,0x10ae,3,REASON_RULE)
 	Duel.RegisterFlagEffect(tp,29065509,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	end
 end

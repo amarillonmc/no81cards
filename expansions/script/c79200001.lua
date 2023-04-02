@@ -27,7 +27,7 @@ function c79200001.initial_effect(c)
 	e2:SetOperation(c79200001.thop)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(79200001,0))
+	e3:SetDescription(aux.Stringid(79200001,1))
 	e3:SetCategory(CATEGORY_TOHAND)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetType(EFFECT_TYPE_IGNITION)
@@ -136,7 +136,7 @@ function c79200001.thop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetDecktopGroup(tp,5)
 		if g:GetCount()>0 then
 			Duel.DisableShuffleCheck()
-			if g:IsExists(c79200001.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(79200001,1)) then
+			if g:IsExists(c79200001.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(79200001,2)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local sg=g:FilterSelect(tp,c79200001.thfilter,1,1,nil)
 				Duel.SendtoHand(sg,nil,REASON_EFFECT)

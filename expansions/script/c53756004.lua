@@ -14,23 +14,23 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_ACTIVATE_COST)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_ADJUST)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetLabelObject(e1)
-	e2:SetTargetRange(1,1)
-	e2:SetTarget(cm.actarget)
-	e2:SetCost(cm.costchk)
-	e2:SetOperation(cm.costop)
+	e2:SetOperation(cm.adjustop)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_ADJUST)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_ACTIVATE_COST)
 	e3:SetRange(LOCATION_HAND)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetLabelObject(e1)
-	e3:SetOperation(cm.adjustop)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetLabelObject(e2)
+	e3:SetTargetRange(1,1)
+	e3:SetTarget(cm.actarget)
+	e3:SetCost(cm.costchk)
+	e3:SetOperation(cm.costop)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
@@ -40,8 +40,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetCode(EVENT_BATTLE_START)
+	e5:SetCode(EVENT_ADJUST)
 	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(cm.negcon)
 	e5:SetOperation(cm.negop)
 	c:RegisterEffect(e5)
 	local e6=Effect.CreateEffect(c)
@@ -83,7 +84,7 @@ function cm.acsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.actarget(e,te,tp)
-	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
+	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject():GetLabelObject()
 end
 function cm.costchk(e,te_or_c,tp)
 	local fdzone=0
@@ -100,7 +101,7 @@ function cm.costchk(e,te_or_c,tp)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local te=e:GetLabelObject()
+	local te=e:GetLabelObject():GetLabelObject()
 	local zone=e:GetLabel()
 	if zone==0 then Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false) else
 		local flag=Duel.SelectDisableField(tp,1,LOCATION_SZONE,0,~zone&0x1f00)
@@ -117,7 +118,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e0,true)
 	local te2=te:Clone()
 	c:RegisterEffect(te2,true)
-	e:SetLabelObject(te2)
+	e:GetLabelObject():SetLabelObject(te2)
 	te:SetType(EFFECT_TYPE_ACTIVATE)
 	local ev0=Duel.GetCurrentChain()+1
 	local e1=Effect.CreateEffect(c)
@@ -181,7 +182,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			local cost=te3:GetCost()
 			if cost and not cost(te3,te,tp) then
 				local tg=te3:GetTarget()
-				if not tg or tg(te3,e,tp) then
+				if not tg or tg(te3,te,tp) then
 					table.insert(t1,te3)
 					table.insert(t2,5)
 				end
@@ -334,7 +335,14 @@ function cm.chval(_val,res)
 	return function(e,re,...)
 				local x=nil
 				if aux.GetValueType(re)=="Effect" then x=re:GetHandler() elseif aux.GetValueType(re)=="Card" then
-					local rc=Duel.CreateToken(tp,m+50)
+					local rc=Duel.CreateToken(tp,1344018)
+					local e1=Effect.CreateEffect(rc)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_CHANGE_CODE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetValue(m)
+					rc:RegisterEffect(e1,true)
+					rc:RegisterFlagEffect(m+66,0,0,0)
 					re=rc:GetActivateEffect()
 				else return res end
 				if x and x:IsHasEffect(m) then return res end
@@ -348,12 +356,16 @@ function cm.chtg2(_tg,res)
 				return _tg(e,te,...)
 			end
 end
+function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return (Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE) or Duel.GetCurrentPhase()==PHASE_BATTLE_STEP) and Duel.GetFlagEffect(0,m)==0
+end
 function cm.atkfilter(c)
 	return c:IsFaceup() and c:GetAttack()>0
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	local p=Duel.GetAttacker():GetControler()
+	local apply=true
 	if Duel.IsExistingMatchingCard(cm.atkfilter,p,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectYesNo(p,aux.Stringid(m,1)) then
 		local g=Duel.SelectMatchingCard(p,cm.atkfilter,p,LOCATION_MZONE,0,1,1,nil)
 		Duel.HintSelection(g)
@@ -366,7 +378,8 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(0)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 			tc:RegisterEffect(e1)
-			if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
+			if not c:IsImmuneToEffect(e) and Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
+				apply=false
 				local e2=Effect.CreateEffect(c)
 				e2:SetCode(EFFECT_CHANGE_TYPE)
 				e2:SetType(EFFECT_TYPE_SINGLE)
@@ -376,7 +389,11 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 				c:RegisterEffect(e2)
 			end
 		end
-	else Duel.NegateAttack() end
+	end
+	if apply then
+		Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_DAMAGE,0,1)
+		Duel.NegateAttack()
+	end
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

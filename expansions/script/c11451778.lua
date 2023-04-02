@@ -42,6 +42,14 @@ function cm.initial_effect(c)
 		local e2=e1:Clone()
 		Duel.RegisterEffect(e2,1)
 	end
+	if not BATTLE_PHASE_CHECK then
+		BATTLE_PHASE_CHECK=0
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_PHASE_START+PHASE_BATTLE_START)
+		ge1:SetOperation(function() BATTLE_PHASE_CHECK=BATTLE_PHASE_CHECK+1 end)
+		Duel.RegisterEffect(ge1,0)
+	end
 	if not MAX_BATTLE_ATK then
 		MAX_BATTLE_ATK=0
 		local ge1=Effect.CreateEffect(c)
@@ -111,7 +119,7 @@ function cm.clear2(e,tp,eg,ep,ev,re,r,rp)
 	BATTLE_CARD_CHECK={}
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE and Duel.GetFlagEffect(0,11451771)>0
+	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE --and Duel.GetFlagEffect(0,11451771)>0
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
@@ -123,7 +131,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_SINGLE)
 		e4:SetCode(EFFECT_SET_BASE_ATTACK)
-		e4:SetValue(MAX_BATTLE_ATK+1000)
+		e4:SetValue(MAX_BATTLE_ATK)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e4)
 		local e5=e4:Clone()
@@ -151,19 +159,10 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.drop2(e,tp,eg,ep,ev,re,r,rp)
-	if #BATTLE_CARD_CHECK>0 then
-		local hash={}
-		local class=0
-		for i=1,#BATTLE_CARD_CHECK do
-			local code=BATTLE_CARD_CHECK[i]
-			if not hash[code] and (i~=#BATTLE_CARD_CHECK or Duel.GetAttacker()~=e:GetHandler()) then
-				class=class+1
-				hash[code]=1
-			elseif hash[code] then
-				hash[code]=hash[code]+1
-			end
-		end
+	if BATTLE_PHASE_CHECK>0 then
+		local class=BATTLE_PHASE_CHECK
 		if class>0 then
+			class=math.ceil(class/2)
 			local tg=Group.CreateGroup()
 			Duel.Draw(tp,class,REASON_EFFECT)
 			tg:Merge(Duel.GetOperatedGroup())
@@ -191,6 +190,7 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
+	if not g then return end
 	local sg=g:Filter(cm.filter6,nil)
 	g:DeleteGroup()
 	Duel.SendtoHand(g,tp,REASON_EFFECT)

@@ -25,6 +25,7 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_IGNITION)
 	e2:SetCondition(cm.spcon)
+	e2:SetTarget(cm.ovtg2)
 	c:RegisterEffect(e2) 
 end
 function cm.sprfilter(c,tp,g,sc)   
@@ -54,6 +55,7 @@ function cm.ofilter(c,e)
 end
 function cm.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) and Duel.IsExistingMatchingCard(cm.ofilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -70,4 +72,8 @@ end
 ----
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSetCard(0x6212)
+end
+function cm.ovtg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) and Duel.IsExistingMatchingCard(cm.ofilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end

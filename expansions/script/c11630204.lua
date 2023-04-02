@@ -14,61 +14,46 @@ function c11630204.initial_effect(c)
 end
 cm.SetCard_xxj_Mirror=true
 function cm.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsType(TYPE_MONSTER) and c:IsLevelBelow(6) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.sfilter(c)
+	return not c:IsPublic() and c:IsType(TYPE_MONSTER)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) or Duel.IsPlayerCanSpecialSummon(tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-	getmetatable(e:GetHandler()).announce_filter={TYPE_MONSTER,OPCODE_ISTYPE}
-	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
-	Duel.SetTargetParam(ac)
-	Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
-end
-function cm.spfilter2(c,e,tp,ac)
-	return c:IsType(TYPE_MONSTER) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and not c:IsCode(ac)
-end
-function cm.cfilter(c,tc,ac)
-	return c:IsCode(ac) and (not c:IsRace(tc:GetRace()) or not c:IsAttribute(tc:GetAttribute()) or not c:IsLevel(tc:GetLevel()) )
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) and Duel.IsPlayerCanSpecialSummon(tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.sfilter,tp,LOCATION_HAND,0,1,nil) end  
+	local g=Duel.SelectMatchingCard(tp,cm.sfilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.ConfirmCards(1-tp,g)
+	local ra=g:GetFirst():GetRace()
+	local att=g:GetFirst():GetAttribute()
+	local lv=g:GetFirst():GetLevel()
+	e:SetLabel(ra,att,lv)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_HAND)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	local c=e:GetHandler()
+	local ra,att,lv=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter2),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,ac)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-		Duel.ConfirmCards(1-tp,g)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(m,2))
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
-		e1:SetCode(EFFECT_ADD_CODE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		e1:SetValue(ac)
-		tc:RegisterEffect(e1)
 		--
-		if Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,1,nil,tc,ac) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			local cg=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,tc,ac)
-			if cg:GetCount()==0 then return end
-			Duel.ConfirmCards(1-tp,cg)
-			local ec=cg:GetFirst()
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_CHANGE_RACE)
-			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e2:SetValue(ec:GetRace())
-			tc:RegisterEffect(e2)
-			local e3=e2:Clone()
-			e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
-			e3:SetValue(ec:GetAttribute())
-			tc:RegisterEffect(e3)
-			local e4=e2:Clone()
-			e4:SetCode(EFFECT_CHANGE_LEVEL)
-			e4:SetValue(ec:GetLevel())
-			tc:RegisterEffect(e4)
-		end
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_CHANGE_RACE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetValue(ra)
+		tc:RegisterEffect(e2)
+		local e3=e2:Clone()
+		e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+		e3:SetValue(att)
+		tc:RegisterEffect(e3)
+		local e4=e2:Clone()
+		e4:SetCode(EFFECT_CHANGE_LEVEL)
+		e4:SetValue(lv)
+		tc:RegisterEffect(e4)
 	end
 end

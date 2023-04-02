@@ -24,20 +24,20 @@ function cm.initial_effect(c)
 	e2:SetTarget(c22348147.sptg)
 	e2:SetOperation(c22348147.spop)
 	c:RegisterEffect(e2)
-	c22348147.onfield_effect=e1
+--	c22348147.onfield_effect=e1
 	c22348147.SetCard_diyuemo=true
 	
 end
 function c22348147.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
 end
 function c22348147.rmfilter(c)
 	return c:IsSetCard(0x45) and c:IsAbleToRemove()
 end
 function c22348147.rmop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=2 then return end
-	Duel.ConfirmDecktop(tp,3)
-	local g=Duel.GetDecktopGroup(tp,3)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=4 then return end
+	Duel.ConfirmDecktop(tp,5)
+	local g=Duel.GetDecktopGroup(tp,5)
 	local tg=g:Filter(c22348147.rmfilter,nil)
 	local ct1=tg:GetCount()
 	if ct1>0 and Duel.SelectYesNo(tp,aux.Stringid(22348147,0)) then

@@ -1,9 +1,9 @@
 --波动节点·驻波端口
 --21.07.14
-local m=11451549
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
+	c:SetSPSummonOnce(m)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -61,7 +61,7 @@ function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local cg=mg:Filter(cm.syncheck,sg,sg,mg)
 	local cg0=cg
 	local finish=cm.syngoal(sg)
-	for i=1,99 do
+	while 1==1 do
 		cg=cg0:Filter(cm.syncheck,sg,sg,cg0)
 		cg:Sub(sg)
 		finish=cm.syngoal(sg)

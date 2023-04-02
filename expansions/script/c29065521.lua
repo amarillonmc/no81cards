@@ -2,37 +2,34 @@
 c29065521.named_with_Arknight=1
 function c29065521.initial_effect(c)
 	c:EnableCounterPermit(0x10ae)
+	c:SetUniqueOnField(1,0,29065521,LOCATION_MZONE)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,29065521+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c29065521.spcon)
 	c:RegisterEffect(e1)
 	--counter
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_COUNTER)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,29065522)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetTarget(c29065521.cttg)
 	e2:SetOperation(c29065521.ctop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e3)
-	c29065521.summon_effect=e2
 end
 function c29065521.spfilter(c)
-	return c:IsFacedown() or not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29065521.spcon(e,c,tp,eg,ep,ev,re,r,rp)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return not Duel.IsExistingMatchingCard(c29065521.spfilter,tp,LOCATION_MZONE,0,1,nil)
+	return (Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0,nil)==0 or Duel.IsExistingMatchingCard(c29065521.spfilter,tp,LOCATION_MZONE,0,1,nil)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function c29065521.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanAddCounter(0x10ae,1) end

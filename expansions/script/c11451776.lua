@@ -130,7 +130,7 @@ function cm.clear2(e,tp,eg,ep,ev,re,r,rp)
 	BATTLE_CARD_CHECK={}
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE and Duel.GetFlagEffect(0,11451771)>0
+	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE --and Duel.GetFlagEffect(0,11451771)>0
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
@@ -153,9 +153,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			local rg=g:Select(tp,1,#g,nil)
 			if #rg>0 and Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)>0 then
 				local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
-				for tc in aux.Next(og) do
-					og:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
-				end
+				og:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 				og:KeepAlive()
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetDescription(aux.Stringid(11451771,3))
@@ -189,27 +187,20 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetOperation(cm.resop)
 	Duel.RegisterEffect(e3,tp)
 end
+function cm.sfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup()
+end
 function cm.drop2(e,tp,eg,ep,ev,re,r,rp)
-	if #BATTLE_CARD_CHECK>0 then
-		local hash={}
-		local class=0
-		for i=1,#BATTLE_CARD_CHECK do
-			local code=BATTLE_CARD_CHECK[i]
-			if not hash[code] and (i~=#BATTLE_CARD_CHECK or Duel.GetAttacker()~=e:GetHandler()) then
-				class=class+1
-				hash[code]=1
-			elseif hash[code] then
-				hash[code]=hash[code]+1
-			end
-		end
-		if class>0 then
-			local tg=Group.CreateGroup()
-			Duel.Draw(tp,class,REASON_EFFECT)
-			tg:Merge(Duel.GetOperatedGroup())
-			Duel.Draw(1-tp,class,REASON_EFFECT)
-			tg:Merge(Duel.GetOperatedGroup())
-			if #tg>0 then tg:ForEach(Card.RegisterFlagEffect,11451771,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451771,1)) end
-		end
+	local g=Duel.GetMatchingGroup(cm.sfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local class=g:GetClassCount(Card.GetCode)
+	if class>0 then
+		class=math.ceil(class/2)
+		local tg=Group.CreateGroup()
+		Duel.Draw(tp,class,REASON_EFFECT)
+		tg:Merge(Duel.GetOperatedGroup())
+		Duel.Draw(1-tp,class,REASON_EFFECT)
+		tg:Merge(Duel.GetOperatedGroup())
+		if #tg>0 then tg:ForEach(Card.RegisterFlagEffect,11451771,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451771,1)) end
 	end
 end
 function cm.resop(e,tp,eg,ep,ev,re,r,rp)
@@ -233,6 +224,7 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
+	if not g then return end
 	local sg=g:Filter(cm.filter6,nil)
 	g:DeleteGroup()
 	Duel.SendtoHand(g,tp,REASON_EFFECT)
@@ -245,8 +237,9 @@ function cm.retcon2(e,tp,eg,ep,ev,re,r,rp)
 		return false
 	else return true end
 end
-function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+function cm.retop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
+	if not g then return end
 	local sg=g:Filter(cm.filter7,nil)
 	g:DeleteGroup()
 	Duel.SendtoHand(g,tp,REASON_EFFECT)

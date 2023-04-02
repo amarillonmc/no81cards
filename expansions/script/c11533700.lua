@@ -40,23 +40,22 @@ function c11533700.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c11533700.mat_filter(c)
-	return not c:IsLevel(10)
+	return not c:IsCode(11533700)  
 end 
 function c11533700.rrtcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end 
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end 
 function c11533700.rrfil(c) 
-	if not c:IsSetCard(0xb4) then return false end 
-	if not c:IsType(TYPE_MONSTER) then return false end  
+	if not c:IsSetCard(0xb4) then return false end  
 	if c:IsLocation(LOCATION_HAND) then 
-	return c:IsReleasable()  
+	return c:IsReleasable() or c:IsAbleToGrave()   
 	elseif c:IsLocation(LOCATION_GRAVE) then 
 	return c:IsAbleToRemove()  
 	else return false end 
 end 
 function c11533700.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11533700.rrfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533700.rrfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,e:GetHandler()) end 
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE)
 end 
@@ -67,7 +66,21 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:Select(tp,1,1,nil):GetFirst() 
 		local x=0
 		if tc:IsLocation(LOCATION_HAND) then 
+			local b1=tc:IsReleasable() 
+			local b2=tc:IsAbleToGrave()
+			local op=0  
+			if b1 and b2 then  
+			op=Duel.SelectOption(tp,aux.Stringid(11533700,2),aux.Stringid(11533700,3))
+			elseif b1 then 
+			op=Duel.SelectOption(tp,aux.Stringid(11533700,2))
+			elseif b2 then 
+			op=Duel.SelectOption(tp,aux.Stringid(11533700,3))+1
+			end  
+			if op==0 then 
 			x=Duel.Release(tc,REASON_EFFECT) 
+			elseif op==1 then 
+			x=Duel.SendtoGrave(tc,REASON_EFFECT) 
+			end  
 		elseif tc:IsLocation(LOCATION_GRAVE) then 
 			x=Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		end 
@@ -79,7 +92,7 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end  
 function c11533700.rlfil(c)  
-	return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsReleasable() 
+	return c:IsSetCard(0xb4) and (c:IsReleasable() or c:IsAbleToGrave()) 
 end 
 function c11533700.rdistg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533700.rlfil,tp,LOCATION_HAND,0,1,nil) end 
@@ -89,8 +102,24 @@ function c11533700.rdisop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	local g=Duel.GetMatchingGroup(c11533700.rlfil,tp,LOCATION_HAND,0,nil) 
 	if g:GetCount()>0 then 
-		local rg=g:Select(tp,1,1,nil) 
-		if Duel.Release(rg,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11533700,1)) then   
+		local rc=g:Select(tp,1,1,nil):GetFirst()  
+		local x=0 
+			local b1=rc:IsReleasable() 
+			local b2=rc:IsAbleToGrave()
+			local op=0  
+			if b1 and b2 then  
+			op=Duel.SelectOption(tp,aux.Stringid(11533700,2),aux.Stringid(11533700,3))
+			elseif b1 then 
+			op=Duel.SelectOption(tp,aux.Stringid(11533700,2))
+			elseif b2 then 
+			op=Duel.SelectOption(tp,aux.Stringid(11533700,3))+1
+			end  
+			if op==0 then 
+			x=Duel.Release(rc,REASON_EFFECT) 
+			elseif op==1 then 
+			x=Duel.SendtoGrave(rc,REASON_EFFECT) 
+			end 
+		if x>0 and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11533700,1)) then   
 			Duel.BreakEffect()
 			local tc=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil):GetFirst()  
 			Duel.NegateRelatedChain(tc,RESET_TURN_SET)

@@ -59,30 +59,30 @@ function c98920042.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetTargetCard(sg)
 	local ct=sg:GetCount()
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
-	if ct>1 then
+	if ct>3 then
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	end
-	if ct>3 then
+	if ct>5 then
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 	end
-	if ct>5 then
+	if ct>1 then
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 	end
 end
 function c98920042.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	local ct=Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	if ct>1 then
+	if ct>3 then
 		Duel.BreakEffect()
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
-	if ct>3 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c98920042.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then
+	if ct>5 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c98920042.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=Duel.SelectMatchingCard(tp,c98920042.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
-	if ct>5 and Duel.IsExistingMatchingCard(c98920042.tgfilter,tp,LOCATION_DECK,0,1,nil) then
+	if ct>1 and Duel.IsExistingMatchingCard(c98920042.tgfilter,tp,LOCATION_DECK,0,1,nil) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local tg=Duel.SelectMatchingCard(tp,c98920042.tgfilter,tp,LOCATION_DECK,0,1,1,nil)

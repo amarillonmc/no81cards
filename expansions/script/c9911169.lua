@@ -30,7 +30,6 @@ function c9911169.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and tep and tep==1-tp then
 		e:SetLabel(1)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c9911169.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

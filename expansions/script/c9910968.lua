@@ -1,60 +1,47 @@
 --尽露的永夏 三谷良一
+require("expansions/script/c9910950")
 function c9910968.initial_effect(c)
-	--flag
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e0:SetCode(EVENT_REMOVE)
-	e0:SetOperation(c9910968.flag)
-	c:RegisterEffect(e0)
-	--spsummon
+	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,9910968)
-	e1:SetCost(c9910968.spcost)
-	e1:SetTarget(c9910968.sptg)
-	e1:SetOperation(c9910968.spop)
+	e1:SetCountLimit(1,9910968+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(c9910968.spcon)
 	c:RegisterEffect(e1)
-end
-function c9910968.flag(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsReason(REASON_EFFECT) then
-		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
-	end
-end
-function c9910968.costfilter(c)
-	return c:IsSetCard(0x5954) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(ATTRIBUTE_WATER)
-		and c:IsAbleToGraveAsCost()
-end
-function c9910968.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910968.costfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9910968.costfilter,tp,LOCATION_DECK,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST)
+	--draw
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DRAW)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(EVENT_BE_MATERIAL)
+	e3:SetCountLimit(1,9910979)
+	e3:SetCondition(c9910968.drcon)
+	e3:SetTarget(c9910968.drtg)
+	e3:SetOperation(c9910968.drop)
+	c:RegisterEffect(e3)
 end
 function c9910968.filter(c)
-	return c:IsSetCard(0x5954) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsFaceup()
+	return c:IsFaceup() and c:IsSetCard(0x5954)
 end
-function c9910968.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local res=Duel.IsExistingMatchingCard(c9910968.filter,tp,LOCATION_MZONE,0,1,nil)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and (not res or Duel.IsPlayerCanDraw(tp,1)) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-	if res then
-		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-		e:SetLabel(1)
-	else
-		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
-		e:SetLabel(0)
-	end
+function c9910968.spcon(e,c)
+	if c==nil then return true end
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9910968.filter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
-function c9910968.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and e:GetLabel()==1 then
-		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
-	end
+function c9910968.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_SYNCHRO
+end
+function c9910968.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c9910968.drop(e,tp,eg,ep,ev,re,r,rp)
+	local res=false
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	res=Duel.Draw(p,d,REASON_EFFECT)>0
+	QutryYx.ExtraEffectSelect(e,tp,res)
 end

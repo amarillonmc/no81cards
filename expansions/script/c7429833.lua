@@ -93,19 +93,18 @@ GM_global_to_deck_check=true
 function cm.zonelimit(e)
 	local tp=e:GetHandlerPlayer()
 	local zone=0
-	if Duel.GetFieldCard(tp,LOCATION_MZONE,1) or Duel.GetFieldCard(tp,LOCATION_MZONE,2) or Duel.GetFieldCard(tp,LOCATION_MZONE,3) then else zone=zone|0x1 end
-	if Duel.GetFieldCard(tp,LOCATION_MZONE,2) or Duel.GetFieldCard(tp,LOCATION_MZONE,3) or Duel.GetFieldCard(tp,LOCATION_MZONE,4) then else zone=zone|0x2 end
+	for i=0,1 do
+		if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<i)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+2))>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+3))>0 then
+			zone=zone|(1<<i)
+		end
+	end
 	return zone
 end
 function cm.splimit(e,c,tp)
 	local zone_check=false
 	for i=0,1 do
-		if Duel.GetFieldCard(tp,LOCATION_MZONE,i) then
-		else
-			if Duel.GetFieldCard(tp,LOCATION_MZONE,i+1) or Duel.GetFieldCard(tp,LOCATION_MZONE,i+2) or Duel.GetFieldCard(tp,LOCATION_MZONE,i+3) then 
-			else
-				zone_check=true
-			end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<i)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+2))>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+3))>0 then
+			zone_check=true
 		end
 	end
 	if not zone_check or Duel.GetLocationCount(tp,LOCATION_MZONE)<3   
@@ -119,12 +118,12 @@ function cm.sumlimit(e,c,tp)
 	local a=c:GetTributeRequirement()
 	for i=0,1 do
 		if Duel.GetFieldCard(tp,LOCATION_MZONE,i) then
-			if not Duel.GetFieldCard(tp,LOCATION_MZONE,i):IsReleasable(c) or Duel.GetFieldCard(tp,LOCATION_MZONE,i+1) or Duel.GetFieldCard(tp,LOCATION_MZONE,i+2) or Duel.GetFieldCard(tp,LOCATION_MZONE,i+3) or a==0 then
+			if not Duel.GetFieldCard(tp,LOCATION_MZONE,i):IsReleasable(c) or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))>0 or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+2))>0 or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+3))>0 or a==0 then
 			else
 				zone_check=true
 			end
 		else
-			if Duel.GetFieldCard(tp,LOCATION_MZONE,i+1) or Duel.GetFieldCard(tp,LOCATION_MZONE,i+2) or Duel.GetFieldCard(tp,LOCATION_MZONE,i+3) then 
+			if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<i)>0 or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))>0 or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+2))>0 or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+3))>0 then 
 			else
 				zone_check=true
 			end

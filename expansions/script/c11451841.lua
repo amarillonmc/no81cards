@@ -9,6 +9,20 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+	--Set
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCondition(cm.con)
+	e2:SetTarget(cm.tg)
+	e2:SetOperation(cm.op)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(4179255)
+	c:RegisterEffect(e3)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -42,5 +56,19 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.MoveToField(ac,tp,1-ac:GetControler(),LOCATION_FZONE,acpos,true)
 			Duel.MoveToField(bc,tp,1-ac:GetControler(),LOCATION_FZONE,bcpos,true)
 		end
+	end
+end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return re and re:IsActiveType(TYPE_FIELD) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToHand() end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,c)
 	end
 end

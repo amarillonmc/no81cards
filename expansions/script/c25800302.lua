@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_IGNITION)
+	e2:SetTarget(cm.gmattg2)
 	e2:SetCondition(cm.spcon)
 	c:RegisterEffect(e2) 
 end
@@ -73,4 +74,13 @@ end
 ----
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSetCard(0x6212)
+end
+function cm.gmattg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
+	if chkc then return false end
+	if chk==0 then return Duel.IsExistingTarget(cm.gmattgfilter,tp,LOCATION_GRAVE,0,1,nil,c) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local g=Duel.SelectTarget(tp,cm.gmattgfilter,tp,LOCATION_GRAVE,0,1,2,nil,c)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,#g,0,0)
 end

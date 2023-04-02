@@ -66,8 +66,7 @@ function c31000007.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=Duel.GetFirstTarget()
 	if c:IsRelateToEffect(e) then
 		local con=function(e,tp,eg,ep,ev,re,r,rp)
-			local rc=e:GetHandler():GetReasonCard()
-			return r==REASON_SYNCHRO and rc:IsSetCard(0x308)
+			return r==REASON_SYNCHRO
 		end
 		local op=function(e,tp,eg,ep,ev,re,r,rp)
 			local rc=e:GetHandler():GetReasonCard()
@@ -81,6 +80,8 @@ function c31000007.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCondition(con)
 		e1:SetOperation(op)
 		c:RegisterEffect(e1)
+		local fid=c:GetFieldID()
+		c:RegisterFlagEffect(31000007,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 	end
 end
 

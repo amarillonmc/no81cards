@@ -57,8 +57,8 @@ function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 end
 --02
 function cm.tkccost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x640,7,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,0x640,7,REASON_COST)
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x640,4,REASON_COST) end
+	e:GetHandler():RemoveCounter(tp,0x640,4,REASON_COST)
 end
 function cm.tkcfilter(c)
 	return c:IsFaceup()

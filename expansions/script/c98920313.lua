@@ -1,6 +1,5 @@
 --虹彩之机界骑士
 function c98920313.initial_effect(c)
-	c:SetSPSummonOnce(98920313)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,c98920313.matfilter,1,1) 
 --lv

@@ -78,9 +78,16 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c:IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(c,REASON_COST)
 end
+function c99990014.costfilter(c)
+	return c:IsSetCard(0xdd) and c:IsType(TYPE_MONSTER) and not c:IsPublic() and not c:IsCode(99990014)
+end
 function c99990014.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDiscardable() end
+	if chk==0 then return e:GetHandler():IsDiscardable() and Duel.IsExistingMatchingCard(c99990014.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,3,nil) end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,c99990014.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,3,3,nil)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.ShuffleHand(tp)
 end
 function c99990014.spfilter1(c,e,tp)
 	return c:IsRace(RACE_DRAGON) and c:IsType(TYPE_NORMAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

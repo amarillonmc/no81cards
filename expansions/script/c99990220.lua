@@ -1,4 +1,4 @@
---不知名的瞄少女
+--不知名的喵少女
 local m=99990220
 local cm=_G["c"..m]
 function cm.initial_effect(c)

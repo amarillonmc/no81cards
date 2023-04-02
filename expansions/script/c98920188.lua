@@ -1,16 +1,8 @@
 --星遗物的妖精
 function c98920188.initial_effect(c)
-   c:SetSPSummonOnce(98920188)
 		--link summon
 	aux.AddLinkProcedure(c,c98920188.mfilter,1,1)
-	c:EnableReviveLimit()  
-  --spsummon condition
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SPSUMMON_COST)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetCost(c98920188.spcost)
-	c:RegisterEffect(e0)	
+	c:EnableReviveLimit()	  
 --to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98920188,0))

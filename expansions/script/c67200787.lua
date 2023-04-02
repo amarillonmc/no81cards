@@ -31,14 +31,14 @@ function c67200787.initial_effect(c)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e4:SetCountLimit(1,67200788)
+	e4:SetCountLimit(1)
 	e4:SetCost(c67200787.rmcost)
 	e4:SetTarget(c67200787.rmtg)
 	e4:SetOperation(c67200787.rmop)
 	c:RegisterEffect(e4)	
 end
 function c67200787.scfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x567c)
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x567c) and c:IsAbleToExtra()
 end
 function c67200787.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
@@ -57,7 +57,7 @@ function c67200787.scop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67200787.spfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()>0 and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()>0 and c:IsAbleToGraveAsCost() and c:IsFaceup()
 end
 function c67200787.sumfilter(c)
 	return c:GetLeftScale()
@@ -74,7 +74,7 @@ end
 function c67200787.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c67200787.spfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,c)
+	local g=Duel.GetMatchingGroup(c67200787.spfilter,tp,LOCATION_EXTRA,0,c)
 	aux.GCheckAdditional=c67200787.hspgcheck
 	local res=g:CheckSubGroup(c67200787.fselect,1,#g)
 	aux.GCheckAdditional=nil
@@ -82,7 +82,7 @@ function c67200787.spcon(e,c)
 		(c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0))
 end
 function c67200787.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(c67200787.spfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,c)
+	local g=Duel.GetMatchingGroup(c67200787.spfilter,tp,LOCATION_EXTRA,0,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	aux.GCheckAdditional=c67200787.hspgcheck
 	local sg=g:SelectSubGroup(tp,c67200787.fselect,true,1,#g)

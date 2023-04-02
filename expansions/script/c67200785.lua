@@ -8,6 +8,7 @@ function c67200785.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,67200785)
 	e1:SetCost(c67200785.sccost)
 	e1:SetTarget(c67200785.sctg)
@@ -29,7 +30,6 @@ function c67200785.initial_effect(c)
 	e3:SetDescription(aux.Stringid(67200785,2))
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetCountLimit(1,67200786)
 	e3:SetCondition(c67200785.condition)
 	e3:SetOperation(c67200785.operation)
 	c:RegisterEffect(e3)	
@@ -58,7 +58,7 @@ function c67200785.scop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67200785.spfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()>0 and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()>0 and c:IsAbleToGraveAsCost() and c:IsFaceup()
 end
 function c67200785.sumfilter(c)
 	return c:GetLeftScale()
@@ -75,7 +75,7 @@ end
 function c67200785.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c67200785.spfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,c)
+	local g=Duel.GetMatchingGroup(c67200785.spfilter,tp,LOCATION_EXTRA,0,c)
 	aux.GCheckAdditional=c67200785.hspgcheck
 	local res=g:CheckSubGroup(c67200785.fselect,1,#g)
 	aux.GCheckAdditional=nil
@@ -83,7 +83,7 @@ function c67200785.spcon(e,c)
 		(c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0))
 end
 function c67200785.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(c67200785.spfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,c)
+	local g=Duel.GetMatchingGroup(c67200785.spfilter,tp,LOCATION_EXTRA,0,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	aux.GCheckAdditional=c67200785.hspgcheck
 	local sg=g:SelectSubGroup(tp,c67200785.fselect,true,1,#g)

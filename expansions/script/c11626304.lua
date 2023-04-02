@@ -153,7 +153,7 @@ function c11626304.atcost(e,c,tp)
 end
 function c11626304.atop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,11626304)
-	local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+	local sg=Duel.GetMatchingGroup(nil,tp,LOCATION_HAND,0,nil):RandomSelect(tp,1)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST) 
 	Duel.Draw(tp,1,REASON_COST)
 end

@@ -27,6 +27,7 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_IGNITION)
 	e2:SetCondition(cm.spcon2)
+	e2:SetTarget(cm.sptg2)
 	c:RegisterEffect(e2)
 end
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -36,7 +37,7 @@ end
 function cm.sprfilter(c,tp,g,sc)   
 	return ((c:GetOriginalAttribute()&ATTRIBUTE_WATER~=0 and c:GetOriginalLevel()==4 and c:IsLocation(LOCATION_SZONE)) 
 	 or (c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsLevel(4) and c:IsAttribute(ATTRIBUTE_WATER))) 
-and c:IsCanBeXyzMaterial(nil)
+	 and c:IsCanBeXyzMaterial(nil)
 end 
 function cm.spgckfil(g,e,tp) 
 	return Duel.GetLocationCountFromEx(tp,tp,g,nil)
@@ -64,6 +65,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -87,4 +89,11 @@ end
 ----2
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSetCard(0x6212)
+end
+function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end

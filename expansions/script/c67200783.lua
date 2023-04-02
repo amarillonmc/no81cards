@@ -7,6 +7,7 @@ function c67200783.initial_effect(c)
 	e1:SetDescription(aux.Stringid(67200783,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,67200783)
 	e1:SetCost(c67200783.sccost)
 	e1:SetTarget(c67200783.sctg)
@@ -30,7 +31,7 @@ function c67200783.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e4:SetCountLimit(1,67200784)
+	e4:SetCountLimit(1)
 	e4:SetCondition(c67200783.negcon)
 	e4:SetCost(c67200783.negcost)
 	e4:SetTarget(aux.nbtg)
@@ -54,13 +55,13 @@ end
 function c67200783.scop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) and aux.NecroValleyFilter()(tc) then
 		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end
 --
 function c67200783.spfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()>0 and c:IsAbleToGraveAsCost()
+	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()>0 and c:IsAbleToGraveAsCost() and c:IsFaceup()
 end
 function c67200783.sumfilter(c)
 	return c:GetLeftScale()
@@ -77,7 +78,7 @@ end
 function c67200783.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c67200783.spfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,c)
+	local g=Duel.GetMatchingGroup(c67200783.spfilter,tp,LOCATION_EXTRA,0,c)
 	aux.GCheckAdditional=c67200783.hspgcheck
 	local res=g:CheckSubGroup(c67200783.fselect,1,#g)
 	aux.GCheckAdditional=nil
@@ -85,7 +86,7 @@ function c67200783.spcon(e,c)
 		(c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0))
 end
 function c67200783.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(c67200783.spfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,c)
+	local g=Duel.GetMatchingGroup(c67200783.spfilter,tp,LOCATION_EXTRA,0,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	aux.GCheckAdditional=c67200783.hspgcheck
 	local sg=g:SelectSubGroup(tp,c67200783.fselect,true,1,#g)

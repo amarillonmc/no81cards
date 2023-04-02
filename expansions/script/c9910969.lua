@@ -1,60 +1,56 @@
 --秘藏的永夏 岬镜子
+require("expansions/script/c9910950")
 function c9910969.initial_effect(c)
-	--flag
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e0:SetCode(EVENT_REMOVE)
-	e0:SetOperation(c9910969.flag)
-	c:RegisterEffect(e0)
-	--spsummon
+	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_RECOVER)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,9910969)
-	e1:SetCost(c9910969.spcost)
-	e1:SetTarget(c9910969.sptg)
-	e1:SetOperation(c9910969.spop)
+	e1:SetCountLimit(1,9910969+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(c9910969.spcon)
 	c:RegisterEffect(e1)
+	--to hand
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_RECOVER)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e3:SetCode(EVENT_BE_MATERIAL)
+	e3:SetCountLimit(1,9910980)
+	e3:SetCondition(c9910969.thcon)
+	e3:SetTarget(c9910969.thtg)
+	e3:SetOperation(c9910969.thop)
+	c:RegisterEffect(e3)
 end
-function c9910969.flag(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsReason(REASON_EFFECT) then
-		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
-	end
+function c9910969.filter(c)
+	return c:IsFaceup() and c:IsSetCard(0x5954)
 end
-function c9910969.costfilter(c)
-	return c:IsSetCard(0x5954) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
+function c9910969.spcon(e,c)
+	if c==nil then return true end
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9910969.filter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
-function c9910969.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910969.costfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local tc=Duel.SelectMatchingCard(tp,c9910969.costfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	Duel.SendtoGrave(tc,REASON_COST)
-	e:SetLabel(tc:GetType()&0x7)
+function c9910969.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_SYNCHRO
 end
-function c9910969.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+function c9910969.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	Duel.SetTargetParam(1000)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
-function c9910969.filter(c,type1)
-	return c:IsFaceup() and c:IsSetCard(0x5954) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(type1)
-end
-function c9910969.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local type1=e:GetLabel()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
-		and type1>0 and Duel.IsExistingMatchingCard(c9910969.filter,tp,LOCATION_ONFIELD,0,1,nil,type1)
-		and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
-		and Duel.SelectYesNo(tp,aux.Stringid(9910969,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-		Duel.HintSelection(sg)
-		local tc=sg:GetFirst()
-		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
-			Duel.Recover(tp,1500,REASON_EFFECT)
+function c9910969.thop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	local res=false
+	if tc:IsRelateToEffect(e) then
+		res=Duel.SendtoHand(tc,nil,REASON_EFFECT)>0
+		if res and tc:IsLocation(LOCATION_HAND) then
+			local d=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
+			Duel.Recover(tp,d,REASON_EFFECT)
 		end
 	end
+	QutryYx.ExtraEffectSelect(e,tp,res)
 end

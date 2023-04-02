@@ -97,7 +97,7 @@ end
 function cm.splimit(e,c,tp)
 	local fc=e:GetHandler()
 	local fc=Duel.GetFieldCard(tp,LOCATION_MZONE,2)
-	if (fc and fc~=e:GetHandler()) or Duel.GetLocationCount(tp,LOCATION_MZONE)<5   
+	if (fc and fc~=e:GetHandler()) or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<2)==0 or Duel.GetLocationCount(tp,LOCATION_MZONE)<5 
 	or not Duel.IsPlayerCanSpecialSummonMonster(tp,7429101,0,TYPES_TOKEN_MONSTER,0,0,4,RACE_FIEND,ATTRIBUTE_WATER,POS_FACEUP_ATTACK) or not Duel.IsPlayerCanSpecialSummonCount(tp,2)
 	or Duel.IsPlayerAffectedByEffect(tp,59822133) then return false end
 	return true
@@ -105,12 +105,12 @@ end
 function cm.sumlimit(e,c,tp)
 	local c=e:GetHandler()
 	local fc=Duel.GetFieldCard(tp,LOCATION_MZONE,2)
-	local fc1=Duel.GetFieldCard(tp,LOCATION_MZONE,0)
-	local fc2=Duel.GetFieldCard(tp,LOCATION_MZONE,1)
-	local fc3=Duel.GetFieldCard(tp,LOCATION_MZONE,3)
-	local fc4=Duel.GetFieldCard(tp,LOCATION_MZONE,4)
+	local fc1=Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<0)==0
+	local fc2=Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<1)==0
+	local fc3=Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<3)==0
+	local fc4=Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<4)==0
 	local a=c:GetTributeRequirement()
-	if (fc and fc~=e:GetHandler() and (not fc:IsReleasable(c) or a==0)) or fc1 or fc2 or fc3 or fc4   
+	if (fc and fc~=e:GetHandler() and (not fc:IsReleasable(c) or a==0)) or (not fc and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<2)==0) or fc1 or fc2 or fc3 or fc4   
 	or not Duel.IsPlayerCanSpecialSummonMonster(tp,7429101,0,TYPES_TOKEN_MONSTER,0,0,4,RACE_FIEND,ATTRIBUTE_WATER,POS_FACEUP_ATTACK) or not Duel.IsPlayerCanSpecialSummonCount(tp,1)
 	or Duel.IsPlayerAffectedByEffect(tp,59822133) then return false end
 	return true

@@ -82,9 +82,10 @@ function cm.initial_effect(c)
 	--search
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_SEARCH)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e4:SetRange(LOCATION_MZONE)
+	e4:SetCondition(cm.srcon)
 	e4:SetOperation(cm.srop)
 	c:RegisterEffect(e4)
 end
@@ -92,21 +93,18 @@ GM_global_to_deck_check=true
 function cm.zonelimit(e)
 	local tp=e:GetHandlerPlayer()
 	local zone=0
-	if Duel.GetFieldCard(tp,LOCATION_MZONE,1) then else zone=zone|0x1 end
-	if Duel.GetFieldCard(tp,LOCATION_MZONE,2) then else zone=zone|0x2 end
-	if Duel.GetFieldCard(tp,LOCATION_MZONE,3) then else zone=zone|0x4 end
-	if Duel.GetFieldCard(tp,LOCATION_MZONE,4) then else zone=zone|0x8 end
+	for i=0,3 do
+		if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<i)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))>0 then
+			zone=zone|(1<<i)
+		end
+	end
 	return zone
 end
 function cm.splimit(e,c,tp)
 	local zone_check=false
 	for i=0,3 do
-		if Duel.GetFieldCard(tp,LOCATION_MZONE,i) then
-		else
-			if Duel.GetFieldCard(tp,LOCATION_MZONE,i+1) then 
-			else
-				zone_check=true
-			end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<i)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))>0 then
+			zone_check=true
 		end
 	end
 	if not zone_check or Duel.GetLocationCount(tp,LOCATION_MZONE)<2   
@@ -120,12 +118,12 @@ function cm.sumlimit(e,c,tp)
 	local a=c:GetTributeRequirement()
 	for i=0,3 do
 		if Duel.GetFieldCard(tp,LOCATION_MZONE,i) then
-			if not Duel.GetFieldCard(tp,LOCATION_MZONE,i):IsReleasable(c) or Duel.GetFieldCard(tp,LOCATION_MZONE,i+1) or a==0 then
+			if not Duel.GetFieldCard(tp,LOCATION_MZONE,i):IsReleasable(c) or a==0 or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))==0 then
 			else
 				zone_check=true
 			end
 		else
-			if Duel.GetFieldCard(tp,LOCATION_MZONE,i+1) then 
+			if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<i)==0 or Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,1<<(i+1))==0 then 
 			else
 				zone_check=true
 			end
@@ -173,22 +171,22 @@ function cm.tokenop(e,tp,eg,ep,ev,re,r,rp)
 			--e6:SetValue(cm.indct)
 			--token:RegisterEffect(e6,true)
 			--search
-			local e7=Effect.CreateEffect(e:GetHandler())
-			e7:SetCategory(CATEGORY_SEARCH)
-			e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-			e7:SetCode(EVENT_ATTACK_ANNOUNCE)
-			e7:SetRange(LOCATION_MZONE)
-			e7:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e7:SetOperation(cm.srop)
-			token:RegisterEffect(e7,true)
-			if not token:IsType(TYPE_EFFECT) then
-				local e8=Effect.CreateEffect(e:GetHandler())
-				e8:SetType(EFFECT_TYPE_SINGLE)
-				e8:SetCode(EFFECT_ADD_TYPE)
-				e8:SetValue(TYPE_EFFECT)
-				e8:SetReset(RESET_EVENT+RESETS_STANDARD)
-				token:RegisterEffect(e8,true)
-			end
+			--local e7=Effect.CreateEffect(e:GetHandler())
+			--e7:SetCategory(CATEGORY_SEARCH)
+			--e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			--e7:SetCode(EVENT_ATTACK_ANNOUNCE)
+			--e7:SetRange(LOCATION_MZONE)
+			--e7:SetReset(RESET_EVENT+RESETS_STANDARD)
+			--e7:SetOperation(cm.srop)
+			--token:RegisterEffect(e7,true)
+			--if not token:IsType(TYPE_EFFECT) then
+			--  local e8=Effect.CreateEffect(e:GetHandler())
+			--  e8:SetType(EFFECT_TYPE_SINGLE)
+			--  e8:SetCode(EFFECT_ADD_TYPE)
+			--  e8:SetValue(TYPE_EFFECT)
+			--  e8:SetReset(RESET_EVENT+RESETS_STANDARD)
+			--  token:RegisterEffect(e8,true)
+			--end
 		end
 		Duel.SpecialSummonComplete()
 	else
@@ -302,6 +300,10 @@ function cm.Group_GetLast(g)
 end
 function cm.thfilter(c)
 	return c:GetSequence()==0
+end
+function cm.srcon(e,tp,eg,ep,ev,re,r,rp)
+	local at=Duel.GetAttacker()
+	return at==e:GetHandler() or at:IsCode(7429211)
 end
 function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=0 then return false end

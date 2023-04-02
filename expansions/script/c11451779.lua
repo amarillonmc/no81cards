@@ -45,6 +45,9 @@ function cm.initial_effect(c)
 	e6:SetCode(m)
 	e6:SetRange(LOCATION_HAND+LOCATION_SZONE)
 	c:RegisterEffect(e6)
+	if not CONVIATRESS_BUFF then
+		CONVIATRESS_BUFF={}
+	end
 end
 function cm.actarget(e,te,tp)
 	e:SetLabelObject(te)
@@ -74,47 +77,105 @@ function cm.costcon(e)
 	return true
 end
 function cm.actarget2(e,te,tp)
-	if not cm[te] then e:SetLabelObject(te) end
-	return not cm[te]
+	if not CONVIATRESS_BUFF[te] then e:SetLabelObject(te) end
+	return not CONVIATRESS_BUFF[te]
+end
+function cm.extfilter(c)
+	return (c:IsLocation(LOCATION_HAND) or c:IsStatus(STATUS_EFFECT_ENABLED)) and (c:IsHasEffect(11451779) or c:IsHasEffect(11451780) or c:IsHasEffect(11451781) or c:IsHasEffect(11451782))
 end
 function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
-	if cm[0] or cm[te] then return end
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
+	if cm[0] or CONVIATRESS_BUFF[te] then return end
 	local tg=te:GetTarget() or aux.TRUE
 	local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 				if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
 				if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
 				tg(e,tp,eg,ep,ev,re,r,rp,1)
-				local exc=nil
-				if e:IsHasType(EFFECT_TYPE_ACTIVATE) then exc=e:GetHandler() end
-				local extg=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_HAND+LOCATION_SZONE,0,exc,m)
-				if #extg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+				local extg=Duel.GetMatchingGroup(cm.extfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,nil)
+				if #extg>0 and Duel.SelectYesNo(tp,aux.Stringid(11451779,2)) then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 					local g=extg:Select(tp,1,#extg,nil)
-					if #g>0 and Duel.SendtoGrave(g,REASON_COST)>0 then
-						Duel.Hint(HINT_CARD,0,m)
-						g:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451779,3))
-						if g:IsContains(e:GetHandler()) then e:GetHandler():CreateEffectRelation(e) end
-						local e1=Effect.CreateEffect(c)
-						e1:SetType(EFFECT_TYPE_FIELD)
-						e1:SetCode(EFFECT_CANNOT_INACTIVATE)
-						e1:SetValue(cm.efilter)
-						e1:SetReset(RESET_CHAIN)
-						e1:SetLabel(Duel.GetCurrentChain())
-						Duel.RegisterEffect(e1,tp)
-						local e2=e1:Clone()
-						e2:SetCode(EFFECT_CANNOT_DISEFFECT)
-						Duel.RegisterEffect(e2,tp)
+					if #g>0 then
+						local lab1=g:IsExists(Card.IsHasEffect,1,nil,11451779)
+						local lab2=g:IsExists(Card.IsHasEffect,1,nil,11451780)
+						local lab3=g:IsExists(Card.IsHasEffect,1,nil,11451781)
+						local lab4=g:IsExists(Card.IsHasEffect,1,nil,11451782)
+						if Duel.SendtoGrave(g,REASON_COST)>0 then
+							g:ForEach(Card.RegisterFlagEffect,11451779,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451779,3))
+							if g:IsContains(e:GetHandler()) then e:GetHandler():CreateEffectRelation(e) end
+							if lab1 then
+								Duel.Hint(HINT_CARD,0,11451779)
+								local e1=Effect.CreateEffect(c)
+								e1:SetType(EFFECT_TYPE_FIELD)
+								e1:SetCode(EFFECT_CANNOT_INACTIVATE)
+								e1:SetValue(cm.efilter)
+								e1:SetReset(RESET_CHAIN)
+								e1:SetLabel(Duel.GetCurrentChain())
+								Duel.RegisterEffect(e1,tp)
+								local e2=e1:Clone()
+								e2:SetCode(EFFECT_CANNOT_DISEFFECT)
+								Duel.RegisterEffect(e2,tp)
+							end
+							if lab2 then
+								Duel.Hint(HINT_CARD,0,11451780)
+								local e1=Effect.CreateEffect(c)
+								e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+								e1:SetCode(EVENT_CHAIN_END)
+								e1:SetOperation(cm.limop2)
+								Duel.RegisterEffect(e1,tp)
+							end
+							if lab3 then
+								Duel.Hint(HINT_CARD,0,11451781)
+								local e1=Effect.CreateEffect(c)
+								e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+								e1:SetCode(EVENT_CHAIN_SOLVING)
+								e1:SetOperation(cm.ngop)
+								e1:SetReset(RESET_CHAIN)
+								e1:SetLabel(Duel.GetCurrentChain()+1)
+								Duel.RegisterEffect(e1,tp)
+							end
+							if lab4 then
+								Duel.Hint(HINT_CARD,0,11451782)
+								local e2=Effect.CreateEffect(c)
+								e2:SetType(EFFECT_TYPE_FIELD)
+								e2:SetCode(EFFECT_IMMUNE_EFFECT)
+								e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+								e2:SetTargetRange(LOCATION_ONFIELD,0)
+								e2:SetValue(cm.imfilter)
+								e2:SetOwnerPlayer(tp)
+								e2:SetReset(RESET_CHAIN)
+								Duel.RegisterEffect(e2,tp)
+							end
+						end
 					end
 				end
 			end
 	te:SetTarget(tg2)
-	cm[te]=true
+	CONVIATRESS_BUFF[te]=true
 	cm[0]=true
 end
 function cm.efilter(e,ct)
 	return e:GetLabel()==ct
+end
+function cm.chainlm(e,rp,tp)
+	return tp==rp
+end
+function cm.limop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SetChainLimitTillChainEnd(cm.chainlm)
+	e:Reset()
+end
+function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
+	if ep~=tp then Duel.NegateEffect(ev) end
+end
+function cm.imfilter(e,re)
+	local i=1
+	while type(c11451782[i])=="table" do
+		local te,tf,cid,ep=table.unpack(c11451782[i])
+		if te==re and ep~=e:GetHandlerPlayer() then return true end
+		i=i+1
+	end
+	return false
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
@@ -135,7 +196,7 @@ function cm.filter2(c,tp)
 	return c:IsCode(m+1) and c:GetActivateEffect():IsActivatable(tp)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE) and Duel.GetCurrentChain()==0 and e:GetHandler():GetFlagEffect(m)>0
+	return Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE) and Duel.GetCurrentChain()==0 and e:GetHandler():GetFlagEffect(11451779)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,tp) end

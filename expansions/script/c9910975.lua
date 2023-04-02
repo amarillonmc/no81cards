@@ -1,59 +1,49 @@
 --永夏的反魂
+require("expansions/script/c9910950")
 function c9910975.initial_effect(c)
-	--flag
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e0:SetCode(EVENT_REMOVE)
-	e0:SetOperation(c9910975.flag)
-	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCountLimit(1,9910975+EFFECT_COUNT_CODE_OATH)
+	e1:SetCost(c9910975.cost)
 	e1:SetTarget(c9910975.target)
 	e1:SetOperation(c9910975.activate)
 	c:RegisterEffect(e1)
 end
-function c9910975.flag(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsReason(REASON_EFFECT) then
-		c:RegisterFlagEffect(9910963,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910963,3))
-	end
+function c9910975.cfilter(c)
+	return c:IsSetCard(0x5954) and c:IsAbleToRemoveAsCost(POS_FACEDOWN)
+end
+function c9910975.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910975.cfilter,tp,LOCATION_GRAVE,0,2,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c9910975.cfilter,tp,LOCATION_GRAVE,0,2,2,nil)
+	Duel.Remove(g,POS_FACEDOWN,REASON_COST)
 end
 function c9910975.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>=5 end
-end
-function c9910975.setfilter(c)
-	return c:IsFacedown() and c:IsSetCard(0x5954) and c:IsReason(REASON_EFFECT)
-		and c:IsType(TYPE_TRAP) and c:IsSSetable()
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,1-tp,LOCATION_MZONE,0,1,nil,REASON_RULE)
+		and Duel.GetDecktopGroup(1-tp,2):FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)==2 end
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,1-tp,LOCATION_MZONE)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,1-tp,LOCATION_DECK)
 end
 function c9910975.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)<5 then return end
-	Duel.ConfirmDecktop(1-tp,5)
-	local g=Duel.GetDecktopGroup(1-tp,5)
-	if #g==0 then return end
-	local lv=g:FilterCount(Card.IsType,nil,TYPE_MONSTER)
-	local res=g:IsExists(Card.IsType,1,nil,TYPE_TRAP)
-	if lv>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsRelateToEffect(e)
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,9910975,0x5954,0x11,0,0,lv,RACE_ZOMBIE,ATTRIBUTE_LIGHT)
-		and Duel.SelectYesNo(tp,aux.Stringid(9910975,0)) then
-		c:AddMonsterAttribute(TYPE_NORMAL,nil,nil,lv,nil,nil)
-		Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
+	local res=false
+	local g=Duel.GetMatchingGroup(Card.IsReleasable,1-tp,LOCATION_MZONE,0,nil,REASON_RULE)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_RELEASE)
+		local sg=g:Select(1-tp,1,1,nil)
+		Duel.HintSelection(sg)
+		res=Duel.Release(sg,REASON_RULE)>0
+		if res then
+			local rg=Duel.GetDecktopGroup(1-tp,2)
+			if #rg>0 then
+				Duel.BreakEffect()
+				Duel.DisableShuffleCheck()
+				Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
+			end
+		end
 	end
-	local tg=g:Filter(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)
-	if g:IsExists(Card.IsType,1,nil,TYPE_SPELL) and #tg>0 and Duel.SelectYesNo(tp,aux.Stringid(9910975,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg=tg:Select(tp,1,3,nil)
-		Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
-	end
-	local g1=Duel.GetMatchingGroup(c9910975.setfilter,tp,LOCATION_REMOVED,0,nil)
-	if res and #g1>0 and Duel.SelectYesNo(tp,aux.Stringid(9910975,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g2=g1:Select(tp,1,1,nil)
-		Duel.SSet(tp,g2)
-	end
-	Duel.ShuffleDeck(1-tp)
+	QutryYx.ExtraEffectSelect(e,tp,res)
 end

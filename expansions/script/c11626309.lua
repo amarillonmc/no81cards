@@ -147,10 +147,10 @@ function c11626309.hxbteop(e,tp,eg,ep,ev,re,r,rp)
 	local x=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0) 
 	if Duel.IsPlayerCanDraw(tp,x) then 
 		Duel.Hint(HINT_CARD,0,11626309) 
-		if Duel.Draw(tp,x,REASON_EFFECT)>0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>7 then  
+		if Duel.Draw(tp,x,REASON_EFFECT)>0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>8 then  
 			local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 			Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
-			local sg=Duel.SelectMatchingCard(tp,c11626309.pbfil,tp,LOCATION_HAND,0,g:GetCount()-7,g:GetCount()-7,nil) 
+			local sg=Duel.GetMatchingGroup(cm.pbfil,tp,LOCATION_HAND,0,nil):RandomSelect(tp,g:GetCount()-8) 
 			Duel.ConfirmCards(1-tp,sg)
 			Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) 
 		end 

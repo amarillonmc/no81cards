@@ -55,7 +55,7 @@ function c9910937.negcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910937.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910937)
-	Duel.RegisterFlagEffect(tp,9910937,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,9910937,RESET_CHAIN,0,1)
 	local rc=re:GetHandler()
 	if Duel.NegateEffect(ev) and rc:IsRelateToEffect(re) then
 		Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)

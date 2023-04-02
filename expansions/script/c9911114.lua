@@ -91,7 +91,7 @@ function c9911114.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	local g1=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0):Filter(Card.IsSetCard,nil,0xa954)
-	local g2=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g2=Duel.GetMatchingGroup(c9911114.disfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if res and g1 and g1:GetClassCount(Card.GetCode)>=3 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9911114,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)

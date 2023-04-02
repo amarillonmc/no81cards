@@ -125,13 +125,13 @@ end
 function cm.reset2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetAttacker()==nil then return end
 	local ev0,loc=e:GetLabel()
-	if ev==ev0 then table.insert(BATTLE_ACT_CHECK,loc) end
+	if ev==ev0 then table.remove(BATTLE_ACT_CHECK,loc) end
 end
 function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 	BATTLE_ACT_CHECK={}
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE and Duel.GetFlagEffect(0,11451771)>0
+	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE --and Duel.GetFlagEffect(0,11451771)>0
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
@@ -182,6 +182,7 @@ function cm.drop2(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		if class>0 then
+			class=math.ceil(class/2)
 			local tg=Group.CreateGroup()
 			Duel.Draw(tp,class,REASON_EFFECT)
 			tg:Merge(Duel.GetOperatedGroup())
@@ -210,6 +211,7 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
+	if not g then return end
 	local sg=g:Filter(cm.filter6,nil)
 	g:DeleteGroup()
 	Duel.SendtoHand(g,tp,REASON_EFFECT)

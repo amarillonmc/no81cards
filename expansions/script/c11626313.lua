@@ -34,9 +34,17 @@ end
 function cm.tfilter(c)
 	return c.SetCard_YM_Crypticinsect and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
+function cm.tafilter(c,e)
+	return c:IsFaceup() and c:IsCanBeEffectTarget(e)
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() and cm.ctfilter(chkc) end	
+	if chk==0 then 
+		local g=Duel.GetMatchingGroup(cm.tafilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e)
+		local gg=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_MZONE,0,nil)
+		return gg:GetCount()>0 and g:GetCount()>1
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g1=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	e:SetLabelObject(g1:GetFirst())
@@ -44,8 +52,8 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g2=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,g1)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,1,0,0)
 end
-function cm.spfilter(c,e,tp,tc)
-	return c:IsRace(tc:GetRace()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function cm.spfilter(c,e,tp,ra)
+	return c:IsRace(ra) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -54,7 +62,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local tc=g:GetFirst()
 	if tc==hc then tc=g:GetNext() end
-	local sg=Duel.GetMatchingGroup(cm.spfilter,1-tp,LOCATION_DECK,0,nil,e,1-tp,tc)
+	local sg=Duel.GetMatchingGroup(cm.spfilter,1-tp,LOCATION_DECK,0,nil,e,1-tp,tc:GetRace())
 	if hc:IsRelateToEffect(e) and hc:IsControler(tp) and Duel.SendtoHand(hc,nil,REASON_EFFECT)~=0 and hc:IsLocation(LOCATION_HAND) and tc:IsRelateToEffect(e) then
 		if tc:IsControler(tp) then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
@@ -84,12 +92,17 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST) 
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() and cm.ctfilter(chkc) end	
+	if chk==0 then 
+		local g=Duel.GetMatchingGroup(cm.tafilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e)
+		local gg=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_MZONE,0,nil)
+		return gg:GetCount()>0 and g:GetCount()>1
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g1=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	e:SetLabelObject(g1:GetFirst())
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEDOWN)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g2=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,g1)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,1,0,0)
 end
@@ -100,7 +113,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local tc=g:GetFirst()
 	if tc==hc then tc=g:GetNext() end
-	local sg=Duel.GetMatchingGroup(cm.spfilter,1-tp,LOCATION_DECK,0,nil,e,1-tp,tc)
+	local sg=Duel.GetMatchingGroup(cm.spfilter,1-tp,LOCATION_DECK,0,nil,e,1-tp,tc:GetRace())
 	if hc:IsRelateToEffect(e) and hc:IsControler(tp) and Duel.SendtoHand(hc,nil,REASON_EFFECT)~=0 and hc:IsLocation(LOCATION_HAND) and tc:IsRelateToEffect(e) then
 		if tc:IsControler(tp) then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)

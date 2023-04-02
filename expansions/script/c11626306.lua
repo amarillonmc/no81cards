@@ -261,10 +261,10 @@ function c11626306.spop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:FilterSelect(tp,c11626306.spfilter,1,ft,nil,e,tp)
 		if sg:GetCount()>0 then
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-			Duel.Draw(1-tp,sg:GetCount(),REASON_EFFECT)
-			Duel.ShuffleHand(1-tp)
+			Duel.Draw(1-tp,sg:GetCount(),REASON_EFFECT)			
 		end
 	end
+	Duel.ShuffleHand(1-tp)
 end
 function c11626306.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and Duel.IsExistingMatchingCard(nil,tp,LOCATION_DECK,0,3,nil) end
