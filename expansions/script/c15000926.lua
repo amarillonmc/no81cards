@@ -20,7 +20,7 @@ end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsActiveType(TYPE_MONSTER) then return false end
 	local atk=re:GetHandler():GetAttack()
-	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil)
+	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,atk)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

@@ -746,7 +746,6 @@ end
 function cm.record(e,tp,eg,ep,ev,re,r,rp)
 	local pro1,pro2=re:GetProperty()
 	cm[re]={re:GetCategory(),re:GetType(),re:GetCode(),re:GetCost(),re:GetCondition(),re:GetTarget(),re:GetOperation(),pro1,pro2}
-	if re:GetCode() then aux.RegisterMergedDelayedEvent(e:GetHandler(),m+50,re:GetCode()) end
 end
 function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetSequence()<5 end
