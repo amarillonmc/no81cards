@@ -33,8 +33,8 @@ function c87490445.initial_effect(c)
 end
 function c87490445.sxxcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(87490445)==0 end
-	c:RegisterFlagEffect(87490445,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
+	if chk==0 then return c:GetFlagEffect(87491445)==0 end
+	c:RegisterFlagEffect(87491445,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
 end 
 function c87490445.sxxtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
@@ -72,7 +72,7 @@ function c87490445.sxxop2(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function c87490445.discon(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	return c:GetFlagEffect(87490445)<2 and re:GetHandlerPlayer()~=tp and Duel.IsChainDisablable(ev) and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) and re:IsActiveType(TYPE_MONSTER)	 
+	return c:GetFlagEffect(87490445)<2 and re:GetHandlerPlayer()~=tp and Duel.IsChainDisablable(ev) and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) and re:IsActiveType(TYPE_MONSTER)   
 end 
 function c87490445.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 

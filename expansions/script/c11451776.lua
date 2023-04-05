@@ -191,6 +191,8 @@ function cm.sfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup()
 end
 function cm.drop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToBattle() and c:IsLocation(LOCATION_MZONE) and c:IsDisabled() then return end
 	local g=Duel.GetMatchingGroup(cm.sfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local class=g:GetClassCount(Card.GetCode)
 	if class>0 then

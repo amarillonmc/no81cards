@@ -103,13 +103,18 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(te1)
 	end
 	if tc.aozora_field_effect then
-		local te2=tc.aozora_field_effect:Clone()
-		if te2:GetType()&(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_QUICK_F)~=0 then
-			te2:SetType(EFFECT_TYPE_IGNITION)
-			te2:SetCode(0)
-		end
+		local te=tc.aozora_field_effect
+		local dest,cat,con,cost,tg,op=te:GetDescription(),te:GetCategory(),te:GetCondition(),te:GetCost(),te:GetTarget(),te:GetOperation()
+		local te2=Effect.CreateEffect(c)
+		if dest then te2:SetDescription(dest) end
+		if cat then te2:SetCategory(cat) end
+		te2:SetType(EFFECT_TYPE_IGNITION)
 		te2:SetRange(LOCATION_SZONE)
 		te2:SetCountLimit(1)
+		if con then te2:SetCondition(con) end
+		if cost then te2:SetCost(cost) end
+		if tg then te2:SetTarget(tg) end
+		if op then te2:SetOperation(op) end
 		te2:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,1)
 		c:RegisterEffect(te2)
 	end

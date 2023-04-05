@@ -89,7 +89,7 @@ end
 function cm.exsetcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
-	return #mg>0 and (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or mc:IsSSetable()) and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	return #mg>0 and (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or c:IsSSetable()) and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.exsetop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -171,6 +171,8 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.drop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToBattle() and c:IsLocation(LOCATION_MZONE) and c:IsDisabled() then return end
 	if #BATTLE_ACT_CHECK>0 then
 		local hash={}
 		local class=0

@@ -620,7 +620,7 @@ function cm.actarget3(e,tc,tp)
 	return Duel.GetLocationCount(p,LOCATION_SZONE)>0 and tc:IsType(TYPE_FIELD) and c:IsLocation(LOCATION_FZONE) and c:IsControler(p) and tc:GetControler()==p and tc~=c
 end
 function cm.pcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(function(c,tp)return c:GetReasonPlayer()~=tp and c:IsPreviousLocation(LOCATION_DECK) and not c:IsLocation(LOCATION_DECK)end,1,nil,tp) and e:GetHandler():GetSequence()>4
+	return eg:IsExists(function(c,tp)return c:GetReasonPlayer()==1-tp and c:IsPreviousLocation(LOCATION_DECK) and not c:IsLocation(LOCATION_DECK)end,1,nil,tp) and e:GetHandler():GetSequence()>4
 end
 function cm.pfilter(c,tp)
 	return not c:IsLocation(LOCATION_FZONE) and c:GetOriginalType()&TYPE_FIELD~=0 and c:GetActivateEffect():IsActivatable(tp,true,true)

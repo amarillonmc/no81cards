@@ -94,6 +94,16 @@ function cm.initial_effect(c)
 	if not Party_time_globle_check then
 		Party_time_globle_check=true
 		Party_time_table={}
+		function Party_time_rfilter(c,id)
+			return c:GetFlagEffectLabel(7439100)==id
+		end
+		function Party_time_chain_target(e,te,tp)
+			return Group.CreateGroup()
+		end
+		function Party_time_chain_operation(e,te,tp,tc,mat,sumtype)
+			if not sumtype then sumtype=SUMMON_TYPE_FUSION end
+			Duel.SpecialSummon(tc,sumtype,tp,tp,false,false,POS_FACEUP)
+		end
 		function Party_time_RandomSelect(g,tp,count)
 			if #g<=0 then return end
 			if count>#g then count=#g end
@@ -117,15 +127,16 @@ function cm.initial_effect(c)
 			if Duel.GetCurrentChain()~=0 then
 				local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
 				if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
-					if not tp and aux.GetValueType(tg)=="Card" and tg:GetFlagEffectLabel(m)==7439100+id and tg:IsLocation(LOCATION_DECK) then 
+					if not tp and aux.GetValueType(tg)=="Card" and tg:GetFlagEffectLabel(7439100)==7439100+id and tg:IsLocation(LOCATION_DECK) then 
 						return _SendtoDeck(tg,1-tg:GetControler(),seq,reason)  
 					end
 					if not tp and aux.GetValueType(tg)=="Group" then 
 						local sg=tg:Filter(cm.rfilter,nil,7439100+id):Filter(Card.IsLocation,nil,LOCATION_DECK)
 						if sg and sg:GetCount()>0 then
-							tg:Sub(sg)
-							if tg and tg:GetCount()>0 then
-								_SendtoDeck(tg,tp,seq,reason)
+							local tgc=tg:Clone()
+							tgc:Sub(sg)
+							if tgc and tgc:GetCount()>0 then
+								_SendtoDeck(tgc,tp,seq,reason)
 							end
 							return _SendtoDeck(sg,1-sg:GetFirst():GetControler(),seq,reason) 
 						end
@@ -139,15 +150,16 @@ function cm.initial_effect(c)
 			if Duel.GetCurrentChain()~=0 then
 				local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
 				if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
-					if not tp and aux.GetValueType(tg)=="Card" and tg:GetFlagEffectLabel(m)==7439100+id and tg:IsLocation(LOCATION_HAND) then 
+					if not tp and aux.GetValueType(tg)=="Card" and tg:GetFlagEffectLabel(7439100)==7439100+id and tg:IsLocation(LOCATION_HAND|LOCATION_DECK) then 
 						return _SendtoHand(tg,1-tg:GetControler(),reason) 
 					end
 					if not tp and aux.GetValueType(tg)=="Group" then 
-						local sg=tg:Filter(cm.rfilter,nil,7439100+id):Filter(Card.IsLocation,nil,LOCATION_HAND)
+						local sg=tg:Filter(Party_time_rfilter,nil,7439100+id):Filter(Card.IsLocation,nil,LOCATION_HAND|LOCATION_DECK)
 						if sg and sg:GetCount()>0 then
-							tg:Sub(sg)
-							if tg and tg:GetCount()>0 then
-								_SendtoHand(tg,tp,reason) 
+							local tgc=tg:Clone()
+							tgc:Sub(sg)
+							if tgc and tgc:GetCount()>0 then
+								_SendtoHand(tgc,tp,reason) 
 							end
 							return _SendtoHand(sg,1-sg:GetFirst():GetControler(),reason) 
 						end
@@ -164,7 +176,7 @@ function cm.initial_effect(c)
 				if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
 					local sg=g:Clone()
 					if aux.GetValueType(ag)=="Group" then 
-						ag=ag:Filter(cm.rfilter,nil,7439100+id)
+						ag=ag:Filter(Party_time_rfilter,nil,7439100+id)
 						if ag:GetCount()~=0 then
 							sg:Merge(ag) 
 						end
@@ -184,7 +196,7 @@ function cm.initial_effect(c)
 				if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
 					local g=Duel.GetMatchingGroup(f,tp,s,o,cg,...)
 					if aux.GetValueType(ag)=="Group" then 
-						ag=ag:Filter(cm.rfilter,nil,7439100+id)
+						ag=ag:Filter(Party_time_rfilter,nil,7439100+id)
 						if ag:GetCount()~=0 then
 							g:Merge(ag) 
 						end
@@ -205,7 +217,7 @@ function cm.initial_effect(c)
 					local g=Duel.GetReleaseGroup(sp)
 					local g=g:Filter(f,cg,...)
 					if aux.GetValueType(ag)=="Group" then 
-						ag=ag:Filter(cm.rfilter,nil,7439100+id)
+						ag=ag:Filter(Party_time_rfilter,nil,7439100+id)
 						if ag:GetCount()~=0 then
 							g:Merge(ag) 
 						end
@@ -226,7 +238,7 @@ function cm.initial_effect(c)
 					local g=Duel.GetReleaseGroup(sp)
 					local g=g:Filter(f,cg,...)
 					if aux.GetValueType(ag)=="Group" then 
-						ag=ag:Filter(cm.rfilter,nil,7439100+id)
+						ag=ag:Filter(Party_time_rfilter,nil,7439100+id)
 						if ag:GetCount()~=0 then
 							g:Merge(ag) 
 						end
@@ -249,8 +261,8 @@ function cm.initial_effect(c)
 				ce:SetType(EFFECT_TYPE_FIELD)
 				ce:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 				ce:SetTargetRange(1,0)
-				ce:SetTarget(cm.chain_target)
-				ce:SetOperation(cm.chain_operation)
+				ce:SetTarget(Party_time_chain_target)
+				ce:SetOperation(Party_time_chain_operation)
 				ce:SetValue(aux.TRUE)
 			end
 			return ce
@@ -265,7 +277,7 @@ function cm.initial_effect(c)
 					if not cg or cg:GetCount()<=0 then return end
 					local cg2=cg:Clone()
 					if aux.GetValueType(ag)=="Group" and Duel.GetFlagEffect(0,7439099)==0 then 
-						ag=ag:Filter(cm.rfilter,nil,7439100+id)
+						ag=ag:Filter(Party_time_rfilter,nil,7439100+id)
 						if ag:GetCount()~=0 then
 							cg2:Merge(ag) 
 						end
@@ -285,7 +297,7 @@ function cm.initial_effect(c)
 				local ag=Party_time_table[7439100+id]
 				if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
 					if aux.GetValueType(ag)=="Group" then 
-						ag=ag:Filter(cm.rfilter,nil,7439100+id)
+						ag=ag:Filter(Party_time_rfilter,nil,7439100+id)
 						if ag:GetCount()~=0 then
 							--
 							aux.SubGroupCaptured=Group.CreateGroup()
@@ -305,9 +317,9 @@ function cm.initial_effect(c)
 								local cg=Group.CreateGroup()
 								local eg=g:Clone()
 								local eg1=g:Clone()
-								local eg2=eg:Filter(cm.rfilter,nil,7439100+id)
+								local eg2=eg:Filter(Party_time_rfilter,nil,7439100+id)
 								local sg1=sg:Clone()
-								local sg2=sg:Filter(cm.rfilter,nil,7439100+id)
+								local sg2=sg:Filter(Party_time_rfilter,nil,7439100+id)
 								if not aux.GCheckAdditional then 
 									eg:Sub(eg2)
 									eg1:Sub(eg2)
@@ -368,6 +380,33 @@ function cm.initial_effect(c)
 			end
 			return _SelectSubGroup(g,tp,f,cancelable,min,max,...)
 		end
+		--_CheckGroupRecursiveCapture=aux.CheckGroupRecursiveCapture
+		--function aux.CheckGroupRecursiveCapture(c,sg,g,f,min,max,ext_params)
+		--  if Duel.GetCurrentChain()~=0 and Duel.GetFlagEffect(0,7439099)~=0 then
+		--  local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
+		--  local ag=Party_time_table[7439100+id]
+		--  if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
+		--	  sg:AddCard(c)
+		--	  local sg2=sg:Clone()
+		--	  local pg=sg:Filter(Party_time_rfilter,nil,7439100+id)
+		--	  sg2:Sub(pg)
+		--	  if aux.GCheckAdditional and (c:GetFlagEffectLabel(7439100)~=id and not aux.GCheckAdditional(sg2,c,g,f,min,max,ext_params) ) then
+		--		  sg:RemoveCard(c)
+		--		  return false
+		--	  end
+		--	  local res=#sg>=min and #sg<=max and f(sg2,table.unpack(ext_params))
+		--	  if res then
+		--		  aux.SubGroupCaptured:Clear()
+		--		  aux.SubGroupCaptured:Merge(sg)
+		--	  else
+		--		  res=#sg<max and g:IsExists(aux.		 CheckGroupRecursiveCapture,1,sg2,sg,g,f,min,max,ext_params)
+		--	  end
+		--	  sg:RemoveCard(c)
+		--	  return res
+		--  end
+		--  end
+		--  return _CheckGroupRecursiveCapture(c,sg,g,f,min,max,ext_params)
+		--end
 		_IsCanBeRitualMaterial=Card.IsCanBeRitualMaterial
 		function Card.IsCanBeRitualMaterial(c,sc)
 			if Duel.GetCurrentChain()~=0 then
@@ -387,7 +426,7 @@ function cm.initial_effect(c)
 					local g=Duel.GetMatchingGroup(f,tp,LOCATION_HAND,0,cg,...)
 					if not g or g:GetCount()<=0 then return false end
 					if aux.GetValueType(ag)=="Group" then 
-						ag=ag:Filter(cm.rfilter,nil,7439100+id)
+						ag=ag:Filter(Party_time_rfilter,nil,7439100+id)
 						if ag:GetCount()~=0 then
 							g:Merge(ag) 
 						end
@@ -399,16 +438,6 @@ function cm.initial_effect(c)
 			return _DiscardHand(tp,f,min,max,reason,cg,...)
 		end
 	end
-end
-function cm.chain_target(e,te,tp)
-	return Group.CreateGroup()
-end
-function cm.chain_operation(e,te,tp,tc,mat,sumtype)
-	if not sumtype then sumtype=SUMMON_TYPE_FUSION end
-	Duel.SpecialSummon(tc,sumtype,tp,tp,false,false,POS_FACEUP)
-end
-function cm.rfilter(c,id)
-	return c:GetFlagEffectLabel(7439100)==id
 end
 function cm.actcon(e)
 	return Duel.IsExistingMatchingCard(cm.cfilter,e:GetHandlerPlayer(),LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil)

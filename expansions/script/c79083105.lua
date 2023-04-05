@@ -96,9 +96,7 @@ function c79083105.zntg(e,tp,eg,ep,ev,re,r,rp,chk)
 	 Duel.IsPlayerAffectedByEffect(tp,79083810) and 
 	 Duel.IsPlayerAffectedByEffect(tp,79083910) and 
 	 Duel.IsPlayerAffectedByEffect(tp,79083010) and 
-	 Duel.IsPlayerAffectedByEffect(tp,79084010) and 
-	 Duel.IsPlayerAffectedByEffect(tp,79084110) and
-	 Duel.IsPlayerAffectedByEffect(tp,79084210)
+	 Duel.IsPlayerAffectedByEffect(tp,79084010) 
 	if chk==0 then return not b1 end 
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(79083104,0))
 	local zone=Duel.SelectField(tp,1,LOCATION_ONFIELD,0,flag) 
@@ -273,12 +271,12 @@ function c79083105.srfilter(c,e,tp,check)
 end
 function c79083105.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	if chk==0 then return Duel.IsExistingMatchingCard(c79083105.srfilter,tp,LOCATION_DECK,0,1,nil,e,tp,check) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c79083105.srfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp,check) end
 end
 function c79083105.srop(e,tp,eg,ep,ev,re,r,rp)
 	local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c79083105.srfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,check)
+	local g=Duel.SelectMatchingCard(tp,c79083105.srfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp,check)
 	local tc=g:GetFirst()
 	if tc then
 		if tc:IsAbleToHand() and (not (check and tc:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,false) and tc:IsType(TYPE_MONSTER) and tc:IsType(TYPE_RITUAL)) or Duel.SelectOption(tp,1190,1152)==0) then

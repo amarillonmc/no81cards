@@ -130,7 +130,7 @@ function c118776531.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c118776531.mpfilter(c)
-    return c:IsFaceup() and c:IsCode(21377582)
+    return c:IsFaceup() and c:IsCode(21377582,57761191)
 end
 function c118776531.thop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

@@ -20,7 +20,7 @@ function cm.chainfilter(re,tp,cid)
 	return not re:GetActivateLocation()==LOCATION_HAND
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)==0 end
+	if chk==0 then return e:GetHandler():IsDiscardable() and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
@@ -29,7 +29,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetValue(cm.aclimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function cm.aclimit(e,re,tp)
 	return re:GetActivateLocation()==LOCATION_HAND

@@ -45,7 +45,7 @@ function cm.filter1(c,tp)
 	return c:IsReleasable() and Duel.GetMZoneCount(1-tp,c,tp)>0
 end
 function cm.filter2(c)
-	return aux.IsCodeListed(c,99518961) and c:IsType(TYPE_MONSTER)
+	return aux.IsCodeListed(c,99518961) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function cm.filter3(c,e,tp)
 	return c:IsLevelBelow(3) and c:IsType(TYPE_NORMAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

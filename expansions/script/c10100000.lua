@@ -1418,7 +1418,7 @@ function Scl.RegisterEffect(reg_obj, reg_eff)
 	local owner, handler, ignore = Scl.GetRegisterInfo(reg_obj)
 	if type(handler) == "number" then
 		Duel.RegisterEffect(reg_eff, handler)
-	else
+	elseif aux.GetValueType(handler) == "Card" then
 		handler:RegisterEffect(reg_eff, ignore)
 	end
 	return reg_eff, reg_eff:GetFieldID()
@@ -3229,7 +3229,7 @@ end
 			2.extra_check_function: add an additional check to the effect cost/target, call extra_check_function(e, tp, eg, ...) to check.
 		//return list_typ, extra_check_function
 	 4.
-	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }	
+	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }   
 		Paramas explain: 
 			2.extra_operate_function: add an additional operate to the effect cost/target, call extra_operate_function(current list's selected card(s), all above lists's selected card(s),e, tp, eg, ...) to operate.
 		//return list_typ, extra_operate_function
@@ -4717,7 +4717,7 @@ function Scl.ActivateSepllOrTrap(tc, actp, apply_effect, lim_zone)
 			local tg = te:GetTarget() or aux.TRUE
 			local op = te:GetOperation() or aux.TRUE
 			tg(te, actp, ceg, cep, cev, cre, cr, crp, 1)
-			op(te, actp, ceg, cep, cev, cre, cr, crp)		  
+			op(te, actp, ceg, cep, cev, cre, cr, crp)		 
 		end
 		if zone == LOCATION_FZONE then
 			Duel.RaiseEvent(tc, 4179255, te, 0, tp, tp, Duel.GetCurrentChain())
@@ -5306,7 +5306,7 @@ end
 	3. Love.IsLinkSeries(c)  -- equal to Scl.IsLinkSeries(c, "YiFanJiang") 
 	4. Love.IsPreviousSeries(c) -- equal to Scl.IsPreviousSeries(c, "YiFanJiang")
 	5. Love.IsOriginalSeries(c) -- equal to Scl.IsOriginalSeries(c, "YiFanJiang")
-	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)	-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
+	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)   -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
 	11~15 Love.IsXXXXSeriesSpell(c) (XXXX can be "", "Fusion", "Link" ……, see above)		-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL)
 	16~20 Love.IsXXXXSeriesTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)   -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_TRAP)
 	21~25 Love.IsXXXXSeriesSpellOrTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)  -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL + TYPE_TRAP)
@@ -6862,9 +6862,9 @@ Scl.RaiseGlobalSetEvent()
 
 --[[
 
-10100000 -- Scl's library		 QQ852415212
+10100000 -- Scl's library		QQ852415212
 
-60152900 -- LaiBill's library	 QQ529508379
+60152900 -- LaiBill's library	QQ529508379
 			B2Sayaka -- "Miki Sayaka"
 			
 

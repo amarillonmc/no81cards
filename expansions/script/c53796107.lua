@@ -362,7 +362,7 @@ function cm.IsSumReleasable(c,sc)
 	end
 	return res
 end
-function cm.fselect(g,c)
+function cm.fselect(g,c,tp)
 	local res=true
 	for tc in aux.Next(g) do if not cm.IsSumReleasable(tc,c) then res=false end end
 	return res and Duel.GetMZoneCount(tp,g)>0
@@ -375,14 +375,14 @@ function cm.sumcon(e,c,minc)
 	if mi<minc then mi=minc end
 	if ma<mi then return false end
 	local g=Group.__add(Duel.GetTributeGroup(c),Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK,0,nil,m))
-	return ma>0 and g:CheckSubGroup(cm.fselect,mi,ma,c)
+	return ma>0 and g:CheckSubGroup(cm.fselect,mi,ma,c,tp)
 end
 function cm.sumop(e,tp,eg,ep,ev,re,r,rp,c,minc)
 	local mi,ma=c:GetTributeRequirement()
 	if minc and mi<minc then mi=minc end
 	local g=Group.__add(Duel.GetTributeGroup(c),Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK,0,nil,m))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local sg=g:SelectSubGroup(tp,cm.fselect,true,mi,ma,c)
+	local sg=g:SelectSubGroup(tp,cm.fselect,true,mi,ma,c,tp)
 	c:SetMaterial(sg)
 	if sg:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.RegisterFlagEffect(tp,m+2500,RESET_PHASE+PHASE_END,0,1) end
 	Duel.SendtoGrave(sg,REASON_RELEASE+REASON_SUMMON+REASON_MATERIAL)
@@ -399,7 +399,7 @@ function cm.otcon1(e,c,minc)
 		if mi<minc then mi=minc end
 		if ma<mi then return false end
 		local g=Group.__add(Duel.GetTributeGroup(c),Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK,0,nil,m))
-		return ma>0 and g:CheckSubGroup(cm.fselect,mi,ma,c)
+		return ma>0 and g:CheckSubGroup(cm.fselect,mi,ma,c,tp)
 	else
 		local mg=Duel.GetMatchingGroup(cm.otfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 		return c:IsLevelAbove(7) and minc<=1 and Duel.CheckTribute(c,1,1,mg)
@@ -412,7 +412,7 @@ function cm.otop1(e,tp,eg,ep,ev,re,r,rp,c,minc)
 		if minc and mi<minc then mi=minc end
 		local g=Group.__add(Duel.GetTributeGroup(c),Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK,0,nil,m))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local sg=g:SelectSubGroup(tp,cm.fselect,true,mi,ma,c)
+		local sg=g:SelectSubGroup(tp,cm.fselect,true,mi,ma,c,tp)
 		c:SetMaterial(sg)
 		if sg:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.RegisterFlagEffect(tp,m+2500,RESET_PHASE+PHASE_END,0,1) end
 		Duel.SendtoGrave(sg,REASON_RELEASE+REASON_SUMMON+REASON_MATERIAL)
@@ -428,7 +428,7 @@ function cm.otcon2(e,c,minc)
 	local tp=c:GetControler()
 	if Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,tp,LOCATION_DECK,0,1,nil,m) and Duel.GetFlagEffect(tp,m+2500)==0 then
 		local g=Group.__add(Duel.GetTributeGroup(c),Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK,0,nil,m))
-		return minc<=3 and g:CheckSubGroup(cm.fselect,3,3,c)
+		return minc<=3 and g:CheckSubGroup(cm.fselect,3,3,c,tp)
 	else
 		return minc<=3 and Duel.CheckTribute(c,3)
 	end
@@ -437,7 +437,7 @@ function cm.otop2(e,tp,eg,ep,ev,re,r,rp,c,minc)
 	if Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,tp,LOCATION_DECK,0,1,nil,m) and Duel.GetFlagEffect(tp,m+2500)==0 then
 		local g=Group.__add(Duel.GetTributeGroup(c),Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK,0,nil,m))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local sg=g:SelectSubGroup(tp,cm.fselect,true,3,3,c)
+		local sg=g:SelectSubGroup(tp,cm.fselect,true,3,3,c,tp)
 		c:SetMaterial(sg)
 		if sg:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.RegisterFlagEffect(tp,m+2500,RESET_PHASE+PHASE_END,0,1) end
 		Duel.SendtoGrave(sg,REASON_RELEASE+REASON_SUMMON+REASON_MATERIAL)
