@@ -18,10 +18,15 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_REMOVE)
+	e2:SetCondition(c.con)
 	e2:SetTarget(c22348122.target2)
 	e2:SetOperation(c22348122.operation2)
 	c:RegisterEffect(e2)
 	
+end
+function c22348122.con(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsFaceup()
 end
 function c22348122.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

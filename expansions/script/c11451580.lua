@@ -89,7 +89,7 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	local loc,p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_PLAYER)
+	local loc,p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_CONTROLER)
 	return loc&LOCATION_ONFIELD>0 and p~=tp
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
