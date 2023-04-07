@@ -35,7 +35,7 @@ function cm.op(e,tp)
 		cm.initial_effect=function() end
 		tc:ReplaceEffect(m,0)
 		cm.initial_effect=ini
-		tc.initial_effect(tc)
+		if tc.initial_effect then tc.initial_effect(tc) end
 	end
 	function Duel.SetChainLimit(...)
 		return
@@ -48,7 +48,7 @@ function cm.hapeop(e)
 	for p=0,1 do
 		for _,val in pairs(cm.codelist) do
 			for _,ae in pairs({Duel.IsPlayerAffectedByEffect(p,val)}) do
-				if ae:GetType()&EFFECT_TYPE_SINGLE==0 then
+				if ae:GetType()&EFFECT_TYPE_SINGLE==0 and ae:GetProperty()&EFFECT_FLAG_UNCOPYABLE==0 then
 					ae:SetCondition(aux.FALSE)
 				end
 			end

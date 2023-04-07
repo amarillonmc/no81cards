@@ -190,6 +190,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 		Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)
 		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsCode,nil,7429151)
+		local tdg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
 		local p=tp
 		for i=1,2 do
 			local dg=g:Filter(cm.seqfilter,nil,p)

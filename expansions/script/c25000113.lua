@@ -25,7 +25,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			og=Group.__sub(g,cg)
 		else og=g end
 	end
-	local b1=#og>0 and og:IsExists(Card.IsAbleToHand,1,nil) and Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_DECK,0,1,nil,TYPE_SPELL)
+	local b1=#og>0 and og:IsExists(Card.IsAbleToHand,1,nil) and Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_DECK,0,1,nil,TYPE_TRAP)
 	local b2=Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
 	if chk==0 then return b1 or b2 end
 	local op=0
@@ -43,7 +43,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e:SetLabel(op)
 	if op~=1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-		local ac=Duel.AnnounceCard(tp,TYPE_SPELL)
+		local ac=Duel.AnnounceCard(tp,TYPE_TRAP)
 		Duel.SetTargetParam(ac)
 		Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,0)
 	end

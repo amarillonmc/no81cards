@@ -123,7 +123,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if dc==1 or dc==2 or dc==3 then
 		Duel.Damage(tp,1500,REASON_EFFECT)
 	else
-		Damage(1-tp,dc*500,REASON_EFFECT)
+		Duel.Damage(1-tp,dc*500,REASON_EFFECT)
 	end
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)

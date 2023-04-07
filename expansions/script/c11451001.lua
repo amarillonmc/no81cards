@@ -24,6 +24,25 @@ function cm.initial_effect(c)
 		local _CRemoveOverlayCard=Card.RemoveOverlayCard
 		local _FilterSelect=Group.FilterSelect
 		local _Select=Group.Select
+		local function Local_RandomSelect(g,tp,ct)
+			local cg=g:Clone()
+			local sg=Group.CreateGroup()
+			if aux.GetValueType(g)~="Group" or #g<=0 then return sg end
+			if ct>#g then ct=#g end
+			if not cm.r then
+				cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
+			end
+			while #sg<ct do
+				local id=cm.roll(0,#cg)
+				local tc=cg:GetFirst()
+				if id>1 then
+					for i=1,id-1,1 do tc=cg:GetNext() end
+				end
+				sg:AddCard(tc)
+				cg:RemoveCard(tc)
+			end
+			return sg
+		end
 		function Duel.SelectMatchingCard(sp,f,p,s,o,min,max,nc,...)
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local g=Duel.GetMatchingGroup(f,p,s,o,nc,...)
@@ -83,7 +102,9 @@ function cm.initial_effect(c)
 		function Duel.RemoveOverlayCard(sp,s,o,min,max,r)
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local og=Duel.GetOverlayGroup(sp,s,o)
-				og=og:Select(sp,min,max,nil)
+				Duel.Hint(HINT_CARD,0,m)
+				cm[sp]=cm[sp]+1
+				og=Local_RandomSelect(og,sp,1)
 				local e=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
 				local dc=og:GetFirst()
 				local c=nil
@@ -98,7 +119,9 @@ function cm.initial_effect(c)
 		function Card.RemoveOverlayCard(oc,sp,min,max,r)
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local og=oc:GetOverlayGroup()
-				og=og:Select(sp,min,max,nil)
+				Duel.Hint(HINT_CARD,0,m)
+				cm[sp]=cm[sp]+1
+				og=Local_RandomSelect(og,sp,1)
 				local e=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
 				local ct=Duel.SendtoGrave(og,r)
 				if ct>0 and e then Duel.RaiseSingleEvent(oc,EVENT_DETACH_MATERIAL,e,0,0,0,0) end
