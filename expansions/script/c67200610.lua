@@ -64,15 +64,15 @@ function c67200610.teop(e,tp,eg,ep,ev,re,r,rp)
 end
 ----
 function c67200610.refilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:IsReleasable()
+	return c:IsFaceup() and c:GetOriginalType()&TYPE_PENDULUM~=0
 end
 function c67200610.stcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ft=Duel.GetLocationCount(tp,LOCATION_PZONE)
+	local b=Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
 	local loc=LOCATION_ONFIELD
-	if ft==0 then loc=LOCATION_PZONE end
-	if chk==0 then return Duel.IsExistingMatchingCard(c67200610.refilter,tp,loc,0,1,e:GetHandler(),e,tp) end
+	if not b then loc=LOCATION_PZONE end
+	if chk==0 then return Duel.IsExistingMatchingCard(c67200610.refilter,tp,loc,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,c67200610.refilter,tp,loc,0,1,1,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,c67200610.refilter,tp,loc,0,1,1,nil)
 	Duel.Release(g,REASON_COST)
 end
 function c67200610.thfilter(c)

@@ -61,7 +61,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if e:GetLabel()==1 then
 		local rc=re:GetHandler()
-		if c:IsImmuneToEffect(e) or not rc:IsRelateToEffect(re) or not c:IsRelateToEffect(e) then return end
+		if rc:IsImmuneToEffect(e) or not rc:IsRelateToEffect(re) or not c:IsRelateToEffect(e) then return end
 		rc:CancelToGrave()
 		local og=rc:GetOverlayGroup()
 		if #og>0 then Duel.SendtoGrave(og,REASON_RULE) end
@@ -80,8 +80,11 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(m,5))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
+	--e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_PLAYER_TARGET)
+	--e1:SetTargetRange(0,1)
 	e1:SetCountLimit(1)
 	e1:SetCondition(cm.discon)
 	e1:SetOperation(cm.disop)
@@ -94,6 +97,8 @@ function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
+	e:SetProperty(0)
+	e:Reset()
 end
 function cm.filter3(c,tp)
 	return c:IsCode(11451583) and c:IsAbleToHand()

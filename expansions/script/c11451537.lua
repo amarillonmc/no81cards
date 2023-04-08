@@ -87,7 +87,13 @@ function cm.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,c,tp,c)
 	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) and #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	sg=g:Select(tp,1,1,nil)
+	local sg=g:Select(tp,1,1,nil)
+	local tc=sg:GetFirst()
+	local og=tc:GetOverlayGroup()
+	if og:GetCount()>0 then
+		Duel.SendtoGrave(og,REASON_RULE)
+	end
+	tc:CancelToGrave()
 	Duel.Overlay(c,sg)
 end
 function cm.smfilter(c)

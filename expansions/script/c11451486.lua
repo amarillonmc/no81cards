@@ -178,6 +178,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		if og:GetCount()>0 then
 			Duel.SendtoGrave(og,REASON_RULE)
 		end
+		tc:CancelToGrave()
 		Duel.Overlay(c,tc)
 	end
 	if #tg>1 then
@@ -188,6 +189,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		if og:GetCount()>0 then
 			Duel.SendtoGrave(og,REASON_RULE)
 		end
+		tc:CancelToGrave()
 		Duel.Overlay(c,tc)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 	end

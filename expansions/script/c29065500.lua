@@ -18,7 +18,10 @@ function c29065500.initial_effect(c)
 	e1:SetCountLimit(1,29065500)
 	e1:SetTarget(c29065500.thtg)
 	e1:SetOperation(c29065500.thop)
-	c:RegisterEffect(e1)   
+	c:RegisterEffect(e1)	
+	local e3=e1:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e3)   
 	--copy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29065500,0)) 
@@ -30,12 +33,45 @@ function c29065500.initial_effect(c)
 	e2:SetOperation(c29065500.coop)
 	--c:RegisterEffect(e2) 
 	--direct attack
-
-
-
-
-
-
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_DIRECT_ATTACK)
+	c:RegisterEffect(e4)
+	--to hand
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCategory(CATEGORY_TOHAND)
+	e5:SetCode(EVENT_PHASE+PHASE_BATTLE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCountLimit(1)
+	e5:SetCondition(c29065500.thandcon)
+	e5:SetOperation(c29065500.thandop)
+	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCategory(CATEGORY_TOHAND)
+	e6:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCountLimit(1)
+	e6:SetCondition(c29065500.thandcon2)
+	e6:SetOperation(c29065500.thandop2)
+	c:RegisterEffect(e6)
+end
+function c29065500.thandcon(e)
+	local c=e:GetHandler()
+	return e:GetHandler():IsAbleToHand() and e:GetHandler():GetFlagEffect(29065500)>0
+end
+function c29065500.thandop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
+end
+function c29065500.thandcon2(e)
+	local c=e:GetHandler()
+	local tp=e:GetHandlerPlayer()
+	return Duel.GetAttackTarget()==nil
+		and c:GetEffectCount(EFFECT_DIRECT_ATTACK)<2 and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
+end
+function c29065500.thandop2(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():RegisterFlagEffect(29065500,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1)
 end
 function c29065500.ntcon(e,c,minc)
 	if c==nil then return true end

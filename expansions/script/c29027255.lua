@@ -48,7 +48,7 @@ function c29027255.valcheck(e,c)
 	end
 end
 function c29027255.thfilter(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand() and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_MONSTER)) and c:IsType(TYPE_RITUAL)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand() and c:IsType(TYPE_SPELL) and c:IsType(TYPE_RITUAL)
 end
 function c29027255.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetLabel()==1

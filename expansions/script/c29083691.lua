@@ -71,7 +71,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.spfilter(c)
-	return c:IsSetCard(0x87af) and not c:IsCode(m) and c:IsAbleToHand()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_PENDULUM) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

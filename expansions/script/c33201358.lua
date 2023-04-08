@@ -51,18 +51,21 @@ function cm.atktg(e,c)
 end
 
 --e0
+function cm.tgfilter(c)
+	return c:IsAbleToGrave() and not c:IsLocation(LOCATION_FZONE)
+end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_SZONE)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) then 
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,nil)
+	if Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) then 
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.HintSelection(g)
-			if Duel.SendtoGrave(g,nil,REASON_EFFECT)>0 then 
+			if Duel.SendtoGrave(g,nil,REASON_EFFECT)>0 and g:GetFirst():IsLocation(LOCATION_GRAVE) then 
 				Duel.BreakEffect()
 				local tc=g:GetFirst()
 				local typ=tc:GetOriginalType()
