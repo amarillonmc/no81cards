@@ -1,93 +1,92 @@
 --方舟骑士-玛恩纳
 function c29065555.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,6,3,c29065555.ovfilter,aux.Stringid(29065555,0),3,c29065555.xyzop)
-	c:EnableReviveLimit()  
-	--battle  
-	local e1=Effect.CreateEffect(c) 
-	e1:SetType(EFFECT_TYPE_IGNITION) 
-	e1:SetRange(LOCATION_MZONE) 
-	e1:SetCountLimit(1,29065555) 
-	e1:SetCost(c29065555.btcost) 
-	e1:SetTarget(c29065555.bttg) 
-	e1:SetOperation(c29065555.btop) 
-	c:RegisterEffect(e1)   
-	--double 
-	local e2=Effect.CreateEffect(c) 
-	e2:SetType(EFFECT_TYPE_SINGLE) 
-	e2:SetCode(EFFECT_SET_BASE_ATTACK) 
-	e2:SetRange(LOCATION_MZONE)  
-	e2:SetCondition(c29065555.atkcon)
-	e2:SetValue(c29065555.atkval)  
-	c:RegisterEffect(e2) 
-	local e3=Effect.CreateEffect(c) 
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
-	e3:SetCode(EVENT_PHASE+PHASE_END) 
-	e3:SetRange(LOCATION_MZONE)  
-	e3:SetCountLimit(1) 
-	e3:SetCondition(c29065555.ckcon)
-	e3:SetOperation(c29065555.ckop) 
+	c:EnableReviveLimit()
+	aux.AddXyzProcedureLevelFree(c,c29065555.mfilter,nil,2,2)
+	--atk
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetOperation(aux.chainreg)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVED)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetOperation(c29065555.atkop)
+	c:RegisterEffect(e2)
+	--negate
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(c29065555.discon)
+	e3:SetCost(c29065555.discost)
+	e3:SetTarget(c29065555.distg)
+	e3:SetOperation(c29065555.disop)
 	c:RegisterEffect(e3)
-end 
-function c29065555.ovfilter(c)
-	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) 
 end
-function c29065555.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,29065555)==0 and Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x10ae,2,REASON_EFFECT) end   
-	Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x10ae,2,REASON_EFFECT)
-	Duel.RegisterFlagEffect(tp,29065555,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+function c29065555.mfilter(c,xyzc)
+	return (c:IsXyzLevel(xyzc,5) or c:IsXyzLevel(xyzc,6)) and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
-function c29065555.btcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c29065555.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if re:GetHandler()~=c and c:GetFlagEffect(1)>0 and c:GetFlagEffect(29065555)<8 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(500)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e1)
+		c:RegisterFlagEffect(29065555,RESET_EVENT+RESETS_STANDARD,0,1)
+	end
+end
+function c29065555.discon(e,tp,eg,ep,ev,re,r,rp)
+	return rp~=tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+end
+function c29065555.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-end 
-function c29065555.bttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end 
-end 
-function c29065555.btop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler() 
-	if c:IsRelateToEffect(e) then 
-	--attack all
+end
+function c29065555.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local rc=re:GetHandler()
+	local atk=c:GetAttack()-c:GetBaseAttack()
+	local b1=atk>=500 and atk<1500 and rc:IsRelateToEffect(re) and rc:IsDestructable()
+	local b2=atk>=1500 Duel.IsChainNegatable(ev)
+	if chk==0 then return b1 or b2 end
+end
+function c29065555.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local rc=re:GetHandler()
+	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
+	local preatk=c:GetAttack()
+	local atk=preatk-c:GetBaseAttack()
+	if atk<=0 then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_ATTACK_ALL)
-	e1:SetValue(1) 
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(-atk)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 	c:RegisterEffect(e1)
-	end 
-	--direct 
-	local e1=Effect.CreateEffect(c) 
-	e1:SetType(EFFECT_TYPE_FIELD) 
-	e1:SetCode(EFFECT_DIRECT_ATTACK) 
-	e1:SetTargetRange(LOCATION_MZONE,0) 
-	e1:SetTarget(c29065555.drttg)
-	e1:SetReset(RESET_PHASE+PHASE_BATTLE)
-	Duel.RegisterEffect(e1,tp) 
-end 
-function c29065555.drttg(e,c) 
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_BEASTWARRIOR)	 
-end 
-function c29065555.atkcon(e) 
-	return e:GetHandler():GetFlagEffect(29065555)~=0  
-end 
-function c29065555.atkval(e) 
-	return e:GetHandler():GetBaseAttack()*2  
-end  
-function c29065555.ckcon(e,tp,eg,ep,ev,re,r,rp)  
-	return Duel.GetTurnPlayer()~=tp  
-end 
-function c29065555.ckop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler() 
-	if c:GetAttackAnnouncedCount()==0 then 
-	Duel.Hint(HINT_CARD,0,29065555) 
-	c:RegisterFlagEffect(29065555,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(29065555,1)) 
-	elseif c:GetAttackAnnouncedCount()~=0 and c:GetFlagEffect(29065555) then 
-	c:ResetFlagEffect(29065555) 
-	end 
-end 
-
-
-
-
-
-
+	atk=preatk-c:GetAttack()
+	if atk<500 then return end
+	if atk<1500 then
+		if rc:IsRelateToEffect(re) then
+			Duel.Destroy(rc,REASON_EFFECT)
+		end
+	elseif atk<4000 then
+		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+			Duel.Destroy(eg,REASON_EFFECT)
+		end
+	else
+		if Duel.NegateActivation(ev) then
+			local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+			Duel.Destroy(g,REASON_EFFECT)
+		end
+	end
+end

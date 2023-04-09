@@ -51,7 +51,7 @@ function cm.SynCondition(f1,f2,minc,maxc)
 			if max<maxc then maxc=max end
 			if minc>maxc then return false end
 		end
-		local exg=Duel.GetMatchingGroup(Card.IsLevelAbove,c:GetControler(),LOCATION_HAND+LOCATION_ONFIELD,0,nil,0)
+		local exg=Duel.GetMatchingGroup(Card.IsLevelAbove,c:GetControler(),LOCATION_HAND+LOCATION_MZONE,LOCATION_MZONE,nil,1)
 		if mg then mg:Merge(exg) else mg=exg end
 		if smat and smat:IsType(TYPE_TUNER) and (not f1 or f1(smat)) then
 			return mg:CheckSubGroup(cm.fselect1,minc,maxc,c,smat,f1,f2,minc,maxc,c:GetControler()) end
@@ -69,7 +69,7 @@ function cm.SynTarget(f1,f2,minc,maxc)
 			if minc>maxc then return false end
 		end
 		local g=nil
-		local exg=Duel.GetMatchingGroup(Card.IsLevelAbove,c:GetControler(),LOCATION_HAND+LOCATION_ONFIELD,0,nil,0)
+		local exg=Duel.GetMatchingGroup(Card.IsLevelAbove,c:GetControler(),LOCATION_HAND+LOCATION_MZONE,LOCATION_MZONE,nil,1)
 		if mg then mg:Merge(exg) else mg=exg end
 		if smat and smat:IsType(TYPE_TUNER) and (not f1 or f1(smat)) then
 			g=mg:SelectSubGroup(c:GetControler(),cm.fselect1,false,minc,maxc,c,smat,f1,f2,minc,maxc,c:GetControler())
