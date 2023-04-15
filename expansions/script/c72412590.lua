@@ -52,7 +52,7 @@ function c72412590.atktarget(e,c)
 	return c:IsAttribute(ATTRIBUTE_DARK)
 end
 function c72412590.dafilter(c)
-	return c:GetAttribute()~=ATTRIBUTE_DARK
+	return c:GetAttribute()~=ATTRIBUTE_DARK and c:IsFaceup()
 end
 function c72412590.datg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and aux.disfilter1(chkc) end

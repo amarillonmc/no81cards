@@ -41,10 +41,9 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
 	e4:SetCategory(CATEGORY_DESTROY)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e4:SetTarget(cm.ctltg)
 	e4:SetOperation(cm.ctlop)
 	c:RegisterEffect(e4)
 	--
@@ -89,21 +88,21 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.tgfilter(c,tp)
-	local g=Card.GetColumnGroup(c):Filter(Card.IsControler,nil,1-tp)
-	if not g:IsContains(c) then return false end
-	return c:IsLocation(LOCATION_MZONE) or g:GetCount()==1
-end
-function cm.ctltg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,0,LOCATION_ONFIELD,nil,tp)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,0,LOCATION_ONFIELD,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,g,1,0,LOCATION_ONFIELD)
+function cm.desf(c)
+	return c:GetSequence()==5 or c:GetSequence()==6
 end
 function cm.ctlop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,0,LOCATION_ONFIELD,nil,tp)
+	local g=e:GetHandler():GetColumnGroup():Filter(Card.IsControler,nil,1-e:GetHandlerPlayer())
+	local cg = g:Filter(cm.desf,nil)
+	local dg = g:Filter(Card.IsType,nil,TYPE_MONSTER)
 	if g:GetCount()>0 then
-		Duel.Destroy(g,REASON_EFFECT)
+		if #g == 1 then
+			Duel.Destroy(g,REASON_EFFECT)
+		elseif cg:GetCount()>0 then
+			Duel.Destroy(cg,REASON_EFFECT)
+		else
+			Duel.Destroy(dg,REASON_EFFECT)
+		end
 	end
 end
 function cm.PConditionFilterArcKnight(c,e,tp,lscale,rscale,f,tc,eset)

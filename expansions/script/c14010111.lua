@@ -12,26 +12,13 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.pspop)
 	c:RegisterEffect(e1)	
 end
-function cm.PConditionFilter(c,e,tp,lscale,rscale,eset)
-	local lv=0
-	if c.pendulum_level then
-		lv=c.pendulum_level
-	else
-		lv=c:GetLevel()
-	end
-	local bool=Auxiliary.PendulumSummonableBool(c)
-	return (c:IsLocation(LOCATION_HAND) or (c:IsFaceup() and c:IsType(TYPE_PENDULUM)))
-		and lv>lscale and lv<rscale and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,bool,bool)
-		and not c:IsForbidden()
-		and (PENDULUM_CHECKLIST&(0x1<<tp)==0 or Auxiliary.PConditionExtraFilter(c,e,tp,lscale,rscale,eset))
-end
 function cm.pspcon(e,tp,eg,ep,ev,re,r,rp)
-	if not PENDULUM_CHECKLIST then
-		PENDULUM_CHECKLIST=0
+	if not Auxiliary.PendulumChecklist then
+		Auxiliary.PendulumChecklist=0
 		local ge1=Effect.GlobalEffect()
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-		ge1:SetOperation(aux.PendulumReset)
+		ge1:SetOperation(Auxiliary.PendulumReset)
 		Duel.RegisterEffect(ge1,0)
 	end
 	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_EXTRA_PENDULUM_SUMMON)}
@@ -47,17 +34,9 @@ function cm.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	else
 		g=Duel.GetFieldGroup(tp,loc,0)
 	end
-	return g:IsExists(cm.PConditionFilter,1,nil,e,tp,lscale,rscale,eset)
+	return g:IsExists(aux.PConditionFilter,1,nil,e,tp,lscale,rscale,eset)
 end
 function cm.pspop(e,tp,eg,ep,ev,re,r,rp,sg,og)
-	if not PENDULUM_CHECKLIST then
-		PENDULUM_CHECKLIST=0
-		local ge1=Effect.GlobalEffect()
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-		ge1:SetOperation(Auxiliary.PendulumReset)
-		Duel.RegisterEffect(ge1,0)
-	end
 	local lscale=1
 	local rscale=9
 	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_EXTRA_PENDULUM_SUMMON)}
@@ -76,12 +55,12 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp,sg,og)
 	if ft1>0 then loc=loc|LOCATION_HAND end
 	if ft2>0 then loc=loc|LOCATION_EXTRA end
 	if og then
-		tg=og:Filter(Card.IsLocation,nil,loc):Filter(cm.PConditionFilter,nil,e,tp,lscale,rscale,eset)
+		tg=og:Filter(Card.IsLocation,nil,loc):Filter(aux.PConditionFilter,nil,e,tp,lscale,rscale,eset)
 	else
-		tg=Duel.GetMatchingGroup(cm.PConditionFilter,tp,loc,0,nil,e,tp,lscale,rscale,eset)
+		tg=Duel.GetMatchingGroup(aux.PConditionFilter,tp,loc,0,nil,e,tp,lscale,rscale,eset)
 	end
 	local ce=nil
-	local b1=PENDULUM_CHECKLIST&(0x1<<tp)==0
+	local b1=aux.PendulumChecklist&(0x1<<tp)==0
 	local b2=#eset>0
 	if b1 and b2 then
 		local options={1163}
@@ -111,17 +90,10 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp,sg,og)
 	if ce then
 		Duel.Hint(HINT_CARD,0,ce:GetOwner():GetOriginalCode())
 	end
-	local g1=g:Filter(Card.IsLocation,nil,LOCATION_EXTRA)
-	g:Sub(g1)
-	for tc in aux.Next(g1) do
-		local bool=aux.PendulumSummonableBool(tc)
-		Duel.SpecialSummonStep(tc,SUMMON_TYPE_PENDULUM,tp,tp,bool,bool,POS_FACEUP)
-	end
 	for tc in aux.Next(g) do
 		local bool=aux.PendulumSummonableBool(tc)
 		Duel.SpecialSummonStep(tc,SUMMON_TYPE_PENDULUM,tp,tp,bool,bool,POS_FACEUP)
 	end
-	g:Merge(g1)
 	Duel.SpecialSummonComplete()
 	for tc in aux.Next(g) do tc:CompleteProcedure() end
 end

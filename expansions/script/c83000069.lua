@@ -80,25 +80,13 @@ function c83000069.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c83000069.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc:GetFlagEffectLabel(83000069)~=e:GetLabel() then
-		e:Reset()
-		return false
-	else 
-		return true 
-	end
-end
-function c83000069.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SendtoHand(e:GetLabelObject(),nil,REASON_EFFECT)
-end
 -----------
 function c83000069.spfilter(c,e,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsAttack(800) and c:IsDefense(1000) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c83000069.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToHand()
+	if chk==0 then return c:IsAbleToHand() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c83000069.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,c,1,0,0)

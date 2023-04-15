@@ -1,7 +1,6 @@
 --破坏剑士的试炼
 --21.08.27
-local m=11451602
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -46,7 +45,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g1=g:SelectSubGroup(tp,cm.fselect,false,1,3)
 	if Duel.Destroy(g1,REASON_EFFECT)>0 then
 		local sg=Duel.GetOperatedGroup():Filter(cm.spfilter,nil,e,tp)
-		if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		local g2=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
+		if #sg>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			local ct=Duel.GetLocationCount(1-tp,LOCATION_MZONE)
 			if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
 			if #sg>ct then
@@ -78,6 +78,6 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
-		Duel.ConfirmCards(tp,c)
+		Duel.ConfirmCards(1-tp,c)
 	end
 end

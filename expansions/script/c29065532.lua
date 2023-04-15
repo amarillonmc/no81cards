@@ -50,7 +50,7 @@ function cm.dfilter(c)
 	return c:IsReleasable() and c:GetOriginalLevel()>0
 end
 function cm.filter(c,e,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_SPELLCASTER)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) --and c:IsRace(RACE_SPELLCASTER)
 end
 function cm.gfilter(g,c)
 	local rg = g:Filter(cm.check,nil)
@@ -60,7 +60,7 @@ function cm.gfilter(g,c)
 		lv = rg:GetSum(Card.GetRitualLevel,c)
 		_flag,lv2 = rg:GetMinGroup(Card.GetRitualLevel,c)
 	end
-	return Duel.GetMZoneCount(c:GetControler(),g)>0 and g:CheckWithSumGreater(cm.lvfun,c:GetLevel(),c) and ((g:FilterCount(cm.mfilter,nil)+lv) <=c:GetLevel() or (rg:CheckWithSumGreater(cm.lvfun,c:GetLevel(),c) and (rg:GetSum(Card.GetRitualLevel,c) - lv2)<c:GetLevel() and g:FilterCount(cm.mfilter,nil)==0))
+	return Duel.GetMZoneCount(c:GetControler(),rg)>0 and g:CheckWithSumGreater(cm.lvfun,c:GetLevel(),c) and ((g:FilterCount(cm.mfilter,nil)+lv) <=c:GetLevel() or (rg:CheckWithSumGreater(cm.lvfun,c:GetLevel(),c) and (rg:GetSum(Card.GetRitualLevel,c) - lv2)<c:GetLevel() and g:FilterCount(cm.mfilter,nil)==0))
 end
 function cm.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_equal,chk)
 	if (bit.band(c:GetType(),0x81)~=0x81) or (filter and not filter(c,e,tp,chk)) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end

@@ -57,18 +57,18 @@ end
 
 --e0
 function cm.ngfilter(c)
-	return c:IsFaceup() and not c:IsDisabled()
+	return c:IsFaceup() and not c:IsType(TYPE_NORMAL) and not c:IsDisabled()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.ngfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(cm.ngfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,g,1,tp,nil)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not Duel.IsExistingMatchingCard(cm.ngfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then return end
+	if not Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectMatchingCard(tp,cm.ngfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.HintSelection(g)
 	local tc=g:GetFirst()
 	local e1=Effect.CreateEffect(e:GetHandler())

@@ -132,10 +132,10 @@ function cm.addc(e,tp,eg,ep,ev,re,r,rp)
 	end
 	ct=math.floor(ct/2)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,ct,ct,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	local tg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,ct,ct,nil)
+	if tg:GetCount()>0 then
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 end
 function cm.valcheck(e,c)
