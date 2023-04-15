@@ -18,7 +18,7 @@ function c98921007.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_DESTROYED)
-	e2:SetCountLimit(1,80801744)
+	e2:SetCountLimit(1,98922007)
 	e2:SetCondition(c98921007.spcon)
 	e2:SetTarget(c98921007.sptg)
 	e2:SetOperation(c98921007.spop)
@@ -27,7 +27,7 @@ end
 function c98921007.spfilter(c,e,tp)
 	return c:IsSetCard(0x1130) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c98921007.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)	
+function c98921007.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)   
 	if chkc then return chkc:IsLocation(e:GetLabel()) and chkc:IsControler(tp) end
 	if chk==0 then
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -63,7 +63,7 @@ function c98921007.activate(e,tp,eg,ep,ev,re,r,rp)
 		  e1:SetLabelObject(tg)
 		  Duel.RegisterEffect(e1,tp)
 	   end
-	   Duel.SpecialSummonComplete()	   
+	   Duel.SpecialSummonComplete()	
 	   local e1=Effect.CreateEffect(e:GetHandler())
 	   e1:SetType(EFFECT_TYPE_FIELD)
 	   e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -71,7 +71,7 @@ function c98921007.activate(e,tp,eg,ep,ev,re,r,rp)
 	   e1:SetTargetRange(1,0)
 	   e1:SetTarget(c98921007.splimit)
 	   e1:SetReset(RESET_PHASE+PHASE_END,2)
-	   Duel.RegisterEffect(e1,tp)	
+	   Duel.RegisterEffect(e1,tp)   
    end
 end
 function c98921007.splimit(e,c)

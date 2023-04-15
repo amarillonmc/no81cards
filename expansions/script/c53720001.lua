@@ -55,7 +55,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c,e,tp)
-	return c:IsLocation(LOCATION_GRAVE) and c:IsControler(tp) and bit.band(c:GetReason(),0x41)==0x41 and not c:IsSetCard(0x353e) and c:IsCanBeEffectTarget(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLocation(LOCATION_GRAVE) and c:IsControler(tp) and bit.band(c:GetReason(),0x41)==0x41 and c:IsRace(RACE_FIEND) and not c:IsSetCard(0x353e) and c:IsCanBeEffectTarget(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return eg:IsContains(chkc) and cm.filter(chkc,e,tp) end
