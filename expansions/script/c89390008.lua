@@ -22,19 +22,12 @@ function cm.initial_effect(c)
     e1:SetTarget(cm.target)
     e1:SetOperation(cm.activate)
     c:RegisterEffect(e1)
-    local e2=Effect.CreateEffect(c)
-    e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-    e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-    e2:SetCode(EVENT_REMOVE)
-    e2:SetOperation(cm.regop)
-    c:RegisterEffect(e2)
     local e3=Effect.CreateEffect(c)
     e3:SetCategory(CATEGORY_TOHAND)
     e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
     e3:SetCode(EVENT_PHASE+PHASE_END)
     e3:SetRange(LOCATION_REMOVED)
-    e3:SetCountLimit(1,m+1)
-    e3:SetCondition(cm.thcon)
+    e3:SetCountLimit(1,m)
     e3:SetTarget(cm.thtg)
     e3:SetOperation(cm.thop)
     c:RegisterEffect(e3)
@@ -90,16 +83,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
         end
     end
 end
-function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
-    c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-    return e:GetHandler():GetFlagEffect(m)>0
-end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
     if chk==0 then return c:IsAbleToHand() or c:IsSSetable() end
+    Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()

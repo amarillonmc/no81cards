@@ -31,15 +31,21 @@ function cm.initial_effect(c)
     e6:SetOperation(cm.chainop)
     c:RegisterEffect(e6)
     local e7=Effect.CreateEffect(c)
-    e7:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW+CATEGORY_TODECK)
+    e7:SetDescription(aux.Stringid(m,0))
+    e7:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW)
     e7:SetType(EFFECT_TYPE_QUICK_O)
     e7:SetCode(EVENT_FREE_CHAIN)
     e7:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
     e7:SetRange(LOCATION_MZONE)
-    e7:SetCountLimit(1)
+    e7:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
     e7:SetTarget(cm.destg)
     e7:SetOperation(cm.desop)
     c:RegisterEffect(e7)
+    local e8=e7:Clone()
+    e8:SetDescription(aux.Stringid(m,1))
+    e8:SetTarget(cm.destg2)
+    e8:SetOperation(cm.desop2)
+    c:RegisterEffect(e8)
 end
 function cm.ffilter(c,fc,sub,mg,sg)
     return c:IsRace(RACE_PSYCHO) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode()))
@@ -70,47 +76,37 @@ end
 function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
     Duel.SetChainLimit(cm.chainlm)
 end
-function cm.gyfilter(c)
-    return c:IsRace(RACE_PSYCHO) and c:IsAbleToDeck()
-end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(cm.gyfilter,tp,LOCATION_REMOVED,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) and Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) end
-    Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_REMOVED)
-    Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_HAND)
-    Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-    Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
-    Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,1)
+    local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+    local gc=g:GetCount()
+    if chk==0 then return gc>0 and g:FilterCount(Card.IsAbleToRemove,nil)==gc and Duel.IsPlayerCanDraw(tp,gc) end
+    Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,gc,0,0)
+    Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,gc)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
-    local n1=Duel.GetMatchingGroupCount(cm.gyfilter,tp,LOCATION_REMOVED,0,nil)
-    local n2=Duel.GetMatchingGroupCount(Card.IsAbleToRemove,tp,LOCATION_HAND,0,nil)
-    local n3=1
-    for i=2,99 do
-        if Duel.IsPlayerCanDraw(tp,i) then n3=i end
+    local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+    local gc=g:GetCount()
+    if gc>0 and g:FilterCount(Card.IsAbleToRemove,nil)==gc then
+        local oc=Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+        if oc>0 then
+            Duel.Draw(tp,oc,REASON_EFFECT)
+        end
     end
-    local n4=Duel.GetMatchingGroupCount(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
-    local n5=1
-    for i=2,99 do
-        if Duel.IsPlayerCanDraw(1-tp,i) then n5=i end
-    end
-    local dc=math.min(n1,n2,n3+1,n4,n5-1)
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-    local gy=Duel.SelectMatchingCard(tp,cm.gyfilter,tp,LOCATION_REMOVED,0,1,dc,nil)
-    if #gy==0 then return end
-    Duel.HintSelection(gy)
-    local yc=Duel.SendtoDeck(gy,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-    if yc<=0 then return end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-    local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_HAND,0,yc,yc,nil)
-    local g1=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,yc)
-    g:Merge(g1)
-    if #g>0 then
-        local ct=Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-        if ct>0 then
-            Duel.BreakEffect()
-            Duel.Draw(tp,yc+1,REASON_EFFECT)
-            Duel.Draw(1-tp,yc-1,REASON_EFFECT)
+end
+function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk)
+    local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+    local gc=g:GetCount()
+    if chk==0 then return gc>0 and g:FilterCount(Card.IsAbleToRemove,nil)==gc and Duel.IsPlayerCanDraw(1-tp,gc) end
+    Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,gc,0,0)
+    Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,gc)
+end
+function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
+    local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+    local gc=g:GetCount()
+    if gc>0 and g:FilterCount(Card.IsAbleToRemove,nil)==gc then
+        local oc=Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+        if oc>0 then
+            Duel.Draw(1-tp,oc,REASON_EFFECT)
         end
     end
 end
