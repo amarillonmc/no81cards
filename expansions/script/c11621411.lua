@@ -18,7 +18,7 @@ function c11621411.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMING_END_PHASE+TIMINGS_CHECK_MONSTER)
-	e2:SetCountLimit(1,m+108)
+	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.ntrcon)
 	e2:SetTarget(cm.ntrtg)
 	e2:SetOperation(cm.ntrop)
@@ -34,7 +34,8 @@ function c11621411.initial_effect(c)
 	e3:SetCondition(cm.ntrcon)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
-	c:RegisterEffect(e3)	
+	c:RegisterEffect(e3)  
+	cm[c]=e3	
 end
 cm.SetCard_THY_PeachblossomCountry=true 
 --

@@ -14,12 +14,14 @@ function c98920195.initial_effect(c)
   --boost
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98920195,1))
+	e2:SetCategory(CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e2:SetCategory(CATEGORY_ATKCHANGE)
 	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCondition(c98920195.tdcon)
-	e2:SetOperation(c98920195.tdop)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCountLimit(1,98930195)
+	e2:SetCondition(c98920195.drcon)
+	e2:SetTarget(c98920195.drtg)
+	e2:SetOperation(c98920195.drop)
 	c:RegisterEffect(e2)
 end
 function c98920195.cfilter(c,tp)
@@ -70,4 +72,18 @@ function c98920195.tdop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 		tc=g:GetNext()
 	end
+end
+function c98920195.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER)
+		and re:GetHandler():IsAttribute(ATTRIBUTE_WATER)
+end
+function c98920195.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c98920195.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
 end

@@ -32,7 +32,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local rc=re:GetHandler()
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)  
-	return (bit.band(loc,LOCATION_HAND)~=0 or bit.band(loc,LOCATION_GRAVE)~=0) and re:IsActiveType(TYPE_MONSTER) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)  
+	return (bit.band(loc,LOCATION_GRAVE)~=0 or bit.band(loc,LOCATION_GRAVE)~=0) and re:IsActiveType(TYPE_MONSTER) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)  
 end  
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return true end  

@@ -41,7 +41,7 @@ function cm.mfilter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 and not Duel.IsExistingMatchingCard(cm.matfilter,tp,LOCATION_MZONE,0,1,nil,tp) then return false end
 		local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
 		if Duel.IsExistingMatchingCard(cm.mfilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) then  
 			local mg2=Duel.GetMatchingGroup(cm.mfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,nil)
@@ -53,7 +53,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 and not Duel.IsExistingMatchingCard(cm.matfilter,tp,LOCATION_MZONE,0,1,nil,tp) then return end
 	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
 	local mg2=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.mfilter),tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,nil)
 	mg:Merge(mg2)
@@ -98,10 +98,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function cm.tdfilter1(c)
-	return c:IsAbleToDeck() and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
+	return c:IsAbleToDeck() 
 end
 function cm.tdfilter2(c)
-	return c:IsCode(11621402,11621401) and c:IsAbleToDeck()
+	return c:IsCode(11621402,11621401) and c:IsAbleToDeck() and c:IsFaceup() 
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return false end

@@ -1,5 +1,6 @@
 function c82228015.initial_effect(c)  
 	c:EnableReviveLimit()  
+	c:SetSPSummonOnce(82228015)  
 	--splimit  
 	local e0=Effect.CreateEffect(c)  
 	e0:SetType(EFFECT_TYPE_SINGLE)  
@@ -84,7 +85,7 @@ function c82228015.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end  
 
 function c82228015.thfilter(c)  
-	return not c:IsType(TYPE_MONSTER) and c:IsSetCard(0x290) and c:IsAbleToHand()  
+	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x290) and c:IsAbleToHand()  
 end  
 
 function c82228015.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  

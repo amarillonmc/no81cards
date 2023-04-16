@@ -3,7 +3,7 @@ local cm=_G["c"..m]
 cm.name="天启帝君"
 function cm.initial_effect(c)
 	--link summon  
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),4)  
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)  
 	c:EnableReviveLimit() 
 	--remove from hand  
 	local e1=Effect.CreateEffect(c)  

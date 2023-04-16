@@ -40,8 +40,8 @@ function c9910149.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910149.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE,nil)
-	return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct+3
+	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD,nil)
+	return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct
 end
 function c9910149.tofifilter(c)
 	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
@@ -62,12 +62,12 @@ function c9910149.thfilter2(g)
 end
 function c9910149.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910149)
-	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE,nil)
-	Duel.ConfirmDecktop(tp,ct+3)
-	local dg=Duel.GetDecktopGroup(tp,ct+3)
+	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD,nil)
+	Duel.ConfirmDecktop(tp,ct)
+	local dg=Duel.GetDecktopGroup(tp,ct)
 	local g=dg:Filter(c9910149.tofifilter,nil)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if ft>3 then ft=3 end
+	if ft>2 then ft=2 end
 	local og=Group.CreateGroup()
 	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910149,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
@@ -88,7 +88,7 @@ function c9910149.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.ShuffleDeck(tp)
 	if og:GetCount()==0 then return end
-	local tg=Duel.GetMatchingGroup(c9910149.thfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,og)
+	local tg=Duel.GetMatchingGroup(c9910149.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,og)
 	if tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910149,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)

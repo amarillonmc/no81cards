@@ -21,7 +21,7 @@ function c9910372.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_SZONE)
+	e3:SetRange(LOCATION_FZONE)
 	e3:SetCountLimit(1,9910372)
 	e3:SetCost(c9910372.spcost)
 	e3:SetTarget(c9910372.sptg)
@@ -65,7 +65,6 @@ function c9910372.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c9910372.spop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local lg=Duel.GetMatchingGroup(c9910372.lgfilter,tp,LOCATION_ONFIELD,0,nil)
 	local zone=0
 	for tc in aux.Next(lg) do

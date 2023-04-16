@@ -56,7 +56,7 @@ function cm.thop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)  
 end  
 function cm.splimit(e,c)  
-	return not c:IsSetCard(0x3299) 
+	return not c:IsSetCard(0x3299) and c:IsLocation(LOCATION_EXTRA)  
 end  
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)

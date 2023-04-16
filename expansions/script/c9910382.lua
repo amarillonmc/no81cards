@@ -25,7 +25,6 @@ function c9910382.initial_effect(c)
 	e3:SetRange(LOCATION_FZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,9910382)
-	e3:SetCost(c9910382.eqcost)
 	e3:SetTarget(c9910382.eqtg)
 	e3:SetOperation(c9910382.eqop)
 	c:RegisterEffect(e3)
@@ -45,10 +44,6 @@ function c9910382.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910382.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLocation(LOCATION_EXTRA)
-end
-function c9910382.eqcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9910382.tgfilter(c,e,tp,chk)
 	return c:IsSetCard(0x5951) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsControler(tp)

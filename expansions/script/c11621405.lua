@@ -15,7 +15,7 @@ function c11621405.initial_effect(c)
 	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
 end 
 function cm.counterfilter(c)
-	return c:IsRace(RACE_ZOMBIE) or (c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER))
+	return c:IsRace(RACE_ZOMBIE) or  not c:IsSummonLocation(LOCATION_EXTRA)
 end   
 function cm.rfilter(c,tp)
 	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
@@ -40,7 +40,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not (c:IsRace(RACE_ZOMBIE) or (c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)))
+	return not (c:IsRace(RACE_ZOMBIE) or  not c:IsSummonLocation(LOCATION_EXTRA))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

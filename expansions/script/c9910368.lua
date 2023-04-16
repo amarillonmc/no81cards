@@ -19,13 +19,13 @@ function c9910368.initial_effect(c)
 	c:RegisterEffect(e2)
 	--Lock S&T
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DRAW)
+	e3:SetCategory(CATEGORY_RECOVER)
 	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_FZONE)
 	e3:SetCountLimit(1,9910368)
-	e3:SetTarget(c9910368.lcktg)
-	e3:SetOperation(c9910368.lckop)
+	e3:SetCost(c9910368.reccost)
+	e3:SetTarget(c9910368.rectg)
+	e3:SetOperation(c9910368.recop)
 	c:RegisterEffect(e3)
 end
 function c9910368.thfilter(c)
@@ -44,54 +44,20 @@ end
 function c9910368.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLocation(LOCATION_EXTRA)
 end
-function c9910368.lcktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsFacedown() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFacedown,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEDOWN)
-	Duel.SelectTarget(tp,Card.IsFacedown,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,nil)
+function c9910368.cfilter(c,tp)
+	return c:IsFacedown() and c:IsReleasable()
 end
-function c9910368.lckop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local c=e:GetHandler()
-	local fid=c:GetFieldID()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_TRIGGER)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
-		e1:SetValue(1)
-		tc:RegisterEffect(e1)
-		tc:RegisterFlagEffect(9910368,RESET_EVENT+RESETS_STANDARD,0,1,fid)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_PHASE+PHASE_END)
-		e2:SetLabel(fid)
-		e2:SetLabelObject(tc)
-		e2:SetCountLimit(1)
-		e2:SetCondition(c9910368.tgcon)
-		e2:SetOperation(c9910368.tgop)
-		Duel.RegisterEffect(e2,tp)
-	end
+function c9910368.reccost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910368.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,c9910368.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.Release(g,REASON_COST)
 end
-function c9910368.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc and tc:GetFlagEffectLabel(9910368)==e:GetLabel() then
-		return true
-	else
-		e:Reset()
-		return false
-	end
+function c9910368.rectg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,PLAYER_ALL,1000)
 end
-function c9910368.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	local p=tc:GetControler()
-	if tc:IsFaceup() or not tc:IsAbleToGrave() or not Duel.IsPlayerCanDraw(p,1) then return end
-	Duel.HintSelection(Group.FromCards(tc))
-	if Duel.SelectYesNo(p,aux.Stringid(9910368,1)) then
-		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 then
-			Duel.Draw(p,1,REASON_EFFECT)
-		end
-		e:Reset()
-	end
+function c9910368.recop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Recover(tp,1000,REASON_EFFECT)
+	Duel.Recover(1-tp,1000,REASON_EFFECT)
 end

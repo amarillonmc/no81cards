@@ -5,7 +5,7 @@ function c33332100.initial_effect(c)
 	c:EnableReviveLimit() 
 	--to hand and dam 
 	local e1=Effect.CreateEffect(c) 
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_DAMAGE) 
+	e1:SetCategory(CATEGORY_TOHAND) 
 	e1:SetType(EFFECT_TYPE_IGNITION) 
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE) 
@@ -15,7 +15,7 @@ function c33332100.initial_effect(c)
 	c:RegisterEffect(e1) 
 	--remove  
 	local e2=Effect.CreateEffect(c) 
-	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_DAMAGE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -43,12 +43,11 @@ function c33332100.thdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(c33332100.thfil,tp,LOCATION_GRAVE,0,1,nil) end 
 	local tc=Duel.SelectTarget(tp,c33332100.thfil,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst() 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tc,1,0,0) 
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,tc:GetLevel()*300)
 end 
 function c33332100.thdop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
 	local tc=Duel.GetFirstTarget() 
-	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and Duel.Damage(1-tp,tc:GetLevel()*300,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) and c:IsFaceup() then 
+	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) and c:IsFaceup() then 
 		local e1=Effect.CreateEffect(c) 
 		e1:SetType(EFFECT_TYPE_SINGLE) 
 		e1:SetCode(EFFECT_UPDATE_ATTACK) 
@@ -59,16 +58,22 @@ function c33332100.thdop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c33332100.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsAttribute(ATTRIBUTE_FIRE)
+	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and re:IsActiveType(TYPE_MONSTER)-- and not re:GetHandler():IsAttribute(ATTRIBUTE_FIRE)
 end 
 function c33332100.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) and re:GetHandler():IsAbleToRemove() end
+	local tc=eg:GetFirst()
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,tc:GetLevel()*300)
 end
 function c33332100.rmop(e,tp,eg,ep,ev,re,r,rp) 
+	local tc=eg:GetFirst()
 	local c=e:GetHandler() 
-	if c:IsRelateToEffect(e) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then 
-		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT) 
+	if c:IsRelateToEffect(e) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.Remove(eg,POS_FACEUP,REASON_EFFECT) then 
+		Duel.BreakEffect()
+		if Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then
+			Duel.Damage(1-tp,tc:GetLevel()*300,REASON_EFFECT)
+		end
 	end 
 end
 function c33332100.sctfil(c) 

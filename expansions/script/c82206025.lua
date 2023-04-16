@@ -44,7 +44,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,1,e:GetHandler(),0x129d)  
 end
 function cm.thfilter(c)  
-	return c:IsSetCard(0x129d) and c:IsAbleToHand() and c:IsAttackBelow(1437)
+	return c:IsSetCard(0x129d) and c:IsAbleToHand() and c:IsAttackBelow(1437) and c:IsType(TYPE_PENDULUM)
 end  
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end  

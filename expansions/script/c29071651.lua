@@ -1,7 +1,7 @@
 --方舟骑士-暴行
 c29071651.named_with_Arknight=1
 function c29071651.initial_effect(c)
-	aux.AddCodeList(c,29065502)
+	aux.AddCodeList(c,29065500,29065502)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -21,7 +21,7 @@ function c29071651.initial_effect(c)
 	Duel.AddCustomActivityCounter(29071651,ACTIVITY_SPSUMMON,c29071651.counterfilter)
 end
 function c29071651.counterfilter(c)
-	return not c:IsCode(29065502)
+	return not (c:IsCode(29065502) or c:IsCode(29065500))
 end
 function c29071651.spcon(e,c)
 	if c==nil then return true end

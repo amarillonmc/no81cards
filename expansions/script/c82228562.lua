@@ -5,7 +5,6 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)  
 	e1:SetType(EFFECT_TYPE_ACTIVATE)  
 	e1:SetCode(EVENT_FREE_CHAIN) 
-	e1:SetCountLimit(1,82228562+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(e1)  
 	--atk&def  
 	local e2=Effect.CreateEffect(c)  
@@ -38,13 +37,23 @@ function cm.initial_effect(c)
 	e5:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)  
 	e5:SetRange(LOCATION_FZONE)  
 	e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)  
-	e5:SetTargetRange(LOCATION_GRAVE,0)  
+	e5:SetTargetRange(LOCATION_GRAVE+LOCATION_MZONE,0)  
 	e5:SetTarget(cm.tgtg)  
 	e5:SetValue(aux.tgoval)  
-	c:RegisterEffect(e5)  
+	c:RegisterEffect(e5) 
+	--to deck  
+	local e6=Effect.CreateEffect(c)  
+	e6:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND)  
+	e6:SetType(EFFECT_TYPE_IGNITION)  
+	e6:SetProperty(EFFECT_FLAG_CARD_TARGET)  
+	e6:SetRange(LOCATION_GRAVE)  
+	e6:SetCountLimit(1,m)  
+	e6:SetTarget(cm.tdtg)  
+	e6:SetOperation(cm.tdop)  
+	c:RegisterEffect(e6)   
 end
 function cm.tgtg(e,c)  
-	return c:IsSetCard(0x297) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x297) and c:IsType(TYPE_MONSTER) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end  
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)   
 	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0x297)
@@ -58,4 +67,23 @@ end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)  
 	Duel.Draw(p,d,REASON_EFFECT)  
+end  
+function cm.thfilter(c)  
+	return c:IsSetCard(0x297) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()  
+end  
+function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.thfilter(chkc) end  
+	if chk==0 then return e:GetHandler():IsAbleToDeck()  
+		and Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) end  
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)  
+	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)  
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)  
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)  
+end  
+function cm.tdop(e,tp,eg,ep,ev,re,r,rp)  
+	local c=e:GetHandler()  
+	local tc=Duel.GetFirstTarget()  
+	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) then  
+		Duel.SendtoHand(c,nil,REASON_EFFECT)  
+	end  
 end  

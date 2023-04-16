@@ -18,7 +18,7 @@ function c11621412.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_CONTINUOUS_TARGET)
 	e2:SetHintTiming(0,TIMING_END_PHASE+TIMINGS_CHECK_MONSTER)
-	e2:SetCountLimit(1,11621416)
+	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.ntrcon)
 	e2:SetTarget(cm.ntrtg)
 	e2:SetOperation(cm.ntrop)
@@ -30,10 +30,11 @@ function c11621412.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_RELEASE)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,11621417)
+	e3:SetCountLimit(1,m*2+1)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
-	c:RegisterEffect(e3)	
+	c:RegisterEffect(e3)
+	cm[c]=e3  
 end
 cm.SetCard_THY_PeachblossomCountry=true 
 --
@@ -68,27 +69,54 @@ function cm.ntrcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.ntrtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and c:IsSSetable() end
+	if chk==0 then return c:IsSSetable() end
 end
 function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local loc=Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)
-	if c:IsSSetable() and loc>0 then
+	local c=e:GetHandler()  
+	if c:IsSSetable() then
 		Duel.SSet(tp,c)
-		local dis1=Duel.SelectDisableField(tp,1,0,LOCATION_MZONE,0)
-	   -- if loc>1 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-		--  local dis2=Duel.SelectDisableField(tp,1,0,LOCATION_MZONE,dis1)
-		--  dis1=bit.bor(dis1,dis2)
-	   -- end
-		if tp==1 then
-			dis1=((dis1&0xffff)<<16)|((dis1>>16)&0xffff)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+		local selected_zone=Duel.SelectField(tp,1,0,LOCATION_ONFIELD,nil)
+		--Card.GetSequence()
+		--Debug.Message("设备运行良好！选择的区域是："..selected_zone)
+		if selected_zone~=0 then 
+			local e1 = Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
+			e1:SetCode(EVENT_TO_GRAVE)
+			e1:SetLabel(selected_zone)
+			e1:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
+				return eg:IsExists(function(c)
+					local nseq=c:GetPreviousSequence()--+16
+					--Debug.Message("设备运行良好！选择的区域是："..nseq)
+					local loc=LOCATION_MZONE 
+					if bit.band(selected_zone,0x1f001f)~=0 then loc=LOCATION_MZONE end
+					if bit.band(selected_zone,0x1f001f00)~=0 then loc=LOCATION_SZONE end
+					if bit.band(selected_zone,0x20002000)~=0 then loc=LOCATION_FZONE end
+					--Debug.Message("设备运行良好！选择的区域是："..loc)
+					local seq=0
+					if selected_zone==65536 or selected_zone==65536*(2^8) then
+						seq=0
+					elseif selected_zone==65536*2 or selected_zone==65536*(2^9) then
+						seq=1
+					elseif selected_zone==65536*4 or selected_zone==65536*(2^10) then
+						seq=2  
+					elseif selected_zone==65536*9 or selected_zone==65536*(2^11) then
+						seq=3 
+					elseif selected_zone==65536*16 or selected_zone==65536*(2^12) then
+						seq=4  
+					else
+						seq=5 
+					end
+					return c:IsPreviousLocation(loc) and c:GetPreviousControler()~=tp and nseq==seq
+				end,1,nil)
+			end)
+			e1:SetOperation(function(e, tp, eg, ep, ev, re, r, rp)
+				Duel.Hint(HINT_CARD,0,m) 
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
 		end
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_DISABLE_FIELD)
-		e1:SetValue(dis1)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
 	end
 end
 --03

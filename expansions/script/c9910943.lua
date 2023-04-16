@@ -5,7 +5,7 @@ function c9910943.initial_effect(c)
 	aux.AddLinkProcedure(c,nil,2,3,c9910943.lcheck)
 	--destroy
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOGRAVE)
+	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -33,21 +33,29 @@ function c9910943.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3954)
 end
 function c9910943.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>0
-		and Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,0,0)
+	local g1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,nil)
+	local g2=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+	if chk==0 then return g1:GetCount()>0 and g2:GetCount()>0 end
+	g1:Merge(g2)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,2,0,0)
 end
 function c9910943.tgop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)==0 or Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g1=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g2=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
-	g1:Merge(g2)
-	Duel.SendtoGrave(g1,REASON_EFFECT)
+	local g1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,nil)
+	local g2=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+	if g1:GetCount()>0 and g2:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg1=g1:Select(tp,1,1,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg2=g2:Select(tp,1,1,nil)
+		dg1:Merge(dg2)
+		if dg1:GetCount()==2 then
+			Duel.HintSelection(dg1)
+			Duel.Destroy(dg1,REASON_EFFECT)
+		end
+	end
 end
 function c9910943.filter(c,e,tp,ft)
-	return c:IsSetCard(0x3954) and c:IsType(TYPE_MONSTER) and c:IsCanBeEffectTarget(e)
+	return c:IsSetCard(0x3954) and c:IsLevelBelow(6) and c:IsCanBeEffectTarget(e)
 		and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)))
 end
 function c9910943.gselect(g,e,tp,check1,check2)

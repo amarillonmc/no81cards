@@ -110,7 +110,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_DECK,0,1,1,nil,cg)
 		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
+			Duel.SendtoHand(g,tp,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 			local thc=g:GetFirst()
 			local rmc=cg:Filter(Card.IsCode,nil,thc:GetCode()):GetFirst()

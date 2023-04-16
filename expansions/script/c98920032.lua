@@ -11,22 +11,14 @@ function c98920032.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(c98920032.splimit)
 	c:RegisterEffect(e1)
---cannot target
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e4:SetValue(aux.tgoval)
-	c:RegisterEffect(e4)
-	--indes
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e5:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetValue(aux.indoval)
-	c:RegisterEffect(e5)
+--immune
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_IMMUNE_EFFECT)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(c98920032.efilter)
+	c:RegisterEffect(e3)
    --disable
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
@@ -47,6 +39,9 @@ function c98920032.initial_effect(c)
 	aux.EnableNeosReturn(c,c98920032.retop,c98920032.set_category)
 end
 c98920032.material_setcode=0x8
+function c98920032.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
+end
 function c98920032.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end

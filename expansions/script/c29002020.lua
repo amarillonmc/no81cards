@@ -1,9 +1,24 @@
 --方舟骑士·年
 c29002020.named_with_Arknight=1
 function c29002020.initial_effect(c)
-	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),12,12,c29002020.ovfilter,aux.Stringid(29002020,0),12,c29002020.xyzop)
-	c:EnableReviveLimit()   
+	c:EnableReviveLimit()  
+	--special summon rule
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(29002020,0))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetCondition(c29002020.sprcon)
+	e1:SetOperation(c29002020.sprop)
+	c:RegisterEffect(e1)
+	--spsummon condition
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e2:SetValue(c29002020.splimit)
+	c:RegisterEffect(e2) 
 	--indes
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(29002020,1))
@@ -12,18 +27,26 @@ function c29002020.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCountLimit(1)
-	e3:SetCost(c29002020.icost)
 	e3:SetTarget(c29002020.itarget)
 	e3:SetOperation(c29002020.ioperation)
 	c:RegisterEffect(e3)  
 end 
-function c29002020.ovfilter(c)
+function c29002020.splimit(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
+end
+function c29002020.sprcon(e,c)
+	if c==nil then return true end
 	local tp=c:GetControler()
 	local x=Duel.GetActivityCount(tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SPSUMMON)
-	return c:IsFaceup() and x>=12 and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) 
-end 
-function c29002020.xyzop(e,tp,chk)
-	if chk==0 then return true end
+	return x>=12 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and (Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x10ae,3,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x10ae,2,REASON_COST)))
+end
+function c29002020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	if Duel.GetFlagEffect(tp,29096814)==1 then
+	Duel.ResetFlagEffect(tp,29096814)
+	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
+	else
+	Duel.RemoveCounter(tp,1,0,0x10ae,3,REASON_RULE)
+	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -31,13 +54,6 @@ function c29002020.xyzop(e,tp,chk)
 	e1:SetTargetRange(1,0) 
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-end
-function c29002020.effcon(e)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
-end
-function c29002020.icost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c29002020.itarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
@@ -61,15 +77,9 @@ function c29002020.ioperation(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetTargetRange(1,0)
 	Duel.RegisterEffect(e3,tp)
 end
-function c29002020.val(e,c)
-	return c:GetBaseDefense()/2
-end
 function c29002020.efilter(e,te)
 	if te:GetOwnerPlayer()==e:GetHandlerPlayer() then return false end
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	return not g or not g:IsContains(e:GetHandler())
-end
-function c29002020.lrop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) then return false end
 end

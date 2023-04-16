@@ -65,9 +65,8 @@ function cm.initial_effect(c)
 	--deckes
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_DECKDES+CATEGORY_TODECK+CATEGORY_DESTROY)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e1:SetCategory(CATEGORY_DECKDES+CATEGORY_TOGRAVE+CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.tg)
@@ -87,12 +86,12 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=4 then return end
 	Duel.ConfirmDecktop(tp,5)
 	local g=Duel.GetDecktopGroup(tp,5):Filter(cm.tgfilter,nil)
+	g:AddCard(e:GetHandler())
 	local tgc=0
 	if g:GetCount()>0 then
 		tgc=Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 	Duel.ShuffleDeck(tp)
-	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKBOTTOM,REASON_EFFECT)
 	local desg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
 	if tgc==5 and desg:GetCount()>0 then
 		Duel.Destroy(desg,REASON_EFFECT)

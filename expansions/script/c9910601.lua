@@ -68,6 +68,7 @@ function c9910601.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and typ>0 and g:CheckSubGroup(c9910601.tgselect,1,4,typ) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_EXTRA)
 end
 function c9910601.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

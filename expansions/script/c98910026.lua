@@ -1,5 +1,6 @@
 --忘却之都的守卫者
 function c98910026.initial_effect(c)
+aux.AddCodeList(c,22702055)
 			--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),4,2)
 	c:EnableReviveLimit() 
@@ -88,7 +89,7 @@ end
 function c98910026.thfilter(c)
 	return aux.IsCodeListed(c,22702055) and c:IsAbleToHand()
 end
-function c98910026.condition(e,tp,eg,ep,ev,re,r,rp)	   
+function c98910026.condition(e,tp,eg,ep,ev,re,r,rp)	
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
 	return loc==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER)  and not e:GetHandler():IsStatus(STATUS_CHAINING) and e:GetHandler():GetOverlayGroup():IsExists(Card.IsLevel,1,nil,5)
 end

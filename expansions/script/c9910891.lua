@@ -13,7 +13,7 @@ function c9910891.initial_effect(c)
 	c:RegisterEffect(e1)
 	--disable spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_HANDES+CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_SPSUMMON)
 	e2:SetRange(LOCATION_GRAVE)
@@ -67,11 +67,13 @@ function c9910891.discon(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(c9910891.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function c9910891.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
 end
 function c9910891.disop(e,tp,eg,ep,ev,re,r,rp,chk)
+	if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,nil,REASON_EFFECT)==0 then return end
 	Duel.NegateSummon(eg)
 	Duel.Destroy(eg,REASON_EFFECT)
 end

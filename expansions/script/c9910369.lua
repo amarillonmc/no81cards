@@ -53,11 +53,12 @@ function c9910369.spellfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_SPELL) and c:IsAbleToDeck()
 end
 function c9910369.setfilter(c)
-	return c:IsCode(9910371) and c:IsSSetable()
+	return c:IsCode(9910371) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function c9910369.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910369.spellfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910369.spellfilter,tp,LOCATION_ONFIELD,0,1,nil)
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsExistingMatchingCard(c9910369.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910369,0))
 	local g=Duel.SelectTarget(tp,c9910369.spellfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
@@ -65,9 +66,11 @@ function c9910369.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 end
 function c9910369.setop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910369.setfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
-	if g2:GetCount()==0 or Duel.SSet(tp,g2)==0 then return end
+	local sc=g2:GetFirst()
+	if not sc or Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)==0 then return end
 	local g=Group.CreateGroup()
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()

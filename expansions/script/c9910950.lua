@@ -21,8 +21,8 @@ function QutryYx.ExtraEffectSelect(e,tp,res)
 	local b6=te6 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil,tp,POS_FACEDOWN)
 		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,nil,tp,POS_FACEDOWN) and tep and tep==1-tp
 	local te7=Duel.IsPlayerAffectedByEffect(tp,9910965)
-	local b7=te7 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_EXTRA,0,1,nil)
-		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_EXTRA,1,nil) and tep and tep==1-tp
+	local b7=te7 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_EXTRA,0,2,nil)
+		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_EXTRA,2,nil) and tep and tep==1-tp
 	if not (b1 or b2 or b3 or b4 or b5 or b6 or b7) or not Duel.IsExistingMatchingCard(QutryYx.Filter0,tp,LOCATION_REMOVED,0,2,nil)
 		or not Duel.SelectYesNo(tp,aux.Stringid(9910950,0)) then return end
 	local op=0
@@ -178,9 +178,9 @@ function QutryYx.ExtraEffectSelect(e,tp,res)
 			local g1=Duel.GetMatchingGroup(Card.IsAbleToGrave,turnp,LOCATION_EXTRA,0,nil)
 			local g2=Duel.GetMatchingGroup(Card.IsAbleToGrave,turnp,0,LOCATION_EXTRA,nil)
 			Duel.Hint(HINT_SELECTMSG,turnp,HINTMSG_TOGRAVE)
-			local sg1=g1:Select(turnp,1,1,nil)
+			local sg1=g1:Select(turnp,2,2,nil)
 			Duel.Hint(HINT_SELECTMSG,1-turnp,HINTMSG_TOGRAVE)
-			local sg2=g2:Select(1-turnp,1,1,nil)
+			local sg2=g2:Select(1-turnp,2,2,nil)
 			sg1:Merge(sg2)
 			if sg1:GetCount()>0 then
 				Duel.SendtoGrave(sg1,REASON_EFFECT)

@@ -18,7 +18,7 @@ function c11621409.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMING_END_PHASE+TIMINGS_CHECK_MONSTER)
-	e2:SetCountLimit(1,m+104)
+	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.ntrcon)
 	e2:SetTarget(cm.ntrtg)
 	e2:SetOperation(cm.ntrop)
@@ -30,10 +30,11 @@ function c11621409.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_RELEASE)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,m+105)
+	e3:SetCountLimit(1,m*2+1)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
-	c:RegisterEffect(e3)	
+	c:RegisterEffect(e3) 
+	cm[c]=e3	 
 end
 cm.SetCard_THY_PeachblossomCountry=true 
 --
@@ -58,7 +59,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(500)
+			e1:SetValue(800)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			ag:GetFirst():RegisterEffect(e1)
 		end
@@ -93,7 +94,7 @@ function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 end
 --03
 function cm.thfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:IsAbleToHand() and (c:IsFaceup() or c:IsLocation(LOCATION_DECK))
+	return c:IsType(TYPE_RITUAL) and c:IsAbleToHand() and (c:IsFaceup() or c:IsLocation(LOCATION_DECK))
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) end

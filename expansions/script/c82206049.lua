@@ -6,6 +6,11 @@ function cm.initial_effect(c)
 	c:EnableReviveLimit() 
 	aux.AddFusionProcFunRep(c,cm.ffilter,3,true) 
 	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE,0,Duel.Release,REASON_COST+REASON_MATERIAL)  
+	--no battle damage  
+	local e0=Effect.CreateEffect(c)  
+	e0:SetType(EFFECT_TYPE_SINGLE)  
+	e0:SetCode(EFFECT_NO_BATTLE_DAMAGE)  
+	c:RegisterEffect(e0)  
 	--spsummon condition  
 	local e1=Effect.CreateEffect(c)  
 	e1:SetType(EFFECT_TYPE_SINGLE)  
@@ -27,6 +32,7 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EVENT_FREE_CHAIN) 
 	e3:SetCountLimit(1,m)
+	e3:SetCost(cm.remcost)
 	e3:SetCondition(cm.remcon)  
 	e3:SetTarget(cm.remtg)  
 	e3:SetOperation(cm.remop)  
@@ -49,6 +55,10 @@ function cm.ffilter(c,fc,sub,mg,sg)
 end  
 function cm.splimit(e,se,sp,st)  
 	return e:GetHandler():GetLocation()~=LOCATION_EXTRA  
+end  
+function cm.remcost(e,tp,eg,ep,ev,re,r,rp,chk)  
+	if chk==0 then return e:GetHandler():IsReleasable() end  
+	Duel.Release(e:GetHandler(),REASON_COST)  
 end  
 function cm.remcon(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.GetTurnPlayer()==1-tp and Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_GRAVE,0,3,nil,RACE_PLANT)  

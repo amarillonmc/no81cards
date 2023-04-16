@@ -19,7 +19,7 @@ function c11621408.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetHintTiming(0,TIMING_END_PHASE+TIMINGS_CHECK_MONSTER)
-	e2:SetCountLimit(1,m+102)
+	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.recon)
 	e2:SetTarget(cm.retg)
 	e2:SetOperation(cm.reop)
@@ -30,10 +30,11 @@ function c11621408.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_RELEASE)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,m+103)
+	e3:SetCountLimit(1,m*2+1)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
-	c:RegisterEffect(e3)	
+	c:RegisterEffect(e3) 
+	cm[c]=e3	 
 end
 cm.SetCard_THY_PeachblossomCountry=true 
 --

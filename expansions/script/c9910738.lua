@@ -1,4 +1,4 @@
---远古造物 日行中新猛鸮
+--远古造物 印石板始祖鸟
 require("expansions/script/c9910700")
 function c9910738.initial_effect(c)
 	--special summon
@@ -8,16 +8,15 @@ function c9910738.initial_effect(c)
 	Ygzw.AddTgFlag(c)
 	--remove
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910738,0))
-	e1:SetCategory(CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910738)
-	e1:SetCost(c9910738.rmcost)
-	e1:SetTarget(c9910738.rmtg)
-	e1:SetOperation(c9910738.rmop)
+	e1:SetCondition(c9910738.thcon)
+	e1:SetCost(c9910738.thcost)
+	e1:SetTarget(c9910738.thtg)
+	e1:SetOperation(c9910738.thop)
 	c:RegisterEffect(e1)
 	--set
 	local e2=Effect.CreateEffect(c)
@@ -30,28 +29,22 @@ function c9910738.initial_effect(c)
 	e2:SetOperation(c9910738.setop)
 	c:RegisterEffect(e2)
 end
-function c9910738.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910738.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()~=tp
+end
+function c9910738.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
-function c9910738.tgfilter(c)
-	return c:IsFaceup() and c:IsLevel(1)
+function c9910738.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tc=Duel.GetAttacker()
+	if chk==0 then return tc and tc:IsAbleToHand() end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tc,1,0,0)
 end
-function c9910738.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=eg:Filter(Card.IsAbleToRemove,nil)
-	local tg=Duel.GetMatchingGroup(c9910738.tgfilter,tp,LOCATION_REMOVED,0,nil)
-	if chk==0 then return g:GetCount()>0 and tg:GetCount()>0 end
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
-end
-function c9910738.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if g:GetCount()>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 then
-		local tg=Duel.GetMatchingGroup(c9910738.tgfilter,tp,LOCATION_REMOVED,0,nil)
-		if tg:GetCount()==0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=tg:Select(tp,1,1,nil)
-		Duel.SendtoGrave(sg,REASON_EFFECT+REASON_RETURN)
+function c9910738.thop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetAttacker()
+	if tc:IsRelateToBattle() and tc:IsControler(1-tp) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end
 function c9910738.setcon(e,tp,eg,ep,ev,re,r,rp)

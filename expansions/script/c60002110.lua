@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 cm.name="卡通城市"
 function cm.initial_effect(c)
 	--code
-	aux.EnableChangeCode(c,15259703,LOCATION_MZONE+LOCATION_GRAVE)
+	aux.EnableChangeCode(c,15259703,LOCATION_FZONE)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -62,7 +62,7 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.HintSelection(Group.FromCards(c))
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil)
 	local sel=1
-	if g:GetCount()~=0 then
+	if g:GetCount()>=3 then
 		sel=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))
 	else
 		sel=Duel.SelectOption(tp,aux.Stringid(m,2))+1

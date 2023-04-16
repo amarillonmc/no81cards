@@ -8,7 +8,8 @@ function cm.initial_effect(c)
 	--set
 	local e1=Effect.CreateEffect(c)  
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_RECOVER)
+	--the recover effect is already removed
+	--e1:SetCategory(CATEGORY_RECOVER)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)  
 	e1:SetProperty(EFFECT_FLAG_DELAY)  
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)  
@@ -55,16 +56,17 @@ function cm.setfilter(c)
 end  
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) end 
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500) 
+	--the recover effect is already removed
+	--Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500) 
 end  
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)  
-	if not e:GetHandler():IsRelateToEffect(e) then return end  
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)  
 	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil)  
 	if g:GetCount()>0 then  
 		if Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
-			Duel.Recover(tp,500,REASON_EFFECT)  
+			--the recover effect is already removed
+			--Duel.Recover(tp,500,REASON_EFFECT)  
 		end
 	end  
 end  

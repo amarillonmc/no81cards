@@ -23,10 +23,11 @@ function c9910975.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEDOWN,REASON_COST)
 end
 function c9910975.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetDecktopGroup(1-tp,5)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,1-tp,LOCATION_MZONE,0,1,nil,REASON_RULE)
-		and Duel.GetDecktopGroup(1-tp,2):FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)==2 end
+		and g:GetCount()==5 and g:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,1-tp,LOCATION_MZONE)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,1-tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_DECK)
 end
 function c9910975.activate(e,tp,eg,ep,ev,re,r,rp)
 	local res=false
@@ -37,11 +38,14 @@ function c9910975.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(sg)
 		res=Duel.Release(sg,REASON_RULE)>0
 		if res then
-			local rg=Duel.GetDecktopGroup(1-tp,2)
+			local rg=Duel.GetDecktopGroup(1-tp,5)
+			Duel.ConfirmCards(tp,rg)
 			if #rg>0 then
 				Duel.BreakEffect()
-				Duel.DisableShuffleCheck()
-				Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+				local tg=rg:FilterSelect(tp,Card.IsAbleToRemove,1,2,nil,tp,POS_FACEDOWN)
+				Duel.Remove(tg,POS_FACEDOWN,REASON_EFFECT)
+				Duel.ShuffleDeck(1-tp)
 			end
 		end
 	end

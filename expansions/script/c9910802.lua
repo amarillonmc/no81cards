@@ -1,5 +1,6 @@
 --曙龙大荒流
 function c9910802.initial_effect(c)
+	c:SetUniqueOnField(1,0,9910802)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

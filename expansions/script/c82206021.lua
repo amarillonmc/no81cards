@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)   
 end  
 function cm.mfilter(c)  
-	return c:IsLinkRace(RACE_PLANT) and not c:IsCode(m)
+	return c:IsLinkSetCard(0x129d) and not c:IsCode(m)
 end  
 function cm.thfilter(c)  
 	return c:IsCode(82206020) and c:IsAbleToHand()  

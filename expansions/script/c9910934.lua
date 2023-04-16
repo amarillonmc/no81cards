@@ -1,4 +1,4 @@
---匪魔嗜血鬼
+--匪魔杀人狂 西卡里奥
 function c9910934.initial_effect(c)
 	--synchro summon
 	local e0=Effect.CreateEffect(c)

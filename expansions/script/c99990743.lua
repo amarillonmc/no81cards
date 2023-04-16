@@ -3,6 +3,8 @@ local m=99990743
 local cm=_G["c"..m]
 	function cm.initial_effect(c)
 	aux.AddCodeList(c,22702055)
+	--code
+	aux.EnableChangeCode(c,3643300,LOCATION_MZONE+LOCATION_GRAVE)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
@@ -27,25 +29,14 @@ local cm=_G["c"..m]
 	e2:SetTarget(cm.distg)
 	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2)
-	--indes
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e3:SetValue(1)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	c:RegisterEffect(e4)
 	--Change race
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_ADD_ATTRIBUTE)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetTargetRange(0,LOCATION_MZONE)
-	e5:SetValue(ATTRIBUTE_FIRE)
-	c:RegisterEffect(e5)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(0,LOCATION_MZONE)
+	e3:SetValue(ATTRIBUTE_FIRE)
+	c:RegisterEffect(e3)
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() and Duel.CheckLPCost(tp,600) end

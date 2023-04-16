@@ -1,6 +1,7 @@
 --绘色的永夏 羽未
 require("expansions/script/c9910950")
 function c9910972.initial_effect(c)
+	c:SetSPSummonOnce(9910972)
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x5954),2,2)

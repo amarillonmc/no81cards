@@ -50,5 +50,5 @@ function c98921002.dscon(e)
 end
 function c98921002.limval(e,re,rp)
 	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc:IsLevelAbove(5)
+	return re:IsActiveType(TYPE_MONSTER) and rc:IsLevelAbove(5) and not rc:IsSummonType(SUMMON_TYPE_NORMAL)
 end

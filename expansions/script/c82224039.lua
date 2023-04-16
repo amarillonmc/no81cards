@@ -5,6 +5,12 @@ function cm.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,nil,3,3,cm.lcheck)
 	c:EnableReviveLimit()
+	--splimit  
+	local e1=Effect.CreateEffect(c)  
+	e1:SetType(EFFECT_TYPE_SINGLE)  
+	e1:SetCode(EFFECT_SPSUMMON_COST)  
+	e1:SetCost(cm.spcost)  
+	c:RegisterEffect(e1)
 	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
@@ -24,6 +30,10 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.penop)
 	c:RegisterEffect(e4)
 end
+function cm.spcost(e,c,tp,st)  
+	if bit.band(st,SUMMON_TYPE_LINK)~=SUMMON_TYPE_LINK then return true end  
+	return Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_MAIN2
+end  
 function cm.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkType,1,nil,TYPE_PENDULUM) and g:GetClassCount(Card.GetLinkCode)==g:GetCount()
 end

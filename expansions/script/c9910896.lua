@@ -5,24 +5,23 @@ function c9910896.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--destroy
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1,9910896)
-	e1:SetTarget(c9910896.destg)
-	e1:SetOperation(c9910896.desop)
+	e1:SetTarget(c9910896.sptg)
+	e1:SetOperation(c9910896.spop)
 	c:RegisterEffect(e1)
 	--xyz summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910896,1))
+	e2:SetDescription(aux.Stringid(9910896,3))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,9910897)
-	e2:SetTarget(c9910896.sptg)
-	e2:SetOperation(c9910896.spop)
+	e2:SetTarget(c9910896.sptg2)
+	e2:SetOperation(c9910896.spop2)
 	c:RegisterEffect(e2)
 	--add race
 	local e3=Effect.CreateEffect(c)
@@ -33,37 +32,57 @@ function c9910896.initial_effect(c)
 	e3:SetOperation(c9910896.raop)
 	c:RegisterEffect(e3)
 end
-function c9910896.desfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and Duel.GetFieldGroupCount(c:GetControler(),LOCATION_DECK,0)>=3
+function c9910896.spfilter(c,e,tp)
+	return c:IsCode(9910896) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
-function c9910896.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local res=e:GetHandler():GetFlagEffect(9910896)~=0
-	local loc=0
-	if res then loc=LOCATION_ONFIELD end
-	if chkc then return chkc:IsOnField() and chkc:IsType(TYPE_SPELL+TYPE_TRAP) and (res or chkc:IsControler(tp)) end
-	if chk==0 then return Duel.IsExistingTarget(c9910896.desfilter,tp,LOCATION_ONFIELD,loc,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c9910896.desfilter,tp,LOCATION_ONFIELD,loc,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+function c9910896.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
 end
-function c9910896.filter(c)
-	return aux.IsCodeListed(c,9910871)
-end
-function c9910896.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Group.CreateGroup()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		g:AddCard(tc)
-		local p=tc:GetControler()
-		if Duel.GetFieldGroupCount(p,LOCATION_DECK,0)>=3 then g:Merge(Duel.GetDecktopGroup(p,3)) end
+function c9910896.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) or Duel.Destroy(c,REASON_EFFECT)==0 then return end
+	local g1=Duel.GetMatchingGroup(c9910896.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
+	local g2=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
+	local off=1
+	local ops={}
+	local opval={}
+	if g1:GetCount()>0 then
+		ops[off]=aux.Stringid(9910896,0)
+		opval[off-1]=1
+		off=off+1
 	end
-	if g:GetCount()==0 or Duel.Destroy(g,REASON_EFFECT)==0 then return end
-	local og=Duel.GetOperatedGroup()
-	if og:IsExists(c9910896.filter,1,nil) then
-		e:GetHandler():RegisterFlagEffect(9910896,RESET_EVENT+RESETS_STANDARD,0,0)
+	if g2:GetCount()>0 then
+		ops[off]=aux.Stringid(9910896,1)
+		opval[off-1]=2
+		off=off+1
+	end
+	ops[off]=aux.Stringid(9910896,2)
+	opval[off-1]=3
+	off=off+1
+	local op=Duel.SelectOption(tp,table.unpack(ops))
+	if opval[op]==1 then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tc=g1:Select(tp,1,1,nil):GetFirst()
+		if tc then
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetCode(EFFECT_DIRECT_ATTACK)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+		end
+	elseif opval[op]==2 then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local g=g2:Select(tp,1,1,nil)
+		Duel.HintSelection(g)
+		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
-function c9910896.spfilter(c,tp,mc)
+function c9910896.spfilter2(c,tp,mc)
 	local mg=Group.FromCards(c,mc)
 	return c:IsFaceup() and not c:IsRace(RACE_MACHINE)
 		and Duel.IsExistingMatchingCard(c9910896.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,mg)
@@ -71,18 +90,18 @@ end
 function c9910896.xyzfilter(c,mg)
 	return c:IsXyzSummonable(mg,2,2) and c:IsRace(RACE_MACHINE)
 end
-function c9910896.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910896.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910896.spfilter(chkc,tp,c) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910896.spfilter2(chkc,tp,c) end
 	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsExistingTarget(c9910896.spfilter,tp,LOCATION_MZONE,0,1,nil,tp,c) end
+		and Duel.IsExistingTarget(c9910896.spfilter2,tp,LOCATION_MZONE,0,1,nil,tp,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c9910896.spfilter,tp,LOCATION_MZONE,0,1,1,nil,tp,c)
+	Duel.SelectTarget(tp,c9910896.spfilter2,tp,LOCATION_MZONE,0,1,1,nil,tp,c)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,2,tp,LOCATION_EXTRA)
 end
-function c9910896.spop(e,tp,eg,ep,ev,re,r,rp)
+function c9910896.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local tc=Duel.GetFirstTarget()

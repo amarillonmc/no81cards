@@ -13,7 +13,8 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)  
 	e2:SetDescription(aux.Stringid(m,0))  
 	e2:SetCategory(CATEGORY_TOHAND)  
-	e2:SetType(EFFECT_TYPE_IGNITION)  
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)  
 	e2:SetRange(LOCATION_GRAVE)  
 	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.con1) 
@@ -41,14 +42,12 @@ end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp) 
 	return not Duel.IsPlayerAffectedByEffect(tp,82228569)
 end 
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
-	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end  
-	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)  
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk) 
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end 
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)  
 end  
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end  
-	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)   
+	if chk==0 then return true end
 end  
 function cm.filter(c)  
 	return c:IsSetCard(0x297) and not c:IsCode(m) and c:IsAbleToHand()

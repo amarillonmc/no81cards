@@ -112,7 +112,7 @@ function c22348198.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
 		and Duel.IsExistingTarget(c22348198.tdfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c22348198.tdfilter,tp,LOCATION_GRAVE,0,1,3,e:GetHandler())
+	local g=Duel.SelectTarget(tp,c22348198.tdfilter,tp,LOCATION_GRAVE,0,1,2,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
