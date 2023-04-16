@@ -50,7 +50,7 @@ end
 
 --e2
 function cm.thfilter(c)
-	return VHisc_CNTdb.nck(c) and c:IsAbleToHand()
+	return VHisc_CNTdb.nck(c)
 end
 function cm.sthtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

@@ -20,45 +20,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.settg)
 	e2:SetOperation(cm.setop)
 	c:RegisterEffect(e2)
-	if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAINING)
-		ge1:SetOperation(cm.count)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=Effect.CreateEffect(c)
-		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_CHAIN_END)
-		ge2:SetOperation(cm.reset)
-		Duel.RegisterEffect(ge2,0)
-		local ge3=Effect.CreateEffect(c)
-		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge3:SetCode(EVENT_SSET)
-		ge3:SetOperation(cm.seteg)
-		Duel.RegisterEffect(ge3,0)
-	end
-end
-function cm.count(e,tp,eg,ep,ev,re,r,rp)
-	cm.chain=true
-end
-function cm.seteg(e,tp,eg,ep,ev,re,r,rp)
-	if cm.chain==true then
-		local g=Group.CreateGroup()
-		if cm[0] then g=cm[0] end
-		g:Merge(eg)
-		g:KeepAlive()
-		cm[0]=g
-	end
-	if cm.chain==false then
-		Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,ev)
-	end
-end
-function cm.reset(e,tp,eg,ep,ev,re,r,rp)
-	cm.chain=false
-	if not cm[0] then return end
-	Duel.RaiseEvent(cm[0],EVENT_CUSTOM+m,re,r,rp,ep,ev)
-	cm[0]=nil
+	aux.RegisterMergedDelayedEvent(c,m,EVENT_SSET)
 end
 function cm.filter(c)
 	return c:IsCode(53727003) and c:IsAbleToHand()
@@ -95,12 +57,12 @@ function cm.cfilter(c,tp)
 	return c:IsControler(tp) and c:IsLocation(LOCATION_SZONE)
 end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp)
+	return eg:IsExists(cm.cfilter,1,nil,tp) and aux.exccon(e)
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsSSetable(true) end
-	Duel.SetTargetCard(eg)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
+	Duel.SetTargetCard(eg:Filter(cm.cfilter,nil,tp))
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,eg:Filter(cm.cfilter,nil,tp),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)

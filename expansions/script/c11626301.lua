@@ -136,7 +136,7 @@ function c11626301.htdop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c11626301.hxtgecon(e,tp,eg,ep,ev,re,r,rp) 
-	return eg:IsExists(Card.IsControler,1,nil,tp) and not Duel.GetCurrentPhase()==PHASE_END 
+	return eg:IsExists(Card.IsControler,1,nil,tp) and Duel.GetCurrentPhase()~=PHASE_END --and not Duel.GetCurrentPhase()==PHASE_END 
 end 
 function c11626301.pbfil(c) 
 	return not c:IsPublic() and c:IsAbleToDeck() and not c.SetCard_YM_Crypticinsect  
