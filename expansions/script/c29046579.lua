@@ -33,7 +33,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.ConfirmDecktop(tp,3)
 	local g=Duel.GetDecktopGroup(tp,3):Filter(cm.opf1,nil,e,tp)
-	if #g>0 and Duel.SelectYesNo(tp,1152) then
+	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,1152) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		Duel.BreakEffect()
 		g=g:Select(tp,1,1,nil)
