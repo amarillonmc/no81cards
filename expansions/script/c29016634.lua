@@ -64,7 +64,7 @@ function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:GetFlagEffect(m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if c:GetFlagEffect(m)==0 and Duel.SelectYesNo(tp,aux.Stringid(64325438,1)) then
 		Duel.Hint(HINT_CARD,0,m)
 		local g=Group.CreateGroup()
 		Duel.ChangeTargetCard(ev,g)

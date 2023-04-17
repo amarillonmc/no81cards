@@ -33,7 +33,7 @@ function c29001624.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_EXTRA_ATTACK)
 	e4:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(c29001624.tgtg)
+	e4:SetTarget(c29001624.tgtg)
 	e4:SetValue(1)
 	c:RegisterEffect(e4)
 end
@@ -55,7 +55,7 @@ function c29001624.valcheck(e,c)
 	end
 end
 function c29001624.thfilter(c)
-	return c:IsAbleToHand() and c:IsType(TYPE_SPELL) and c.kinkuaoi_LightAK
+	return c:IsAbleToHand() and c:IsType(TYPE_SPELL) and c.kinkuaoi_Lightakm
 end
 function c29001624.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetLabel()==1

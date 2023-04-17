@@ -14,7 +14,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 end
-cm.kinkuaoi_LightAK=true
+cm.kinkuaoi_Lightakm=true
 function cm.filter(c,e,tp)
 	return c:IsCode(29016634)--(c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
@@ -50,7 +50,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		local mg1=Duel.GetRitualMaterial(tp)
 		local mg2=g:Filter(cm.mfilter,nil)
 		mg1:Merge(mg2)
-		if Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,cm.filter,e,tp,mg1,nil,Card.GetLevel,"Greater") and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		if Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,cm.filter,e,tp,mg1,nil,Card.GetLevel,"Greater") and Duel.SelectYesNo(tp,aux.Stringid(93754402,1)) then
 			Duel.BreakEffect()
 			::cancel::
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
