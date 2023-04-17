@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.op1)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetDescription(aux.Stringid(3070049,0))
 	e2:SetCategory(CATEGORY_COUNTER)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -66,7 +66,7 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 end
 function cm.op2op1(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.SelectYesNo(tp,aux.Stringid(m,1)) then return end
+	if not Duel.SelectYesNo(tp,aux.Stringid(5697558,2)) then return end
 	Duel.NegateAttack()
 	e:Reset()
 end
