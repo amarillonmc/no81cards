@@ -68,7 +68,7 @@ function cm.cfilter(c,code)
 end
 function cm.rthtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local code=e:GetLabel()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,code) and c:IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,code) and e:GetHandler():IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
 end
 function cm.rthop(e,tp,eg,ep,ev,re,r,rp)
@@ -79,6 +79,10 @@ function cm.rthop(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 then
 			Duel.SendtoHand(g,tp,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
+			if g:IsExists(Card.IsLocation,1,nil,LOCATION_HAND) then 
+				Duel.BreakEffect()
+				Duel.SendtoHand(c,tp,REASON_EFFECT)
+			end
 		end
 	end
 end

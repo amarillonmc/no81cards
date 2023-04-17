@@ -15,20 +15,20 @@ end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
 function c65130303.cfilter(c)
-	return c:GetOriginalCodeRule()==65130303
+	return c:GetOriginalCodeRule()==65130303 and  c:IsFaceup()
 end
 function c65130303.cfilter2(c,zone1,e)
 	local zone2=1<<c:GetSequence()
-	return not c:IsOriginalCodeRule(65130303) and c:GetFlagEffect(65130303)==0 and c:GetFlagEffect(65130333)==0 and zone1==zone2|zone1 and not c:IsImmuneToEffect(e) 
+	return not c:IsOriginalCodeRule(65130303) and c:GetFlagEffect(65130303)==0 and c:GetFlagEffect(65130333)==0 and zone1==zone2|zone1 and c:IsFaceup() and not c:IsImmuneToEffect(e) 
 end
 function c65130303.cfilter3(c,zc,e)
-	return not c:IsOriginalCodeRule(65130303) and c:GetFlagEffect(65130303)==0 and c:GetFlagEffect(65130333)==0  and c:GetColumnGroup():IsContains(zc) and not c:IsImmuneToEffect(e)
+	return not c:IsOriginalCodeRule(65130303) and c:GetFlagEffect(65130303)==0 and c:GetFlagEffect(65130333)==0  and c:GetColumnGroup():IsContains(zc) and c:IsFaceup() and not c:IsImmuneToEffect(e)
 end
 function c65130303.copycon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local zone=0
 	local seq=c:GetSequence()
-	if seq>0 then zone=zone|(1<<(seq-1)) end
+	if seq>0 and seq<5 then zone=zone|(1<<(seq-1)) end
 	if seq<4 then zone=zone|(1<<(seq+1)) end
 	return Duel.IsExistingMatchingCard(c65130303.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) 
 	and (Duel.IsExistingMatchingCard(c65130303.cfilter2,tp,LOCATION_MZONE,0,1,c,zone,e) or
@@ -53,7 +53,7 @@ function c65130303.ncopycon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local zone=0
 	local seq=c:GetSequence()
-	if seq>0 then zone=zone|(1<<(seq-1)) end
+	if seq>0 and seq<5 then zone=zone|(1<<(seq-1)) end
 	if seq<4 then zone=zone|(1<<(seq+1)) end	
 	return not Duel.IsExistingMatchingCard(c65130303.ncfilter2,tp,LOCATION_MZONE,0,1,c,zone) and not Duel.IsExistingMatchingCard(c65130303.ncfilter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,c,c) and c:GetFlagEffect(65130303)~=0 end
 function c65130303.copyop(e,tp,eg,ep,ev,re,r,rp)
@@ -61,7 +61,7 @@ function c65130303.copyop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsImmuneToEffect(e) then return end
 	local zone=0
 	local seq=c:GetSequence()
-	if seq>0 then zone=zone|(1<<(seq-1)) end
+	if seq>0 and seq<5 then zone=zone|(1<<(seq-1)) end
 	if seq<4 then zone=zone|(1<<(seq+1)) end
 	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0):Filter(c65130303.cfilter2,c,zone,e)
 	local tg=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE):Filter(c65130303.cfilter3,c,c,e)

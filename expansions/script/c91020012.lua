@@ -124,6 +124,7 @@ function cm.valcheck(e,c)
 		e11:SetType(EFFECT_TYPE_SINGLE)
 		e11:SetCode(EFFECT_SET_BASE_ATTACK)
 		e11:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+		e11:SetCondition(cm.con11)
 		e11:SetRange(LOCATION_MZONE)
 		e11:SetValue(atk)
 		e11:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
@@ -134,6 +135,9 @@ function cm.valcheck(e,c)
 		e2:SetValue(def)
 		c:RegisterEffect(e2)
   
+end
+function cm.con11(e,c)
+return e:GetHandler():IsCode(91020012)
 end
 function cm.ttcon1(e,c,minc)
 	if c==nil then return true end
