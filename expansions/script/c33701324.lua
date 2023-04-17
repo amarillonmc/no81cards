@@ -2,7 +2,7 @@
 function c33701324.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1,1)
-	c:EnableReviveLimit()	
+	c:EnableReviveLimit()   
 	--pierce
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -17,6 +17,7 @@ function c33701324.initial_effect(c)
 	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_MZONE,0)
