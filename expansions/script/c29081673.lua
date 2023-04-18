@@ -43,14 +43,14 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ConfirmDecktop(p,5)
-	local g=Duel.GetDecktopGroup(p,5)
+	Duel.ConfirmDecktop(tp,5)
+	local g=Duel.GetDecktopGroup(tp,5)
 	local ct=5
 	if #g>0 then
 		local mg1=Duel.GetRitualMaterial(tp)
 		local mg2=g:Filter(cm.mfilter,nil)
 		mg1:Merge(mg2)
-		if Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,cm.filter,e,tp,mg1,nil,Card.GetLevel,"Greater") and Duel.SelectYesNo(tp,aux.Stringid(93754402,1)) then
+		if Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,cm.filter,e,tp,mg1,nil,Card.GetLevel,"Greater") and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.BreakEffect()
 			::cancel::
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

@@ -63,11 +63,8 @@ function cm.initial_effect(c)
 	e8:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e8)   
 end
-function cm.cfilter1(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and cm.Cardinal(c)
-end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():GetControler()==e:GetHandler():GetOwner()
+function cm.thcon(e,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetControler()==e:GetHandler():GetOwner()
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end

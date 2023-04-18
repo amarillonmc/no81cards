@@ -1,4 +1,5 @@
 --方舟骑士共赴黎明
+c29012513.named_with_Arknight=1
 function c29012513.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -9,8 +10,8 @@ function c29012513.initial_effect(c)
 	e1:SetTarget(c29012513.target)
 	e1:SetOperation(c29012513.activate)
 	c:RegisterEffect(e1)
-c29012513.kinkuaoi_LightAK=true
 end
+c29012513.kinkuaoi_Lightakm=true
 function c29012513.filter(c,ft,e,tp)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
