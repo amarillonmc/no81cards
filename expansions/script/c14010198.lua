@@ -68,5 +68,5 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.con(e,c)
-	return Duel.GetActivityCount(e:GetControler(),ACTIVITY_BATTLE_PHASE)~=0
+	return Duel.GetActivityCount(e:GetOwnerPlayer(),ACTIVITY_BATTLE_PHASE)~=0
 end

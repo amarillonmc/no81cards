@@ -32,14 +32,15 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetOperatedGroup():GetFirst()
 	Duel.ConfirmCards(1-tp,tc)
 	Duel.BreakEffect()
-	Duel.ShuffleHand(tp)
-	if tc:IsType(TYPE_MONSTER) and tc:IsSetCard(0x87af) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,1152) then
+	if tc:IsType(TYPE_MONSTER) and (tc:IsSetCard(0x87af) or (_G["c"..tc:GetCode()] and  _G["c"..tc:GetCode()].named_with_Arknight)) then
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,aux.Stringid(6459419,1)) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	else
+		end
+	return
+	end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		tc=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
 		if not tc then return end
 		Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
-	end
+	
 end

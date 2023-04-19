@@ -35,7 +35,8 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 and #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(6459419,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		sg=sg:Select(tp,1,#g,nil)
+		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+		sg=sg:Select(tp,1,ft>#g and #g or ft,nil)
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 	if c:IsLocation(LOCATION_HAND) and c:IsRelateToEffect(e) then

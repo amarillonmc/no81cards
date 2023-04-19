@@ -29,7 +29,7 @@ end
 function c29065521.spcon(e,c,tp,eg,ep,ev,re,r,rp)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return (Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0,nil)==0 or Duel.IsExistingMatchingCard(c29065521.spfilter,tp,LOCATION_MZONE,0,1,nil)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return Duel.IsExistingMatchingCard(c29065521.spfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function c29065521.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanAddCounter(0x10ae,1) end

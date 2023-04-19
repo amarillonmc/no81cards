@@ -167,7 +167,7 @@ function cm.LinkCondition(f,minc,maxc,gf)
 			if not aux.LConditionFilter(lmat,f,c,e) then return false end
 			mg:AddCard(lmat)
 		end
-		local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+		local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 		if fg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
 		Duel.SetSelectedCard(fg)
 		return mg:CheckSubGroup(cm.LCheckGoal,minc,maxc,tp,c,gf,lmat)
@@ -194,7 +194,7 @@ function cm.LinkTarget(f,minc,maxc,gf)
 			if not aux.LConditionFilter(lmat,f,c,e) then return false end
 			mg:AddCard(lmat)
 		end
-		local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+		local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 		Duel.SetSelectedCard(fg)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
 		local cancel=Duel.IsSummonCancelable()
