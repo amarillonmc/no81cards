@@ -27,7 +27,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_PZONE,0)>0
 end
 function cm.thfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_DECK) or c:IsFaceup()) and c:IsAbleToHand()
 		and not Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_PZONE,0,1,nil,c:GetOriginalAttribute())
 		and not c:IsSummonableCard()
 end
