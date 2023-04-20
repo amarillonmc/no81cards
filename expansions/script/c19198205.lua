@@ -32,10 +32,12 @@ function c19198205.ctfil(c)
 end 
 function c19198205.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1) 
+	local c=e:GetHandler() 
+	if not c:IsStatus(STATUS_SET_TURN) then return true end
 	local ct=#{e:GetHandler():IsHasEffect(EFFECT_TRAP_ACT_IN_SET_TURN,tp)}
-	local dis=Duel.IsExistingMatchingCard(c19198205.ctfil,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
-	if chk==0 then return ct>1 or dis or not e:GetHandler():IsStatus(STATUS_SET_TURN) end
-	if ct==1 or (dis and Duel.SelectYesNo(tp,aux.Stringid(19198205,2))) then
+	local dis=Duel.IsExistingMatchingCard(c19198205.ctfil,tp,LOCATION_ONFIELD,0,1,e:GetHandler())  
+	if chk==0 then return ct>1 or dis end 
+	if ct==1 or dis and Duel.SelectYesNo(tp,aux.Stringid(19198205,2)) then
 		local sg=Duel.SelectMatchingCard(tp,c19198205.ctfil,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler()) 
 		Duel.SendtoGrave(sg,REASON_COST)  
 	end 
