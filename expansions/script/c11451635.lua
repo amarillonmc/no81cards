@@ -179,13 +179,13 @@ function cm.actfilter(c)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and (code1==11451631 or code2==11451631)
 end
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.actfilter,1,nil) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND)) and Duel.GetCurrentChain()<=3
+	return eg:IsExists(cm.actfilter,1,nil) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
 end
 function cm.desfilter(c)
 	return (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsOnField()) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_DECK) and c:IsAbleToGrave())
 end
 function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_DECK+LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_DECK+LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.GetCurrentChain()<=2 end
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_DECK+LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end

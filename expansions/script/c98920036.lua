@@ -21,6 +21,7 @@ function c98920036.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetCode(EVENT_CHAINING)
+	e2:SetCondition(c98920036.tgcon)
 	e2:SetTarget(c98920036.target)
 	e2:SetOperation(c98920036.operation)
 	c:RegisterEffect(e2)
@@ -31,6 +32,9 @@ end
 function c98920036.atkval(e)
 	local g=Duel.GetMatchingGroup(c98920036.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
 	return g:GetClassCount(Card.GetCode)*-100
+end
+function c98920036.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE 
 end
 function c98920036.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

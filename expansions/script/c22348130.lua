@@ -93,10 +93,13 @@ function c22348130.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_DECK,0,1,1,nil)
 	local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(c22348130.tgfilter),tp,LOCATION_GRAVE,0,nil)
-	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 and g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(22348130,2)) then
+	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
+	local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(c22348130.tgfilter),tp,LOCATION_GRAVE,0,nil)
+	if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(22348130,2)) then
 			Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg=g2:Select(tp,1,1,nil)
 	Duel.SendtoHand(sg,nil,REASON_EFFECT)
+	end
 	end
 end
