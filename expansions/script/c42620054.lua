@@ -67,34 +67,34 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
     return e:GetHandler():IsLocation(0x08)
 end
 
-function cm.tgsfilter(c,e,tp,tc)
-	return c:IsSetCard(0x12b) and Duel.GetLocationCount(tp,0x04)>0 and c:IsType(0x01) and (cm.tgsfilter1(c,e,tp) or cm.tgsfilter2(c,e,tp,tc))
+function cm.tgsfilter(c,e,tp)
+	return c:IsSetCard(0x12b) and Duel.GetLocationCount(tp,0x04)>0 and c:IsType(0x01) and (cm.tgsfilter1(c,e,tp) or cm.tgsfilter2(c,tp))
 end
 
 function cm.tgsfilter1(c,e,tp)
     return not c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
-function cm.tgsfilter2(c,e,tp,tc)
+function cm.tgsfilter2(c,tp)
     return Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x12b,TYPES_EFFECT_TRAP_MONSTER,0,0,4,RACE_CYBERSE,ATTRIBUTE_WATER) and c:IsAbleToHand()
 end
 
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     local c=e:GetHandler()
-    if chkc then return chkc:IsLocation(0x10) and chkc:IsControler(tp) and cm.tgsfilter(chkc,e,tp,c) end
-	if chk==0 then return Duel.IsExistingTarget(cm.tgsfilter,tp,0x10,0,1,nil,e,tp,c) end
+    if chkc then return chkc:IsLocation(0x10) and chkc:IsControler(tp) and cm.tgsfilter(chkc,e,tp) end
+	if chk==0 then return Duel.IsExistingTarget(cm.tgsfilter,tp,0x10,0,1,nil,e,tp) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.tgsfilter,tp,0x10,0,1,1,nil,e,tp,c)
+	local g=Duel.SelectTarget(tp,cm.tgsfilter,tp,0x10,0,1,1,nil,e,tp)
     local tc=g:GetFirst()
-    if cm.tgsfilter1(tc,e,tp) and cm.tgsfilter2(tc,e,tp,c) then
-        g:Merge(c)
+    if cm.tgsfilter1(tc,e,tp) and cm.tgsfilter2(tc,tp) then
+        g:AddCard(c)
         Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,nil,nil)
         Duel.SetOperationInfo(0,CATEGORY_TOHAND,tc,1,nil,nil)
         Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,0x16)
     elseif cm.tgsfilter1(tc,e,tp) then
         Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,tc,1,nil,nil)
         Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,0x16)
-    elseif cm.tgsfilter2(tc,e,tp,c) then
+    elseif cm.tgsfilter2(tc,tp) then
         Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,nil,nil)
         Duel.SetOperationInfo(0,CATEGORY_TOHAND,tc,1,nil,nil)
     end
@@ -113,7 +113,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
     local tc=Duel.GetFirstTarget()
     local c=e:GetHandler()
     if tc:IsRelateToEffect(e) and c:IsRelateToEffect(e) then
-        if cm.tgsfilter1(tc,e,tp) and ((not (c:IsFaceup() and cm.tgsfilter2(tc,e,tp,c))) or Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))==0) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) then
+        if cm.tgsfilter1(tc,e,tp) and ((not (c:IsFaceup() and cm.tgsfilter2(tc,tp))) or Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))==0) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) then
             Duel.BreakEffect()
             local g=Duel.GetMatchingGroup(cm.opstgfilter,tp,0x04,0,nil)
             local qg=Duel.GetMatchingGroup(cm.opseqfilter,tp,0x16,0,nil)
@@ -132,7 +132,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
                 e1:SetReset(RESET_EVENT+RESETS_STANDARD)
                 qc:RegisterEffect(e1)
             end
-        elseif c:IsFaceup() and cm.tgsfilter2(tc,e,tp,c) then
+        elseif c:IsFaceup() and cm.tgsfilter2(tc,tp) then
             c:AddMonsterAttribute(TYPE_EFFECT)
             if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP) and Duel.SendtoHand(tc,nil,REASON_EFFECT) and tc:IsLocation(0x02) then
                 Duel.ConfirmCards(1-tp,tc)
