@@ -34,7 +34,7 @@ function c98920050.condition(e,tp,eg,ep,ev,re,r,rp)
 		and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function c98920050.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x104) and not c:IsCode(98920050)
+	return c:IsFaceup() and c:IsSetCard(0x104) and not c:IsCode(98920050) and c:IsCanTurnSet()
 end
 function c98920050.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

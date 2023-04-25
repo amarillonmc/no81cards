@@ -105,7 +105,7 @@ function c60002008.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end
 function c60002008.splimit(e,c)
-	return not c:IsAttribute(ATTRIBUTE_EARTH)
+	return not c:IsRace(RACE_PLANT)
 end
 
 

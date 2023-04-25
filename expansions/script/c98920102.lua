@@ -59,16 +59,17 @@ end
 function c98920102.atlimit(e,c)
 	return not e:GetHandler():GetLinkedGroup():IsContains(c)
 end
-function c98920102.filter(c,e,tp)
-	return c:IsSetCard(0x18) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c98920102.filter(c,e,tp,zonr)
+	return c:IsSetCard(0x18) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,zone)
 end
 function c98920102.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsType(TYPE_LINK) and c:GetLinkedGroupCount()==0 and Duel.GetTurnPlayer()==tp
 end
 function c98920102.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c98920102.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then 
+		local zone=e:GetHandler():GetLinkedZone(tp)
+		return zone~=0 and Duel.IsExistingMatchingCard(c98920102.filter,tp,LOCATION_DECK,0,1,nil,e,tp,zone) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c98920102.spop(e,tp,eg,ep,ev,re,r,rp)
