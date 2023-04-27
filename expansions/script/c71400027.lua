@@ -28,17 +28,39 @@ function c71400027.con1(e,tp,eg,ep,ev,re,r,rp)
 	return yume.IsYumeFieldOnField(tp) and rp==1-tp and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER)
 end
 function c71400027.filter1(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x714)
+	if c:IsType(TYPE_LINK) then return false end
+	local num=0
+	local xyz=0
+	if c:IsType(TYPE_XYZ) then
+		xyz=1
+		num=c:GetRank()
+	else
+		num=c:GetLevel()
+	end
+	return c:IsFaceup() and c:IsSetCard(0x714) and Duel.IsExistingMatchingCard(c71400027.filter1a,0,LOCATION_MZONE,LOCATION_MZONE,1,c,num,xyz)
+end
+function c71400027.filter1a(c,num,xyz)
+	if c:IsType(TYPE_LINK) or not (c:IsFaceup() and c:IsSetCard(0x714)) then return false end
+	local num2=0
+	local xyz2=0
+	if c:IsType(TYPE_XYZ) then
+		xyz2=1
+		num2=c:GetRank()
+	else
+		num2=c:GetLevel()
+	end
+	return xyz2==xyz and num2==num
 end
 function c71400027.op1(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	Duel.SetLP(tp,Duel.GetLP(tp)-math.ceil(tc:GetBaseAttack()/2))
-	local g=Duel.GetMatchingGroup(Card.IsSummonLocation,tp,LOCATION_MZONE,0,nil,LOCATION_EXTRA)
-	if g:FilterCount(c71400027.filter1,nil)==g:GetCount() and Duel.IsChainDisablable(ev) then
-		Duel.BreakEffect()
+	if Duel.IsChainDisablable(ev) then
 		Duel.NegateEffect(ev)
-		if rc:IsRelateToEffect(re) and not rc:IsStatus(STATUS_BATTLE_DESTROYED) then
-			Duel.GetControl(tc,tp)
+		if rc:IsRelateToEffect(re) then
+			Duel.SetLP(tp,Duel.GetLP(tp)-math.ceil(rc:GetBaseAttack()/2))
+			if not rc:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsExistingMatchingCard(c71400027.filter1,0,LOCATION_MZONE,LOCATION_MZONE,1,nil) then
+				Duel.BreakEffect()
+				Duel.GetControl(rc,tp)
+			end
 		end
 	end
 end

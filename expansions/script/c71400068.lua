@@ -68,7 +68,7 @@ function c71400068.op1(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToBattle() then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
 		e1:SetValue(c:GetAttack()*2)
 		c:RegisterEffect(e1)

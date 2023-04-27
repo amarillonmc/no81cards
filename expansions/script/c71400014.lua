@@ -45,7 +45,7 @@ function c71400014.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	c:RegisterFlagEffect(71400014,RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(71400014,0))
 	Duel.Hint(HINT_SELECTMSG,rp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(rp,nil,rp,LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(re))
+	local g=Duel.SelectMatchingCard(rp,nil,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,aux.ExceptThisCard(e))
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		if Duel.SendtoGrave(g,REASON_EFFECT)>0 then

@@ -15,6 +15,7 @@ function c71400035.initial_effect(c)
 	e1:SetDescription(aux.Stringid(71400035,0))
 	e1:SetOperation(c71400035.op1)
 	e1:SetTarget(c71400035.tg1)
+	e1:SetCost(c71400035.cost1)
 	e1:SetTarget(yume.YumeFieldCheckTarget())
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
 	c:RegisterEffect(e1)
@@ -29,6 +30,10 @@ function c71400035.initial_effect(c)
 	e2:SetTarget(c71400035.tg2)
 	e2:SetOperation(c71400035.op2)
 	c:RegisterEffect(e2)
+end
+function c71400035.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c71400035.filter1(c)
 	return c:IsSetCard(0xc714) and c:IsAbleToGrave()
@@ -85,26 +90,7 @@ function c71400035.op1(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
 	end
-	--[[
-	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
-	local rct=1
-	if Duel.GetTurnPlayer()~=tp then rct=2 end
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetValue(c71400035.aclimit)
-	e4:SetTargetRange(1,0)
-	e4:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,rct)
-	Duel.RegisterEffect(e4,tp)
-	--]]
 end
---[[
-function c71400035.aclimit(e,re,rp)
-	local rc=re:GetHandler()
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and not rc:IsSetCard(0x714) and not rc:IsImmuneToEffect(e)
-end
---]]
 function c71400035.tg1a(e,c)
 	local seq=e:GetLabel()
 	local p=c:GetControler()

@@ -38,6 +38,7 @@ function c71400030.con1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71400030.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.SetTargetCard(eg)
 	local g=eg:Filter(Card.IsAbleToRemove,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
