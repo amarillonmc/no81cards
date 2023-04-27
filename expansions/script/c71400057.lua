@@ -42,6 +42,30 @@ function c71400057.filter1c(c,e,tp,mc)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_XYZ) and not c:IsCode(mc:GetCode()) and mc:IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
+function c71400057.filter1d(c)
+	if c:IsType(TYPE_LINK) then return false end
+	local num=0
+	local xyz=false
+	if c:IsType(TYPE_XYZ) then
+		xyz=true
+		num=c:GetRank()
+	else
+		num=c:GetLevel()
+	end
+	return c:IsFaceup() and c:IsSetCard(0x714) and Duel.IsExistingMatchingCard(c71400057.filter1e,0,LOCATION_MZONE,LOCATION_MZONE,1,c,num,xyz)
+end
+function c71400057.filter1e(c,num,xyz)
+	if c:IsType(TYPE_LINK) or not (c:IsFaceup() and c:IsSetCard(0x714)) then return false end
+	local num2=0
+	local xyz2=false
+	if c:IsType(TYPE_XYZ) then
+		xyz2=true
+		num2=c:GetRank()
+	else
+		num2=c:GetLevel()
+	end
+	return xyz2==xyz and num2==num
+end
 function c71400057.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) or tc:IsImmuneToEffect(e) then return end
@@ -49,8 +73,12 @@ function c71400057.op1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c71400057.filter1b,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()<1 then return end
 	Duel.Overlay(tc,g)
-	local fg=Duel.GetMatchingGroup(Card.IsSummonLocation,tp,LOCATION_MZONE,0,nil,LOCATION_EXTRA)
-	if fg:FilterCount(c71400057.filter1a,nil)~=fg:GetCount() or not aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) or tc:IsControler(1-tp) then return end
+	if not (tc:IsFaceup() and tc:IsControler(tp) and tc:IsRelateToEffect(e)
+		and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL)
+		and Duel.IsExistingMatchingCard(c71400057.filter1d,0,LOCATION_MZONE,LOCATION_MZONE,1,nil))
+		or tc:IsImmuneToEffect(e) then
+		return
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local xyzg=Duel.SelectMatchingCard(tp,c71400057.filter1c,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
 	if xyzg:GetCount()>0 then

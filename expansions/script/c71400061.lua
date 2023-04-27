@@ -11,7 +11,7 @@ function c71400061.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(c71400061.con1)
 	c:RegisterEffect(e1)
-	--change attribute
+	--change type
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400061,0))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -19,6 +19,7 @@ function c71400061.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1)
+	e2:SetCondition(c71400061.con2)
 	e2:SetTarget(c71400061.tg2)
 	e2:SetOperation(c71400061.op2)
 	c:RegisterEffect(e2)
@@ -43,6 +44,9 @@ function c71400061.con1(e,c)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0
 		and Duel.IsExistingMatchingCard(c71400061.filter1,tp,LOCATION_MZONE,0,1,nil) and yume.YumeCheck(c)
+end
+function c71400061.con2(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsLinkState()
 end
 function c71400061.filter2(c)
 	return c:IsFaceup() and not c:IsRace(RACE_PLANT)
