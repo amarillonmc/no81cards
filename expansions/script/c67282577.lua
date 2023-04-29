@@ -31,7 +31,10 @@ function s.initial_effect(c)
 	
 end
 function s.cfilter(c,tp)
-	return c:IsSetCard(0x2b) and Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
+	return c:IsSetCard(0x2b) and Duel.IsExistingTarget(s.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,c,c,tp)
+end
+function s.cfilter2(c,ec,tp)
+	return c:IsFaceup() and c:IsCanTurnSet() and Duel.CheckReleaseGroupEx(tp,Card.IsSetCard,1,Group.FromCards(c,ec),0x2b)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroupEx(tp,s.cfilter,1,e:GetHandler()) end
@@ -39,7 +42,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function s.filter(c)
-	return c:IsFaceup() and c:IsCanTurnSet() and Duel.CheckReleaseGroupEx(tp,Card.IsSetCard,1,Group.FromCards(c,ec),0x2b)
+	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

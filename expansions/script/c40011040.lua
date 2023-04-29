@@ -44,24 +44,29 @@ function cm.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkType,1,nil,TYPE_PENDULUM)
 end
 function cm.cfilter(c)
-	return cm.MagiaDoll(c) and c:IsType(TYPE_PENDULUM) and c:IsAbleToExtraAsCost() and (c:IsFaceup() or c:IsLocation(LOCATION_DECK+LOCATION_HAND))
+	return cm.MagiaDoll(c) and c:GetOriginalType()&TYPE_PENDULUM~=0
+		and (c:IsFaceup() or c:IsLocation(LOCATION_DECK+LOCATION_HAND))
+end
+function cm.gselect(g,tp)
+	return Duel.GetLocationCountFromEx(tp,tp,g,TYPE_PENDULUM)>0
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_DECK,0,2,nil) end
+	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_DECK,0,nil)
+	if chk==0 then return g:CheckSubGroup(cm.gselect,2,2,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_DECK,0,2,2,nil)
-	Duel.SendtoExtraP(g,nil,REASON_COST)
+	local sg=g:SelectSubGroup(tp,cm.gselect,false,2,2,tp)
+	Duel.SendtoExtraP(sg,nil,REASON_COST)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local c=e:GetHandler()
+	local ft=Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)
 	if ft<=0 then return end
 	if ft>3 then ft=3 end
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
@@ -87,14 +92,14 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc=g:GetNext()
 		end
 		Duel.SpecialSummonComplete()
-		sg:KeepAlive()
+		g:KeepAlive()
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e3:SetCode(EVENT_PHASE+PHASE_END)
 		e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 		e3:SetCountLimit(1)
 		e3:SetLabel(fid)
-		e3:SetLabelObject(sg)
+		e3:SetLabelObject(g)
 		e3:SetCondition(cm.descon)
 		e3:SetOperation(cm.desop)
 		Duel.RegisterEffect(e3,tp)
