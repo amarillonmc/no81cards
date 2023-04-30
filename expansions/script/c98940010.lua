@@ -10,7 +10,6 @@ function c98940010.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetRange(LOCATION_DECK)
-	e2:SetOperation(c98940010.acop)
 	c:RegisterEffect(e2)
 --act in hand
 	local e2=Effect.CreateEffect(c)
@@ -54,6 +53,9 @@ function c98940010.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.ConfirmCards(1-tp,g)
 	end
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
+	if e:GetHandler():IsLocation(LOCATION_DECK) then
+		Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	end
 end
 function c98940010.filter3(c,tp)
 	return c:GetSummonPlayer()==tp
@@ -91,16 +93,10 @@ function c98940010.operation2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c98940010.sumlimit(e,c,se,sump,sumtype,sumpos,targetp)
-	return c:IsCode(e:GetLabel())
+	return se and se:GetHandler():IsCode(98940010) and c:IsCode(e:GetLabel()) 
 end
 function c98940010.sumlimit1(e,c)
 	return c:IsCode(e:GetLabel())
-end
-function c98940010.acop(e,tp,eg,ep,ev,re,r,rp)
-	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if ft>0 then
-		Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-	end
 end
 function c98940010.filter5(c,tp)
 	return c:GetSummonPlayer()==tp

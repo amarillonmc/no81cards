@@ -41,9 +41,6 @@ function cm.ARC(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Arcalling
 end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_ONFIELD,0,e:GetHandler())==0
-end
 function cm.disfilter(c)
 	return (cm.ARC(c) or c:GetType()==TYPE_TRAP) and c:IsDiscardable()
 end
@@ -72,6 +69,9 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_ONFIELD,0,e:GetHandler())==0
+end
 function cm.setfilter(c)
 	return cm.ARC(c) and c:IsType(TYPE_TRAP) and c:IsSSetable()
 end
@@ -85,6 +85,16 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,ct,nil)
 	if #g>0 then
 		Duel.SSet(tp,g)
+		local tc=g:GetFirst()
+		while tc do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			tc=g:GetNext()
+		end
 	end
 end
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)

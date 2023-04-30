@@ -63,7 +63,7 @@ function c98920401.cfilter(c,tp)
 	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK)
 end
 function c98920401.hdcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DRAW and eg:IsExists(c98920401.cfilter,1,nil,1-tp)
+	return eg:IsExists(c98920401.cfilter,1,nil,1-tp)
 end
 function c98920401.hdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) end

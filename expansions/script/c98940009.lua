@@ -151,7 +151,7 @@ function c98940009.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c98940009.lksfilter(c)
-	return c:IsSetCard(0x11b,0xfe)
+	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_DARK)
 end
 function c98940009.reop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(c98940009.lksfilter,tp,LOCATION_MZONE,0,nil)
@@ -175,10 +175,10 @@ function c98940009.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function c98940009.spfilter(c,e,tp)
-	return c:IsSetCard(0x11b,0xfe) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c98940009.tgfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToGrave()
+	return c:IsSetCard(0x11b) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c98940009.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
