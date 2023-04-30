@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect()
+	return c:IsSetCard(0x9212) and c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return  Duel.CheckReleaseGroupEx(tp,cm.filter,2,nil) end

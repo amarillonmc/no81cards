@@ -67,7 +67,7 @@ function fuef.B_A(c,des,cat,cod,pro,ctl,con,cos,tg,op,rc,res,lab,obj)
 	return fuef.Act(c,des,cat,EFFECT_TYPE_ACTIVATE,cod or "FC",pro,nil,ctl,con,cos,tg,op,rc,res,lab,obj)
 end  
 function fuef.A(c,cod,rc)
-	return fuef.B_A(c,nil,nil,cod,nil,nil,nil,nil,nil,nil,rc or c)
+	return fuef.B_A(c,nil,nil,cod,nil,nil,nil,nil,nil,nil,rc)
 end
 --------------------------------------------------------------------------"Effect_Ignition"
 --Ignition Effect: Base set
@@ -111,7 +111,7 @@ end
 function fuef.S(c,des,cod,pro,ran,val,ctl,con,op,rc,res,lab,obj)
 	return fuef.NoAct(c,des,EFFECT_TYPE_SINGLE,cod,pro,ran,nil,val,ctl,con,nil,op,rc,res,lab,obj)
 end
-function fuef.SC(c,des,cod,pro,ran,ctl,con,op,rc,res,lab,obj)
+function fuef.SC(c,des,cod,pro,ctl,con,op,rc,res,lab,obj)
 	return fuef.NoAct(c,des,EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS,cod,pro,nil,nil,nil,ctl,con,nil,op,rc,res,lab,obj)
 end
 --------------------------------------------------------------------------"Effect_Field"
@@ -121,7 +121,4 @@ function fuef.F(c,des,cod,pro,ran,tran,val,ctl,con,tg,op,rc,res,lab,obj)
 end
 function fuef.FC(c,des,cod,pro,ran,ctl,con,op,rc,res,lab,obj)
 	return fuef.NoAct(c,des,EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS,cod,pro,ran,nil,nil,ctl,con,nil,op,rc,res,lab,obj)
-end
-function fuef.FG(c,ran,tran,con,tg,rc,res,lab,obj)
-	return fuef.NoAct(c,nil,EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT,nil,nil,ran,tran,nil,nil,con,tg,nil,rc,res,lab,obj)
 end

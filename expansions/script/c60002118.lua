@@ -72,7 +72,8 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	   
+	local tc=Duel.CreateToken(tp,m-5)
+	Duel.SendtoDeck(tc,tp,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end
 function cm.filter(c,e,tp)
 	return c:IsCode(m-5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

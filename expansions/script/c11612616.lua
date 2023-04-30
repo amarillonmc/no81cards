@@ -1,8 +1,12 @@
 --龙仪巧-双子流星=GEM
 local m=11612616
 local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
+cm.text=zhc_lhq_sz
 function c11612616.initial_effect(c)
 	c:EnableReviveLimit()   
+	--
+	local e00=fpjdiy.Zhc(c,cm.text)
 	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -55,7 +59,7 @@ function c11612616.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e4:SetCountLimit(1,m+1)
+	e4:SetCountLimit(1,m*2+1)
 	e4:SetTarget(cm.thtg)
 	e4:SetOperation(cm.thop)
 	c:RegisterEffect(e4)

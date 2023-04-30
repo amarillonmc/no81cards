@@ -1,7 +1,6 @@
 --方舟骑士-阿米娅
 c29065500.named_with_Arknight=1
 function c29065500.initial_effect(c)
-	aux.AddCodeList(c,29065500)
 	--summon
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(6616912,0))

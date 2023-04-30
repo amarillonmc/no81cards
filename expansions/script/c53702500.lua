@@ -2656,6 +2656,21 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 	local rstg=Duel.GetMatchingGroup(function(c)return c.Snnm_Ef_Rst end,0,0xff,0xff,nil)
 	local rstt={}
 	for rstc in aux.Next(rstg) do if not cm.IsInTable(rstc:GetOriginalCode(),rstt) then table.insert(rstt,rstc:GetOriginalCode()) end end
+	if cm.IsInTable(53759012,rstt) then 
+		c53759012[1]=Effect.SetLabelObject
+		Effect.SetLabelObject=function(se,le)
+			if aux.GetValueType(le)=="Effect" then
+				local e1=Effect.CreateEffect(se:GetOwner())
+				e1:SetType(EFFECT_TYPE_FIELD)
+				e1:SetCode(m)
+				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+				c53759012[1](e1,se)
+				e1:SetTargetRange(1,1)
+				Duel.RegisterEffect(e1,0)
+			end
+			return c53759012[1](se,le)
+		end
+	end
 	local code=e:GetHandler():GetOriginalCode()
 	Card.RegisterEffect=function(sc,se,bool)
 		if cm.IsInTable(25000008,rstt) then
@@ -2779,6 +2794,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Card.RegisterEffect=reg
+	if cm.IsInTable(53759012,rstt) then Effect.SetLabelObject=c53759012[1] end
 	e:Reset()
 end
 function cm.reni(c,sdes,scat,styp,spro,scod,sran,sct,sht,scon,scos,stg,sop)
@@ -4279,5 +4295,23 @@ function cm.RabbitTeamCheck(e,tp,eg,ep,ev,re,r,rp)
 			for _,v in ipairs(t) do Duel.RegisterFlagEffect(tp,53755000+v,RESET_PHASE+PHASE_END,0,1) end
 		end
 		return cm[55](tp,ct)
+	end
+end
+function cm.Global_in_Initial_Reset(c,t)
+	local le={Duel.IsPlayerAffectedByEffect(0,53702800)}
+	for _,v in pairs(le) do
+		if v:GetOwner()==c then
+			if v:GetLabelObject() then v:GetLabelObject():Reset() end
+			v:Reset()
+		end
+	end
+	for _,v in pairs(t) do
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(53702800)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(1,0)
+		e1:SetLabelObject(v)
+		Duel.RegisterEffect(e1,0)
 	end
 end

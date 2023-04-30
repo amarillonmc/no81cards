@@ -2,6 +2,9 @@
 local m=64800015
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)
+c:EnableReviveLimit()
   c:SetSPSummonOnce(m)
    local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
@@ -27,9 +30,8 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetCategory(CATEGORY_DRAW)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
 	e4:SetCondition(cm.drcon)
@@ -64,8 +66,8 @@ function cm.lkcon(e,c)
 		sg:AddCard(pc)
 	end
 	local ct=sg:GetCount()
-	local minc=2
-	local maxc=2
+	local minc=3
+	local maxc=4
 	if ct>maxc then return false end
 	return cm.lcheck(tp,sg,c,minc,ct) or mg:IsExists(cm.lkchenk,1,nil,tp,sg,mg,c,ct,minc,maxc)
 end
@@ -123,7 +125,7 @@ local ct=e:GetHandler():GetMaterial():FilterCount(Card.IsPreviousLocation,nil,LO
 end  
 
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	 return Duel.GetLP(tp)>Duel.GetLP(1-tp)
+	 return Duel.GetLP(tp)>Duel.GetLP(1-tp) 
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

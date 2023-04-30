@@ -43,12 +43,13 @@ function c29012513.activate(e,tp,eg,ep,ev,re,r,rp)
 		else
 			res=Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 			end
-			if res>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c29012513.spfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp,tid) and Duel.SelectYesNo(tp,aux.Stringid(16958382,1)) then
+			if res>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c29012513.spfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp,tid) and Duel.SelectYesNo(tp,aux.Stringid(29012513,0)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g2=Duel.SelectMatchingCard(tp,c29012513.spfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp,tid)
 			local tc=g2:GetFirst()
 			Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
 			end
+			Duel.SpecialSummonComplete()
 	end
 end

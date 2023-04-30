@@ -72,6 +72,7 @@ function c22348220.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
 	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
+	if rpz==nil or lpz==nil then return false end
 	local lscale=lpz:GetLeftScale()
 	local rscale=rpz:GetRightScale()
 	if lscale>rscale then lscale,rscale=rscale,lscale end
@@ -107,7 +108,7 @@ function c22348220.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
 end
 function c22348220.thfilter(c,lscale,rscale)
-	return c:IsSetCard(0x708) and c:IsAbleToHand()
+	return c:IsSetCard(0x708) and c:IsType(TYPE_PENDULUM)
 end
 function c22348220.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -123,9 +124,11 @@ function c22348220.thop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(c22348220.thfilter,tp,LOCATION_DECK,0,nil)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(22348220,3)) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			g=g:Select(tp,1,1,nil)
-			Duel.SendtoHand(g,tp,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(22348220,4))
+			gg=g:Select(tp,1,1,nil)
+			if gg:GetCount()>0 then
+			Duel.SendtoExtraP(gg,nil,REASON_EFFECT)
+			end
 		end
 end
+

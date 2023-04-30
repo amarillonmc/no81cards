@@ -2,7 +2,7 @@
 local m=91020015
 local cm=c91020015
 function c91020015.initial_effect(c)
---SpecialSummon   
+--SpecialSummon  
 		local e1=Effect.CreateEffect(c)
 		e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 		e1:SetType(EFFECT_TYPE_IGNITION)
@@ -45,34 +45,36 @@ function c91020015.initial_effect(c)
 	e4:SetOperation(cm.tgop)
 	c:RegisterEffect(e4)
 	--change target
-	local e21=e4:Clone()
+	local e21=Effect.CreateEffect(c)
 	e21:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e21:SetCode(EVENT_BE_BATTLE_TARGET)
+	e21:SetRange(LOCATION_MZONE)
+	e21:SetCountLimit(1,m+3)
 	e21:SetCondition(cm.cbcon)
 	e21:SetTarget(cm.tgtg1)
 	e21:SetOperation(cm.cbop)
 	c:RegisterEffect(e21)
 end
 --e1
-function cm.filter(c)
+function cm.filter1(c)
 	return c:IsAttribute(ATTRIBUTE_DIVINE) and c:IsFaceup()
 end
 function cm.fit(c,e,tp)
 	return c:IsCode(91020015) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
-return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil)
+return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_MZONE,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
 end
-function cm.tag(e,c)
+function cm.tag(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 return c:GetLevel()>10
 end
-function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0 then return end   
+function cm.op1(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
@@ -97,7 +99,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 --e2
 function cm.thfilter2(c)
-	return c:IsAttribute(ATTRIBUTE_DIVINE) and c:IsAbleToHand() or (c:IsCode(91020010) or aux.IsCodeListed(c,91020010)) or(c:IsCode(91020014) or aux.IsCodeListed(c,91020014)) or(c:IsCode(91020011) or aux.IsCodeListed(c,91020011))
+	return  c:IsAbleToHand() and c:IsSetCard(0x9d0)
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0 end

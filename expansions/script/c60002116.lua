@@ -40,7 +40,23 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	   
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsCode,m-3))
+	e1:SetValue(cm.efilter)
+	if Duel.GetCurrentPhase()==PHASE_MAIN1 then
+		e1:SetReset(RESET_PHASE+PHASE_MAIN1)
+		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_MAIN1,0,1)
+	else
+		e1:SetReset(RESET_PHASE+PHASE_MAIN2)
+		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_MAIN2,0,1)
+	end
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
 end
 function cm.filter(c,e,tp)
 	return c:IsCode(m-3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

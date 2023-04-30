@@ -4,6 +4,7 @@ local cm=_G["c"..m]
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	aux.AddCodeList(c,29065554,29065521)
+	c:EnableReviveLimit()
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -85,6 +86,7 @@ function cm.initial_effect(c)
 		Auxiliary.PendOperation = cm.PendOperationArcKnight
 	end
 end
+c29030177.assault_name=29065521
 function cm.descfilter(c,tp,rc)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousControler(1-tp) and ((c:IsReason(REASON_EFFECT) and c:GetReasonEffect():GetHandler()==rc) or (c:IsReason(REASON_BATTLE) and c:GetReasonCard()==rc))
 end

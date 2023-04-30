@@ -26,7 +26,6 @@ function c98920003.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,98920003)
 	e3:SetTarget(c98920003.sptg)
-	e3:SetCondition(c98920003.spcon)
 	e3:SetOperation(c98920003.spop)
 	c:RegisterEffect(e3)  
    --change position
@@ -136,9 +135,6 @@ function c98920003.FShaddollOperation()
 end
 function c98920003.filter(c,e,tp)
 	return c:IsSetCard(0x9d) and not c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c98920003.spcon(e)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c98920003.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

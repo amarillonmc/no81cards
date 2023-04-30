@@ -56,8 +56,8 @@ function c29065555.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
 	local atk=c:GetAttack()-c:GetBaseAttack()
-	local b1=atk>=500 and atk<1500 and rc:IsRelateToEffect(re) and rc:IsDestructable()
-	local b2=atk>=1500 Duel.IsChainNegatable(ev)
+	local b1=atk>=1000 and atk<2000 and rc:IsRelateToEffect(re) and rc:IsDestructable()
+	local b2=atk>=2000 Duel.IsChainNegatable(ev)
 	if chk==0 then return b1 or b2 end
 end
 function c29065555.disop(e,tp,eg,ep,ev,re,r,rp)
@@ -74,8 +74,8 @@ function c29065555.disop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 	c:RegisterEffect(e1)
 	atk=preatk-c:GetAttack()
-	if atk<500 then return end
-	if atk<1500 then
+	if atk<1000 then return end
+	if atk<2000 then
 		if rc:IsRelateToEffect(re) then
 			Duel.Destroy(rc,REASON_EFFECT)
 		end

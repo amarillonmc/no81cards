@@ -1,7 +1,6 @@
 --方舟骑士-琴柳
 function c29096814.initial_effect(c)
 	c:EnableReviveLimit()
-	c:EnableCounterPermit(0x10ae)
 	c:SetSPSummonOnce(29096814)
 	--special summon rule
 	local e1=Effect.CreateEffect(c)

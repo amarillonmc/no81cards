@@ -6,25 +6,34 @@ function c91010021.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_ADD_EXTRA_TRIBUTE)
+	e0:SetCondition(cm.con1)
 	e0:SetTarget(cm.tg1)
 	e0:SetTargetRange(LOCATION_HAND,0)
 	e0:SetValue(POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)
 	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_ADD_EXTRA_TRIBUTE)
+	e1:SetTarget(cm.tg1)
 	e1:SetTargetRange(LOCATION_HAND,0)
-	e1:SetTarget(cm.con)
-	e1:SetLabelObject(e0)
-	c:RegisterEffect(e1)
+	e1:SetValue(POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE) 
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(LOCATION_HAND,0)
+	e3:SetTarget(cm.tag)
+	e3:SetLabelObject(e1)
+	c:RegisterEffect(e3)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,m)
+	e2:SetCondition(cm.con1)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.activate)
-	c:RegisterEffect(e2)
+	c:RegisterEffect(e2)  
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(91010021,1))
 	e4:SetCategory(CATEGORY_SUMMON)
@@ -35,15 +44,23 @@ function c91010021.initial_effect(c)
 	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e4:SetTarget(cm.sumtg)
 	e4:SetOperation(cm.sumop)
-	c:RegisterEffect(e4)			  
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_DOUBLE_TRIBUTE)
+	c:RegisterEffect(e5)	 
 end
 --e0
+function cm.con1(e,tp,eg,ep,ev,re,r,rp)
+if c==nil then return true end
+return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0 
+end
 function cm.tg1(e,c)
 return c~=e:GetOwner() and c:IsType(TYPE_MONSTER)
 end
---e1	
+--e2   
 function cm.filter(c)
-	return c:IsAttribute(ATTRIBUTE_DIVINE) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return (c:IsSetCard(0x9d0)or c:IsSetCard(0x9d1)) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -57,11 +74,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
---e2
-function cm.con(e,c)
-return c:IsAttribute(ATTRIBUTE_DIVINE)
+--e1
+function cm.tag(e,c)
+return c:IsType(TYPE_MONSTER) and (c:IsSetCard(0x9d0)or c:IsSetCard(0x9d1))
 end
 --e4
+
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1) end
@@ -80,5 +98,6 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.MSet(tp,c,true,nil,1)
 	end
 end
+
 
 

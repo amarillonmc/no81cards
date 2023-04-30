@@ -28,10 +28,11 @@ function c9910034.initial_effect(c)
 	e3:SetCategory(CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,9910034)
+	e3:SetCountLimit(1)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCondition(c9910034.thcon)
+	e3:SetTarget(c9910034.thtg)
 	e3:SetOperation(c9910034.thop)
 	c:RegisterEffect(e3)
 end
@@ -51,10 +52,16 @@ function c9910034.efilter(e,te)
 end
 function c9910034.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0
 end
-function c9910034.thfilter(c,g)
+function c9910034.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
+end
+function c9910034.thfilter1(c,g)
 	return c:IsAbleToHand() and g:IsContains(c)
+end
+function c9910034.thfilter2(c)
+	return c:IsFaceup() and c:IsSetCard(0x3950) and c:IsAbleToHand()
 end
 function c9910034.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -65,11 +72,18 @@ function c9910034.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.MoveSequence(c,nseq)
 	local tg=c:GetColumnGroup()
 	tg:AddCard(c)
-	local g=Duel.GetMatchingGroup(c9910034.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tg)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910034,1)) then
+	local g=Group.CreateGroup()
+	local g1=Duel.GetMatchingGroup(c9910034.thfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tg)
+	g:Merge(g1)
+	local g2=Duel.GetMatchingGroup(c9910034.thfilter2,tp,LOCATION_EXTRA,0,nil)
+	g:Merge(g2)
+	if g:GetCount()>0 then
+		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local sg=g:Select(tp,1,1,nil)
-		Duel.BreakEffect()
+		local tc=sg:GetFirst()
+		if g1:IsContains(tc) then Duel.HintSelection(sg) end
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		if g2:IsContains(tc) then Duel.ConfirmCards(1-tp,sg) end
 	end
 end

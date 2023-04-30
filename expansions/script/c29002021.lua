@@ -2,7 +2,6 @@
 c29002021.named_with_Arknight=1
 function c29002021.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),12,12,c29002021.ovfilter,aux.Stringid(29002021,0),12,c29002021.xyzop)
 	c:EnableReviveLimit()   
 	--indes
 	local e3=Effect.CreateEffect(c)

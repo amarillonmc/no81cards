@@ -2,18 +2,17 @@
 local m=91020012
 local cm=c91020012
 function c91020012.initial_effect(c)
-	aux.AddCodeList(c,91020014)
 	Duel.EnableGlobalFlag(GLOBALFLAG_BRAINWASHING_CHECK)
 	--summon with 3 tribute
-	local e11=Effect.CreateEffect(c)
-	e11:SetDescription(aux.Stringid(m,0))
-	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e11:SetType(EFFECT_TYPE_SINGLE)
-	e11:SetCode(EFFECT_LIMIT_SUMMON_PROC)
-	e11:SetCondition(cm.ttcon1)
-	e11:SetOperation(cm.ttop1)
-	e11:SetValue(SUMMON_TYPE_ADVANCE)
-	c:RegisterEffect(e11)
+	  local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(91020012,0))
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_LIMIT_SUMMON_PROC)
+	e1:SetCondition(cm.ttcon1)
+	e1:SetOperation(cm.ttop1)
+	e1:SetValue(SUMMON_TYPE_ADVANCE)
+	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SPSUM_PARAM)
@@ -61,29 +60,17 @@ function c91020012.initial_effect(c)
 	e9:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e9:SetType(EFFECT_TYPE_IGNITION)
 	e9:SetRange(LOCATION_MZONE)
-	e9:SetCountLimit(2,m*2+EFFECT_COUNT_CODE_DUEL)
 	e9:SetCost(cm.spcost)
 	e9:SetTarget(cm.sptg)
 	e9:SetOperation(cm.spop)
 	c:RegisterEffect(e9)
-	--SpecialSummon
-	local e10=Effect.CreateEffect(c) 
-	e10:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e10:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
-	e10:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e10:SetCode(EVENT_LEAVE_FIELD)
-	e10:SetTarget(cm.tg1)
-	e10:SetOperation(cm.op1)
-	c:RegisterEffect(e10)
 --atk\def up 
    local e11=Effect.CreateEffect(c)
-	e11:SetType(EFFECT_TYPE_FIELD)
+	e11:SetType(EFFECT_TYPE_SINGLE)
 	e11:SetCode(EFFECT_MATERIAL_CHECK)
-	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE)
 	e11:SetValue(cm.valcheck)
-	e11:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e11,tp)   
+   c:RegisterEffect(e11) 
+-- special summon 2  
 	local e12=Effect.CreateEffect(c)
 	e12:SetDescription(aux.Stringid(m,3))
 	e12:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -99,45 +86,28 @@ local sc=se:GetHandler()
 	return sc and sc:IsType(TYPE_MONSTER) and sc:IsCode(91020013)
 end
 --SpecialSummon
-function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
- if chk==0 then return true end
-	Duel.SetChainLimit(aux.FALSE)
-end
-function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-local g1=Duel.CreateToken(tp,91020013)   
-local g2=Group.FromCards(g1)
-	Duel.SpecialSummon(g2,0,tp,tp,true,true,POS_FACEUP)
-end
---atk up
 function cm.valcheck(e,c)
-		local g=c:GetMaterial()
-		local tc=g:GetFirst()
-		local atk=0
-		local def=0
-		while tc do
-			atk=atk+math.max(tc:GetTextAttack(),0)
-			def=def+math.max(tc:GetTextDefense(),0)
-			tc=g:GetNext()
-		end
+  local g=c:GetMaterial()
+	local tc=g:GetFirst()
+	local atk=0
+	local def=0
+	while tc do
+		atk=atk+math.max(tc:GetTextAttack(),0)
+		def=def+math.max(tc:GetTextDefense(),0)
+		tc=g:GetNext()
+	end
 		--atk continuous effect
-		local e11=Effect.CreateEffect(c)
-		e11:SetType(EFFECT_TYPE_SINGLE)
-		e11:SetCode(EFFECT_SET_BASE_ATTACK)
-		e11:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
-		e11:SetCondition(cm.con11)
-		e11:SetRange(LOCATION_MZONE)
-		e11:SetValue(atk)
-		e11:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
-		c:RegisterEffect(e11)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SET_ATTACK)
+		e1:SetValue(atk)
+		e1:SetReset(RESET_EVENT+0xff0000)
+		c:RegisterEffect(e1)
 		--def continuous effect
-		local e2=e11:Clone()
-		e2:SetCode(EFFECT_SET_BASE_DEFENSE)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_SET_DEFENSE)
 		e2:SetValue(def)
 		c:RegisterEffect(e2)
-  
-end
-function cm.con11(e,c)
-return e:GetHandler():IsCode(91020012)
 end
 function cm.ttcon1(e,c,minc)
 	if c==nil then return true end
@@ -210,23 +180,29 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
+function cm.filte(c,e,tp)
+	return c:IsCode(91020014) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1 end   
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
+		and Duel.IsExistingMatchingCard(cm.filte,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
+	Duel.SetChainLimit(aux.FALSE)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local g1=Duel.CreateToken(tp,91020014)   
-	local g=Group.FromCards(g1)
-	local tc=g1
-	if g1 and Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)then
-		local e11=Effect.CreateEffect(e:GetHandler())
-		e11:SetType(EFFECT_TYPE_SINGLE)
-		e11:SetCode(EFFECT_SET_ATTACK)
-		e11:SetValue(4000)
-		e11:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e11)
-		local e2=e11:Clone()
-		e2:SetCode(EFFECT_SET_DEFENSE)
+	  if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.filte,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
+	local tc=g:GetFirst()
+	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SET_BASE_ATTACK)
+		e1:SetValue(4000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_SET_BASE_DEFENSE)
 		tc:RegisterEffect(e2)
 	end
 	Duel.SpecialSummonComplete()
@@ -242,6 +218,7 @@ function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
 		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_GRAVE_SPSUMMON,nil,1,tp,LOCATION_GRAVE)
+	Duel.SetChainLimit(aux.FALSE)
 end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

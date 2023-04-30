@@ -43,21 +43,31 @@ function c91020010.initial_effect(c)
 	e4:SetValue(cm.immval)
 	c:RegisterEffect(e4)
 --atk/def down
- local e5=Effect.CreateEffect(c)
+	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,1))
 	e5:SetCategory(CATEGORY_ATKCHANGE)  
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(2)
-	e5:SetCode(EVENT_FREE_CHAIN)
-	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e5:SetCountLimit(1,m*2)
+	e5:SetCode(EVENT_SUMMON_SUCCESS)
 	e5:SetTarget(cm.tg1)
-	e5:SetCondition(cm.con2)
 	e5:SetOperation(cm.op1)
 	c:RegisterEffect(e5)
- local e8=e5:Clone()
-	e8:SetCategory(CATEGORY_DEFCHANGE)
-	c:RegisterEffect(e8)
+	local e6=e5:Clone()
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetDescription(aux.Stringid(m,0))
+	e7:SetCategory(CATEGORY_ATKCHANGE)  
+	e7:SetRange(LOCATION_MZONE) 
+	e7:SetType(EFFECT_TYPE_QUICK_O)
+	e7:SetCode(EVENT_FREE_CHAIN)
+	e7:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e7:SetCountLimit(1,m*3)
+	e7:SetCondition(cm.con7)
+	e7:SetTarget(cm.tg1)
+	e7:SetOperation(cm.op1)
+	c:RegisterEffect(e7)
 end
 --normal summon
 function cm.ttcon(e,c,tp)
@@ -82,20 +92,15 @@ function cm.adval(e,c)
 end
 --immune
 function cm.immval(e,te)
-	return te:GetOwner()~=e:GetHandler() and te:IsActiveType(TYPE_MONSTER)
-		and (te:GetOwner():GetAttack()<=te:GetHandler():GetAttack() or te:GetOwner():GetDefense()<=te:GetHandler():GetDefense())
+return te:GetOwner()~=e:GetHandler() and te:IsActiveType(TYPE_MONSTER) and (te:GetOwner():GetAttack()<=e:GetHandler():GetAttack() or ((te:GetOwner():GetDefense()<=e:GetHandler():GetDefense() and not te:GetOwner():IsType(TYPE_LINK)) or (te:GetOwner():GetAttack()<=e:GetHandler():GetAttack() and te:GetOwner():IsType(TYPE_LINK))))
 end
 --Destroy
-function cm.con2(e,tp,eg,ep,ev,re,r,rp)
-return  Duel.GetTurnPlayer()~=tp
-end
+
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	 Duel.SetChainLimit(cm.chlimit)
+	 Duel.SetChainLimit(aux.FALSE)
 end
-function cm.chlimit(e,ep,tp)
-	return tp==ep
-end
+
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
@@ -103,6 +108,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local dg=Group.CreateGroup()
 	while tc do
 		local preatk=tc:GetAttack()
+		local predef=tc:GetDefense()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
@@ -115,8 +121,12 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e2:SetValue(-2000)
 		tc:RegisterEffect(e2)
-		if preatk~=0 and (tc:IsDefense(0)or tc:IsAttack(0)) then dg:AddCard(tc) end
+		if (preatk~=0 and tc:IsAttack(0)) or (tc:IsDefense(0) and predef~=0) then dg:AddCard(tc) end
 		tc=g:GetNext()
 	end
 	Duel.Destroy(dg,REASON_EFFECT)
+end
+--e7
+function cm.con7(e,tp,eg,ep,ev,re,r,rp)
+return Duel.IsPlayerAffectedByEffect(tp,91000002)
 end

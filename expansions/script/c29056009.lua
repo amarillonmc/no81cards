@@ -2,14 +2,6 @@
 c29056009.named_with_Arknight=1
 function c29056009.initial_effect(c)
 	aux.AddCodeList(c,29065500)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetCode(EFFECT_SPSUMMON_PROC)
-	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e0:SetRange(LOCATION_HAND)
-	e0:SetCondition(c29056009.spcon)
-	e0:SetOperation(c29056009.spop)
-	c:RegisterEffect(e0)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29056009,0))

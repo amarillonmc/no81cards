@@ -1,6 +1,7 @@
 --方舟骑士-海蒂
 local cm,m,o=GetID()
 function cm.initial_effect(c)
+	c:EnableCounterPermit(0x10ae)
 	aux.AddCodeList(c,29065500,29065501)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

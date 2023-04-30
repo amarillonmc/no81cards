@@ -3,6 +3,7 @@ require("expansions/script/c9910106")
 function c9910134.initial_effect(c)
 	--xyz summon
 	Zcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),4,2,c9910134.xyzfilter,aux.Stringid(9910134,0),99)
+	c:EnableReviveLimit()
 	--material
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910134,1))
@@ -44,9 +45,9 @@ function c9910134.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsCanOverlay() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,nil)
 		and Duel.IsExistingMatchingCard(c9910134.xfilter,tp,LOCATION_MZONE,0,1,c) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	Duel.SelectTarget(tp,Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c9910134.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

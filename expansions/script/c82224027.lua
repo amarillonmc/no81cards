@@ -45,6 +45,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local rc=re:GetHandler()  
 	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) then
-		Duel.Destroy(rc,REASON_EFFECT)
+
 	end  
 end  

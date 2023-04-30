@@ -46,4 +46,15 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	e2:SetTarget(cm.splimit)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.splimit(e,c)
+	return not c:IsType(TYPE_XYZ) and c:IsLocation(LOCATION_EXTRA)
 end

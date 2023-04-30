@@ -40,7 +40,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 	if c:IsLocation(LOCATION_HAND) and c:IsRelateToEffect(e) then
-		if Duel.IsPlayerAffectedByEffect(tp,29080291) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(6459419,1)) then
+		if Duel.IsPlayerAffectedByEffect(tp,29080291) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(29081673,1)) then
 			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		else
 			Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)

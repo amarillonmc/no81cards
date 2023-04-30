@@ -33,7 +33,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.ConfirmDecktop(tp,3)
 	local g=Duel.GetDecktopGroup(tp,3):Filter(cm.opf1,nil,e,tp)
-	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,1152) then
+	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(6459419,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		Duel.BreakEffect()
 		g=g:Select(tp,1,1,nil)
@@ -41,7 +41,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.ShuffleDeck(tp)
 	if c:IsLocation(LOCATION_HAND) and c:IsRelateToEffect(e) then
-		if Duel.IsPlayerAffectedByEffect(tp,29080291) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(6459419,1)) then
+		if Duel.IsPlayerAffectedByEffect(tp,29080291) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(29081673,1)) then
 			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		else
 			Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)

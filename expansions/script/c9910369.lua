@@ -53,7 +53,7 @@ function c9910369.spellfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_SPELL) and c:IsAbleToDeck()
 end
 function c9910369.setfilter(c)
-	return c:IsCode(9910371) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
+	return c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x5951) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function c9910369.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910369.spellfilter(chkc) end

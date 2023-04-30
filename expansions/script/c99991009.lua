@@ -3,7 +3,7 @@ function c99991009.initial_effect(c)
 	c:SetUniqueOnField(1,0,99991009)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_ZOMBIE),3,5)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_ZOMBIE),4,5)
 	--Remove
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_RECOVER)

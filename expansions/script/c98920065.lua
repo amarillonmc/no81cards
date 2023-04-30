@@ -44,20 +44,46 @@ function c98920065.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Overlay(sc,Group.FromCards(tc))
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 		sc:CompleteProcedure()
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e4:SetCode(EVENT_CHAINING)
-		e4:SetRange(LOCATION_MZONE)
-		e4:SetOperation(c98920065.chainop)
-		sc:RegisterEffect(e4,true)
+		if tc:IsSetCard(0xba,0x10db,0x13b) then
+		   local id=sc:GetRealFieldID()
+		   local e1=Effect.CreateEffect(e:GetHandler())
+		   e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		   e1:SetCode(EVENT_CHAINING)
+		   e1:SetRange(0xff)
+		   e1:SetLabelObject(g)
+		   e1:SetLabel(id)
+		   e1:SetOperation(c98920065.chainop)
+		   e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		   e:GetHandler():RegisterEffect(e1)
+		else
+		   local e1=Effect.CreateEffect(e:GetHandler())
+		   e1:SetType(EFFECT_TYPE_SINGLE)
+		   e1:SetCode(EFFECT_DISABLE)
+		   e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		   sc:RegisterEffect(e1)
+		   local e2=Effect.CreateEffect(e:GetHandler())
+		   e2:SetType(EFFECT_TYPE_SINGLE)
+		   e2:SetCode(EFFECT_DISABLE_EFFECT)
+		   e2:SetValue(RESET_TURN_SET)
+		   e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		   sc:RegisterEffect(e2)
+		   local e3=Effect.CreateEffect(e:GetHandler())
+		   e3:SetType(EFFECT_TYPE_SINGLE)
+		   e3:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
+		   e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		   sc:RegisterEffect(e3)
+	   end
 	end
 end
 function c98920065.chainop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if rc~=e:GetHandler() and re:IsActiveType(TYPE_MONSTER) and ep==tp then
-		Duel.SetChainLimit(c98920065.chainlm)
+	local tc=e:GetLabelObject():GetFirst()
+	local id=e:GetLabel()
+	if not tc or not id then return end
+	if rc==tc and tc:GetRealFieldID()==id then
+		Duel.SetChainLimit(cm.chainlm)
 	end
 end
 function c98920065.chainlm(e,rp,tp)
-	return tp==rp or not e:IsActiveType(TYPE_MONSTER)
+	return tp==rp
 end

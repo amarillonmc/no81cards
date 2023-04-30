@@ -47,7 +47,7 @@ function c22348225.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c22348225.tdfilter(c)
-	return c:IsSetCard(0x708) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x708) and c:IsAbleToHand()
 end
 function c22348225.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348225.tdfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -120,7 +120,7 @@ function c22348225.setop(e,tp,eg,ep,ev,re,r,rp)
 			  tc1:RegisterEffect(e3)
 			 end
 			 if tc2 then
-			  Duel.MoveToField(tc1,1-tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
+			  Duel.MoveToField(tc2,1-tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
 			  local ttc2=tc2:GetCode()
 			  local e1=Effect.CreateEffect(e:GetHandler())
 			  e1:SetCode(EFFECT_CHANGE_TYPE)

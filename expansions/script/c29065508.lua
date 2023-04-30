@@ -60,6 +60,10 @@ function c29065508.btop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		e1:SetValue(c29065508.efilter)
 		c:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e2:SetValue(1)
+		c:RegisterEffect(e2)
 		end
 	end
 end

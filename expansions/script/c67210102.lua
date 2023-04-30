@@ -56,7 +56,7 @@ function c67210102.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsFaceup()
 end
 function c67210102.pfilter(c)
-	return c:IsSetCard(0x67e) and not c:IsCode(67210102) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsSetCard(0x367e) and not c:IsCode(67210102) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c67210102.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 

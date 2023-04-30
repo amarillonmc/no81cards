@@ -1,8 +1,12 @@
 --龙仪巧-金牛流星=TAU
 local m=11612614
 local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
+cm.text=zhc_lhq_jn
 function c11612614.initial_effect(c)
 	c:EnableReviveLimit()
+	--
+	local e00=fpjdiy.Zhc(c,cm.text)
 	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -11,18 +15,23 @@ function c11612614.initial_effect(c)
 	c:RegisterEffect(e0) 
 	--pierce
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_PIERCE)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCondition(cm.con)
+	e1:SetTargetRange(0,1)
+	e1:SetValue(1)
 	c:RegisterEffect(e1)
-	--actlimit2
+	--destroy replace
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_DESTROY_REPLACE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetTargetRange(0,1)
+	e2:SetCountLimit(1,m*2+1)
+	e2:SetTarget(cm.desreptg)
+	e2:SetValue(cm.desrepval)
+	e2:SetOperation(cm.desrepop)
 	e2:SetCondition(cm.spcon)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
@@ -64,9 +73,34 @@ function cm.valcheck(e,c)
 		e:GetLabelObject():SetLabel(0)
 	end
 end
+--01
+function cm.con(e)
+	local ph=Duel.GetCurrentPhase()
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+end
 --02
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0 
+end
+function cm.repfilter(c,tp)
+	return c:IsControler(1-tp) and c:IsLocation(LOCATION_MZONE)
+		and c:IsReason(REASON_BATTLE) and not c:IsReason(REASON_REPLACE) and c:IsControlerCanBeChanged()
+end
+function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp) end
+	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
+		local tc=eg:GetFirst()
+		Duel.SetTargetCard(tc)
+		return true
+	end
+	return false
+end
+function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	Duel.GetControl(tc,tp)
+end
+function cm.desrepval(e,c)
+	return cm.repfilter(c,e:GetHandlerPlayer())
 end
 --03
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)

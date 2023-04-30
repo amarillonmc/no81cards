@@ -13,10 +13,12 @@ function c91020014.initial_effect(c)
 --release
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(91020014,1))
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetCountLimit(2)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
@@ -43,11 +45,48 @@ function c91020014.initial_effect(c)
 	e7:SetTarget(c91020014.destg)
 	e7:SetOperation(c91020014.desop)
 	c:RegisterEffect(e7)
+	local e8=Effect.CreateEffect(c)
+	e8:SetDescription(aux.Stringid(91020014,6))
+	e8:SetCategory(CATEGORY_DESTROY)
+	e8:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e8:SetRange(LOCATION_MZONE)   
+	e8:SetType(EFFECT_TYPE_QUICK_O)
+	e8:SetCode(EVENT_FREE_CHAIN)
+	e8:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)  
+	e8:SetCountLimit(1)
+	e8:SetCondition(cm.con8)
+	e8:SetCost(c91020014.descost)
+	e8:SetTarget(c91020014.destg)
+	e8:SetOperation(c91020014.desop)
+	c:RegisterEffect(e8)
+	 local e10=Effect.CreateEffect(c) 
+	e10:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e10:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
+	e10:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e10:SetCode(EVENT_LEAVE_FIELD)
+	e10:SetTarget(cm.tg1)
+	e10:SetOperation(cm.op1)
+	c:RegisterEffect(e10)
+end
+function cm.filter(c,e,tp)
+	return c:IsCode(91020014) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+end
+function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
+	Duel.SetChainLimit(aux.FALSE)
+end
+function cm.op1(e,tp,eg,ep,ev,re,r,rp)
+local g1=Duel.CreateToken(tp,91020013)   
+local g2=Group.FromCards(g1)
+	Duel.SpecialSummon(g2,0,tp,tp,true,true,POS_FACEUP)
 end
 --summon
 function cm.splimit(e,se,sp,st)
 local sc=se:GetHandler()
-	return sc and sc:IsType(TYPE_MONSTER) and sc:IsCode(91020012)
+	return sc and sc:IsType(TYPE_MONSTER) and sc:IsCode(91020012) 
 end
 --Release
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -70,7 +109,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 			e1:SetCode(EFFECT_IMMUNE_EFFECT)
 			e1:SetRange(LOCATION_MZONE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+PHASE_END)
 			e1:SetValue(cm.efilter)
 			e1:SetLabel(typ)
 			c:RegisterEffect(e1)
@@ -97,11 +136,9 @@ function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,1,0,0)
-	Duel.SetChainLimit(cm.chlimit)
+	Duel.SetChainLimit(aux.FALSE)
 end
-function cm.chlimit(e,ep,tp)
-	return tp==ep
-end
+
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
@@ -117,7 +154,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 				local e2=e1:Clone()
 				e2:SetCode(EFFECT_UPDATE_DEFENSE)
 				e2:SetValue(tc:GetBaseDefense())
-				c:RegisterEffect(e2,true)		 
+				c:RegisterEffect(e2,true)   
 			else
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_FIELD)
@@ -168,8 +205,8 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 --Destroy
 function c91020014.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,1000) end
-	Duel.PayLPCost(tp,1000)
+	if chk==0 then return Duel.CheckLPCost(tp,2000) end
+	Duel.PayLPCost(tp,2000)
 end
 function c91020014.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) end
@@ -177,12 +214,17 @@ function c91020014.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	Duel.SetChainLimit(aux.FALSE)
 end
 function c91020014.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
+end
+--e8
+function cm.con8(e,tp,eg,ep,ev,re,r,rp)
+return Duel.IsPlayerAffectedByEffect(tp,91000002)
 end
 
 

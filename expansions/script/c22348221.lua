@@ -69,6 +69,7 @@ function c22348221.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
 	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
+	if rpz==nil or lpz==nil then return false end
 	local lscale=lpz:GetLeftScale()
 	local rscale=rpz:GetRightScale()
 	if lscale>rscale then lscale,rscale=rscale,lscale end

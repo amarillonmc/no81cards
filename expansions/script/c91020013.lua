@@ -2,7 +2,6 @@
 local m=91020013
 local cm=c91020013
 function c91020013.initial_effect(c)
-	aux.AddCodeList(c,91020014)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -13,7 +12,7 @@ function c91020013.initial_effect(c)
 	c:RegisterEffect(e1)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(91020013,0))
+	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_TO_GRAVE)
@@ -32,7 +31,7 @@ function c91020013.initial_effect(c)
 	c:RegisterEffect(e3)
 	--tograve
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(91020013,1))
+	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetCategory(CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
@@ -42,19 +41,31 @@ function c91020013.initial_effect(c)
 	c:RegisterEffect(e4)
 	--spsummon
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(91020013,2))
+	e5:SetDescription(aux.Stringid(m,2))
 	e5:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1)
 	e5:SetCode(EVENT_PHASE+PHASE_END)
 	e5:SetTarget(c91020013.sptg2)
 	e5:SetOperation(c91020013.spop2)
 	c:RegisterEffect(e5)
+	local e8=Effect.CreateEffect(c)
+	e8:SetDescription(aux.Stringid(m,3))
+	e8:SetCategory(CATEGORY_TOGRAVE)
+	e8:SetRange(LOCATION_MZONE)	
+	e8:SetType(EFFECT_TYPE_QUICK_O)
+	e8:SetCode(EVENT_FREE_CHAIN)
+	e8:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e8:SetCountLimit(1)
+	e8:SetCondition(cm.con8)
+	e8:SetCost(c91020013.tgcost)
+	e8:SetTarget(c91020013.tgtg)
+	e8:SetOperation(c91020013.tgop) 
+	c:RegisterEffect(e8)
 end
 function cm.splimit(e,se,sp,st)
 local sc=se:GetHandler()
-	return sc and sc:IsType(TYPE_MONSTER) and sc:IsCode(91020012)
+	return sc and sc:IsType(TYPE_MONSTER) and (sc:IsCode(91020012) or sc:IsCode(91020013) or sc:IsCode(91020014))
 end
 function c91020013.cfilter(c,tp)
 	return c:IsCode(91020014) and c:IsControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
@@ -77,12 +88,13 @@ function c91020013.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
 function c91020013.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,1000) end
-	Duel.PayLPCost(tp,1000)
+	if chk==0 then return Duel.CheckLPCost(tp,2000) end
+	Duel.PayLPCost(tp,2000)
 end
 function c91020013.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,PLAYER_ALL,LOCATION_MZONE)
+	Duel.SetChainLimit(aux.FALSE)
 end
 function c91020013.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -121,5 +133,8 @@ function c91020013.spop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummonComplete()
 	  end
 end
-
+--e8
+function cm.con8(e,tp,eg,ep,ev,re,r,rp)
+return Duel.IsPlayerAffectedByEffect(tp,91000002)
+end
 

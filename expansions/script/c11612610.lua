@@ -1,8 +1,12 @@
 --龙仪巧-狮子流星=LEO
 local m=11612610
 local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
+cm.text=zhc_lhq_zs
 function c11612610.initial_effect(c)
 	c:EnableReviveLimit()
+	local e00=fpjdiy.Zhc(c,cm.text)
+	--
 	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -41,7 +45,7 @@ function c11612610.initial_effect(c)
 	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetCategory(CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_IGNITION)
-	e4:SetCountLimit(1,11612611)
+	e4:SetCountLimit(1,m*2+1)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetTarget(cm.detg)
 	e4:SetOperation(cm.deop)

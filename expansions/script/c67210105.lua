@@ -46,7 +46,7 @@ function c67210105.con(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE
 end
 function c67210105.penfilter(c)
-	return c:IsSetCard(0x67e) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsCode(67210105)
+	return c:IsSetCard(0x367e) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsCode(67210105)
 end
 function c67210105.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -22,7 +22,7 @@ function c29069575.initial_effect(c)
 	e3:SetCode(EFFECT_UPDATE_ATTACK)
 	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetTarget(aux.TargetBoolFunction(c29069575.atkfilter))
-	e3:SetValue(1400)
+	e3:SetValue(700)
 	c:RegisterEffect(e3)
 	--remove
 	local e4=Effect.CreateEffect(c)

@@ -19,7 +19,7 @@ function c67210103.stcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE
 end
 function c67210103.penfilter(c)
-	return c:IsSetCard(0x67e) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsCode(67210103)
+	return c:IsSetCard(0x367e) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsCode(67210103)
 end
 function c67210103.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -51,10 +51,15 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
+function cm.desfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
+end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	   
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local g=Duel.SelectMatchingCard(tp,cm.desfilter,tp,0,LOCATION_MZONE,0,1,nil)
+	Duel.Destroy(g,REASON_EFFECT)
 end
 function cm.filter(c,e,tp)
 	return c:IsCode(m-4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	--To deck
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -96,15 +96,27 @@ function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsFaceup()
 end
+function cm.thfilter(c,e,tp)
+	return c:IsSetCard(0x1406) and c:IsAbleToHand()
+end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,LOCATION_REMOVED+LOCATION_GRAVE,LOCATION_REMOVED+LOCATION_GRAVE)
-	if chk==0 then return #g>0 end
+	if chk==0 then return #g>0 and g:IsExists(Card.IsSetCard,1,nil,0x1406) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,PLAYER_ALL,LOCATION_REMOVED+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetFieldGroup(tp,LOCATION_REMOVED+LOCATION_GRAVE,LOCATION_REMOVED+LOCATION_GRAVE)
-	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 and g:GetFirst():IsLocation(LOCATION_HAND) then
+			Duel.ConfirmCards(1-tp,g)
+			local g=Duel.GetFieldGroup(tp,LOCATION_REMOVED+LOCATION_GRAVE,LOCATION_REMOVED+LOCATION_GRAVE)
+			if #g>0 and g:IsExists(Card.IsSetCard,1,nil,0x1406) then
+				Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+			end
+		end
+	end
 end
 function cm.efilter(e,re)
 	return re:IsActiveType(TYPE_MONSTER) and re:GetOwner()~=e:GetOwner()

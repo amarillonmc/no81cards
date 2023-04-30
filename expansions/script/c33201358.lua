@@ -6,7 +6,7 @@ function cm.initial_effect(c)
 	VHisc_CNTdb.the(c,m,0x100000+0x80000+0x40+0x20,0x10000)
 	--tohand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_HAND)
@@ -44,7 +44,7 @@ function cm.sthop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_PHASE+PHASE_END,2)
 		Duel.RegisterEffect(e1,tp)
 	end
-	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKBOTTOM,REASON_EFFECT)
+	Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
 end
 function cm.atktg(e,c)
 	return c:GetCode()==e:GetLabel()

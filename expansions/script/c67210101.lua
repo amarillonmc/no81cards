@@ -23,7 +23,7 @@ function c67210101.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE
 end
 function c67210101.penfilter(c)
-	return c:IsSetCard(0x67e) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsCode(67210101)
+	return c:IsSetCard(0x367e) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsCode(67210101)
 end
 function c67210101.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -56,7 +56,7 @@ function c67210101.effop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
 	if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 then
 		local drcount=Duel.GetOperatedGroup()
-		local gg=drcount:Filter(Card.IsSetCard,nil,0x67e)
+		local gg=drcount:Filter(Card.IsSetCard,nil,0x367e)
 		if gg:GetCount()>0 and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(67210101,2)) then
 			local desg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,gg:GetCount(),nil)
 		Duel.Destroy(desg,REASON_EFFECT)

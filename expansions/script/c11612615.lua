@@ -1,8 +1,12 @@
 --龙仪巧-天琴流星=LYR
 local m=11612615
 local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
+cm.text=zhc_lhq_tq
 function c11612615.initial_effect(c)
 	c:EnableReviveLimit()
+	--
+	local e00=fpjdiy.Zhc(c,cm.text)
 	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -41,7 +45,7 @@ function c11612615.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_BE_MATERIAL)
 	e4:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
-	e4:SetCountLimit(1,m+1)
+	e4:SetCountLimit(1,m*2+1)
 	e4:SetCondition(cm.effcon)
 	e4:SetOperation(cm.effop)
 	c:RegisterEffect(e4)

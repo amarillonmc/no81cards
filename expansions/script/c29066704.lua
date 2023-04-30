@@ -22,13 +22,13 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
 end
 function cm.opf1(c)
-	return c:IsType(TYPE_SPELL) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+	return (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TUNER)) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.ConfirmDecktop(tp,5)
 	local g=Duel.GetDecktopGroup(tp,5):Filter(cm.opf1,nil)
-	if #g>0 and Duel.SelectYesNo(tp,1190) then
+	if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(12931061,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		Duel.BreakEffect()
 		g=g:Select(tp,1,1,nil)
@@ -36,7 +36,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.ShuffleDeck(tp)
 	if c:IsLocation(LOCATION_HAND) and c:IsRelateToEffect(e) then
-		if Duel.IsPlayerAffectedByEffect(tp,29080291) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(6459419,1)) then
+		if Duel.IsPlayerAffectedByEffect(tp,29080291) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(29081673,1)) then
 			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		else
 			Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)

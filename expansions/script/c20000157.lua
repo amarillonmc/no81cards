@@ -1,37 +1,16 @@
---概念虚械 才华
-local m=20000157
-local cm=_G["c"..m]
+--概念虚械 辉煌
 if not pcall(function() require("expansions/script/c20000150") end) then require("script/c20000150") end
+local cm,m,o=GetID()
 function cm.initial_effect(c)
-	local e1=fu_cim.XyzUnite(c,m,cm.Give)
+	local e = {fu_cim.XyzUnite(c)}
 end
-function cm.Give(c)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,2))
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.tg1)
-	e1:SetOperation(cm.op1)
-	c:RegisterEffect(e1)
-end
-function cm.tgf1(c,rk)
-	return c:IsSetCard(0xcfd1) and c:IsType(TYPE_XYZ) and c:IsCanOverlay() and c:IsRankBelow(rk)
-end
-function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.Add(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgf1,tp,LOCATION_EXTRA,0,1,nil,e:GetHandler():GetRank()) and c:IsType(TYPE_XYZ) end
-	Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(m,2))
-end
-function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsFaceup() and c:IsType(TYPE_XYZ) then
-		local tc=Duel.SelectMatchingCard(tp,cm.tgf1,tp,LOCATION_EXTRA,0,1,1,nil,e:GetHandler():GetRank())
-		if tc then
-			Duel.Overlay(c,tc)
-		end
-	end
+	local g=fugf.GetFilter(tp,"E",{Card.IsSetCard,Card.IsType,Card.IsRankBelow,Card.IsCanOverlay},{0xcfd1,TYPE_XYZ,c:GetRank()})
+	if not (c:IsRelateToEffect(e) and c:IsFaceup() and c:IsType(TYPE_XYZ) and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0))) then return end
+	Duel.BreakEffect()
+	Duel.Hint(HINT_CODE,tp,m)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	g=g:Select(tp,1,1,e:GetHandler())
+	Duel.Overlay(c,g)
 end

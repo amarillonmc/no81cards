@@ -32,6 +32,15 @@ function cm.initial_effect(c)
 	e2:SetTarget(c22348224.sptg)
 	e2:SetOperation(c22348224.spop)
 	c:RegisterEffect(e2)
+	--sj
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetCategory(CATEGORY_SUMMON)
+	e3:SetCountLimit(1)
+	e3:SetRange(LOCATION_PZONE)
+	e3:SetTarget(c22348224.sjtg)
+	e3:SetOperation(c22348224.sjop)
+	c:RegisterEffect(e3)
 	
 end
 function c22348224.dacon(e)
@@ -59,4 +68,26 @@ function c22348224.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
+function c22348224.sjfilter(c)
+	return (c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)) and c:IsType(TYPE_PENDULUM)
+end
+function c22348224.sjtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348224.sjfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
+end
+function c22348224.sjop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	local g=Duel.SelectMatchingCard(tp,c22348224.sjfilter,tp,LOCATION_HAND,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		local s1=tc:IsSummonable(true,nil,1)
+		local s2=tc:IsMSetable(true,nil,1)
+		if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
+			Duel.Summon(tp,tc,true,nil,1)
+		else
+			Duel.MSet(tp,tc,true,nil,1)
+		end
+	end
+end
+
 

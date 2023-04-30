@@ -21,7 +21,7 @@ function cm.rfilter2(c)
 end  
 function cm.hspcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.rfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,4,c) and not Duel.IsExistingMatchingCard(cm.rfilter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c) end  
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.rfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,2,c) and not Duel.IsExistingMatchingCard(cm.rfilter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c) end  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)  
 	local g=Duel.GetMatchingGroup(cm.rfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,c)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)  

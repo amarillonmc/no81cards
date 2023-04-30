@@ -43,7 +43,7 @@ function cm.initial_effect(c)
 	--TurnSet
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_POSITION)
+	e4:SetCategory(CATEGORY_POSITION+CATEGORY_TODECK+CATEGORY_TOHAND)
 	e4:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
@@ -136,12 +136,25 @@ function cm.tscon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsFaceup()
 end
+function cm.tdfilter(c)
+	return c:IsSetCard(0x1406) and (c:IsFaceup() and not c:IsExtraDeckMonster()) and (c:IsAbleToDeck() or c:IsAbleToHand())
+end
 function cm.tstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_EXTRA,0,1,nil) end
 	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,0,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,LOCATION_EXTRA)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 end
 function cm.tsop(e,tp,eg,ep,ev,re,r,rp)
+	local tg=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	if #tg>0 then
+		local tc=tg:GetFirst()
+		if not Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_GRAVE,0,1,nil,TYPE_MONSTER) and tc:IsAbleToHand() and (not tc:IsAbleToDeck() or Duel.SelectYesNo(tp,aux.Stringid(m,2))) then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		else
+			Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
+		end
+	end
 	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)

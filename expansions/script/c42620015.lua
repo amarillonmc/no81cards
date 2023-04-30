@@ -41,7 +41,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.thfilter(c)
-	return c:IsAttackBelow(1500) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsAbleToHand()
+	return c:IsSetCard(0x12b) and c:IsAbleToHand()
 end
 
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -71,8 +71,7 @@ function cm.spllimit(e,c)
 end
 
 function cm.thfgcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-		and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
 end
 
 function cm.thfgcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -88,37 +87,23 @@ function cm.thfg2filter(c)
 	return c:IsRace(RACE_CYBERSE) and c:IsAbleToHand()
 end
 
+function cm.thgfilter(g)
+	return g:FilterCount(cm.thfgfilter,nil)==1 and g:FilterCount(cm.thfg2filter,nil)==1
+end
+
 function cm.thfgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfgfilter,tp,LOCATION_GRAVE,0,1,nil) and
-	Duel.IsExistingMatchingCard(cm.thfg2filter,tp,LOCATION_GRAVE,0,1,nil) end
+	local g=Duel.GetFieldGroup(tp,0x10,0)
+	if chk==0 then return g:CheckSubGroup(cm.thgfilter,2,2) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_GRAVE)
 end
 
 function cm.thfgop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.thfgfilter,tp,LOCATION_GRAVE,0,nil)
-	local gg=Duel.GetMatchingGroup(cm.thfg2filter,tp,LOCATION_GRAVE,0,nil)
-	if g:GetCount()>0 or gg:GetCount()>0 then
-		local gc=nil
-		local ggc=nil
-		if g:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			gc=g:Select(tp,1,1,nil)
-		end
-		if gg:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			ggc=gg:Select(tp,1,1,nil)
-		end
-		if gc and ggc then
-			local ggg=Group.__add(gc,ggc)
-			Duel.SendtoHand(ggg,tp,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,ggg)
-		elseif gc then
-			Duel.SendtoHand(gc,tp,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,gc)
-		elseif ggc then
-			Duel.SendtoHand(ggc,tp,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,ggc)
-		end
+	local g=Duel.GetFieldGroup(tp,0x10,0)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local fg=g:SelectSubGroup(tp,cm.thgfilter,false,2,2)
+	if #fg>0 then
+		Duel.SendtoHand(fg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,fg)
 	end
 	local e4=Effect.CreateEffect(e:GetHandler())
 	e4:SetType(EFFECT_TYPE_FIELD)
@@ -127,7 +112,7 @@ function cm.thfgop(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetTargetRange(1,0)
 	e4:SetTarget(cm.splimit)
 	e4:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e4,tp)  
+	Duel.RegisterEffect(e4,tp)
 end
 
 function cm.splimit(e,c)

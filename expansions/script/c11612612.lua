@@ -1,8 +1,12 @@
 --龙仪巧-仙英流星=PER
 local m=11612612
 local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
+cm.text=zhc_lhq_yx
 function c11612612.initial_effect(c)
 	c:EnableReviveLimit()
+	--
+	local e00=fpjdiy.Zhc(c,cm.text)
 	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)

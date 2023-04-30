@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 end
 --e1
 function cm.cof1(c)
-	return c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x87af) and (c:IsAttribute(ATTRIBUTE_LIGHT) or c:IsType(TYPE_TUNER)) and c:IsAbleToGraveAsCost()
 end
 function cm.cos1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cof1,tp,LOCATION_DECK,0,1,nil) end

@@ -33,14 +33,14 @@ function c9910242.filter(c)
 end
 function c9910242.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c9910242.filter,tp,LOCATION_DECK,0,nil)
-	if chk==0 then return g:CheckSubGroup(aux.drccheck,3,3)
+	if chk==0 then return g:CheckSubGroup(aux.drccheck,4,4)
 		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end
 end
 function c9910242.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9910242.filter,tp,LOCATION_DECK,0,nil)
-	if not g:CheckSubGroup(aux.drccheck,3,3) or (not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end
+	if not g:CheckSubGroup(aux.drccheck,4,4) or (not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local sg=g:SelectSubGroup(tp,aux.drccheck,false,3,3)
+	local sg=g:SelectSubGroup(tp,aux.drccheck,false,4,4)
 	if #sg>0 then
 		Duel.ConfirmCards(1-tp,sg)
 		local tc=sg:RandomSelect(1-tp,1):GetFirst()
@@ -55,6 +55,10 @@ function c9910242.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(c9910242.aclimit)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1,true)
+			sg:RemoveCard(tc)
+		end
+		if #sg>0 then
+			Duel.SendtoExtraP(sg,nil,REASON_EFFECT)
 		end
 		Duel.ShuffleDeck(tp)
 	end

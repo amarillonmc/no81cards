@@ -39,8 +39,9 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	return
 	end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		Duel.DisableShuffleCheck()
 		tc=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
 		if not tc then return end
-		Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
+		Duel.SendtoDeck(tc,nil,0,REASON_EFFECT)
 	
 end

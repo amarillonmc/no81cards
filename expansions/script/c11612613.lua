@@ -1,8 +1,12 @@
 --龙仪巧-猎户流星=ORI
 local m=11612613
 local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
+cm.text=zhc_lhq_lh
 function c11612613.initial_effect(c)
 	c:EnableReviveLimit()
+	--
+	local e00=fpjdiy.Zhc(c,cm.text)
 	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -48,7 +52,7 @@ function c11612613.initial_effect(c)
 	e4:SetCategory(CATEGORY_REMOVE)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_BATTLE_DESTROYING)
-	e4:SetCountLimit(1,m+1)
+	e4:SetCountLimit(1,m*2+1)
 	e4:SetCondition(aux.bdocon)
 	e4:SetTarget(cm.thtg)
 	e4:SetOperation(cm.thop)

@@ -33,7 +33,7 @@ function c67210107.con(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE
 end
 function c67210107.penfilter(c)
-	return c:IsSetCard(0x67e) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsCode(67210107)
+	return c:IsSetCard(0x367e) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsCode(67210107)
 end
 function c67210107.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -55,7 +55,7 @@ function c67210107.op(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67210107.pfilter(c)
-	return c:IsSetCard(0x67e) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x367e) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c67210107.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67210107.pfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -83,7 +83,7 @@ function c67210107.effop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
 	if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 then
 		local drcount=Duel.GetOperatedGroup()
-		local gg=drcount:Filter(Card.IsSetCard,nil,0x67e)
+		local gg=drcount:Filter(Card.IsSetCard,nil,0x367e)
 		Duel.Draw(tp,gg:GetCount(),REASON_EFFECT)
 	end
 end

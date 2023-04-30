@@ -60,7 +60,7 @@ function c67210108.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsFaceup()
 end
 function c67210108.thfilter(c)
-	return c:IsSetCard(0x67e) and c:IsAbleToHand()
+	return c:IsSetCard(0x367e) and c:IsAbleToHand()
 end
 function c67210108.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67210108.thfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil) end

@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.atktg)
 	e4:SetValue(65535)
 	c:RegisterEffect(e4)
-	--extra attack
+	--[[extra attack
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
 	e5:SetCode(EFFECT_EXTRA_ATTACK)
@@ -48,7 +48,19 @@ function cm.initial_effect(c)
 	e5:SetTarget(cm.datg)
 	e5:SetValue(1)
 	c:RegisterEffect(e5)
-	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,aux.FALSE)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,aux.FALSE)]]
+	--search
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(m,1))
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_FREE_CHAIN)
+	e6:SetRange(LOCATION_FZONE)
+	e6:SetHintTiming(0,TIMING_BATTLE_START+TIMING_BATTLE_END)
+	e6:SetCountLimit(1)
+	e6:SetCondition(cm.thcon)
+	e6:SetTarget(cm.thtg)
+	e6:SetOperation(cm.thop)
+	c:RegisterEffect(e6)
 end
 function cm.blazed(c)
 	local m=_G["c"..c:GetCode()]
@@ -77,7 +89,7 @@ function cm.haop(e,tp,eg,ep,ev,re,r,rp)
 		local cost=te:GetCost()
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 		Duel.RaiseEvent(c,4179255,te,0,tp,tp,Duel.GetCurrentChain())
-		Duel.RaiseEvent(c,EVENT_CUSTOM+14001550,te,0,tp,tp,Duel.GetCurrentChain())
+		--Duel.RaiseEvent(c,EVENT_CUSTOM+14001550,te,0,tp,tp,Duel.GetCurrentChain())
 	end
 end
 function cm.atkcon(e)
@@ -92,4 +104,27 @@ function cm.dacon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.datg(e,c)
 	return cm.blazed(c)
+end
+function cm.cfilter(c)
+	return c:IsFaceup() and cm.blazed(c)
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE and (Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+		or Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil))
+end
+function cm.thfilter(c)
+	return cm.blazed(c) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end

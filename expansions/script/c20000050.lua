@@ -1,77 +1,37 @@
---幻梦帝无亘龙
+--幻梦无亘龙
+if not pcall(function() require("expansions/script/c20000000") end) then require("script/c20000000") end
 local cm,m,o=GetID()
 function cm.initial_effect(c)
-	local e1=Effect.CreateEffect(c)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(aux.FALSE)
-	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCondition(cm.con2)
-	e2:SetOperation(cm.op2)
-	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_IMMUNE_EFFECT)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetValue(cm.val3)
-	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1)
-	e4:SetCondition(cm.con4)
-	e4:SetOperation(cm.op4)
-	c:RegisterEffect(e4)
+	c:EnableReviveLimit()
+	aux.AddCodeList(c,20000051,20000057)
+	local e1=fuef.SC(c,nil,"SP",nil,nil,nil,cm.con1,cm.op1,c)
+	local e2=fuef.FTO(c,0,CATEGORY_ATKCHANGE,EVENT_PHASE+PHASE_BATTLE_START,nil,"M",1,cm.con1,nil,cm.tg2,cm.op2,c)
+end
+--e1
+function cm.con1(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
+end
+function cm.op1(e,tp,eg,ep,ev,re,r,rp)
+	local g=fugf.GetFilter(tp,"D",{"IsCode",aux.NOT(Card.IsForbidden)},20000057)
+	if #g==0 or Duel.GetLocationCount(tp,LOCATION_SZONE)==0 or not Duel.SelectYesNo(tp,1150) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local tc=g:Select(tp,1,1,nil):GetFirst()
+	if not tc then return end
+	Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 end
 --e2
-function cm.con2(e,tp)
-	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and e:GetHandler():IsSummonable(true,nil,1)
-end
-function cm.opf2(g,rc,minc,maxc)
-	return Duel.CheckTribute(rc,minc,maxc,g) and (g:GetCount()==minc or g:GetCount()==maxc)
+function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return fugf.GetFilter(tp,"M","IsRace+IsFaceup",RACE_DRAGON,nil,1) end
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetTributeGroup(c)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	g=g:SelectSubGroup(tp,cm.opf2,true,1,#g,c,c:GetTributeRequirement())
-	if not g then return end
-	g:KeepAlive()
-	local e1=Effect.CreateEffect(c)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_SUMMON_PROC)
-	e1:SetLabelObject(g)
-	e1:SetOperation(function (ce,ctp,ceg,cep,cev,cre,cr,crp,cc)
-						cc:SetMaterial(g)
-						Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
-						e1:Reset()
-					end)
-	e1:SetValue(SUMMON_TYPE_ADVANCE)
-	c:RegisterEffect(e1)
-	Duel.Summon(tp,c,true,e1,0)
-end
---e3
-function cm.val3(e,te)
-	return te:GetOwner():IsType(TYPE_MONSTER) and te:GetOwner():IsLevelBelow(5) and te:GetOwner():IsLevelAbove(1)
-end
---e4
-function cm.con4(e)
-	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
-end
-function cm.op4(e,tp,eg,ep,ev,re,r,rp)
-	local n=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_EXTRA_ATTACK)
-	e1:SetValue(n-1)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
-	e:GetHandler():RegisterEffect(e1)
+	local g=fugf.GetFilter(tp,"M",{"IsRace+IsImmuneToEffect",aux.NOT(Card.IsFaceup)},{RACE_DRAGON,e})
+	local atk=0
+	for tc in aux.Next(g) do
+		atk=atk+tc:GetAttack()
+		local e1=fuef.S(c,nil,EFFECT_SET_BASE_ATTACK,nil,nil,0,nil,nil,nil,tc,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
+		atk=atk-tc:GetAttack()
+	end
+	if not (c:IsFaceup() and c:IsRelateToEffect(e)) then return end
+	local e1=fuef.S(c,nil,EFFECT_SET_BASE_ATTACK,nil,nil,atk,nil,nil,nil,c,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
 end

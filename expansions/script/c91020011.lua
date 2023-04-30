@@ -39,9 +39,22 @@ function c91020011.initial_effect(c)
 	e7:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e7:SetRange(LOCATION_MZONE)
 	e7:SetCost(c91020011.descost)
+	e7:SetCondition(cm.con7)
 	e7:SetTarget(c91020011.destg)
 	e7:SetOperation(c91020011.desop)
 	c:RegisterEffect(e7)
+	local e8=Effect.CreateEffect(c)
+	e8:SetDescription(aux.Stringid(91020011,4))   
+	e8:SetCategory(CATEGORY_DESTROY)
+	e8:SetType(EFFECT_TYPE_QUICK_O)
+	e8:SetCode(EVENT_FREE_CHAIN)
+	e8:SetCountLimit(1)
+	e8:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e8:SetRange(LOCATION_MZONE)
+	e8:SetCondition(cm.con8)
+	e8:SetTarget(c91020011.destg)
+	e8:SetOperation(c91020011.desop)
+	c:RegisterEffect(e8)
 	--battle
 	local e14=Effect.CreateEffect(c)
 	e14:SetDescription(aux.Stringid(m,0))
@@ -51,10 +64,23 @@ function c91020011.initial_effect(c)
 	e14:SetCode(EVENT_FREE_CHAIN)
 	e14:SetCountLimit(1)
 	e14:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e14:SetCondition(cm.con7)
 	e14:SetCost(cm.bacost)
 	e14:SetTarget(cm.batg)
 	e14:SetOperation(cm.baop)
 	c:RegisterEffect(e14)
+	local e15=Effect.CreateEffect(c)
+	e15:SetDescription(aux.Stringid(91020011,5))  
+	e15:SetCategory(CATEGORY_DEFCHANGE)
+	e15:SetType(EFFECT_TYPE_QUICK_O)
+	e15:SetRange(LOCATION_MZONE)
+	e15:SetCode(EVENT_FREE_CHAIN)
+	e15:SetCountLimit(1)
+	e15:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e15:SetCondition(cm.con8)
+	e15:SetTarget(cm.batg)
+	e15:SetOperation(cm.baop)
+	c:RegisterEffect(e15)
 end
 --immune
 function cm.eval(e,te)
@@ -79,7 +105,7 @@ function c91020011.setcon(e,c,minc)
 end
 --Destroy
 function c91020011.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetAttackAnnouncedCount()==0 and Duel.CheckReleaseGroup(tp,nil,2,nil) end
+	if chk==0 then return  Duel.CheckReleaseGroup(tp,nil,2,nil) end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_OATH)
@@ -107,10 +133,11 @@ function cm.rfilter(c)
 	return c:IsAttribute(ATTRIBUTE_DIVINE)
 end
 function cm.bacost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.rfilter,1,nil) end
+	if chk==0 then return  Duel.CheckReleaseGroup(tp,cm.rfilter,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectReleaseGroup(tp,cm.rfilter,1,1,nil,tp)
 	Duel.Release(g,REASON_COST)
+	
 end
 function cm.batg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
@@ -191,4 +218,10 @@ function cm.atklimit1(e,c)
 end
 function cm.atklimit(e,c)
 	return c:GetRealFieldID()==e:GetLabel()
+end
+function cm.con8(e,tp,eg,ep,ev,re,r,rp)
+return Duel.IsPlayerAffectedByEffect(tp,91000002)
+end
+function cm.con7(e,tp,eg,ep,ev,re,r,rp)
+return not Duel.IsPlayerAffectedByEffect(tp,91000002)
 end

@@ -39,18 +39,19 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,PLAYER_ALL,LOCATION_ONFIELD)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		loc=LOCATION_HAND+LOCATION_ONFIELD
-	else
-		loc=LOCATION_ONFIELD
+	local loc1=LOCATION_HAND+LOCATION_ONFIELD
+	local loc2=LOCATION_ONFIELD
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then
+		loc1=LOCATION_ONFIELD
+		loc2=0
 	end
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		c:CancelToGrave()
-		if Duel.SendtoDeck(c,nil,2,REASON_EFFECT) and Duel.IsExistingMatchingCard(cm.cfilter,tp,loc,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		if Duel.SendtoDeck(c,nil,2,REASON_EFFECT) and Duel.IsExistingMatchingCard(cm.cfilter,tp,loc1,loc2,1,nil,e,tp) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 			Duel.BreakEffect()
-			local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,loc,0,1,1,nil,e,tp)
-			local g1=Duel.SelectMatchingCard(tp,cm.cfilter1,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,99,g)
+			local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,loc1,loc2,1,1,nil,e,tp)
+			local g1=Duel.SelectMatchingCard(tp,cm.cfilter1,tp,LOCATION_HAND+LOCATION_ONFIELD,LOCATION_ONFIELD,1,99,g)
 			g:Merge(g1)
 			if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

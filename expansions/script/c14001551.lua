@@ -102,7 +102,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and cm.blazed(re:GetHandler())
+	return rp==tp and re:IsActiveType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) and cm.blazed(re:GetHandler())
 end
 function cm.spfilter(c,e,tp)
 	return cm.blazed(c) and not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

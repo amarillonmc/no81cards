@@ -1,8 +1,14 @@
 --方舟骑士-陈·游龙
 c29065553.named_with_Arknight=1
 function c29065553.initial_effect(c) 
-	aux.AddCodeList(c,29065508) 
 	c:EnableReviveLimit() 
+	--spsummon condition
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c29065553.splimit)
+	c:RegisterEffect(e0)
 	--add 
 	local e1=Effect.CreateEffect(c) 
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
@@ -19,31 +25,24 @@ function c29065553.initial_effect(c)
 	e2:SetCondition(c29065553.dscon) 
 	e2:SetOperation(c29065553.dsop) 
 	c:RegisterEffect(e2)	
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e0:SetCondition(c29065553.matcon)
-	e0:SetOperation(c29065553.matop)
-	c:RegisterEffect(e0)
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetCode(EFFECT_MATERIAL_CHECK)
-	e5:SetValue(c29065553.valcheck)
-	e5:SetLabelObject(e0)
-	c:RegisterEffect(e5)
+end
+c29065553.assault_name=29065508
+function c29065553.splimit(e,se,sp,st)
+	local sc=se:GetHandler()
+	return (sc:IsSetCard(0x87af) or (_G["c"..sc:GetCode()] and  _G["c"..sc:GetCode()].named_with_Arknight)) 
 end
 function c29065553.adcon(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	return c:GetFlagEffect(29065553)~=0 and c:IsCanAddCounter(0x10af,1) and rp==1-tp 
+	return c:IsCanAddCounter(0x10af,1) and rp==1-tp 
 end 
 function c29065553.adop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
 	c:AddCounter(0x10af,1) 
 end 
 function c29065553.dscon(e,tp,eg,ep,ev,re,r,rp) 
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
 	local c=e:GetHandler()  
-	return c:GetFlagEffect(29065553)~=0 and c:IsCanRemoveCounter(tp,0x10af,3,REASON_EFFECT) and rp==1-tp
+	return c:IsCanRemoveCounter(tp,0x10af,3,REASON_EFFECT) and rp==1-tp and (LOCATION_HAND+LOCATION_ONFIELD)&loc~=0
 end 
 function c29065553.dsfil(c,s,p) 
 	local seq=c:GetSequence()
@@ -67,21 +66,6 @@ function c29065553.dsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(g,REASON_EFFECT)
 	end 
 end 
-function c29065553.matcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and e:GetLabel()==1
-end
-function c29065553.matop(e,tp,eg,ep,ev,re,r,rp) 
-	Duel.Hint(HINT_CARD,0,29065553) 
-	e:GetHandler():RegisterFlagEffect(29065553,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(29065553,0))
-end
-function c29065553.valcheck(e,c)
-	local mg=c:GetMaterial()
-	if mg:IsExists(Card.IsCode,1,nil,29065508) then
-		e:GetLabelObject():SetLabel(1)
-	else
-		e:GetLabelObject():SetLabel(0)
-	end
-end
 
 
 

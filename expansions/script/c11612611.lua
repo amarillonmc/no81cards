@@ -1,8 +1,12 @@
 --龙仪巧-水瓶流星=AQU
 local m=11612611
 local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
+cm.text=zhc_lhq_sp
 function c11612611.initial_effect(c)
 	c:EnableReviveLimit()
+	--
+	local e00=fpjdiy.Zhc(c,cm.text)
 	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -45,7 +49,7 @@ function c11612611.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,m+1)
+	e4:SetCountLimit(1,m*2+1)
 	e4:SetCost(cm.copycost)
 	e4:SetCondition(cm.cpcon)
 	e4:SetTarget(cm.cptg)

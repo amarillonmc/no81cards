@@ -18,7 +18,7 @@ function c67210104.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 function c67210104.pcfilter(c)
-	return c:IsSetCard(0x67e) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsSetCard(0x367e) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c67210104.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))

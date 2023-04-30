@@ -1,7 +1,7 @@
 --焰圣骑士叛-加尼隆
 function c99990006.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(c99990006.sfilter),1,99)
 	c:EnableReviveLimit()
 	--equip
 	local e1=Effect.CreateEffect(c)
@@ -43,6 +43,9 @@ function c99990006.initial_effect(c)
 		ge1:SetOperation(c99990006.regop)
 		Duel.RegisterEffect(ge1,0)
 	end
+end
+function c99990006.sfilter(c)
+	return c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_FIRE)
 end
 function c99990006.regfilter(c,tp)
 	return c:IsReason(REASON_BATTLE+REASON_EFFECT)

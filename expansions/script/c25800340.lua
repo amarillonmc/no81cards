@@ -2,9 +2,9 @@
 local m=25800340
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-					--xyz summon
-	c:EnableReviveLimit()   
-	 aux.AddXyzProcedureLevelFree(c,cm.mfilter,nil,2,2)   
+	--xyz summon
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),4,2)
+	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to hand
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(90809975,2))
+	e3:SetDescription(aux.Stringid(m,2))
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
@@ -28,9 +28,6 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.thtg2)
 	e3:SetOperation(cm.thop2)
 	c:RegisterEffect(e3)
-end
-function cm.mfilter(c)
-	return  c:IsLevelAbove(3) and c:IsLevelBelow(5) and c:IsAttribute(ATTRIBUTE_WATER)
 end
 ---
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
