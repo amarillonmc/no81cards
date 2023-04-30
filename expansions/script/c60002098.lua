@@ -3,6 +3,7 @@ local m=60002098
 local cm=_G["c"..m]
 cm.name="卡通暗黑人偶 妮可罗菲娅"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,15259703)
 	c:EnableReviveLimit()
 	--cannot attack
 	local e1=Effect.CreateEffect(c)

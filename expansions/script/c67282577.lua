@@ -37,8 +37,8 @@ function s.cfilter2(c,ec,tp)
 	return c:IsFaceup() and c:IsCanTurnSet() and Duel.CheckReleaseGroupEx(tp,Card.IsSetCard,1,Group.FromCards(c,ec),0x2b)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,s.cfilter,1,e:GetHandler()) end
-	local g=Duel.SelectReleaseGroupEx(tp,s.cfilter,1,1,e:GetHandler())
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,s.cfilter,1,e:GetHandler(),tp) end
+	local g=Duel.SelectReleaseGroupEx(tp,s.cfilter,1,1,e:GetHandler(),tp)
 	Duel.Release(g,REASON_COST)
 end
 function s.filter(c)

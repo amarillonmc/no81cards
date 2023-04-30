@@ -68,7 +68,7 @@ function cm.tgfilter(c,e,tp,ft)
 	return c:IsFaceup() and (ft>0 or c:GetSequence()<5) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode(),c:GetLeftScale(),c:GetRightScale(),c:GetRace())
 end  
 function cm.spfilter(c,e,tp,code,lse,rse,rac)  
-	return c:IsRace(rac) and c:GetLeftScale()==lse and c:GetRightScale()==rse and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and not c:IsCode(code)
+	return c:IsRace(rac) and c:GetLeftScale()==lse and c:GetRightScale()==rse and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and c:IsType(TYPE_PENDULUM) and not c:IsCode(code)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc) 
 	local tp=e:GetHandlerPlayer() 

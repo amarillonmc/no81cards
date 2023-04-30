@@ -3,6 +3,7 @@ local m=60002111
 local cm=_G["c"..m]
 cm.name="卡通防火墙龙"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,15259703)
 	--link summon
 	aux.AddLinkProcedure(c,cm.fil,2)
 	c:EnableReviveLimit()

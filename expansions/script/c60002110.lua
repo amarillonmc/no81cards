@@ -3,6 +3,7 @@ local m=60002110
 local cm=_G["c"..m]
 cm.name="卡通城市"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,15259703)
 	--code
 	aux.EnableChangeCode(c,15259703,LOCATION_FZONE)
 	--Activate

@@ -3,6 +3,7 @@ local m=60002103
 local cm=_G["c"..m]
 cm.name="卡通英雄 新宇侠"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,15259703)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x62),aux.FilterBoolFunction(Card.IsCode,60002099),true)
 	--cannot attack

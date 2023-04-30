@@ -3,6 +3,7 @@ local m=60002099
 local cm=_G["c"..m]
 cm.name="卡通英雄 羽翼侠"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,15259703)
 	--cannot attack
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)

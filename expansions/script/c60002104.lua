@@ -77,7 +77,7 @@ function cm.imcon(e)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function cm.efilter(e,te)
-	return te:IsActiveType(TYPE_TRAP)
+	return te:IsActiveType(TYPE_TRAP) or te:IsActiveType(TYPE_SPELL)
 end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
