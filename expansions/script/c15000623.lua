@@ -26,7 +26,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(e:GetHandlerPlayer())<=2000
+	local c=e:GetHandler()
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLP(tp)<=2000
 end
 function cm.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -58,9 +60,9 @@ function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetCondition(cm.descon)
 			e2:SetOperation(cm.desop)
 			Duel.RegisterEffect(e2,tp)
+			token:RegisterFlagEffect(15000623,RESET_EVENT+RESETS_STANDARD,0,1)
+			Duel.SpecialSummonComplete()
 		end
-		token:RegisterFlagEffect(15000623,RESET_EVENT+RESETS_STANDARD,0,1)
-		Duel.SpecialSummonComplete()
 	end
 end
 function cm.srfilter(c)
@@ -72,6 +74,7 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,1-c:GetPreviousControler(),HINTMSG_ATOHAND)
 		local tc=Duel.SelectMatchingCard(1-c:GetPreviousControler(),cm.srfilter,1-c:GetPreviousControler(),LOCATION_DECK,0,1,1,nil):GetFirst()
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-c:GetPreviousControler(),tc)
 	end
 	e:Reset()
 end

@@ -42,7 +42,7 @@ function cm.repfilter1(c,tp)
 	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c.SetCard_01_YaoHu  
 end  
 function cm.repfilter2(c,tp)  
-	return c:IsOnField() and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)  
+	return c:IsOnField() and c:IsType(TYPE_MONSTER) and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)  
 end  
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return e:GetHandler():IsAbleToDeck() and Duel.IsExistingMatchingCard(cm.repfilter1,tp,LOCATION_MZONE,0,1,nil) and eg:IsExists(cm.repfilter2,1,nil,tp) end  

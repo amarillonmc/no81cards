@@ -801,7 +801,7 @@ function cm.initial_effect(c)
 			end
 			local res1=ly>0 and (class["Card_Prophecy_L_Check_"..ly] or class["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
-			if lv>0 and (res1 or res2) then b=(int==4) else b=cm[35](sc,int,...) end
+			if lv>0 and (res1 or res2) then b=(int==lv) else b=cm[35](sc,int,...) end
 			return b
 		end
 		cm[36]=Card.IsLevelAbove
@@ -818,7 +818,7 @@ function cm.initial_effect(c)
 			end
 			local res1=ly>0 and (class["Card_Prophecy_L_Check_"..ly] or class["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
-			if lv>0 and (res1 or res2) then b=(int<=4) else b=cm[36](sc,int) end
+			if lv>0 and (res1 or res2) then b=(int<=lv) else b=cm[36](sc,int) end
 			return b
 		end
 		cm[37]=Card.IsLevelBelow
@@ -835,7 +835,7 @@ function cm.initial_effect(c)
 			end
 			local res1=ly>0 and (class["Card_Prophecy_L_Check_"..ly] or class["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
-			if lv>0 and (res1 or res2) then b=(int>=4) else b=cm[37](sc,int) end
+			if lv>0 and (res1 or res2) then b=(int>=lv) else b=cm[37](sc,int) end
 			return b
 		end
 		cm[38]=Card.GetLevel
@@ -852,7 +852,7 @@ function cm.initial_effect(c)
 			end
 			local res1=ly>0 and (class["Card_Prophecy_L_Check_"..ly] or class["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
-			if lv>0 and (res1 or res2) then b=4 end
+			if lv>0 and (res1 or res2) then b=lv end
 			return b
 		end
 		cm[39]=Card.IsAttack

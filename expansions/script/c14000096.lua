@@ -35,12 +35,12 @@ function cm.BRAVE(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_brave
 end
-function cm.setfilter(c,e,tp)
+function cm.setfilter1(c)
 	return c:IsFaceup() and c:GetSequence()<5
 end
 function cm.actcon(e)
 	local tp=e:GetHandlerPlayer()
-	return not Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_SZONE,0,1,nil)
+	return not Duel.IsExistingMatchingCard(cm.setfilter1,tp,LOCATION_SZONE,0,1,nil)
 end
 function cm.setfilter(c)
 	return cm.BRAVE(c) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()

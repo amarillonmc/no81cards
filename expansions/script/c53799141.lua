@@ -18,6 +18,9 @@ end
 function cm.cfilter(c)
 	return c:IsFaceup() and c:IsAbleToDeck() and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
+function cm.filter(c)
+	return c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToDeck()
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,0,LOCATION_ONFIELD,1,nil) end
 	if Duel.GetCustomActivityCount(m,1-tp,ACTIVITY_CHAIN)>0 then
