@@ -176,7 +176,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsType(TYPE_PENDULUM) or not c:IsRelateToEffect(e) then return end
 	if Duel.SendtoExtraP(c,nil,REASON_EFFECT)==0 then return end
-	if not Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) then return end
+	if not Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) then return end
 	if not Duel.SelectYesNo(tp,aux.Stringid(m,1)) then return end
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))

@@ -46,8 +46,9 @@ function c91010021.initial_effect(c)
 	e4:SetOperation(cm.sumop)
 	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_DOUBLE_TRIBUTE)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_DOUBLE_TRIBUTE)
+	e5:SetValue(1)
 	c:RegisterEffect(e5)	 
 end
 --e0
