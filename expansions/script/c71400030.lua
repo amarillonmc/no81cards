@@ -45,16 +45,19 @@ end
 function c71400030.filter1(c,e)
 	return c:IsRelateToEffect(e) and c:IsAbleToRemove()
 end
+function c71400030.filter2(c)
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
+end
 function c71400030.op1(e,tp,eg,ep,ev,re,r,rp)
 	local g1=eg:Filter(c71400030.filter1,nil,e)
 	if g1:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg1=g1:Select(tp,1,1,nil)
-		local mg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,aux.ExceptThisCard(e))
-		local g2=mg:Sub(sg1)
-		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400032,1)) then
+		local mg=Duel.GetMatchingGroup(c71400030.filter2,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,aux.ExceptThisCard(e))
+		mg:Sub(sg1)
+		if mg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400032,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local sg2=g2:Select(tp,1,2,nil)
+			local sg2=mg:Select(tp,1,2,nil)
 			sg1:Merge(sg2)
 		end
 		Duel.HintSelection(sg1)
