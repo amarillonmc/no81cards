@@ -38,7 +38,7 @@ function c29002020.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local x=Duel.GetActivityCount(tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SPSUMMON)
-	return x>=12 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and (Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x10ae,3,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x10ae,2,REASON_COST)))
+	return x>=12 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and (Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x10ae,3,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x10ae,2,REASON_COST)))
 end
 function c29002020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	if Duel.GetFlagEffect(tp,29096814)==1 then

@@ -89,7 +89,7 @@ function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
 		e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
-		e1:SetTarget(aux.TargetBoolFunction(cm.ArcKnightPCardFilter))
+		e1:SetTarget(aux.TargetBoolFunction(cm.ArcKnightPCardFilter1))
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
@@ -288,6 +288,9 @@ function cm.PendOperationArcKnight()
 end
 function cm.ArcKnightPCardFilter(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_PENDULUM)
+end
+function cm.ArcKnightPCardFilter1(c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function cm.ArcKnightPCardCheck(e)
 	return Duel.IsExistingMatchingCard(cm.ArcKnightPCardFilter,e:GetHandlerPlayer(),LOCATION_PZONE,0,1,e:GetHandler())
