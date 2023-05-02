@@ -37,6 +37,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_PZONE)
+	e3:SetCountLimit(1,m)
 	e3:SetCondition(cm.ArcKnightPCardCheck)
 	e3:SetCode(29036036)
 	e3:SetValue(function() return LOCATION_DECK,cm.ArcKnightPCardFilter,1 end )
@@ -85,8 +86,7 @@ function cm.ctlop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetControl(c,1-tp,PHASE_END,2) then
 			local g = Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp,c:GetSequence())
 			if g:GetCount()>0 then
-				local og = Duel.GetOperatedGroup()
-				for tc in aux.Next(og) do
+				for tc in aux.Next(g) do
 					local e3=Effect.CreateEffect(c)
 					e3:SetType(EFFECT_TYPE_SINGLE)
 					e3:SetCode(EFFECT_CANNOT_TRIGGER)

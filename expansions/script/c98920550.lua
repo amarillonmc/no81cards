@@ -29,6 +29,7 @@ function c98920550.initial_effect(c)
 	e3:SetOperation(c98920550.disop)
 	c:RegisterEffect(e3)
 end
+aux.xyz_number[98920550]=39 
 function c98920550.ovfilter(c)
 	local rk=c:GetRank()
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsCode(52653092,56832966,86532744,56840427)

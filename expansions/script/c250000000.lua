@@ -1,7 +1,6 @@
 --卡通风暴密码人
 function c250000000.initial_effect(c)
 	aux.AddCodeList(c,15259703)
-	c:EnableReviveLimit()
 	--special summon
 	--destroy
 	local e3=Effect.CreateEffect(c)
@@ -95,12 +94,6 @@ end
 function c250000000.atlimit(e,c)
 	return not c:IsType(TYPE_TOON) or c:IsFacedown()
 end
-function c250000000.atklimit(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_ATTACK)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	e:GetHandler():RegisterEffect(e1)
-end
+
 
 

@@ -93,7 +93,7 @@ function c98940010.operation2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c98940010.sumlimit(e,c,se,sump,sumtype,sumpos,targetp)
-	return se and se:GetHandler():IsCode(98940010) and c:IsCode(e:GetLabel()) 
+	return c:IsCode(e:GetLabel()) 
 end
 function c98940010.sumlimit1(e,c)
 	return c:IsCode(e:GetLabel())

@@ -35,7 +35,7 @@ function c9910894.initial_effect(c)
 	c:RegisterEffect(e4)
 	--destroy
 	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE+CATEGORY_COUNTER)
+	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_COUNTER)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e5:SetRange(LOCATION_MZONE)
@@ -57,16 +57,37 @@ end
 function c9910894.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetMatchingGroup(c9910894.tdfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	if chkc then return false end
-	if chk==0 then return g:CheckSubGroup(aux.drccheck,2,2) end
+	if chk==0 then return #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=g:SelectSubGroup(tp,aux.drccheck,false,2,4)
+	local sg=g:SelectSubGroup(tp,aux.drccheck,false,1,4)
 	Duel.SetTargetCard(sg)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,sg:GetCount(),0,0)
 end
+function c9910894.posfilter(c)
+	return c:IsFaceup() and c:IsCanTurnSet()
+end
 function c9910894.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if tg:GetCount()<=0 then return end
-	Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	if tg:GetCount()>0 then
+		local ct=Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		local g=Duel.GetOperatedGroup()
+		if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+		local b1=ct==2 and Duel.IsExistingMatchingCard(c9910894.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+		local b2=ct==3 and Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_DECK,0,1,nil,TYPE_MONSTER)
+		local b3=ct==4 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>1
+		if (b1 or b2 or b3) and Duel.SelectYesNo(tp,aux.Stringid(14001209,1)) then
+			if b1 then
+				local pg=Duel.GetMatchingGroup(c9910894.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+				Duel.ChangePosition(pg,POS_FACEDOWN_DEFENSE)
+			elseif b2 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+				local dg=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_DECK,0,1,1,nil,TYPE_MONSTER)
+				Duel.Destroy(dg,REASON_EFFECT)
+			else
+				Duel.DiscardHand(1-tp,nil,2,2,REASON_EFFECT+REASON_DISCARD)
+			end
+		end
+	end
 end
 function c9910894.cfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP)
@@ -90,18 +111,19 @@ function c9910894.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,1,0,0x1,3,REASON_COST)
 end
 function c9910894.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsAbleToRemove() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil)
 		and Duel.IsCanAddCounter(tp,0x1,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x1)
 end
 function c9910894.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT,LOCATION_REMOVED)~=0 and c:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND)
+		and c:IsRelateToEffect(e) then
 		Duel.BreakEffect()
 		c:AddCounter(0x1,1)
 	end

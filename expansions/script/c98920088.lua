@@ -38,6 +38,7 @@ function c98920088.initial_effect(c)
 	e1:SetOperation(c98920088.disop)
 	c:RegisterEffect(e1)
 end
+aux.xyz_number[98920088]=55 
 function c98920088.indtg(e,c)
 	return c:IsDefensePos()
 end
