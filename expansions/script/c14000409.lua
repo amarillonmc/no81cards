@@ -3,6 +3,7 @@ local m=14000409
 local cm=_G["c"..m]
 cm.card_code_list={14000401}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000401)
 	c:SetSPSummonOnce(m)
 	c:EnableReviveLimit()
 	--spsummon condition
@@ -48,6 +49,13 @@ function cm.initial_effect(c)
 	local e7=e5:Clone()
 	e7:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	c:RegisterEffect(e7)
+	--add code
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e8:SetCode(EFFECT_ADD_CODE)
+	e8:SetValue(14000410)
+	c:RegisterEffect(e8)
 end
 function cm.fuslimit(e,c,sumtype)
 	return sumtype&SUMMON_TYPE_FUSION==SUMMON_TYPE_FUSION
@@ -65,7 +73,7 @@ end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(cm.sdfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil) and Duel.GetLocationCountFromEx(tp)>0
+	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(cm.sdfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)

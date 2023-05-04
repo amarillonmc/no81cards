@@ -38,7 +38,7 @@ function c98920038.remcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c98920038.remtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_GRAVE)
 end
 function c98920038.remop(e,tp,eg,ep,ev,re,r,rp)
@@ -69,7 +69,7 @@ function c98920038.actop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c98920038.atcon(e,tp,eg,ep,ev,re,r,rp)
-	return aux.bdocon(e,tp,eg,ep,ev,re,r,rp) and e:GetHandler():IsChainAttackable() and e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
+	return aux.bdocon(e,tp,eg,ep,ev,re,r,rp) and e:GetHandler():IsChainAttackable(0) and e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and Duel.GetAttacker()==e:GetHandler()
 end
 function c98920038.atop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChainAttack()

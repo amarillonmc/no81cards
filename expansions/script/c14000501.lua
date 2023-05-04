@@ -185,10 +185,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if tc then
 		local b1=tc:IsAbleToHand()
 		local b2=tc:IsForbidden()
-		if b1 and (b2 or Duel.GetLocationCount(tp,LOCATION_SZONE)<=0) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		if b1 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
-		else
+		elseif not b2 then
 			if tc:IsType(TYPE_PENDULUM) and Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 				Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 			else

@@ -27,32 +27,24 @@ function c10173095.initial_effect(c)
 	e2:SetOperation(c10173095.tkop)
 	c:RegisterEffect(e2)
 end
+function c10173095.cfilter(c,tp,rseq)
+	local seq=c:GetPreviousSequence()
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE) and seq<5 and rseq<5 and math.abs(seq-rseq)==1
+end
 function c10173095.tkcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c10173095.cfilter,1,nil,tp,e:GetHandler():GetSequence())
 end
 function c10173095.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,69868556,0,0x4011,0,0,1,RACE_DRAGON,ATTRIBUTE_LIGHT) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,69868556,0,0x4011,0,0,1,RACE_DRAGON,ATTRIBUTE_LIGHT) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c10173095.tkop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not e:GetHandler():IsRelateToEffect(e) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if not Duel.IsPlayerCanSpecialSummonMonster(tp,69868556,0,0x4011,0,0,1,RACE_DRAGON,ATTRIBUTE_LIGHT) then return end
 	local token=Duel.CreateToken(tp,69868556)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
-end
-function c10173095.cfilter(c,tp,rseq)
-	local seq=c:GetPreviousSequence()
-	if c:GetPreviousControler()~=tp then seq=seq+16 end 
-	if c:IsPreviousLocation(LOCATION_SZONE) then return
-	   seq==rseq
-	elseif c:IsPreviousLocation(LOCATION_MZONE) then 
-	   if rseq==5 then return seq==1 or seq==19
-	   elseif rseq==6 then return seq==3 or seq==17
-	   else return (seq==rseq-1 or seq==rseq+1) and seq>=0 and seq<=4
-	   end
-	end
-	return false 
 end
 function c10173095.filter(c,tp)
 	local zone=c:GetColumnZone(LOCATION_MZONE,0,0,tp)

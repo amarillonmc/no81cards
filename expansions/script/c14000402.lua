@@ -3,6 +3,7 @@ local m=14000402
 local cm=_G["c"..m]
 cm.card_code_list={14000401}
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000401)
 	--summon & set with no tribute
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))

@@ -51,7 +51,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		local g=og:Filter(cm.thfilter,nil,nil)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		if tc then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.SendtoHand(tc,tp,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
 		end
 	end
