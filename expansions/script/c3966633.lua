@@ -65,7 +65,8 @@ function c3966633.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c3966633.aclimit(e,re,tp)
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+	local ctp=e:GetOwnerPlayer()
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,ctp,0,LOCATION_MZONE,nil)
 	local attr=0
 	if g:GetCount()>0 and re:IsActiveType(TYPE_MONSTER) then
 		local tc=g:GetFirst()

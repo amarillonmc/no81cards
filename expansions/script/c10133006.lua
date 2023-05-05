@@ -21,7 +21,7 @@ function s.initial_effect(c)
 end
 function s.recon(e,tp)
 	local c = e:GetHandler()
-	return c:IsPosition(POS_FACEUP) and c:IsType(rscf.extype)
+	return c:IsPosition(POS_FACEUP) and c:IsType(TYPE_LINK+TYPE_XYZ+TYPE_SYNCHRO+TYPE_FUSION)
 end
 function s.gcheck(g)
 	return g:IsExists(Card.IsLinkRace,1,nil,RACE_BEAST)

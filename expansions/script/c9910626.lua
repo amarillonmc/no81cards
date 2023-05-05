@@ -62,7 +62,8 @@ function c9910626.matop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910626.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
+	local c=e:GetHandler()
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c9910626.thfilter(c)
 	return bit.band(c:GetType(),0x81)==0x81 and c:IsAbleToHand()

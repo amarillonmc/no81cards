@@ -20,7 +20,7 @@ function s.initial_effect(c)
 end
 function s.recon(e,tp)
 	local c = e:GetHandler()
-	return c:IsPosition(POS_FACEUP) and c:IsType(rscf.extype)
+	return c:IsPosition(POS_FACEUP) and c:IsType(TYPE_LINK+TYPE_XYZ+TYPE_SYNCHRO+TYPE_FUSION)
 end
 function s.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsCode(10133001) or c:IsHasEffect(10133009))

@@ -5,10 +5,7 @@ function cm.initial_effect(c)
 	--summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SUMMON+CATEGORY_POSITION)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetTarget(cm.settg)
 	e1:SetOperation(cm.setop)
 	c:RegisterEffect(e1)
@@ -35,12 +32,12 @@ function cm.BRAVE(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_brave
 end
-function cm.setfilter1(c)
+function cm.setfilter(c,e,tp)
 	return c:IsFaceup() and c:GetSequence()<5
 end
 function cm.actcon(e)
 	local tp=e:GetHandlerPlayer()
-	return not Duel.IsExistingMatchingCard(cm.setfilter1,tp,LOCATION_SZONE,0,1,nil)
+	return not Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_SZONE,0,1,nil)
 end
 function cm.setfilter(c)
 	return cm.BRAVE(c) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
