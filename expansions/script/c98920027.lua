@@ -3,12 +3,12 @@ function c98920027.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 --synchro limit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetValue(c98920027.synlimit)
-	c:RegisterEffect(e1)
+	local e11=Effect.CreateEffect(c)
+	e11:SetType(EFFECT_TYPE_SINGLE)
+	e11:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e11:SetValue(c98920027.synlimit)
+	c:RegisterEffect(e11)
 --draw
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98920027,0))
@@ -32,9 +32,9 @@ function c98920027.initial_effect(c)
 	e1:SetOperation(c98920027.thop)
 	e1:SetCountLimit(1,98920027)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2)
+	local e12=e1:Clone()
+	e12:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e12)
 end
 function c98920027.synlimit(e,c)
 	if not c then return false end
@@ -89,7 +89,7 @@ function c98920027.thop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetValue(c98920027.aclimit)
 			e2:SetLabel(tc:GetCode())
 			e2:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e2,tp)		
+			Duel.RegisterEffect(e2,tp)	  
 		end
 	end
 end
