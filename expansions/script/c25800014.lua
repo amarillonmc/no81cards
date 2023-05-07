@@ -44,9 +44,9 @@ function c25800014.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetValue(c25800014.efilter)
-	e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,1)
+	e1:SetReset(RESET_PHASE+PHASE_END,1)
 	e:GetHandler():RegisterEffect(e1)
 end
-function c25800014.efilter(e,te)
-	return te:GetOwner()~=e:GetOwner() and te:IsActivated()
+function c25800014.efilter(e,re)
+	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
 end

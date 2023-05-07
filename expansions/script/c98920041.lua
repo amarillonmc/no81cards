@@ -13,7 +13,7 @@ function c98920041.initial_effect(c)
 	e1:SetTarget(c98920041.target)
 	e1:SetOperation(c98920041.operation)
 	c:RegisterEffect(e1)
---Damage
+	--Damage
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(98920041,0))
 	e3:SetCategory(CATEGORY_DAMAGE)
@@ -39,13 +39,6 @@ function c98920041.initial_effect(c)
 		e5:SetOperation(c98920041.addcount)
 		Duel.RegisterEffect(e5,0)
 	end
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e6:SetProperty(EFFECT_FLAG_DELAY)
-	e6:SetCode(EVENT_BATTLE_DESTROYING)
-	e6:SetCondition(aux.bdocon)
-	e6:SetOperation(c98920041.bdop)
-	c:RegisterEffect(e6)
 end
 function c98920041.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetActivityCount(tp,ACTIVITY_BATTLE_PHASE)==0 end
@@ -83,12 +76,6 @@ function c98920041.damop(e,tp,eg,ep,ev,re,r,rp)
 		local ct=c98920041[0]*500
 		Duel.Hint(HINT_CARD,0,98920041)
 		Duel.Damage(1-tp,ct,REASON_EFFECT)
-	end
-end
-function c98920041.bdop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	if #sg>0 then
-		Duel.Destroy(sg,REASON_EFFECT)
 	end
 end
 function c98920041.resetcount(e,tp,eg,ep,ev,re,r,rp)

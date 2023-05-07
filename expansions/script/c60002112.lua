@@ -53,12 +53,12 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,m)~=0
 end
 function cm.filter1(c,e,tp)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x172) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
-		and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,c:GetRank()+4)
+		and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,c:GetRank()+4) 
 end
 function cm.filter2(c,e,tp,mc,rk)
-	return c:IsRank(rk) and c:IsSetCard(0x172) and mc:IsCanBeXyzMaterial(c)
+	return c:IsRank(rk) and c:IsAttribute(ATTRIBUTE_LIGHT) and mc:IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
