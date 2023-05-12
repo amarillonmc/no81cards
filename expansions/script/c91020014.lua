@@ -32,7 +32,7 @@ function c91020014.initial_effect(c)
 	e21:SetCode(EVENT_FREE_CHAIN)
 	e21:SetCountLimit(1)
 	e21:SetTarget(cm.target1)
-	e21:SetOperation(cm.op1)
+	e21:SetOperation(cm.ope)
 	c:RegisterEffect(e21)
   --destroy
 	local e7=Effect.CreateEffect(c)
@@ -61,7 +61,7 @@ function c91020014.initial_effect(c)
 	c:RegisterEffect(e8)
 	 local e10=Effect.CreateEffect(c) 
 	e10:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e10:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
 	e10:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e10:SetCode(EVENT_LEAVE_FIELD)
@@ -70,7 +70,7 @@ function c91020014.initial_effect(c)
 	c:RegisterEffect(e10)
 end
 function cm.filter(c,e,tp)
-	return c:IsCode(91020014) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsCode(91020013) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
@@ -79,9 +79,10 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetChainLimit(aux.FALSE)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-local g1=Duel.CreateToken(tp,91020013)   
-local g2=Group.FromCards(g1)
-	Duel.SpecialSummon(g2,0,tp,tp,true,true,POS_FACEUP)
+	  if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp) 
+	Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 end
 --summon
 function cm.splimit(e,se,sp,st)
@@ -139,7 +140,7 @@ function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetChainLimit(aux.FALSE)
 end
 
-function cm.op1(e,tp,eg,ep,ev,re,r,rp)
+function cm.ope(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
