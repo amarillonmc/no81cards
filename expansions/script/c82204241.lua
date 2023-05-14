@@ -23,8 +23,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 cm.SetCard_01_YaoHu=true 
+function cm.isYaoHu(code)
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_YaoHu
+end
 function cm.filter(c)  
-	return c.SetCard_01_YaoHu and c:IsAbleToHand()  
+	return cm.isYaoHu(c:GetCode()) and c:IsAbleToHand()  
 end  
 function cm.shtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return true end  
@@ -39,7 +43,7 @@ function cm.shop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function cm.repfilter1(c,tp)  
-	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c.SetCard_01_YaoHu  
+	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and cm.isYaoHu(c:GetCode()) 
 end  
 function cm.repfilter2(c,tp)  
 	return c:IsOnField() and c:IsType(TYPE_MONSTER) and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)  

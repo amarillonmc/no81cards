@@ -30,8 +30,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 cm.SetCard_01_YaoHu=true 
+function cm.isYaoHu(code)
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_YaoHu
+end
 function cm.filter(c)  
-	return c.SetCard_01_YaoHu and not (c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)) and c:IsAbleToHand() 
+	return cm.isYaoHu(c:GetCode()) and not (c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)) and c:IsAbleToHand() 
 end  
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end  

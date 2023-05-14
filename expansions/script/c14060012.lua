@@ -133,5 +133,11 @@ function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 		and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsControler(1-tp) and atk1<=atk and (atk1>=0 or c:IsLocation(LOCATION_MZONE))
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
+	Duel.Hint(HINT_CARD,0,m)
+	local g=Group.CreateGroup()
+	Duel.ChangeTargetCard(ev,g)
+	return Duel.ChangeChainOperation(ev,cm.repop)
+end
+function cm.repop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(0)
 end

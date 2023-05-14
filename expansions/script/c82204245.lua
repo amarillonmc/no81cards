@@ -29,8 +29,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 cm.SetCard_01_YaoHu=true 
+function cm.isYaoHu(code)
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_YaoHu
+end
 function cm.filter(c)  
-	return c.SetCard_01_YaoHu and c:IsFaceup() and not c:IsCode(m) and c:IsAbleToGrave()
+	return cm.isYaoHu(c:GetCode()) and c:IsFaceup() and not c:IsCode(m) and c:IsAbleToGrave()
 end  
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_REMOVED,0,1,nil) end  

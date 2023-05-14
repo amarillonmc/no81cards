@@ -18,11 +18,15 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 cm.SetCard_01_YaoHu=true 
+function cm.isYaoHu(code)
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_YaoHu
+end
 function cm.filter(c)  
-	return c.SetCard_01_YaoHu and (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) 
+	return cm.isYaoHu(c:GetCode()) and (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) 
 end  
 function cm.atkfilter(c)  
-	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c.SetCard_01_YaoHu  
+	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and cm.isYaoHu(c:GetCode())  
 end  
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.IsExistingMatchingCard(cm.atkfilter,tp,LOCATION_MZONE,0,1,nil)  
