@@ -54,7 +54,7 @@ function c22348169.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348169.thfilter(c)
-	return aux.IsCodeListed(c,22348157) and not c:IsCode(22348157) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return aux.IsCodeListed(c,22348157) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c22348169.desttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348169.thfilter,tp,LOCATION_DECK,0,1,nil) end
