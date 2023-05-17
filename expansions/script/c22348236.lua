@@ -56,7 +56,7 @@ function c22348236.sop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(22348236,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
 end
 function c22348236.recon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()==1 and (e:GetHandler():GetFlagEffect(22348236)>0 or e:GetCode()~=EVENT_CHAIN_NEGATED)
+	return (e:GetHandler():GetFlagEffect(22348236)>0 or e:GetCode()~=EVENT_CHAIN_NEGATED)
 end
 function c22348236.reop(e,tp,eg,ep,ev,re,r,rp)
 	local ng=Group.CreateGroup()

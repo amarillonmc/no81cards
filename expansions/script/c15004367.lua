@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.spcfilter(c)
-	return c:IsSetCard(0xcf30) and c:IsFaceup() and c:IsAbleToHand()
+	return c:IsSetCard(0xcf30) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAbleToHand()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and cm.spcfilter(chkc) end
