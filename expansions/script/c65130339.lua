@@ -6,7 +6,9 @@ function c65130339.initial_effect(c)
 	--material
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(65130339,1))
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,65130339)
 	e1:SetTarget(c65130339.mttg)
@@ -44,10 +46,10 @@ function c65130339.mtop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Overlay(c,g)
 		Duel.BreakEffect()
 		local og=c:GetOverlayGroup():Filter(c65130339.spfilter,nil,e,tp)
-		if og:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(65130339,2))then
+		if og:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(65130339,2))then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local sg=og:Select(tp,1,1,nil)
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-		end	
+		end 
 	end
 end

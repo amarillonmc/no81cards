@@ -26,9 +26,36 @@ function c65130331.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
+	local e5=e3:Clone()
+	e5:SetCode(EVENT_CHAIN_END)
+	e5:SetOperation(c65130331.sumsuc2)
+	c:RegisterEffect(e5)
 end
 function c65130331.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SetChainLimitTillChainEnd(aux.FALSE)
+	if Duel.GetCurrentChain()==0 then
+		Duel.SetChainLimitTillChainEnd(aux.FALSE)
+	elseif Duel.GetCurrentChain()==1 then
+		e:GetHandler():RegisterFlagEffect(65130331,RESET_EVENT+RESETS_STANDARD,0,1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAINING)
+		e1:SetOperation(c65130331.resetop)
+		Duel.RegisterEffect(e1,tp)
+		local e2=e1:Clone()
+		e2:SetCode(EVENT_BREAK_EFFECT)
+		e2:SetReset(RESET_CHAIN)
+		Duel.RegisterEffect(e2,tp)
+	end
+end
+function c65130331.sumsuc2(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():GetFlagEffect(65130331)~=0 then
+		Duel.SetChainLimitTillChainEnd(aux.FALSE)
+	end
+	e:GetHandler():ResetFlagEffect(65130331)
+end
+function c65130331.resetop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():ResetFlagEffect(65130331)
+	e:Reset()
 end
 function c65130331.spfilter(c,tp)
 	return c:IsFaceup() and c:IsControler(tp) and c:IsAttack(878) and c:IsDefense(1157)

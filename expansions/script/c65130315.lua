@@ -59,24 +59,24 @@ function c65130315.splimit(e,c)
 	return not (c:IsAttack(878) and c:IsDefense(1157))
 end
 function c65130315.desfilter(c)
-	return c:IsFaceup() and c:IsLinkType(TYPE_MONSTER)
+	return c:IsFaceup() and c:GetOriginalType()&TYPE_MONSTER>0
+end
+function c65130315.spfilter(c,e,tp)
+	return c:IsAttack(878) and c:IsDefense(1157) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c65130315.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsOnField() end
-	if chk==0 then return Duel.IsExistingTarget(c65130315.desfilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c65130315.desfilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c65130315.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,c65130315.desfilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function c65130315.spfilter(c,e,tp)
-	return c:IsAttack(878) and c:IsDefense(1157) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c65130315.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		if Duel.Destroy(tc,REASON_EFFECT) then
+		if Duel.Destroy(tc,REASON_EFFECT) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 			local g=Duel.SelectMatchingCard(tp,c65130315.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 			local sc=g:GetFirst()
 			if not sc then return end
