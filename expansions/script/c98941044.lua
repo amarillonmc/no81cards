@@ -22,7 +22,6 @@ function c98941044.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,989941044)
 	e2:SetCost(aux.bfgcost)
 	e2:SetCondition(c98941044.pspcon)
 	e2:SetTarget(c98941044.psptg)
@@ -36,7 +35,6 @@ function c98941044.initial_effect(c)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCost(c98941044.cost)
-	e4:SetCountLimit(1,98951044)
 	e4:SetCondition(c98941044.pspcon)
 	e4:SetTarget(c98941044.ltarget)
 	e4:SetOperation(c98941044.lactivate)
@@ -79,6 +77,14 @@ function c98941044.activate(e,tp,eg,ep,ev,re,r,rp)
 		local token=Duel.CreateToken(tp,98941045)
 		Duel.SpecialSummonStep(token,0,tp,1-tp,false,false,POS_FACEUP)
 		Duel.SpecialSummonComplete()
+		local g=Duel.GetMatchingGroup(c98941044.filter,tp,LOCATION_HAND,0,nil,e,tp)
+		if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(98941044,2)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=g:Select(tp,1,1,nil)
+			sc=sg:GetFirst()
+			Duel.SpecialSummonRule(tp,sc,0)
+		end
 	end 
 	local e3=Effect.CreateEffect(e:GetHandler())
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -105,8 +111,7 @@ function c98941044.filter(c,e,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsSpecialSummonable(0) and c:IsSetCard(0x10c)
 end
 function c98941044.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c98941044.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c98941044.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end

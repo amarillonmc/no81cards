@@ -1,69 +1,45 @@
 --异位魔的威压
-function c10106012.initial_effect(c)
-	--Activate
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,0x1e0)
-	c:RegisterEffect(e1) 
-	--SpecialSummon
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(10106012,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN) 
-	e2:SetHintTiming(0,0x1e0)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,10106012)
-	e2:SetTarget(c10106012.sptg)
-	e2:SetOperation(c10106012.spop)
-	c:RegisterEffect(e2) 
-	--tohand
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(10106012,1))
-	e3:SetCategory(CATEGORY_TOHAND) 
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_TO_HAND)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1)
-	e3:SetCondition(c10106012.thcon)
-	e3:SetTarget(c10106012.thtg)
-	e3:SetOperation(c10106012.thop)
-	c:RegisterEffect(e3)
+if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
+local s,id = GetID()
+function s.initial_effect(c)
+	aux.AddCodeList(c,10106003)
+	local e1 = Scl.CreateActivateEffect(c)
+	local e2 = Scl.CreateQuickOptionalEffect(c, nil, "Look", 1,
+		"SpecialSummonFromHand/GY", nil, "Spell&TrapZone", nil, nil, 
+		{ "~Target", "Dummy", aux.TRUE, 0, "Hand,GY" }, s.spop)
+	local e3 = Scl.CreateFieldTriggerOptionalEffect(c, "BeAdded2Hand", 
+		"Add2Hand", 1, "Search,Add2Hand" , "Delay", "Spell&TrapZone", 
+		nil, nil, s.thtg, s.thop)
 end
-function c10106012.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c10106012.cfilter,1,nil,tp)
+function s.spfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,1-tp,false,false,POS_FACEUP,1-tp) and Duel.GetLocationCount(1-tp,LOCATION_MZONE ) > 0
 end
-function c10106012.cfilter(c,tp)
-	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsControler(tp)
-end
-function c10106012.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,PLAYER_ALL,LOCATION_ONFIELD)
-end
-function c10106012.thop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	if g:GetCount()>0 then
-	   Duel.HintSelection(g)
-	   Duel.SendtoHand(g,nil,REASON_EFFECT)
+function s.spop(e,tp)
+	local g = Duel.GetFieldGroup(tp,0,LOCATION_HAND+LOCATION_GRAVE)
+	if #g == 0 then return end
+	Duel.ConfirmCards(tp, g) 
+	if g:IsExists(s.spfilter,1,nil,e,tp) and Scl.SelectYesNo(tp, "SpecialSummon") then
+		local sg = g:FilterSelect(tp, s.spfilter, 1, 1, nil, e, tp)
+		Scl.HintSelection(sg)
+		Scl.AddSingleBuff(nil, "NegateEffect,NegateActivatedEffect", 1)
+		Scl.SpecialSummon(sg,0,1-tp,1-tp,false,false,POS_FACEUP)
 	end
 end
-function c10106012.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 or Duel.IsExistingMatchingCard(Card.IsCanBeSpecialSummoned,1-tp,0x10,0,1,nil,e,0,1-tp,false,false,POS_FACEUP,1-tp)) and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 end
-	--has bug in ocgcore (find in 2018.7.12)
-	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,1-tp,LOCATION_GRAVE+LOCATION_HAND)
+function s.pfilter(c,tp)
+	return not c:IsPublic() and c:IsControler(tp) and c:IsSetCard(0x3338) and c:IsPreviousSetCard(0x3338) and c:IsType(TYPE_MONSTER) and Scl.IsOriginalType(c, 0, "Monster") and (not c:IsReason(REASON_DRAW) or not c:IsReason(REASON_RULE)) and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,c:GetCode())
 end
-function c10106012.spop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) or Duel.GetLocationCount(1-tp,LOCATION_MZONE)<=0 then return end
-	local g=Duel.GetMatchingGroup(Card.IsCanBeSpecialSummoned,1-tp,0x12,0,nil,e,0,1-tp,false,false,POS_FACEUP,1-tp)
-	if g:GetCount()>0 then
-	   Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
-	   local sg=g:Select(1-tp,1,1,nil)
-	   Duel.HintSelection(sg)
-	   Duel.SpecialSummon(sg,0,1-tp,1-tp,false,false,POS_FACEUP)
+function s.thfilter(c,code)
+	return c:IsCode(0x3338) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(code)
+end
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk == 0 then
+		return e:IsCostChecked() and eg:IsExists(s.pfilter,1,nil,tp)
 	end
+	local ct,og,tc = Scl.SelectAndOperateCardsFromGroup("Reveal",eg,tp,s.pfilter,1,1,nil,tp)()
+	Duel.SetTargetCard(tc)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+end
+function s.thop(e,tp)
+	local tc = Duel.GetFirstTarget()
+	Scl.SelectAndOperateCards("Add2Hand",tp,aux.NecroValleyFilter(s.thfilter),tp,"Deck,GY",0,1,1,nil,tc:GetCode())()
 end

@@ -1,67 +1,60 @@
---梦魇魔的前卫
-function c10106005.initial_effect(c)
-	--cannot special summon
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	c:RegisterEffect(e0)
-	--draw
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(10106005,1))
-	e1:SetCategory(CATEGORY_RECOVER)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EVENT_TO_HAND)
-	e1:SetCondition(c10106005.reccon)
-	e1:SetTarget(c10106005.rectg)
-	e1:SetOperation(c10106005.recop)
-	c:RegisterEffect(e1)
-	--dis
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(10106005,0))
-	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetCondition(c10106005.discon)
-	e2:SetTarget(c10106005.distg)
-	e2:SetOperation(c10106005.disop)
-	c:RegisterEffect(e2)	
+--自卑之恶念体
+if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
+local s,id = GetID()
+function s.initial_effect(c)
+	local e1 = Scl.CreateFieldTriggerOptionalEffect(c, "DeclareAttack",
+		"Equip", nil, "Equip", 
+		"Target", "Hand,MonsterZone", s.eqcon, nil, s.eqtg, s.eqop)
+	local e2 = Scl.CreateEquipBuffEffect(c, "!Attack", 1)
+	local e3,e4 = Scl.CreateEquipBuffEffect(c, 
+		"=ATK,=DEF", 0)
+	local e5,e6 = Scl.CreateSingleTriggerOptionalEffect(c, "BeNormalSummoned,BeAdded2Hand", 
+		{id, 0}, nil, nil, "Delay", nil, nil, nil, s.drop)
 end
-function c10106005.reccon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP)
+function s.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x3338)
 end
-function c10106005.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(800)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,800)
+function s.eqcon(e,tp)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 end
-function c10106005.recop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Recover(p,d,REASON_EFFECT)
+function s.eqfilter(c,e,tp)
+	return c:IsControler(1-tp) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsCanBeEffectTarget(e)
 end
-function c10106005.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSummonable(true,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
-end
-function c10106005.disop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.NegateEffect(ev) and c:IsRelateToEffect(e) and c:IsSummonable(true,nil) then
-	   Duel.BreakEffect()
-	   Duel.Summon(tp,c,true,nil)
+function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local bc1,bc2 = Duel.GetBattleMonster(tp)
+	local g = Scl.Mix2Group(bc1,bc2)
+	local sg = g:Filter(s.eqfilter,nil,e,tp)
+	if chk == 0 then return #sg > 0 and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0 end
+	local tc = sg:GetFirst()
+	if #sg > 1 then
+		Scl.HintSelect(tp, "Opponent")
+		tc = sg:Select(tp,1,1,nil):GetFirst()
 	end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e1,tp)
+	Duel.SetTargetCard(tc)
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
 end
-function c10106005.discon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasCategory(CATEGORY_SPECIAL_SUMMON) and Duel.IsChainDisablable(ev) and not Duel.IsExistingMatchingCard(Card.IsSummonType,tp,LOCATION_MZONE,0,1,nil,SUMMON_TYPE_SPECIAL)
+function s.eqop(e,tp,eg)
+	local _, tc = Scl.GetTargetsReleate2Chain(Card.IsFaceup)
+	local _, c = Scl.GetActivateCard()
+	if not tc or not c then return end
+	Scl.Equip(c, tc)
+end
+function s.drop(e,tp)
+	Duel.RegisterFlagEffect(tp,id,RESET_EP_SCL,0,1)
+	if s.buff then return end
+	s.buff = true
+	local c = e:GetHandler()
+	Scl.CreateFieldBuffEffect({c,tp},"+ATK,+DEF",s.val1,s.limtg,{0, "MonsterZone"},nil, nil, RESET_EP_SCL)
+	Scl.CreateFieldBuffEffect({c,tp},"+Level",s.val2,s.limtg,{0, "MonsterZone"},nil, nil, RESET_EP_SCL)
+end
+function s.val1(e,c)
+	local ct = Duel.GetFlagEffect(tp, id)
+	return ct * -800
+end
+function s.val2(e,c)
+	local ct = Duel.GetFlagEffect(tp, id)
+	return ct * -1
+end
+function s.limtg(e,c)
+	return c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end

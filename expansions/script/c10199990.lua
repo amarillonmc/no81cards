@@ -43,7 +43,7 @@ rscode.Phase_Leave_Flag   =   FLAG_PHASE_OPERATE_SCL
 rscode.Extra_Synchro_Material =  EFFECT_EXTRA_SYNCHRO_MATERIAL_SCL
 rscode.Extra_Xyz_Material   =   EFFECT_EXTRA_XYZ_MATERIAL_SCL
 rscode.Utility_Xyz_Material =   EFFECT_UTILITY_XYZ_MATERIAL_SCL
-rscode.Previous_Set_Code	=   FLAG_PREVIOUS_XYZ_MATERIAL_SCL
+rscode.Previous_Set_Code    =   FLAG_PREVIOUS_XYZ_MATERIAL_SCL
 rscode.Pre_Complete_Proc = EFFECT_COMPLETE_SUMMON_PROC_SCL
 rscode.Set  =  EVENT_SET_SCL
 
@@ -64,103 +64,103 @@ rsloc.all = 0xff
 
 s.sum_list = {
 
-		["sp"] = "SpecialSummon", ["adv"] = "TributeSummon", ["rit"] = "RitualSummon"
-	  , ["fus"] = "FusionSummon", ["syn"] = "SynchroSummon", ["xyz"] = "XyzSummon"
-	  , ["link"] = "LinkSummon", ["pen"] = "PendulumSummon"
+        ["sp"] = "SpecialSummon", ["adv"] = "TributeSummon", ["rit"] = "RitualSummon"
+      , ["fus"] = "FusionSummon", ["syn"] = "SynchroSummon", ["xyz"] = "XyzSummon"
+      , ["link"] = "LinkSummon", ["pen"] = "PendulumSummon"
 
 }
 
 s.flag_list =   { 
-	
-		["tg"] = "Target", ["ptg"] = "PlayerTarget", ["de"] = "Delay", ["dsp"] = "DamageStep" 
-	  , ["dcal"] = "DamageCalculation", ["ii"] = "IgnoreImmune", ["sa"] = "SetAvailable", ["ir"] = "IgnoreZone" 
-	  , ["sr"] = "BuffZone", ["bs"] = "BothSide", ["uc"] = "Uncopyable" 
-	  , ["ch"] = "ClientHint", ["lz"] = "LimitActivateZone", ["atg"] = "AbsoluteTarget" 
-	  , ["sp"] = "SummonParama", ["ep"] = "EventPlayer", ["oa"] = "Oath" , ["ntr"] = "NoTurnReset" 
-	  , ["neg~"] = "!NegateActivation" 
-	  , ["cn"] = "!NegateEffect", ["dise~"] = "!NegateEffect2" 
-	  , ["cd"] = "!NegateEffect" , ["dis~"] = "!NegateEffect" 
+    
+        ["tg"] = "Target", ["ptg"] = "PlayerTarget", ["de"] = "Delay", ["dsp"] = "DamageStep" 
+      , ["dcal"] = "DamageCalculation", ["ii"] = "IgnoreImmune", ["sa"] = "SetAvailable", ["ir"] = "IgnoreZone" 
+      , ["sr"] = "BuffZone", ["bs"] = "BothSide", ["uc"] = "Uncopyable" 
+      , ["ch"] = "ClientHint", ["lz"] = "LimitActivateZone", ["atg"] = "AbsoluteTarget" 
+      , ["sp"] = "SummonParama", ["ep"] = "EventPlayer", ["oa"] = "Oath" , ["ntr"] = "NoTurnReset" 
+      , ["neg~"] = "!NegateActivation" 
+      , ["cn"] = "!NegateEffect", ["dise~"] = "!NegateEffect2" 
+      , ["cd"] = "!NegateEffect" , ["dis~"] = "!NegateEffect" 
 
 }   
 
 
 s.ctgy_list =   {
 
-		["des"] = "Destroy"
-	  , ["rdes"] = "DestroyReplace"
-	  , ["res"] = "Tribute"
-	  , ["rm"] = "Banish"
-	  , ["rmd"] = "BanishFacedown"
-	  , ["se"] = "Search"
-	  , ["th"] = "Add2Hand"
-	  , ["rth"] = "Return2Hand"
-	  , ["td"] = "ShuffleIn2Deck"
-	  , ["tdt"] = "ShuffleIn2DeckTop"
-	  , ["tdb"] = "ShuffleIn2DeckBottom"
-	  , ["ptdt"] = "PlaceOnDeckTop"
-	  , ["ptdb"] = "PlaceOnDeckBottom"
-	  , ["te"] = "Return2Extra"
-	  , ["tde"] = "ShuffleIn2Deck/ExtraAsCost"
-	  , ["pte"] = "Add2ExtraFaceup"
-	  , ["tg"] = "Send2GY"
-	  , ["rtg"] = "Return2GY"
-	  , ["dtg"] = "Discard2GY"
-	  , ["dish"] = "Discard"
-	  , ["dh"] = "Discard"
-	  , ["dishf"] = "DiscardWithFilter"
-	  , ["dhf"] = "DiscardWithFilter"
-	  , ["disd"] = "SendDeckTop2GY"
-	  , ["dd"] = "SendDeckTop2GY"
-	  , ["dr"] = "Draw"
-	  , ["dam"] = "Damage"
-	  , ["rec"] = "GainLP"
-	  , ["sum"] = "NormalSummon"
-	  , ["tk"] = "Token"
-	  , ["sp"] = "SpecialSummon"
-	  , ["cp"] = "ChangePosition"
-	  , ["pos"] = "ChangePosition"
-	  , ["upa"] = "Change2AttackPosition"
-	  , ["upd"] = "Change2FaceupDefensePosition"
-	  , ["dpd"] = "Change2FacedownDefensePosition"
-	  , ["posd"] = "Change2DefensePosition"
-	  , ["ctrl"] = "ChangeControl"
-	  , ["con"] = "ChangeControl"
-	  , ["sctrl"] = "SwitchControl"
-	  , ["dis"] = "NegateEffect"
-	  , ["diss"] = "NegateSummon"
-	  , ["neg"] = "NegateActivation"
-	  , ["eq"] = "Equip"
-	  , ["atk"] = "ChangeATK"
-	  , ["def"] = "ChangeDEF"
-	  , ["ct"] = "PlaceCounter"
-	  , ["pct"] = "PlaceCounter"
-	  , ["rmct"] = "RemoveCounter"
-	  , ["coin"] = "TossCoin"
-	  , ["dice"] = "TossDice"
-	  , ["an"] = "AnnounceCard"
-	  , ["lv"] = "ChangLevel"
-	  , ["fus"] = "FusionSummon"
-	  , ["ga"] = "GYAction"
-	  , ["gsp"] = "SpecialSummonFromGY"
-	  , ["lg"] = "LeaveGY"
-	  , ["cf"] = "Look"
-	  , ["rv"] = "Reveal"
-	  , ["rvep"] = "RevealUntilEP"
-	  , ["tf"] = "PlaceOnField"
-	  , ["act"] = "ActivateCard"
-	  , ["rf"] = "Return2Field"
-	  , ["rtf"] = "Return2Field"
-	  , ["ae"] = "ApplyEffect"
-	  , ["set"] = "SetSpell/Trap"
-	  , ["sset"] = "SetSpell/Trap"
-	  , ["xmat"] = "AttachXyzMaterial"
-	  , ["axmat"] = "AttachXyzMaterial"
-	  , ["rxmat"] = "DetachXyzMaterial"
-	  , ["rmxmat"] = "DetachXyzMaterial"
-	  , ["ms"] = "MoveZone"
-	  , ["dum"] = "Dummy"
-	  , ["self"] = "Self"
-	  , ["oppo"] = "Opponent"
+        ["des"] = "Destroy"
+      , ["rdes"] = "DestroyReplace"
+      , ["res"] = "Tribute"
+      , ["rm"] = "Banish"
+      , ["rmd"] = "BanishFacedown"
+      , ["se"] = "Search"
+      , ["th"] = "Add2Hand"
+      , ["rth"] = "Return2Hand"
+      , ["td"] = "ShuffleIn2Deck"
+      , ["tdt"] = "ShuffleIn2DeckTop"
+      , ["tdb"] = "ShuffleIn2DeckBottom"
+      , ["ptdt"] = "PlaceOnDeckTop"
+      , ["ptdb"] = "PlaceOnDeckBottom"
+      , ["te"] = "Return2Extra"
+      , ["tde"] = "ShuffleIn2Deck/ExtraAsCost"
+      , ["pte"] = "Add2ExtraFaceup"
+      , ["tg"] = "Send2GY"
+      , ["rtg"] = "Return2GY"
+      , ["dtg"] = "Discard2GY"
+      , ["dish"] = "Discard"
+      , ["dh"] = "Discard"
+      , ["dishf"] = "DiscardWithFilter"
+      , ["dhf"] = "DiscardWithFilter"
+      , ["disd"] = "SendDeckTop2GY"
+      , ["dd"] = "SendDeckTop2GY"
+      , ["dr"] = "Draw"
+      , ["dam"] = "Damage"
+      , ["rec"] = "GainLP"
+      , ["sum"] = "NormalSummon"
+      , ["tk"] = "Token"
+      , ["sp"] = "SpecialSummon"
+      , ["cp"] = "ChangePosition"
+      , ["pos"] = "ChangePosition"
+      , ["upa"] = "Change2AttackPosition"
+      , ["upd"] = "Change2FaceupDefensePosition"
+      , ["dpd"] = "Change2FacedownDefensePosition"
+      , ["posd"] = "Change2DefensePosition"
+      , ["ctrl"] = "ChangeControl"
+      , ["con"] = "ChangeControl"
+      , ["sctrl"] = "SwitchControl"
+      , ["dis"] = "NegateEffect"
+      , ["diss"] = "NegateSummon"
+      , ["neg"] = "NegateActivation"
+      , ["eq"] = "Equip"
+      , ["atk"] = "ChangeATK"
+      , ["def"] = "ChangeDEF"
+      , ["ct"] = "PlaceCounter"
+      , ["pct"] = "PlaceCounter"
+      , ["rmct"] = "RemoveCounter"
+      , ["coin"] = "TossCoin"
+      , ["dice"] = "TossDice"
+      , ["an"] = "AnnounceCard"
+      , ["lv"] = "ChangLevel"
+      , ["fus"] = "FusionSummon"
+      , ["ga"] = "GYAction"
+      , ["gsp"] = "SpecialSummonFromGY"
+      , ["lg"] = "LeaveGY"
+      , ["cf"] = "Look"
+      , ["rv"] = "Reveal"
+      , ["rvep"] = "RevealUntilEP"
+      , ["tf"] = "PlaceOnField"
+      , ["act"] = "ActivateCard"
+      , ["rf"] = "Return2Field"
+      , ["rtf"] = "Return2Field"
+      , ["ae"] = "ApplyEffect"
+      , ["set"] = "SetSpell/Trap"
+      , ["sset"] = "SetSpell/Trap"
+      , ["xmat"] = "AttachXyzMaterial"
+      , ["axmat"] = "AttachXyzMaterial"
+      , ["rxmat"] = "DetachXyzMaterial"
+      , ["rmxmat"] = "DetachXyzMaterial"
+      , ["ms"] = "MoveZone"
+      , ["dum"] = "Dummy"
+      , ["self"] = "Self"
+      , ["oppo"] = "Opponent"
 
 }
 
@@ -296,7 +296,7 @@ rsef.CreatEvent_Set = Scl.RaiseGlobalSetEvent
 rsef.SetChainLimit= Scl.SetChainLimit
 s.clone_list = {
 
-	["code"] = "Code",  ["desc"] = "Description",   ["flag"] = "Property", ["cate"] = "Category", 
+	["code"] = "Code", 	["desc"] = "Description", 	["flag"] = "Property", ["cate"] = "Category", 
 	["reset"] = "Reset", ["type"] = "Type", ["con"] = "Condition", ["tg"] = "Target", ["cost"] = "Cost",
 	["op"] = "Operation", ["value"] = "Value", ["loc"] = "Zone", ["tgrng"] = "TargetRange"
 }
@@ -316,21 +316,21 @@ rsef.QO_OPPONENT_TURN = Scl.CloneEffectAsQucikEffect
 rsef.RegisterSolve = Scl.RegisterSolvePart
 Effect.RegisterSolve = Scl.RegisterSolvePart
 function s.get_default_range(reg_obj)
-	local reg_range
-	local reg_owner, reg_handler = Scl.GetRegisterInfo(reg_obj)
-	if aux.GetValueType(reg_handler) ~= "Card" then return nil end
-	--(TYPE_PENDULUM , LOCATION_PZONE must manual input)
-	local type_list = { TYPE_MONSTER, TYPE_FIELD, TYPE_SPELL + TYPE_TRAP }
-	local reg_obj = { LOCATION_MZONE, LOCATION_FZONE, LOCATION_SZONE }
-	for idx, card_type in pairs(type_list) do
-		if reg_handler:IsType(card_type) then 
-			reg_range = reg_obj[idx]
-			break 
-		end
-	end
-	--after begain duel 
-	--if Duel.GetTurnCount() > 0 then reg_range = reg_handler:GetLocation() end
-	return reg_range 
+    local reg_range
+    local reg_owner, reg_handler = Scl.GetRegisterInfo(reg_obj)
+    if aux.GetValueType(reg_handler) ~= "Card" then return nil end
+    --(TYPE_PENDULUM , LOCATION_PZONE must manual input)
+    local type_list = { TYPE_MONSTER, TYPE_FIELD, TYPE_SPELL + TYPE_TRAP }
+    local reg_obj = { LOCATION_MZONE, LOCATION_FZONE, LOCATION_SZONE }
+    for idx, card_type in pairs(type_list) do
+        if reg_handler:IsType(card_type) then 
+            reg_range = reg_obj[idx]
+            break 
+        end
+    end
+    --after begain duel 
+    --if Duel.GetTurnCount() > 0 then reg_range = reg_handler:GetLocation() end
+    return reg_range 
 end
 function s.switch_old_string(desc_obj, ctgy, flag, buff_code)
 	local desc_obj2 = type(desc_obj) == "string" and s.ctgy_list[desc_obj] or desc_obj
@@ -466,7 +466,15 @@ function rsef.SV_Card(reg_obj, att_obj, val_obj, flag, range, con, rst_obj, desc
 	if handler:IsStatus(STATUS_SPSUMMON_STEP) then
 		range = LOCATION_MZONE
 	end
-	if flag3 & EFFECT_FLAG_UNCOPYABLE ~= 0 then
+	local res = flag3 & EFFECT_FLAG_UNCOPYABLE ~= 0
+	if not range then
+		if res then
+			range = 0xff
+		else
+			range = s.get_default_range(reg_obj)
+		end
+	end
+	if res then
 		return Scl.CreateSingleBuffCondition(reg_obj, att_obj2, val_obj, range, con, rst_obj, desc_obj2, lim_obj2, flag2)
 	else
 		return Scl.CreateSingleBuffEffect(reg_obj, att_obj2, val_obj, range, con, rst_obj, desc_obj2, lim_obj2, flag2)
@@ -516,7 +524,7 @@ function rsef.FV_ExtraMaterial_Self(reg_obj, mat, val_obj, tg, tgrng_obj, con, r
 	elseif mat == "link" then
 		att = "ExtraLinkMaterial"
 	end
-	local val_obj2 = val_obj or { function(e, c, mg) return c == e:GetHandler(), true end }
+    local val_obj2 = val_obj or { function(e, c, mg) return c == e:GetHandler(), true end }
 	local _, _, flag2 = s.switch_old_string(0, 0, flag)
 	local lim_obj2 = s.switch_old_count_limit(lim_obj)
 	return Scl.CreateFieldBuffEffect(reg_obj, att, val_obj2, tg, tgrng_obj, LOCATION_EXTRA, con, rst_obj, desc_obj, lim_obj2, flag2)
@@ -557,7 +565,7 @@ end
 function rsef.STO_Flip(reg_obj, desc_obj, lim_obj, ctgy, flag, con, cost, tg, op, rst_obj)
 	local desc_obj2, ctgy2, flag2 = s.switch_old_string(desc_obj, ctgy, flag)
 	local lim_obj2 = s.switch_old_count_limit(lim_obj)
-	return Scl.CreateFlipOptionalEffect(reg_obj, desc_obj2, lim_obj2, ctgy2, flag2, con, cost, tg, op, rst_obj)			 
+	return Scl.CreateFlipOptionalEffect(reg_obj, desc_obj2, lim_obj2, ctgy2, flag2, con, cost, tg, op, rst_obj)				
 end
 function rsef.STF_Flip(reg_obj, desc_obj, lim_obj, ctgy, flag, con, cost, tg, op, rst_obj)
 	local desc_obj2, ctgy2, flag2 = s.switch_old_string(desc_obj, ctgy, flag)
@@ -613,7 +621,7 @@ function rsef.FC_DestroyReplace(reg_obj, lim_obj, range, repfilter, tg, op, con,
 end
 function rsef.FC_PhaseOpearte(reg_obj, op_obj, times, whos, phase, ex_con, fun_obj)
 	local _, fun_obj2 = s.switch_old_string(0, fun_obj)
-	return Scl.CreateFieldTriggerContinousEffect_PhaseOpearte(reg_obj, op_obj, times, whos, phase, ex_con, fun_obj2)
+	return Scl.CreateFieldTriggerContinousEffect_PhaseOpearte(reg_obj, op_obj, fun_obj2, times, whos, phase, ex_con)
 end
 rsef.FC_Global = Scl.SetGlobalFieldTriggerEffect
 function rsef.FC_Easy(reg_obj, code, flag, range, con, op, rst_obj)
@@ -625,7 +633,7 @@ function rsef.SC(reg_obj, code, desc_obj, lim_obj, flag, con, op, rst_obj)
 	return Scl.CreateSingleTriggerContinousEffect(reg_obj, code, desc_obj, lim_obj2, flag2, con, op, rst_obj)
 end
 function rsef.SC_Easy(reg_obj, code, flag, con, op, reset_obj)
-	return rsef.SC(reg_obj, code, nil, nil, flag, con, op, reset_obj)
+    return rsef.SC(reg_obj, code, nil, nil, flag, con, op, reset_obj)
 end
 function rsef.SC_DestroyReplace(reg_obj, lim_obj, repfilter, tg, op, con, flag, rst_obj)
 	local _, _, flag2 = s.switch_old_string(0, 0, flag)
@@ -667,7 +675,7 @@ function rssf.SpecialSummonEither(sum_card, sum_eff, sum_typ, sum_pl, loc_pl, ig
 	return Scl.SpecialSummon2EitherFieldStep(sum_card, sum_typ, sum_pl, ignore_con, ignore_revie, pos, sum_zone) 
 end
 rsval.spconfe = scl.value_special_summon_from_extra("SpecialSummon")
-rsval.spconbe = scl.value_special_summon_by_card_effects
+rsval.spconbe = scl.value_special_summon_by_card_effect
 function rsval.indbae(str1, str2)
 	if not str1 and not str2 then 
 		str1 = "Battle"
@@ -717,25 +725,25 @@ rstg.token = scl.target_special_summon_token
 rssf.CheckTokenSummonable = Scl.IsCanSpecialSummonToken
 rssf.SpecialSummonToken = Scl.SpecialSummonToken
 function rstg.neg(dn_str, ex_tg)
-	return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-		dn_str = dn_str or "dum"
+    return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
+        dn_str = dn_str or "dum"
 		local dn_str2 = s.ctgy_list[dn_str]
-		local c = e:GetHandler()
-		local rc = re:GetHandler()
-		if chkc then return ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc) end
-		if chk == 0 then return (dn_str ~= "rm" or aux.nbcon(tp, re)) and (ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)) end
-		local op_cate = Scl.Category_List[dn_str2][2]
+        local c = e:GetHandler()
+        local rc = re:GetHandler()
+        if chkc then return ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc) end
+        if chk == 0 then return (dn_str ~= "rm" or aux.nbcon(tp, re)) and (ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)) end
+        local op_cate = Scl.Category_List[dn_str2][2]
 		local ctgy_list = type(op_cate) == "number" and {op_cate} or op_cate
-		if #ctgy_list > 0 and rc:IsRelateToEffect(re) then
+        if #ctgy_list > 0 and rc:IsRelateToEffect(re) then
 			local res = rsop.Operation_Solve(eg, dn_str, REASON_EFFECT, { }, 0, e, tp, eg, ep, ev, re, r, rp) 
 			if res then
 				for ctgy in pairs(ctgy_list) do
 					Duel.SetOperationInfo(0, ctgy, eg, 1, 0, 0)
 				end
 			end
-		end
-		ex_tg(e, tp, eg, ep, ev, re, r, rp, 1)
-	end
+        end
+        ex_tg(e, tp, eg, ep, ev, re, r, rp, 1)
+    end
 end
 function rsop.neg(dn_str, ex_op)
 	return function(...)
@@ -749,11 +757,11 @@ function rsop.dis(dn_str, ex_op)
 end
 function s.get_effect_array(checkfun, endfun, list_typ, a1, a2, a3, ...)
 	local arr = { }
-	if type(a1) == "table" and (not a2 or (type(a2) == "table" )) and (not a3 or type(a3) == "table") then
-		arr = { a1, a2, a3, ... }
-	else
-		arr = { { a1, a2, a3, ... } }
-	end
+    if type(a1) == "table" and (not a2 or (type(a2) == "table" )) and (not a3 or type(a3) == "table") then
+        arr = { a1, a2, a3, ... }
+    else
+        arr = { { a1, a2, a3, ... } }
+    end
 	local cache_arr = Scl.CloneArray(arr)
 	--boom nil
 	for idx, arr2 in pairs(arr) do
@@ -852,6 +860,17 @@ function s.get_effect_array(checkfun, endfun, list_typ, a1, a2, a3, ...)
 			end
 		end
 	end
+	--switch filter_obj and category_obj(20230422)
+	for _, arr in pairs(cache_arr2) do
+		local list_typ = arr[1]
+		if list_typ == "Cost" or list_typ == "Target" or list_typ == "~Target" then
+			local filter_obj = arr[2]
+			local ctgy_obj = arr[3]
+			arr[2] = ctgy_obj
+			arr[3] = filter_obj
+		end
+
+	end
 	return cache_arr2
 end
 function s.end_fun(endfun)
@@ -923,15 +942,15 @@ end
 rscost.rmct = scl.cost_remove_counter
 rscost.rmct2 = scl.cost_remove_counter_from_field
 rscost.rmxmat = scl.cost_detach_xyz_material
-rscost.setlab = scl.cost_check_copy_status
+rscost.setlab = scl.cost_set_copy_status
 rscost.paylp = scl.cost_pay_lp
 rscost.paylp2 = scl.cost_pay_lp_in_multiples
-rscost.chnlim = scl.cost_once_per_chain
-rscon.turns = scl.cond_during_your_turn
-rscon.turno = scl.cond_during_opponents_turn
-rscon.phmp = scl.cond_during_phase("M1,M2")
-rscon.phbp = scl.cond_during_phase("BP")
-rscon.prepup = scl.cond_previous_faceup
+rscost.chnlim = scl.cost_set_once_per_chain_limit
+rscon.turns = scl.cond_check_tp(0)
+rscon.turno = scl.cond_check_tp(1)
+rscon.phmp = scl.cond_check_phase("M1,M2", 2)
+rscon.phbp = scl.cond_check_phase("BP", 2)
+rscon.prepup = scl.cond_check_position("+",true)
 function rstg.chnlim(sp, op)
 	return function(g, e, tp)
 		Duel.SetChainLimit(rsval.chainlimit(sp, op, g))
@@ -962,12 +981,12 @@ function rstg.chainlimit_check(p_val, g, e, rp, tp)
 end
 function rscon.sumtyps(typ)
 	return function(e, tp)
-		return scl.cond_is_summon_type(s.sum_list[typ], false)(e, tp)
+		return scl.cond_check_summon_type(s.sum_list[typ], false)(e, tp)
 	end
 end
 function rscon.sumtypf(typ)
 	return function(e, tp, eg)
-		return scl.cond_is_summon_type(s.sum_list[typ], true)(e, tp, eg)
+		return scl.cond_check_summon_type(s.sum_list[typ], true)(e, tp, eg)
 	end
 end
 s.effect_type_list = {
@@ -998,34 +1017,44 @@ function rscon.neg(dn_filter, pl_fun)
 		return scl.negate_activation_or_effect_con("NegateActivation", { f, pl_fun })
 	end
 end
-rscon.excard = scl.cond_is_card_exists
-rscon.excard2 = scl.cond_is_card_faceup_exists
-function rscon.sumtolz(link_filter, sum_filter)
-	return function(e, tp, eg, ep, ev, re, r, rp)
-		local c = e:GetHandler()
-		local zone = 0
-		local link_group = Group.CreateGroup()
-		if rsof.Check_Boolean(link_filter) then
-			link_group = rsgf.Mix2(c)
-		else
-			link_group = Duel.GetMatchingGroup(link_filter, tp, LOCATION_MZONE, LOCATION_MZONE, nil, e, tp, eg, ep, ev, re, rp)
-		end
-		for tc in aux.Next(link_group) do
-			zone = zone | tc:GetLinkedZone(tp)
-		end
-		return eg:IsExists(rscon.sumtolz_filter, 1, nil, zone, sum_filter, e, tp, eg, ep, ev, re, rp)
+function rscon.excard(...)
+	local arr = { ... }
+	return function(...)
+		return scl.cond_check_cards(false, table.unpack(arr))(...)
 	end
+end
+function rscon.excard2(...)
+	local arr = { ... }
+	return function(...)
+		return scl.cond_check_cards(true, table.unpack(arr))(...)
+	end
+end
+function rscon.sumtolz(link_filter, sum_filter)
+    return function(e, tp, eg, ep, ev, re, r, rp)
+        local c = e:GetHandler()
+        local zone = 0
+        local link_group = Group.CreateGroup()
+        if rsof.Check_Boolean(link_filter) then
+            link_group = rsgf.Mix2(c)
+        else
+            link_group = Duel.GetMatchingGroup(link_filter, tp, LOCATION_MZONE, LOCATION_MZONE, nil, e, tp, eg, ep, ev, re, rp)
+        end
+        for tc in aux.Next(link_group) do
+            zone = zone | tc:GetLinkedZone(tp)
+        end
+        return eg:IsExists(rscon.sumtolz_filter, 1, nil, zone, sum_filter, e, tp, eg, ep, ev, re, rp)
+    end
 end 
 function rscon.sumtolz_filter(c, zone, sum_filter, e, tp, eg, ep, ev, re, rp)
-	if sum_filter and not sum_filter(c, e, tp, eg, ep, ev, re, rp) then return false end
-	local seq = c:GetSequence()
-	if c:IsLocation(LOCATION_MZONE) then
-		if c:IsControler(1 - tp) then seq = seq + 16 end
-	else
-		seq = c:GetPreviousSequence()
-		if c:GetPreviousControler() == 1 - tp then seq = seq + 16 end
-	end
-	return bit.extract(zone, seq) ~= 0
+    if sum_filter and not sum_filter(c, e, tp, eg, ep, ev, re, rp) then return false end
+    local seq = c:GetSequence()
+    if c:IsLocation(LOCATION_MZONE) then
+        if c:IsControler(1 - tp) then seq = seq + 16 end
+    else
+        seq = c:GetPreviousSequence()
+        if c:GetPreviousControler() == 1 - tp then seq = seq + 16 end
+    end
+    return bit.extract(zone, seq) ~= 0
 end
 function rsop.SelectExPara(a1, ...) 
 	return Scl.SetExtraSelectAndOperateParama(s.ctgy_list[a1], ...)
@@ -1060,15 +1089,15 @@ end
 rsop.GetOperatedCorrectlyCount = Scl.GetCorrectlyOperatedCount
 rsop.CheckOperateCorrectly = Scl.IsCorrectlyOperated
 function rsop.ToDeckDraw(dp, dct, is_break, check_count) 
-	local res, ct, g = rsop.CheckOperateCorrectly(rsloc.de, check_count)
-	if not res then return 0 end
-	if g:IsExists(Card.IsLocation, 1, nil, LOCATION_DECK) then
-		Duel.ShuffleDeck(dp)
-	end
-	if is_break then
-		Duel.BreakEffect()
-	end
-	return Duel.Draw(dp, dct, REASON_EFFECT)
+    local res, ct, g = rsop.CheckOperateCorrectly(rsloc.de, check_count)
+    if not res then return 0 end
+    if g:IsExists(Card.IsLocation, 1, nil, LOCATION_DECK) then
+        Duel.ShuffleDeck(dp)
+    end
+    if is_break then
+        Duel.BreakEffect()
+    end
+    return Duel.Draw(dp, dct, REASON_EFFECT)
 end 
 rsop.SendtoHand = Scl.Send2Hand
 function rsop.MoveToField_Activate(tc, movep, targetp, zone, pos, enable, zone)
@@ -1108,26 +1137,26 @@ function rscf.DefineCard(code, inside_series_str)
 	return m, cm 
 end
 function rscf.DefineSet(setmeta, seriesstring, type_int)
-	local prefixlist1 = { "", "Fus", "Link", "Pre", "Ori" } 
-	local prefixlist1_fun = { "", "Fusion", "Link", "Previous", "Original" }
-	local prefixlist2 = { "", "M", "S", "T", "ST" } 
-	local prefixlist2_fun = { nil, TYPE_MONSTER, TYPE_SPELL, TYPE_TRAP, TYPE_SPELL + TYPE_TRAP }
-	local suffixlist1 = { "", "_th", "_tg", "_td", "_rm", "_sp1", "_sp2" }
-	local suffixlist1_fun = { nil, Card.IsAbleToHand, Card.IsAbleToGrave, Card.IsAbleToDeck, Card.IsAbleToRemove, rscf.spfilter(), rscf.spfilter2() }
-	type_int = type_int or "" 
-	for idx1, prefix1 in pairs(prefixlist1) do 
-		for idx2, prefix2 in pairs(prefixlist2) do
-			for idx3, suffix1 in pairs(suffixlist1) do 
-				setmeta["Is"..prefix1.."Set"..prefix2..type_int..suffix1] = rscf.DefineSet_Fun(prefixlist1_fun[idx1], prefixlist2_fun[idx2], suffixlist1_fun[idx3], seriesstring)
-			end
-		end
-	end
+    local prefixlist1 = { "", "Fus", "Link", "Pre", "Ori" } 
+    local prefixlist1_fun = { "", "Fusion", "Link", "Previous", "Original" }
+    local prefixlist2 = { "", "M", "S", "T", "ST" } 
+    local prefixlist2_fun = { nil, TYPE_MONSTER, TYPE_SPELL, TYPE_TRAP, TYPE_SPELL + TYPE_TRAP }
+    local suffixlist1 = { "", "_th", "_tg", "_td", "_rm", "_sp1", "_sp2" }
+    local suffixlist1_fun = { nil, Card.IsAbleToHand, Card.IsAbleToGrave, Card.IsAbleToDeck, Card.IsAbleToRemove, rscf.spfilter(), rscf.spfilter2() }
+    type_int = type_int or "" 
+    for idx1, prefix1 in pairs(prefixlist1) do 
+        for idx2, prefix2 in pairs(prefixlist2) do
+            for idx3, suffix1 in pairs(suffixlist1) do 
+                setmeta["Is"..prefix1.."Set"..prefix2..type_int..suffix1] = rscf.DefineSet_Fun(prefixlist1_fun[idx1], prefixlist2_fun[idx2], suffixlist1_fun[idx3], seriesstring)
+            end
+        end
+    end
 end
 function rscf.DefineSet_Fun(prefix1, prefix2, suffix1, seriesstring)
-	return function(c, ...)
-		return rscf["Check"..prefix1.."SetCard"](c, seriesstring) and (not prefix2 or c:IsType(prefix2))
-			and (not suffix1 or suffix1(c, ...))
-	end
+    return function(c, ...)
+        return rscf["Check"..prefix1.."SetCard"](c, seriesstring) and (not prefix2 or c:IsType(prefix2))
+            and (not suffix1 or suffix1(c, ...))
+    end
 end
 function s.get_quick_buff_new_arr(...)
 	local arr = { ... }
@@ -1169,7 +1198,7 @@ function rscf.GetSelf(e)
 	return c2
 end 
 function rscf.GetFaceUpSelf(e)
-	local c1, c2 = Scl.GetFaceupActivateCard()
+	local c1, c2 = Scl.GetActivateCard(true)
 	return c2
 end
 function rscf.AddSpecialSummonProcdure(reg_obj, zone, con, tg, op, desc_obj, lim_obj, val, rst_obj)
@@ -1202,10 +1231,10 @@ rscf.IsDarkSynchro = Scl.IsDarkSynchro
 rscf.IsDarkTuner = Scl.IsDarkTuner
 rscf.DarkTuner = Scl.DarkTuner
 function rscf.fufilter(f, ...)
-	local ext_paramms = { ... }
-	return  function(target)
-				return f(target, table.unpack(ext_paramms)) and target:IsFaceup()
-			end
+    local ext_paramms = { ... }
+    return  function(target)
+                return f(target, table.unpack(ext_paramms)) and target:IsFaceup()
+            end
 end
 function rscf.spfilter(f1, ...)
 	local list = { ... }
@@ -1265,7 +1294,7 @@ function rshint.Select(p, hint_obj)
 	if type(hint_obj) == "string" then
 		hint_obj = s.ctgy_list[hint_obj]
 	end
-	return Scl.SelectHint(p, hint_obj)
+	return Scl.HintSelect(p, hint_obj)
 end
 rshint.Card = Scl.HintCard
 function rshint.SelectYesNo(v1, v2, ...)
@@ -1276,8 +1305,12 @@ function rshint.SelectYesNo(v1, v2, ...)
 	return Scl.SelectYesNo(v1, new_hint, ...)
 end
 function rshint.SelectOption(...)
+	local arr = { ... }
 	local new_arr = { }
-	for _, elm in pairs({ ... }) do
+	for idx, elm in pairs(arr) do
+		if idx == #arr and idx & 1 == 1 then
+			break 
+		end
 		if type(elm) == "string" then
 			table.insert(new_arr, s.ctgy_list[elm])
 		else
@@ -1362,7 +1395,7 @@ rscon.negcon = function(dn_filter, pl_fun)
 			dn_filter = dn_list[dn_filter]
 		end
 		if pl_fun then pl_fun = pl_fun and 1 or 0 end
-		return rscon.neg(dn_filter, pl_fun)(...)
+		return rscon.disneg("neg", dn_filter, pl_fun)(...)
 	end
 end
 rscon.discon = function(dn_filter, pl_fun)
@@ -1372,7 +1405,7 @@ rscon.discon = function(dn_filter, pl_fun)
 			dn_filter = dn_list[dn_filter]
 		end
 		if pl_fun then pl_fun = pl_fun and 1 or 0 end
-		return rscon.dis(dn_filter, pl_fun)(...)
+		return rscon.disneg("dis", dn_filter, pl_fun)(...)
 	end
 end
 rsef.QO_NEGATE = function(reg_list, dn_type, lim_list, dn_str, range, con, cost, desc_list, cate, flag, reset_list)
@@ -1462,200 +1495,200 @@ function rsgf.SelectOperate(sel_hint, g, sp, filter, minct, maxct, except_obj, s
 end
 
 function rsef.INDESTRUCTABLE_List(inds_list)
-	local inds_list2 = string.gsub(inds_list, "battle", "indb")
-	inds_list2 = string.gsub(inds_list2, "effect", "inde")
-	inds_list2 = string.gsub(inds_list2, "ct", "indct")
-	inds_list2 = string.gsub(inds_list2, "all", "ind")
-	return inds_list2
+    local inds_list2 = string.gsub(inds_list, "battle", "indb")
+    inds_list2 = string.gsub(inds_list2, "effect", "inde")
+    inds_list2 = string.gsub(inds_list2, "ct", "indct")
+    inds_list2 = string.gsub(inds_list2, "all", "ind")
+    return inds_list2
 end
 --Single Val Effect: Cannot destroed 
 function rsef.SV_INDESTRUCTABLE(reg_list, inds_list, val_list, con, reset_list, flag, desc_list, lim_list)
-	local inds_list2 = rsef.INDESTRUCTABLE_List(inds_list)
-	return rsef.SV_Card(reg_list, inds_list2, val_list, nil, flag, con, reset_list, desc_list, lim_list)
+    local inds_list2 = rsef.INDESTRUCTABLE_List(inds_list)
+    return rsef.SV_Card(reg_list, inds_list2, val_list, nil, flag, con, reset_list, desc_list, lim_list)
 end
 --Field Val Effect: Cannot destroed 
 function rsef.FV_INDESTRUCTABLE(reg_list, inds_list, val_list, tg, tg_range_list, con, reset_list, flag, desc_list)
-	local inds_list2 = rsef.INDESTRUCTABLE_List(inds_list)
-	return rsef.FV_Card(reg_list, inds_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list, lim_list)
+    local inds_list2 = rsef.INDESTRUCTABLE_List(inds_list)
+    return rsef.FV_Card(reg_list, inds_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list, lim_list)
 end
 --Single Val Effect: Immue effects
 function rsef.SV_IMMUNE_EFFECT(reg_list, val, con, reset_list, flag, desc_list)
-	return rsef.SV_Card(reg_list, "im", val, flag, nil, con, reset_list, desc_list)
+    return rsef.SV_Card(reg_list, "im", val, flag, nil, con, reset_list, desc_list)
 end
 --Field Val Effect: Immue effects
 function rsef.FV_IMMUNE_EFFECT(reg_list, val, tg, tg_range_list, con, reset_list, flag, desc_list)
-	return rsef.FV_Card(reg_list, "im", val, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
+    return rsef.FV_Card(reg_list, "im", val, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
 end
 --Single Val Effect: Directly set ATK & DEF 
 function rsef.SV_SET(reg_list, set_list, val_list, con, reset_list, flag, desc_list)
-	return rsef.SV_Card(reg_list, set_list, val_list, flag, nil, con, reset_list, desc_list)
+    return rsef.SV_Card(reg_list, set_list, val_list, flag, nil, con, reset_list, desc_list)
 end
 --Single Val Effect: Directly set other card attribute, except ATK & DEF
 function rsef.SV_CHANGE(reg_list, change_list, val_list, con, reset_list, flag, desc_list)
-	return rsef.SV_Card(reg_list, change_list, val_list, flag, nil, con, reset_list, desc_list)
+    return rsef.SV_Card(reg_list, change_list, val_list, flag, nil, con, reset_list, desc_list)
 end
 --Field Val Effect: Directly set other card attribute, except ATK & DEF
 function rsef.FV_CHANGE(reg_list, change_list, val_list, tg, tg_range_list, con, reset_list, flag, desc_list)
-	return rsef.FV_Card(reg_list, change_list, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
+    return rsef.FV_Card(reg_list, change_list, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
 end
 --Single Val Effect: Update attribute 
 function rsef.SV_UPDATE(reg_list, up_list, val_list, con, reset_list, flag, desc_list)
-	local str_list = Scl.UniformSclParamaFormat(up_list)
+    local str_list = Scl.UniformSclParamaFormat(up_list)
 	local str = ""
-	for idx, string in pairs(str_list) do
+    for idx, string in pairs(str_list) do
 		if idx > 1 then
 			str = str .. ","
 		end
 		str = str .. string .. "+"
-	end
-	return rsef.SV_Card(reg_list, str, val_list, flag, nil, con, reset_list, desc_list)
+    end
+    return rsef.SV_Card(reg_list, str, val_list, flag, nil, con, reset_list, desc_list)
 end 
 --Field Val Effect: Updata some card attributes
 function rsef.FV_UPDATE(reg_list, up_list, val_list, tg, tg_range_list, con, reset_list, flag, desc_list)
-	local str_list = Scl.UniformSclParamaFormat(up_list)
+    local str_list = Scl.UniformSclParamaFormat(up_list)
 	local str = ""
-	for idx, string in pairs(str_list) do
+    for idx, string in pairs(str_list) do
 		if idx > 1 then
 			str = str .. ","
 		end
 		str = str .. string .. "+"
-	end
-	return rsef.FV_Card(reg_list, str, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
+    end
+    return rsef.FV_Card(reg_list, str, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
 end
 --Single Val Effect: Add attribute
 function rsef.SV_ADD(reg_list, add_list, val_list, con, reset_list, flag, desc_list)
-	return rsef.SV_UPDATE(reg_list, add_list, val_list, flag, nil, con, reset_list, desc_list)
+    return rsef.SV_UPDATE(reg_list, add_list, val_list, flag, nil, con, reset_list, desc_list)
 end
 --Field Val Effect: Directly set other card attribute, except ATK & DEF
 function rsef.FV_ADD(reg_list, add_list, val_list, tg, tg_range_list, con, reset_list, flag, desc_list)
-	return rsef.FV_UPDATE(reg_list, add_list, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
+    return rsef.FV_UPDATE(reg_list, add_list, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
 end
 --Single Val Effect: Material lim_
 function rsef.SV_CANNOT_BE_MATERIAL(reg_list, mat_list, val_list, con, reset_list, flag, desc_list)
-	local flag2 = rsef.GetRegisterProperty(nil, flag)
-	flag2 = flag2 | (EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE) 
-	local str_list = Scl.UniformSclParamaFormat(mat_list)
-	local str_list2 = { }
-	local string2
-	for _, string in pairs(str_list) do
-		string2 = string.sub(string,1,1)
-		table.insert(str_list2, string2.."mat~")
-	end
-	return rsef.SV_Card(reg_list, str_list2, val_list, flag2, nil, con, reset_list, desc_list)
+    local flag2 = rsef.GetRegisterProperty(nil, flag)
+    flag2 = flag2 | (EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE) 
+    local str_list = Scl.UniformSclParamaFormat(mat_list)
+    local str_list2 = { }
+    local string2
+    for _, string in pairs(str_list) do
+        string2 = string.sub(string,1,1)
+        table.insert(str_list2, string2.."mat~")
+    end
+    return rsef.SV_Card(reg_list, str_list2, val_list, flag2, nil, con, reset_list, desc_list)
 end
 --Single Val Effect: Cannot be battle or card effect target
 function rsef.SV_CANNOT_BE_TARGET(reg_list, tg_list, val_list, con, reset_list, flag, desc_list)
-	local tg_list2 = string.gsub(tg_list, "battle", "tgb~")
-	tg_list2 = string.gsub(tg_list2, "effect", "tge~")
-	return rsef.SV_Card(reg_list, tg_list2, val_list, flag, nil, con, reset_list, desc_list)
+    local tg_list2 = string.gsub(tg_list, "battle", "tgb~")
+    tg_list2 = string.gsub(tg_list2, "effect", "tge~")
+    return rsef.SV_Card(reg_list, tg_list2, val_list, flag, nil, con, reset_list, desc_list)
 end
 --Field Val Effect: Cannot be battle or card effect target
 function rsef.FV_CANNOT_BE_TARGET(reg_list, tg_list, val_list, tg, tg_range_list, con, reset_list, flag, desc_list)
-	local tg_list2 = string.gsub(tg_list, "battle", "tgb~")
-	tg_list2 = string.gsub(tg_list2, "effect", "tge~")
-	return rsef.FV_Card(reg_list, tg_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
+    local tg_list2 = string.gsub(tg_list, "battle", "tgb~")
+    tg_list2 = string.gsub(tg_list2, "effect", "tge~")
+    return rsef.FV_Card(reg_list, tg_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
 end
 --Cannot disable 
 function rsef.CANNOT_DISABLE_List(dis_list)
-	local compare_list = { ["dise"] = "dise~", ["dis"] = "dis~", ["act"] = "neg~", ["sum"] = "dsum~", ["sp"] = "dsp~", ["fp"] = "dfp", ["neg"] = "neg~" }
-	local dis_list2 = Scl.SplitString(dis_list,",")
-	local dis_list3 = ""
-	for _, str in pairs(dis_list2) do 
-		dis_list3 = dis_list3 .. compare_list[str] .. ","
-	end
-	dis_list3 = string.sub(dis_list3, 1, -2)
-	return dis_list3
+    local compare_list = { ["dise"] = "dise~", ["dis"] = "dis~", ["act"] = "neg~", ["sum"] = "dsum~", ["sp"] = "dsp~", ["fp"] = "dfp", ["neg"] = "neg~" }
+    local dis_list2 = Scl.SplitString(dis_list,",")
+    local dis_list3 = ""
+    for _, str in pairs(dis_list2) do 
+        dis_list3 = dis_list3 .. compare_list[str] .. ","
+    end
+    dis_list3 = string.sub(dis_list3, 1, -2)
+    return dis_list3
 end
 --Single Val Effect: Cannot disable 
 function rsef.SV_CANNOT_DISABLE(reg_list, dis_list, val_list, con, reset_list, flag, desc_list, range)
-	local dis_list2 = rsef.CANNOT_DISABLE_List(dis_list)
-	return rsef.SV_Card(reg_list, dis_list2, val_list, flag, range, con, reset_list, desc_list)
+    local dis_list2 = rsef.CANNOT_DISABLE_List(dis_list)
+    return rsef.SV_Card(reg_list, dis_list2, val_list, flag, range, con, reset_list, desc_list)
 end
 function rsef.SV_CANNOT_DISABLE_val(e, ct)
-	local te = Duel.GetChainInfo(ct, CHAININFO_TRIGGERING_EFFECT)
-	return te:GetHandler() == e:GetHandler()
+    local te = Duel.GetChainInfo(ct, CHAININFO_TRIGGERING_EFFECT)
+    return te:GetHandler() == e:GetHandler()
 end
 --Field Val Effect: Cannot Disable 
 function rsef.FV_CANNOT_DISABLE(reg_list, dis_list, val_list, tg, tg_range_list, con, reset_list, flag, desc_list) 
-	local dis_list2 = rsef.CANNOT_DISABLE_List(dis_list)
-	return rsef.FV_Card(reg_list, dis_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
+    local dis_list2 = rsef.CANNOT_DISABLE_List(dis_list)
+    return rsef.FV_Card(reg_list, dis_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
 end
 --Limit List 
 function rsef.LIMIT_List(lim_list) 
-	local str_list = Scl.UniformSclParamaFormat(lim_list)
-	local str_list2 = { }
-	for _, string in pairs(str_list) do
-		if string ~= "dis" and string ~= "distm" and string ~= "dise"
-			and  string ~= "sbp" and string ~= "sm1" and string ~= "sm2" 
-				and string ~= "sdp" and  string ~= "ssp" then
-			string = string.."~"
-		end
-		string = string.gsub(string, "datk~", "atkd~")
-		table.insert(str_list2, string)
-	end 
-	return str_list2
+    local str_list = Scl.UniformSclParamaFormat(lim_list)
+    local str_list2 = { }
+    for _, string in pairs(str_list) do
+        if string ~= "dis" and string ~= "distm" and string ~= "dise"
+            and  string ~= "sbp" and string ~= "sm1" and string ~= "sm2" 
+                and string ~= "sdp" and  string ~= "ssp" then
+            string = string.."~"
+        end
+        string = string.gsub(string, "datk~", "atkd~")
+        table.insert(str_list2, string)
+    end 
+    return str_list2
 end
 --Single Val Effect: Other Limit
 function rsef.SV_LIMIT(reg_list, lim_list, val_list, con, reset_list, flag, desc_list)
-	local str_list2 = rsef.LIMIT_List(lim_list)
-	return rsef.SV_Card(reg_list, str_list2, val_list, flag, nil, con, reset_list, desc_list)
+    local str_list2 = rsef.LIMIT_List(lim_list)
+    return rsef.SV_Card(reg_list, str_list2, val_list, flag, nil, con, reset_list, desc_list)
 end
 --Field Val Effect: Other Limit
 function rsef.FV_LIMIT(reg_list, lim_list, val_list, tg, tg_range_list, con, reset_list, flag, desc_list) 
-	local str_list2 = rsef.LIMIT_List(lim_list)
-	return rsef.FV_Card(reg_list, str_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
+    local str_list2 = rsef.LIMIT_List(lim_list)
+    return rsef.FV_Card(reg_list, str_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
 end
 --Field Val Effect: Other Limit (affect Player)
 function rsef.FV_LIMIT_PLAYER(reg_list, lim_list, val_list, tg, tg_range_list, con, reset_list, flag, desc_list) 
-	local str_list2 = rsef.LIMIT_List(lim_list)
-	return rsef.FV_Player(reg_list, str_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
+    local str_list2 = rsef.LIMIT_List(lim_list)
+    return rsef.FV_Player(reg_list, str_list2, val_list, tg, tg_range_list, flag, nil, con, reset_list, desc_list)
 end
 --Leave field list
 function rsef.REDIRECT_LIST(leave_list)
-	local str_list = Scl.UniformSclParamaFormat(leave_list)
-	local str_list2 = { }
-	for _, string in pairs(str_list) do
-		if string == "leave" then 
-			table.insert(str_list2, "rlf")  
-		else
-			table.insert(str_list2, "r"..string)
-		end
-	end
-	return str_list2
+    local str_list = Scl.UniformSclParamaFormat(leave_list)
+    local str_list2 = { }
+    for _, string in pairs(str_list) do
+        if string == "leave" then 
+            table.insert(str_list2, "rlf")  
+        else
+            table.insert(str_list2, "r"..string)
+        end
+    end
+    return str_list2
 end
 --Single Val Effect: Leave field redirect 
 function rsef.SV_REDIRECT(reg_list, leave_list, val_list, con, reset_list, flag, desc_list) 
-	local str_list2 = rsef.REDIRECT_LIST(leave_list)
-	return rsef.SV_Card(reg_list, str_list2, val_list, flag, nil, con, reset_list, desc_list)
+    local str_list2 = rsef.REDIRECT_LIST(leave_list)
+    return rsef.SV_Card(reg_list, str_list2, val_list, flag, nil, con, reset_list, desc_list)
 end
 --Field Val Effect: Leave field redirect 
 function rsef.FV_REDIRECT(reg_list, leave_list, val_list, tg, tg_range_list, con, reset_list, flag, desc_list) 
-	local str_list2 = rsef.REDIRECT_LIST(leave_list)
-	local flag2 = rsef.GetRegisterProperty(nil, flag) | (EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE) 
-	if tg_range_list and (tg_range_list[1] == 0xff and tg_range_list[2] == 0xff) then 
-		flag2 = flag2 | EFFECT_FLAG_IGNORE_RANGE 
-	end
-	return rsef.FV_Card(reg_list, str_list2, val_list, tg, tg_range_list, flag2, nil, con, reset_list, desc_list)
+    local str_list2 = rsef.REDIRECT_LIST(leave_list)
+    local flag2 = rsef.GetRegisterProperty(nil, flag) | (EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE) 
+    if tg_range_list and (tg_range_list[1] == 0xff and tg_range_list[2] == 0xff) then 
+        flag2 = flag2 | EFFECT_FLAG_IGNORE_RANGE 
+    end
+    return rsef.FV_Card(reg_list, str_list2, val_list, tg, tg_range_list, flag2, nil, con, reset_list, desc_list)
 end
 --Single Val Effect: Activate Trap / Quick Spell immediately
 function rsef.SV_ACTIVATE_IMMEDIATELY(reg_list, act_list, con, reset_list, flag, desc_list) 
-	local act_list2 
-	local reg_owner, reg_handler = Scl.GetRegisterInfo(reg_list)
-	if reg_handler:IsComplexType(TYPE_QUICKPLAY + TYPE_SPELL) then
-		act_list2 = string.gsub(act_list, "hand", "qah")
-		act_list2 = string.gsub(act_list2, "set", "qas")
-	elseif reg_handler:IsComplexType(TYPE_TRAP) then
-		act_list2 = string.gsub(act_list, "hand", "tah")
-		act_list2 = string.gsub(act_list2, "set", "tas")
-	end
-	return rsef.SV_Card(reg_list, act_list2, 1, flag, 0xff, con, reset_list, desc_list)
+    local act_list2 
+    local reg_owner, reg_handler = Scl.GetRegisterInfo(reg_list)
+    if reg_handler:IsComplexType(TYPE_QUICKPLAY + TYPE_SPELL) then
+        act_list2 = string.gsub(act_list, "hand", "qah")
+        act_list2 = string.gsub(act_list2, "set", "qas")
+    elseif reg_handler:IsComplexType(TYPE_TRAP) then
+        act_list2 = string.gsub(act_list, "hand", "tah")
+        act_list2 = string.gsub(act_list2, "set", "tas")
+    end
+    return rsef.SV_Card(reg_list, act_list2, 1, flag, 0xff, con, reset_list, desc_list)
 end
 --cost: tribute self 
 function rscost.releaseself(check_mzone, check_exzone)
-	return function(e, tp, eg, ep, ev, re, r, rp, chk)
-		local c = e:GetHandler()
-		if chk == 0 then return c:IsReleasable() and (not check_mzone or Duel.GetMZoneCount(tp, c, tp) > 0) and (not check_exzone or Duel.GetLocationCountFromEx(tp, tp, c, exmzone) > 0) end
-		Duel.Release(c, REASON_COST)
-	end
+    return function(e, tp, eg, ep, ev, re, r, rp, chk)
+        local c = e:GetHandler()
+        if chk == 0 then return c:IsReleasable() and (not check_mzone or Duel.GetMZoneCount(tp, c, tp) > 0) and (not check_exzone or Duel.GetLocationCountFromEx(tp, tp, c, exmzone) > 0) end
+        Duel.Release(c, REASON_COST)
+    end
 end
 rsof.Table_List = Scl.IsArrayContains_Single

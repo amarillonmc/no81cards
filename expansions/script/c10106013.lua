@@ -1,78 +1,36 @@
 --异位魔的威信
-function c10106013.initial_effect(c)
-	--Activate
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0x1e0)
-	c:RegisterEffect(e1)
-	--tohand
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(10106013,0))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_FIELD)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,10106013)
-	e2:SetTarget(c10106013.thtg)
-	e2:SetOperation(c10106013.thop)
-	c:RegisterEffect(e2)
-	--tohand
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(10106013,1))
-	e3:SetCategory(CATEGORY_SUMMON) 
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_TO_HAND)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1)
-	e3:SetCondition(c10106013.sumcon)
-	e3:SetTarget(c10106013.sumtg)
-	e3:SetOperation(c10106013.sumop)
-	c:RegisterEffect(e3)
+if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
+local s,id = GetID()
+function s.initial_effect(c)
+	aux.AddCodeList(c,10106003)
+	local e1 = Scl.CreateActivateEffect(c)
+	local e2 = Scl.CreateQuickOptionalEffect(c, nil, "Look", 1,
+		"SpecialSummonFromDeck/Extra", nil, "Spell&TrapZone", nil, nil, 
+		{ "~Target", "Dummy", aux.TRUE, 0, "Deck,Extra" }, s.spop)
+	local e2 = Scl.CreateQuickOptionalEffect(c, nil, "Equip", 1, 
+		"Equip", "Target", "Spell&TrapZone", nil, nil, {
+		{ "Target", "Dummy", Card.IsFaceup, "MonsterZone", "MonsterZone" },
+		{ "~Target", "Equip", s.eqfilter, "Hand,Deck,GY" } }, s.eqop)
 end
-function c10106013.sumcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c10106013.cfilter2,1,nil,tp)
+function s.spfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp) and Duel.GetLocationCount( 1- tp,LOCATION_MZONE ) > 0
 end
-function c10106013.cfilter2(c,tp)
-	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsControler(tp)
-end
-function c10106013.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c10106013.sumfilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,tp,LOCATION_HAND)
-end
-function c10106013.sumfilter(c)
-	return c:IsSetCard(0x3338) and c:IsSummonable(true,nil)
-end
-function c10106013.sumop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-	local tc=Duel.SelectMatchingCard(tp,c10106013.sumfilter,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
-	if tc then
-	   Duel.Summon(tp,tc,true,nil)
+function s.spop(e,tp)
+	local g = Duel.GetFieldGroup(tp,0,LOCATION_DECK+LOCATION_EXTRA)
+	if #g == 0 then return end
+	Duel.ConfirmCards(tp, g) 
+	if g:IsExists(s.spfilter,1,nil,e,tp) and Scl.SelectYesNo(tp, "SpecialSummon") then
+		local sg = g:FilterSelect(tp, s.spfilter, 1, 1, nil, e, tp)
+		Scl.HintSelection(sg)
+		Scl.AddSingleBuff(nil, "NegateEffect,NegateActivatedEffect", 1)
+		Scl.SpecialSummon(sg,0,1-tp,1-tp,false,false,POS_FACEUP)
 	end
 end
-function c10106013.cfilter(c)
-	return c:IsSetCard(0x3338) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
+function s.eqfilter(c,e,tp)
+	return (c:GetOriginalLevel() == 1 or c:GetOriginalLevel() == 4) and c:IsSetCard(0x3338) and Scl.GetSZoneCount(tp) > 0 and not c:IsForbidden()
 end
-function c10106013.thfilter(c,ec)
-	return c:IsAbleToHand() and c:IsLevel(ec:GetLevel()) and not c:IsCode(ec:GetCode()) and c:IsSetCard(0x3338)
-end
-function c10106013.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then 
-	   local ec=eg:GetFirst()
-	   return eg:GetCount()==1 and ec:IsControler(tp) and ec:IsFaceup() and ec:IsSetCard(0x3338) and Duel.IsExistingMatchingCard(c10106013.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,ec)
-	end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
-end
-function c10106013.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c10106013.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,eg:GetFirst())
-	if g:GetCount()>0 then
-	   Duel.SendtoHand(g,nil,REASON_EFFECT)
-	   Duel.ConfirmCards(1-tp,g)
-	end
+function s.eqop(e,tp)
+	local _,tc = Scl.GetTargetsReleate2Chain(Card.IsFaceup)
+	if not tc then return end
+	Scl.SelectAndOperateCards("Equip",tp,aux.NecroValleyFilter(s.eqfilter),tp,"Hand,Deck,GY",0,1,1,nil,e,tp)(tc)
 end
