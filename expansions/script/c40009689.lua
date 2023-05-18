@@ -67,10 +67,10 @@ function cm.costcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.costchk(e,te_or_c,tp)
 	local ct=Duel.GetFlagEffect(tp,m)
-	return Duel.CheckLPCost(tp,ct*500)
+	return Duel.CheckLPCost(tp,ct*600)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.PayLPCost(tp,500)
+	Duel.PayLPCost(tp,600)
 end
 function cm.xyzcon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_FZONE,0,1,nil) or Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_FZONE,1,nil)

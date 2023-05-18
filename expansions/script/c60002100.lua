@@ -23,15 +23,15 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local atk=0
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,52340445,0,TYPES_TOKEN_MONSTER,atk,atk,1,RACE_WARRIOR,ATTRIBUTE_DARK,POS_FACEUP_DEFENSE) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,60002130,0,TYPES_TOKEN_MONSTER,atk,atk,1,RACE_WARRIOR,ATTRIBUTE_DARK,POS_FACEUP_DEFENSE) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local atk=0
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,52340445,0,TYPES_TOKEN_MONSTER,atk,atk,1,RACE_WARRIOR,ATTRIBUTE_DARK,POS_FACEUP_DEFENSE) then return end
-	local token=Duel.CreateToken(tp,52340445)
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,60002130,0,TYPES_TOKEN_MONSTER,atk,atk,1,RACE_WARRIOR,ATTRIBUTE_DARK,POS_FACEUP_DEFENSE) then return end
+	local token=Duel.CreateToken(tp,60002130)
 	if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -45,7 +45,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		token:RegisterEffect(e2)
 	end
 	Duel.SpecialSummonComplete()
-	local token=Duel.CreateToken(tp,52340445)
+	local token=Duel.CreateToken(tp,60002131)
 	if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)

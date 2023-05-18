@@ -1,5 +1,7 @@
 fpjdiy={}
 zhc_lhq_xw='统御群星的至高至上之神||于星云辉灿之处割裂昏晓，以无匹的伟力制裁邪恶！||群星的君王！龙辉巧-仙王流星=CEP！光临！！'
+zhc_lhq_xw_1='暗淡的星，再次开始闪烁'
+zhc_lhq_xw_2='无数的光辉合而为一，现在，我们可吞噬万物'
 zhc_lhq_tx='隐匿于星辰晦暗之处，且以光明为饵||行绝命之构陷藏于，螯针之中的猛毒！||龙仪巧-天蝎流星=SCO！光临！！'
 zhc_lhq_lh='以猎弓射落煌煌大日，栖身于星云璀璨之地||以流星击坠来犯之敌！||龙仪巧-猎户流星=QRI！光临！'
 zhc_lhq_by='着无暇之毫庇护良善||以星之荣光救赎灾厄，化作永恒闪耀的新星！||龙仪巧-白羊流星=ARI！光临！！'
@@ -53,24 +55,26 @@ function fpjdiy.isNormalSpecialSummoned(card)
 		return true
 	elseif summonType == SUMMON_TYPE_LINK and bit.band(cardType, TYPE_LINK) ~= 0 then
 		return true
+	elseif card:IsCode(11612634) then
+		return true
 	else
 		return false
 	end
 end
 --检测是否为正规特招出场
 function fpjdiy.splitString(inputString, separator)
-    local result = {}
-    local i = 1
-    for str in string.gmatch(inputString, "([^" .. separator .. "]+)") do
-        result[i] = str
-        i = i + 1
-    end
-    return result
+	local result = {}
+	local i = 1
+	for str in string.gmatch(inputString, "([^" .. separator .. "]+)") do
+		result[i] = str
+		i = i + 1
+	end
+	return result
 end
 
 function fpjdiy.printLines(inputString)
-    local lines = fpjdiy.splitString(inputString, "||")
-    for i, line in ipairs(lines) do
-        Debug.Message(line)
-    end
+	local lines = fpjdiy.splitString(inputString, "||")
+	for i, line in ipairs(lines) do
+		Debug.Message(line)
+	end
 end

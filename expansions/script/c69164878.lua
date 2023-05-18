@@ -56,6 +56,34 @@ function c69164878.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			return 
 		end
+		Myutant_diemc=Duel.IsExistingMatchingCard
+		Myutant_dsmc=Duel.SelectMatchingCard
+		Myutant_cost_check=true
+		Myutant_cost_check2=false
+		Duel.IsExistingMatchingCard=function(filter,player,s,o,ct,int,...)
+			if Myutant_cost_check or Myutant_cost_check2 then 
+				return Myutant_diemc(filter,player,s,o,ct,int,...)
+			end
+			Myutant_cost_check2=true
+			local Myutant_boolean=Myutant_diemc(filter,player,s,o|LOCATION_ONFIELD,ct,int,...)
+			Myutant_cost_check2=false
+			return Myutant_boolean
+		end
+		Duel.SelectMatchingCard=function(sel_player,filter,player,s,o,min,max,int,...)
+			if Myutant_cost_check or Myutant_cost_check2 then
+				return Myutant_dsmc(sel_player,filter,player,s,o,min,max,int,...)
+			end
+			Myutant_cost_check2=true
+			local Myutant_select=Myutant_dsmc(sel_player,filter,player,s,o|LOCATION_ONFIELD,min,max,int,...)
+			local Myutant_g=Duel.GetMatchingGroup(filter,player,s,o,int,...)
+			Myutant_g=Group.__band(Myutant_g,Myutant_select)
+			if #Myutant_g==0 then
+				Duel.Hint(HINT_CARD,0,69164878)
+				Duel.RegisterFlagEffect(player,69164878,RESET_PHASE+PHASE_END,0,1)
+			end
+			Myutant_cost_check2=false
+			return Myutant_select
+		end
 		for tc in aux.Next(g) do
 			table_effect={}
 			tc:ReplaceEffect(69164878,0)
@@ -63,19 +91,38 @@ function c69164878.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			for key,eff in ipairs(table_effect) do
 				local cost=eff:GetCost()
 				if cost then
-					if tc:GetOriginalCode()==6182103 then
-						eff:SetCost(c69164878.negcost)
-					elseif tc:GetOriginalCode()==26561172 then
-						eff:SetCost(c69164878.spcost)
-					elseif tc:GetOriginalCode()==43709490 then
-						eff:SetCost(c69164878.sp2cost)
-					elseif tc:GetOriginalLevel()<=4 then
-						eff:SetCost(c69164878.spcost2)
-					elseif tc:GetOriginalCode()==7574904 then
-						eff:SetCost(c69164878.rmcost)
-					else
-						eff:SetCost(c69164878.cost)
-					end
+					eff:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
+						if chk==0 then
+							if Duel.GetFlagEffect(tp,69164879)~=0 and Duel.GetFlagEffect(tp,69164878)==0 then
+								Myutant_cost_check=false
+								local Myutant_boolean=cost(e,tp,eg,ep,ev,re,r,rp,0)
+								Myutant_cost_check=true
+								return Myutant_boolean
+							end
+							return cost(e,tp,eg,ep,ev,re,r,rp,0)
+						end
+						if Duel.GetFlagEffect(tp,69164879)~=0 and Duel.GetFlagEffect(tp,69164878)==0 then
+							Myutant_cost_check=false
+							cost(e,tp,eg,ep,ev,re,r,rp,chk)
+							Myutant_cost_check=true
+							return 
+						end
+						cost(e,tp,eg,ep,ev,re,r,rp,chk)
+					end)
+					
+					--if tc:GetOriginalCode()==6182103 then
+					--  eff:SetCost(c69164878.negcost)
+					--elseif tc:GetOriginalCode()==26561172 then
+					--  eff:SetCost(c69164878.spcost)
+					--elseif tc:GetOriginalCode()==43709490 then
+					--  eff:SetCost(c69164878.sp2cost)
+					--elseif tc:GetOriginalLevel()<=4 then
+					--  eff:SetCost(c69164878.spcost2)
+					--elseif tc:GetOriginalCode()==7574904 then
+					--  eff:SetCost(c69164878.rmcost)
+					--else
+					--  eff:SetCost(c69164878.cost)
+					--end
 				end
 				cregister(tc,eff)
 			end

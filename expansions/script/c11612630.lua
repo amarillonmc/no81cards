@@ -80,8 +80,8 @@ function cm.efilter(e,re)
 end
 --2
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local ct1=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD+LOCATION_HAND,0)
-	local ct2=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD+LOCATION_HAND)
+	local ct1=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)
+	local ct2=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
 	if e:GetHandler():GetFlagEffect(m)<=0 then return false end
 	return ct1<ct2
 end

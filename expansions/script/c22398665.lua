@@ -16,10 +16,15 @@ function c22398665.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,22398665)
+	e2:SetCondition(c22398665.thcon)
 	e2:SetTarget(c22398665.thtg)
 	e2:SetOperation(c22398665.thop)
 	c:RegisterEffect(e2)
+end
+function c22398665.thcon(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsPlayerAffectedByEffect(tp,11612634) then
+		return true
+	else return Duel.GetFlagEffect(tp,22398665)<1 end
 end
 function c22398665.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x154) and c:IsAttackAbove(1000)
@@ -30,6 +35,7 @@ function c22398665.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,c22398665.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+	Duel.RegisterFlagEffect(tp,22398665,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function c22398665.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -6,8 +6,10 @@ function c33331900.initial_effect(c)
 	aux.AddFusionProcFun2(c,c33331900.mfilter1,c33331900.mfilter2,true) 
 	--remove and damage 
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(33331900,0))
 	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_DAMAGE) 
-	e1:SetType(EFFECT_TYPE_IGNITION) 
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE) 
 	e1:SetCountLimit(1) 
 	e1:SetCost(c33331900.radcost) 
@@ -16,6 +18,7 @@ function c33331900.initial_effect(c)
 	c:RegisterEffect(e1) 
 	--negate
 	local e2=Effect.CreateEffect(c) 
+	e2:SetDescription(aux.Stringid(33331900,1))
 	e2:SetCategory(CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
@@ -41,7 +44,7 @@ function c33331900.mfilter2(c)
 	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_THUNDER) 
 end 
 function c33331900.ctfil(c) 
-	return c:IsAbleToDeckAsCost() and c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)  
+	return c:IsAbleToDeckOrExtraAsCost() and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)  
 end 
 function c33331900.tdgck(g)  
 	return g:FilterCount(Card.IsAttribute,nil,ATTRIBUTE_LIGHT)==1 

@@ -1,6 +1,7 @@
 --龙纹·朱红凯撒
 local m=40010220
 local cm=_G["c"..m]
+cm.named_with_KaiserVermillion=1
 cm.named_with_Dragonic=1
 function cm.initial_effect(c)
 	--synchro summon
@@ -12,10 +13,14 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
-	e1:SetCost(cm.thcost)
-	e1:SetCondition(cm.atkcon)
-	e1:SetOperation(cm.atkop)
-	c:RegisterEffect(e1)   
+	e1:SetCondition(cm.atkcon1)
+	e1:SetOperation(cm.atkop1)
+	c:RegisterEffect(e1) 
+	local e2=e1:Clone()
+	e2:SetCondition(cm.atkcon2)
+	e2:SetCost(cm.thcost)
+	e2:SetOperation(cm.atkop2)
+	c:RegisterEffect(e2)  
 	--remove counter
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,1))
@@ -26,17 +31,21 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.desop)
 	c:RegisterEffect(e5) 
 end
-function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.atkcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local d=c:GetBattleTarget()
-	--local gc=Duel.GetMatchingGroupCount(cm.atkfilter,tp,LOCATION_EXTRA,0,nil)
-	return c==Duel.GetAttacker() and d and d:IsFaceup() and not d:IsControler(tp)
+	return c==Duel.GetAttacker() and d and d:IsFaceup() and not d:IsControler(tp) and e:GetHandler():GetFlagEffect(m+4)==0 
+end
+function cm.atkcon1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local d=c:GetBattleTarget()
+	return c==Duel.GetAttacker() and d and d:IsFaceup() and not d:IsControler(tp) and e:GetHandler():GetFlagEffect(m+4)~=0 
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
-function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+function cm.atkop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsFaceup() and c:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(c)
@@ -45,6 +54,18 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(1000)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
+	end
+end
+function cm.atkop1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsFaceup() and c:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(1000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e1)
+		e:GetHandler():ResetFlagEffect(m+4)
 	end
 end
 function cm.filter(c,atk)

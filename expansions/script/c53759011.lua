@@ -13,6 +13,7 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e2:SetCondition(cm.condition)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -24,6 +25,9 @@ function cm.initial_effect(c)
 	e3:SetTarget(function(e,te,tp)return te==e:GetLabelObject()end)
 	e3:SetOperation(cm.costop)
 	c:RegisterEffect(e3)
+end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()~=tp
 end
 function cm.filter(c)
 	return c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand()

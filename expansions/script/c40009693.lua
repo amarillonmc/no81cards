@@ -18,15 +18,7 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.tg)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1) 
-	--immune
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_IMMUNE_EFFECT)
-	e2:SetCondition(cm.imcon)
-	e2:SetValue(cm.efilter)
-	c:RegisterEffect(e2) 
+ 
 	--negate
 	local e3=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,3))
@@ -100,9 +92,8 @@ function cm.cfilter(c,ft,tp)
 		and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5)) and (c:IsControler(tp) or c:IsFaceup())
 end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if chk==0 then return ft>-1 and Duel.CheckReleaseGroup(tp,cm.cfilter,1,nil,ft,tp) end
-	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,nil,ft,tp)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.cfilter,3,nil) end
+	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,3,3,nil)
 	Duel.Release(g,REASON_COST)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)

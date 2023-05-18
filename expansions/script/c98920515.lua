@@ -1,0 +1,102 @@
+--召唤兽 穆斯贝尔海姆
+function c98920515.initial_effect(c)
+	--fusion material
+	c:EnableReviveLimit()
+	aux.AddFusionProcCodeFun(c,86120751,aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_FIRE),1,true,true)
+	--atk
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(98920515,0))
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(c98920515.atkcon)
+	e1:SetCost(c98920515.atkcost)
+	e1:SetOperation(c98920515.atkop)
+	c:RegisterEffect(e1)
+end
+function c98920515.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c==Duel.GetAttacker() or c==Duel.GetAttackTarget()
+end
+function c98920515.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(98920515)==0 end
+	c:RegisterFlagEffect(98920515,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
+end
+function c98920515.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local a=Duel.GetAttacker()
+	local d=Duel.GetAttackTarget()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DISABLE)
+	e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
+	e1:SetTarget(c98920515.distg)
+	e1:SetReset(RESET_PHASE+PHASE_DAMAGE)
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetOperation(c98920515.disop)
+	e2:SetReset(RESET_PHASE+PHASE_DAMAGE)
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e3:SetReset(RESET_PHASE+PHASE_DAMAGE)
+	Duel.RegisterEffect(e3,tp)
+	Duel.AdjustInstantly()
+	if a:IsRelateToBattle() then
+		local e4=Effect.CreateEffect(c)
+		e4:SetType(EFFECT_TYPE_SINGLE)
+		e4:SetCode(EFFECT_SET_BATTLE_ATTACK)
+		e4:SetReset(RESET_PHASE+PHASE_DAMAGE)
+		e4:SetValue(a:GetBaseAttack())
+		a:RegisterEffect(e4,true)
+		local e5=Effect.CreateEffect(c)
+		e5:SetType(EFFECT_TYPE_SINGLE)
+		e5:SetCode(EFFECT_SET_BATTLE_DEFENSE)
+		e5:SetReset(RESET_PHASE+PHASE_DAMAGE)
+		e5:SetValue(a:GetBaseDefense())
+		a:RegisterEffect(e5,true)
+	end
+	if d and d:IsRelateToBattle() then
+		local e6=Effect.CreateEffect(c)
+		e6:SetType(EFFECT_TYPE_SINGLE)
+		e6:SetCode(EFFECT_SET_BATTLE_ATTACK)
+		e6:SetValue(d:GetBaseAttack())
+		e6:SetReset(RESET_PHASE+PHASE_DAMAGE)
+		d:RegisterEffect(e6,true)
+		local e7=Effect.CreateEffect(c)
+		e7:SetType(EFFECT_TYPE_SINGLE)
+		e7:SetCode(EFFECT_SET_BATTLE_DEFENSE)
+		e7:SetValue(d:GetBaseDefense())
+		e7:SetReset(RESET_PHASE+PHASE_DAMAGE)
+		d:RegisterEffect(e7,true)
+	end
+	if a:IsRelateToBattle() and d and d:IsRelateToBattle() then
+		local g=Group.FromCards(a,d)
+		g:KeepAlive()
+		local e8=Effect.CreateEffect(c)
+		e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e8:SetCode(EVENT_BATTLE_DESTROYING)
+		e8:SetLabelObject(g)
+		e8:SetOperation(c98920515.damop)
+		e8:SetReset(RESET_PHASE+PHASE_DAMAGE)
+		Duel.RegisterEffect(e8,tp)
+	end
+end
+function c98920515.damfilter(c,p)
+	return c:IsReason(REASON_BATTLE) and c:IsLocation(LOCATION_GRAVE) and c:IsControler(p)
+end
+function c98920515.damop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetLabelObject():IsExists(c98920515.damfilter,1,nil,1-tp) then
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
+end
+function c98920515.distg(e,c)
+	return c~=e:GetHandler()
+end

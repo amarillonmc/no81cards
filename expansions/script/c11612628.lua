@@ -16,28 +16,12 @@ function c11612628.initial_effect(c)
 	--cannot be effect target
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(cm.lpcon1)
+	e1:SetCountLimit(1)
 	e1:SetOperation(cm.lpop1)
 	c:RegisterEffect(e1)
 	--
-	local e12=Effect.CreateEffect(c)
-	e12:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e12:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e12:SetRange(LOCATION_MZONE)
-	e12:SetCondition(cm.regcon)
-	e12:SetOperation(cm.regop)
-	c:RegisterEffect(e12)
-	local e13=Effect.CreateEffect(c)
-	e13:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e13:SetCode(EVENT_CHAIN_SOLVED)
-	e13:SetCondition(cm.lpcon2)
-	e13:SetOperation(cm.lpop2)
-	e13:SetLabelObject(e12)
-	e13:SetRange(LOCATION_MZONE)
-	c:RegisterEffect(e13)
 	--th
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -46,7 +30,7 @@ function c11612628.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetCountLimit(1,m+2)
+	e2:SetCountLimit(1,m*3+1)
 	e2:SetCost(cm.cost1)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
@@ -72,16 +56,6 @@ function c11612628.initial_effect(c)
 	e4:SetTarget(cm.detg)
 	e4:SetOperation(cm.deop)
 	c:RegisterEffect(e4)
-	--Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
-   -- if not cm.global_check then
-	 --   cm.global_check=true
-	   -- local e5=Effect.GlobalEffect()
-	   -- e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	   -- e5:SetCode(EVENT_CHAINING)
-		--e5:SetCountLimit(1)
-	   -- e5:SetOperation(cm.checkop)
-		--Duel.RegisterEffect(e5,0)
-	--end
 end
 --0
 function cm.matcon(e,tp,eg,ep,ev,re,r,rp)
@@ -115,46 +89,10 @@ end
 	--return not c:IsCode(m)
 --end
 --1
-function cm.lpcon1(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,1-tp) and (not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS))
-end
 function cm.lpop1(e,tp,eg,ep,ev,re,r,rp)
-	local lg=eg:Filter(cm.cfilter,nil,1-tp)
-	local rnum=lg:GetSum(Card.GetDefense)
-	Duel.Recover(tp,rnum,REASON_EFFECT)
-end
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,1-tp) and re:IsHasType(EFFECT_TYPE_ACTIONS) and not re:IsHasType(EFFECT_TYPE_CONTINUOUS)
-end
-function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local lg=eg:Filter(cm.cfilter,nil,1-tp)
-	local g=e:GetLabelObject()
-	if g==nil or #g==0 then
-		lg:KeepAlive()
-		e:SetLabelObject(lg)
-	else
-		g:Merge(lg)
-	end
-	c:RegisterFlagEffect(tp,m+1,RESET_CHAIN,0,1)
-end
-function cm.lpcon2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:GetFlagEffect(tp,m+1)>0
-end
-function cm.lpop2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	c:ResetFlagEffect(tp,m+1)
-	local lg=e:GetLabelObject():GetLabelObject()
-	local rnum=lg:GetSum(Card.GetDefense)
-	local g=Group.CreateGroup()
-	g:KeepAlive()
-	e:GetLabelObject():SetLabelObject(g)
-	lg:DeleteGroup()
-	Duel.Recover(tp,rnum,REASON_EFFECT)
-end
-function cm.cfilter(c,sp)
-	return c:IsSummonPlayer(sp) and c:IsFaceup()
+	local count=Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_MZONE,0,nil,TYPE_RITUAL)
+	if count<=0 then return false end
+	Duel.Recover(tp,count*500,REASON_EFFECT)
 end
 --2
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)

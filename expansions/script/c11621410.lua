@@ -36,8 +36,18 @@ function c11621410.initial_effect(c)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3) 
 	cm[c]=e3	 
+	--
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_UNRELEASABLE_SUM)
+	e4:SetValue(cm.sumlimit)
+	c:RegisterEffect(e4)  
 end
 cm.SetCard_THY_PeachblossomCountry=true 
+--
+function cm.sumlimit(e,c)
+	return not c:IsRace(RACE_ZOMBIE)
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,700,0,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) end
@@ -149,29 +159,12 @@ function cm.thfilter(c)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end
-	local g1=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,nil)  
-	local g2=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_GRAVE,nil)
-	if g1:GetCount()>0 and g2:GetCount()<1 then 
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg1=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,1,2,nil)
-	elseif g1:GetCount()<1 and g2:GetCount()>0 then 
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg2=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,0,LOCATION_GRAVE,1,2,nil)
-	else
-		if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local sg3=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,1,2,nil)
-			if Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-				local sg4=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,0,LOCATION_GRAVE,1,2,nil)
-			end
-		else
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local sg5=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,0,LOCATION_GRAVE,1,2,nil)
-		end
-	end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,nil,0,0)
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,5,nil) end
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil) 
+	if g1:GetCount()<=4 then return false end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local sg=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,5,5,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,5,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)

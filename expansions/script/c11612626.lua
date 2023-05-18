@@ -98,7 +98,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if count<3 then Duel.BreakEffect() end   
 		if count==2 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP) 
-			g=Duel.SelectMatchingCard(tp,cm.etfilter,tp,0,LOCATION_MZONE,1,1,nil)		 
+			g=Duel.SelectMatchingCard(tp,cm.etfilter,tp,0,LOCATION_MZONE,1,1,nil)		
 			count=1
 		else			
 			local rg=Duel.GetMatchingGroup(cm.etfilter,1-tp,LOCATION_MZONE,0,nil)
@@ -117,7 +117,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
-		tc:RegisterEffect(e2)	
+		tc:RegisterEffect(e2)   
 		if tc:GetAttack()==0 or tc:GetDefense()==0 then
 			Duel.Destroy(tc,REASON_EFFECT)
 			count=0
@@ -163,7 +163,7 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 		local code=tc:GetCode()
 		if tc:GetFlagEffect(m)>0 then return end
-		tc:RegisterFlagEffect(code,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+		tc:RegisterFlagEffect(code,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
 	end
 end
 function cm.RitualCheckGreater(g,c,atk)

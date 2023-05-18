@@ -34,14 +34,17 @@ function cm.matfilter(c,tp)
 	if re then
 		val=re:GetValue() 
 	end
-	return c:IsType(TYPE_TRAP) and (val==nil or val(re,c)~=true)
+	return c:IsType(TYPE_TRAP) and (val==nil or val(re,c)~=true) -- and Duel.GetMZoneCount(tp,c)>0
 end
 function cm.mfilter(c)
 	return c:IsType(TYPE_TRAP) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ct=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,nil,tp)
+	local ct1=ct:GetCount()
+	local  loc=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if chk==0 then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 and not Duel.IsExistingMatchingCard(cm.matfilter,tp,LOCATION_MZONE,0,1,nil,tp) then return false end
+		if loc+ct1<=0 and not Duel.IsExistingMatchingCard(cm.matfilter,tp,LOCATION_MZONE,0,1,nil,tp) then return false end
 		local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
 		if Duel.IsExistingMatchingCard(cm.mfilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) then  
 			local mg2=Duel.GetMatchingGroup(cm.mfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,nil)
@@ -51,6 +54,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
+--
+function cm.rlcheck(c,tp)
+	--local g=sg:Clone()
+	return Duel.GetMZoneCount(tp,c)>0 
+end
+--
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 and not Duel.IsExistingMatchingCard(cm.matfilter,tp,LOCATION_MZONE,0,1,nil,tp) then return end
@@ -69,7 +78,15 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				num=(num+1)/2
 			end
 		end 
-		local tgg=mg:FilterSelect(tp,aux.TRUE,num,num,nil)
+		local tgg1=nil
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 and Duel.IsExistingMatchingCard(cm.matfilter,tp,LOCATION_MZONE,0,1,nil,tp) then
+			tgg1=mg:FilterSelect(tp,cm.rlcheck,1,1,nil,tp)
+			num=num-1
+		end
+		local tgg=mg:FilterSelect(tp,aux.TRUE,num,num,tgg1)
+		if tgg1~=nil then
+			tgg:Merge(tgg1)
+		end
 		local tgc=tgg:GetFirst()
 		while tgc do
 			--tc:SetMaterial(tgc)

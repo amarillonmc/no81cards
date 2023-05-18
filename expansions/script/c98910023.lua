@@ -1,9 +1,9 @@
 --无形噬体·虚无形
 function c98910023.initial_effect(c)
-		--link summon
-	aux.AddLinkProcedure(c,c98910023.mfilter,2,2)
-	c:EnableReviveLimit()   
 	c:SetSPSummonOnce(98910023)
+	--link summon
+	c:EnableReviveLimit()
+	aux.AddLinkProcedure(c,c98910023.mfilter,2,2,c98910023.lcheck)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98910023,0))
@@ -31,7 +31,7 @@ function c98910023.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)	
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET) 
 	e1:SetHintTiming(0,TIMING_END_PHASE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,98910023)   
@@ -39,6 +39,9 @@ function c98910023.initial_effect(c)
 	e1:SetTarget(c98910023.sptg)
 	e1:SetOperation(c98910023.spop)
 	c:RegisterEffect(e1)
+end
+function c98910023.lcheck(g,lc)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xe0)
 end
 function c98910023.mfilter(c)
 	return c:IsType(TYPE_PENDULUM) and c:IsLinkRace(RACE_DRAGON)

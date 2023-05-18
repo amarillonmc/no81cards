@@ -2,7 +2,7 @@
 local m=11612612
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
-cm.text=zhc_lhq_yx
+cm.text=zhc_lhq_xy
 function c11612612.initial_effect(c)
 	c:EnableReviveLimit()
 	--

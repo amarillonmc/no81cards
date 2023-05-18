@@ -1,4 +1,4 @@
---战车道计策·禁锢
+--战车道计策·盲点侦察
 function c9910142.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

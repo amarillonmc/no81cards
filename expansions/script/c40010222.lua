@@ -1,8 +1,10 @@
 --龙纹·朱红凯撒 THE BLOOD
 local m=40010222
 local cm=_G["c"..m]
+cm.named_with_KaiserVermillion=1
 cm.named_with_Dragonic=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40010220)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),1)
 	c:EnableReviveLimit()

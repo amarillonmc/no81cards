@@ -10,11 +10,22 @@ function c11630204.initial_effect(c)
 	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
-	c:RegisterEffect(e1)	
+	c:RegisterEffect(e1) 
+	--salvage
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_PREDRAW)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCondition(cm.thcon)
+	e2:SetTarget(cm.thtg)
+	e2:SetOperation(cm.thop)
+	c:RegisterEffect(e2)   
 end
 cm.SetCard_xxj_Mirror=true
 function cm.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsLevelBelow(6) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false) --and c:IsLevelBelow(6)
 end
 function cm.sfilter(c)
 	return not c:IsPublic() and c:IsType(TYPE_MONSTER)
@@ -55,5 +66,35 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetCode(EFFECT_CHANGE_LEVEL)
 		e4:SetValue(lv)
 		tc:RegisterEffect(e4)
+	end
+end
+--
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return tp==Duel.GetTurnPlayer() and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
+		and Duel.GetDrawCount(tp)>0
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToHand() end
+	local dt=Duel.GetDrawCount(tp)
+	if dt~=0 then
+		aux.DrawReplaceCount=0
+		aux.DrawReplaceMax=dt
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_DRAW_COUNT)
+		e1:SetTargetRange(1,0)
+		e1:SetReset(RESET_PHASE+PHASE_DRAW)
+		e1:SetValue(0)
+		Duel.RegisterEffect(e1,tp)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	aux.DrawReplaceCount=aux.DrawReplaceCount+1
+	if aux.DrawReplaceCount<=aux.DrawReplaceMax and c:IsRelateToEffect(e) then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,c)
 	end
 end

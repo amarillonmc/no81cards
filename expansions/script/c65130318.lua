@@ -1,10 +1,13 @@
 --破天荒伊吕波
-function c65130318.initial_effect(c)
+function c65130318.initial_effect(c)	
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(65130318,1))
 	e1:SetCategory(CATEGORY_DESTROY)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_TO_GRAVE)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(c65130318.decon)
+	e1:SetCost(c65130318.decost)
 	e1:SetTarget(c65130318.detg)
 	e1:SetOperation(c65130318.deop)
 	c:RegisterEffect(e1)
@@ -20,6 +23,9 @@ function c65130318.initial_effect(c)
 	e2:SetTarget(c65130318.sptg)
 	e2:SetOperation(c65130318.spop)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e3)
 end
 function c65130318.filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
@@ -88,15 +94,19 @@ function c65130318.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.SpecialSummonComplete()
 end
+function c65130318.decon(e,tp,eg,ep,ev,re,r,rp)
+	return re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and re:IsActiveType(TYPE_MONSTER)	   
+end
+function c65130318.decost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() end
+	Duel.Release(e:GetHandler(),REASON_COST)
+end
 function c65130318.detg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,1,0,0)
+	if chk==0 then return re:GetHandler():IsDestructable() end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 end
 function c65130318.deop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
-	if g:GetCount()>0 then
-		 local sg=g:RandomSelect(tp,1)
-		 Duel.Destroy(sg,REASON_EFFECT)
+	if re:GetHandler():IsRelateToEffect(re) then
+		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end

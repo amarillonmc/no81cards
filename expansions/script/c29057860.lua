@@ -71,7 +71,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.repfilter(c,tp)
-	return c:IsControler(tp) and c:IsOnField() and c:IsFaceup() and c:IsSetCard(0x87af)
+	return c:IsControler(tp) and c:IsOnField() and c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)

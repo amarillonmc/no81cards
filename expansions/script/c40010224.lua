@@ -3,6 +3,7 @@ local m=40010224
 local cm=_G["c"..m]
 cm.named_with_Dragonic=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40010220)
 	 --synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsAttribute,ATTRIBUTE_LIGHT),1)
 	c:EnableReviveLimit()   

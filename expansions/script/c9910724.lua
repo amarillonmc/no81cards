@@ -34,14 +34,13 @@ function c9910724.cfilter(c)
 end
 function c9910724.discon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainDisablable(ev)
-		and Duel.IsExistingMatchingCard(c9910724.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c9910724.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c9910724.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910724.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
 function c9910724.disop(e,tp,eg,ep,ev,re,r,rp)

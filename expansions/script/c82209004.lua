@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_TOHAND)  
 	e2:SetType(EFFECT_TYPE_IGNITION)  
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
 	e2:SetCondition(cm.thcon)
 	e2:SetTarget(cm.thtg)  
 	e2:SetOperation(cm.thop)  
@@ -45,14 +46,30 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetChainLimit(cm.chainlm)  
 end  
 function cm.chainlm(e,ep,tp)  
-	return tp==ep  
+	return tp==ep or not e:GetHandler():IsType(TYPE_MONSTER)
 end  
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)  
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)  
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)  
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_MZONE,1,1,nil)  
 	if g:GetCount()>0 then  
 		Duel.HintSelection(g) 
 		g:AddCard(e:GetHandler())
-		Duel.SendtoHand(g,nil,REASON_EFFECT)  
+		if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
+			Duel.ShuffleHand(tp)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)  
+			local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)  
+			if g2:GetCount()>0 then  
+				Duel.BreakEffect()  
+				Duel.SendtoDeck(g2,nil,1,REASON_EFFECT)  
+			end
+		end  
 	end  
+	local e1=Effect.CreateEffect(e:GetHandler())  
+	e1:SetType(EFFECT_TYPE_FIELD)  
+	e1:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)  
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)  
+	e1:SetTargetRange(0,1)  
+	e1:SetValue(HALF_DAMAGE)  
+	e1:SetReset(RESET_PHASE+PHASE_END)  
+	Duel.RegisterEffect(e1,tp) 
 end  

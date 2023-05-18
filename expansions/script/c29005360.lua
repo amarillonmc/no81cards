@@ -3,6 +3,7 @@ local m=29005360
 local cm=_G["c"..m]
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
+	c:SetSPSummonOnce(29005360)
 	c:EnableCounterPermit(0x10ae)
 	if not Auxiliary.PendulumChecklist then
 		Auxiliary.PendulumChecklist=0
@@ -59,9 +60,15 @@ function cm.initial_effect(c)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
 	e5:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-	e5:SetCondition(function(e,tp) return e:GetHandler():IsSummonType(SUMMON_TYPE_PENDULUM|SUMMON_TYPE_NORMAL) end)
+	--e5:SetCondition(function(e,tp) return e:GetHandler():IsSummonType(SUMMON_TYPE_PENDULUM|SUMMON_TYPE_NORMAL) end)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetCondition(cm.rethcon)
 	e5:SetValue(LOCATION_HAND)
 	c:RegisterEffect(e5)
+end
+function cm.rethcon(e,tp)
+	local c=e:GetHandler()
+	return ((c:IsSummonType(SUMMON_TYPE_PENDULUM)) or (c:IsSummonType(SUMMON_TYPE_NORMAL))) and c:IsLocation(LOCATION_MZONE)
 end
 function cm.addct(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

@@ -66,20 +66,55 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-	Duel.Remove(sg,POS_FACEUP,REASON_COST)
+	local cost=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil):GetFirst()
+	e:SetLabel(cost:GetOriginalType())
+	Duel.Remove(cost,POS_FACEUP,REASON_COST)
 end
 function cm.caop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(1,1)
-	e1:SetDescription(aux.Stringid(m,3))
-	e1:SetValue(cm.aclimit)
-	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,1)
-	Duel.RegisterEffect(e1,tp)
+	local typ=e:GetLabel()
+	if (typ&TYPE_MONSTER)>0 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e1:SetTargetRange(1,1)
+		e1:SetDescription(aux.Stringid(m,3))
+		e1:SetValue(cm.aclimit1)
+		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,1)
+		Duel.RegisterEffect(e1,tp)
+	end
+	if (typ&TYPE_SPELL)>0 then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e2:SetTargetRange(1,1)
+		e2:SetDescription(aux.Stringid(m,4))
+		e2:SetValue(cm.aclimit2)
+		e2:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,1)
+		Duel.RegisterEffect(e2,tp)
+	end
+	if (typ&TYPE_TRAP)>0 then
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e3:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e3:SetTargetRange(1,1)
+		e3:SetDescription(aux.Stringid(m,5))
+		e3:SetValue(cm.aclimit3)
+		e3:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,1)
+		Duel.RegisterEffect(e3,tp)
+	end
+end
+function cm.aclimit1(e,re,tp)
+	return re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsSetCard(0x157)
+end
+function cm.aclimit2(e,re,tp)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and not re:GetHandler():IsSetCard(0x157)
+end
+function cm.aclimit3(e,re,tp)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_TRAP) and not re:GetHandler():IsSetCard(0x157)
 end
 function cm.acfilter(c,typ)
 	return c:IsFaceup() and bit.band(c:GetType(),typ)~=0

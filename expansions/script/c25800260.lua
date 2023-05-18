@@ -3,17 +3,26 @@ local m=25800260
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 		--link summon
-	aux.AddLinkProcedure(c,nil,3,4)
 	c:EnableReviveLimit()
 	--extra link
 	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(1166)
 	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
-	e0:SetTargetRange(LOCATION_PZONE,0)
-	e0:SetValue(cm.matval)
+	e0:SetCondition(cm.lcon)
+	e0:SetTarget(cm.ltg)
+	e0:SetOperation(cm.lop)
+	e0:SetValue(SUMMON_TYPE_LINK)
 	c:RegisterEffect(e0)
+	--cannot be link material
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e4:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	e4:SetValue(1)
+	c:RegisterEffect(e4)
 	--summon success
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -38,9 +47,36 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 end
-function cm.matval(e,lc,mg,c,tp)
-	if e:GetHandler()~=lc then return false,nil end
-	return true,true
+function cm.lcon(...)
+	local f=aux.GetLinkMaterials
+	aux.GetLinkMaterials=cm.GetLinkMaterials
+	local res=Auxiliary.LinkCondition(nil,3,4,nil)(...)
+	aux.GetLinkMaterials=f
+	return res
+end
+function cm.ltg(...)
+	local f=aux.GetLinkMaterials
+	aux.GetLinkMaterials=cm.GetLinkMaterials
+	local res=Auxiliary.LinkTarget(nil,3,4,nil)(...)
+	aux.GetLinkMaterials=f
+	return res
+end
+function cm.GetLinkMaterials(tp,f,lc,e)
+	local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc,e)
+	local mg2=Duel.GetMatchingGroup(Auxiliary.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
+	local mg3=Duel.GetMatchingGroup(function(c)return c:IsSetCard(0x5212) end,tp,LOCATION_ONFIELD,0,nil)
+	if mg2:GetCount()>0 then mg:Merge(mg2) end
+	if mg3:GetCount()>0 then mg:Merge(mg3) end
+	return mg
+end
+function cm.lop(e,tp,eg,ep,ev,re,r,rp,c,og,lmat,min,max)
+	 local g=e:GetLabelObject()
+	 c:SetMaterial(g)
+	 aux.LExtraMaterialCount(g,c,tp)
+	 local cg=g:Filter(Card.IsFacedown,nil)
+	 if #cg>0 then Duel.ConfirmCards(1-tp,cg) end
+	 Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
+	 g:DeleteGroup()
 end
 ----1
 function cm.hspcon(e,tp,eg,ep,ev,re,r,rp)

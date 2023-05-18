@@ -18,9 +18,9 @@ function c9911114.initial_effect(c)
 	e3:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_TOGRAVE+CATEGORY_REMOVE+CATEGORY_DISABLE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e3:SetRange(LOCATION_HAND)
-	e3:SetCondition(c9911114.condition)
+	e3:SetCondition(c9911114.thcon)
 	e3:SetCost(c9911114.thcost)
 	e3:SetTarget(c9911114.thtg)
 	e3:SetOperation(c9911114.thop)
@@ -30,9 +30,8 @@ function c9911114.initial_effect(c)
 	e4:SetCategory(CATEGORY_DAMAGE+CATEGORY_SUMMON)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e4:SetRange(LOCATION_GRAVE)
-	e4:SetCondition(c9911114.condition)
+	e4:SetCondition(c9911114.sumcon)
 	e4:SetCost(c9911114.sumcost)
 	e4:SetTarget(c9911114.sumtg)
 	e4:SetOperation(c9911114.sumop)
@@ -52,17 +51,20 @@ function c9911114.otop(e,tp,eg,ep,ev,re,r,rp,c)
 	c:SetMaterial(sg)
 	Duel.Release(sg,REASON_SUMMON+REASON_MATERIAL)
 end
-function c9911114.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
+function c9911114.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+end
+function c9911114.cfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsDiscardable()
 end
 function c9911114.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsReleasable()
-		and Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_HAND,0,1,c) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_HAND,0,1,1,c)
+	if chk==0 then return c:IsDiscardable()
+		and Duel.IsExistingMatchingCard(c9911114.cfilter,tp,LOCATION_HAND,0,1,c) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	local g=Duel.SelectMatchingCard(tp,c9911114.cfilter,tp,LOCATION_HAND,0,1,1,c)
 	g:AddCard(c)
-	Duel.Release(g,REASON_COST)
+	Duel.SendtoGrave(g,REASON_DISCARD+REASON_COST)
 end
 function c9911114.thfilter(c)
 	return c:IsSetCard(0xa954) and (c:IsAbleToHand() or c:IsAbleToGrave())
@@ -123,6 +125,9 @@ function c9911114.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
+end
+function c9911114.sumcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE
 end
 function c9911114.rmfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()

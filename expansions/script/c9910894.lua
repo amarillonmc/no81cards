@@ -75,17 +75,17 @@ function c9910894.tdop(e,tp,eg,ep,ev,re,r,rp)
 		local b1=ct==2 and Duel.IsExistingMatchingCard(c9910894.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 		local b2=ct==3 and Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_DECK,0,1,nil,TYPE_MONSTER)
 		local b3=ct==4 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>1
-		if (b1 or b2 or b3) and Duel.SelectYesNo(tp,aux.Stringid(14001209,1)) then
-			if b1 then
-				local pg=Duel.GetMatchingGroup(c9910894.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-				Duel.ChangePosition(pg,POS_FACEDOWN_DEFENSE)
-			elseif b2 then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-				local dg=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_DECK,0,1,1,nil,TYPE_MONSTER)
-				Duel.Destroy(dg,REASON_EFFECT)
-			else
-				Duel.DiscardHand(1-tp,nil,2,2,REASON_EFFECT+REASON_DISCARD)
-			end
+		if b1 and Duel.SelectYesNo(tp,aux.Stringid(9910894,0)) then
+			local pg=Duel.GetMatchingGroup(c9910894.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+			Duel.ChangePosition(pg,POS_FACEDOWN_DEFENSE)
+		end
+		if b2 and Duel.SelectYesNo(tp,aux.Stringid(9910894,1)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local dg=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_DECK,0,1,1,nil,TYPE_MONSTER)
+			Duel.Destroy(dg,REASON_EFFECT)
+		end
+		if b3 and Duel.SelectYesNo(tp,aux.Stringid(9910894,2)) then
+			Duel.DiscardHand(1-tp,nil,2,2,REASON_EFFECT+REASON_DISCARD)
 		end
 	end
 end

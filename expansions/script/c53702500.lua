@@ -4315,3 +4315,36 @@ function cm.Global_in_Initial_Reset(c,t)
 		Duel.RegisterEffect(e1,0)
 	end
 end
+function cm.DressamLocCheck(tp,usep,z)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE,usep,LOCATION_REASON_TOFIELD,z)>0 then return true end
+	if not Duel.IsPlayerAffectedByEffect(tp,53760022) then return false end
+	for i=0,4 do
+		local fc=Duel.GetFieldCard(tp,LOCATION_MZONE,i)
+		if z&(1<<i)~=0 and fc and fc:IsType(TYPE_EFFECT) and Duel.GetMZoneCount(tp,fc,usep,LOCATION_REASON_TOFIELD,1<<i)>0 then return true end
+	end
+	return false
+end
+function cm.DressamSPStep(tc,tp,tgp,pos,z)
+	local zone=z
+	if Duel.IsPlayerAffectedByEffect(tp,53760022) then
+		zone=0
+		local ct=0
+		for i=0,4 do
+			if z&(1<<i)~=0 and cm.DressamLocCheck(tgp,tp,1<<i) then
+				zone=zone|(1<<i)
+				ct=ct+1
+			end
+		end
+		if zone==0 then return false end
+		if ct~=1 then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(53760022,0))
+			if tp==tgp then zone=Duel.SelectField(tp,1,LOCATION_MZONE,0,0x7f&(~zone)) else
+				zone=Duel.SelectField(tp,1,0,LOCATION_MZONE,0x7f&(~zone))
+				zone=zone>>16
+			end
+		end
+		local fc=Duel.GetFieldCard(tgp,LOCATION_MZONE,math.log(zone,2))
+		if fc and fc:IsType(TYPE_EFFECT) then Duel.Destroy(fc,REASON_RULE) end
+	end
+	return Duel.SpecialSummonStep(tc,0,tp,tgp,false,false,pos,zone)
+end
