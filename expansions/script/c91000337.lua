@@ -77,7 +77,8 @@ function c91000337.spcop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCode(EFFECT_CANNOT_ACTIVATE) 
+	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetTargetRange(1,0)  
 	e2:SetValue(c91000337.actlimit)
 	Duel.RegisterEffect(e2,tp) 
@@ -185,7 +186,7 @@ function c91000337.filter2(c)
 end
 function c91000337.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and c91000337.filter2(chkc) end
-	if chk==0 then return Duel.IsExistingMatchingCard(c91000337.filters,tp,LOCATION_ONFIELD,0,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c91000337.filters,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 			end
 	local ct=Duel.GetMatchingGroupCount(c91000337.filters,tp,LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)

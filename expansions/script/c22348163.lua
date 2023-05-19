@@ -53,6 +53,8 @@ function c22348163.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c22348163.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local c=e:GetHandler()
+	local aaa=Duel.SelectMatchingCard(tp,c22348163.sprfilter1,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	if not aaa then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 	local g1=Duel.SelectMatchingCard(tp,c22348163.sprfilter1,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)

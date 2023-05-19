@@ -88,6 +88,7 @@ function c91000333.spcop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_CANNOT_ACTIVATE) 
 	e2:SetTargetRange(1,0)  
 	e2:SetValue(c91000333.actlimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp) 
 end
 function c91000333.actlimit(e,re,tp)

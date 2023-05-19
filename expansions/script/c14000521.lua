@@ -1,4 +1,4 @@
-﻿--抉择之地·生命之森
+--抉择之地·生命之森
 local m=14000521
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -36,8 +36,8 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetTargetPlayer(tp)
 		Duel.SetTargetParam(2000)
 		Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,2000)
-		if Duel.GetFlagEffect(tp,14010281)==0 then
-			Duel.RegisterFlagEffect(tp,14010281,0,0,0)
+		if Duel.GetFlagEffect(tp,m)==0 then
+			Duel.RegisterFlagEffect(tp,m,0,0,0)
 		else
 			return
 		end
@@ -45,8 +45,8 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetCategory(0)
 		e:SetProperty(0)
 		e:SetOperation(nil)
-		if Duel.GetFlagEffect(tp,14010281)==0 then
-			Duel.RegisterFlagEffect(tp,14010281,0,0,0)
+		if Duel.GetFlagEffect(tp,m)==0 then
+			Duel.RegisterFlagEffect(tp,m,0,0,0)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetCode(m)
@@ -63,7 +63,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(p,d,REASON_EFFECT)
 end
 function cm.check()
-	return Duel.IsPlayerAffectedByEffect(tp,m) and Duel.GetFlagEffect(tp,14010281)~=0
+	return Duel.IsPlayerAffectedByEffect(tp,m) and Duel.GetFlagEffect(tp,m)~=0
 end
 function cm.abdcon(e)
 	local at=Duel.GetAttackTarget()

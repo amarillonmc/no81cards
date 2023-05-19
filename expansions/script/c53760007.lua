@@ -12,8 +12,6 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_ADJUST)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(cm.adjustcon)
 	e2:SetOperation(cm.adjustop)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
@@ -100,18 +98,16 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 	if #g1>0 then Duel.RaiseEvent(g1,EVENT_CUSTOM+m,re,r,rp,1,0) end
 	if #g2>0 then Duel.RaiseEvent(g2,EVENT_CUSTOM+m,re,r,rp,0,0) end
 end
-function cm.adjustcon(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	local seq=e:GetHandler():GetSequence()
-	return not (Doremy_Summoning_Check or Doremy_Chain_Solving_Check or Doremy_Token_Check) and (cm.spcheck(tp,seq) or cm.spcheck(1-tp,4-seq)) and not ((ph==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or ph==PHASE_DAMAGE_CAL)
-end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ph=Duel.GetCurrentPhase()
+	local seq=c:GetSequence()
+	if (Doremy_Summoning_Check or Doremy_Chain_Solving_Check or Doremy_Token_Check) or not (cm.spcheck(tp,seq) or cm.spcheck(1-tp,4-seq)) or ((ph==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or ph==PHASE_DAMAGE_CAL) or c:GetFlagEffect(m+50)>0 then return end
 	Duel.HintSelection(Group.FromCards(c))
 	cm.sp(c,tp,c:GetSequence())
 	cm.sp(c,1-tp,4-c:GetSequence())
 	Duel.SpecialSummonComplete()
-	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+	c:RegisterFlagEffect(m+50,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 end
 function cm.spcheck(tp,seq)
 	return SNNM.DressamLocCheck(tp,tp,1<<seq) and Duel.IsPlayerCanSpecialSummonMonster(tp,m+1,0x9538,TYPES_TOKEN_MONSTER,2900,3000,4,RACE_FIEND,ATTRIBUTE_LIGHT,POS_FACEUP,tp,0,1<<seq)

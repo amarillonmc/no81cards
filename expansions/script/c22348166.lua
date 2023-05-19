@@ -49,9 +49,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	
 end
+function c22348166.linkfilter(c)
+	return c:IsSetCard(0x705) and c:IsFaceup()
+end
 function c22348166.spcost(e,c,tp,st)
 	if bit.band(st,SUMMON_TYPE_LINK)~=SUMMON_TYPE_LINK then return true end
-	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x705)
+	return Duel.IsExistingMatchingCard(c22348166.linkfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c22348166.matfilter(c)
 	return c:IsLinkCode(22348157)
