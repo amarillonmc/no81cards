@@ -148,6 +148,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	e5:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e5:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
 	e5:SetReset(RESET_PHASE+PHASE_END)
+	e5:SetCondition(cm.lockcon)
 	e5:SetValue(1)
 	Duel.RegisterEffect(e5,tp)
 	local e6=e5:Clone()
@@ -160,6 +161,9 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local e8=e5:Clone()
 	e8:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	Duel.RegisterEffect(e8,tp)
+end
+function cm.lockcon(e)
+	return Duel.GetCurrentPhase()~=PHASE_MAIN1 
 end
 function cm.fuslimit(e,c,sumtype)
 	return sumtype==SUMMON_TYPE_FUSION

@@ -18,12 +18,12 @@ function c29020954.tdfilter(c)
 end
 function c29020954.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)
-		and Duel.IsExistingMatchingCard(c29020954.tdfilter,tp,LOCATION_GRAVE,0,3,nil) end
+		and Duel.IsExistingMatchingCard(c29020954.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,3,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
 function c29020954.operation(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c29020954.tdfilter),tp,LOCATION_GRAVE,0,3,3,nil)	
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c29020954.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,3,nil)   
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)

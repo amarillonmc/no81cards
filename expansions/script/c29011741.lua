@@ -57,7 +57,7 @@ function c29011741.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 
 end
 function c29011741.defilter(c)
-	return c:IsAttribute(ATTRIBUTE_WATER)
+	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsFaceup()
 end
 function c29011741.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -31,14 +31,17 @@ function c98920383.initial_effect(c)
 	e4:SetCode(EVENT_SPSUMMON)
 	c:RegisterEffect(e4)
 end
+function c98920383.sfilter(c,tp)
+	return c:IsSetCard(0x2e) and c:IsFaceup()
+end
 function c98920383.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x2e) end
+		and Duel.IsExistingTarget(c98920383.sfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,Card.IsSetCard,tp,LOCATION_MZONE,0,1,1,nil,0x2e)
+	Duel.SelectTarget(tp,c98920383.sfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c98920383.spop(e,tp,eg,ep,ev,re,r,rp)
