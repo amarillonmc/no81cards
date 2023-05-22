@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 	--destroy2
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22348247,1))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
