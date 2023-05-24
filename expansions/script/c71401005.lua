@@ -19,7 +19,7 @@ function c71401005.initial_effect(c)
 	yume.ButterflyCounter()
 end
 function c71401005.con2(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
+	return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
 end
 function c71401005.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end

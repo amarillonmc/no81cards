@@ -6,7 +6,7 @@ function c71400015.initial_effect(c)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71400015,0))
-	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_FZONE)
@@ -30,6 +30,12 @@ end
 function c71400015.filter1(c)
 	return c:IsSetCard(0xe714) and c:IsAbleToHand()
 end
+function c71400015.filter1a(c)
+	return c:IsSetCard(0x714) and (c:IsType(TYPE_TUNER) or c:IsAttribute(ATTRIBUTE_WATER)) and c:IsLevelAbove(1) and c:IsFaceup()
+end
+function c71400015.filter1b(c)
+	return c:IsSetCard(0xe714) and c:IsAbleToGrave()
+end
 function c71400015.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c71400015.filter1(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c71400015.filter1,tp,LOCATION_GRAVE,0,1,nil) end
@@ -39,8 +45,13 @@ function c71400015.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c71400015.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) and Duel.IsExistingMatchingCard(c71400015.filter1a,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(c71400015.filter1b,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(71400015,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,c71400015.filter1b,tp,LOCATION_DECK,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.BreakEffect()
+			Duel.SendtoGrave(g,REASON_EFFECT)
+		end
 	end
 end
 function c71400015.target2(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -6,12 +6,13 @@ function c71400034.initial_effect(c)
 	--link summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_FZONE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetDescription(aux.Stringid(71400034,0))
 	e1:SetCountLimit(1)
+	e1:SetCondition(c71400034.con1)
 	e1:SetTarget(c71400034.tg1)
 	e1:SetOperation(c71400034.op1)
 	e1:SetCost(c71400034.cost1)
@@ -19,8 +20,9 @@ function c71400034.initial_effect(c)
 	--todeck
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TODECK+CATEGORY_REMOVE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CHAINING)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1)
 	e2:SetDescription(aux.Stringid(71400034,1))
@@ -31,6 +33,9 @@ function c71400034.initial_effect(c)
 	c:RegisterEffect(e2)
 	--self to deck & activate field
 	yume.AddYumeFieldGlobal(c,71400034,2)
+end
+function c71400034.con1(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsActiveType(TYPE_SPELL) and e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED)
 end
 function c71400034.filter1c(c)
 	return c:IsSetCard(0x714) and c:IsAbleToDeckOrExtraAsCost()
@@ -65,7 +70,7 @@ function c71400034.filter2c(c)
 	return c:IsSetCard(0x7714) and c:IsType(TYPE_FIELD) and c:IsAbleToDeckAsCost()
 end
 function c71400034.con2(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER)
+	return re:IsActiveType(TYPE_MONSTER) and e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED)
 end
 function c71400034.filter2(c)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_LINK) and c:IsFaceup()
@@ -74,13 +79,13 @@ function c71400034.filter2b(c,tp)
 	return c:IsAbleToRemove(tp) and not c71400034.filter2(c)
 end
 function c71400034.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	rc=re:GetHandler()
-	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsAbleToDeck() end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,rc,1,0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	local tdg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,tdg,1,0,0)
 end
 function c71400034.op2(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if rc:IsRelateToEffect(re) and Duel.SendtoDeck(rc,nil,2,REASON_EFFECT)==1 then
+	local tdg=Duel.SelectMatchingCard(Card.IsAbleToDeck,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	if tdg:GetCount()==1 and Duel.SendtoDeck(tdg,nil,2,REASON_EFFECT)==1 then
 		local g=Duel.GetMatchingGroup(c71400034.filter2b,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler(),tp)
 		local lg=Duel.GetMatchingGroup(c71400034.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 		if lg:GetCount()>0 and lg:GetSum(Card.GetLink)>=4 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400034,2)) then

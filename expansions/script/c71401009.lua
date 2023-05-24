@@ -21,7 +21,6 @@ function c71401009.initial_effect(c)
 	e2:SetHintTiming(0,TIMING_END_PHASE+TIMING_EQUIP)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71401009)
-	e2:SetCondition(c71401009.con2)
 	e2:SetCost(c71401009.cost2)
 	e2:SetTarget(c71401009.tg2)
 	e2:SetOperation(c71401009.op2)
@@ -49,9 +48,6 @@ end
 function c71401009.atkval(e,c)
 	return Duel.GetMatchingGroupCount(c71401009.atkfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)*200
 end
-function c71401009.con2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
-end
 function c71401009.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
@@ -68,10 +64,11 @@ function c71401009.op2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c71401009.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg=g:Select(tp,1,1,nil)
+		local sg=g:Select(tp,1,2,nil)
 		Duel.HintSelection(sg)
 		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 		local c=e:GetHandler()
+		--[[
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -84,6 +81,7 @@ function c71401009.op2(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_PHASE+PHASE_MAIN2)
 		end
 		Duel.RegisterEffect(e1,1-tp)
+		--]]
 		if c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.SelectYesNo(tp,aux.Stringid(71401009,2)) then
 			Duel.BreakEffect()
