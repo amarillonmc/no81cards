@@ -56,6 +56,18 @@ function c71401001.op1(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+	e1:SetTargetRange(0xff,0xfe)
+	e1:SetValue(LOCATION_REMOVED)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTarget(c71401001.rmtg)
+	Duel.RegisterEffect(e1,tp)
+end
+function c71401001.rmtg(e,c)
+	return c:GetOwner()==e:GetHandlerPlayer()
 end
 function c71401001.filter2ext(c)
 	return c:IsFaceup() and c:IsType(TYPE_CONTINUOUS)

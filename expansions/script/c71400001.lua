@@ -166,23 +166,6 @@ function yume.AddYumeFieldGlobal(c,id,ft)
 	eac:SetCode(EVENT_FREE_CHAIN)
 	eac:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(eac)
-	--[[
-	--self to deck
-	local esd1=Effect.CreateEffect(c)
-	esd1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	esd1:SetCode(EVENT_CHAINING)
-	esd1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	esd1:SetRange(LOCATION_FZONE)
-	esd1:SetOperation(aux.chainreg)
-	c:RegisterEffect(esd1)
-	local esd2=Effect.CreateEffect(c)
-	esd2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	esd2:SetCode(EVENT_CHAIN_SOLVED)
-	esd2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	esd2:SetRange(LOCATION_FZONE)
-	esd2:SetOperation(yume.SelfToDeckOp)
-	c:RegisterEffect(esd2)
-	--]]
 	--activate field
 	local efa=Effect.CreateEffect(c)
 	efa:SetDescription(aux.Stringid(71400001,2))
@@ -195,15 +178,6 @@ function yume.AddYumeFieldGlobal(c,id,ft)
 	efa:SetOperation(yume.ActivateFieldOp)
 	c:RegisterEffect(efa)
 end
---[[
---Self To Deck
-function yume.SelfToDeckOp(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not re:GetHandler():IsSetCard(0x714) and rp==tp and c:GetFlagEffect(1)>0 then
-		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
-	end
-end
---]]
 function yume.AddYumeWeaponGlobal(c)
 	--set
 	local e1=Effect.CreateEffect(c)
@@ -291,7 +265,8 @@ function yume.ActivateFieldCon(e,tp,eg,ep,ev,re,r,rp)
 end
 function yume.ActivateFieldOp(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local id=yume.temp_card_field[c].id
+	--local id=yume.temp_card_field[c].id
+	local id=0
 	local ft=yume.temp_card_field[c].ft
 	yume.ActivateYumeField(e,tp,id,ft,LOCATION_DECK+LOCATION_HAND)
 end

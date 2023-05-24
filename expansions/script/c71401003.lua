@@ -9,7 +9,7 @@ function c71401003.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMING_END_PHASE)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
 	e2:SetCountLimit(1,71501003)
 	e2:SetCondition(c71401003.con2)
 	e2:SetCost(c71401003.cost2)
@@ -35,7 +35,7 @@ function c71401003.filter2(c)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsAttribute(ATTRIBUTE_LIGHT) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and (c:IsAbleToHand() or not c:IsForbidden() and c:CheckUniqueOnField(tp))
 end
 function c71401003.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71401003.filter2,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c71401003.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c71401003.filter2a(c)

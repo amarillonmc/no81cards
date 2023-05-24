@@ -19,10 +19,12 @@ function c71400014.initial_effect(c)
 	--heart
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400014,1))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetRange(LOCATION_FZONE)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCondition(c71400014.con2)
 	e2:SetCost(c71400014.cost2)
 	e2:SetTarget(c71400014.tg2)
 	e2:SetOperation(c71400014.op2)
@@ -63,7 +65,7 @@ function c71400014.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,rp)
 end
 function c71400014.aclimit(e,re,tp)
-	return not re:IsActiveType(TYPE_TRAP)
+	return not (re:IsActiveType(TYPE_TRAP) or re:GetHandler():IsSetCard(0x714) and re:IsActiveType(TYPE_FIELD))
 end
 function c71400014.con1(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_TRAP) and e:GetHandler():GetFlagEffect(1)~=0 and Duel.GetFlagEffect(tp,71400014)==0
@@ -71,9 +73,12 @@ end
 function c71400014.filter2(c,e,tp)
 	return c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function c71400014.con2(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsActiveType(TYPE_TRAP) and e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED)
+end
 function c71400014.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,1000) end
-	Duel.PayLPCost(tp,1000)
+	if chk==0 then return Duel.CheckLPCost(tp,2000) end
+	Duel.PayLPCost(tp,2000)
 end
 function c71400014.filter2(c)
 	return c:IsXyzSummonable(nil) and c:IsSetCard(0x714)
@@ -104,7 +109,7 @@ function c71400014.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetDescription(aux.Stringid(71400014,1))
-	e1:SetValue(1000)
+	e1:SetValue(2000)
 	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 	e1:SetReset(RESET_EVENT+0xff0000)
 	c:RegisterEffect(e1)

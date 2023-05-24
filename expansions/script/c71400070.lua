@@ -21,7 +21,7 @@ function c71400070.initial_effect(c)
 	e3:SetCategory(CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCountLimit(1,71500070)
 	e3:SetLabelObject(e0)
@@ -76,8 +76,11 @@ function c71400070.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71400070.op3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c71400070.filter3,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoGrave(g,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(c71400070.filter3,tp,LOCATION_DECK,0,nil)
+	local ct=g:GetClassCount(Card.GetCode)
+	if ct>2 then ct=2 end
+	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ct)
+	if sg:GetCount()>0 then
+		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end
 end
