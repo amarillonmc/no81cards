@@ -114,14 +114,14 @@ function c98910022.adfilter(c)
 end
 function c98910022.adtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and chkc:IsControler(tp) and c98910022.adfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c98910022.adfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c98910022.adfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,c98910022.adfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,g,1,0,0)
 end
 function c98910022.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	local tc=Duel.GetFirstTarget()	  
+	local tc=Duel.GetFirstTarget()	
 	if not (tc:IsRelateToEffect(e) and tc:IsFaceup()) then return end
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	local tc1=g:GetFirst()  
