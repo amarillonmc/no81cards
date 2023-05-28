@@ -18,6 +18,12 @@ function c98920543.initial_effect(c)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
+	--double
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_CHANGE_INVOLVING_BATTLE_DAMAGE)
+	e2:SetValue(DOUBLE_DAMAGE)
+	c:RegisterEffect(e2)
 	--damage indestructable
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -41,10 +47,13 @@ function c98920543.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_TO_GRAVE)
-	e3:SetCountLimit(1,98920543)
+	e3:SetCountLimit(1,98930543)
 	e3:SetTarget(c98920543.thtg1)
 	e3:SetOperation(c98920543.thop1)
 	c:RegisterEffect(e3)
+end
+function c98920543.damcon(e)
+	return e:GetHandler():GetBattleTarget()~=nil
 end
 function c98920543.thfilter1(c)
 	return c:IsType(TYPE_EQUIP) and c:IsAbleToHand()

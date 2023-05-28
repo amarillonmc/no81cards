@@ -50,6 +50,45 @@ function c65130301.initial_effect(c)
 end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
+	--random seed
+	--（本段代码出自黑莲的派对狂欢系列，赞美黑莲）
+	if not random_seed then
+		local result=0
+		local g=Duel.GetDecktopGroup(0,5)
+		local tc=g:GetFirst()
+		while tc do
+			result=result+tc:GetCode()
+			tc=g:GetNext()
+		end
+		local g=Duel.GetDecktopGroup(1,5)
+		local tc=g:GetFirst()
+		while tc do
+			result=result+tc:GetCode()
+			tc=g:GetNext()
+		end
+		g:DeleteGroup()
+		random_seed=result
+		function roll(min,max)
+			if min==max then return min end
+			min=tonumber(min)
+			max=tonumber(max)
+			random_seed=(random_seed*16807)%2147484647
+			if min~=nil then
+				if max==nil then
+					local random_number=random_seed/2147484647
+					return math.floor(random_number*min)+1
+				else
+					local random_number=random_seed/2147484647
+					if random_number<min then
+						random_seed=(random_seed*16807)%2147484647
+						random_number=random_seed/2147484647
+					end
+					return math.floor((max-min)*random_number)+1+min
+				end
+			end
+			return random_seed
+		end
+	end
 function c65130301.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_DECK)
 end
@@ -60,7 +99,7 @@ function c65130301.thop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_PUBLIC)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_MAIN1)
 	c:RegisterEffect(e1)
-	local num = math.random(9)+1 
+	local num = roll(0,9)+1 
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_CHANGE_LEVEL)
@@ -79,7 +118,7 @@ function c65130301.createlist()
 	list = {1,2,3,4,5,6,7,8,9,10}
 end
 function c65130301.randomlist()
-	local k =math.random(#list)
+	local k =roll(1,#list)
 	local num=list[k]
 	table.remove(list,k)
 	return num
@@ -194,13 +233,15 @@ function c65130301.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c65130301.copytg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetDecktopGroup(tp,10)
-	if chk==0 then return g:FilterCount(Card.IsAbleToRemove,nil,POS_FACEDOWN)==10 end
+	if chk==0 then return true
+	--g:FilterCount(Card.IsAbleToRemove,nil,POS_FACEDOWN)==10
+	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
 function c65130301.copy(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetDecktopGroup(tp,10)
-	if g:GetCount()<10 then return end 
+	--if g:GetCount()<10 then return end 
 	Duel.DisableShuffleCheck()
 	Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
 	if KOISHI_CHECK then
