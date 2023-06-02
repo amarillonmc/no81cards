@@ -98,7 +98,7 @@ function cm.skcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_EXTRA,0,nil)
 	if chk==0 then return g:GetClassCount(Card.GetCode)>=4 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g1=g:SelectSubGroup(tp,aux.dlvcheck,false,4,4)
+	local g1=g:SelectSubGroup(tp,aux.dlvcheck,false,4,4,tp)
 	Duel.Remove(g1,POS_FACEUP,REASON_COST)
 end
 function cm.skcon(e,tp)

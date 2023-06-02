@@ -86,7 +86,7 @@ function c11560313.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)-5 
 	if ct>0 then 
-		local rg=Duel.GetDecktopGroup(tp,ct)
+		local rg=Duel.GetDecktopGroup(1-tp,ct)
 		Duel.SendtoGrave(rg,REASON_EFFECT) 
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD)

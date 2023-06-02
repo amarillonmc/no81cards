@@ -46,7 +46,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	--all race  
 	local e2=e1:Clone() 
-	e2:SetValue(0x1ffffff)  
+	e2:SetValue(0x3ffffff)  
 	--no attribute
 	local e3=e1:Clone() 
 	e3:SetCode(EFFECT_CHANGE_ATTRIBUTE) 
