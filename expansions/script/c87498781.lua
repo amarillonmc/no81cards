@@ -186,7 +186,7 @@ function c87498781.pspfil(c,e,tp)
 	local rsc=rc:GetRightScale() 
 	if lsc>rsc then lsc,rsc=rsc,lsc end
 	local lv=c:GetOriginalLevel() 
-	return c:IsSetCard(0x143) and c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,true,false) and lv>0 and lv>lsc and lv<rsc   
+	return c:IsSetCard(0x143) and c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0x143,TYPES_NORMAL_TRAP_MONSTER,c:GetTextAttack(),c:GetTextDefense(),c:GetOriginalLevel(),c:GetOriginalRace(),c:GetOriginalAttribute(),POS_FACEUP,tp,SUMMON_TYPE_PENDULUM) and lv>0 and lv>lsc and lv<rsc   
 end 
 function c87498781.psptg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(c87498781.pspfil,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end 
