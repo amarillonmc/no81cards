@@ -28,7 +28,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ct=Duel.GetMatchingGroupCount(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsOnField() end
+	if chkc then return chkc:IsOnField() and chkc~=c end
 	if chk==0 then return ct>0 and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,ct,c) end
 	Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,ct,ct,c)
 	Duel.RegisterFlagEffect(0,11451760,RESET_CHAIN,0,1)

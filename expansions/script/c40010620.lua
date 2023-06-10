@@ -85,7 +85,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.fusop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetDescription(aux.Stringid(id,2))
+	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_EXTRA_FUSION_MATERIAL)
 	e1:SetTargetRange(LOCATION_DECK,LOCATION_MZONE)

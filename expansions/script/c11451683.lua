@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e5:SetRange(LOCATION_SZONE)
-	e5:SetCode(EVENT_CHAIN_SOLVED)
+	e5:SetCode(EVENT_CHAIN_SOLVING)
 	e5:SetOperation(cm.desop2)
 	e5:SetLabelObject(e3)
 	c:RegisterEffect(e5)
@@ -205,9 +205,16 @@ function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	if re==e:GetLabelObject():GetLabelObject() and c:GetFlagEffect(m)>0 then
 		if Duel.GetCurrentPhase()==PHASE_DAMAGE and not Duel.IsDamageCalculated() then
 			e:GetLabelObject():SetLabel(1)
+		elseif e:GetCode()==EVENT_CHAIN_SOLVING then
+			e:GetLabelObject():SetLabel(1)
+			local e5=Effect.CreateEffect(c)
+			e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e5:SetCode(EVENT_CHAIN_SOLVED)
+			e5:SetLabelObject(e:GetLabelObject())
+			e5:SetOperation(cm.desop3)
+			Duel.RegisterEffect(e5,tp)
 		else
-			if c:IsHasEffect(EFFECT_DISABLE) then return end
-			if not c:IsDisabled() then cm.spop(e,tp,eg,ep,ev,re,r,rp) end
+			cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
@@ -215,7 +222,6 @@ function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local des=e:GetLabelObject():GetLabel()
 	e:GetLabelObject():SetLabel(0)
-	if c:IsHasEffect(EFFECT_DISABLE) then return end
 	if des==1 and not c:IsDisabled() then
 		cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end

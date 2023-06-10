@@ -33,9 +33,9 @@ function cm.initial_effect(c)
 	--act limit & def position
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_DISABLE)
+	e3:SetCode(EFFECT_DISABLE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(0,LOCATION_MZONE)
+	e3:SetTargetRange(0,1)
 	e3:SetTarget(cm.actg)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
@@ -82,6 +82,9 @@ end
 function cm.c2filter(c)
 	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsPreviousLocation(LOCATION_EXTRA)
 end
+function cm.c3filter(c)
+	return c:IsFaceup() and not c:IsAttack(c:GetBaseAttack())
+end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g1=Duel.GetMatchingGroup(cm.atkfilter,tp,0,LOCATION_MZONE,nil)
@@ -94,19 +97,19 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc1:RegisterEffect(e1)
 		tc1=g1:GetNext()
-		if Duel.IsExistingMatchingCard(cm.c2filter,tp,0,LOCATION_MZONE,1,nil) then
-			Duel.BreakEffect()
-			local g2=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
-			local tc2=g2:GetFirst()
-			local atk=0
-			while tc2 do
-				local batk=tc2:GetBaseAttack()
-				local catk=tc2:GetAttack()
-				atk=math.abs(catk-batk)+atk
-				tc2=g2:GetNext()
-			end
-			Duel.Damage(1-tp,atk,REASON_EFFECT)
+	end
+	if Duel.IsExistingMatchingCard(cm.c2filter,tp,0,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(cm.c3filter,tp,0,LOCATION_MZONE,1,nil) then
+		Duel.BreakEffect()
+		local g2=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+		local tc2=g2:GetFirst()
+		local atk=0
+		while tc2 do
+			local batk=tc2:GetBaseAttack()
+			local catk=tc2:GetAttack()
+			atk=math.abs(catk-batk)+atk
+			tc2=g2:GetNext()
 		end
+		Duel.Damage(1-tp,atk,REASON_EFFECT)
 	end
 end
 function cm.actg(e,c)

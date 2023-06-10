@@ -127,7 +127,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_DELAY)
 		e4:SetCode(EVENT_MOVE)
 		e4:SetLabelObject(e3)
-		e4:SetOperation(cm.resop)
+		e4:SetOperation(cm.resop2)
 		tc:RegisterEffect(e4,true)
 		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	end
@@ -322,28 +322,42 @@ end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_DISABLE)
 	e1:SetTargetRange(0,LOCATION_ONFIELD)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
-	e:GetHandler():RegisterEffect(e1)
-	local e2=Effect.CreateEffect(e:GetHandler())
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVED)
-	e2:SetLabel(ev)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
 	e2:SetLabelObject(e1)
-	e2:SetCondition(cm.rescon)
-	e2:SetOperation(cm.resop)
+	e2:SetOperation(cm.disop5)
 	e2:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e2,tp)
-	local e3=e2:Clone()
-	e3:SetCode(EVENT_CHAIN_NEGATED)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+	e3:SetLabelObject(e2)
+	e3:SetTargetRange(0,LOCATION_MZONE)
+	e3:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e3,tp)
+	Duel.AdjustInstantly()
+	local e4=Effect.CreateEffect(e:GetHandler())
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_CHAIN_SOLVED)
+	e4:SetLabel(ev)
+	e4:SetLabelObject(e3)
+	e4:SetCondition(cm.rescon)
+	e4:SetOperation(cm.resop)
+	e4:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e4,tp)
+	local e5=e4:Clone()
+	e5:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e5,tp)
 end
 function cm.rescon(e,tp,eg,ep,ev,re,r,rp)
 	return ev==e:GetLabel()
 end
-function cm.resop(e,tp,eg,ep,ev,re,r,rp)
+function cm.resop2(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsLocation(LOCATION_SZONE) then return end
 	local te=e:GetLabelObject()
 	if te~=nil and aux.GetValueType(te)=="Effect" then
@@ -352,4 +366,23 @@ function cm.resop(e,tp,eg,ep,ev,re,r,rp)
 		te:Reset()
 	end
 	e:Reset()
+end
+function cm.resop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	if te~=nil and aux.GetValueType(te)=="Effect" then
+		local te2=te:GetLabelObject()
+		if te2~=nil and aux.GetValueType(te2)=="Effect" then 
+			local te3=te2:GetLabelObject()
+			if te3~=nil and aux.GetValueType(te3)=="Effect" then te3:Reset() end
+			te2:Reset()
+		end
+		te:Reset()
+	end
+	e:Reset()
+end
+function cm.disop5(e,tp,eg,ep,ev,re,r,rp)
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	if bit.band(loc,LOCATION_ONFIELD)~=0 then
+		Duel.NegateEffect(ev)
+	end
 end

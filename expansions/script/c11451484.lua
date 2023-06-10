@@ -1,6 +1,5 @@
 --魔人★双子相杀
-local m=11451484
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_SPSUMMON_COUNT)
 	--Activate
@@ -26,16 +25,16 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function cm.chkfilter1(c,e,tp)
-	return c:IsSetCard(0x151) and c:IsType(TYPE_MONSTER) and not c:IsHasEffect(EFFECT_REVIVE_LIMIT) and Duel.IsPlayerCanSpecialSummon(tp,0,POS_FACEUP,tp,c) and Duel.IsExistingMatchingCard(cm.chkfilter2,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetAttribute())
+	return c:IsSetCard(0x97b) and c:IsType(TYPE_MONSTER) and not c:IsHasEffect(EFFECT_REVIVE_LIMIT) and Duel.IsPlayerCanSpecialSummon(tp,0,POS_FACEUP,tp,c) and Duel.IsExistingMatchingCard(cm.chkfilter2,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetAttribute())
 end
 function cm.chkfilter2(c,e,tp,att)
-	return c:IsSetCard(0x151) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(att) and not c:IsHasEffect(EFFECT_REVIVE_LIMIT) and Duel.IsPlayerCanSpecialSummon(tp,0,POS_FACEUP,1-tp,c)
+	return c:IsSetCard(0x97b) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(att) and not c:IsHasEffect(EFFECT_REVIVE_LIMIT) and Duel.IsPlayerCanSpecialSummon(tp,0,POS_FACEUP,1-tp,c)
 end
 function cm.filter1(c,e,tp)
-	return c:IsSetCard(0x151) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetAttribute())
+	return c:IsSetCard(0x97b) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetAttribute())
 end
 function cm.filter2(c,e,tp,att)
-	return c:IsSetCard(0x151) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(att) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK,1-tp)
+	return c:IsSetCard(0x97b) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(att) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK,1-tp)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sp=Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)

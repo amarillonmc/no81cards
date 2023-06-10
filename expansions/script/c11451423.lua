@@ -1,6 +1,5 @@
 --pearl of dragon palace
-local m=11451423
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -67,7 +66,7 @@ function cm.filter2(c)
 	return not c:IsType(TYPE_MONSTER) or not c:IsType(TYPE_RITUAL)
 end
 function cm.filter3(c)
-	return c:IsFaceup() and bit.band(c:GetType(),0x81)==0x81 and c:IsSetCard(0x6978) and c:IsSummonType(SUMMON_TYPE_RITUAL) and c:GetMaterialCount()>0 and c:GetFlagEffect(m)>0
+	return c:IsFaceup() and bit.band(c:GetType(),0x81)==0x81 and c:IsSetCard(0x6978) and c:IsSummonType(SUMMON_TYPE_RITUAL) --and c:GetMaterialCount()>0 and c:GetFlagEffect(m)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end

@@ -1,7 +1,6 @@
 --幽玄龙象※坎寄沧波
 --21.09.21
-local m=11451616
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -159,7 +158,7 @@ function cm.fsop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Remove(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
 			if tc:IsType(TYPE_MONSTER) then
-				Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 				Duel.ConfirmCards(1-tp,tc)
 			else
 				Duel.SSet(tp,tc)
