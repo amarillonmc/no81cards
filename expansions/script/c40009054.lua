@@ -49,7 +49,7 @@ function cm.initial_effect(c)
 end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()
-	if g:FilterCount(Card.IsType,nil,TYPE_SYNCHRO)==#g then
+	if #g>0 and g:FilterCount(Card.IsType,nil,TYPE_SYNCHRO)==#g then
 		e:GetLabelObject():SetLabel(1)
 	else
 		e:GetLabelObject():SetLabel(0)
