@@ -96,14 +96,14 @@ end
 function cm.sp2con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
-function cm.thfilter(c)
-	return c:IsSetCard(0x5f31) and c:IsAbleToHand()
+function cm.th2filter(c)
+	return c:IsSetCard(0x5f31) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.sp2filter(c,e,tp)
 	return c:IsSetCard(0x5f31) and c.NonVemoisit_type and c.NonVemoisit_type=="Former" and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sp2tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.th2filter,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_ONFIELD)
 end
@@ -115,7 +115,7 @@ function cm.sp2op(e,tp,eg,ep,ev,re,r,rp)
 		local d2g=Duel.GetOperatedGroup()
 		cg:Merge(d2g)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local rg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+		local rg=Duel.SelectMatchingCard(tp,cm.th2filter,tp,LOCATION_GRAVE,0,1,1,nil)
 		if #rg~=0 and Duel.SendtoHand(rg,nil,REASON_EFFECT)~=0 then
 			local r2g=Duel.GetOperatedGroup()
 			cg:Merge(r2g)

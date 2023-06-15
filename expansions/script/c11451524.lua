@@ -155,12 +155,23 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	if not g then return end
 	Duel.HintSelection(Group.FromCards(lpz))
 	Duel.HintSelection(Group.FromCards(rpz))
-	for tc in aux.Next(g) do
-		local bool=aux.PendulumSummonableBool(tc)
-		Duel.SpecialSummonStep(tc,SUMMON_TYPE_PENDULUM,tp,tp,bool,bool,POS_FACEUP)
+	local tc=g:GetFirst()
+	if not tc.pendulum_rule then
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_SPSUMMON_PROC)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetRange(LOCATION_HAND+LOCATION_EXTRA)
+		e1:SetLabel(1)
+		e1:SetCondition(function(e) return e:GetLabel()==1 end)
+		e1:SetTarget(function(e) e:SetLabel(0) return true end)
+		e1:SetValue(SUMMON_TYPE_PENDULUM)
+		tc:RegisterEffect(e1,true)
+		_G["c"..tc:GetOriginalCode()].pendulum_rule=e1
+	else
+		tc.pendulum_rule:SetLabel(1)
 	end
-	Duel.SpecialSummonComplete()
-	for tc in aux.Next(g) do tc:CompleteProcedure() end
+	Duel.SpecialSummonRule(tp,tc,SUMMON_TYPE_PENDULUM)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

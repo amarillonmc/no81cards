@@ -21,7 +21,7 @@ function cm.thfilter(c,e,tp,sc)
 	return c:IsSetCard(0x5f31) and (sc:IsCode(table.unpack(class.name_beyond_Non_Vemoisit)) or sc:IsCode(c:GetCode())) and (b1 or b2) and c:IsType(TYPE_MONSTER)
 end
 function cm.rmfilter(c,e,tp)
-	return c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c)
+	return c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,c,e,tp,c)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp) end
