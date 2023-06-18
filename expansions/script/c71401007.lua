@@ -33,7 +33,7 @@ function c71401007.con1(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function c71401007.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
@@ -70,11 +70,13 @@ function c71401007.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	Duel.ShuffleDeck(tp)
 	Duel.BreakEffect()
-	local sg=Duel.GetMatchingGroup(c71401007.filter2,tp,LOCATION_HAND,0,nil,e,tp)
-	if Duel.Draw(tp,g:GetCount(),REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401007,2)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tg=sg:Select(tp,1,1,nil)
-		Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
+	if Duel.Draw(tp,g:GetCount(),REASON_EFFECT)>0 then
+		local sg=Duel.GetMatchingGroup(c71401007.filter2,tp,LOCATION_HAND,0,nil,e,tp)
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401007,2)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local tg=sg:Select(tp,1,1,nil)
+			Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
 end
