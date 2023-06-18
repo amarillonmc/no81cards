@@ -15,19 +15,6 @@ function c98910024.initial_effect(c)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e3:SetCondition(c98910024.handcon)
 	c:RegisterEffect(e3)  
-  --to hand
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_CAL)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,98910024)
-	e2:SetCondition(c98910024.thcon)
-	e2:SetCondition(aux.exccon)
-	e2:SetTarget(c98910024.thtg)
-	e2:SetOperation(c98910024.thop)
-	c:RegisterEffect(e2)
 end
 function c98910024.filter(c)
 	return c:IsFaceup() and c:IsSetCard(0x14f) and c:IsType(TYPE_FUSION)
@@ -98,20 +85,4 @@ end
 function c98910024.ffilter(c,tp)
 	return c:IsPreviousSetCard(0x14f) and c:IsPreviousControler(tp) and c:GetPreviousTypeOnField()&TYPE_FUSION~=0
 		and c:IsPreviousPosition(POS_FACEUP)
-end
-function c98910024.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c98910024.thfilter,1,nil) and not eg:IsContains(e:GetHandler())
-end
-function c98910024.thfilter(c,tp)
-	return c:IsSetCard(0x14f) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsReason(REASON_DESTROY) and c:GetReasonPlayer()==1-tp
-end
-function c98910024.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
-end
-function c98910024.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SendtoHand(c,nil,REASON_EFFECT)
-	end
 end

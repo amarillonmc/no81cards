@@ -70,12 +70,13 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,cm.stfilter1,tp,LOCATION_DECK,0,1,1,nil)  
 	Duel.SSet(tp,g)
-	local tc=g:GetFirst()
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	tc:RegisterEffect(e2)   
+	local tc=tg:GetFirst()
+	local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
 end
 --e3
 function cm.filter(c)
@@ -92,6 +93,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		Duel.Overlay(c,tc)
+		if tc:IsRelateToEffect(e) then
+		   Duel.Overlay(c,tc)
+		 end 
 	end
 end

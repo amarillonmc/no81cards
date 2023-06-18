@@ -2,7 +2,7 @@
 function c31000014.initial_effect(c)
   c:SetUniqueOnField(1,0,31000014)
   --Synchro Summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x308),aux.NonTuner(Card.IsSetCard,0x308),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x308),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
   --Gain ATK/DEF
   local e1=Effect.CreateEffect(c)

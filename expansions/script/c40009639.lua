@@ -13,7 +13,7 @@ function cm.sprcon(e,c,tp)
 	return Duel.IsExistingMatchingCard(cm.ofilter,tp,LOCATION_MZONE,0,1,nil,tp) 
 end
 function cm.ofilter(c,tp)
-	return Duel.GetMZoneCount(tp,c,tp) > 0 and c:IsSetCard("Vairina","BlazeMaiden") and c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsSummonType(SUMMON_VALUE_SELF)
+	return Duel.GetMZoneCount(tp,c,tp) > 0 and c:CheckSetCard("Vairina","BlazeMaiden") and c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsSummonType(SUMMON_VALUE_SELF)
 end
 function cm.sprop(e,tp)
 	local c = e:GetHandler()
@@ -28,10 +28,10 @@ function cm.thcon(e,tp)
 	return e:GetHandler():IsSummonType(SUMMON_VALUE_SELF)
 end
 function cm.thfilter(c,set)
-	return c:IsAbleToHand() and c:IsSetCard(set)
+	return c:IsAbleToHand() and c:CheckSetCard(set) --c:IsSetCard(set)
 end
 function cm.thfilter2(c)
-	return c:IsAbleToHand() and (c:IsCode(40009683) or aux.IsCodeListed(c,40009683))
+	return c:IsAbleToHand() and (c:IsCode(40009579) or (aux.IsCodeListed(c,40009579) and c:IsType(TYPE_RITUAL)))
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local c = e:GetHandler()
@@ -40,7 +40,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local res = { false, false, false }
 	local resct = 0
 	for mx, set in pairs(list) do
-		if og:IsExists(Card.IsSetCard,1,nil,set) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,set) then
+		if og:IsExists(Card.CheckSetCard,1,nil,set) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,set) then
 			res[mx] = set
 			resct = resct + 1
 		end

@@ -45,7 +45,7 @@ end
 function c29096814.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST)
+	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST)
 end
 function c29096814.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)

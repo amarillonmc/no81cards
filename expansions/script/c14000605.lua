@@ -62,7 +62,7 @@ function cm.tgfilter(c,e,tp)
 	return c:IsFaceup() and ((c:IsControler(tp) and c:IsRace(RACE_CYBERSE)) or Duel.IsPlayerAffectedByEffect(tp,14000601)) and Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
 function cm.rmfilter(c,code)
-	return c:IsRace(RACE_CYBERSE) and not c:IsCode(code)
+	return c:IsRace(RACE_CYBERSE) and c:IsAbleToRemove() and not c:IsCode(code)
 end
 function cm.rmcon1(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,14000601)
@@ -88,6 +88,12 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,tc:GetCode())
 	if #g>0 then
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+		local tc1=g:GetFirst()
+		if Duel.Remove(tc1,POS_FACEUP,REASON_EFFECT)~=0 and tc1:IsLocation(LOCATION_REMOVED) and cm.Code0(tc1) and tc1:IsCanBeSpecialSummoned(e,0,tp,false,false) and tc:IsAbleToGrave() and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+			Duel.BreakEffect()
+			if tc:IsAbleToGrave() and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
+				 Duel.SpecialSummon(tc1,0,tp,tp,false,false,POS_FACEUP)
+			end
+		end
 	end
 end

@@ -1,12 +1,14 @@
 --死型镜·魂光刻印镜
 local m=11630214
 local cm=_G["c"..m]
+local cont=5
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c) 
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	--act in hand
@@ -16,6 +18,7 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.handcon)
 	c:RegisterEffect(e2)   
 end
+cm.SetCard_xxj_Mirror=true
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
@@ -50,8 +53,8 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=1
 	local num=Duel.GetFlagEffect(tp,m)
-	if num>=10 then
-		ct=math.floor(num/10)
+	if num>=cont then
+		ct=math.floor(num/cont)
 	end
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE,0,nil)
 	if g:GetCount()<1 then return end

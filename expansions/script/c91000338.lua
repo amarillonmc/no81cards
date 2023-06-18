@@ -3,22 +3,22 @@ function c91000338.initial_effect(c)
 	c:EnableReviveLimit()
 	--ritual summon
 	local e1=aux.AddRitualProcGreater2(c,c91000338.filter,nil,nil,c91000338.matfilter,true) 
-	e1:SetType(EFFECT_TYPE_QUICK_O) 
-	e1:SetCode(EVENT_FREE_CHAIN) 
+	e1:SetType(EFFECT_TYPE_IGNITION) 
 	e1:SetRange(LOCATION_HAND)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetCountLimit(1,91000338)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
-	and Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0 end) 
+	return  Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0 end) 
 	c:RegisterEffect(e1)  
 	--xx
 	local e2=Effect.CreateEffect(c)  
+	e2:SetCategory(CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS) 
 	e2:SetProperty(EFFECT_FLAG_DELAY) 
+	e2:SetCountLimit(1,91000338*2)
 	e2:SetCondition(function(e) 
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0 end)  
+	return  Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0  and e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)end)
+	e2:SetTarget(c91000338.ritg)
 	e2:SetOperation(c91000338.riops) 
 	c:RegisterEffect(e2)  
 	--actlimit
@@ -103,7 +103,6 @@ function c91000338.xxop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 end
-
 function c91000338.riop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
 	local e1=Effect.CreateEffect(c) 
@@ -134,25 +133,20 @@ end
 function c91000338.aclimit(e,re,tp)
 	return re:GetActivateLocation()==LOCATION_HAND and re:IsActiveType(TYPE_MONSTER)
 end
+function c91000338.ritg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(2)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+end
 function c91000338.riops(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler() 
-	local e1=Effect.CreateEffect(c) 
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
-	e1:SetCode(EVENT_SUMMON_SUCCESS) 
-	e1:SetOperation(c91000338.recops) 
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp) 
-	local e2=e1:Clone() 
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS) 
-	Duel.RegisterEffect(e2,tp) 
-end 
-function c91000338.recops(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.Hint(HINT_CARD,0,91000338)  
-	local def=eg:GetSum(Card.GetDefense) 
-	Duel.Recover(tp,def,REASON_EFFECT) 
-end 
-
+	if Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,0,1,nil) then
+	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.Release(g,REASON_EFFECT)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
+	end
+end
 
 
 

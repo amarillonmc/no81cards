@@ -3,7 +3,7 @@ local cm=_G["c"..m]
 --幻奏的华乐圣 花之特莉普萝
 function cm.initial_effect(c)
 	--link summon  
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x9b),1)  
+	aux.AddLinkProcedure(c,cm.matfilter,1,1)  
 	c:EnableReviveLimit()  
 	--search  
 	local e1=Effect.CreateEffect(c)  
@@ -32,13 +32,16 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.desop)  
 	c:RegisterEffect(e2)  
 	--cannot link material  
-	local e3=Effect.CreateEffect(c)  
-	e3:SetType(EFFECT_TYPE_SINGLE)  
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)  
-	e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)  
-	e3:SetValue(1)  
-	c:RegisterEffect(e3)  
+	--local e3=Effect.CreateEffect(c)  
+	--e3:SetType(EFFECT_TYPE_SINGLE)  
+	--e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)  
+	--e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)  
+	--e3:SetValue(1)  
+	--c:RegisterEffect(e3)  
 end
+function cm.matfilter(c)  
+	return c:IsLinkSetCard(0x9b) and not c:IsLinkType(TYPE_LINK)  
+end  
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)  
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetHandler():GetSequence()<5 
 end  

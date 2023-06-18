@@ -2,6 +2,7 @@
 local m=29047151
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,29065500)
 	c:EnableReviveLimit()
 	aux.AddXyzProcedureLevelFree(c,cm.mfilter,aux.TRUE,2,2)
 	--Effect 1
@@ -17,7 +18,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)  
 end
 function cm.mfilter(c,xyzc)
-	local b1=c:IsRace(RACE_BEASTWARRIOR) and c:IsAttribute(ATTRIBUTE_EARTH)
+	local b1=(c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 	local b2=c:IsXyzLevel(xyzc,5)
 	local b3=c:IsXyzLevel(xyzc,6)
 	return b1 and (b2 or b3)

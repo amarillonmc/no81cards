@@ -2,8 +2,8 @@
 function c29068155.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddCodeList(c,29065500)
 	c:SetSPSummonOnce(29068155)
+	aux.AddCodeList(c,29065500)
 	aux.AddLinkProcedure(c,c29068155.matfilter,2,2)
 	--change name
 	aux.EnableChangeCode(c,29065500,LOCATION_MZONE+LOCATION_GRAVE)
@@ -26,7 +26,7 @@ function c29068155.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c29068155.thfilter(c)
-	return c:IsCode(29065510) and c:IsAbleToHand()
+	return aux.IsCodeListed(c,29065500) and c:IsAbleToHand()
 end
 function c29068155.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29068155.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
@@ -39,4 +39,16 @@ function c29068155.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c29068155.spelimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c29068155.spelimit(e,c)
+	return c:IsLocation(LOCATION_EXTRA)
+		and not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end

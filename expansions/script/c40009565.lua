@@ -6,7 +6,7 @@ function cm.initial_effect(c)
 	local e2,e3 = rsfwh.SummonFun(c,m,CATEGORY_SEARCH+CATEGORY_TOHAND,cm.thtg,cm.thop,0,cm.tftg,cm.tfop)
 end
 function cm.filter(c)
-	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0xaf1b)
+	return c:CheckSetCard("BlazeTalisman") and c:GetType()==0x20002
 end
 function cm.thfilter(c)
 	return cm.filter(c) and c:IsAbleToHand()

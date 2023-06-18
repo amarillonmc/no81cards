@@ -20,14 +20,14 @@ function c9910334.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910334.cfilter(c)
-	return c:IsSetCard(0x956) and c:IsType(TYPE_MONSTER) and c:IsDiscardable(REASON_EFFECT)
+	return c:IsSetCard(0x3956) and c:IsType(TYPE_MONSTER) and c:IsDiscardable(REASON_EFFECT)
 end
 function c9910334.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910334.cfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 end
 function c9910334.setfilter(c)
-	return c:IsSetCard(0x956) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and not c:IsCode(9910334)
+	return c:IsSetCard(0x3956) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and not c:IsCode(9910334)
 end
 function c9910334.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
@@ -66,7 +66,7 @@ function c9910334.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910334.tdfilter(c)
-	return c:IsSetCard(0x956) and c:IsAbleToDeck()
+	return c:IsSetCard(0x3956) and c:IsAbleToDeck()
 end
 function c9910334.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910334.tdfilter(chkc) end

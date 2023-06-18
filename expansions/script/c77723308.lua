@@ -1,6 +1,6 @@
 --龙宫乙姬(注：狸子DIY)
 function c77723308.initial_effect(c)
-c:SetUniqueOnField(2,1,77723308)
+	c:SetUniqueOnField(1,0,77723308)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -13,20 +13,19 @@ c:SetUniqueOnField(2,1,77723308)
 	e1:SetTarget(c77723308.sptg)
 	e1:SetOperation(c77723308.spop)
 	c:RegisterEffect(e1)
-		--spsummon
+	--spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(77723308,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,777233080)
+	e2:SetCountLimit(1,77723508)
 	e2:SetCost(c77723308.spcost2)
 	e2:SetTarget(c77723308.sptg2)
 	e2:SetOperation(c77723308.spop2)
 	c:RegisterEffect(e2)
-	end
+end
 function c77723308.cfilter(c)
 	return c:IsType(TYPE_NORMAL) and c:IsAbleToGraveAsCost()
 end
@@ -38,27 +37,28 @@ function c77723308.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c77723308.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c77723308.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		end
 	end
+end
+function c77723308.rfilter(c,tp)
+	return c:IsType(TYPE_EFFECT) and Duel.GetMZoneCount(tp,c)>0
+end
 function c77723308.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsType,1,e:GetHandler(),TYPE_EFFECT) end
-	local g=Duel.SelectReleaseGroup(tp,Card.IsType,1,1,e:GetHandler(),TYPE_EFFECT)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,c77723308.rfilter,1,e:GetHandler(),tp) end
+	local g=Duel.SelectReleaseGroup(tp,c77723308.rfilter,1,1,e:GetHandler(),tp)
 	Duel.Release(g,REASON_COST)
 end
 function c77723308.spfilter(c,e,tp)
-	return (c:IsType(TYPE_NORMAL) or (c:IsLevel(1) and c:IsType(TYPE_TUNER) ) )and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsType(TYPE_NORMAL) or (c:IsLevel(1) and c:IsType(TYPE_TUNER))) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c77723308.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c77723308.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c77723308.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c77723308.spop2(e,tp,eg,ep,ev,re,r,rp)
@@ -67,7 +67,7 @@ function c77723308.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c77723308.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc and Duel.SpecialSummonStep(g:GetFirst(),0,tp,tp,false,false,POS_FACEUP) then
-	local fid=e:GetHandler():GetFieldID()
+		local fid=e:GetHandler():GetFieldID()
 		tc:RegisterFlagEffect(77723308,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)

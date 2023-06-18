@@ -69,70 +69,48 @@ function c31000009.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function c31000009.spfilter(c,typ)
+function c31000009.cfilter(c,typ)
 	return c:IsSetCard(0x308) and c:IsType(typ)
 end
 
 function c31000009.opfilter(c)
-	return Duel.IsExistingMatchingCard(c31000009.spfilter,tp,LOCATION_DECK,nil,1,nil,c:GetType()) and c:IsPosition(POS_FACEUP)
+	return Duel.IsExistingMatchingCard(c31000009.cfilter,tp,LOCATION_DECK,nil,1,nil,c:GetType()) and c:IsPublic()
 end
 
 function c31000009.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local filter=function(c)
-		return c:IsSetCard(0x308)
-	end
+	local filter=function(c) return c:IsSetCard(0x308) end
 	local gc=Duel.GetMatchingGroupCount(filter,tp,LOCATION_MZONE,0,nil)
 	if chk==0 then return Duel.GetFieldGroup(tp,0,LOCATION_HAND):GetCount()>=gc end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,0,0,1-tp,e:GetLabel())
 end
 
 function c31000009.operation(e,tp,eg,ep,ev,re,r,rp)
-	local filter=function(c)
-		return c:IsSetCard(0x308)
-	end
-	local retop=function(e,tp,eg,ep,ev,re,r,rp)
-		local sg=e:GetLabelObject()
-		for rc in aux.Next(sg) do
-			if rc:GetFlagEffectLabel(31000009)~=e:GetLabel() then
-				sg:RemoveCard(rc)
-			end
-		end
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-	end
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+	local filter=function(c) return c:IsSetCard(0x308) end
 	local gc=Duel.GetMatchingGroupCount(filter,tp,LOCATION_MZONE,0,nil)
-	if g:GetCount()>=gc then
-		local sg=g:RandomSelect(1-tp,gc)
-		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
-		sg:KeepAlive()
-		local c=e:GetHandler()
-		local fid=c:GetFieldID()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
-		e1:SetLabel(fid)
-		e1:SetLabelObject(sg)
-		e1:SetOperation(retop)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-		for rc in aux.Next(sg) do
-			rc:RegisterFlagEffect(31000009,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
-		end
+	local rs=g:RandomSelect(tp,gc)
+	for tc in aux.Next(rs) do
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		tc:RegisterFlagEffect(31000009,RESET_EVENT+RESETS_STANDARD,nil,1)
 	end
 end
 
 function c31000009.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_REMOVED) and c31000009.opfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c31000009.opfilter,tp,0,LOCATION_REMOVED,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectTarget(tp,c31000009.opfilter,tp,0,LOCATION_REMOVED,1,1,nil)
+	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_HAND) and c31000009.opfilter(chkc) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c31000009.opfilter,tp,0,LOCATION_HAND,1,nil) end
+	local g=Duel.GetMatchingGroup(c31000009.opfilter,tp,0,LOCATION_HAND,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local sg=g:Select(tp,1,1,nil)
+	Duel.SetTargetCard(sg)
 	Duel.SetOperationInfo(0,CATEGORY_SEARCH,nil,1,tp,LOCATION_DECK)
 end
 
 function c31000009.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=Duel.GetFirstTarget()
-	local g=Duel.GetMatchingGroup(c31000009.spfilter,tp,LOCATION_DECK,0,nil,c:GetType())
+	local g=Duel.GetMatchingGroup(c31000009.cfilter,tp,LOCATION_DECK,0,nil,c:GetType())
 	if c:IsRelateToEffect(e) and g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)

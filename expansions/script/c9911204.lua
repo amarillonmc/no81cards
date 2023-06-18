@@ -60,8 +60,8 @@ function c9911204.fselect(g,tg)
 	return tg:IsExists(Card.IsLevel,1,nil,#g)
 end
 function c9911204.spfilter(c,e,tp)
-	return c:IsLevelAbove(1) and c:IsSetCard(0x6958) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	return c:IsLevelAbove(1) and c:IsType(TYPE_SYNCHRO) and c:IsType(TYPE_TUNER)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c9911204.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cg=Duel.GetMatchingGroup(c9911204.confilter,tp,LOCATION_ONFIELD,0,nil)
@@ -71,11 +71,11 @@ function c9911204.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
 		if #tg==0 then return false end
-		return #cg>=math.max(1,minlevel-3)
+		return #cg>=math.max(1,math.ceil(minlevel/3))
 	end
-	if minlevel<=4 then minlevel=4 end
+	minlevel=math.max(1,math.ceil(minlevel/3))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local sg=cg:Select(tp,minlevel-3,#cg,nil)
+	local sg=cg:Select(tp,minlevel,#cg,nil)
 	Duel.ConfirmCards(1-tp,sg)
 	e:SetLabel(#sg)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
@@ -84,12 +84,12 @@ function c9911204.spfilter1(c,e,tp,lv)
 	return c9911204.spfilter(c,e,tp) and c:IsLevelBelow(lv)
 end
 function c9911204.spop(e,tp,eg,ep,ev,re,r,rp)
-	local lv=e:GetLabel()+3
+	local lv=e:GetLabel()*3
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9911204.spfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,lv)
 	local tc=g:GetFirst()
 	if tc then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

@@ -34,7 +34,7 @@ function c98910023.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET) 
 	e1:SetHintTiming(0,TIMING_END_PHASE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,98910023)   
+	e1:SetCountLimit(1)   
 	e1:SetCondition(c98910023.condition)
 	e1:SetTarget(c98910023.sptg)
 	e1:SetOperation(c98910023.spop)
@@ -117,7 +117,6 @@ function c98910023.spop(e,tp,eg,ep,ev,re,r,rp)
 		local code=tc:GetCode()
 		local g=Duel.SelectMatchingCard(tp,c98910023.stfilter,tp,LOCATION_EXTRA+LOCATION_HAND,0,1,1,nil,code)
 		if g:GetCount()>0 then
-			Duel.BreakEffect()
 			Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 		end
 	end

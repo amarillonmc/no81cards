@@ -17,9 +17,6 @@ end
 function c98921003.counterfilter(c)
 	return not c:IsSummonLocation(LOCATION_EXTRA) or c:IsSetCard(0x7)
 end
-function c98921003.desfilter(c)
-	return c:IsFaceup() and not c:IsCode(98921003)
-end
 function c98921003.filter(c,e,tp)
 	return ((c:IsSetCard(0x46) and c:IsType(TYPE_SPELL)) or c:IsCode(83104731)) and c:IsAbleToHand() 
 end
@@ -38,11 +35,11 @@ function c98921003.splimit(e,c)
 	return c:IsLocation(LOCATION_EXTRA) and not c:IsSetCard(0x7)
 end
 function c98921003.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c.desfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c98921003.desfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and chkc~=e:GetHandler() end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 		and Duel.IsExistingMatchingCard(c98921003.filter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c98921003.desfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end

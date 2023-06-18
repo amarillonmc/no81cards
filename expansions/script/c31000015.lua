@@ -45,7 +45,7 @@ end
 
 function c31000015.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
+	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
 	local ag=Group.CreateGroup()
 	local codes={}
 	for c in aux.Next(g) do
@@ -78,12 +78,12 @@ function c31000015.op(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	e1:SetTargetRange(LOCATION_ONFIELD, LOCATION_ONFIELD)
+	e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e1:SetValue(c31000015.efilter)
 	e1:SetLabel(ac)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	Duel.RegisterEffect(e1,1-tp)
+	--Duel.RegisterEffect(e1,1-tp)
 end
 
 function c31000015.efilter(e,re)
@@ -117,11 +117,4 @@ function c31000015.operation(e,tp,eg,ep,ev,re,r,rp)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	Duel.RegisterEffect(e2,tp)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetTargetRange(1,0)
-	e3:SetReset(RESET_PHASE+PHASE_DAMAGE_CAL+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
 end

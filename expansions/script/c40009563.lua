@@ -24,7 +24,7 @@ function cm.thfilter2(c)
 	return c:IsRace(RACE_DRAGON) and c:IsType(TYPE_RITUAL) and c:IsAbleToHand()
 end
 function cm.thfilter3(c)
-	return c:IsSetCard(0xcf1b)  and c:IsAbleToHand()
+	return c:CheckSetCard("Vairina")  and c:IsAbleToHand()
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk == 0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.thfilter3,tp,LOCATION_DECK,0,1,nil) end

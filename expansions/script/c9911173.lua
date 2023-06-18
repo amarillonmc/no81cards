@@ -68,7 +68,6 @@ end
 function c9911173.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ec=c:GetEquipTarget()
-	local tp=c:GetControler()
 	local g=ec:GetColumnGroup():Filter(c9911173.rmfilter,nil,e,tp)
 	if g:GetCount()~=0 then
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)

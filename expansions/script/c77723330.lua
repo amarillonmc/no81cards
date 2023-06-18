@@ -1,6 +1,6 @@
 --永生的灵魂 查拉图斯特拉(注：狸子DIY)
 function c77723330.initial_effect(c)
-  c:SetUniqueOnField(2,1,77723330) 
+	c:SetUniqueOnField(1,0,77723330) 
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -11,7 +11,7 @@ function c77723330.initial_effect(c)
 	e1:SetTarget(c77723330.target)
 	e1:SetOperation(c77723330.operation)
 	c:RegisterEffect(e1)
-	end
+end
 function c77723330.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsReason(REASON_EFFECT) and c:IsReason(REASON_DESTROY)
@@ -35,8 +35,8 @@ function c77723330.operation(e,tp,eg,ep,ev,re,r,rp)
 			local sg=dg:Select(tp,1,ct,nil)
 			Duel.HintSelection(sg)
 			Duel.Destroy(sg,REASON_EFFECT)
-	        Duel.SetLP(1-tp,Duel.GetLP(1-tp)-ct*200)	
-	        Duel.Damage(tp,500,REASON_EFFECT)        
+			Duel.SetLP(1-tp,Duel.GetLP(1-tp)-ct*200)
+			Duel.Damage(tp,500,REASON_EFFECT)
 		end
 	end
 end

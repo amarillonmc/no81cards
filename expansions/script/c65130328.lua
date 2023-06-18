@@ -63,7 +63,7 @@ function c65130328.activate2(e,tp,eg,ep,ev,re,r,rp)
 		g=Duel.SelectMatchingCard(tp,c65130328.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,true)
 	end
 	local tc=g:GetFirst()
-	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then
+	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then		
 		Duel.ConfirmCards(1-tp,tc)
 		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and tc:IsLocation(LOCATION_HAND)
 			and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then

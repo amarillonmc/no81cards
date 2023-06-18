@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not (c:IsCode(40009190) or aux.IsCodeListed(c,40009190)) and not c:IsLocation(LOCATION_EXTRA)
+	return not (c:IsCode(40009190) or aux.IsCodeListed(c,40009190)) 
 end
 function cm.tg(e,c)
 	return aux.IsCodeListed(c,40009190) and c:IsType(TYPE_XYZ) 

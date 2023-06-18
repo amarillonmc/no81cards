@@ -1,11 +1,11 @@
---新世界星舞者
+--调时鸟
 function c9910668.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,5,4)
 	c:EnableReviveLimit()
 	--disable
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DISABLE)
+	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -23,35 +23,28 @@ function c9910668.initial_effect(c)
 	e2:SetCondition(c9910668.dscon)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
 	c:RegisterEffect(e2)
-	--activate limit
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_REMOVE)
-	e3:SetCountLimit(1,9910668)
-	e3:SetOperation(c9910668.limop)
-	c:RegisterEffect(e3)
 end
 function c9910668.discon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c9910668.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil)
 end
 function c9910668.disop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
+	local c=e:GetHandler()
+	local fid=c:GetFieldID()
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil)
 	local tc=g:GetFirst()
 	while tc do
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local e1=Effect.CreateEffect(e:GetHandler())
+		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_DISABLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(e:GetHandler())
+		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
 		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -59,29 +52,36 @@ function c9910668.disop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(RESET_TURN_SET)
 		tc:RegisterEffect(e2)
 		if tc:IsType(TYPE_TRAPMONSTER) then
-			local e3=Effect.CreateEffect(e:GetHandler())
+			local e3=Effect.CreateEffect(c)
 			e3:SetType(EFFECT_TYPE_SINGLE)
 			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e3)
 		end
+		tc:RegisterFlagEffect(9910668,RESET_EVENT+RESET_TURN_SET+RESET_OVERLAY+RESET_MSCHANGE+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(9910668,0))
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e3:SetCode(EVENT_LEAVE_FIELD)
+		e3:SetLabel(fid)
+		e3:SetLabelObject(tc)
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		e3:SetOperation(c9910668.damop)
+		Duel.RegisterEffect(e3,tp)
 		tc=g:GetNext()
 	end
 end
+function c9910668.damop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if not eg:IsContains(tc) then return end
+	if tc:GetFlagEffectLabel(9910668)~=e:GetLabel() then
+		e:Reset()
+		return
+	end
+	Duel.Hint(HINT_CARD,0,9910668)
+	Duel.Damage(1-tp,600,REASON_EFFECT)
+	tc:ResetFlagEffect(9910668)
+	e:Reset()
+end
 function c9910668.dscon(e)
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsRank,1,nil,5)
-end
-function c9910668.limop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetOperation(c9910668.chainop)
-	Duel.RegisterEffect(e1,tp)
-end
-function c9910668.chainop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SetChainLimit(c9910668.chlimit)
-end
-function c9910668.chlimit(e,ep,tp)
-	return tp==ep
 end

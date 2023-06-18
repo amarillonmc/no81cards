@@ -1,178 +1,102 @@
-fufu_loop=fufu_loop or {}
-
---loop.continu spell:create token and destroy token
-function fufu_loop.ctadt(c)
-	local tc=c
---creat token
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		local seq=e:GetHandler():GetSequence()
-		if chk==0 then return true end
-		e:SetLabel(seq)
-		if seq==0 then
-			e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
-			Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-			Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
-		end
-	end)
-	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		local label=e:GetLabel()
-		if label==0 then
-			if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-				and Duel.IsPlayerCanSpecialSummonMonster(tp,20000200,nil,TYPES_TOKEN_MONSTER,1000,1000,1,RACE_PSYCHO,ATTRIBUTE_LIGHT) then
-				local token=Duel.CreateToken(tp,20000200)
-				Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
-				e:GetHandler():SetCardTarget(token)
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-				e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-				e1:SetRange(LOCATION_MZONE)
-				e1:SetValue(1)
-				token:RegisterEffect(e1)
-			end
-			Duel.SpecialSummonComplete()
-		end
-	end)
-	tc:RegisterEffect(e1)
---destroy token
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetCode(EVENT_LEAVE_FIELD_P)
-	e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		if e:GetHandler():IsDisabled() then
-			e:SetLabel(1)
-		else e:SetLabel(0) end
-	end)
-	tc:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		if e:GetLabelObject():GetLabel()~=0 then return end
-		local ftc=e:GetHandler():GetFirstCardTarget()
-		if ftc and ftc:IsLocation(LOCATION_MZONE) then
-			Duel.Destroy(ftc,REASON_EFFECT)
-		end
-	end)
-	e3:SetLabelObject(e2)
-	tc:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetCode(EVENT_LEAVE_FIELD)
-	e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-		local ftc=e:GetHandler():GetFirstCardTarget()
-		return ftc and eg:IsContains(ftc)
-	end)
-	e4:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		Duel.Destroy(e:GetHandler(),REASON_EFFECT)
-	end)
-	tc:RegisterEffect(e4)
-	return e1
-end
---loop.continu spell:buff
-function fufu_loop.b(c,cod,val)
-	local tc=c
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(cod)
-	e5:SetRange(LOCATION_SZONE)
-	e5:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e5:SetTarget(aux.TargetBoolFunction(Card.IsCode,20000200))
-	e5:SetCondition(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		local seq=c:GetSequence()
-		return seq~=0 and seq<5
-	end)
-	e5:SetValue(val)
-	tc:RegisterEffect(e5)
-	return e5
-end
---loop.spell:search
-function fufu_loop.s(c)
-	local tc=c
+--红莲战士 莫特
+local cm,m,o=GetID()
+function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-		return Duel.IsExistingMatchingCard(function(c)
-			return c:IsFaceup() and c:IsCode(20000200)
-		end,tp,LOCATION_MZONE,0,1,nil)
-	end)
-	e1:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if chk==0 then return e:GetHandler():IsDiscardable() end
-		Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
-	end)
-	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if chk==0 then return Duel.IsExistingMatchingCard(function(c)
-			return aux.IsCodeListed(c,20000200) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsAbleToHand()
-		end,tp,LOCATION_DECK,0,1,nil) end
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	end)
-	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,function(c)
-			return aux.IsCodeListed(c,20000200) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsAbleToHand()
-		end,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-		end
-	end)
-	tc:RegisterEffect(e1)
-	return e1
-end
---loop.spell:return
-function fufu_loop.ro(c,cat,cod,op)
-	local tc=c
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1)
+	e1:SetCost(cm.cos1)
+	e1:SetTarget(cm.tg1)
+	e1:SetOperation(cm.op1)
+	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	if cat then
-		e2:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN+cat)
-	else
-		e2:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_EQUIP)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCondition(cm.con2)
+	e2:SetTarget(cm.tg2)
+	e2:SetOperation(cm.op2)
+	c:RegisterEffect(e2)
+end
+--e1
+function cm.cos1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
+function cm.tg1f1(c)
+	return c:IsAbleToHand() and c:IsSetCard(0x3fd2)
+end
+function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tg1f1,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function cm.op1(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.tg1f1,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,cod)
-	e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-		return Duel.IsExistingMatchingCard(function(c)
-			return c:IsFaceup() and c:IsCode(20000200) end,tp,LOCATION_MZONE,0,1,nil)
-	end)
-	e2:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHandAsCost,tp,LOCATION_SZONE,0,1,nil) end
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHandAsCost,tp,LOCATION_SZONE,0,1,1,nil)
-		Duel.SendtoHand(g,nil,REASON_COST)
-	end)
-	e2:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if chk==0 then return e:GetHandler():IsAbleToDeck() and Duel.GetLocationCount(tp,LOCATION_SZONE)>-1 and Duel.IsExistingMatchingCard(function(c,tp)
-			return c:GetType()==0x20002 end,tp,LOCATION_HAND,0,1,nil,tp) end
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,tp,LOCATION_GRAVE)
-		Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
-	end)
-	e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		if e:GetHandler():IsRelateToEffect(e) and Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_EFFECT)~=0 then
-			if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-			if not Duel.IsPlayerCanSpecialSummonMonster(tp,20000200,nil,TYPES_TOKEN_MONSTER,1000,1000,1,RACE_PSYCHO,ATTRIBUTE_LIGHT) then return end
-			local token=Duel.CreateToken(tp,20000200)
-			if Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-			local g=Duel.SelectMatchingCard(tp,function(c,tp)
-				return c:GetType()==0x20002 and c:GetActivateEffect():IsActivatable(tp,true,true) end,tp,LOCATION_HAND,0,1,1,nil,tp)
-			local tc=g:GetFirst()
-			if tc:GetActivateEffect():IsActivatable(tp,true,true) then
-				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-				local te=tc:GetActivateEffect()
-				te:UseCountLimit(tp,1,true)
-				local cost=te:GetCost()
-				if cost then cost(te,tp,eg,ep,ev,re,r,rp,1) end
-			end
+end
+--e2
+function cm.con2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()&(PHASE_DAMAGE+PHASE_DAMAGE_CAL)==0
+end
+function cm.tg2f2(c,e,tp,g,tc,f)
+	if not (c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsSetCard(0x6fd2) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false)) then return false end
+	local min,max=aux.GetMaterialListCount(c)
+	return g:CheckSubGroup(cm.gchk,min,max,tc,tp,c)
+end
+function cm.gchk(g,c,tp,fc)
+	return g:IsContains(c) and Duel.GetLocationCountFromEx(tp,tp,g,fc)>0 and g:IsExists(cm.cchk,1,nil,g,fc.fmatchk,1,Group.CreateGroup())
+end
+function cm.cchk(c,g,f,i,sg)
+	if type(f[i])=="number" and not (c:IsCode(f[i]) or (c:IsFusionSetCard(0x5fd2) and aux.IsCodeListed(c,f[i]))) then return false end
+	if type(f[i])~="number" and not (f[i])(c) then return false end
+	return #f==i or g:IsExists(cm.cchk,1,sg,g,f,i+1,sg+c)
+end
+function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local g=Duel.GetMatchingGroup(Card.IsCanBeFusionMaterial,tp,LOCATION_ONFIELD,0,nil)
+		local res=Duel.IsExistingMatchingCard(cm.tg2f2,tp,LOCATION_EXTRA,0,1,nil,e,tp,g,e:GetHandler())
+		if Duel.IsExistingMatchingCard(cm.tg2f2,tp,LOCATION_EXTRA,0,1,nil,e,tp,g,e:GetHandler()) then return true end
+		local ce=Duel.GetChainMaterial(tp)
+		if not ce then return false end
+		g=ce:GetTarget()(ce,e,tp)
+		local mf=ce:GetValue()
+		return Duel.IsExistingMatchingCard(cm.tg2f2,tp,LOCATION_EXTRA,0,1,nil,e,tp,g,e:GetHandler(),mf)
+	end
+	Duel.Hint(24,0,aux.Stringid(m,0)) 
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
+	local mg1=Duel.GetMatchingGroup(Card.IsCanBeFusionMaterial,tp,LOCATION_ONFIELD,0,nil):Filter(aux.NOT(Card.IsImmuneToEffect),nil,e)
+	local sg1=Duel.GetMatchingGroup(cm.tg2f2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,e:GetHandler())
+	local mg2=Group.CreateGroup()
+	local sg2=Group.CreateGroup()
+	local ce=Duel.GetChainMaterial(tp)
+	if ce~=nil then
+		mg2=ce:GetTarget()(ce,e,tp)
+		local mf=ce:GetValue()
+		sg2=Duel.GetMatchingGroup(cm.tg2f2,tp,LOCATION_EXTRA,0,nil,e,tp,mg2,e:GetHandler(),mf)
+	end
+	if #(sg1+sg2)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tc=(sg1+sg2):Select(tp,1,1,nil):GetFirst()
+		local min,max=aux.GetMaterialListCount(tc)
+		if sg1:IsContains(tc) and (not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
+			local mat=mg1:SelectSubGroup(tp,cm.gchk,false,min,max,e:GetHandler(),tp,tc)
+			tc:SetMaterial(mat)
+			Duel.SendtoGrave(mat,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
+			Duel.BreakEffect()
+			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
+		else
+			local mat=mg2:SelectSubGroup(tp,cm.gchk,false,min,max,e:GetHandler(),tp,tc)
+			local fop=ce:GetOperation()
+			fop(ce,e,tp,tc,mat)
 		end
-	end)
-	tc:RegisterEffect(e2)
-	return e2
+		tc:CompleteProcedure()
+	end
 end

@@ -101,7 +101,7 @@ end
 function c65130314.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local p=c:GetOwner()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsExistingMatchingCard(c65130314.tfilter,p,LOCATION_DECK,0,1,nil,e,tp) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 or not Duel.IsExistingMatchingCard(c65130314.tfilter,p,LOCATION_DECK,0,1,nil,e,tp) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(p,c65130314.tfilter,p,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then

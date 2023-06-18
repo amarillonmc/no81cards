@@ -11,6 +11,18 @@ function c65130336.initial_effect(c)
 	e1:SetTarget(c65130336.sptg)
 	e1:SetOperation(c65130336.spop)
 	c:RegisterEffect(e1)
+	--synchro effect
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(65130336,3))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(c65130336.sccon)
+	e2:SetTarget(c65130336.sctarg)
+	e2:SetOperation(c65130336.scop)
+	c:RegisterEffect(e2)
 end
 function c65130336.costfilter(c,tp)
 	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER)
@@ -22,7 +34,7 @@ function c65130336.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function c65130336.filter(c,e,tp)
-	return c:IsAttack(878) and c:IsDefense(1157) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsAttack(878) and c:IsDefense(1157) and not c:IsCode(65130336) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c65130336.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65130336.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
@@ -41,4 +53,25 @@ function c65130336.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 	Duel.SpecialSummonComplete()
+end
+function c65130336.sccon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()~=tp
+		and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+end
+function c65130336.sctarg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(65130336)==0
+		and Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,c) end
+	c:RegisterFlagEffect(65130336,RESET_CHAIN,0,1)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c65130336.scop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsControler(1-tp) or not c:IsRelateToEffect(e) or c:IsFacedown() then return end
+	local g=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,c)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SynchroSummon(tp,sg:GetFirst(),c)
+	end
 end

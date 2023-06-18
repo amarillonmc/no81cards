@@ -20,6 +20,10 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
+end
+function cm.counterfilter(c)
+	return (c:IsRace(RACE_REPTILE) and c:IsAttribute(ATTRIBUTE_LIGHT)) or c:IsSetCard(0xc)
 end
 function cm.spfilter(c)
 	return c:IsFaceup() and c:GetCounter(0x100e)>0 and c:IsControlerCanBeChanged()
@@ -44,6 +48,17 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 	end
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	e2:SetTargetRange(1,0)
+	e2:SetTarget(cm.sumlimit)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return not ((c:IsRace(RACE_REPTILE) and c:IsAttribute(ATTRIBUTE_LIGHT)) or c:IsSetCard(0xc))
 end
 function cm.chval(_val,ce)
 	return function(e,te)

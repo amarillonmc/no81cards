@@ -67,19 +67,34 @@ function c9910666.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 	if c:IsRelateToEffect(e) and c:IsAbleToRemove() and Duel.SelectYesNo(tp,aux.Stringid(9910666,1)) then
 		Duel.BreakEffect()
-		Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)
+		local fid=c:GetFieldID()
+		if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)==0 then return end
+		c:RegisterFlagEffect(9910666,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_CHAIN_END)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetCode(EVENT_CHAIN_SOLVED)
+		e1:SetLabel(fid)
 		e1:SetLabelObject(c)
-		e1:SetCountLimit(1)
+		e1:SetCondition(c9910666.retcon)
 		e1:SetOperation(c9910666.retop)
 		Duel.RegisterEffect(e1,tp)
+		local e2=e1:Clone()
+		e2:SetCode(EVENT_CHAIN_NEGATED)
+		Duel.RegisterEffect(e2,tp)
+	end
+end
+function c9910666.retcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(9910666)==e:GetLabel() then
+		return Duel.GetCurrentChain()==1
+	else
+		e:Reset()
+		return false
 	end
 end
 function c9910666.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
+	e:Reset()
 end
 function c9910666.lvcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

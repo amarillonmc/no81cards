@@ -35,7 +35,7 @@ function c65130317.filter(c)
 	return c:IsAttack(878) and c:IsDefense(1157) and c:IsAbleToHand()
 end
 function c65130317.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c65130317.filter,tp,LOCATION_DECK,0,1,nil) or Duel.IsExistingMatchingCard(c65130317.filter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(c65130317.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,3,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c65130317.filter,tp,LOCATION_DECK,0,1,nil) or Duel.IsExistingMatchingCard(c65130317.filter2,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(c65130317.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,3,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c65130317.thop(e,tp,eg,ep,ev,re,r,rp)

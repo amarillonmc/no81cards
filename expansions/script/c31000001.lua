@@ -69,7 +69,6 @@ end
 
 function c31000001.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
 	local lv=e:GetLabel()
 	local token=Duel.CreateToken(tp,31000002)
 	local e1=Effect.CreateEffect(c)

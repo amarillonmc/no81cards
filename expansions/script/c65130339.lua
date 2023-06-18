@@ -31,17 +31,17 @@ function c65130339.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsAttack(878) and c:IsDefense(1157)
 end
 function c65130339.mtfilter(c,e)
-	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsLinkType(TYPE_MONSTER) and c:IsCanOverlay() and not (e and c:IsImmuneToEffect(e))
+	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:GetOriginalType()&TYPE_MONSTER>0 and c:IsCanOverlay() and not (e and c:IsImmuneToEffect(e))
 end
 function c65130339.mttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ)
-		and Duel.IsExistingMatchingCard(c65130339.mtfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,e) end
+		and Duel.IsExistingMatchingCard(c65130339.mtfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,e) end
 end
 function c65130339.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,c65130339.mtfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,c,e)
+	local g=Duel.SelectMatchingCard(tp,c65130339.mtfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c,e)
 	if g:GetCount()>0 then
 		Duel.Overlay(c,g)
 		Duel.BreakEffect()

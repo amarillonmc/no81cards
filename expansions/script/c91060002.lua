@@ -39,15 +39,15 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,91060002,0,TYPES_NORMAL_TRAP_MONSTER+TYPE_TUNER,1500,500,5,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then return end
-	c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
+	c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TUNER+TYPE_TRAP)
 	if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0
 		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,0,1,nil)
 		and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,cm.fit1,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,1,nil)	  
-		Duel.HintSelection(g)	 
+		local g=Duel.SelectMatchingCard(tp,cm.fit1,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,1,nil)	
+		Duel.HintSelection(g)	
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		if  Duel.IsPlayerCanDraw(tp,1) then Duel.Draw(tp,1,REASON_EFFECT) end
 	end

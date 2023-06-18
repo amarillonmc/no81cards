@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 end
 --e1
 function cm.filter(c,e,tp)
-	return c:IsSetCard(0x211) or c:IsType(TYPE_RITUAL)
+	return c:IsSetCard(0x9212) or c:IsType(TYPE_RITUAL)
 end
 function cm.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_equal,chk)
 	if (filter and not filter(c,e,tp,chk)) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true,POS_FACEUP) then return false end

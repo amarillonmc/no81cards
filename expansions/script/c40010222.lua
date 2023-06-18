@@ -50,6 +50,18 @@ function cm.initial_effect(c)
 	e5:SetValue(cm.valcheck)
 	e5:SetLabelObject(e4)
 	c:RegisterEffect(e5) 
+
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(m,3))
+	e6:SetCategory(CATEGORY_DAMAGE)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e6:SetCode(EVENT_PHASE+PHASE_END)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCountLimit(1)
+	e6:SetCondition(cm.descon)
+	e6:SetTarget(cm.destg)
+	e6:SetOperation(cm.desop)
+	c:RegisterEffect(e6)
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -132,4 +144,17 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+end
+function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetAttackAnnouncedCount()~=0 and  e:GetHandler():GetFlagEffect(m)>0
+end
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(e:GetHandler():GetBaseAttack())
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,tp,e:GetHandler():GetBaseAttack())
+end
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Damage(p,d,REASON_EFFECT)
 end

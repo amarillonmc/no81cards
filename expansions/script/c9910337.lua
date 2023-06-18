@@ -3,15 +3,12 @@ function c9910337.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,aux.NonTuner(nil),nil,nil,aux.Tuner(nil),1,99)
 	c:EnableReviveLimit()
-	--to hand
+	--release
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,9910337)
-	e1:SetCondition(c9910337.thcon)
-	e1:SetTarget(c9910337.thtg)
-	e1:SetOperation(c9910337.thop)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_EQUIP)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetOperation(c9910337.rlop)
 	c:RegisterEffect(e1)
 	--negate
 	local e2=Effect.CreateEffect(c)
@@ -26,25 +23,26 @@ function c9910337.initial_effect(c)
 	e2:SetTarget(c9910337.distg)
 	e2:SetOperation(c9910337.disop)
 	c:RegisterEffect(e2)
+	--to extra
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_FIELD)
+	e3:SetCategory(CATEGORY_TOEXTRA)
+	e3:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1)
+	e3:SetCondition(c9910337.tecon)
+	e3:SetTarget(c9910337.tetg)
+	e3:SetOperation(c9910337.teop)
+	c:RegisterEffect(e3)
 end
-function c9910337.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
-end
-function c9910337.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local p=Duel.GetTurnPlayer()
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,p,1)
-end
-function c9910337.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=c:GetMaterial():FilterCount(Card.IsType,nil,TYPE_TUNER)
-	local p=Duel.GetTurnPlayer()
-	local g=Duel.GetFieldGroup(p,LOCATION_ONFIELD,0):Filter(Card.IsAbleToHand,nil)
-	if ct>g:GetCount() then ct=g:GetCount() end
-	if ct>0 then
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_RTOHAND)
-		local sg=g:Select(p,ct,ct,nil)
-		Duel.SendtoHand(sg,nil,REASON_RULE)
+function c9910337.rlop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsReleasable,1-tp,LOCATION_MZONE,0,nil,REASON_RULE)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_CARD,0,9910337)
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_RELEASE)
+		local sg=g:Select(1-tp,1,1,nil)
+		Duel.HintSelection(sg)
+		Duel.Release(sg,REASON_RULE)
 	end
 end
 function c9910337.discon(e,tp,eg,ep,ev,re,r,rp)
@@ -73,4 +71,39 @@ function c9910337.disop(e,tp,eg,ep,ev,re,r,rp)
 		ec:CancelToGrave()
 		Duel.SendtoDeck(ec,nil,2,REASON_EFFECT)
 	end
+end
+function c9910337.tecon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
+end
+function c9910337.tetg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
+end
+function c9910337.teop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SSET)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c9910337.setlimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetValue(c9910337.actlimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+end
+function c9910337.setlimit(e,c,tp)
+	return c:IsType(TYPE_FIELD)
+end
+function c9910337.actlimit(e,re,tp)
+	return re:IsActiveType(TYPE_FIELD) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end

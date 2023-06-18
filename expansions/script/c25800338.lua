@@ -21,7 +21,8 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,m)
+	e2:SetCondition(cm.spcon)
 	e2:SetCost(cm.drcost)
 	e2:SetTarget(cm.retg)
 	e2:SetOperation(cm.reop)
@@ -29,9 +30,9 @@ function cm.initial_effect(c)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFacedown,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectTarget(tp,Card.IsFacedown,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
@@ -42,6 +43,9 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 ----
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSetCard(0x6212)
+end
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)

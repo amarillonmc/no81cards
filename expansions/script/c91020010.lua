@@ -22,26 +22,6 @@ function c91020010.initial_effect(c)
 	e3:SetCode(EFFECT_CANNOT_DISABLE_SUMMON)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	c:RegisterEffect(e3)
---atk/def   
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_SINGLE)
-	e6:SetCode(EFFECT_UPDATE_ATTACK)
-	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e6:SetRange(LOCATION_MZONE)
-	e6:SetCondition(cm.con1)
-	e6:SetValue(cm.adval)
-	c:RegisterEffect(e6)
-	local e7=e6:Clone()
-	e7:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e7)
---immune
- local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_IMMUNE_EFFECT)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetValue(cm.immval)
-	c:RegisterEffect(e4)
 --atk/def down
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,1))
@@ -53,9 +33,25 @@ function c91020010.initial_effect(c)
 	e5:SetTarget(cm.tg1)
 	e5:SetOperation(cm.op1)
 	c:RegisterEffect(e5)
-	local e6=e5:Clone()
-	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	--atk/def   
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCode(EVENT_BATTLE_DESTROYING)
+	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetOperation(cm.op6)
 	c:RegisterEffect(e6)
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e9:SetCode(EVENT_DESTROYED)
+	e9:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e9:SetRange(LOCATION_MZONE)
+	e9:SetCondition(cm.con9)
+	e9:SetOperation(cm.op9)
+	c:RegisterEffect(e9)
+	local e8=e5:Clone()
+	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e8)
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(m,0))
 	e7:SetCategory(CATEGORY_ATKCHANGE)  
@@ -68,6 +64,15 @@ function c91020010.initial_effect(c)
 	e7:SetTarget(cm.tg1)
 	e7:SetOperation(cm.op1)
 	c:RegisterEffect(e7)
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_DESTROY_REPLACE)
+	e8:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e8:SetRange(LOCATION_MZONE)
+	e8:SetTarget(cm.desreptg)
+	e8:SetCountLimit(1,m*4)
+	e8:SetOperation(cm.desrepop)
+	c:RegisterEffect(e8)
 end
 --normal summon
 function cm.ttcon(e,c,tp)
@@ -83,16 +88,42 @@ function cm.setcon(e,c,minc)
 	if not c then return true end
 	return false
 end
---atk/def
-function cm.con1(e,tp,eg,ep,ev,re,r,rp)
-return e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE) 
+--e6
+function cm.fitl(c,e)
+return c:GetReason()&REASON_EFFECT~=0 and c:GetReasonEffect():GetHandler()==e:GetHandler()
 end
-function cm.adval(e,c)
-	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_HAND+LOCATION_ONFIELD,0)*1000
+function cm.con9(e,tp,eg,ep,ev,re,r,rp)
+return  eg:IsExists(cm.fitl,1,nil,e)
 end
---immune
-function cm.immval(e,te)
-return te:GetOwner()~=e:GetHandler() and te:IsActiveType(TYPE_MONSTER) and (te:GetOwner():GetAttack()<=e:GetHandler():GetAttack() or ((te:GetOwner():GetDefense()<=e:GetHandler():GetDefense() and not te:GetOwner():IsType(TYPE_LINK)) or (te:GetOwner():GetAttack()<=e:GetHandler():GetAttack() and te:GetOwner():IsType(TYPE_LINK))))
+function cm.op9(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(#eg*1000)
+		c:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_UPDATE_DEFENSE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetValue(#eg*1000)
+		c:RegisterEffect(e2)
+end
+function cm.op6(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(1000)
+		c:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_UPDATE_DEFENSE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetValue(1000)
+		c:RegisterEffect(e2)
 end
 --Destroy
 
@@ -129,4 +160,25 @@ end
 --e7
 function cm.con7(e,tp,eg,ep,ev,re,r,rp)
 return Duel.IsPlayerAffectedByEffect(tp,91000002)
+end
+--e8
+function cm.repfilter(c,e)
+	return c:IsDestructable(e) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+end
+function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return not c:IsReason(REASON_REPLACE) and c:IsOnField() and c:IsFaceup()
+		and Duel.IsExistingMatchingCard(cm.repfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,e) end
+	if Duel.SelectEffectYesNo(tp,c,96) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESREPLACE)
+		local g=Duel.SelectMatchingCard(tp,cm.repfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,e)
+		e:SetLabelObject(g:GetFirst())
+		g:GetFirst():SetStatus(STATUS_DESTROY_CONFIRMED,true)
+		return true
+	else return false end
+end
+function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	tc:SetStatus(STATUS_DESTROY_CONFIRMED,false)
+	Duel.Destroy(tc,REASON_EFFECT+REASON_REPLACE)
 end

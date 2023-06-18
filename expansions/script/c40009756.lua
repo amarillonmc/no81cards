@@ -2,6 +2,7 @@
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
 local m , cm = rscf.DefineCard(40009756,"BlazeMaiden")
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40009577)
 	local e1 = rsef.A(c,nil,nil,{1,m},"sp,se,th,dd",nil,
 		nil,nil,rsop.target(cm.thfilter,"th",LOCATION_DECK),cm.act)
 	e1:SetCost(cm.thcost)

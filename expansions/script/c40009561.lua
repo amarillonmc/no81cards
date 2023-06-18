@@ -208,12 +208,12 @@ function cm.erfop(tg,op,sum_loc,sum_filter)
 			Duel.Overlay(ritc,matc)
 			Duel.BreakEffect()
 			Duel.SpecialSummon(ritc,SUMMON_TYPE_RITUAL+SUMMON_VALUE_SELF,tp,tp,false,true,POS_FACEUP)
-			local e1 = rsef.FC_PhaseLeave({ritc,tp},ritc,nil,nil,PHASE_END,cm.ovlop2(matc),rsrst.std)
+			--local e1 = rsef.FC_PhaseLeave({ritc,tp},ritc,nil,nil,PHASE_END,cm.ovlop2(matc),rsrst.std)
 			local code = ritc:GetOriginalCodeRule()
 			matc:RegisterFlagEffect(m,rsrst.std,0,1)
 			ritc:RegisterFlagEffect(code,rsrst.std,0,1)
 			Duel.RegisterFlagEffect(tp,code,rsrst.ep,0,1)
-			local tc = ritc:GetOverlayGroup():Filter(Card.IsSetCard,nil,"BlazeTalisman"):GetFirst()
+			local tc = ritc:GetOverlayGroup():Filter(Card.CheckSetCard,nil,"BlazeTalisman"):GetFirst()
 			cm.attach_list[ritc] = tc
 		end
 		sum_filter = f

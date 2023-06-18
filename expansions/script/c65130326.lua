@@ -87,11 +87,10 @@ function c65130326.activate(e,tp,eg,ep,ev,re,r,rp)
 			tc:SetMaterial(mat1)
 			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
-			if Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)>0 then 
+			if Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)>0 and Duel.GetMatchingGroupCount(c65130326.cfilter,tp,LOCATION_ONFIELD,0,nil)>0 and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil)>0 and Duel.SelectYesNo(tp,aux.Stringid(65130326,1))then
 				local ct=Duel.GetMatchingGroupCount(c65130326.cfilter,tp,LOCATION_ONFIELD,0,nil)
-				if ct==0 then return end
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-				local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
+				local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,ct,nil)
 				Duel.HintSelection(g)
 				local oc=Duel.Destroy(g,REASON_EFFECT)
 			end

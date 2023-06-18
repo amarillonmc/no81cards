@@ -3,12 +3,6 @@ function c9910300.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,aux.NonTuner(nil),nil,nil,aux.Tuner(nil),2,99)
 	c:EnableReviveLimit()
-	--spsummon bgm
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e0:SetOperation(c9910300.sumsuc)
-	c:RegisterEffect(e0)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -83,9 +77,6 @@ function c9910300.initial_effect(c)
 	e10:SetValue(c9910300.valcheck)
 	e10:SetLabelObject(e9)
 	c:RegisterEffect(e10)
-end
-function c9910300.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(9910300,1))
 end
 function c9910300.valcheck(e,c)
 	local g=c:GetMaterial()

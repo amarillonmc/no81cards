@@ -26,18 +26,14 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--hand link
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e3:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
-	e3:SetRange(LOCATION_HAND)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(LOCATION_HAND,0)
+	e3:SetTarget(cm.mattg)
 	e3:SetValue(cm.matval)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetTargetRange(LOCATION_HAND,0)
-	e4:SetTarget(cm.mattg)
-	e4:SetLabelObject(e3)
-	c:RegisterEffect(e4)
+	c:RegisterEffect(e3)
 end
 function cm.Code0(c)
 	local m=_G["c"..c:GetCode()]
@@ -85,7 +81,7 @@ function cm.mfilter(c)
 	return c:IsLocation(LOCATION_MZONE) and c:IsRace(RACE_CYBERSE)
 end
 function cm.matval(e,lc,mg,c,tp)
-	if not lc or not lc:IsType(TYPE_LINK) then return false,nil end
+	if not lc:IsType(TYPE_LINK) then return false,nil end
 	return true,not mg or mg:IsExists(cm.mfilter,1,nil)
 end
 function cm.mattg(e,c)

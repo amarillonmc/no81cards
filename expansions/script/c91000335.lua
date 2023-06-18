@@ -11,16 +11,14 @@ function c91000335.initial_effect(c)
 	and Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0 end) 
 	c:RegisterEffect(e1)   
 	--ritual summon
-	local e2=Effect.CreateEffect(c) 
-	e2:SetCategory(CATEGORY_RELEASE+CATEGORY_SPECIAL_SUMMON)
+   local e2=Effect.CreateEffect(c)  
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCountLimit(2,91335)
-	e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
-	and Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0 end)  
-	e2:SetTarget(c91000335.rstg)
-	e2:SetOperation(c91000335.rsop)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS) 
+	e2:SetProperty(EFFECT_FLAG_DELAY) 
+	e2:SetCondition(function(e)
+	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0 and e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) end)  
+	e2:SetTarget(c91000335.thtg)
+	e2:SetOperation(c91000335.thop) 
 	c:RegisterEffect(e2) 
 
 	--disable
@@ -47,27 +45,14 @@ function c91000335.initial_effect(c)
 	c:RegisterEffect(e7)
 
 	local e4=Effect.CreateEffect(c) 
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON) 
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
 	e4:SetCode(EVENT_RELEASE) 
-	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET) 
+	e4:SetProperty(EFFECT_FLAG_DELAY) 
 	e4:SetCountLimit(1,29100335) 
 	e4:SetCondition(function(e) 
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0 end)  
 	e4:SetOperation(c91000335.riop) 
 	c:RegisterEffect(e4)
-	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(1945387,0))
-	e7:SetCategory(CATEGORY_DRAW)
-	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e7:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e7:SetCode(EVENT_BATTLE_DESTROYED)
-	e7:SetRange(LOCATION_MZONE)
-	
-	e7:SetCondition(c91000335.drcon)
-	e7:SetTarget(c91000335.drtg)
-	e7:SetOperation(c91000335.drop)
-	c:RegisterEffect(e7)
 	--special summon cost
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -89,21 +74,6 @@ c91000335.material_setcode=0x8
 function c91000335.cfilter(c,tp)
 	return  c:IsPreviousLocation(LOCATION_MZONE) 
 end
-function c91000335.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c91000335.cfilter,1,nil,tp)
-end
-function c91000335.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
-	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function c91000335.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
-end
-
 c91000335.SetCard_Dr_AcWarrior=true 
 function c91000335.checkop(e,tp,eg,ep,ev,re,r,rp) 
 	if re:IsHasType(EFFECT_TYPE_ACTIVATE) then 
@@ -156,18 +126,21 @@ end
 function c91000335.distg(e,c)
 	return c:GetFlagEffect(91000335)~=0
 end 
+function c91000335.fitth(c)
+return c:IsFaceup() and c:IsLevel(10) 
+end
 function c91000335.thtg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local x=Duel.GetMatchingGroupCount(function(c) return c:IsFaceup() and c:IsLevel(10) end,tp,LOCATION_MZONE,0,nil) 
-	if chk==0 then return x>0 and Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end 
-	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,x,nil) 
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0) 
+	local x=Duel.GetMatchingGroupCount(c91000335.fitth,tp,LOCATION_MZONE,0,nil) 
+	local g=Duel.GetMatchingGroup(Card.IsDestructable,tp,0,LOCATION_ONFIELD,nil) 
+	if chk==0 then return x>0 and #g>0 end 
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0) 
 end 
 function c91000335.thop(e,tp,eg,ep,ev,re,r,rp)  
-	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if g:GetCount()>0 then 
-		Duel.SendtoHand(g,nil,REASON_EFFECT)	
-	end 
+	local g=Duel.GetMatchingGroupCount(c91000335.fitth,tp,LOCATION_MZONE,0,nil)
+	if Duel.IsExistingMatchingCard(Card.IsDestructable,tp,0,LOCATION_ONFIELD,1,nil) and g>0 then
+	local dg=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,g,nil)
+	Duel.Destroy(dg,REASON_EFFECT)
+	end
 end 
 function c91000335.rstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -30,7 +30,8 @@ function cm.counterfilter(c)
 	return c:IsSetCard(0x9b)  
 end  
 function cm.spfilter(c)
-	return c:IsSetCard(0x9b) and c:IsType(TYPE_MONSTER) and c:IsDefenseBelow(1500) and c:IsDiscardable()
+	return c:IsSetCard(0x9b) and c:IsType(TYPE_MONSTER) --and c:IsDefenseBelow(1500) 
+	and c:IsDiscardable()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local c=e:GetHandler()

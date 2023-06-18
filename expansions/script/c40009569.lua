@@ -2,6 +2,7 @@
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
 local m , cm = rscf.DefineCard(40009569,"BlazeTalisman")
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40009577)
 	--activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)

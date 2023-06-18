@@ -21,6 +21,17 @@ function c11621103.initial_effect(c)
 	e2:SetTarget(cm.tdtg)
 	e2:SetOperation(cm.tdop)
 	c:RegisterEffect(e2)
+	--
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,1))
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetCountLimit(1,m)
+	e4:SetCondition(cm.con)
+	e4:SetTarget(cm.tg)
+	e4:SetOperation(cm.op)
+	c:RegisterEffect(e4)
 	--Destroy replace
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
@@ -31,6 +42,7 @@ function c11621103.initial_effect(c)
 	e3:SetOperation(cm.desrepop)
 	c:RegisterEffect(e3)
 end
+cm.SetCard_xxj_Mirror=true
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsCanAddCounter(tp,0x63,7,c) end
@@ -59,7 +71,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(c,REASON_EFFECT)
 	end
 end
---03
+--04
 function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsReason(REASON_RULE) and e:GetHandler():GetCounter(0x63)>0  end
 	return Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
@@ -68,4 +80,21 @@ function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(1-tp,LOCATION_SZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	Duel.MoveToField(e:GetHandler(),tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
+end
+--03
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and re:IsHasProperty(EFFECT_FLAG_PLAYER_TARGET)
+end
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local te=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+		local ftg=te:GetTarget()
+		return ftg==nil or ftg(e,tp,eg,ep,ev,re,r,rp,chk)
+	end
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	c:RemoveCounter(tp,0x63,1,REASON_EFFECT)
+	local p=Duel.GetChainInfo(ev,CHAININFO_TARGET_PLAYER)
+	Duel.ChangeTargetPlayer(ev,1-p)
 end

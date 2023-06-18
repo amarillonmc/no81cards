@@ -12,7 +12,7 @@ function c9911208.initial_effect(c)
 	c:RegisterEffect(e1)
 	--sset
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_DECKDES+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9911209)
@@ -62,7 +62,7 @@ function c9911208.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
-		return ct>3 and #cg>0
+		return ct>3 and #cg>0 and Duel.IsPlayerCanDiscardDeck(tp,1)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local sg=cg:Select(tp,1,ct-3,nil)
@@ -74,16 +74,19 @@ function c9911208.setfilter(c)
 end
 function c9911208.setop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()+3
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct then
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct and Duel.IsPlayerCanDiscardDeck(tp,1) then
 		Duel.ConfirmDecktop(tp,ct)
 		local g=Duel.GetDecktopGroup(tp,ct)
-		local tg=g:Filter(c9911208.setfilter,nil)
-		if #tg>0 and Duel.SelectYesNo(tp,aux.Stringid(9911208,1)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-			local sg=tg:Select(tp,1,1,nil)
-			Duel.SSet(tp,sg)
+		if g:GetCount()>0 then
+			Duel.DisableShuffleCheck()
+			if g:IsExists(c9911208.setfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(9911208,1)) then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+				local sg=g:FilterSelect(tp,c9911208.setfilter,1,1,nil)
+				Duel.SSet(tp,sg)
+				g:Sub(sg)
+			end
+			Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
 		end
-		Duel.ShuffleDeck(tp)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

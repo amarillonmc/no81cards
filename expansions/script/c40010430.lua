@@ -5,6 +5,7 @@ local m=40010430
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.AddCodeList(c,40009579)
+	aux.AddCodeList(c,40009577)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON)
@@ -45,7 +46,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.desfilter(c,e,tp)
-	return  (c:CheckSetCard("BlazeMaiden") or c:CheckSetCard("Vairina")) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP)
+	return  (c:CheckSetCard("BlazeMaiden") or c:CheckSetCard("Vairina")) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ec=re:GetHandler()
@@ -54,7 +55,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SendtoDeck(ec,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and ec:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
 			if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 			local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_HAND,0,nil,e,tp)
-			if g:GetCount()>0 then
+			if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 				local sg=g:Select(tp,1,1,nil)

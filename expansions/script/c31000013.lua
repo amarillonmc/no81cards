@@ -36,7 +36,7 @@ end
 
 function c31000013.cpcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=re:GetHandler()
-	local p=c:GetControler()
+	local p=e:GetHandler():GetControler()
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
 	return p==tp and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x308) and loc==LOCATION_MZONE
 end

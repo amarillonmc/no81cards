@@ -22,7 +22,8 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,m)
+	e2:SetCondition(cm.spcon)
 	e2:SetCost(cm.drcost)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.operation)
@@ -64,6 +65,9 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 -----
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSetCard(0x6212)
+end
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)

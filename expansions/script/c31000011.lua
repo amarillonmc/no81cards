@@ -101,10 +101,6 @@ function c31000011.opfilter(c)
 	return c:IsSetCard(0x308) and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP))
 end
 
-function c31000011.tkfilter(c)
-	return c:IsCode(31000002)
-end
-
 function c31000011.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c31000011.cost(e,tp,eg,ep,ev,re,r,rp,0) end
 	c31000011.cost(e,tp,eg,ep,ev,re,r,rp)
@@ -117,7 +113,6 @@ end
 function c31000011.immval(e,te)
 	local tp=te:GetOwner():GetControler()
 	return tp~=e:GetHandler():GetControler() and te:IsActiveType(TYPE_MONSTER)
-		and Duel.IsExistingMatchingCard(c31000011.tkfilter,tp,LOCATION_MZONE,nil,1,nil)
 end
 
 function c31000011.operation(e,tp,eg,ep,ev,re,r,rp)

@@ -2,6 +2,7 @@
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
 local m , cm = rscf.DefineCard(40009681,"BlazeTalisman")
 function cm.initial_effect(c)
+	aux.AddCodeList(c,40009577)
 	local e1 = rsef.A(c)
 	local e2 = rsef.I(c,{m,0},{1,m},nil,nil,LOCATION_SZONE,
 		rscon.excard2(cm.cfilter,LOCATION_MZONE),nil,nil,cm.op1)

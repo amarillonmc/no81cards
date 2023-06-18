@@ -2,7 +2,7 @@
 if not pcall(function() require("expansions/script/c40009561") end) then require("script/c40009561") end
 local m , cm = rscf.DefineCard(40009796)
 function cm.initial_effect(c)
-	aux.AddCodeList(c,40009798,40009641,40010240,40009800)
+	aux.AddCodeList(c,40009798,40009641,40010240,40009800,40009577)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES+CATEGORY_TODECK)
@@ -12,6 +12,10 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+	rsfwh.ExtraRitualFun(c,e1,LOCATION_HAND+LOCATION_GRAVE,cm.ritfilter)
+end
+function cm.ritfilter(c)
+	return c:IsCode(40009798,40009641,40010240,40009800)
 end
 function cm.filter(c,e,tp,mat)
 	if bit.band(c:GetType(),0x81)~=0x81 or not c:IsCode(40009798,40009641,40010240,40009800)
@@ -49,13 +53,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(mat,nil,SEQ_DECKSHUFFLE,REASON_MATERIAL+REASON_RITUAL)
 		Duel.BreakEffect()
 		--c40009561.attach_list[tc] = nil
-		Duel.SpecialSummon(ritc,SUMMON_TYPE_RITUAL+SUMMON_VALUE_SELF,tp,tp,false,true,POS_FACEUP)
-			local code = ritc:GetOriginalCodeRule()
-			matc:RegisterFlagEffect(m,rsrst.std,0,1)
-			ritc:RegisterFlagEffect(code,rsrst.std,0,1)
-			Duel.RegisterFlagEffect(tp,code,rsrst.ep,0,1)
-			local tc = ritc:GetOverlayGroup():Filter(Card.IsSetCard,nil,"BlazeTalisman"):GetFirst()
-			cm.attach_list[ritc] = tc
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL+SUMMON_VALUE_SELF,tp,tp,false,true,POS_FACEUP)
 		tc:CompleteProcedure()
 	end
 end
