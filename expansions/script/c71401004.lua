@@ -1,8 +1,9 @@
 --蝶现-「像」
 xpcall(function() require("expansions/script/c71401001") end,function() require("script/c71401001") end)
 function c71401004.initial_effect(c)
-	--same effect send this card to grave and spsummon another card check
+	--same effect sends this card to grave or banishes it, and spsummon another card check
 	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
+	local e0a=yume.AddThisCardBanishedAlreadyCheck(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71401004,0))
@@ -12,15 +13,21 @@ function c71401004.initial_effect(c)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
 	e1:SetCountLimit(1,71401004)
-	e1:SetLabelObject(e0)
 	e1:SetCost(c71401004.cost1)
-	e1:SetCondition(c71401004.con1)
 	e1:SetTarget(c71401004.tg1)
 	e1:SetOperation(c71401004.op1)
 	c:RegisterEffect(e1)
 	local e1a=e1:Clone()
 	e1a:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1a:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1a:SetCondition(c71401004.con1)
+	e1a:SetLabelObject(e0)
 	c:RegisterEffect(e1a)
+	local e1b=e1a:Clone()
+	e1b:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1b:SetRange(LOCATION_REMOVED)
+	e1b:SetLabelObject(e0a)
+	c:RegisterEffect(e1b)
 	--banish
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401004,1))
@@ -44,13 +51,13 @@ function c71401004.con1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c71401004.filtercon1,1,nil,tp,se)
 end
 function c71401004.filterc1(c,tp)
-	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:IsAbleToGraveAsCost()
+	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:IsAbleToRemoveAsCost()
 		and Duel.GetMZoneCount(tp,c)>0
 end
 function c71401004.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71401004.filterc1,tp,LOCATION_MZONE,0,1,nil,tp) and Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c71401004.filterc1,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c71401004.filterc1,tp,LOCATION_MZONE,0,1,1,nil,tp)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	yume.RegButterflyCostLimit(e,tp)
 end
