@@ -87,13 +87,9 @@ end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
-function cm.cfilter(c,ft,tp)
-	return c:IsCode(40009699)
-		and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5)) and (c:IsControler(tp) or c:IsFaceup())
-end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.cfilter,3,nil) end
-	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,3,3,nil)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsCode,3,nil,40009699) end
+	local g=Duel.SelectReleaseGroup(tp,Card.IsCode,3,3,nil,40009699)
 	Duel.Release(g,REASON_COST)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)

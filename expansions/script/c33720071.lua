@@ -4,6 +4,7 @@
 local s,id=GetID()
 
 xpcall(function() require("expansions/script/glitchylib_vsnemo") end,function() require("script/glitchylib_vsnemo") end)
+xpcall(function() require("expansions/script/utterconfusionlib") end,function() require("script/utterconfusionlib") end)
 
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)

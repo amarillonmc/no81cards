@@ -91,7 +91,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,29010023,nil,0x4011,1500,1500,1,RACE_AQUA,ATTRIBUTE_WATER)
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,29098632,nil,0x4011,1500,1500,1,RACE_AQUA,ATTRIBUTE_WATER)
 		and not Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_MZONE,0,1,nil,TYPE_TOKEN) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
@@ -100,8 +100,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	if not Duel.IsPlayerCanSpecialSummonMonster(tp,29010023,nil,0x4011,1500,1500,1,RACE_AQUA,ATTRIBUTE_WATER) then return end
-	local token=Duel.CreateToken(tp,29010023)
+	if not Duel.IsPlayerCanSpecialSummonMonster(tp,29098632,nil,0x4011,1500,1500,1,RACE_AQUA,ATTRIBUTE_WATER) then return end
+	local token=Duel.CreateToken(tp,29098632)
 	local fid=e:GetHandler():GetFieldID()
 	local g=Group.CreateGroup()
 	if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP) then
@@ -183,14 +183,14 @@ function cm.efilter(c,sc,seq,tp)
 		end
 	end
 
-	return b and c:IsCode(29010023) and sc:GetControler()==tp
+	return b and c:IsCode(29098632) and sc:GetControler()==tp
 end
 function cm.eftg(e,c)
 	local seq=c:GetSequence()
 	return c:IsType(TYPE_EFFECT) and ((seq<5 and math.abs(e:GetHandler():GetSequence()-seq)<=1) or (Duel.IsExistingMatchingCard(cm.efilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_MZONE,1,nil,c,seq,e:GetHandlerPlayer())))
 end
 function cm.repfilter(c,e)
-	return c:IsFaceup() and (c:IsCode(29010023) or c:IsCode(15000181))
+	return c:IsFaceup() and (c:IsCode(29098632) or c:IsCode(15000181))
 		and c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -219,7 +219,7 @@ end
 function cm.cdcon1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
-	return Duel.GetFlagEffect(tp,15000181)==0 and ((c:IsLocation(LOCATION_ONFIELD) and c:IsFaceup() and eg:FilterCount(Card.IsReason,nil,REASON_DESTROY)==eg:GetCount() and not Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,c)) or (eg:IsContains(c) and c:IsReason(REASON_REPLACE)) or (c:IsLocation(LOCATION_ONFIELD) and c:IsFaceup() and eg:GetFirst():IsReason(REASON_DESTROY) and eg:GetCount()==1 and eg:GetFirst():GetPreviousControler()==1-tp and (Duel.GetAttacker():IsCode(29010023) or (Duel.GetAttackTarget() and Duel.GetAttackTarget():IsCode(29010023)))))
+	return Duel.GetFlagEffect(tp,15000181)==0 and ((c:IsLocation(LOCATION_ONFIELD) and c:IsFaceup() and eg:FilterCount(Card.IsReason,nil,REASON_DESTROY)==eg:GetCount() and not Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,c)) or (eg:IsContains(c) and c:IsReason(REASON_REPLACE)) or (c:IsLocation(LOCATION_ONFIELD) and c:IsFaceup() and eg:GetFirst():IsReason(REASON_DESTROY) and eg:GetCount()==1 and eg:GetFirst():GetPreviousControler()==1-tp and (Duel.GetAttacker():IsCode(29098632) or (Duel.GetAttackTarget() and Duel.GetAttackTarget():IsCode(29098632)))))
 end
 function cm.cdop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -229,7 +229,7 @@ function cm.cdop1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SelectYesNo(tp,aux.Stringid(m,0))
 	elseif eg:IsContains(c) and c:IsReason(REASON_REPLACE) then
 		Duel.SelectYesNo(tp,aux.Stringid(m,1))
-	elseif c:IsLocation(LOCATION_ONFIELD) and c:IsFaceup() and eg:GetFirst():IsReason(REASON_DESTROY) and eg:GetCount()==1 and eg:GetFirst():GetPreviousControler()==1-tp and (Duel.GetAttacker():IsCode(29010023) or (Duel.GetAttackTarget() and Duel.GetAttackTarget():IsCode(29010023))) then
+	elseif c:IsLocation(LOCATION_ONFIELD) and c:IsFaceup() and eg:GetFirst():IsReason(REASON_DESTROY) and eg:GetCount()==1 and eg:GetFirst():GetPreviousControler()==1-tp and (Duel.GetAttacker():IsCode(29098632) or (Duel.GetAttackTarget() and Duel.GetAttackTarget():IsCode(29098632))) then
 		Duel.SelectYesNo(tp,aux.Stringid(m,2))
 	end
 	Duel.RegisterFlagEffect(tp,15000181,RESET_PHASE+PHASE_END,0,99)

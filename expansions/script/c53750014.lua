@@ -55,6 +55,17 @@ function cm.initial_effect(c)
 	sg:KeepAlive()
 	e4:SetLabelObject(sg)
 	e5:SetLabelObject(e4)
+	if not cm.global_check then
+		cm.global_check=true
+		cm[0]=Card.GetType
+		Card.GetType=function(tc)
+			if tc:GetFlagEffect(m)>0 then
+				return TYPE_SPELL
+			else
+				return cm[0](tc)
+			end
+		end
+	end
 end
 function cm.etg(e,c)
 	return e:GetHandler():GetEquipGroup():IsContains(c)
@@ -102,12 +113,6 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2)
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_REMOVE_TYPE)
-		e3:SetValue(TYPE_EQUIP)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e3)
 	end
 end
 function cm.eqlimit(e,c)
