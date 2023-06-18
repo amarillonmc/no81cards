@@ -76,7 +76,7 @@ function c88100009.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c88100009.tkop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,55326323,0x30ea,TYPES_TOKEN_MONSTER,0,0,1,RACE_MACHINE,ATTRIBUTE_WATER) then return end
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,88100010,0x30ea,TYPES_TOKEN_MONSTER,0,0,1,RACE_MACHINE,ATTRIBUTE_WATER) then return end
 	local token=Duel.CreateToken(tp,88100010)
 	Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -88,13 +88,13 @@ function c88100009.tkop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_UNRELEASABLE_NONSUM)
 	token:RegisterEffect(e2,true)
-	Duel.SpecialSummonComplete()
 	local e3=Effect.CreateEffect(e:GetHandler())
 	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetCode(EFFECT_NONTUNER)
 	e3:SetValue(c88100009.tnval)
+	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 	token:RegisterEffect(e3,true)
+	Duel.SpecialSummonComplete()
 end
 function c88100009.tnval(e,c)
 	return e:GetHandler():IsControler(c:GetControler())

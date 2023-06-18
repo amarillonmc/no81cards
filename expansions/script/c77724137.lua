@@ -1,6 +1,6 @@
 --玄奘(注:狸子DIY)
 function c77724137.initial_effect(c)
-   c:SetUniqueOnField(2,1,77724137)
+	c:SetUniqueOnField(1,0,77724137)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
@@ -20,7 +20,7 @@ function c77724137.initial_effect(c)
 	e3:SetTarget(c77724137.desreptg)
 	e3:SetOperation(c77724137.desrepop)
 	c:RegisterEffect(e3)
-	end
+end
 function c77724137.cfilter(c)
 	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToRemoveAsCost()
 end
@@ -43,11 +43,10 @@ function c77724137.filter(c)
 end
 function c77724137.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0
-	and not Duel.IsExistingMatchingCard(c77724137.cfilter2,tp,LOCATION_MZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(77724137,0)) then
-     local g=Duel.GetMatchingGroup(c77724137.filter,tp,LOCATION_DECK,0,nil)
-		if g:GetCount()>0 then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		local g=Duel.GetMatchingGroup(c77724137.filter,tp,LOCATION_DECK,0,nil)
+		if not Duel.IsExistingMatchingCard(c77724137.cfilter2,tp,LOCATION_MZONE,0,1,nil)
+			and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(77724137,0)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local sg=g:Select(tp,1,1,nil)
@@ -56,17 +55,19 @@ function c77724137.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c77724137.desrepfilter(c)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToDeck() and not c:IsHasEffect(EFFECT_NECRO_VALLEY)
+function c77724137.desrepfilter(c,e)
+	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToDeck()
+		and not c:IsStatus(STATUS_DESTROY_CONFIRMED) and not c:IsImmuneToEffect(e)
 end
 function c77724137.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
-		and Duel.IsExistingMatchingCard(c77724137.desrepfilter,tp,LOCATION_MZONE,0,1,nil) end
+		and Duel.IsExistingMatchingCard(c77724137.desrepfilter,tp,LOCATION_MZONE,0,1,c,e) end
 	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function c77724137.desrepop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOHAND)
-	local g=Duel.SelectMatchingCard(tp,c77724137.desrepfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.SendtoHand(g,nil,2,REASON_EFFECT+REASON_REPLACE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,c77724137.desrepfilter,tp,LOCATION_MZONE,0,1,1,c,e)
+	Duel.HintSelection(g)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT+REASON_REPLACE)
 end

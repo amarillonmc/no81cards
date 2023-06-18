@@ -1,0 +1,80 @@
+--圣刻龙-孔斯龙
+function c98920093.initial_effect(c)
+	--Normal monster
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_ADD_TYPE)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetValue(TYPE_NORMAL)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_REMOVE_TYPE)
+	e2:SetValue(TYPE_EFFECT)
+	c:RegisterEffect(e2)
+	--spsummon from deck
+	local e0=Effect.CreateEffect(c)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetRange(LOCATION_DECK)
+	e0:SetCountLimit(1,98920093)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetCondition(c98920093.hspcon)
+	e0:SetOperation(c98920093.hspop)
+	c:RegisterEffect(e0) 
+	--declare card
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetTarget(c98920093.dectg)
+	e3:SetOperation(c98920093.decop)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e4)
+end
+function c98920093.hspfilter(c,ft,tp)
+	return c:IsSetCard(0x69)
+		and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5)) and (c:IsControler(tp) or c:IsFaceup())
+end
+function c98920093.hspcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	return ft>-1 and Duel.CheckReleaseGroup(tp,c98920093.hspfilter,1,nil,ft,tp)
+end
+function c98920093.hspop(e,tp,eg,ep,ev,re,r,rp,c)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local g=Duel.SelectReleaseGroup(tp,c98920093.hspfilter,1,1,nil,ft,tp)
+	Duel.Release(g,REASON_COST)
+	c:RegisterFlagEffect(0,RESET_EVENT+0x4fc0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(98920093,2))
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c98920093.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c98920093.splimit(e,c)
+	return not (c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_LIGHT)) and c:IsLocation(LOCATION_EXTRA)
+end
+function c98920093.dectg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local lv=e:GetHandler():GetLevel()
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(26082117,1))
+	e:SetLabel(Duel.AnnounceLevel(tp,1,8,lv))
+end
+function c98920093.decop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsFaceup() and c:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_LEVEL)
+		e1:SetValue(e:GetLabel())
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e1)
+	end
+end

@@ -1,20 +1,20 @@
---创生之美神 女娲(注：狸子DIY)
+--创世之美神 女娲(注：狸子DIY)
 function c77723387.initial_effect(c)
-c:SetUniqueOnField(2,1,77723387)
+	c:SetUniqueOnField(1,0,77723387)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(77723387,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,77723387)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCost(c77723387.cost)
 	e1:SetTarget(c77723387.target)
 	e1:SetOperation(c77723387.operation)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	c:RegisterEffect(e1)
-		--battle indes
+	--battle indes
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -22,10 +22,9 @@ c:SetUniqueOnField(2,1,77723387)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
-		--negate
+	--negate
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(77723387,0))
-	e3:SetCategory(CATEGORY_NEGATE)
+	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetCode(EVENT_CHAINING)
@@ -35,7 +34,7 @@ c:SetUniqueOnField(2,1,77723387)
 	e3:SetTarget(c77723387.negtg)
 	e3:SetOperation(c77723387.negop)
 	c:RegisterEffect(e3)
-	end
+end
 function c77723387.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
@@ -55,7 +54,7 @@ function c77723387.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-			local fid=e:GetHandler():GetFieldID()
+		local fid=e:GetHandler():GetFieldID()
 		tc:RegisterFlagEffect(77723387,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -88,18 +87,20 @@ function c77723387.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return g and g:IsExists(c77723387.cfilter,1,nil,tp) and Duel.IsChainNegatable(ev)
 end
 function c77723387.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c77723387.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return aux.ndcon(tp,re) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
+	end
 end
 function c77723387.negop(e,tp,eg,ep,ev,re,r,rp)
 	local ec=re:GetHandler()
-	if Duel.NegateEffect(ev) and ec:IsRelateToEffect(re) then
+	if Duel.NegateActivation(ev) and ec:IsRelateToEffect(re) then
 		ec:CancelToGrave()
-		if Duel.SendtoDeck(ec,nil,2,REASON_EFFECT)~=0 and ec:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
-		end
-		end
-		end
+		Duel.SendtoDeck(ec,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
+end
