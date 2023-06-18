@@ -50,7 +50,7 @@ end
 function c71401008.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71401008.filterc2,tp,LOCATION_ONFIELD,0,1,nil,tp) and Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c71401008.filterc2,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c71401008.filterc2,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	yume.RegButterflyCostLimit(e,tp)
 end
