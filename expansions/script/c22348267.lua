@@ -146,6 +146,14 @@ function c22348267.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
 	local ttg=g:Filter(c22348267.ovfilter,nil,e)
 	if  c:IsRelateToEffect(e) and ttg:GetCount()>0 then
+		local ttc=ttg:GetFirst()
+		while ttc do
+		local og=ttc:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+		ttc=ttg:GetNext()
+		end
 		Duel.Overlay(c,ttg)
 	end
 end

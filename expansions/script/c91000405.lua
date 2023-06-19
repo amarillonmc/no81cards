@@ -81,7 +81,7 @@ if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
 	Duel.SendtoGrave(g1,REASON_EFFECT) end
 end
 function cm.cfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousControler(tp) 
+	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousControler(tp) and c:IsSetCard(0x9d2)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,e:GetHandler(),tp) 

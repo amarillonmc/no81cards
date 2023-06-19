@@ -56,7 +56,7 @@ function s.filter1(c,e,tp,m,f,chkf)
 	return res
 end
 function s.cfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
 		and c:IsReason(REASON_EFFECT)
 end
 function s.fuscon(e,tp,eg,ep,ev,re,r,rp)

@@ -55,7 +55,7 @@ function s.initial_effect(c)
 	e7:SetCode(EVENT_CHAINING)
 	e7:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e7:SetRange(LOCATION_MZONE)
-	e7:SetLabel(1)
+	e7:SetLabel(7)
 	--e7:SetCountLimit(1,id+1)
 	e7:SetCost(s.discost)
 	e7:SetCondition(s.discon)
@@ -74,7 +74,7 @@ function s.matcheck(e,c)
 		re:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 		c:RegisterEffect(re)
 		tc=cg:GetNext()
-	end	
+	end 
 end
 function s.rafilter(c)
 	return c:IsFaceup() and c:GetRace()~=0
