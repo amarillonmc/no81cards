@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)  
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)  
-	return re:GetActiveType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainDisablable(ev)  
+	return re:IsActiveType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainDisablable(ev)  
 end  
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local c=e:GetHandler()  
