@@ -22,14 +22,14 @@ end
 ----------------------------------------------------------
 function WW_TK.filter(tc,c,tp)
 	if tc:IsFacedown() or not tc:IsCanBeSynchroMaterial() then return false end
-	c:RegisterFlagEffect(id,0,0,1)
+	c:RegisterFlagEffect(40010663,0,0,1)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SYNCHRO_MATERIAL)
 	tc:RegisterEffect(e1,true)
 	local mg=Group.FromCards(c,tc)
 	local res=Duel.IsExistingMatchingCard(WW_TK.synfilter,tp,LOCATION_EXTRA,0,1,nil,mg)
-	c:ResetFlagEffect(id)
+	c:ResetFlagEffect(40010663)
 	e1:Reset()
 	return res
 end
@@ -51,7 +51,7 @@ function WW_TK.synop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
-		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
+		c:RegisterFlagEffect(40010663,RESET_EVENT+RESETS_STANDARD,0,1)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SYNCHRO_MATERIAL)
@@ -64,7 +64,7 @@ function WW_TK.synop(e,tp,eg,ep,ev,re,r,rp)
 		if sc then
 			Duel.SynchroSummon(tp,sc,nil,mg)
 		else
-			c:ResetFlagEffect(id)
+			c:ResetFlagEffect(40010663)
 			e1:Reset()
 		end
 	end

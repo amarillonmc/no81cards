@@ -1,16 +1,17 @@
 --哀恸魔女的选择
-local s,id,o=GetID()
-Duel.LoadScript("c40010663.lua")
-function s.initial_effect(c)
+local m=40010690
+local cm=_G["c"..m]
+xpcall(function() require("expansions/script/c40010663") end,function() require("script/c40010663") end)
+function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_SUMMON)
-	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
-	e1:SetCondition(s.condition)
-	e1:SetTarget(s.target)
-	e1:SetOperation(s.activate)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(cm.condition)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_FLIP_SUMMON)
@@ -19,20 +20,20 @@ function s.initial_effect(c)
 	e3:SetCode(EVENT_SPSUMMON)
 	c:RegisterEffect(e3)
 end
-s.setname="WailWitch"
+cm.setname="WailWitch"
 
-function s.filter(c)
+function cm.filter(c)
 	return c:IsFaceup() and c.setname=="WailWitch" and c:IsType(TYPE_SYNCHRO)
 end
-function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetCurrentChain()==0
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetCurrentChain()==0
 end
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
 end
-function s.activate(e,tp,eg,ep,ev,re,r,rp)
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
 	local dec=Duel.Destroy(eg,REASON_EFFECT)
 	if dec then

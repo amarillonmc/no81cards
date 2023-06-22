@@ -62,7 +62,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if Duel.SelectEffectYesNo(tp,rc,aux.Stringid(m,0)) then
+	if not rc:IsLocation(LOCATION_HAND) and Duel.SelectEffectYesNo(tp,rc,aux.Stringid(m,0)) then
 		rc:CancelToGrave()
 		Duel.SendtoHand(rc,nil,REASON_EFFECT)
 		e:GetHandler():RegisterFlagEffect(m,RESET_PHASE+PHASE_END,0,0)

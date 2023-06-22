@@ -40,8 +40,8 @@ function s.initial_effect(c)
 	end
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	if not re
-		and Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT):IsHasType(EFFECT_TYPE_ACTIVATE) then return false end
+	if not re or (re:IsHasCategory(CATEGORY_NEGATE)
+		and Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT):IsHasType(EFFECT_TYPE_ACTIVATE)) then return false end
 	local ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_DESTROY)
 	if ex and tg~=nil and tc+tg:FilterCount(Card.IsOnField,nil)-tg:GetCount()>0 then
 		Icejade_global_effect[re]=true

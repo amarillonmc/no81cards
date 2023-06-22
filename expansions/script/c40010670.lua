@@ -1,31 +1,32 @@
 --哀恸魔女-罪业之耶里德
-local s,id,o=GetID()
-Duel.LoadScript("c40010663.lua")
-function s.initial_effect(c)
+local m=40010670
+local cm=_G["c"..m]
+xpcall(function() require("expansions/script/c40010663") end,function() require("script/c40010663") end)
+function cm.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsRace,RACE_SPELLCASTER),1)
 	c:EnableReviveLimit()
 	--replace
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_BE_BATTLE_TARGET)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,id)
-	e1:SetTarget(s.cbtg)
-	e1:SetOperation(s.cbop)
+	e1:SetCountLimit(1,m)
+	e1:SetTarget(cm.cbtg)
+	e1:SetOperation(cm.cbop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,id)
-	e2:SetCondition(s.cecon)
-	e2:SetTarget(s.cetg)
-	e2:SetOperation(s.ceop)
+	e2:SetCountLimit(1,m)
+	e2:SetCondition(cm.cecon)
+	e2:SetTarget(cm.cetg)
+	e2:SetOperation(cm.ceop)
 	c:RegisterEffect(e2)
 	--can not be battle target
 		local e31=Effect.CreateEffect(c)
@@ -76,37 +77,37 @@ function s.initial_effect(c)
 	e7:SetLabelObject(e71)
 	c:RegisterEffect(e7) 
 end
-s.setname="WailWitch"
+cm.setname="WailWitch"
 
 
 --mat
-function s.sumlimit(e,c)
+function cm.sumlimit(e,c)
 	if not c then return false end
 	return not c:IsControler(e:GetHandlerPlayer())
 end
 
 --e1
-function s.cbfilter(c,e)
+function cm.cbfilter(c,e)
 	return c:IsCanBeEffectTarget(e)
 end
-function s.cbtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.cbfilter(chkc,e) end
+function cm.cbtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.cbfilter(chkc,e) end
 	local ag=Duel.GetAttacker():GetAttackableTarget()
 	local at=Duel.GetAttackTarget()
 	ag:RemoveCard(at)
 	if chk==0 then return Duel.GetAttacker():IsControler(1-tp) and at:IsControler(tp) and WW_N.ck(at)
-		and ag:IsExists(s.cbfilter,1,e:GetHandler(),e) end
+		and ag:IsExists(cm.cbfilter,1,e:GetHandler(),e) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=ag:FilterSelect(tp,s.cbfilter,1,1,e:GetHandler(),e)
+	local g=ag:FilterSelect(tp,cm.cbfilter,1,1,e:GetHandler(),e)
 	Duel.SetTargetCard(g)
 end
-function s.cbop(e,tp,eg,ep,ev,re,r,rp)
+function cm.cbop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and not Duel.GetAttacker():IsImmuneToEffect(e) then
 		Duel.ChangeAttackTarget(tc)
 	end
 end
-function s.cecon(e,tp,eg,ep,ev,re,r,rp)
+function cm.cecon(e,tp,eg,ep,ev,re,r,rp)
 	if e==re or rp~=1-tp or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	if not g or g:GetCount()~=1 then return false end
@@ -114,16 +115,16 @@ function s.cecon(e,tp,eg,ep,ev,re,r,rp)
 	e:SetLabelObject(tc)
 	return tc:IsLocation(LOCATION_MZONE) and WW_N.ck(tc)
 end
-function s.cefilter(c,ct,oc)
+function cm.cefilter(c,ct,oc)
 	return oc~=c and Duel.CheckChainTarget(ct,c)
 end
-function s.cetg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.cefilter(chkc,ev,e:GetHandler()) end
-	if chk==0 then return Duel.IsExistingTarget(s.cefilter,tp,LOCATION_MZONE,0,1,e:GetLabelObject(),ev,e:GetHandler()) end
+function cm.cetg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.cefilter(chkc,ev,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingTarget(cm.cefilter,tp,LOCATION_MZONE,0,1,e:GetLabelObject(),ev,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,s.cefilter,tp,LOCATION_MZONE,0,1,1,e:GetLabelObject(),ev,e:GetHandler())
+	Duel.SelectTarget(tp,cm.cefilter,tp,LOCATION_MZONE,0,1,1,e:GetLabelObject(),ev,e:GetHandler())
 end
-function s.ceop(e,tp,eg,ep,ev,re,r,rp)
+function cm.ceop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.ChangeTargetCard(ev,Group.FromCards(tc))

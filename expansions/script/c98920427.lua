@@ -38,6 +38,7 @@ function c98920427.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x155)
 end
 function c98920427.ntcon(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or Duel.IsExistingMatchingCard(c98920427.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c98920427.tgfilter(c)

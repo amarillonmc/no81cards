@@ -1,7 +1,7 @@
 local m=53759004
 local cm=_G["c"..m]
 cm.name="心术魔导 LV10"
-cm.Card_Prophecy_LV8=true
+cm.Card_Prophecy_LV10=true
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))

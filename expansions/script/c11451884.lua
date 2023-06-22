@@ -85,6 +85,9 @@ end
 function cm.extfilter(c)
 	return c:IsType(TYPE_NORMAL) and not c:IsPublic()
 end
+function cm.thfilter(c)
+	return c:IsSetCard(0x9976) and c:IsAbleToHand()
+end
 function cm.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

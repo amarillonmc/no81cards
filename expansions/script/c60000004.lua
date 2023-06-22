@@ -14,8 +14,7 @@ function c60000004.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c60000004.discon(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return ep~=tp and loc==LOCATION_GRAVE
+	return rp==1-tp and re:GetActivateLocation()==LOCATION_GRAVE
 end
 function c60000004.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
