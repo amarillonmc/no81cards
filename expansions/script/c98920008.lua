@@ -33,7 +33,7 @@ function c98920008.slevel(e,c)
 	return 4*65536+lv
 end
 function c98920008.cfilter(c)
-	return c:IsRace(RACE_REPTILE) and c:IsAbleToGraveAsCost()
+	return c:IsRace(RACE_REPTILE) and c:IsReleasable()
 end
 function c98920008.dspcon(e,c)
 	if c==nil then return true end

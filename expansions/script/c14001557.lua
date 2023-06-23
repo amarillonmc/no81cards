@@ -74,7 +74,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				Duel.HintSelection(mat1)
 				Duel.ConfirmCards(1-tp,mat1)
 				Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
-				Duel.ShuffleHand()
+				Duel.ShuffleHand(tp)
 			else
 				Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			end
