@@ -1,6 +1,5 @@
 --光铸之圣域-天界城
-local m=11451544
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e0=Effect.CreateEffect(c)
@@ -116,7 +115,7 @@ function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter2(c,re,tp,r)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and re:IsActivated() and bit.band(r,REASON_COST)~=0 and re:GetHandler()==c and c:IsReason(REASON_RELEASE)
+	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsReason(REASON_RELEASE) and bit.band(r,REASON_COST)~=0 and re and aux.GetValueType(re)=="Effect" and re:IsActivated() and re:GetHandler()==c
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
