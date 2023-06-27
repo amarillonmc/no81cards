@@ -19,10 +19,6 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.con2)
 	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_DIRECT_ATTACK)
-	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -44,7 +40,7 @@ end
 function cm.con2(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil):IsExists(Card.IsCode,1,nil,29056009) 
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil):IsExists(Card.IsCode,1,nil,29038040,29056009) 
 		and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp,c)
@@ -56,5 +52,5 @@ function cm.con4(e)
 end
 --e5
 function cm.con5(e)
-	return not Duel.GetMatchingGroup(Card.IsFaceup,e:GetHandler():GetControler(),LOCATION_MZONE,0,nil):IsExists(Card.IsCode,1,nil,29056009) 
+	return not Duel.GetMatchingGroup(Card.IsFaceup,e:GetHandler():GetControler(),LOCATION_MZONE,0,nil):IsExists(Card.IsCode,1,nil,29038040,29056009) 
 end

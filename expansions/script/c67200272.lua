@@ -29,15 +29,15 @@ function c67200272.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 function c67200272.scfilter1(c,e,tp)
-	return c:IsSetCard(0x674) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceup() and c:IsSetCard(0x674) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c67200272.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_PZONE) and chkc:IsControler(tp) and c67200272.scfilter1(chkc,e,tp,c) end
+	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(tp) and c67200272.scfilter1(chkc,e,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c67200272.scfilter1,tp,LOCATION_SZONE,0,1,nil,e,tp,c) end
+		and Duel.IsExistingTarget(c67200272.scfilter1,tp,LOCATION_SZONE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c67200272.scfilter1,tp,LOCATION_SZONE,0,1,1,nil,e,tp,c)
+	local g=Duel.SelectTarget(tp,c67200272.scfilter1,tp,LOCATION_SZONE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c67200272.scop(e,tp,eg,ep,ev,re,r,rp)
@@ -47,13 +47,15 @@ function c67200272.scop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_DISABLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
+		tc:RegisterEffect(e1,true)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		tc:RegisterEffect(e2)
+		e2:SetValue(RESET_TURN_SET)
+		tc:RegisterEffect(e2,true)
 	end
-	if Duel.SpecialSummonComplete()==0 then return end
+	Duel.SpecialSummonComplete()
 end
 --
 function c67200272.spfilter(c,e,tp)
