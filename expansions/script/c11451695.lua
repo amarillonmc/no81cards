@@ -18,11 +18,18 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.thcon)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_SPSUMMON_PROC_G)
+	e5:SetRange(LOCATION_DECK)
+	e5:SetCondition(cm.thcon)
+	c:RegisterEffect(e5)
 end
 function cm.filter(c)
 	return c:IsAbleToDeckAsCost() and not c:IsCode(m)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
 	return Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.GetCurrentChain()==0 and e:GetHandler():IsAbleToHand() and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)

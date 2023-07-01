@@ -59,10 +59,10 @@ function c98920315.filter(c)
 	return c:IsSetCard(0x119) and c:IsType(TYPE_MONSTER)
 end
 function c98920315.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98920315.filter,tp,LOCATION_EXTRA,0,1,nil,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c98920315.cfilter,tp,LOCATION_EXTRA,0,1,nil,e:GetHandler()) end
 end
 function c98920315.cfilter(c,tc)
-	return c:IsType(TYPE_LINK) and not c:IsCode(tc:GetLinkCode())
+	return c:IsSetCard(0x119) and not c:IsCode(tc:GetCode())
 end
 function c98920315.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -47,7 +47,7 @@ function c98920107.posfilter(c)
 	return c:IsFaceup() and c:IsCanChangePosition()
 end
 function c98920107.postg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98920107.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler()) end
+	if chk==0 then return true end
 	local g=Duel.GetMatchingGroup(c98920107.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 end

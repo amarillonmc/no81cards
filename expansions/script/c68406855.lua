@@ -22,9 +22,9 @@ function s.initial_effect(c)
 	--effect gain
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_SET_AVAILABLE)
 	e5:SetCode(EVENT_ADJUST)
-	e5:SetRange(LOCATION_MZONE)
+	e5:SetRange(0xff)
 	e5:SetOperation(s.effop)
 	c:RegisterEffect(e5)
 end
@@ -82,14 +82,14 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 	local c=e:GetHandler()
 	if not fc or fc:IsFacedown() or not fc:IsSetCard(0xe2) then return false end
-	if c:IsDisabled() and s.check[c] and #s.check[c]>0 then
+	if (not c:IsLocation(LOCATION_MZONE) or c:IsFacedown() or c:IsDisabled()) and s.check[c] and #s.check[c]>0 then
 		local exg=Group.CreateGroup()
 		for tc,cid in pairs(s.check[c]) do
 			if tc and cid then fc:ResetEffect(s.check[c][tc],RESET_COPY) end
 		end
 		s.check[c]={}
 	end
-	if c:IsDisabled() then return false end
+	if (not c:IsLocation(LOCATION_MZONE) or c:IsFacedown() or c:IsDisabled()) then return false end
 	if not e:GetLabelObject() or e:GetLabelObject()~=fc then 
 		s.check[c]={}
 		e:SetLabelObject(fc) 

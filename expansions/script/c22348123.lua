@@ -45,7 +45,7 @@ function c22348123.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(22348123,2))
-	local g=Duel.SelectMatchingCard(tp,c22348123.rfilter,tp,LOCATION_REMOVED,0,1,1,nil)	
+	local g=Duel.SelectMatchingCard(tp,c22348123.rfilter,tp,LOCATION_REMOVED,0,1,1,nil) 
 	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT+REASON_RETURN)>0 then	  
 		Duel.BreakEffect()
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -55,7 +55,7 @@ function c22348123.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(1,1)
 	e1:SetValue(1)
 	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)	 
+	Duel.RegisterEffect(e1,tp)   
 	end
 	end
 end
@@ -71,6 +71,7 @@ function c22348123.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return tc and tc:IsFaceup() and tc:IsAbleToGrave() and tc:IsCanBeEffectTarget(e)
 		and Duel.IsExistingMatchingCard(c22348123.filter,tp,LOCATION_DECK,0,1,nil,tp,tc:GetCode()) end
 	Duel.SetTargetCard(tc)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,0,1,0,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,tc,1,0,0)
 end
 function c22348123.operation(e,tp,eg,ep,ev,re,r,rp)

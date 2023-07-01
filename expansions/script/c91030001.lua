@@ -14,7 +14,6 @@ function c91030001.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.con)
 	e1:SetTarget(cm.atttg)
 	e1:SetOperation(cm.attop)
 	c:RegisterEffect(e1)
@@ -40,7 +39,10 @@ function cm.lcheck(c)
 end
 --e2
 function cm.con(e)
-return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0
+	return Duel.GetCustomActivityCount(91030001,tp,ACTIVITY_SPSUMMON)==0 
+end
+function cm.attfilter(c)
+	return c:IsFaceup() and not c:IsRace(RACE_MACHINE)
 end
 function cm.atttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.attfilter(chkc) end
@@ -58,9 +60,20 @@ function cm.attop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CHANGE_DAMAGE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+	e1:SetValue(cm.damval)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.damval(e,re,val,r,rp,rc)
+	return math.floor(val/2)
 end
 function cm.cpfilter(c)
-	return (c:GetType()==TYPE_SPELL) and (c:IsSetCard(0x1093)or c:IsCode(3659803)or c:IsCode(37630732)) and c:IsAbleToGraveAsCost()
+	return (c:GetType()==TYPE_SPELL) and (c:IsSetCard(0x93)or c:IsCode(3659803)or c:IsCode(37630732)) and c:IsAbleToGraveAsCost()
 		and c:CheckActivateEffect(true,true,false)~=nil
 end
 function cm.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)

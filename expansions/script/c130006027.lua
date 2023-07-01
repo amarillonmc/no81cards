@@ -46,6 +46,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CUSTOM+m)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) local g=eg:Filter(cm.filter,1,nil) Duel.SendtoDeck(g,nil,2,REASON_RULE) end)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) local g=eg:Filter(cm.filter,1,nil,e) Duel.SendtoDeck(g,nil,2,REASON_RULE) end)
 	Duel.RegisterEffect(e1,0)
 end

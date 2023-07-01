@@ -118,7 +118,7 @@ function cm.operation0(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCountLimit(1)
 	e1:SetRange(LOCATION_FZONE)
 	e1:SetOperation(cm.tgop)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,4)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:SetTurnCounter(0)
 	c:RegisterEffect(e1)
 end
