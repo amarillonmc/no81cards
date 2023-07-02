@@ -33,10 +33,23 @@ function cm.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function cm.equipfd(c,tp,tc)
-	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) return true end
+	if tc:IsPosition(POS_FACEUP) then return Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
 	if not Duel.Equip(tp,tc,c,false) then return false end
 	--Add Equip limit
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
+	e1:SetCode(EFFECT_EQUIP_LIMIT)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetValue(cm.eqlimit)
+	tc:RegisterEffect(e1)
+	return true
+end
+function cm.equipfd2(c,tp,tc)
+	if tc:IsPosition(POS_FACEUP) then return Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
+	if not Duel.Equip(tp,tc,c,false) then return false end
+	--Add Equip limit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
@@ -82,7 +95,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
 	if tc:IsForbidden() then
 		Duel.SendtoGrave(tc,REASON_RULE)
-	elseif cm.equipfd(c,tp,tc) then
+	elseif cm.equipfd2(c,tp,tc) then
 		Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
