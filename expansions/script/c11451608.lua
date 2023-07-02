@@ -47,8 +47,8 @@ end
 function cm.filter1(c)
 	return c:IsSetCard(0x10) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
-function cm.filter2(c,mg,tp)
-	return (c:IsSynchroSummonable(nil,mg) or c:IsLinkSummonable(mg)) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
+function cm.filter2(c,mg)
+	return (c:IsSynchroSummonable(nil,mg) or c:IsLinkSummonable(mg)) --and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
 function cm.filter3(c)
 	return c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
