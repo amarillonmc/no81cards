@@ -61,18 +61,18 @@ function c98920177.damcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c98920177.filter(c)
+function c98920177.damfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_FIELD)
 end
 function c98920177.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98920177.filter,tp,LOCATION_GRAVE,0,1,nil) end
-	local ct=Duel.GetMatchingGroupCount(c98920177.filter,tp,LOCATION_GRAVE,0,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c98920177.damfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	local ct=Duel.GetMatchingGroupCount(c98920177.damfilter,tp,LOCATION_GRAVE,0,nil)
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(ct*400)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,ct*400)
 end
 function c98920177.damop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetMatchingGroupCount(c98920177.filter,tp,LOCATION_GRAVE,0,nil)
+	local ct=Duel.GetMatchingGroupCount(c98920177.damfilter,tp,LOCATION_GRAVE,0,nil)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	Duel.Damage(p,ct*400,REASON_EFFECT)
 end

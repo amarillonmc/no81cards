@@ -49,7 +49,7 @@ function c79029566.xsplimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
 function c79029566.matfilter1(c)
-	return c:GetSequence()>4
+	return c:GetSequence()>4 and c:IsLocation(LOCATION_MZONE)
 end
 function c79029566.matfilter2(c)
 	return c:GetAttackAnnouncedCount()>0 

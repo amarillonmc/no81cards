@@ -11,7 +11,7 @@ function c60159912.initial_effect(c)
 	--act in hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e2:SetCondition(c60159912.handcon)
 	c:RegisterEffect(e2)
 end
