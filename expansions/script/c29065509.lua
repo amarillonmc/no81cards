@@ -2,7 +2,7 @@
 c29065509.named_with_Arknight=1
 function c29065509.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedureLevelFree(c,c29065509.mfilter,aux.TRUE,2,2)
+	aux.AddXyzProcedureLevelFree(c,c29065509.mfilter,aux.TRUE,3,3)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
