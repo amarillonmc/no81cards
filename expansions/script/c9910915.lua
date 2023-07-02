@@ -2,7 +2,7 @@
 function c9910915.initial_effect(c)
 	--tohand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,9910915)
@@ -12,8 +12,13 @@ function c9910915.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910915.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDiscardable() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable()
+		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,c) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	local g=Duel.SelectMatchingCard(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,1,1,c)
+	g:AddCard(c)
+	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function c9910915.thfilter(c)
 	return c:IsSetCard(0xc954) and not c:IsCode(9910915) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
@@ -33,7 +38,28 @@ function c9910915.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
-	if not Duel.IsExistingMatchingCard(c9910915.cfilter,tp,LOCATION_MZONE,0,1,nil) then
+	if Duel.IsExistingMatchingCard(c9910915.cfilter,tp,LOCATION_MZONE,0,1,nil) then return end
+	local off=1
+	local ops={}
+	local opval={}
+	if Duel.IsPlayerCanDraw(tp,1) then
+		ops[off]=aux.Stringid(9910915,0)
+		opval[off-1]=1
+		off=off+1
+	end
+	ops[off]=aux.Stringid(9910915,1)
+	opval[off-1]=2
+	off=off+1
+	ops[off]=aux.Stringid(9910915,2)
+	opval[off-1]=3
+	off=off+1
+	local op=Duel.SelectOption(tp,table.unpack(ops))
+	if opval[op]==1 then
+		Duel.BreakEffect()
+		Duel.ShuffleDeck(tp)
+		Duel.Draw(tp,1,REASON_EFFECT)
+	elseif opval[op]==2 then
+		Duel.BreakEffect()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_DISABLE)

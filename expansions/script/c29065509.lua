@@ -2,7 +2,7 @@
 c29065509.named_with_Arknight=1
 function c29065509.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,6,3,c29065509.ovfilter,aux.Stringid(29065509,0),3,c29065509.xyzop)
+	aux.AddXyzProcedureLevelFree(c,c29065509.mfilter,aux.TRUE,2,2)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -24,6 +24,12 @@ function c29065509.initial_effect(c)
 	e2:SetTarget(c29065509.destg)
 	e2:SetOperation(c29065509.desop)
 	c:RegisterEffect(e2)
+end
+function c29065509.mfilter(c,xyzc)
+	local b1=(c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+	local b2=c:IsXyzLevel(xyzc,5)
+	local b3=c:IsXyzLevel(xyzc,6)
+	return b1 and (b2 or b3)
 end
 function c29065509.decost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

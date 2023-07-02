@@ -14,13 +14,13 @@ function c9910729.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetValue(c9910729.atkval)
 	c:RegisterEffect(e1)
-	--cannot target
+	--immune
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_IMMUNE_EFFECT)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_CANNOTBE_EFFECT_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetValue(aux.tgoval)
+	e2:SetValue(c9910729.efilter)
 	c:RegisterEffect(e2)
 	--destroy
 	local e3=Effect.CreateEffect(c)
@@ -36,6 +36,9 @@ function c9910729.initial_effect(c)
 end
 function c9910729.atkval(e,c)
 	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD)*300
+end
+function c9910729.efilter(e,te,ev)
+	return te:IsActivated() and te:IsActiveType(TYPE_MONSTER) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
 end
 function c9910729.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
@@ -56,6 +59,11 @@ function c9910729.desop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(1)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			c:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetDescription(aux.Stringid(9910729,1))
+			e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+			e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+			c:RegisterEffect(e2)
 			local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_MZONE,nil)
 			if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910729,0)) then
 				Duel.BreakEffect()

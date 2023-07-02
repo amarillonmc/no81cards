@@ -6,21 +6,32 @@ function c9910731.initial_effect(c)
 	c:EnableReviveLimit()
 	--flag
 	Ygzw.AddTgFlag(c)
-	--confirm
+	--direct attack
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910731,0))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SSET)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(c9910731.concon)
-	e1:SetTarget(c9910731.contg)
-	e1:SetOperation(c9910731.conop)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_DIRECT_ATTACK)
+	e1:SetCondition(c9910731.dircon)
 	c:RegisterEffect(e1)
+	--confirm
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9910731,0))
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SSET)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e2:SetCondition(c9910731.concon)
+	e2:SetTarget(c9910731.contg)
+	e2:SetOperation(c9910731.conop)
+	c:RegisterEffect(e2)
+end
+function c9910731.dircon(e)
+	return Duel.IsExistingMatchingCard(Card.IsFacedown,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
 end
 function c9910731.concon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsControler,1,nil,tp)
 end
 function c9910731.contg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)>0 end
 end
 function c9910731.conop(e,tp,eg,ep,ev,re,r,rp)

@@ -65,7 +65,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or Duel.IsExistingMatchingCard(cm.rfilter,tp,LOCATION_MZONE,0,1,nil,tp)  ) end
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -87,7 +87,7 @@ function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return loc>=g and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 end
 function cm.setfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_TRAP) and (c:IsSSetable() or c:IsLocation(LOCATION_SZONE)) and c.SetCard_THY_PeachblossomCountry
+	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsSSetable() and c.SetCard_THY_PeachblossomCountry
 end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	local rg=Duel.GetMatchingGroup(cm.setfilter,tp,LOCATION_ONFIELD,0,nil)

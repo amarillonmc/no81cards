@@ -12,6 +12,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCondition(cm.eatcon)
+	e1:SetCost(cm.eatcost)
 	e1:SetTarget(cm.eattg) 
 	e1:SetOperation(cm.eatop)  
 	c:RegisterEffect(e1)
@@ -42,7 +43,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)  
 end
 function cm.cfilter(c)  
-	return c:IsType(TYPE_SPELL) and c:IsDiscardable()  
+	return c:IsSetCard(0x95) and c:IsType(TYPE_SPELL) and c:IsDiscardable()  
 end  
 function cm.ovfilter(c)  
 	return c:IsFaceup() and c:IsCode(82209115)
@@ -56,6 +57,10 @@ end
 function cm.eatcon(e,tp,eg,ep,ev,re,r,rp)  
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)  
 end  
+function cm.eatcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.PayLPCost(tp,Duel.GetLP(tp)/2)
+end
 function cm.eatfilter(c,e)  
 	return c:IsCanOverlay() and not c:IsImmuneToEffect(e)
 end  

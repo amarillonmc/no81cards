@@ -29,7 +29,7 @@ function c9910741.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910741.cfilter(c,b1,b2,tp,rc)
 	local res=b1 and (Duel.GetMZoneCount(tp,c)>0 or Duel.GetMZoneCount(tp,rc)>0)
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost() and (res or b2)
+	return c:IsSetCard(0xc950) and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0 and c:IsAbleToRemoveAsCost() and (res or b2)
 end
 function c9910741.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -37,8 +37,8 @@ function c9910741.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Group.FromCards(c,rc)
 	local b0=rc:IsRelateToEffect(re) and rc:IsAbleToRemoveAsCost() and not rc:IsLocation(LOCATION_REMOVED)
 	local b1=c:IsLocation(LOCATION_HAND) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
-	local b2=c:IsLocation(LOCATION_MZONE)
-	local b3=Duel.IsExistingMatchingCard(c9910741.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,g,b1,b2,tp,rc)
+	local b2=c:IsLocation(LOCATION_ONFIELD)
+	local b3=Duel.IsExistingMatchingCard(c9910741.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,g,b1,b2,tp,rc)
 	if chk==0 then
 		if e:GetLabel()~=0 then
 			e:SetLabel(0)
@@ -50,7 +50,7 @@ function c9910741.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if e:GetLabel()~=0 then
 		e:SetLabel(0)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local rg=Duel.SelectMatchingCard(tp,c9910741.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,g,b1,b2,tp,rc)
+		local rg=Duel.SelectMatchingCard(tp,c9910741.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,g,b1,b2,tp,rc)
 		rg:AddCard(rc)
 		Duel.Remove(rg,POS_FACEUP,REASON_COST)
 	end

@@ -1,11 +1,10 @@
 --绘舞华·绯梦之樱术使 RK4
 --21.06.22
-local m=11451579
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,11451582)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,4,2)
+	aux.AddXyzProcedureLevelFree(c,cm.mfilter,cm.xyzcheck,2,2)
 	c:EnableReviveLimit()
 	--effect1
 	local e1=Effect.CreateEffect(c)
@@ -41,6 +40,12 @@ function cm.initial_effect(c)
 end
 cm.rkup={11451580}
 cm.rkdn={11451578}
+function cm.mfilter(c,xyzc)
+	return c:IsXyzType(TYPE_MONSTER) and c:IsXyzLevel(xyzc,4)
+end
+function cm.xyzcheck(g)
+	return g:GetFirst():GetAttribute()&g:GetNext():GetAttribute()>0
+end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Group.CreateGroup()
 	local g2=Group.CreateGroup()

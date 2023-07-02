@@ -114,16 +114,16 @@ function cm.nfilter(c)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local check1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
-	local check2=Duel.GetCurrentPhase()==PHASE_BATTLE_STEP and Duel.GetAttackTarget() and Duel.GetFlagEffect(tp,m)==0 and #g>0
+	local check1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
+	local check2=Duel.GetCurrentPhase()==PHASE_BATTLE_STEP and Duel.GetAttackTarget() and Duel.GetFlagEffect(tp,m)==0 and #g>0 and Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
 	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and (check1 or check2) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local check1=c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-	local check2=Duel.GetCurrentPhase()==PHASE_BATTLE_STEP and Duel.GetAttackTarget() and Duel.GetFlagEffect(tp,m)==0 and #g>0
+	local check1=c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
+	local check2=Duel.GetCurrentPhase()==PHASE_BATTLE_STEP and Duel.GetAttackTarget() and Duel.GetFlagEffect(tp,m)==0 and #g>0 and Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
 	if check2 and (not check1 or Duel.SelectYesNo(tp,aux.Stringid(m,0))) then
 		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_BATTLE_STEP,0,1)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
@@ -131,7 +131,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(tg)
 		Duel.Destroy(tg,REASON_EFFECT)
 	elseif c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 	end
 end
 function cm.thfilter(c)
@@ -189,5 +189,5 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	if not g then return end
 	local sg=g:Filter(cm.filter6,nil)
 	g:DeleteGroup()
-	Duel.SendtoHand(g,tp,REASON_EFFECT)
+	Duel.SendtoHand(sg,tp,REASON_EFFECT)
 end

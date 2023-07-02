@@ -127,7 +127,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.resfilter(c,e,tp)
-	return c:IsReleasable() and c:IsFaceup() and Duel.GetMZoneCount(tp,c,tp)>0
+	return c:IsReleasable() and Duel.GetMZoneCount(tp,c,tp)>0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.resfilter,1,nil,tp) end

@@ -4,7 +4,7 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,11451583)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,7,2)
+	aux.AddXyzProcedureLevelFree(c,cm.mfilter,cm.xyzcheck,2,2)
 	c:EnableReviveLimit()
 	--effect1
 	local e1=Effect.CreateEffect(c)
@@ -31,6 +31,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 cm.rkdn={11451579}
+function cm.mfilter(c,xyzc)
+	return c:IsXyzType(TYPE_MONSTER) and c:IsXyzLevel(xyzc,7)
+end
+function cm.xyzcheck(g)
+	return g:GetFirst():GetAttribute()&g:GetNext():GetAttribute()>0
+end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not re:GetHandler():IsSetCard(0x97f) and re:GetValue()~=11451480
 end

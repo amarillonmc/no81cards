@@ -1,11 +1,10 @@
 --结界守护者 辛歇耳
-local m=11451541
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SPSUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -30,6 +29,38 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sctg)
 	e2:SetOperation(cm.scop)
 	c:RegisterEffect(e2)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetCode(EVENT_BECOME_TARGET)
+		ge3:SetOperation(cm.checkop3)
+		Duel.RegisterEffect(ge3,0)
+		local ge6=Effect.CreateEffect(c)
+		ge6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge6:SetCode(EVENT_ADJUST)
+		ge6:SetOperation(cm.checkop6)
+		Duel.RegisterEffect(ge6,0)
+	end
+end
+function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
+	local tg=eg:Filter(Card.IsLocation,nil,LOCATION_MZONE)
+	if #tg>0 then
+		for tc in aux.Next(tg) do
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+		end
+	end
+end
+function cm.checkop6(e,tp,eg,ep,ev,re,r,rp)
+	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if #tg>0 then
+		for tc in aux.Next(tg) do
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+		end
+	end
+end
+function cm.ctgfilter(c)
+	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(m)==0
 end
 function cm.filter(c,tp)
 	return c:IsControler(tp)
@@ -89,7 +120,7 @@ function cm.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.cfilter(c)
-	return c:IsFaceup()
+	return c:IsFaceup() and c:GetFlagEffect(m)==0
 end
 function cm.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -111,7 +142,7 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(0,1)
 	e1:SetCondition(cm.con)
-	if ac:IsAttribute(bc:GetAttribute()) then
+	if ac:IsAttribute(bc:GetAttribute()) and (ac:GetAttribute()==bc:GetAttribute() or Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))==0) then
 		ac:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
 		bc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
 		e1:SetTarget(cm.sumlimit)

@@ -89,8 +89,8 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local num=cm[1-tp]
 	Debug.Message(num)
 	if num<1 then return end
-	if num>=3 then
-		ct=math.floor(num/3)
+	if num>=2 then
+		ct=math.floor(num/2)
 	end
 	Duel.Hint(HINT_CARD,0,m)
 	--
@@ -163,13 +163,24 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 					table.insert(afilter,OPCODE_OR)
 				end
 			end
+		local xcodes={}
 		for i=1,ct do
+			if #xcodes>0 then 
+				for i=1,#xcodes do 
+				table.insert(afilter,xcodes[i])
+				table.insert(afilter,OPCODE_ISCODE)
+				table.insert(afilter,OPCODE_NOT)
+				table.insert(afilter,OPCODE_AND)
+				end 
+			end 
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 			local ac=Duel.AnnounceCard(tp,table.unpack(afilter)) 
 			ng1=g1:Filter(Card.IsCode,nil,ac)
 			g1:Sub(ng1)
-			Duel.SendtoHand(ng1,tp,REASON_EFFECT)
-		end
+			Duel.SendtoHand(ng1,tp,REASON_EFFECT) 
+			local code=ng1:GetFirst():GetCode()
+			table.insert(xcodes,code) 
+		end 
 		Duel.SendtoDeck(g1,tp,2,REASON_EFFECT)
 		end
 	end

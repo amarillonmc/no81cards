@@ -1,6 +1,5 @@
 --绛胧烈刃谱线投影
-local m=11451718
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -37,7 +36,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not tc.mvcon or not tc.mvop then return end
 	local c=e:GetHandler()
 	local fid=c:GetFieldID()
-	local sg=Duel.GetMatchingGroup(cm.rmfilter2,0,0xff,0xff,nil)
+	--[[local sg=Duel.GetMatchingGroup(cm.rmfilter2,0,0xff,0xff,nil)
 	local sg2=Duel.GetOverlayGroup(0,1,1):Filter(cm.rmfilter2,nil)
 	sg:Merge(sg2)
 	for sc in aux.Next(sg) do
@@ -55,14 +54,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetTargetRange(0xff,0xff)
 	e2:SetTarget(cm.eftg)
 	e2:SetLabelObject(e1)
-	--Duel.RegisterEffect(e2,tp)
+	--Duel.RegisterEffect(e2,tp)--]]
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(tc:GetOriginalCode(),3))
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	e3:SetTargetRange(1,0)
 	e3:SetCode(m)
-	e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) if r==fid then Duel.RegisterFlagEffect(0,0xffffff+m+fid,RESET_PHASE+PHASE_END,0,1) end end)
+	--e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) if r==fid then Duel.RegisterFlagEffect(0,0xffffff+m+tc:GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) end end)
 	Duel.RegisterEffect(e3,tp)
 	cm[tc:GetOriginalCode()]=true
 end

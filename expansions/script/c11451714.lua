@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_MOVE)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_DELAY)
 	e2:SetCondition(cm.mvcon)
-	e2:SetOperation(cm.mvop)
+	e2:SetOperation(cm.mvop1)
 	c:RegisterEffect(e2)
 	--effect2
 	local e3=Effect.CreateEffect(c)
@@ -93,7 +93,61 @@ end
 function cm.sumfilter(c,e,tp)
 	return c:IsRace(RACE_PSYCHO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
+function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
+	local n=11451718
+	local cn=_G["c"..n]
+	local chk=false
+	while 1==1 do
+		local off=1
+		local ops={} 
+		local opval={}
+		if cm.mvop(e,tp,eg,ep,ev,re,r,rp,2) and not chk then
+			ops[off]=aux.Stringid(n,10)
+			opval[off-1]=1
+			off=off+1
+		end
+		for i=11451711,11451715 do
+			local ci=_G["c"..i]
+			if ci and cn and cn[i] and Duel.GetFlagEffect(0,0xffffff+i)==0 and ci.mvop and ci.mvop(e,tp,eg,ep,ev,re,r,rp,2) then
+				ops[off]=aux.Stringid(i,3)
+				opval[off-1]=i-11451709
+				off=off+1
+			end
+		end
+		if off==1 then break end
+		ops[off]=aux.Stringid(n,11)
+		opval[off-1]=7
+		--mobile adaption
+		local ops2=ops
+		local op=-1
+		if off<=5 then
+			op=Duel.SelectOption(tp,table.unpack(ops))
+		else
+			local page=0
+			while op==-1 do
+				if page==0 then
+					ops2={table.unpack(ops,1,4)}
+					table.insert(ops2,aux.Stringid(11451505,4))
+					op=Duel.SelectOption(tp,table.unpack(ops2))
+					if op==4 then op=-1 page=1 end
+				else
+					ops2={table.unpack(ops,5,off)}
+					table.insert(ops2,1,aux.Stringid(11451505,3))
+					op=Duel.SelectOption(tp,table.unpack(ops2))+3
+					if op==3 then op=-1 page=0 end
+				end
+			end
+		end
+		if opval[op]==1 then
+			cm.mvop(e,tp,eg,ep,ev,re,r,rp,0)
+			chk=true
+		elseif opval[op]>=2 and opval[op]<=6 then
+			local ci=_G["c"..opval[op]+11451709]
+			ci.mvop(e,tp,eg,ep,ev,re,r,rp,1)
+		elseif opval[op]==7 then break end
+	end
+end
+function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.sumfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 	local dr=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<c:GetFlagEffectLabel(11451717)
@@ -101,8 +155,9 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
 	local fid=e:GetLabel()
 	if fid~=0 then b1=1 end
 	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (not dr or Duel.IsPlayerCanDraw(tp,1)) then
+		if opt==2 then return true end
 		Duel.HintSelection(Group.FromCards(c))
-		if Duel.SelectYesNo(tp,aux.Stringid(m,b1)) then
+		--if Duel.SelectYesNo(tp,aux.Stringid(m,b1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local tc=g:Select(tp,1,1,nil):GetFirst()
 			if tc then
@@ -125,7 +180,8 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
-		end
+			if opt==1 then Duel.RegisterFlagEffect(0,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
+		--end
 	end
 	--c:ResetFlagEffect(11451717)
 end

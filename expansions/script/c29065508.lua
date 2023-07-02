@@ -2,7 +2,7 @@
 c29065508.named_with_Arknight=1
 function c29065508.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,6,3,c29065508.ovfilter,aux.Stringid(29065508,0),3,c29065508.xyzop)
+	aux.AddXyzProcedureLevelFree(c,c29065508.mfilter,aux.TRUE,2,2)
 	c:EnableReviveLimit()
 	-- attack
 	local e2=Effect.CreateEffect(c)
@@ -17,8 +17,11 @@ function c29065508.initial_effect(c)
 	e2:SetOperation(c29065508.btop)
 	c:RegisterEffect(e2)
 end
-function c29065508.ovfilter(c)
-	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+function c29065508.mfilter(c,xyzc)
+	local b1=(c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+	local b2=c:IsXyzLevel(xyzc,5)
+	local b3=c:IsXyzLevel(xyzc,6)
+	return b1 and (b2 or b3)
 end
 function c29065508.xyzop(e,tp,chk)
 	if chk==0 then return (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST))) and Duel.GetFlagEffect(tp,29065508)==0 end

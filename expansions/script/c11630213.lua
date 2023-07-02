@@ -20,16 +20,9 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return ct>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,nil)
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
-	if ct==0 then return end
-	local ac=1
-	if ct>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
-		ac=Duel.AnnounceNumber(tp,1,2,3)
-	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,ac)
+function cm.activate(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler() 
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND) 
 	Duel.ConfirmCards(tp,g)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
 	local sg=g:Select(tp,1,1,nil)

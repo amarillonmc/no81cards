@@ -1,7 +1,6 @@
 --幽玄万象图※太虚六爻
 --21.09.21
-local m=11451619
-local cm=_G["c"..m]
+local cm,m=GetID()
 cm.IsFusionSpellTrap=true
 function cm.initial_effect(c)
 	--fusion set
@@ -88,7 +87,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0 then
 				sg=sg:Filter(cm.mzfilter,nil,tp)
 				Duel.ShuffleSetCard(sg)
-				if #sg<2 then return end
+				if #sg==2 and Duel.SelectYesNo(tp,aux.Stringid(11451619,0)) then
+					Duel.SwapSequence(sg:GetFirst(),sg:GetNext())
+				end
+				if #sg<=2 then return end
 				for i=1,10 do
 					if not Duel.SelectYesNo(tp,aux.Stringid(11451619,1)) then return end
 					Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451619,2))

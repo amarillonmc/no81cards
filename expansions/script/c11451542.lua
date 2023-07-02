@@ -1,6 +1,5 @@
 --结界守护者 科瑞葛
-local m=11451542
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -90,7 +89,7 @@ function cm.cfilter(c,e)
 	return c:IsFaceup() and c:IsCanBeEffectTarget(e)
 end
 function cm.sabcheck(g)
-	return g:GetClassCount(Card.GetAttribute)==1
+	return g:GetFirst():GetAttribute()&g:GetNext():GetAttribute()>0
 end
 function cm.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,0,LOCATION_MZONE,nil,e)
@@ -128,18 +127,20 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	if #g<2 then return end
 	local ac=g:GetFirst()
 	local bc=g:GetNext()
-	if ac:IsAttribute(bc:GetAttribute()) then
+	local b1=Duel.IsPlayerCanDraw(tp,2)
+	local b2=Duel.IsPlayerCanDraw(1-tp,1) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_HAND,1,nil)
+	if ac:IsAttribute(bc:GetAttribute()) and (ac:GetAttribute()==bc:GetAttribute() or ((b1 or not b2) and Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))==0)) then
 		if Duel.Draw(tp,2,REASON_EFFECT)==2 then
-			Duel.ShuffleHand(p)
+			Duel.ShuffleHand(tp)
 			Duel.BreakEffect()
-			local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_HAND,0,nil):RandomSelect(tp,1)
+			local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_HAND,0,nil):Select(tp,1,1,nil)
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
 	else
 		if Duel.Draw(1-tp,1,REASON_EFFECT)==1 then
-			Duel.ShuffleHand(p)
+			Duel.ShuffleHand(1-tp)
 			Duel.BreakEffect()
-			local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_HAND,nil):RandomSelect(tp,2)
+			local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_HAND,nil):Select(1-tp,2,2,nil)
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
 	end

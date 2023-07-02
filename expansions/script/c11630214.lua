@@ -1,7 +1,6 @@
 --死型镜·魂光刻印镜
 local m=11630214
-local cm=_G["c"..m]
-local cont=5
+local cm=_G["c"..m] 
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c) 
@@ -53,8 +52,8 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=1
 	local num=Duel.GetFlagEffect(tp,m)
-	if num>=cont then
-		ct=math.floor(num/cont)
+	if num>=3 then
+		ct=math.floor(num/3)
 	end
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE,0,nil)
 	if g:GetCount()<1 then return end

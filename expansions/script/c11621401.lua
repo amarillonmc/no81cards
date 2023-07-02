@@ -69,7 +69,7 @@ function cm.refilter2(c,tp)
 	return c:IsType(TYPE_TRAP) and  (val==nil or val(re,c)~=true) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,tp) or Duel.IsExistingMatchingCard(cm.refilter2,tp,0,LOCATION_ONFIELD,1,nil,tp) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,true) and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_MZONE,0,1,nil,tp)) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,tp) or Duel.IsExistingMatchingCard(cm.refilter2,tp,0,LOCATION_ONFIELD,1,nil,tp) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,true) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)

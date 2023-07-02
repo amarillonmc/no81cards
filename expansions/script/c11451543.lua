@@ -1,6 +1,5 @@
 --结界守护者 查莉蒂
-local m=11451543
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -50,7 +49,7 @@ function cm.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
 end
 function cm.actfilter(c,tp)
 	return c:IsCode(11451544) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true)
@@ -109,7 +108,7 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	if #g<2 then return end
 	local ac=g:GetFirst()
 	local bc=g:GetNext()
-	if ac:IsAttribute(bc:GetAttribute()) then
+	if ac:IsAttribute(bc:GetAttribute()) and (ac:GetAttribute()==bc:GetAttribute() or Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))==0) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)

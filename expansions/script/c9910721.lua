@@ -6,16 +6,16 @@ function c9910721.initial_effect(c)
 	c:EnableReviveLimit()
 	--flag
 	Ygzw.AddTgFlag(c)
-	--chain set
+	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_CHAINING)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910721)
-	e1:SetCondition(c9910721.cscon)
-	e1:SetCost(c9910721.cscost)
-	e1:SetTarget(c9910721.cstg)
-	e1:SetOperation(c9910721.csop)
+	e1:SetCost(c9910721.spcost)
+	e1:SetTarget(c9910721.sptg)
+	e1:SetOperation(c9910721.spop)
 	c:RegisterEffect(e1)
 	--set
 	local e2=Effect.CreateEffect(c)
@@ -28,13 +28,10 @@ function c9910721.initial_effect(c)
 	e2:SetOperation(c9910721.setop)
 	c:RegisterEffect(e2)
 end
-function c9910721.cscon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER)
-end
 function c9910721.costfilter(c)
 	return c:IsSetCard(0xc950) and c:IsAbleToGraveAsCost()
 end
-function c9910721.cscost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910721.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910721.costfilter,tp,LOCATION_HAND,0,1,c) and c:IsAbleToGraveAsCost() end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -42,19 +39,28 @@ function c9910721.cscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	g:AddCard(c)
 	Duel.SendtoGrave(g,REASON_COST)
 end
-function c9910721.cstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local rc=re:GetHandler()
-	if chk==0 then return rc:IsRelateToEffect(re) and Ygzw.SetFilter(rc,e,tp) end
-	if rc:IsLocation(LOCATION_GRAVE) then
-		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
-	end
+function c9910721.spfilter(c,e,tp)
+	return c:IsSetCard(0xc950) and c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
-function c9910721.csop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	local rc=re:GetHandler()
-	if rc:IsRelateToEffect(re) then
-		Ygzw.Set(rc,e,tp)
+function c9910721.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910721.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c9910721.spop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c9910721.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	local tc=g:GetFirst()
+	if not tc then return end
+	if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SET_ATTACK)
+		e1:SetValue(0)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
 	end
+	Duel.SpecialSummonComplete()
 end
 function c9910721.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)

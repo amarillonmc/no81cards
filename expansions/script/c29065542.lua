@@ -2,7 +2,7 @@
 c29065542.named_with_Arknight=1
 function c29065542.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,6,3,c29065542.ovfilter,aux.Stringid(29065542,1),3,c29065542.xyzop)
+	aux.AddXyzProcedureLevelFree(c,c29065542.mfilter,aux.TRUE,2,2)
 	c:EnableReviveLimit()  
 	--xyz 
 	local e1=Effect.CreateEffect(c)
@@ -12,6 +12,12 @@ function c29065542.initial_effect(c)
 	e1:SetOperation(c29065542.cxyzop)
 	c:RegisterEffect(e1) 
 
+end
+function c29065542.mfilter(c,xyzc)
+	local b1=(c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+	local b2=c:IsXyzLevel(xyzc,5)
+	local b3=c:IsXyzLevel(xyzc,6)
+	return b1 and (b2 or b3)
 end
 function c29065542.ovfilter(c)
 	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) 

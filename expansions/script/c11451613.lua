@@ -1,7 +1,6 @@
 --幽玄龙象※离召升明
 --21.07.28
-local m=11451613
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -9,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	--e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.spcon)
+	--e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -61,24 +60,24 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(cm.splimit)
-	--Duel.RegisterEffect(e1,tp)
+	Duel.RegisterEffect(e1,tp)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)
 	e2:SetLabelObject(e1)
-	--Duel.RegisterEffect(e2,tp)
+	Duel.RegisterEffect(e2,tp)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_ADJUST)
 	e3:SetOperation(cm.adjustop)
 	e3:SetLabelObject(e2)
 	e3:SetOwnerPlayer(tp)
-	--Duel.RegisterEffect(e3,tp)
+	Duel.RegisterEffect(e3,tp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return sumpos&POS_FACEUP>0
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,0,1,nil) then
+	if not Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_MZONE,0,1,nil) then
 		local te=e:GetLabelObject()
 		if te~=nil and aux.GetValueType(te)=="Effect" then
 			local te2=te:GetLabelObject()

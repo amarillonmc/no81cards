@@ -1304,20 +1304,16 @@ function rshint.SelectYesNo(v1, v2, ...)
 	end
 	return Scl.SelectYesNo(v1, new_hint, ...)
 end
-function rshint.SelectOption(...)
-	local arr = { ... }
+function rshint.SelectOption(p, ...)
 	local new_arr = { }
-	for idx, elm in pairs(arr) do
-		if idx == #arr and idx & 1 == 1 then
-			break 
-		end
+	for idx, elm in pairs({ ... }) do
 		if type(elm) == "string" then
 			table.insert(new_arr, s.ctgy_list[elm])
 		else
 			table.insert(new_arr, elm)
 		end
 	end
-	return Scl.SelectOption(table.unpack(new_arr))
+	return Scl.SelectOption(p, table.unpack(new_arr))
 end
 
 rsreset = rsrst
@@ -1390,22 +1386,22 @@ rsef.ACT = rsef.A
 
 rscon.negcon = function(dn_filter, pl_fun)
 	return function(...)
-		local dn_list = { [0] = "s,t,m", [1] = "a,m", [2] = "m", [3] = "a", [4] = "s,t" }
+		local dn_list = { [0] = "All", [1] = "Avtivate,Monster", [2] = "Monster", [3] = "Activate", [4] = "Spell,Trap" }
 		if type(dn_filter) == "number" then
 			dn_filter = dn_list[dn_filter]
 		end
 		if pl_fun then pl_fun = pl_fun and 1 or 0 end
-		return rscon.disneg("neg", dn_filter, pl_fun)(...)
+		return scl.negate_activation_or_effect_con("NegateActivation", dn_filter, pl_fun)(...)
 	end
 end
 rscon.discon = function(dn_filter, pl_fun)
 	return function(...)
-		local dn_list = { [0] = "s,t,m", [1] = "a,m", [2] = "m", [3] = "a", [4] = "s,t" }
+		local dn_list = { [0] = "All", [1] = "Avtivate,Monster", [2] = "Monster", [3] = "Activate", [4] = "Spell,Trap" }
 		if type(dn_filter) == "number" then
 			dn_filter = dn_list[dn_filter]
 		end
 		if pl_fun then pl_fun = pl_fun and 1 or 0 end
-		return rscon.disneg("dis", dn_filter, pl_fun)(...)
+		return scl.negate_activation_or_effect_con("NegateEffect", dn_filter, pl_fun)(...)
 	end
 end
 rsef.QO_NEGATE = function(reg_list, dn_type, lim_list, dn_str, range, con, cost, desc_list, cate, flag, reset_list)
@@ -1415,6 +1411,7 @@ rsef.QO_NEGATE = function(reg_list, dn_type, lim_list, dn_str, range, con, cost,
 		return rsef.QO_NegateEffect(reg_list, dn_str, lim_list, range, con, cost, cate, flag, nil, nil, desc_list, reset_list)
 	end
 end
+
 
 rstg.negtg = rstg.neg
 rstg.distg = rstg.neg

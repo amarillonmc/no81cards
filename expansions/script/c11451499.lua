@@ -1,15 +1,20 @@
 --流年如歌
 --A souvenir of 2020
-local m=11451499
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetCost(cm.cost)
-	e0:SetOperation(cm.activate)
 	c:RegisterEffect(e0)
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e10:SetCode(EVENT_ADJUST)
+	e10:SetRange(LOCATION_FZONE)
+	e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e10:SetCondition(cm.condition0)
+	e10:SetOperation(cm.operation0)
+	c:RegisterEffect(e10)
 	--spring
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -91,9 +96,20 @@ function cm.initial_effect(c)
 	e9:SetValue(cm.actlimit)
 	c:RegisterEffect(e9)
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+function cm.condition0(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(m+1)==0
+end
+function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ct=c:GetTurnCounter()
+	ct=ct+1
+	c:SetTurnCounter(ct)
+	if ct==4 then Duel.SendtoGrave(c,REASON_RULE) end
+end
+function cm.operation0(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,2))
+	local c=e:GetHandler()
+	c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1)
 	--to grave
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
@@ -106,16 +122,6 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,4)
 	c:SetTurnCounter(0)
 	c:RegisterEffect(e1)
-end
-function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=c:GetTurnCounter()
-	ct=ct+1
-	c:SetTurnCounter(ct)
-	if ct==4 then Duel.SendtoGrave(c,REASON_RULE) end
-end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,2))
 end
 function cm.indct(e,re,r,rp)
 	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then return 1 else return 0 end
@@ -144,7 +150,7 @@ function cm.actlimit(e,re,tp)
 end
 function cm.sfilter(c,loc,p)
 	return c:IsReason(REASON_REDIRECT) and c:IsLocation(loc) and (not p or c:IsControler(p))
-
+end
 function cm.sortop(e,tp,eg,ep,ev,re,r,rp)
 	local tp=Duel.GetTurnPlayer()
 	local g=eg:Filter(cm.sfilter,nil,LOCATION_DECK)

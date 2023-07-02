@@ -85,7 +85,15 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetValue(RACE_ZOMBIE)
 			tc:RegisterEffect(e2)
 			local e3=e1:Clone()
-			e3:SetCode(EFFECT_CHANGE_LEVEL)
+			if tc:IsLevelAbove(1) then
+				e2:SetCode(EFFECT_CHANGE_LEVEL)
+			end
+			if tc:IsRankAbove(1) then
+				e3:SetCode(EFFECT_CHANGE_RANK)
+			end
+			if tc:IsLinkAbove(1) then
+				e3:SetCode(EFFECT_UPDATE_LINK)
+			end
 			e3:SetValue(3)
 			tc:RegisterEffect(e3)
 			local e4=e1:Clone()
@@ -151,7 +159,15 @@ function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 		--
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_FIELD)
-		e4:SetCode(EFFECT_CHANGE_LEVEL)
+		if tc:IsLevelAbove(1) then
+			e4:SetCode(EFFECT_CHANGE_LEVEL)
+		end
+		if tc:IsRankAbove(1) then
+			e4:SetCode(EFFECT_CHANGE_RANK)
+		end
+		if tc:IsLinkAbove(1) then
+			e4:SetCode(EFFECT_UPDATE_LINK)
+		end
 		e4:SetTargetRange(0,0x7f)
 		e4:SetTarget(cm.crtg2)
 		e4:SetLabel(code)

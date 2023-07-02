@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_MOVE)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_DELAY)
 	e2:SetCondition(cm.mvcon)
-	e2:SetOperation(cm.mvop)
+	e2:SetOperation(cm.mvop1)
 	c:RegisterEffect(e2)
 	--effect2
 	local e3=Effect.CreateEffect(c)
@@ -90,6 +90,60 @@ function cm.mvcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsLocation(LOCATION_MZONE) and c:IsPreviousLocation(LOCATION_REMOVED) and not c:IsReason(REASON_SPSUMMON) and not c:IsReason(REASON_SUMMON) and c:GetFlagEffect(11451717)>0
 end
+function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
+	local n=11451718
+	local cn=_G["c"..n]
+	local chk=false
+	while 1==1 do
+		local off=1
+		local ops={} 
+		local opval={}
+		if cm.mvop(e,tp,eg,ep,ev,re,r,rp,2) and not chk then
+			ops[off]=aux.Stringid(n,10)
+			opval[off-1]=1
+			off=off+1
+		end
+		for i=11451711,11451715 do
+			local ci=_G["c"..i]
+			if ci and cn and cn[i] and Duel.GetFlagEffect(0,0xffffff+i)==0 and ci.mvop and ci.mvop(e,tp,eg,ep,ev,re,r,rp,2) then
+				ops[off]=aux.Stringid(i,3)
+				opval[off-1]=i-11451709
+				off=off+1
+			end
+		end
+		if off==1 then break end
+		ops[off]=aux.Stringid(n,11)
+		opval[off-1]=7
+		--mobile adaption
+		local ops2=ops
+		local op=-1
+		if off<=5 then
+			op=Duel.SelectOption(tp,table.unpack(ops))
+		else
+			local page=0
+			while op==-1 do
+				if page==0 then
+					ops2={table.unpack(ops,1,4)}
+					table.insert(ops2,aux.Stringid(11451505,4))
+					op=Duel.SelectOption(tp,table.unpack(ops2))
+					if op==4 then op=-1 page=1 end
+				else
+					ops2={table.unpack(ops,5,off)}
+					table.insert(ops2,1,aux.Stringid(11451505,3))
+					op=Duel.SelectOption(tp,table.unpack(ops2))+3
+					if op==3 then op=-1 page=0 end
+				end
+			end
+		end
+		if opval[op]==1 then
+			cm.mvop(e,tp,eg,ep,ev,re,r,rp,0)
+			chk=true
+		elseif opval[op]>=2 and opval[op]<=6 then
+			local ci=_G["c"..opval[op]+11451709]
+			ci.mvop(e,tp,eg,ep,ev,re,r,rp,1)
+		elseif opval[op]==7 then break end
+	end
+end
 function cm.tempfilter(c)
 	return c:IsLocation(LOCATION_REMOVED) and c:IsReason(REASON_TEMPORARY) and c:GetPreviousLocation()&LOCATION_ONFIELD>0
 end
@@ -152,31 +206,38 @@ function cm.retop3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 	e:Reset()
 end
-function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
+function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt)
 	local c=e:GetHandler()
 	local ct=c:GetFlagEffectLabel(11451717)//3
 	--c:ResetFlagEffect(11451717)
 	local b1=0
 	local fid=e:GetLabel()
 	if fid~=0 then b1=1 end
+	local chk=false
 	local g2=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	local g1=Duel.GetMatchingGroup(cm.tffilter,tp,LOCATION_REMOVED,0,nil)
 	if ct>=1 and #g2>0 then
+		if opt==2 then return true end
 		Duel.HintSelection(Group.FromCards(c))
-		if Duel.SelectYesNo(tp,aux.Stringid(m,b1)) then
+		if #g1==0 or Duel.SelectYesNo(tp,aux.Stringid(m,b1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=g2:Select(tp,1,ct,nil)
 			ct=ct-#sg
+			chk=true
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
+			if opt==1 then Duel.RegisterFlagEffect(0,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		end
 	end
-	local g1=Duel.GetMatchingGroup(cm.tffilter,tp,LOCATION_REMOVED,0,nil)
+	g1=Duel.GetMatchingGroup(cm.tffilter,tp,LOCATION_REMOVED,0,nil)
 	if ct>=1 and #g1>0 then
+		if opt==2 then return true end
 		Duel.HintSelection(Group.FromCards(c))
-		if Duel.SelectYesNo(tp,aux.Stringid(m,b1+4)) then
+		if not chk or Duel.SelectYesNo(tp,aux.Stringid(m,b1+4)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 			local sg=g1:Select(tp,1,ct,nil)
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
+			if opt==1 then Duel.RegisterFlagEffect(0,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
 			sg:ForEach(cm.returntofield,e)
 			Duel.RaiseEvent(sg,m,e,0,0,0,0)
 		end

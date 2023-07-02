@@ -2,7 +2,7 @@
 --the old library (c10199990.lua and c10199991.lua) has gone out of service, becuase it has become a SHIT MOUNTAIN, hard for reading.
 --any problems, you can call me: QQ/VX 852415212, PLZ note sth. about YGO while you add me, otherwise I will reject your friend request.
 
-local Version_Number = "2023.05.09"
+local Version_Number = "2023.07.01"
 
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constant <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -24,7 +24,7 @@ scl = { }
 local id = 10100000
 --this table's contents can only be used in this library. 
 local s = { }
---Record Scl's custom card filter functions and group filter functions
+--Record Scl's custom card filter functions and group filter functions.
 Scl.Card = { }
 Scl.Group = { }
 --Value for inside series, inside type, etc.
@@ -82,6 +82,8 @@ Scl.Global_Effect_Owner_ID = nil
 scl.black_hole_count = 0
 --For a mandatory trigger effect, the target check will always return TRUE, but if you want to copy that effect, you should do a common target check, like optional trigger effects. 
 Scl.Mandatory_Effect_Target_Check = false
+--For function Scl.RegisterZone to recording effects' appliable zones.
+Scl.Effect_Zone_List = { }
 
 --Attach extra effect
 EFFECT_ADDITIONAL_EFFECT_SCL  =   id + 100 
@@ -97,6 +99,8 @@ EFFECT_COMPLETE_SUMMON_PROC_SCL = id + 104
 EFFECT_SET_MATERIAL_SCL = id + 105
 --For special buff: activate spell & trap form any zone
 EFFECT_ACTIVATE_SPELL_AND_TRAP_FROM_ANY_ZONE_SCL = id + 106
+--For function s.Activate1ofTheseEffects to recording effects' appliable zones.
+EFFECT_CHECKING_ACTIVATE_ZONE_SCL = id + 107
 
 --Event for any set operation
 EVENT_SET_SCL  =   id + 200 
@@ -259,7 +263,7 @@ Scl.Card_Type_List   =   {
 }
 --add TYPE_NORMAL_SPELL_OR_TRAP_SCL to normal spells and normal traps
 function s.add_type_normal_spell_or_trap_scl()
-	local e1 = Scl.CreateFieldBuffEffect({ true, 0 }, "+Type", TYPE_NORMAL_SPELL_OR_TRAP_SCL, s.add_type_normal_spell_or_trap_scl_target, { 0xff, 0xff })
+	local e1 = Scl.CreateFieldBuffEffect({ true, 0 }, "+ExtraType", TYPE_NORMAL_SPELL_OR_TRAP_SCL, s.add_type_normal_spell_or_trap_scl_target, { 0xff, 0xff })
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_IGNORE_RANGE + EFFECT_FLAG_SET_AVAILABLE)
 end
 function s.add_type_normal_spell_or_trap_scl_target(e, c)
@@ -301,7 +305,7 @@ Scl.Summon_Type_List = {
 
 --Timing list
 function s.create_timing_list()
-	
+
 	Scl.Timing_List = {
 	
 	["FreeChain"] = { EVENT_FREE_CHAIN },
@@ -631,6 +635,7 @@ function s.create_buff_list()
 	["+Race"] = { EFFECT_ADD_RACE, true },
 	["+Series"] = { EFFECT_ADD_SETCODE, true },
 	["+Type"] = { EFFECT_ADD_TYPE, true },
+	["+ExtraType"] = { EFFECT_ADD_TYPE, true },
 	["+FusionAttribute"] = { EFFECT_ADD_FUSION_ATTRIBUTE, true },
 	["+FusionName"] = { EFFECT_ADD_FUSION_CODE, true },
 	["+FusionSeries"] = { EFFECT_ADD_FUSION_SETCODE, true },
@@ -680,7 +685,7 @@ function s.create_buff_list()
 	["!AttackAnnounce"] = { EFFECT_CANNOT_ATTACK_ANNOUNCE },
 	["!AttackDirectly"] = { EFFECT_CANNOT_DIRECT_ATTACK },
 	["MustAttack"] = { EFFECT_MUST_ATTACK, true },
-	["MustAttackMonster"] = { EFFECT_MUST_ATTACK, true  },  
+	["MustAttackMonster"] = { EFFECT_MUST_ATTACK, true  },	
 	["!BeTributed"] = { { "!BeTributed4TributeSummon", "!BeTributedExcept4TributeSummon" } },
 	["!BeTributed4TributeSummon"] = { EFFECT_UNRELEASABLE_SUM },
 	["!BeTributedExcept4TributeSummon"] = { EFFECT_UNRELEASABLE_NONSUM },
@@ -1210,7 +1215,7 @@ function Scl.CloneEffect(reg_obj, base_eff, ...)
 		if bool and idx2 then
 			fun_arr[idx2](clone_eff, val)
 		end
-		if typ == "Description" then 
+		if typ == "Description" then
 			Scl.RegisterDescription(clone_eff, val)
 		elseif typ == "Property" then 
 			clone_eff:SetProperty(Scl.GetNumFormatProperty(val))
@@ -1339,12 +1344,15 @@ function Scl.RegisterActivateCountLimit(reg_eff, lim_obj)
 				if (type(val) == "number" and val == 1) or
 					 (type(val) == "string" and val == "Oath") then 
 					lim_code = lim_code + EFFECT_COUNT_CODE_OATH 
-				elseif (type(val) == "number" and val == 1) or
+				elseif (type(val) == "number" and val == 2) or
 					 (type(val) == "string" and val == "Duel") then
 					lim_code = lim_code + EFFECT_COUNT_CODE_DUEL 
 				elseif (type(val) == "number" and val == 3) or
 					 (type(val) == "string" and val == "Share") then
 					lim_code = lim_code + EFFECT_COUNT_CODE_SINGLE 
+				elseif (type(val) == "number" and val == 4) or
+				(type(val) == "string" and val == "Chain") then
+				    lim_code = lim_code + EFFECT_COUNT_CODE_CHAIN 
 				else
 					lim_code = lim_code + val
 				end
@@ -1392,6 +1400,7 @@ end
 -->>e1:SetRange(LOCATION_HAND + LOCATION_MZONE + LOCATION_GRAVE)
 function Scl.RegisterZone(reg_eff, zone_obj)
 	local zone = Scl.GetNumFormatZone(zone_obj)
+	Scl.Effect_Zone_List[reg_eff] = zone
 	reg_eff:SetRange(zone)
 end
 --Register target range for reg_eff. 
@@ -1996,11 +2005,11 @@ end
 -->>eg2. Scl.CreateActivateEffect_Equip(c, aux.FilterBoolFunction(Card.IsRace, RACE_WARRIOR), nil, nil, nil, s.cost)
 -->>create an equip effect that make the Equip Spell can only equip to Warrior-monster on the field, and should pay s.cost when activate.
 function Scl.CreateActivateEffect_Equip(reg_obj, eqfilter, desc_obj, lim_obj, con, cost) 
-	eqfilter = eqfilter or Card.IsFaceup 
+	eqfilter = eqfilter or Card.IsFaceup
 	local limf = function(c, e, tp)
 		return c:IsFaceup() and eqfilter(c, tp)
 	end
-	local e1 = Scl.CreateActivateEffect(reg_obj, nil, nil, lim_obj, "Equip", "Target", con, cost, { "Target", limf, "Equip", LOCATION_MZONE, LOCATION_MZONE}, s.create_activate_effect_equip_op)
+	local e1 = Scl.CreateActivateEffect(reg_obj, nil, nil, lim_obj, "Equip", "Target", con, cost, { "Target", "Equip", limf, LOCATION_MZONE, LOCATION_MZONE}, s.create_activate_effect_equip_op)
 	local e2 = Scl.CreateSingleBuffCondition(reg_obj, "EquipLimit", s.create_activate_effect_equip_value(limf))
 	return e1, e2
 end
@@ -2252,131 +2261,9 @@ end
 -->>	 local e3 = Scl.CreateActivateEffect_Activate1ofTheseEffects(c, e1, e2)
 -->>mix effect e1 and e2 into e3.
 function Scl.CreateActivateEffect_Activate1ofTheseEffects(reg_obj, ...)
-	local eff_arr = { ... }
-	local code_arr = { }
-	local con_arr = { }
-	local cost_arr = { }
-	local tg_arr = { }
-	local op_arr = { }
-	local desc_arr = { }
-	for _, e in pairs(eff_arr) do
-		table.insert(code_arr, e:GetCode() or EVENT_FREE_CHAIN)
-		table.insert(con_arr, e:GetCondition() or aux.TRUE)
-		table.insert(cost_arr, e:GetCost() or aux.TRUE)
-		table.insert(tg_arr, e:GetTarget() or aux.TRUE)
-		table.insert(op_arr, e:GetOperation() or aux.TRUE)
-		table.insert(desc_arr, e:GetDescription() or DESC_ACTIVATE_SCL)
-		e:Reset()
-	end
-	local code = 0
-	if Scl.GetValuesKindsFromArray(code_arr) == 1 then 
-		code = code_arr[1]
-	else
-		code = EVENT_FREE_CHAIN
-	end
-	local e1 = Scl.CreateActivateEffect(reg_obj, code, nil, nil, nil, nil, s.apply_1_of_these_effects_condition(eff_arr, code_arr, con_arr), nil, s.apply_1_of_these_effects_target(eff_arr, code_arr, cost_arr, tg_arr, op_arr, desc_arr))
+	local code_arr, eff_arr, con_arr, cost_arr, tg_arr, op_arr, desc_arr = s.Activate1ofTheseEffects(reg_obj, ...)
+	local e1 = Scl.CreateActivateEffect(reg_obj, EVENT_FREE_CHAIN, "ApplyEffect", nil, nil, "DamageStep,DamageCalculation", s.apply_1_of_these_effects_condition(eff_arr, code_arr, con_arr), nil, s.apply_1_of_these_effects_target(eff_arr, code_arr, cost_arr, tg_arr, op_arr, desc_arr))
 	return e1
-end
-function s.apply_1_of_these_effects_condition(eff_arr, code_arr, con_arr)
-	return function(e, tp, ...)
-		local arr = { }
-		for idx, con in pairs(con_arr) do
-			local ce = eff_arr[idx]
-			local code = code_arr[idx]
-			if code == EVENT_FREE_CHAIN then 
-				if con(e, tp, ...) and ce:CheckCountLimit(tp) then
-					table.insert(arr, idx)
-				end
-			else
-				local res, eg, ep, ev, re, r, rp = Duel.CheckEvent(code, true)
-				if res and con(e, tp, eg, ep, ev, re, r, rp) and ce:CheckCountLimit(tp) then
-					table.insert(arr, idx)
-				end
-			end
-		end
-		Scl.Choose_One_Effect_Condition_Index = arr
-		return #arr > 0
-	end
-end
-function s.apply_1_of_these_effects_target(eff_arr, code_arr, cost_arr, tg_arr, op_arr, desc_arr)
-	return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-		local con_arr = Scl.Choose_One_Effect_Condition_Index
-		if chkc then 
-			local idx = Scl.Choose_One_Effect_Select_Index[e][Duel.GetCurrentChain()]
-			return idx > 0 and tg_arr[idx](e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-		end
-		local arr = { }
-		if e:IsCostChecked() then 
-			for idx, cost in pairs(cost_arr) do
-				local code = code_arr[idx]
-				if code == EVENT_FREE_CHAIN then 
-					if cost(e, tp, eg, ep, ev, re, r, rp, 0) then
-						table.insert(arr, idx)
-					end
-				else
-					local res, eg2, ep2, ev2, re2, r2, rp2 = Duel.CheckEvent(code, true)
-					if cost(e, tp, eg2, ep2, ev2, re2, r2, rp2, 0) then
-						table.insert(arr, idx)
-					end
-				end
-			end
-		end
-		local arr2 = { }
-		for idx, tg in pairs(tg_arr) do
-			if not e:IsCostChecked() then
-				table.insert(arr, idx)
-			end
-			local code = code_arr[idx]
-			if code == EVENT_FREE_CHAIN then 
-				if tg(e, tp, eg, ep, ev, re, r, rp, 0) then
-					table.insert(arr2, idx)
-				end
-			else
-				local res, eg2, ep2, ev2, re2, r2, rp2 = Duel.CheckEvent(code, true)
-				if tg(e, tp, eg2, ep2, ev2, re2, r2, rp2, 0) then
-					table.insert(arr2, idx)
-				end
-			end
-		end
-		local res, arr3 = Scl.IsArraysHasIntersection(arr, arr2)
-		if chk == 0 then
-			return res and (not con_arr or Scl.IsArraysHasIntersection(arr3, con_arr))
-		end
-		local desc_arr2 = { }
-		for idx, desc in pairs(desc_arr) do
-			local res = Scl.IsArrayContains_Single(arr3, idx)
-			table.insert(desc_arr2, res and Scl.IsArrayContains_Single(con_arr, idx))
-			table.insert(desc_arr2, desc)
-		end
-		local opt = Scl.SelectOption(tp, table.unpack(desc_arr2))
-		Scl.Choose_One_Effect_Select_Index[e] = Scl.Choose_One_Effect_Select_Index[e] or { }
-		Scl.Choose_One_Effect_Select_Index[e][Duel.GetCurrentChain()] = opt
-		local code = code_arr[opt]
-		local res, eg2, ep2, ev2, re2, r2, rp2 = false, nil, 0, 0, nil, 0, 0
-		if code ~= EVENT_FREE_CHAIN then 
-			res, eg2, ep2, ev2, re2, r2, rp2 = Duel.CheckEvent(code, true)
-		end
-		local ce = eff_arr[opt]
-		ce:UseCountLimit(tp)
-		if e:IsCostChecked() then
-			local cost = cost_arr[opt]
-			if code == EVENT_FREE_CHAIN then
-				cost(e, tp, eg, ep, ev, re, r, rp, 1)
-			else
-				cost(e, tp, eg2, ep2, ev2, re2, r2, rp2, 1)
-			end
-		end
-		--beacuse some effects' operations is set in there targets, so first set operation, and second do the chk == 1 target, make target can reset operation.
-		e:SetOperation(op_arr[opt])
-		local tg = tg_arr[opt]
-		if code == EVENT_FREE_CHAIN then
-			tg(e, tp, eg, ep, ev, re, r, rp, 1)
-		else
-			tg(e, tp, eg2, ep2, ev2, re2, r2, rp2, 1)
-		end
-		Scl.Choose_One_Effect_Condition_Index = nil
-		return #arr > 0
-	end
 end
 
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -2447,7 +2334,186 @@ end
 function Scl.CreateIgnitionEffect(reg_obj, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_IGNITION, nil, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, nil, nil, nil, rst_obj)
 end
-
+--Mix several single ignition effects into oneignition effect.
+--when you activate the mixed effect, you will select which single activate effect you want to activate and apply.
+--this function use single activate effects' descriptions as the hint for you selecting, so you should add corresponding descriptions to thoes single activate effects.
+--... is the single activate effects that you want to mix in.
+--the single activate effects that be mixed cannot be activated.
+--//return the mixed effect.
+-->>eg1. local e1 = Scl.CreateIgnitionEffect(c, "Banish", { 1, id, "Oath" }, "Banish", "Target", "Hand,MonsterZone", nil, nil, s.tg, s.op)
+-->>	 local e2 = Scl.CreateIgnitionEffect(c, "Destroy", { 1, id, "Oath" }, "Destroy", "Target", "MonsterZone", nil, nil, s.tg2, s.op2)
+-->>	 local e3 = Scl.CreateIgnitionEffect_Activate1ofTheseEffects(c, e1, e2)
+-->>mix effect e1 and e2 into e3.
+function Scl.CreateIgnitionEffect_Activate1ofTheseEffects(reg_obj, ...)
+	local code_arr, eff_arr, con_arr, cost_arr, tg_arr, op_arr, desc_arr = s.Activate1ofTheseEffects(reg_obj, ...)
+	local e1 = Scl.CreateIgnitionEffect(reg_obj, "ApplyEffect", nil, nil, "DamageStep,DamageCalculation", 0xff, s.apply_1_of_these_effects_condition(eff_arr, code_arr, con_arr), nil, s.apply_1_of_these_effects_target(eff_arr, code_arr, cost_arr, tg_arr, op_arr, desc_arr))
+	return e1
+end
+function s.Activate1ofTheseEffects(reg_obj, ...)
+	local _, handler = Scl.GetRegisterInfo(reg_obj)
+	local eff_arr = { ... }
+	local code_arr = { }
+	local con_arr = { }
+	local cost_arr = { }
+	local tg_arr = { }
+	local op_arr = { }
+	local desc_arr = { }
+	for _, e in pairs(eff_arr) do
+		table.insert(code_arr, e:GetCode() or EVENT_FREE_CHAIN)
+		table.insert(con_arr, e:GetCondition() or aux.TRUE)
+		table.insert(cost_arr, e:GetCost() or aux.TRUE)
+		table.insert(tg_arr, e:GetTarget() or aux.TRUE)
+		table.insert(op_arr, e:GetOperation() or aux.TRUE)
+		table.insert(desc_arr, e:GetDescription() or DESC_ACTIVATE_SCL)
+		--ingeniously checking activate zone
+		if not Scl.Effect_Zone_List[e] then
+			local ce = e:Clone()
+			ce:SetType(EFFECT_TYPE_SINGLE)
+			ce:SetCondition(aux.TRUE)
+			ce:SetTarget(aux.TRUE)
+			ce:SetOperation(nil)
+			ce:SetCode(EFFECT_CHECKING_ACTIVATE_ZONE_SCL)
+			ce:SetValue(e:GetFieldID())
+			handler:RegisterEffect(ce, true)
+		end
+		e:Reset()
+	end
+	return code_arr, eff_arr, con_arr, cost_arr, tg_arr, op_arr, desc_arr
+end
+function s.apply_1_of_these_effects_condition(eff_arr, code_arr, con_arr)
+	return function(e, tp, ...)
+		local arr = { }
+		local c = e:GetHandler()
+		for idx, con in pairs(con_arr) do
+			local ce = eff_arr[idx]
+			local code = code_arr[idx]
+			--ingeniously checking activate zone
+			local zone_correct = e:IsHasType(EFFECT_TYPE_ACTIVATE) and true or false
+			if not zone_correct then
+				local zone = c:GetLocation()
+				if Scl.Effect_Zone_List[ce] and Scl.Effect_Zone_List[ce] & zone ~= 0 then
+					zone_correct = true
+				else
+					local zone_arr = { c:IsHasEffect(EFFECT_CHECKING_ACTIVATE_ZONE_SCL) }
+					local fid = ce:GetFieldID()
+					for _, ze in pairs(zone_arr) do
+						local val = ze:GetValue()
+						if val == fid then
+							zone_correct = true
+							Scl.Effect_Zone_List[ce] = (Scl.Effect_Zone_List[ce] or 0) | zone
+						end
+					end
+				end
+			end
+			--check damage step and damage caculation
+			local dmg_correct = true
+			local flag1, flag2 = ce:GetProperty()
+			if flag1 & EFFECT_FLAG_DAMAGE_STEP == 0 and Duel.GetCurrentPhase() == PHASE_DAMAGE  then
+				dmg_correct = false
+			end
+			if flag1 & EFFECT_FLAG_DAMAGE_CAL == 0 and Duel.GetCurrentPhase() == PHASE_DAMAGE_CAL  then
+				dmg_correct = false
+			end
+			if code == EVENT_FREE_CHAIN then 
+				if con(e, tp, ...) and ce:CheckCountLimit(tp) and zone_correct and dmg_correct then
+					table.insert(arr, idx)
+				end
+			else
+				local res, eg, ep, ev, re, r, rp = Duel.CheckEvent(code, true)
+				Debug.Message(res)
+				if res and con(e, tp, eg, ep, ev, re, r, rp) and ce:CheckCountLimit(tp) and zone_correct and dmg_correct then
+					table.insert(arr, idx)
+				end
+			end
+		end
+		Scl.Choose_One_Effect_Condition_Index = arr
+		return #arr > 0
+	end
+end
+function s.apply_1_of_these_effects_target(eff_arr, code_arr, cost_arr, tg_arr, op_arr, desc_arr)
+	return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
+		local con_arr = Scl.Choose_One_Effect_Condition_Index
+		if chkc then 
+			local idx = Scl.Choose_One_Effect_Select_Index[e][Duel.GetCurrentChain()]
+			return idx > 0 and tg_arr[idx](e, tp, eg, ep, ev, re, r, rp, chk, chkc)
+		end
+		local arr = { }
+		if e:IsCostChecked() then 
+			for idx, cost in pairs(cost_arr) do
+				local code = code_arr[idx]
+				if code == EVENT_FREE_CHAIN then 
+					if cost(e, tp, eg, ep, ev, re, r, rp, 0) then
+						table.insert(arr, idx)
+					end
+				else
+					local res, eg2, ep2, ev2, re2, r2, rp2 = Duel.CheckEvent(code, true)
+					if cost(e, tp, eg2, ep2, ev2, re2, r2, rp2, 0) then
+						table.insert(arr, idx)
+					end
+				end
+			end
+		end
+		local arr2 = { }
+		for idx, tg in pairs(tg_arr) do
+			if not e:IsCostChecked() then
+				table.insert(arr, idx)
+			end
+			local code = code_arr[idx]
+			if code == EVENT_FREE_CHAIN then 
+				if tg(e, tp, eg, ep, ev, re, r, rp, 0) then
+					table.insert(arr2, idx)
+				end
+			else
+				local res, eg2, ep2, ev2, re2, r2, rp2 = Duel.CheckEvent(code, true)
+				if tg(e, tp, eg2, ep2, ev2, re2, r2, rp2, 0) then
+					table.insert(arr2, idx)
+				end
+			end
+		end
+		local res, arr3 = Scl.IsArraysHasIntersection(arr, arr2)
+		if chk == 0 then
+			return res and (not con_arr or Scl.IsArraysHasIntersection(arr3, con_arr))
+		end
+		local desc_arr2 = { }
+		for idx, desc in pairs(desc_arr) do
+			local res = Scl.IsArrayContains_Single(arr3, idx)
+			table.insert(desc_arr2, res and Scl.IsArrayContains_Single(con_arr, idx))
+			table.insert(desc_arr2, desc)
+		end
+		local opt = Scl.SelectOption(tp, table.unpack(desc_arr2))
+		Scl.Choose_One_Effect_Select_Index[e] = Scl.Choose_One_Effect_Select_Index[e] or { }
+		Scl.Choose_One_Effect_Select_Index[e][Duel.GetCurrentChain()] = opt
+		local code = code_arr[opt]
+		local res, eg2, ep2, ev2, re2, r2, rp2 = false, nil, 0, 0, nil, 0, 0
+		if code ~= EVENT_FREE_CHAIN then 
+			res, eg2, ep2, ev2, re2, r2, rp2 = Duel.CheckEvent(code, true)
+		end
+		local ce = eff_arr[opt]
+		ce:UseCountLimit(tp)
+		local flag1, flag2 = ce:GetProperty()
+		e:SetProperty(flag1 | (EFFECT_FLAG_DAMAGE_STEP + EFFECT_FLAG_DAMAGE_CAL), flag2)
+		local ctgy =  ce:GetCategory()
+		e:SetCategory(ctgy)
+		if e:IsCostChecked() then
+			local cost = cost_arr[opt]
+			if code == EVENT_FREE_CHAIN then
+				cost(e, tp, eg, ep, ev, re, r, rp, 1)
+			else
+				cost(e, tp, eg2, ep2, ev2, re2, r2, rp2, 1)
+			end
+		end
+		--beacuse some effects' operations is set in there targets, so first set operation, and second do the chk == 1 target, make target can reset operation.
+		e:SetOperation(op_arr[opt])
+		local tg = tg_arr[opt]
+		if code == EVENT_FREE_CHAIN then
+			tg(e, tp, eg, ep, ev, re, r, rp, 1)
+		else
+			tg(e, tp, eg2, ep2, ev2, re2, r2, rp2, 1)
+		end
+		Scl.Choose_One_Effect_Condition_Index = nil
+		return #arr > 0
+	end
+end
 
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Quick Effect<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -2463,6 +2529,21 @@ end
 function Scl.CreateQuickOptionalEffect(reg_obj, code, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, tmg_obj, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_QUICK_O, code or EVENT_FREE_CHAIN, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, nil, nil, tmg_obj or { 0, TIMINGS_CHECK_MONSTER + TIMING_END_PHASE }, rst_obj)
 end 
+--Mix several single quick optional effects into one quick optional effect.
+--when you activate the mixed effect, you will select which single activate effect you want to activate and apply.
+--this function use single activate effects' descriptions as the hint for you selecting, so you should add corresponding descriptions to thoes single activate effects.
+--... is the single activate effects that you want to mix in.
+--the single activate effects that be mixed cannot be activated.
+--//return the mixed effect.
+-->>eg1. local e1 = Scl.CreateQuickOptionalEffect(c, nil, "Banish", { 1, id, "Oath" }, "Banish", "Target", "Hand,MonsterZone", nil, nil, s.tg, s.op)
+-->>	 local e2 = Scl.CreateQuickOptionalEffect(c, nil, "Destroy", { 1, id, "Oath" }, "Destroy", "Target", "MonsterZone", nil, nil, s.tg2, s.op2)
+-->>	 local e3 = Scl.CreateQuickOptionalEffect_Activate1ofTheseEffects(c, e1, e2)
+-->>mix effect e1 and e2 into e3.
+function Scl.CreateQuickOptionalEffect_Activate1ofTheseEffects(reg_obj, ...)
+	local code_arr, eff_arr, con_arr, cost_arr, tg_arr, op_arr, desc_arr = s.Activate1ofTheseEffects(reg_obj, ...)
+	local e1 = Scl.CreateQuickOptionalEffect(reg_obj, EVENT_FREE_CHAIN, "ApplyEffect", nil, nil, "DamageStep,DamageCalculation", 0xff, s.apply_1_of_these_effects_condition(eff_arr, code_arr, con_arr), nil, s.apply_1_of_these_effects_target(eff_arr, code_arr, cost_arr, tg_arr, op_arr, desc_arr))
+	return e1
+end
 --Create a quick effect, negate the card's effect (neg_typ == "NegateEffect") or activation (neg_typ == "NegateActivation").
 --op_str is the index to find the corresponding operation and the extra category(s) in Scl.Category_List, means negate the effect/activation, and do that operation to the negated card. 
 --con can be function, nil, or be a array { ... }, if be nil or array-format, it equals to call the scl.negate_activation_or_effect_con("NegateEffect" ,nil/ ...).
@@ -2499,9 +2580,9 @@ end
 --param see Scl.CreateQuickOptionalEffect_Negate
 --//return effect
 -->>eg1. Scl.CreateQuickOptionalEffect_NegateEffect(c, "Destroy", 1, LOCATION_MZONE)
--->>create an activate effect that can negate any effect and destroy that effect's handler once per turn.
+-->>create a quick optional effect that can negate any effect and destroy that effect's handler once per turn.
 -->>eg2. Scl.CreateQuickOptionalEffect_NegateEffect(c, "Dummy", 1, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
--->>create an activate effect that can negate monster effect, and can only activate once per turn. You must pay s.cost for its activation, and add the s.op ass the additional operation.
+-->>create a quick optional effect that can negate monster effect, and can only activate once per turn. You must pay s.cost for its activation, and add the s.op ass the additional operation.
 function Scl.CreateQuickOptionalEffect_NegateEffect(reg_obj, op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 	return Scl.CreateQuickOptionalEffect_Negate(reg_obj, "NegateEffect", op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 end
@@ -2509,9 +2590,9 @@ end
 --param see Scl.CreateQuickOptionalEffect_Negate
 --//return effect
 -->>eg1. Scl.CreateQuickOptionalEffect_NegateActivation(c, "Destroy", 1, LOCATION_MZONE)
--->>create an activate effect that can negate any activation and destroy that activation's handler once per turn.
+-->>create a quick optional effect that can negate any activation and destroy that activation's handler once per turn.
 -->>eg2. Scl.CreateQuickOptionalEffect_NegateActivation(c, "Dummy", 1, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
--->>create an activate effect that can negate monster effect's activation, and can only activate once per turn. You must pay s.cost for its activation, and add the s.op ass the additional operation.
+-->>create a quick optional effect that can negate monster effect's activation, and can only activate once per turn. You must pay s.cost for its activation, and add the s.op ass the additional operation.
 function Scl.CreateQuickOptionalEffect_NegateActivation(reg_obj, op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 	return Scl.CreateQuickOptionalEffect_Negate(reg_obj, "NegateActivation", op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 end
@@ -3325,7 +3406,7 @@ end
 			2.extra_check_function: add an additional check to the effect cost/target, call extra_check_function(e, tp, eg, ...) to check.
 		//return list_typ, extra_check_function
 	 4.
-	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }	
+	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }	 
 		Paramas explain: 
 			2.extra_operate_function: add an additional operate to the effect cost/target, call extra_operate_function(current list's selected card(s), all above lists's selected card(s),e, tp, eg, ...) to operate.
 		//return list_typ, extra_operate_function
@@ -3334,7 +3415,7 @@ function s.get_cost_or_target_or_operation_paramas(arr, e, tp, eg, ep, ev, re, r
 	--1.list type  ("Cost", "~Target", "Target","PlayerTarget","Operation","ExtraCheck","ExtraOperation")
 	local list_typ = arr[1]
 	if list_typ ~= "PlayerTarget" and list_typ ~= "PlayerCost" and list_typ ~= "ExtraCheck" and list_typ ~= "ExtraOperation" then
-		--2.category string, replace operation
+	    --2.category string, replace operation
 		local category_obj = type(arr[2]) == "table" and arr[2] or { arr[2] }
 		local category_str, replace_operation = table.unpack(category_obj)
 		local category, category_arr, category_str_arr = Scl.GetNumFormatCategory(category_str)
@@ -3940,7 +4021,7 @@ end
 function scl.cost_pay_lp(pay_ct, is_directly)
 	return function(e, tp, eg, ep, ev, re, r, rp, chk)
 		local pay_lp = pay_ct
-		if Scl.CheckBoolean(lp) then 
+		if Scl.CheckBoolean(pay_lp) then 
 			pay_lp = math.floor(Duel.GetLP(tp) / 2) 
 		end
 		if is_directly then 
@@ -5002,7 +5083,7 @@ function Scl.ActivateCard(tc, actp, apply_effect, lim_zone)
 			local tg = te:GetTarget() or aux.TRUE
 			local op = te:GetOperation() or aux.TRUE
 			tg(te, actp, ceg, cep, cev, cre, cr, crp, 1)
-			op(te, actp, ceg, cep, cev, cre, cr, crp)		  
+			op(te, actp, ceg, cep, cev, cre, cr, crp)		   
 		end
 		if zone == LOCATION_FZONE then
 			Duel.RaiseEvent(tc, 4179255, te, 0, tp, tp, Duel.GetCurrentChain())
@@ -5022,9 +5103,9 @@ end
 function Scl.Return2Field(card_obj, pos, zone)
 	local e, _, tp = Scl.GetCurrentEffectInfo()
 	zone = zone or 0x3f1f3f1f
-	local mzone = { [tp] = zone & 0x001f,		   [1 - tp] = (zone & 0x001f0000) / 0x0010000 }
+	local mzone = { [tp] = zone & 0x001f,           [1 - tp] = (zone & 0x001f0000) / 0x0010000 }
 	local szone = { [tp] = (zone & 0x1f00) / 0x100, [1 - tp] = (zone & 0x1f000000) / 0x1000000 }
-	local fzone = { [tp] = zone & 0x2000,		   [1 - tp] = zone & 0x20000000 }
+	local fzone = { [tp] = zone & 0x2000,           [1 - tp] = zone & 0x20000000 }
 	local sg = Scl.Mix2Group(card_obj)
 	local mon = sg:Filter(Scl.IsPreviouslyInZone, nil, "MonsterZone")
 	local st = sg:Filter(Scl.IsPreviouslyInZone, nil, "Spell&TrapZone")
@@ -5615,7 +5696,7 @@ end
 	3. Love.IsLinkSeries(c)  -- equal to Scl.IsLinkSeries(c, "YiFanJiang") 
 	4. Love.IsPreviousSeries(c) -- equal to Scl.IsPreviousSeries(c, "YiFanJiang")
 	5. Love.IsOriginalSeries(c) -- equal to Scl.IsOriginalSeries(c, "YiFanJiang")
-	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)	-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
+	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)	 -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
 	11~15 Love.IsXXXXSeriesSpell(c) (XXXX can be "", "Fusion", "Link" ……, see above)		-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL)
 	16~20 Love.IsXXXXSeriesTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)   -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_TRAP)
 	21~25 Love.IsXXXXSeriesSpellOrTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)  -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL + TYPE_TRAP)
@@ -5685,14 +5766,14 @@ end
 --Get target player and that num-format value for an effect that register player target information in Effect.SetTarget
 --//return target player, target value
 --[[
-	>>eg1.  Duel.SetTargetPlayer(tp)
+	>>eg1. 	Duel.SetTargetPlayer(tp)
 			Duel.SetTargetParam(1000)
 			Scl.GetPlayerTargetParamas()
 	>> return tp, 1000
 --]]
 function Scl.GetPlayerTargetParamas()
 	local player, value = Duel.GetChainInfo(0, CHAININFO_TARGET_PLAYER, CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+    Duel.Draw(p,d,REASON_EFFECT)
 	return player, value
 end
 --Add normal summon or set procedure
@@ -7180,5 +7261,5 @@ s.record_previous_inside_series()
 s.previous_xyz_material_record()
 s.record_official_filter()
 s.add_current_effect_check()
---s.add_type_normal_spell_or_trap_scl()
+s.add_type_normal_spell_or_trap_scl()
 Scl.RaiseGlobalSetEvent()

@@ -23,9 +23,8 @@ function c98910022.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98910022,1))
 	e2:SetCategory(CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCost(c98910022.adcost)  
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -41,7 +40,7 @@ function c98910022.initial_effect(c)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,98910022)
+	e4:SetCountLimit(1,98920022)
 	e4:SetCondition(c98910022.thcon)
 	e4:SetTarget(c98910022.thtg)
 	e4:SetOperation(c98910022.thop)
@@ -109,28 +108,19 @@ function c98910022.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c98910022.adfilter(c)
-	return c:IsSetCard(0x70) and c:IsFaceup() and c:GetBaseAttack()>0 and not c:IsType(TYPE_XYZ)
-end
 function c98910022.adtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and chkc:IsControler(tp) and c98910022.adfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c98910022.adfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c98910022.adfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,g,1,0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
 end
 function c98910022.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	local tc=Duel.GetFirstTarget()	
-	if not (tc:IsRelateToEffect(e) and tc:IsFaceup()) then return end
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	local tc1=g:GetFirst()  
 		while tc1 do
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			e1:SetValue(-tc:GetAttack())
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(-500)
 			tc1:RegisterEffect(e1)
 			tc1=g:GetNext()
 	end

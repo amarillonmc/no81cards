@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_FLIP)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCountLimit(1,m)
+	--e4:SetCountLimit(1,m)
 	e4:SetOperation(cm.op)
 	c:RegisterEffect(e4)
 
