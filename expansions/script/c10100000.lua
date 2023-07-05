@@ -2052,7 +2052,7 @@ function Scl.CreateActivateEffect_NegateActivation(reg_obj, op_str, lim_obj, con
 end
 --Create an activate effect, fusion summon a monster meets "fus_filter", use cards from "mat_obj" as fusion materials, and do "mat_fun" to those materials, the materials must meet "fcheck" and "gcheck"
 --"mat_obj" should be function-format, call mat_obj(e, tp, eg, ...) to get materials.
---"mat_fun" can be string-format (like "Send2GY", "Bainsh", see Scl.Category_List), call s.operate_selected_objects to do the operation on the selected materials and set operation info due to the categroy.
+--"mat_fun" can be string-format (like "Send2GY", "Bainsh", see Scl.Category_List), call Scl.OperateSelectedObjects to do the operation on the selected materials and set operation info due to the categroy.
 --OR can be function-format, call mat_fun(selected_materials, e, tp, eg, ep, ev, re, r, rp) to do the operation on the selected materials.
 --only after all the selected materials be operated successfully by "mat_fun", the fusion summon will be continued, so if you used function-format "mat_fun", PLZ noticed that you should return a boolean value to make this function to distinguish whether you have operated successfully (like return Duel.Destroy(g, REASON_MATERIAL + REASON_EFFECT + REASON_FUSION) == #g)
 --if you set the parama must_include_card (default = nil), means you must use that card as one of the fusion materials
@@ -2223,7 +2223,7 @@ function s.fusion_summon_operation(ex_op, fus_filter, mat_obj, mat_fun, must_inc
 				local mat0 = Duel.SelectFusionMaterial(tp, tc, mat, must_include_card, chkf)
 				tc:SetMaterial(mat0)
 				if type(mat_fun) == "string" then
-					res = s.operate_selected_objects(mat0, mat_fun, REASON_FUSION + REASON_MATERIAL + REASON_EFFECT, 1, e, tp, eg, ep, ev, re, r, rp)() == #mat0
+					res = Scl.OperateSelectedObjects(mat0, mat_fun, REASON_FUSION + REASON_MATERIAL + REASON_EFFECT, 1, e, tp, eg, ep, ev, re, r, rp)() == #mat0
 				else
 					res = mat_fun(mat0, e, tp, eg, ep, ev, re, r, rp, 1)
 				end
@@ -2573,7 +2573,7 @@ function Scl.CreateQuickOptionalEffect_Negate(reg_obj, neg_typ, op_str, lim_obj,
 	ex_tg = ex_tg or aux.TRUE 
 	ex_op = ex_op or aux.TRUE 
 	local reg_tg = s.negate_activation_or_effect_tg(neg_typ, op_str, ex_tg)
-	local reg_op = s.negate_activation_or_effect_op(neg_typ, op_str, ex_op)
+	local reg_op = scl.negate_activation_or_effect_op(neg_typ, op_str, ex_op)
 	return Scl.CreateQuickOptionalEffect(reg_obj, EVENT_CHAINING, desc_obj or neg_typ, lim_obj, reg_ctgy, reg_flag, rng, reg_con, cost, reg_tg, reg_op, nil, rst_obj)  
 end 
 --Create a quick effect, negate the card's effect.
@@ -2596,6 +2596,7 @@ end
 function Scl.CreateQuickOptionalEffect_NegateActivation(reg_obj, op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 	return Scl.CreateQuickOptionalEffect_Negate(reg_obj, "NegateActivation", op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 end
+--warning: this function use "scl" beacuse this function must be referenced in the old library, do not refer to this function anywhere else.
 function scl.negate_activation_or_effect_con(neg_typ, eff_typ_obj, player)
 	return function(e, tp, eg, ep, ev, re, r, rp)
 		eff_typ_obj = eff_typ_obj or "All"
@@ -2632,7 +2633,7 @@ function scl.negate_activation_or_effect_con(neg_typ, eff_typ_obj, player)
 end
 function s.negate_activation_or_effect_tg(neg_typ, op_str, ex_tg)
 	return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-		op_str = op_str or "Dummy"
+		op_str = op_str or aux.TRUE
 		local rc = re:GetHandler()
 		local cgty, ctgy_arr = Scl.GetNumFormatCategory(op_str)
 		if chkc then 
@@ -2649,11 +2650,13 @@ function s.negate_activation_or_effect_tg(neg_typ, op_str, ex_tg)
 		scl.list_format_cost_or_target_or_operation(ex_tg)(e, tp, eg, ep, ev, re, r, rp, 1)
 	end
 end
-function s.negate_activation_or_effect_op(neg_typ, op_str, ex_op)
+--warning: this function use "scl" beacuse this function must be referenced in the old library, do not refer to this function anywhere else.
+function scl.negate_activation_or_effect_op(neg_typ, op_str, ex_op)
 	return function(e, tp, eg, ep, ev, re, r, rp)
+		ex_op = ex_op or aux.TRUE
 		local c = e:GetHandler()
 		local rc = re:GetHandler()
-		local res = not ex_op and true or scl.list_format_cost_or_target_or_operation(ex_op)(e, tp, eg, ep, ev, re, r, rp, 0)
+		local res = scl.list_format_cost_or_target_or_operation(ex_op)(e, tp, eg, ep, ev, re, r, rp, 0)
 		if Scl.CheckBoolean(res, true) or type(res) == "nil" then
 			if neg_typ == "NegateEffect" then
 				res = Duel.NegateEffect(ev)
@@ -2663,7 +2666,7 @@ function s.negate_activation_or_effect_op(neg_typ, op_str, ex_op)
 			if op_str and op_str ~= "Dummy" and not rc:IsRelateToChain(ev) then 
 				res = false
 			else
-				res = s.operate_selected_objects(eg, op_str, REASON_EFFECT, 1, e, tp, eg, ep, ev, re, r, rp)() > 0
+				res = Scl.OperateSelectedObjects(eg, op_str, REASON_EFFECT, 1, e, tp, eg, ep, ev, re, r, rp)() > 0
 			end
 			if res or type(res) == "nil" then
 				scl.list_format_cost_or_target_or_operation(ex_op)(e, tp, eg, ep, ev, re, r, rp, 1)
@@ -2879,7 +2882,7 @@ function s.phase_opearte_op(fun_obj, fid)
 		if typ == "function" then 
 			fun_obj(rg, e, tp, eg, ep, ev, re, r, rp)
 		elseif typ == "string" then
-			s.operate_selected_objects(rg, fun_obj, REASON_EFFECT, 1, e, tp, eg, ep, ev, re, r, rp)()
+			Scl.OperateSelectedObjects(rg, fun_obj, REASON_EFFECT, 1, e, tp, eg, ep, ev, re, r, rp)()
 		end
 	end
 end
@@ -3560,7 +3563,7 @@ function s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, 
 		elseif list_typ == "PlayerTarget" or list_typ == "PlayerCost" then 
 			local op_arr = { [tp] = self_minct, [1 - tp] = oppo_minct, [tp + 2] = self_maxct, [3 - tp] = oppo_maxct }
 			Scl.Player_Cost_And_Target_Value[category_str] = Scl.CloneArray(op_arr)
-			if not s.operate_selected_objects(Scl.Player_Cost_And_Target_Value[category_str], category_str, reason, 0, e, tp, eg, ep, ev, re, r, rp)() then
+			if not Scl.OperateSelectedObjects(Scl.Player_Cost_And_Target_Value[category_str], category_str, reason, 0, e, tp, eg, ep, ev, re, r, rp)() then
 				return false
 			else 
 				return s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, r, rp, chk, chkc, used_arr, arr2, ...)
@@ -3816,10 +3819,10 @@ function s.operate_selected_cost_or_operat_objects(current_sel_object, total_sel
 	if replace_operation then 
 		return replace_operation(current_sel_object, total_sel_group, e, tp, eg, ep, ev, re, r, rp) 
 	else
-		return s.operate_selected_objects(current_sel_object, category_str, reason, 1, e, tp, eg, ep, ev, re, r, rp)()
+		return Scl.OperateSelectedObjects(current_sel_object, category_str, reason, 1, e, tp, eg, ep, ev, re, r, rp)()
 	end
 end
---some functions like Scl.SelectAndOperateCards, you cannot transfer parama "e" and "tp" to s.operate_selected_objects, so you first need to use this function to get the current checking/solving effect "e".
+--some functions like Scl.SelectAndOperateCards, you cannot transfer parama "e" and "tp" to Scl.OperateSelectedObjects, so you first need to use this function to get the current checking/solving effect "e".
 --//return the current checking/solving effect.
 function Scl.GetCurrentEffectInfo()
 	if not Scl.Token_List[4392470] or not Scl.Token_List[4392470][1] then
@@ -3849,7 +3852,7 @@ end
 --if chk == 0, this function won't do operation, but check whether it can be operated successfully.
 -- ... is the parama of the operate function, if you don't set those parama(s), it will use the default parama (see Scl.Category_List)
 --//return that operate function's return.,
-function s.operate_selected_objects(sel_obj, ctgy_str, reason, chk, e, tp, eg, ep, ev, re, r, rp)
+function Scl.OperateSelectedObjects(sel_obj, ctgy_str, reason, chk, e, tp, eg, ep, ev, re, r, rp)
 	return function(...)
 		local ex_para_arr =  { ... }
 		local op_arr = Scl.Category_List[ctgy_str][6]
@@ -4431,7 +4434,7 @@ function Scl.SelectAndOperateCards(sel_hint, sp, filter_obj, tp, self_zone, oppo
 			Scl.Single_Buff_Affect_Self_List = { }
 			return 0, #sg
 		else
-			return s.operate_selected_objects(sg, sel_hint, REASON_EFFECT, 1)(table.unpack(op_arr))
+			return Scl.OperateSelectedObjects(sg, sel_hint, REASON_EFFECT, 1)(table.unpack(op_arr))
 		end
 	end
 end
@@ -4496,7 +4499,7 @@ function Scl.SelectAndOperateCardsFromGroup(sel_hint, g, sp, filter, minct, maxc
 			Scl.Single_Buff_Affect_Self_List = { }
 			return 0, #sg
 		else
-			return s.operate_selected_objects(sg, sel_hint, REASON_EFFECT, 1)(table.unpack(op_arr))
+			return Scl.OperateSelectedObjects(sg, sel_hint, REASON_EFFECT, 1)(table.unpack(op_arr))
 		end
 	end
 end

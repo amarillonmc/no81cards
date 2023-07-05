@@ -726,16 +726,17 @@ rssf.CheckTokenSummonable = Scl.IsCanSpecialSummonToken
 rssf.SpecialSummonToken = Scl.SpecialSummonToken
 function rstg.neg(dn_str, ex_tg)
     return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-        dn_str = dn_str or "dum"
+		dn_str = dn_str or "dum"
 		local dn_str2 = s.ctgy_list[dn_str]
         local c = e:GetHandler()
         local rc = re:GetHandler()
+		ex_tg = ex_tg or aux.TRUE
         if chkc then return ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc) end
         if chk == 0 then return (dn_str ~= "rm" or aux.nbcon(tp, re)) and (ex_tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)) end
         local op_cate = Scl.Category_List[dn_str2][2]
 		local ctgy_list = type(op_cate) == "number" and {op_cate} or op_cate
         if #ctgy_list > 0 and rc:IsRelateToEffect(re) then
-			local res = rsop.Operation_Solve(eg, dn_str, REASON_EFFECT, { }, 0, e, tp, eg, ep, ev, re, r, rp) 
+			local res =  Scl.OperateSelectedObjects(eg, dn_str2, REASON_EFFECT, 0, e, tp, eg, ep, ev, re, r, rp)()
 			if res then
 				for ctgy in pairs(ctgy_list) do
 					Duel.SetOperationInfo(0, ctgy, eg, 1, 0, 0)
@@ -747,12 +748,14 @@ function rstg.neg(dn_str, ex_tg)
 end
 function rsop.neg(dn_str, ex_op)
 	return function(...)
-		return s.negate_activation_or_effect_op("NegateActivation", s.ctgy_list[dn_str], ex_op)(...)
+		local dn_str2 = dn_str or "dum"
+		return scl.negate_activation_or_effect_op("NegateActivation", s.ctgy_list[dn_str2], ex_op)(...)
 	end
 end
 function rsop.dis(dn_str, ex_op)
 	return function(...)
-		return s.negate_activation_or_effect_op("NegateEffect", s.ctgy_list[dn_str], ex_op)(...)
+		local dn_str2 = dn_str or "dum"
+		return scl.negate_activation_or_effect_op("NegateEffect", s.ctgy_list[dn_str2], ex_op)(...)
 	end
 end
 function s.get_effect_array(checkfun, endfun, list_typ, a1, a2, a3, ...)
@@ -1390,8 +1393,14 @@ rscon.negcon = function(dn_filter, pl_fun)
 		if type(dn_filter) == "number" then
 			dn_filter = dn_list[dn_filter]
 		end
+		local dn_filter2 = dn_filter
+		if type(dn_filter) == "function" then
+			dn_filter2 = function(e, tp, ev, re, rp, tg, loc, seq, cp)
+				return dn_filter(e, tp, re, rp, tg)
+			end
+		end
 		if pl_fun then pl_fun = pl_fun and 1 or 0 end
-		return scl.negate_activation_or_effect_con("NegateActivation", dn_filter, pl_fun)(...)
+		return scl.negate_activation_or_effect_con("NegateActivation", dn_filter2, pl_fun)(...)
 	end
 end
 rscon.discon = function(dn_filter, pl_fun)
@@ -1400,8 +1409,14 @@ rscon.discon = function(dn_filter, pl_fun)
 		if type(dn_filter) == "number" then
 			dn_filter = dn_list[dn_filter]
 		end
+		local dn_filter2 = dn_filter
+		if type(dn_filter) == "function" then
+			dn_filter2 = function(e, tp, ev, re, rp, tg, loc, seq, cp)
+				return dn_filter(e, tp, re, rp, tg)
+			end
+		end
 		if pl_fun then pl_fun = pl_fun and 1 or 0 end
-		return scl.negate_activation_or_effect_con("NegateEffect", dn_filter, pl_fun)(...)
+		return scl.negate_activation_or_effect_con("NegateEffect", dn_filter2, pl_fun)(...)
 	end
 end
 rsef.QO_NEGATE = function(reg_list, dn_type, lim_list, dn_str, range, con, cost, desc_list, cate, flag, reset_list)
@@ -1416,7 +1431,7 @@ end
 rstg.negtg = rstg.neg
 rstg.distg = rstg.neg
 rsop.negop = rsop.neg
-rsop.negop = rsop.dis
+rsop.disop = rsop.dis
 
 --//
 rscf.SetSpecialSummonProduce = function(reg_list,range,con,op,desc_list,lim_list,reset_list)
