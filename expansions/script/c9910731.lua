@@ -60,6 +60,7 @@ function c9910731.conop(e,tp,eg,ep,ev,re,r,rp)
 	if sg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND) then Duel.ShuffleHand(1-tp) end
 	local c=e:GetHandler()
 	for tc in aux.Next(sg) do
+		tc:RegisterFlagEffect(9910731,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,2,0,aux.Stringid(9910731,5))
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_DISABLE)

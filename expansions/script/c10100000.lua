@@ -685,7 +685,7 @@ function s.create_buff_list()
 	["!AttackAnnounce"] = { EFFECT_CANNOT_ATTACK_ANNOUNCE },
 	["!AttackDirectly"] = { EFFECT_CANNOT_DIRECT_ATTACK },
 	["MustAttack"] = { EFFECT_MUST_ATTACK, true },
-	["MustAttackMonster"] = { EFFECT_MUST_ATTACK, true  },	
+	["MustAttackMonster"] = { EFFECT_MUST_ATTACK, true  },  
 	["!BeTributed"] = { { "!BeTributed4TributeSummon", "!BeTributedExcept4TributeSummon" } },
 	["!BeTributed4TributeSummon"] = { EFFECT_UNRELEASABLE_SUM },
 	["!BeTributedExcept4TributeSummon"] = { EFFECT_UNRELEASABLE_NONSUM },
@@ -1352,7 +1352,7 @@ function Scl.RegisterActivateCountLimit(reg_eff, lim_obj)
 					lim_code = lim_code + EFFECT_COUNT_CODE_SINGLE 
 				elseif (type(val) == "number" and val == 4) or
 				(type(val) == "string" and val == "Chain") then
-				    lim_code = lim_code + EFFECT_COUNT_CODE_CHAIN 
+					lim_code = lim_code + EFFECT_COUNT_CODE_CHAIN 
 				else
 					lim_code = lim_code + val
 				end
@@ -3406,7 +3406,7 @@ end
 			2.extra_check_function: add an additional check to the effect cost/target, call extra_check_function(e, tp, eg, ...) to check.
 		//return list_typ, extra_check_function
 	 4.
-	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }	 
+	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }	
 		Paramas explain: 
 			2.extra_operate_function: add an additional operate to the effect cost/target, call extra_operate_function(current list's selected card(s), all above lists's selected card(s),e, tp, eg, ...) to operate.
 		//return list_typ, extra_operate_function
@@ -3415,7 +3415,7 @@ function s.get_cost_or_target_or_operation_paramas(arr, e, tp, eg, ep, ev, re, r
 	--1.list type  ("Cost", "~Target", "Target","PlayerTarget","Operation","ExtraCheck","ExtraOperation")
 	local list_typ = arr[1]
 	if list_typ ~= "PlayerTarget" and list_typ ~= "PlayerCost" and list_typ ~= "ExtraCheck" and list_typ ~= "ExtraOperation" then
-	    --2.category string, replace operation
+		--2.category string, replace operation
 		local category_obj = type(arr[2]) == "table" and arr[2] or { arr[2] }
 		local category_str, replace_operation = table.unpack(category_obj)
 		local category, category_arr, category_str_arr = Scl.GetNumFormatCategory(category_str)
@@ -5083,7 +5083,7 @@ function Scl.ActivateCard(tc, actp, apply_effect, lim_zone)
 			local tg = te:GetTarget() or aux.TRUE
 			local op = te:GetOperation() or aux.TRUE
 			tg(te, actp, ceg, cep, cev, cre, cr, crp, 1)
-			op(te, actp, ceg, cep, cev, cre, cr, crp)		   
+			op(te, actp, ceg, cep, cev, cre, cr, crp)		  
 		end
 		if zone == LOCATION_FZONE then
 			Duel.RaiseEvent(tc, 4179255, te, 0, tp, tp, Duel.GetCurrentChain())
@@ -5103,9 +5103,9 @@ end
 function Scl.Return2Field(card_obj, pos, zone)
 	local e, _, tp = Scl.GetCurrentEffectInfo()
 	zone = zone or 0x3f1f3f1f
-	local mzone = { [tp] = zone & 0x001f,           [1 - tp] = (zone & 0x001f0000) / 0x0010000 }
+	local mzone = { [tp] = zone & 0x001f,		   [1 - tp] = (zone & 0x001f0000) / 0x0010000 }
 	local szone = { [tp] = (zone & 0x1f00) / 0x100, [1 - tp] = (zone & 0x1f000000) / 0x1000000 }
-	local fzone = { [tp] = zone & 0x2000,           [1 - tp] = zone & 0x20000000 }
+	local fzone = { [tp] = zone & 0x2000,		   [1 - tp] = zone & 0x20000000 }
 	local sg = Scl.Mix2Group(card_obj)
 	local mon = sg:Filter(Scl.IsPreviouslyInZone, nil, "MonsterZone")
 	local st = sg:Filter(Scl.IsPreviouslyInZone, nil, "Spell&TrapZone")
@@ -5696,7 +5696,7 @@ end
 	3. Love.IsLinkSeries(c)  -- equal to Scl.IsLinkSeries(c, "YiFanJiang") 
 	4. Love.IsPreviousSeries(c) -- equal to Scl.IsPreviousSeries(c, "YiFanJiang")
 	5. Love.IsOriginalSeries(c) -- equal to Scl.IsOriginalSeries(c, "YiFanJiang")
-	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)	 -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
+	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)	-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
 	11~15 Love.IsXXXXSeriesSpell(c) (XXXX can be "", "Fusion", "Link" ……, see above)		-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL)
 	16~20 Love.IsXXXXSeriesTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)   -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_TRAP)
 	21~25 Love.IsXXXXSeriesSpellOrTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)  -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL + TYPE_TRAP)
@@ -5766,14 +5766,14 @@ end
 --Get target player and that num-format value for an effect that register player target information in Effect.SetTarget
 --//return target player, target value
 --[[
-	>>eg1. 	Duel.SetTargetPlayer(tp)
+	>>eg1.  Duel.SetTargetPlayer(tp)
 			Duel.SetTargetParam(1000)
 			Scl.GetPlayerTargetParamas()
 	>> return tp, 1000
 --]]
 function Scl.GetPlayerTargetParamas()
 	local player, value = Duel.GetChainInfo(0, CHAININFO_TARGET_PLAYER, CHAININFO_TARGET_PARAM)
-    Duel.Draw(p,d,REASON_EFFECT)
+	Duel.Draw(p,d,REASON_EFFECT)
 	return player, value
 end
 --Add normal summon or set procedure
@@ -7261,5 +7261,5 @@ s.record_previous_inside_series()
 s.previous_xyz_material_record()
 s.record_official_filter()
 s.add_current_effect_check()
-s.add_type_normal_spell_or_trap_scl()
+--s.add_type_normal_spell_or_trap_scl()
 Scl.RaiseGlobalSetEvent()

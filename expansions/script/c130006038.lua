@@ -3,8 +3,8 @@ if not pcall(function() require("expansions/script/c130001000") end) then requir
 local s,id = Scl.SetID(130006038, "LordOfChain")
 function s.initial_effect(c)
 	local e1 = Scl.CreateActivateEffect(c, "FreeChain", nil, nil, "Send2GY,Draw", "!NegateEffect,!NegateActivation", s.con, nil, 
-		{ { "~Target", "Send2GY", Card.IsAbleToGrave, 0, "OnField", s.ct }, 
-		{ "PlayerTarget", "Draw", s.ct} }, s.op)
+		{ {"~Target", "Send2GY", Card.IsAbleToGrave, 0, "OnField", s.ct }, 
+			{ "PlayerTarget", "Draw", s.ct } }, s.op)
 	local e2 = Scl.CreateQuickOptionalEffect(c, "ActivateEffect", "ShuffleIn2Deck", {1, id, "Chain"}, "ShuffleIn2Deck,AddFromDeck2Hand", nil, "Hand", s.scon, nil, s.stg,s.sop)
 end
 function s.ct(e,tp)
@@ -12,7 +12,7 @@ function s.ct(e,tp)
 	return #g > 0 and 1 or 0
 end
 function s.con(e,tp)
-	return Duel.CheckPhaseActivity()
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 and not Duel.CheckPhaseActivity()
 end
 function s.op(e,tp)
 	local g = Scl.GetMatchingGroup(Card.IsPublic, tp, "Hand", 0, nil)
