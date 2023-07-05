@@ -160,6 +160,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e4,tp)
 	end
 end
+function cm.nimfilter(c,e)
+	return not c:IsImmuneToEffect(e)
+end
 function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
@@ -170,7 +173,7 @@ function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local tt=Duel.GetAttackTarget()
 		if tt then g:AddCard(tt) end
 		local tg=g:Filter(Card.IsAbleToHand,nil)
-		return #tg>0
+		return #tg>0 and tg:IsExists(cm.nimfilter,1,nil,e)
 	end
 	return true
 end
