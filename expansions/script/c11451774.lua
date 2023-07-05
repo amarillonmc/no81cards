@@ -265,5 +265,5 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	if not g then return end
 	local sg=g:Filter(cm.filter6,nil)
 	g:DeleteGroup()
-	Duel.SendtoHand(sg,tp,REASON_EFFECT)
+	Duel.SendtoHand(sg,tp,REASON_EFFECT+REASON_REPLACE)
 end

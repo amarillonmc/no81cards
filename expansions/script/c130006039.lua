@@ -7,7 +7,7 @@ function s.initial_effect(c)
 		{ "~Target", "SpecialSummon", s.spfilter, "Deck" }, s.act)
 	local e3 = Scl.CreateQuickOptionalEffect(c, "FreeChain", "XyzSummon", nil, "XyzSummon", nil, "GY", nil, 
 		{ "Cost", "ShuffleIn2Deck", {s.cfilter, s.gcheck}, "Hand,GY", 0, 2 },
-		{ "~Tareget", "XyzSummon", s.xfilter, "Extra" }, s.spop)
+		{ "~Target", "XyzSummon", s.xfilter, "Extra" }, s.spop)
 end
 function s.acon(e)
 	return Duel.GetCurrentChain() >= 2
@@ -26,7 +26,7 @@ function s.cfilter(c)
 	return c:IsAbleToDeckAsCost() and (not c:IsLocation(LOCATION_HAND) or c:IsPublic())
 end
 function s.gcheck(g,e,tp)
-	return g:IsContains(e:GetHandler())
+	return g:IsContains(e:GetHandler()) and g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE) < 2
 end
 function s.xfilter(c,e,tp)
 	return c:IsType(TYPE_XYZ) and c:IsXyzSummonable(nil)

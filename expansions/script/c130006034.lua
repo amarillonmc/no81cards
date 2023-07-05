@@ -43,7 +43,6 @@ function s.mixtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetCategory(ctgy)
 		Duel.ChangeChainOperation(0,s.op2)
 	end
-	e:SetLabel(op)
 end
 function s.op1(e,tp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

@@ -172,7 +172,7 @@ function cm.limop2(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
-	if ep~=tp then Duel.NegateEffect(ev) end
+	if ep~=tp and ev==e:GetLabel() then Duel.NegateEffect(ev) end
 end
 function cm.imfilter(e,re)
 	local i=1
@@ -228,8 +228,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local tc=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
 		if tc then
-			th=Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local te=tc:GetActivateEffect()
+			te:UseCountLimit(tp,1,true)
 			local tep=tc:GetControler()
 			local cost=te:GetCost()
 			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end

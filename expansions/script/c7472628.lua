@@ -235,7 +235,7 @@ end
 function s.val(c,syncard,c1)
 	if c==c1 and c:IsSetCard(0x101b) then
 		local lv=c:GetSynchroLevel(syncard)
-		if lv~=0 then
+		if lv~=0 and c:IsType(TYPE_TUNER) then
 			return (2<<16)+lv
 		else
 			return 2

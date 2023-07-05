@@ -69,7 +69,7 @@ function s.thfilter(c,e,tp)
 	return c:IsAbleToHand() and Scl.IsSeries(c, "LordOfChain")
 end
 function s.drcon(e,tp,eg,ep,ev,re)
-	return Scl.IsSeries(re:GetHandler(), "LordOfChain") and Duel.IsPlayerCanDraw(tp,1)
+	return Scl.IsSeries(re:GetHandler(), "LordOfChain") 
 end
 function s.drop(e,tp)
 	Scl.HintCard(id)
