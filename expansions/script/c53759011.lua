@@ -30,7 +30,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function cm.filter(c)
-	return c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand()
+	return c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.filter(chkc) end
