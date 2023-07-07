@@ -38,6 +38,24 @@ function c29002023.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetOperation(c29002023.atkop)
 	c:RegisterEffect(e4)
+	if not c29002023.global_check then
+		c29002023.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(c29002023.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge2,0)
+	end
+end
+function c29002023.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		Duel.RegisterFlagEffect(0,29002023,RESET_PHASE+PHASE_END,0,1)
+		tc=eg:GetNext()
+	end
 end
 function c29002023.op0(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(24,0,aux.Stringid(29002023,0))
@@ -54,7 +72,7 @@ function c29002023.damcon(e)
 end
 function c29002023.ovfilter(c)
 	local tp=c:GetControler()
-	local x=Duel.GetActivityCount(tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SPSUMMON)
+	local x=Duel.GetFlagEffect(0,29002023)
 	return c:IsFaceup() and x>=12 and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))  
 end 
 function c29002023.xyzop(e,tp,chk)

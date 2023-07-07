@@ -1,7 +1,6 @@
 --救祓少女·斯塔米罗
 --21.12.31
-local m=11451644
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,cm.matfilter,1,1)
@@ -32,6 +31,21 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
+	if cm.global_check==nil then
+		cm.global_check=true
+		local _SpecialSummon=Duel.SpecialSummon
+		local _SpecialSummonStep=Duel.SpecialSummonStep
+		function Duel.SpecialSummon(tg,...)
+			tg:KeepAlive()
+			cm[1]=tg
+			return _SpecialSummon(tg,...)
+		end
+		function Duel.SpecialSummonStep(tg,...)
+			tg:KeepAlive()
+			cm[1]=tg
+			return _SpecialSummonStep(tg,...)
+		end
+	end
 end
 function cm.matfilter(c)
 	return c:IsLinkSetCard(0x172) and not c:IsLinkType(TYPE_LINK)
@@ -41,13 +55,16 @@ function cm.costcon(e)
 	if Duel.GetFieldGroupCount(tp,0,LOCATION_GRAVE)==0 then return false end
 	return true
 end
+function cm.tdfilter(c)
+	return c:IsAbleToDeckOrExtraAsCost() and not (cm[1] and aux.GetValueType(cm[1])=="Group" and cm[1]:IsContains(c))
+end
 function cm.costchk(e,te_or_c,tp)
 	local p=e:GetHandlerPlayer()
 	if p==tp then
 		return true
 	elseif cm[0] and (cm[0]:IsStatus(STATUS_SPSUMMON_STEP) or cm[0]:IsStatus(STATUS_SUMMONING)) then
 		return true
-	elseif Duel.IsExistingMatchingCard(Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE,0,1,te_or_c) then
+	elseif Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,te_or_c) then
 		e:SetLabelObject(te_or_c)
 		cm[0]=nil
 		return true
@@ -60,7 +77,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	if cm[0] then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE,0,1,1,tc)
+	local sg=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,1,1,tc)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	cm[0]=tc
 end

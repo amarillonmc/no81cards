@@ -37,7 +37,7 @@ function cm.spfilter(c,e,tp)
 	return c:IsRace(RACE_MACHINE) and c:IsLevel(10) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.fselect(g,tp)
-	return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g,tp) and g:GetClassCount(Card.GetAttribute)==#g
+	return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g,tp)
 end
 function cm.xyzfilter(c,g,tp)
 	return c:IsRace(RACE_MACHINE) and c:IsXyzSummonable(g,#g,#g) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0
@@ -51,7 +51,10 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
 		if #g==0 then return false end
 		ft=math.min(g:GetClassCount(Card.GetAttribute),ft)
-		return g:CheckSubGroup(cm.fselect,1,ft,tp)
+		aux.GCheckAdditional=aux.dabcheck
+		local res=g:CheckSubGroup(cm.fselect,1,ft,tp)
+		aux.GCheckAdditional=nil
+		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
@@ -65,9 +68,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=ag:Filter(cm.spfilter,nil,e,tp)
 	if #g==0 then return false end
 	ft=math.min(g:GetClassCount(Card.GetAttribute),ft)
+	aux.GCheckAdditional=aux.dabcheck
 	if g:CheckSubGroup(cm.fselect,1,ft,tp) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:SelectSubGroup(tp,cm.fselect,false,1,ft,tp)
+		aux.GCheckAdditional=nil
 		if not sg then return end
 		for tc in aux.Next(sg) do
 			Duel.DisableShuffleCheck()
@@ -87,7 +92,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if #og>0 then
 			Duel.BreakEffect()
 			Duel.DisableShuffleCheck()
-			if Duel.SendtoHand(ag-og,1-tp,REASON_EFFECT) then Duel.ShuffleHand(1-tp) end
+			if Duel.SendtoHand(ag-og,1-tp,REASON_EFFECT)>0 then Duel.ShuffleHand(1-tp) end
 			if og:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)==#sg then
 				local tg=Duel.GetMatchingGroup(cm.xyzfilter,tp,LOCATION_EXTRA,0,nil,og,tp)
 				if #tg>0 then
@@ -98,6 +103,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	else
+		aux.GCheckAdditional=nil
 		Duel.ShuffleDeck(tp)
 	end
 end

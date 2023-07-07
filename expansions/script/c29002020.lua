@@ -19,34 +19,52 @@ function c29002020.initial_effect(c)
 	e2:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e2:SetValue(c29002020.splimit)
 	c:RegisterEffect(e2) 
-	--immune
+	--indes
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_IMMUNE_EFFECT)
+	e3:SetDescription(aux.Stringid(29002020,1))
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetValue(c29002020.efilter)
-	c:RegisterEffect(e3)  
-end 
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCountLimit(1)
+	e3:SetTarget(c29002020.itarget)
+	e3:SetOperation(c29002020.ioperation)
+	c:RegisterEffect(e3)
+	if not c29002020.global_check then
+		c29002020.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(c29002020.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge2,0)
+	end
+end
+function c29002020.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		Duel.RegisterFlagEffect(0,29002020,RESET_PHASE+PHASE_END,0,1)
+		tc=eg:GetNext()
+	end
+end
 function c29002020.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
-end
-function c29002020.hspfilter(c,ft,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
-		and (ft>0 or c:IsControler(tp)) and (c:IsControler(tp) or c:IsFaceup())
 end
 function c29002020.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetReleaseGroup(tp)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local x=Duel.GetActivityCount(tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SUMMON)+Duel.GetActivityCount(1-tp,ACTIVITY_SPSUMMON)
-	return x>=12 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.CheckReleaseGroup(tp,c29002020.mfilter,3,nil,ft,tp)
+	local x=Duel.GetFlagEffect(0,29002020)
+	return x>=12 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and (Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x10ae,3,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x10ae,2,REASON_COST)))
 end
 function c29002020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local g=Duel.SelectReleaseGroup(tp,c29002020.mfilter,3,3,nil,ft,tp)
-	Duel.Release(g,REASON_RULE)
+	if Duel.GetFlagEffect(tp,29096814)==1 then
+	Duel.ResetFlagEffect(tp,29096814)
+	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
+	else
+	Duel.RemoveCounter(tp,1,0,0x10ae,3,REASON_RULE)
+	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -54,6 +72,28 @@ function c29002020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	e1:SetTargetRange(1,0) 
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+end
+function c29002020.itarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return true end
+end
+function c29002020.ioperation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e2=Effect.CreateEffect(c) 
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_IMMUNE_EFFECT)
+	e2:SetValue(c29002020.efilter)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetReset(RESET_PHASE+PHASE_END) 
+	e2:SetOwnerPlayer(tp) 
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c) 
+	e3:SetDescription(aux.Stringid(29002020,2))
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(29002020)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e3:SetTargetRange(1,0)
+	Duel.RegisterEffect(e3,tp)
 end
 function c29002020.efilter(e,te)
 	if te:GetOwnerPlayer()==e:GetHandlerPlayer() then return false end

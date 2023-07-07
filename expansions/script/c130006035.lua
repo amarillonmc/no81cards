@@ -56,8 +56,7 @@ function s.mixop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		local c = e:GetHandler()
 		if cct >= 3 then 
-			if c:IsRelateToChain(0) and Duel.GetLocationCount(tp,LOCATION_MZONE) > 0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and
-				Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) > 0 then
+			if c:IsRelateToChain(0) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) > 0 then
 				Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT,nil)
 			end
 		end
