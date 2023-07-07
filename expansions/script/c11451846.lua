@@ -47,6 +47,7 @@ function cm.initial_effect(c)
 	e6:SetCode(EVENT_FREE_CHAIN)
 	e6:SetRange(LOCATION_MZONE)
 	e6:SetHintTiming(0x11e0)
+	--e6:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e6:SetCost(cm.cost)
 	e6:SetTarget(cm.target)
 	e6:SetOperation(cm.operation)
@@ -77,7 +78,7 @@ end
 function cm.filter(c,tp)
 	return c:IsSetCard(0x6f) and c:IsType(TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not c:IsType(TYPE_CONTINUOUS)) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect():IsActivatable(tp)) or c:IsAbleToHand())
 end
-function cm.costfilter(c)
+function cm.costfilter(c,tp)
 	return c:IsSetCard(0x6f) and c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,c,tp)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -85,9 +86,9 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	return true
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(cm.costfilter,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetMatchingGroup(cm.costfilter,tp,LOCATION_DECK,0,nil,tp)
 	if e:GetHandler():IsType(TYPE_XYZ) then
-		local g2=e:GetHandler():GetOverlayGroup():Filter(cm.costfilter,nil)
+		local g2=e:GetHandler():GetOverlayGroup():Filter(cm.costfilter,nil,tp)
 		g:Merge(g2)
 	end
 	if chk==0 then
