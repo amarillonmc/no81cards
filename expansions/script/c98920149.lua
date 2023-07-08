@@ -19,7 +19,7 @@ function c98920149.atkfilter1(c)
 	return c:IsAttribute(ATTRIBUTE_WATER) and c:GetAttack()>0
 end
 function c98920149.afilter(c,e,tp)
-	return c:IsSetCard(0x8e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsSetCard(0x8e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c98920149.cfilter(c,e,tp)
 	return c:IsFaceup() and c:IsLevelAbove(1) and c:IsSetCard(0x8e)

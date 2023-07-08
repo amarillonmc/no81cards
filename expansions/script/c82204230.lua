@@ -15,8 +15,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)  
 end
 cm.SetCard_01_YeRen=true 
+function cm.isYeRen(code)
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_YeRen
+end
 function cm.tdfilter(c)  
-	return c.SetCard_01_YeRen and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()  
+	return cm.isYeRen(c:GetCode()) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()  
 end  
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_REMOVED,0,1,nil) end

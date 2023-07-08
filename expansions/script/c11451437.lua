@@ -1,6 +1,5 @@
 --波动武士·紫外光剑
-local m=11451437
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--spsummon condition
@@ -97,6 +96,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_REMOVED,0,1,2,nil)
 	if #g>0 then
+		g:ForEach(Card.SetStatus,STATUS_TO_HAND_WITHOUT_CONFIRM,true)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		local num=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_HAND)
 		if num>0 then

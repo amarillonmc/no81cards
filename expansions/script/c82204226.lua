@@ -35,6 +35,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 cm.SetCard_01_YeRen=true 
+function cm.isYeRen(code)
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_YeRen
+end
 function cm.splimit(e,se,sp,st)  
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)  
 end  
@@ -62,7 +66,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
  
 function cm.thfilter(c)  
-	return c.SetCard_01_YeRen and not c:IsCode(m) and c:IsAbleToHand()
+	return cm.isYeRen(c:GetCode()) and not c:IsCode(m) and c:IsAbleToHand()
 end  
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and cm.thfilter(chkc) end  

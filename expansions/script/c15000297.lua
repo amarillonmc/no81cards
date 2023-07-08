@@ -56,7 +56,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
 		Duel.BreakEffect()
-		if tc:IsStatus(STATUS_DISABLED) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		if tc:IsStatus(STATUS_DISABLED) and c:GetOverlayGroup() and c:GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0xdd) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			local ag=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,tc:GetCode())
 			if ag:GetCount()~=0 then
 				Duel.Destroy(ag,REASON_EFFECT)

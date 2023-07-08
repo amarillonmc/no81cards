@@ -1,6 +1,5 @@
 --波动武士·伽马射线武装
-local m=11451439
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--spsummon condition
@@ -149,6 +148,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_REMOVED,0,num,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local sg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_REMOVED,0,num,num,nil)
+		sg:ForEach(Card.SetStatus,STATUS_TO_HAND_WITHOUT_CONFIRM,true)
 		Duel.SendtoHand(sg,tp,REASON_EFFECT)
 	end
 end
