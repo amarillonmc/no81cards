@@ -9,7 +9,7 @@ end
 function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,cm.mfilter,3,2)
-	c:EnableReviveLimit()	 
+	c:EnableReviveLimit()	
 	--tograve
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -53,6 +53,9 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetCondition(cm.spcon2)
 	c:RegisterEffect(e5) 
+end
+function cm.mfilter(c)
+	return cm.AuroraBattlePrincess(c)
 end
 function cm.xccon1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetFlagEffect(m)>0 and not Duel.IsPlayerAffectedByEffect(tp,40009707)

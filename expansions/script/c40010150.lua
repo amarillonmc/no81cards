@@ -36,7 +36,7 @@ function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter1,tp,0,LOCATION_MZONE,5,nil)
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)>1 
+	return Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)>0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)
