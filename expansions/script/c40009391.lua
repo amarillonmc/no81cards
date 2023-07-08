@@ -47,7 +47,7 @@ function c40009391.syntg(e,syncard,f,min,max)
 	local lv=syncard:GetLevel()
 	if lv<=c:GetLevel() then return false end
 	local g=Group.FromCards(c)
-	local mg=Duel.GetMatchingGroup(c40009391.synfilter1,syncard:GetControler(),LOCATION_MZONE,LOCATION_MZONE,c,syncard,c,f)
+	local mg=Duel.GetMatchingGroup(c40009391.synfilter1,syncard:GetControler(),LOCATION_MZONE,0,c,syncard,c,f)
 	if syncard:IsSetCard(0xd9) then
 		local exg=Duel.GetMatchingGroup(c40009391.synfilter2,syncard:GetControler(),LOCATION_DECK+LOCATION_MZONE,0,c,syncard,c,f)
 		mg:Merge(exg)
@@ -60,7 +60,7 @@ function c40009391.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)
 	local c=e:GetHandler()
 	local lv=syncard:GetLevel()
 	local g=Group.FromCards(c)
-	local mg=Duel.GetMatchingGroup(c40009391.synfilter1,syncard:GetControler(),LOCATION_MZONE,LOCATION_MZONE,c,syncard,c,f)
+	local mg=Duel.GetMatchingGroup(c40009391.synfilter1,syncard:GetControler(),LOCATION_MZONE,0,c,syncard,c,f)
 	if syncard:IsSetCard(0xd9) then
 		local exg=Duel.GetMatchingGroup(c40009391.synfilter2,syncard:GetControler(),LOCATION_DECK+LOCATION_MZONE,0,c,syncard,c,f)
 		mg:Merge(exg)
