@@ -74,6 +74,7 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetReset(RESET_EVENT+RESETS_REDIRECT)
 		e4:SetRange(LOCATION_SZONE)
 		e4:SetOperation(cm.ccost)
+		e4:SetReset(RESET_EVENT+RESETS_REDIRECT)
 		c:RegisterEffect(e4)
 	end
 end
