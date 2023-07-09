@@ -31,11 +31,11 @@ function c71401003.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	yume.RegButterflyCostLimit(e,tp)
 end
-function c71401003.filter2(c)
+function c71401003.filter2(c,tp)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsAttribute(ATTRIBUTE_LIGHT) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and (c:IsAbleToHand() or not c:IsForbidden() and c:CheckUniqueOnField(tp))
 end
 function c71401003.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71401003.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c71401003.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c71401003.filter2a(c)
@@ -43,7 +43,7 @@ function c71401003.filter2a(c)
 end
 function c71401003.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c71401003.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c71401003.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
 		local b1=tc:IsAbleToHand()

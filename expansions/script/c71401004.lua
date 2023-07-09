@@ -37,7 +37,7 @@ function c71401004.initial_effect(c)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetCountLimit(1,71501004)
 	e2:SetCondition(c71401004.con2)
-	e2:SetCost(c71401004.cost2)
+	e2:SetCost(yume.ButterflyLimitCost)
 	e2:SetTarget(c71401004.tg2)
 	e2:SetOperation(c71401004.op2)
 	c:RegisterEffect(e2)
@@ -70,10 +70,6 @@ function c71401004.op1(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
-end
-function c71401004.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
-	yume.RegButterflyCostLimit(e,tp)
 end
 function c71401004.con2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

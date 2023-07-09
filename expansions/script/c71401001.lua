@@ -24,7 +24,7 @@ function c71401001.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,71501001)
-	e2:SetCost(c71401001.cost2)
+	e2:SetCost(yume.ButterflyLimitCost)
 	e2:SetTarget(c71401001.tg2)
 	e2:SetOperation(c71401001.op2)
 	c:RegisterEffect(e2)
@@ -62,10 +62,6 @@ function c71401001.rmtg(e,c)
 end
 function c71401001.filter2ext(c)
 	return c:IsFaceup() and c:IsType(TYPE_CONTINUOUS)
-end
-function c71401001.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
-	yume.RegButterflyCostLimit(e,tp)
 end
 function c71401001.filter2(c,e,tp,check)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsLevel(4)
@@ -132,7 +128,7 @@ function yume.AddButterflySpell(c,id)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetCountLimit(1,id)
-	e1:SetCost(yume.ButterflyPlaceCost)
+	e1:SetCost(yume.ButterflyLimitCost)
 	e1:SetTarget(yume.ButterflyPlaceTg)
 	e1:SetOperation(yume.ButterflySpellOp)
 	c:RegisterEffect(e1)
@@ -140,7 +136,7 @@ end
 function yume.ButterflyPlaceTg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and e:GetHandler():CheckUniqueOnField(tp) end
 end
-function yume.ButterflyPlaceCost(e,tp,eg,ep,ev,re,r,rp,chk)
+function yume.ButterflyLimitCost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
 	yume.RegButterflyCostLimit(e,tp)
 end
@@ -163,7 +159,7 @@ function yume.AddButterflyTrap(c,id)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetCountLimit(1,id)
-	e1:SetCost(yume.ButterflyPlaceCost)
+	e1:SetCost(yume.ButterflyLimitCost)
 	e1:SetTarget(yume.ButterflyPlaceTg)
 	e1:SetOperation(yume.ButterflyTrapOp)
 	c:RegisterEffect(e1)
