@@ -23,7 +23,7 @@ function c71401007.initial_effect(c)
 	e2:SetCode(EVENT_REMOVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,71501007)
-	e2:SetCost(c71401007.cost2)
+	e2:SetCost(yume.ButterflyLimitCost)
 	e2:SetTarget(c71401007.tg2)
 	e2:SetOperation(c71401007.op2)
 	c:RegisterEffect(e2)
@@ -48,10 +48,6 @@ function c71401007.op1(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
-end
-function c71401007.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
-	yume.RegButterflyCostLimit(e,tp)
 end
 function c71401007.filter2ext(c)
 	return c:IsFaceup() and c:IsType(TYPE_CONTINUOUS)
