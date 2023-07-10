@@ -63,7 +63,7 @@ function c71401012.op2(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsExistingMatchingCard(c71401012.filter2a,tp,LOCATION_ONFIELD,0,1,nil) and og:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401012,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-			local oc=og:Select(tp,1,1,nil)
+			local oc=og:Select(tp,1,1,nil):GetFirst()
 			if oc then
 				local b1=oc:IsAbleToHand()
 				local b2=not oc:IsForbidden() and oc:CheckUniqueOnField(tp)
