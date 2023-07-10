@@ -67,7 +67,7 @@ function cm.tnop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.efilter(e,te)
 	if not te:IsActivated() then return false end
-	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
+	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	return g and g:IsContains(e:GetHandler())
 end

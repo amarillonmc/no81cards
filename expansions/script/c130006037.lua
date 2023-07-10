@@ -18,6 +18,7 @@ function s.mixtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1 = (c:IsOnField() or c:IsPublic()) and c:GetFlagEffect(id) < s.get_count(LOCATION_GRAVE)
 	local b2 = c:IsLocation(LOCATION_HAND) and c:GetFlagEffect(id + 100) == 0 and cct > 1
 	if chk == 0 then return b1 or b2 end
+	b2 =  c:IsLocation(LOCATION_HAND) and c:GetFlagEffect(id + 100) == 0  and cct > 2
 	--local op = b1 and 1 or 2
 	--if b1 and b2 then 
 		--op = Scl.SelectOption(tp, true, "Damage", true, {id, 0})

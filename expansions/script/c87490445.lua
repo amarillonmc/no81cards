@@ -61,7 +61,7 @@ function c87490445.sxxtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetChainLimit(c87490445.chlimit)
 end
 function c87490445.chlimit(e,ep,tp)
-	return tp==ep
+	return tp==ep or not e:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function c87490445.sxxop2(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local c=e:GetHandler()   

@@ -47,6 +47,5 @@ function cm.accon(e,tp)
 	return e:GetHandler():GetFlagEffect(m) > 0
 end
 function cm.aclimit(e,re,tp)
-	local loc=re:GetActivateLocation()
-	return not loc==LOCATION_ONFIELD 
+	return not re:GetHandler():IsLocation(LOCATION_ONFIELD)
 end
