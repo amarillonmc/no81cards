@@ -71,18 +71,19 @@ function cm.ffilter(c,fc,sub,mg,sg)
 end
 
 function cm.getfusionfilter(c,tp,tc)
-	return c:IsPosition(POS_FACEDOWN) and c:IsAbleToDeckOrExtraAsCost() and c:IsSetCard(0x628) and Duel.GetLocationCountFromEx(tp,tp,c,tc)>0
+	return c:IsPosition(POS_FACEDOWN) and c:IsAbleToDeckAsCost() and c:IsSetCard(0x628) and Duel.GetLocationCountFromEx(tp,tp,c,tc)>0
 end
 
 function cm.sprcon(e,c)
 	if c==nil then return true end
-	local tp=c:GetControler()
+	local c=e:GetHandler()
+	local tp=e:GetHandler():GetControler()
 	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_ONFIELD,0,nil,tp,c)
 	return g:GetCount()>0
 end
 
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_ONFIELD,0,nil,tp,c)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local tc=g:Select(tp,1,1,nil)

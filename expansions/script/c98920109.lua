@@ -39,7 +39,7 @@ function c98920109.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c98920109.mfilter(c)
-	return not c:IsLinkType(TYPE_LINK) and c:IsLinkSetCard(0x129)
+	return not c:IsLinkType(TYPE_LINK) and c:IsLinkRace(RACE_FIEND)
 end
 function c98920109.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
