@@ -18,7 +18,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_MZONE,0,nil)
 	for tc in aux.Next(g) do
-		tc:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1)
+		tc:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000,0,1)
 		local ct=tc:GetFlagEffect(m)
 		local le={tc:GetActivateEffect()}
 		for i,v in pairs(le) do
@@ -45,7 +45,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetLabel(ct)
 			e2:SetLabelObject(e1)
 			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e2)
 		end
 	end

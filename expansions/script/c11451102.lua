@@ -21,7 +21,6 @@ function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 		c:SetHint(CHINT_CARD,ac)
 		c:RegisterFlagEffect(m+ac,RESET_EVENT+RESETS_STANDARD,0,1)
 		if c:GetFlagEffect(m)==0 then
-			Debug.Message("112")
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetRange(LOCATION_MZONE)
