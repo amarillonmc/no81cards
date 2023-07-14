@@ -220,8 +220,8 @@ function cm.filter7(c)
 end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
-	if not g:IsExists(cm.filter6,1,nil) then
-		g:DeleteGroup()
+	if not (g and aux.GetValueType(g)=="Group") or not g:IsExists(cm.filter6,1,nil) then
+		if aux.GetValueType(g)=="Group" then g:DeleteGroup() end
 		e:Reset()
 		return false
 	else return true end
@@ -235,8 +235,8 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retcon2(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
-	if g and not g:IsExists(cm.filter7,1,nil) then
-		g:DeleteGroup()
+	if not (g and aux.GetValueType(g)=="Group") or not g:IsExists(cm.filter7,1,nil) then
+		if aux.GetValueType(g)=="Group" then g:DeleteGroup() end
 		e:Reset()
 		return false
 	else return true end

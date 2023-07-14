@@ -59,7 +59,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_GRAVE,0,10,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,tp,15)
 end

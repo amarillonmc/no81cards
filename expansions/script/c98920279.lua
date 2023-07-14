@@ -169,7 +169,13 @@ function c98920279.synop(e,tp,eg,ep,ev,re,r,rp,c,tuner,mg)
 	g:DeleteGroup()
 end
 function c98920279.valcheck(e,c)
-	local ct=e:GetHandler():GetMaterial():GetClassCount(Card.GetType)
+	local ct=0
+	local g=c:GetMaterial()
+	for i,type in ipairs({TYPE_FUSION,TYPE_RITUAL,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK}) do
+		if g:IsExists(Card.IsType,1,nil,type) then
+			ct=ct+1
+		end
+	end
 	e:GetLabelObject():SetLabel(ct)
 end
 function c98920279.con(e,tp,eg,ep,ev,re,r,rp)

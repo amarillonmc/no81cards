@@ -31,8 +31,8 @@ function cm.tgop(e,tp)
 	rsop.SelectOperate("tg",tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	local loc = Duel.GetOperationInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return Duel.IsChainNegatable(ev) and re:IsActiveType(TYPE_MONSTER) and (re:IsHasCategory(CATEGORY_DESTROY) or re:IsHasCategory(CATEGORY_REMOVE)) and loc & LOCATION_ONFIELD ~= 0
+	local loc = Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	return Duel.IsChainNegatable(ev) and (re:IsHasCategory(CATEGORY_DESTROY) or re:IsHasCategory(CATEGORY_REMOVE)) and loc & LOCATION_ONFIELD ~= 0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
