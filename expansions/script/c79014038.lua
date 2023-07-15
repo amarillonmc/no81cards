@@ -39,12 +39,17 @@ end
 function c79014038.sthfil(c) 
 	return c:IsAbleToHandAsCost() and c:IsType(TYPE_SPIRIT) 
 end 
+function c79014038.sthgck(g,tp) 
+	return Duel.GetMZoneCount(tp,g)>0  
+end 
 function c79014038.ttcon(e,c,minc)
 	if c==nil then return true end 
+	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(c79014038.sthfil,tp,LOCATION_MZONE,0,nil)
 	return g:CheckSubGroup(c79014038.sthgck,3,3,tp)
 end
 function c79014038.ttop(e,tp,eg,ep,ev,re,r,rp,c)
+	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(c79014038.sthfil,tp,LOCATION_MZONE,0,nil)
 	local sg=g:SelectSubGroup(tp,c79014038.sthgck,false,3,3,tp)
 	Duel.SendtoHand(sg,nil,REASON_SUMMON+REASON_MATERIAL)
@@ -75,14 +80,14 @@ function c79014038.pbfil(c)
 end  
 function c79014038.atkcost(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return Duel.IsExistingMatchingCard(c79014038.pbfil,tp,LOCATION_HAND,0,1,nil) end
-	local g=Duel.SelectMatchingCard(tp,c79014038.pbfil,tp,LOCATION_HAND,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c79014038.pbfil,tp,LOCATION_HAND,0,1,99,nil)
 	Duel.ConfirmCards(1-tp,g)  
 	e:SetLabel(g:GetCount())
 end
 function c79014038.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	local x=e:GetLabel()  
-	if x>0 and Duel.Recover(tp,x*500,REASON_EFFECT)~=0 and c:IsRelateToBattle() and c:IsFaceup() then		 
+	if x>0 and Duel.Recover(tp,x*500,REASON_EFFECT)~=0 and c:IsRelateToBattle() and c:IsFaceup() then	  
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
