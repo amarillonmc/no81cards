@@ -52,19 +52,19 @@ end
 function c29002020.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
+function c29002020.cfilter(c,tp)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and (c:IsControler(tp) or c:IsFaceup())
+end
 function c29002020.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local x=Duel.GetFlagEffect(0,29002020)
-	return x>=12 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and (Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x10ae,3,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x10ae,2,REASON_COST)))
+	return x>=12 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.CheckReleaseGroup(tp,c29002020.cfilter,3,nil)
 end
 function c29002020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	if Duel.GetFlagEffect(tp,29096814)==1 then
-	Duel.ResetFlagEffect(tp,29096814)
-	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
-	else
-	Duel.RemoveCounter(tp,1,0,0x10ae,3,REASON_RULE)
-	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectReleaseGroup(tp,c29002020.cfilter,3,3,nil)
+	Duel.Release(g,REASON_COST)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
