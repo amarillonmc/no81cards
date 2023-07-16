@@ -43,7 +43,7 @@ function c34500350.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c34500350.thfilter(c)
-	return c:IsSetCard(0x345) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0xacf) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c34500350.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c34500350.thfilter,tp,LOCATION_DECK,0,1,nil) end
