@@ -16,7 +16,7 @@ function c9911076.cfilter(c)
 end
 function c9911076.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and aux.NegateAnyFilter(chkc) end
-	local ct=Duel.GetMatchingGroupCount(c9911076.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	local ct=Duel.GetMatchingGroup(c9911076.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil):GetClassCount(Card.GetCode)
 	if chk==0 then return ct>0 and Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,ct,nil)
