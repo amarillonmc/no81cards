@@ -7,7 +7,6 @@ function c9910681.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,9910681)
 	e1:SetCondition(c9910681.condition)
-	e1:SetCost(c9910681.cost)
 	e1:SetTarget(c9910681.target)
 	e1:SetOperation(c9910681.activate)
 	c:RegisterEffect(e1)
@@ -29,15 +28,6 @@ end
 function c9910681.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9910681.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 		and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
-end
-function c9910681.costfilter(c)
-	return c:IsSetCard(0xc954) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
-end
-function c9910681.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910681.costfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9910681.costfilter,tp,LOCATION_DECK,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9910681.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -67,16 +57,22 @@ function c9910681.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910681.rmfilter(c)
-	return c:IsSetCard(0xc954) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
+	return (c:IsCode(9910681) or c:IsSetCard(0xc954)) and c:IsAbleToRemove()
+end
+function c9910681.fselect(g)
+	return aux.gffcheck(g,Card.IsCode,9910681,Card.IsSetCard,0xc954)
 end
 function c9910681.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910681.rmfilter,tp,LOCATION_DECK,0,1,nil) end
+	local g=Duel.GetMatchingGroup(c9910681.rmfilter,tp,LOCATION_DECK,0,nil)
+	if chk==0 then return g:CheckSubGroup(c9910681.fselect,2,2) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
 function c9910681.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9910681.rmfilter,tp,LOCATION_DECK,0,nil)
+	if not g:CheckSubGroup(c9910681.fselect,2,2) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910681.rmfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	local sg=g:SelectSubGroup(tp,c9910681.fselect,false,2,2)
+	if sg:GetCount()>0 then
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
 end

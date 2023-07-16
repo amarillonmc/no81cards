@@ -1,7 +1,7 @@
 --星海航线 混元天尊
 function c11560707.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,9,3) 
+	aux.AddXyzProcedure(c,nil,9,2) 
 	c:EnableReviveLimit() 
 	--actlimit  
 	local e0=Effect.CreateEffect(c)
@@ -21,7 +21,7 @@ function c11560707.initial_effect(c)
 	c:RegisterEffect(e0)   
 	--to deck 
 	local e1=Effect.CreateEffect(c) 
-	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS) 
 	e1:SetProperty(EFFECT_FLAG_DELAY) 
@@ -33,20 +33,65 @@ function c11560707.initial_effect(c)
 	local e2=Effect.CreateEffect(c) 
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
 	e2:SetCode(EVENT_LEAVE_FIELD) 
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET) 
-	e2:SetCountLimit(1,21560707+EFFECT_COUNT_CODE_DUEL)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP) 
+	e2:SetCountLimit(1,21560707)
+	e2:SetLabel(0)
+	e2:SetCondition(function(e) 
+	return e:GetLabel()==0 end)
 	e2:SetTarget(c11560707.cptg) 
 	e2:SetOperation(c11560707.cpop)  
 	c:RegisterEffect(e2)
-	--destroy replace
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EFFECT_DESTROY_REPLACE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,31560707+EFFECT_COUNT_CODE_DUEL)
-	e3:SetTarget(c11560707.reptg)
+	local e3=Effect.CreateEffect(c) 
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS) 
+	e3:SetCode(EVENT_LEAVE_FIELD_P)  
+	e3:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetLabelObject(e2) 
+	e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)  
+	local c=e:GetHandler() 
+	local te=e:GetLabelObject() 
+	if te==nil then return end 
+	if c:GetOverlayCount()>0 then 
+	te:SetLabel(1)
+	else
+	te:SetLabel(0) 
+	end end)  
 	c:RegisterEffect(e3) 
+	--destroy replace
+	--local e3=Effect.CreateEffect(c)
+	--e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	--e3:SetCode(EFFECT_DESTROY_REPLACE)
+	--e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	--e3:SetRange(LOCATION_MZONE)
+	--e3:SetCountLimit(1,31560707+EFFECT_COUNT_CODE_DUEL)
+	--e3:SetTarget(c11560707.reptg)
+	--c:RegisterEffect(e3) 
+	--SpecialSummon 
+	local e3=Effect.CreateEffect(c) 
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)  
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F) 
+	e3:SetCode(EVENT_LEAVE_FIELD) 
+	e3:SetCountLimit(1,31560707)  
+	e3:SetLabel(0)
+	e3:SetCondition(function(e) 
+	return e:GetLabel()~=0 end)
+	e3:SetTarget(c11560707.sptg) 
+	e3:SetOperation(c11560707.spop) 
+	c:RegisterEffect(e3) 
+	local e4=Effect.CreateEffect(c) 
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS) 
+	e4:SetCode(EVENT_LEAVE_FIELD_P)  
+	e4:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetLabelObject(e3) 
+	e4:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)  
+	local c=e:GetHandler() 
+	local te=e:GetLabelObject() 
+	if te==nil then return end 
+	if c:GetOverlayCount()>0 then 
+	te:SetLabel(1)
+	else
+	te:SetLabel(0) 
+	end end)  
+	c:RegisterEffect(e4) 
 	--0  
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
@@ -85,7 +130,7 @@ function c11560707.initial_effect(c)
 	e4:SetOperation(c11560707.rcop)
 	c:RegisterEffect(e4)
 end 
-c11560707.toss_coin=true
+--c11560707.toss_coin=true
 c11560707.SetCard_SR_Saier=true
 function c11560707.actop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetHandler()==e:GetHandler() then
@@ -97,24 +142,22 @@ function c11560707.chainlm(e,rp,tp)
 end
 function c11560707.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
-	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,1-tp,LOCATION_ONFIELD)
 end 
 function c11560707.tdop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local x=Duel.TossCoin(tp,1) 
-	if x==1 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) then 
-	local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil) 
-	Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) 
+	if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) then 
+		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil) 
+		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) 
 	end 
 end 
 function c11560707.cptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_MZONE,0,1,nil) end 
-	Duel.SelectTarget(tp,nil,tp,LOCATION_MZONE,0,1,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,0,1,nil) end  
 end 
 function c11560707.cpop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local tc=Duel.GetFirstTarget() 
-	if tc:IsRelateToEffect(e) then 
+	local tc=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+	if tc then  
 		local code=c:GetOriginalCodeRule()
 		local cid=0
 		local e1=Effect.CreateEffect(c)
@@ -142,6 +185,18 @@ function c11560707.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		return true
 	else return false end
 end
+function c11560707.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetLabel()~=0 end 
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0) 
+end 
+function c11560707.spop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler() 
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11560707,0)) then 
+		Duel.BreakEffect() 
+		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil) 
+		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) 
+	end 
+end 
 function c11560707.rccon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and e:GetHandler():GetOverlayCount()>0 
 end 

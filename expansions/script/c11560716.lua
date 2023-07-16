@@ -1,7 +1,7 @@
 --星海航线 万兽之王·猛虎王
 function c11560716.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,3,3)
+	aux.AddXyzProcedure(c,nil,3,2)
 	c:EnableReviveLimit() 
 	--coin
 	local e1=Effect.CreateEffect(c) 
@@ -29,6 +29,15 @@ function c11560716.initial_effect(c)
 	e3:SetCondition(function(e) 
 	return e:GetHandler():GetDefense()>e:GetHandler():GetBaseAttack() end)
 	c:RegisterEffect(e3)
+	--atk limit
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetTargetRange(0,LOCATION_MZONE)
+	e4:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET) 
+	e4:SetValue(function(e,c)
+	return c~=e:GetHandler() end)
+	c:RegisterEffect(e4)
 end
 c11560716.SetCard_SR_Saier=true  
 c11560716.toss_coin=true

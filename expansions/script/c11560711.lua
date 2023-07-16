@@ -1,7 +1,7 @@
 --星海航线 圣光灵神
 function c11560711.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,5,3) 
+	aux.AddXyzProcedure(c,nil,5,2) 
 	c:EnableReviveLimit()  
 	--atk up
 	local e1=Effect.CreateEffect(c)
@@ -16,7 +16,7 @@ function c11560711.initial_effect(c)
 	c:RegisterEffect(e1) 
 	--Destroy
 	local e2=Effect.CreateEffect(c) 
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_BATTLED)
 	e2:SetCountLimit(1,21560711) 
@@ -31,6 +31,8 @@ function c11560711.initial_effect(c)
 	e3:SetCode(EVENT_LEAVE_FIELD) 
 	e3:SetCountLimit(1,31560711)  
 	e3:SetLabel(0)
+	e3:SetCondition(function(e) 
+	return e:GetLabel()~=0 end)
 	e3:SetTarget(c11560711.sptg) 
 	e3:SetOperation(c11560711.spop) 
 	c:RegisterEffect(e3) 
@@ -84,13 +86,13 @@ function c11560711.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
 	local g=Group.FromCards(c,bc) 
 	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end
 function c11560711.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	local dg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e) 
 	if dg:GetCount()>0 then 
-	Duel.Destroy(dg,REASON_EFFECT) 
+		Duel.Remove(dg,POS_FACEUP,REASON_EFFECT) 
 	end 
 end 
 function c11560711.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

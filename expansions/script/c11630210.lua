@@ -16,12 +16,12 @@ end
 cm.SetCard_xxj_Mirror=true 
 --
 function cm.copyfilter(c)
-	return c:IsFaceup() and c:IsLevelAbove(1)-- and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0,TYPES_EFFECT_TRAP_MONSTER,c:GetAttack(),c:GetDefense(),c:GetLevel(),c:GetRace(),c:GetAttribute(),POS_FACEUP)
+	return c:IsFaceup()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.copyfilter(chkc) and chkc~=c end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,0,1,nil) end --
+	if chk==0 then return Duel.IsExistingTarget(cm.copyfilter,tp,LOCATION_MZONE,0,1,nil) end --
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,cm.copyfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
@@ -49,7 +49,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.BreakEffect()
 	--if not Duel.IsPlayerCanSpecialSummonMonster(tp,code,0,TYPES_EFFECT_TRAP_MONSTER,atk,def,lv,race,att,POS_FACEUP)  then return end 
 	
-	if (c:IsCanBeSpecialSummoned(e,0,tp,true,true) or Duel.IsPlayerCanSpecialSummonMonster(tp,code,0,TYPES_EFFECT_TRAP_MONSTER,atk,def,lv,race,att,POS_FACEUP) ) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	if (c:IsCanBeSpecialSummoned(e,0,tp,true,true) or Duel.IsPlayerCanSpecialSummonMonster(tp,code,0,TYPES_EFFECT_TRAP_MONSTER,atk,def,lv,race,att,POS_FACEUP) ) and tc:IsLevelAbove(1)  and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		c:AddMonsterAttribute(TYPE_NORMAL) 
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)

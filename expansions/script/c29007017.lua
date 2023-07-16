@@ -18,6 +18,7 @@ function c29007017.initial_effect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,29007017)
 	e2:SetTarget(c29007017.thtg)
 	e2:SetOperation(c29007017.thop)
 	c:RegisterEffect(e2)
@@ -41,18 +42,18 @@ function c29007017.ovfilter(c)
 	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) 
 end
 function c29007017.xyzop(e,tp,chk)
-	if chk==0 then return (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST))) and Duel.GetFlagEffect(tp,29065542)==0 end
+	if chk==0 then return (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST))) and Duel.GetFlagEffect(tp,29007017)==0 end
 	if Duel.GetFlagEffect(tp,29096814)==1 then
 	Duel.ResetFlagEffect(tp,29096814)
 	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_RULE)
-	Duel.RegisterFlagEffect(tp,29065542,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	Duel.RegisterFlagEffect(tp,29007017,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	else
 	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
-	Duel.RegisterFlagEffect(tp,29065542,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	Duel.RegisterFlagEffect(tp,29007017,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	end
 end
 function c29007017.tgfilter(c,e,tp,check)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x87af) and c:IsType(TYPE_MONSTER)
 		and (c:IsAbleToHand() or check and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
 function c29007017.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -1,7 +1,7 @@
 --星海航线 弑序神罗
 function c11560705.initial_effect(c) 
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,11,3) 
+	aux.AddXyzProcedure(c,nil,11,2) 
 	c:EnableReviveLimit()  
 	--dis 
 	local e1=Effect.CreateEffect(c)  
@@ -17,7 +17,9 @@ function c11560705.initial_effect(c)
 	--
 	local e2=Effect.CreateEffect(c) 
 	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY) 
-	e2:SetType(EFFECT_TYPE_IGNITION) 
+	e2:SetType(EFFECT_TYPE_QUICK_O) 
+	e2:SetCode(EVENT_FREE_CHAIN) 
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER) 
 	e2:SetRange(LOCATION_MZONE) 
 	e2:SetCountLimit(1) 
 	e2:SetLabel(1)  

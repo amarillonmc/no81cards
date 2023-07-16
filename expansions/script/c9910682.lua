@@ -75,6 +75,7 @@ function c9910682.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910682.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9910682.thfilter,tp,LOCATION_DECK,0,nil)
+	if not g:CheckSubGroup(c9910682.fselect,2,2) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg=g:SelectSubGroup(tp,c9910682.fselect,false,2,2)
 	if sg:GetCount()>0 then

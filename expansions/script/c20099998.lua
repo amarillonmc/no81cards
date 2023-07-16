@@ -30,9 +30,6 @@ function fucf.Not(c,val)
 	end
 	return false
 end
-fucf.TgChk = Card.IsCanBeEffectTarget
-fucf.GChk = function(c)return not c:IsHasEffect(EFFECT_NECRO_VALLEY) end
-fucf.IsImm = Card.IsImmuneToEffect
 function fucf.IsSet(c,set)
 	if type(set) == "number" then return c:IsSetCard(set) end
 	for _,Set in ipairs(fusf.CutString(set,"/")) do
@@ -51,52 +48,26 @@ function fucf.AbleTo(c,loc)
 	}
 	local iscos = string.sub(loc,1,1) == "*"
 	if iscos then loc = string.sub(loc,2) end
-	func = "IsAbleTo"..func[loc]
-	if iscos then func = func.."AsCost" end
-	return Card[func](c)
+	return Card["IsAbleTo"..func[loc]..(iscos and "AsCost" or "")](c)
 end
 function fucf.CanSp(c,e,typ,tp,nochk,nolimit,pos,totp,zone)
 	return c:IsCanBeSpecialSummoned(e, typ, tp, nochk or false, nolimit or false, pos or POS_FACEUP, totp or tp,zone or 0xff)
 end
-function fucf.IsCod(c,cod)
-	if type(cod) == "string" then cod = tonumber(cod) end
-	return c:IsCode(cod)
-end
-function fucf.IsLoc(c,loc)
-	return c:IsLocation(fusf.Loc(loc))
-end
-function fucf.CheckConstantValue(func,chktable)
-	return function(c,cons)
-		if cons and type(cons) ~= "string" then return func(c,cons) end
-		local Cons, tStack = fusf.PostFix_Trans(cons), { }
-		local CalL, CalR
-		for _,val in ipairs(Cons) do
-			if string.match(val, "[%-%~]") then
-				tStack[#tStack] = not tStack[#tStack]
-			elseif string.match(val, "[%+%/]") then
-				CalR = table.remove(tStack)
-				CalL = table.remove(tStack)
-				local tCal = {
-					["+"] = CalL and CalR,
-					["/"] = CalL or CalR
-				}
-				table.insert(tStack, tCal[val])
-			else
-				table.insert(tStack, func(c,chktable[string.upper(val)]))
-			end
-		end
-		return tStack[#tStack]
-	end
-end
-fucf.IsRea = fucf.CheckConstantValue(function(c,v) return c:IsReason(v) end,fucg.rea)
-fucf.IsTyp = fucf.CheckConstantValue(function(c,v) return c:GetType()&v==v end,fucg.typ)
-fucf.IsAtt = fucf.CheckConstantValue(function(c,v) return c:GetAttribute()&v==v end,fucg.att)
-fucf.IsRac = fucf.CheckConstantValue(function(c,v) return c:GetRace()&v==v end,fucg.rac)
-fucf.IsPos = fucf.CheckConstantValue(function(c,v) return c:IsPosition(v) end,fucg.pos)
+fucf.TgChk = Card.IsCanBeEffectTarget
+fucf.GChk = function(c) return not c:IsHasEffect(EFFECT_NECRO_VALLEY) end
+fucf.IsImm = Card.IsImmuneToEffect
+fucf.IsCon = Card.IsControler
+fucf.IsPCon = Card.IsPreviousControler
+fucf.IsLoc = function(c,loc) return c:IsLocation(fusf.Loc(loc)) end
+fucf.IsPLoc = function(c,loc) return c:IsPreviousLocation(fusf.Loc(loc)) end
+fucf.IsCod = function(c,cod) return c:IsCode(type(cod) == "string" and tonumber(cod) or cod) end
+fucf.IsRea = fusf.Check_Constant(function(c,v) return c:IsReason(v) end,fucg.rea)
+fucf.IsTyp = fusf.Check_Constant(function(c,v) return c:GetType()&v==v end,fucg.typ)
+fucf.IsAtt = fusf.Check_Constant(function(c,v) return c:GetAttribute()&v==v end,fucg.att)
+fucf.IsRac = fusf.Check_Constant(function(c,v) return c:GetRace()&v==v end,fucg.rac)
+fucf.IsPos = fusf.Check_Constant(function(c,v) return c:IsPosition(v) end,fucg.pos)
+fucf.IsPPos = fusf.Check_Constant(function(c,v) return c:IsPreviousPosition(v) end,fucg.pos)
 --------------------------------------"Group function"
-function fugf.Get(p,loc)
-	return Duel.GetFieldGroup(p,fusf.Loc(loc))
-end
 function fugf.Filter(g,f,v,n)
 	local func, tStack, index = { }, { }, 1
 	v = type(v) == "table" and v or { v }
@@ -110,8 +81,7 @@ function fugf.Filter(g,f,v,n)
 		local CalL, CalR
 		for _,val in ipairs(func) do
 			if val == "~" then
-				CalR = g - table.remove(tStack)
-				table.insert(tStack, CalR)
+				tStack[#tStack] = g - tStack[#tStack]
 			elseif type(val) == "string" and #val == 1 then
 				CalR = table.remove(tStack)
 				CalL = table.remove(tStack)
@@ -133,15 +103,11 @@ function fugf.Filter(g,f,v,n)
 	if n then return #g>=n end
 	return g
 end
-function fugf.GetFilter(p,loc,f,v,n)
-	return fugf.Filter(fugf.Get(p,loc),f,v,n)
-end
-function fugf.SelectFilter(p,loc,f,v,c,min,max,sp)
-	min=min or 1
-	return fugf.GetFilter(p,loc,f,v):Select(sp or p,min,max or min,c)
-end
-function fugf.SelectTg(p,loc,f,v,c,min,max,sp)
-	local g=fugf.SelectFilter(p,loc,f,v,c,min,max,sp)
+fugf.Get = function(tp,loc) return Duel.GetFieldGroup(tp,fusf.Loc(loc)) end
+fugf.GetFilter = function(tp,loc,f,v,n) return fugf.Filter(fugf.Get(tp,loc),f,v,n) end
+fugf.SelectFilter = function(tp,loc,f,v,c,min,max,sp) return fugf.GetFilter(tp,loc,f,v):Select(sp or tp,min,max or min or 1,c) end
+function fugf.SelectTg(tp,loc,f,v,c,min,max,sp)
+	local g=fugf.SelectFilter(tp,loc,f,v,c,min,max,sp)
 	Duel.SetTargetCard(g)
 	return g
 end

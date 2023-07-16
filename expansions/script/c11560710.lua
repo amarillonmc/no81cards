@@ -1,7 +1,7 @@
 --星海航线 重生之翼
 function c11560710.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,6,3) 
+	aux.AddXyzProcedure(c,nil,6,2) 
 	c:EnableReviveLimit()   
 	--battle indes
 	local e1=Effect.CreateEffect(c)
@@ -113,9 +113,27 @@ function c11560710.initial_effect(c)
 	e9:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F) 
 	e9:SetCode(EVENT_LEAVE_FIELD) 
 	e9:SetProperty(EFFECT_FLAG_DELAY) 
+	e9:SetLabel(0) 
+	e9:SetCondition(function(e) 
+	return e:GetLabel()~=0 end)
 	e9:SetTarget(c11560710.sptg) 
 	e9:SetOperation(c11560710.spop) 
 	c:RegisterEffect(e9)
+	local e10=Effect.CreateEffect(c) 
+	e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS) 
+	e10:SetCode(EVENT_LEAVE_FIELD_P)  
+	e10:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e10:SetLabelObject(e9) 
+	e10:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)  
+	local c=e:GetHandler() 
+	local te=e:GetLabelObject() 
+	if te==nil then return end 
+	if c:GetOverlayCount()>0 then 
+	te:SetLabel(1)
+	else
+	te:SetLabel(0) 
+	end end)  
+	c:RegisterEffect(e10) 
 end
 c11560710.SetCard_SR_Saier=true 
 function c11560710.effcon(e) 
@@ -135,12 +153,12 @@ function c11560710.exop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChainAttack()  
 end 
 function c11560710.ovtg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and e:GetHandler():GetFlagEffect(11560710)==0 end 
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler()) and e:GetHandler():GetFlagEffect(11560710)==0 end 
 	e:GetHandler():RegisterFlagEffect(11560710,RESET_CHAIN,0,1)  
 end 
 function c11560710.ovop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil) 
+	local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,e:GetHandler()) 
 	if c:IsRelateToEffect(e) and g:GetCount()>0 then 
 	local og=g:Select(tp,1,1,nil) 
 	Duel.Overlay(c,og) 

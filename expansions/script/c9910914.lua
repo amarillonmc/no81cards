@@ -79,6 +79,7 @@ function c9910914.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910914.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9910914.setfilter,tp,LOCATION_DECK,0,nil,e,tp)
+	if not g:CheckSubGroup(c9910914.fselect,2,2,tp) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local sg=g:SelectSubGroup(tp,c9910914.fselect,false,2,2,tp)
 	if #sg==0 then return end

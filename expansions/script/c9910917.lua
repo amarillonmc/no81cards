@@ -62,19 +62,25 @@ function c9910917.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c9910917.negcon(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and ep~=tp
-		and loc==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp
+		and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
 end
-function c9910917.tdfilter(c)
+function c9910917.tdfilter1(c,tp)
+	return c:IsFaceup() and c:IsCode(9910917) and c:IsAbleToDeck()
+		and Duel.IsExistingTarget(c9910917.tdfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,1,c)
+end
+function c9910917.tdfilter2(c)
 	return c:IsFaceup() and c:IsSetCard(0xc954) and c:IsAbleToDeck()
 end
 function c9910917.negtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_REMOVED) and chkc:IsControler(tp) and c9910917.tdfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9910917.tdfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,2,nil) end
+	if chkc then return false end
+	if chk==0 then return Duel.IsExistingTarget(c9910917.tdfilter1,tp,LOCATION_MZONE+LOCATION_REMOVED,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c9910917.tdfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,2,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
+	local g1=Duel.SelectTarget(tp,c9910917.tdfilter1,tp,LOCATION_MZONE+LOCATION_REMOVED,0,1,1,nil,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g2=Duel.SelectTarget(tp,c9910917.tdfilter2,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,1,1,g1:GetFirst())
+	g1:Merge(g2)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g1,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)

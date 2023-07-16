@@ -1,4 +1,4 @@
---火焰纹章if·卡米拉
+--妖艳之花 卡米拉
 local m=75000705
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -60,7 +60,7 @@ function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,e:GetOwnerPlayer())
 end
 function cm.splimit(e,c)
-	return not c:IsSetCard(0x95e)
+	return c:IsSetCard(0x000)
 end
 --Effect 2
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -103,3 +103,4 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 end
 --Effect 4 
 --Effect 5  
+

@@ -4,10 +4,18 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,5))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCost(cm.accost)
 	e1:SetOperation(cm.activate)
+	c:RegisterEffect(e1)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,6))
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW+CATEGORY_TOGRAVE)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
 	--return
 	local e2=Effect.CreateEffect(c)
@@ -28,15 +36,17 @@ function cm.initial_effect(c)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
 end
+function cm.accost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x625,1,REASON_COST) end
+	Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x625,1,REASON_COST)
+end
 function cm.filter1(c)
 	return c:IsLevelBelow(4) and c:IsRace(RACE_SPELLCASTER) and c:IsAbleToHand()
 end
-function cm.filter1(c)
+function cm.filter2(c)
 	return c:IsLevelAbove(7) and c:IsRace(RACE_FAIRY) and c:IsAbleToGrave()
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x625,1,REASON_EFFECT)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x625,1,REASON_EFFECT)
 		local op=0
 		op=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2),aux.Stringid(m,3))
 		if op==0 then
@@ -55,7 +65,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				Duel.SendtoGrave(g,REASON_EFFECT)
 			end
 		end
-	end
 end
 function cm.rtcon(e,tp,eg,ep,ev,re,r,rp)
 	local at=Duel.GetAttacker()
@@ -69,11 +78,21 @@ function cm.rtop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		dmg=400
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	e1:SetValue(atk)
-	tc:RegisterEffect(e1)
-	tc=g:GetNext()
+	local g1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
+	local tc=g1:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(dmg)
+		tc:RegisterEffect(e1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_DEFENSE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(dmg)
+		tc:RegisterEffect(e1)
+		tc=g1:GetNext()
+	end
 end

@@ -1,4 +1,4 @@
---火焰纹章if·里昂
+--切入的魔导龙骑士 卡米拉
 local m=75000712
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -198,21 +198,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-end
-function cm.splimit(e,c)
-	return not c:IsSetCard(0750)
 end
 --Effect 2
 function cm.reccon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and eg:GetFirst():IsControler(tp) and eg:GetFirst():IsSetCard(0x95e)
+	return ep~=tp and eg:GetFirst():IsControler(tp) and eg:GetFirst():IsSetCard(0x750)
 end
 function cm.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

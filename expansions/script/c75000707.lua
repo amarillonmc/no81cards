@@ -1,4 +1,4 @@
---火焰纹章if·艾丽泽
+--清纯之花 爱丽丝
 local m=75000707
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x95e))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xe75))
 	e2:SetValue(500)
 	c:RegisterEffect(e2)
 end
@@ -50,7 +50,7 @@ function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,e:GetOwnerPlayer())
 end
 function cm.splimit(e,c)
-	return not c:IsSetCard(0x750)
+	return c:IsSetCard(0x000)
 end
 --Effect 2
 function cm.tf(c)

@@ -47,7 +47,7 @@ function cm.initial_effect(c)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
-	return Duel.GetFlagEffect(tp,60002148)>=4
+	return Duel.GetFlagEffect(tp,m)>=4
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() and Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x625,1,REASON_COST) end
@@ -55,7 +55,6 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x625,1,REASON_COST)
 end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Draw(tp,1,REASON_EFFECT)
 	Duel.Damage(1-tp,500,REASON_EFFECT)
 	Duel.Recover(tp,500,REASON_EFFECT)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1000)
@@ -97,8 +96,8 @@ function cm.ovcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function cm.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand() and c:GetFlagEffect(m+10000000)==0 end
-	c:RegisterFlagEffect(m+10000000,RESET_CHAIN,0,1)
+	if chk==0 then return e:GetHandler():IsAbleToHand() and Duel.GetFlagEffect(tp,m+10000000)==0 end
+	Duel.RegisterFlagEffect(tp,m+10000000,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
 function cm.ovop(e,tp,eg,ep,ev,re,r,rp)

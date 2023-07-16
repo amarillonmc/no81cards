@@ -4348,3 +4348,87 @@ function cm.DressamSPStep(tc,tp,tgp,pos,z)
 	end
 	return Duel.SpecialSummonStep(tc,0,tp,tgp,false,false,pos,zone)
 end
+function cm.Ranclock(c,cat,att1,op,att2)
+	aux.AddCodeList(c,53763001)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(53763001,2))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY+cat)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCondition(cm.Ranclockspcon1)
+	e1:SetTarget(cm.Ranclocksptg1)
+	e1:SetOperation(cm.Ranclockspop1(att1,op))
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(53763001,3))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_DESTROYED)
+	e2:SetCondition(cm.Ranclockspcon2)
+	e2:SetTarget(cm.Ranclocksptg2)
+	e2:SetOperation(cm.Ranclockspop2(att2))
+	c:RegisterEffect(e2)
+	return e1,e2
+end
+function cm.Ranclockspcon1(e,tp,eg,ep,ev,re,r,rp)
+	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and ((aux.exccon(e) or e:GetHandler():IsPreviousLocation(LOCATION_HAND)) or e:GetHandler():IsLocation(LOCATION_HAND))
+end
+function cm.Ranclockdfilter(c)
+	return c:IsFaceupEx() and c:IsRace(RACE_FIEND) and c:IsLevelAbove(7)
+end
+function cm.Ranclocksptg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.Ranclockdfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,c) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
+end
+function cm.Ranclockspop1(att1,op)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+		local c=e:GetHandler()
+		if c:IsRelateToEffect(e) and Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_LEVEL)
+			e1:SetValue(1)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+			c:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+			e2:SetValue(att1)
+			c:RegisterEffect(e2)
+			Duel.SpecialSummonComplete()
+			op(e,tp,eg,ep,ev,re,r,rp)
+		end
+	end
+end
+function cm.Ranclockspcon2(e,tp,eg,ep,ev,re,r,rp)
+	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0
+end
+function cm.Ranclockspfilter(c,e,tp)
+	return c:IsCode(53763001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.Ranclocksptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.Ranclockspfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+end
+function cm.Ranclockspop2(att2)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.Ranclockspfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+		if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+			e1:SetValue(att2)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			Duel.SpecialSummonComplete()
+		end
+	end
+end

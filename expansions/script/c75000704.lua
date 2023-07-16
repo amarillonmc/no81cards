@@ -1,90 +1,78 @@
---火焰纹章if·神威
+--慈悲之翼 樱
 local m=75000704
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--Effect 1
-	local e01=Effect.CreateEffect(c)
-	e01:SetType(EFFECT_TYPE_SINGLE)
-	e01:SetCode(EFFECT_UPDATE_ATTACK)
-	e01:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e01:SetRange(LOCATION_MZONE)
-	e01:SetValue(cm.atkval)
-	c:RegisterEffect(e01)
+	local e02=Effect.CreateEffect(c)  
+	e02:SetDescription(aux.Stringid(m,0))
+	e02:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e02:SetType(EFFECT_TYPE_IGNITION)
+	e02:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e02:SetRange(LOCATION_HAND)
+	e02:SetCountLimit(1,m)
+	e02:SetCost(cm.spcost)
+	e02:SetTarget(cm.sptg)
+	e02:SetOperation(cm.spop)
+	c:RegisterEffect(e02)   
 	--Effect 2  
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.thtg)
-	e1:SetOperation(cm.thop)
-	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_RECOVER)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(cm.con)
+	e2:SetTarget(cm.tg)
+	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
-	--Effect 3 
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,0))
-	e4:SetCategory(CATEGORY_CONTROL)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e4:SetCode(EVENT_BATTLE_START)
-	e4:SetCondition(cm.descon)
-	e4:SetTarget(cm.destg)
-	e4:SetOperation(cm.desop)
-	c:RegisterEffect(e4)
 end
 --Effect 1
-function cm.f(c)
-	local b1=c:IsSetCard(0x750)
-	local b2=c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)
-	local b3=c:IsLocation(LOCATION_MZONE) or (c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_GRAVE))
-	return b1 and b2 and b3
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsDiscardable() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
-function cm.atkval(e,c)
-	local ct=Duel.GetMatchingGroupCount(cm.f,e:GetHandlerPlayer(),LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,nil)
-	return ct*500
+function cm.spfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x750)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.spfilter(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(cm.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,cm.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) 
+		and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1,true)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2,true)
+	end
 end
 --Effect 2
-function cm.thfilter(c)
-	return not c:IsCode(m) and c:IsSetCard(0750) and c:IsAbleToHand()
-end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-end
-function cm.splimit(e,c)
-	return not c:IsSetCard(0x750)
-end
---Effect 3 
-function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local bc=c:GetBattleTarget()
-	return bc and bc:GetOwner()==e:GetHandlerPlayer()
+	local rc=re:GetHandler()
+	return re:IsActiveType(TYPE_MONSTER) and rc:IsSetCard(0x750) and rc~=c
 end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_CONTROL,e:GetHandler():GetBattleTarget(),1,0,0)
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(200)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,200)
 end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local bc=e:GetHandler():GetBattleTarget()
-	if bc:IsRelateToBattle() then
-		Duel.GetControl(bc,e:GetHandlerPlayer())
-	end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Recover(p,d,REASON_EFFECT)
 end

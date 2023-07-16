@@ -7,6 +7,7 @@ function cm.Diablotherhood(c)
 	return m and m.named_with_Diablotherhood
 end
 function cm.initial_effect(c)
+	c:SetUniqueOnField(1,0,m)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_FIEND),2)
 	c:EnableReviveLimit()

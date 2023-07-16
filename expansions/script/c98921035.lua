@@ -1,0 +1,160 @@
+--彼岸的祝福者 圣彼得
+function c98921035.initial_effect(c)
+	--material
+	c:EnableReviveLimit()
+	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xb1),3,true)
+	--spsummon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.fuslimit)
+	c:RegisterEffect(e1)
+	--spsummon
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
+	e2:SetRange(LOCATION_EXTRA)
+	e2:SetCondition(c98921035.hspcon)
+	e2:SetOperation(c98921035.hspop)
+	c:RegisterEffect(e2)
+	--tohand
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(98921035,0))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_RECOVER)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetTarget(c98921035.thtg)
+	e3:SetOperation(c98921035.thop)
+	c:RegisterEffect(e3)
+	--bless
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
+	e4:SetHintTiming(TIMING_DAMAGE_STEP,TIMING_DAMAGE_STEP+TIMINGS_CHECK_MONSTER)
+	e4:SetCountLimit(1)
+	e4:SetCondition(aux.dscon)
+	e4:SetCost(c98921035.atkcost)
+	e4:SetTarget(c98921035.atktg)
+	e4:SetOperation(c98921035.atkop)
+	c:RegisterEffect(e4)
+	 --damage
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(98921035,1))
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e5:SetCode(EVENT_TO_GRAVE)
+	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e5:SetCondition(c98921035.damcon)
+	e5:SetOperation(c98921035.damop)
+	c:RegisterEffect(e5)
+end
+function c98921035.hspfilter(c,tp,sc)
+	return c:IsFusionSetCard(0xb1) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsControler(tp) and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) and c:IsAbleToGrave()
+end
+function c98921035.hspcon(e,c)
+	if c==nil then return true end
+	return Duel.IsExistingMatchingCard(c98921035.hspfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+		and Duel.IsExistingMatchingCard(c98921035.hspfilter,tp,LOCATION_MZONE,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c98921035.hspfilter,tp,LOCATION_DECK,0,1,nil,e,tp)
+end
+function c98921035.hspop(e,tp,eg,ep,ev,re,r,rp,c)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g1=Duel.SelectMatchingCard(tp,c98921035.hspfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g2=Duel.SelectMatchingCard(tp,c98921035.hspfilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g3=Duel.SelectMatchingCard(tp,c98921035.hspfilter,tp,LOCATION_DECK,0,1,1,nil)
+	g1:Merge(g2)
+	g1:Merge(g3)
+	c:SetMaterial(g1)
+	Duel.SendtoGrave(g1,REASON_COST)
+end
+function c98921035.thfilter(c,tp)
+	return c:IsSetCard(0xb1) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+function c98921035.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c98921035.thfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c98921035.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local sg=Duel.SelectTarget(tp,c98921035.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,sg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,sg:GetFirst():GetAttack())
+end
+function c98921035.thop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT) and tc:IsLocation(LOCATION_HAND) then
+		Duel.Recover(tp,tc:GetAttack(),REASON_EFFECT)
+	end
+end
+function c98921035.cfilter(c)
+	return c:IsSetCard(0xb1) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+end
+function c98921035.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c98921035.cfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c98921035.cfilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
+	e:SetLabelObject(g:GetFirst())
+end
+function c98921035.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and chkc:IsFaceup() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+end
+function c98921035.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() then	 
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetCode(EFFECT_UNRELEASABLE_SUM)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetValue(1)
+		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+		tc:RegisterEffect(e2)
+		local e4=e1:Clone()
+		e4:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+		tc:RegisterEffect(e4)
+		local e5=e1:Clone()
+		e5:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+		tc:RegisterEffect(e5)
+		local e6=e1:Clone()
+		e6:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+		tc:RegisterEffect(e6)
+		local e7=Effect.CreateEffect(e:GetHandler())
+		e7:SetType(EFFECT_TYPE_SINGLE)
+		e7:SetCode(EFFECT_IMMUNE_EFFECT)
+		e7:SetValue(c98921035.efilter)
+		e7:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e7)
+	end
+end
+function c98921035.efilter(e,re)
+	return e:GetHandler()~=re:GetOwner() and re:GetOwner()~=e:GetOwner()
+end
+function c98921035.damcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+end
+function c98921035.damop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CHANGE_DAMAGE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(0)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+end

@@ -1,7 +1,7 @@
 --星海航线 至序圣华
 function c11560704.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,12,3) 
+	aux.AddXyzProcedure(c,nil,12,2) 
 	c:EnableReviveLimit()  
 	--sb 
 	local e1=Effect.CreateEffect(c)   
@@ -10,7 +10,9 @@ function c11560704.initial_effect(c)
 	e1:SetCode(EVENT_LEAVE_FIELD)  
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetCountLimit(1,11560704+EFFECT_COUNT_CODE_DUEL)   
-	e1:SetLabel(0)
+	e1:SetLabel(0) 
+	e1:SetCondition(function(e) 
+	return e:GetLabel()~=0 end)
 	e1:SetTarget(c11560704.sbtg) 
 	e1:SetOperation(c11560704.sbop) 
 	c:RegisterEffect(e1) 
@@ -32,8 +34,9 @@ function c11560704.initial_effect(c)
 	--disable 
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DISABLE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_ATTACK_ANNOUNCE) 
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_PHASE+PHASE_BATTLE_START) 
+	e2:SetRange(LOCATION_MZONE) 
 	e2:SetCountLimit(1,21560704) 
 	e2:SetCost(c11560704.discost)
 	e2:SetTarget(c11560704.distg)
@@ -125,36 +128,36 @@ function c11560704.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST) 
 end 
 function c11560704.distg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end 
-	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0) 
+	if chk==0 then return true end 
 end 
 function c11560704.disop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
-	if g:GetCount()>0 then  
-	local tc=g:GetFirst() 
-	while tc do 
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE)
-		tc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		tc:RegisterEffect(e2)
-		if tc:IsType(TYPE_TRAPMONSTER) then
-			local e3=e1:Clone()
-			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-			tc:RegisterEffect(e3)
-		end
-	tc=g:GetNext() 
-	end 
-	end 
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,1)
+	e1:SetValue(c11560704.aclimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetLabel(c:GetFieldID())
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_DISABLE)
+	e2:SetTargetRange(0,LOCATION_ONFIELD)
+	e2:SetTarget(c11560704.disable)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	e2:SetLabel(c:GetFieldID())
+	Duel.RegisterEffect(e2,tp)
+	c:RegisterFlagEffect(11560704,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1,c:GetFieldID())
 end 
+function c11560704.aclimit(e,re,tp)
+	local rc=re:GetHandler()
+	return rc:IsControler(1-tp) and rc:IsOnField() and rc:GetFlagEffectLabel(11560704)~=e:GetLabel()
+end
+function c11560704.disable(e,c)
+	return c:GetFlagEffectLabel(11560704)~=e:GetLabel() and (not c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_EFFECT) or bit.band(c:GetOriginalType(),TYPE_EFFECT)==TYPE_EFFECT))
+end
 function c11560704.datg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end  
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)

@@ -24,9 +24,9 @@ function cm.initial_effect(c)
 	local e03=e01:Clone()
 	e03:SetCode(EFFECT_FLIPSUMMON_COST)
 	c:RegisterEffect(e03)
-	local e04=e02:Clone()
-	e04:SetCode(EFFECT_MSET_COST)
-	c:RegisterEffect(e04)
+	--local e04=e02:Clone()
+	--e04:SetCode(EFFECT_MSET_COST)
+	--c:RegisterEffect(e04)
 	--spsummon token
 	local e05=Effect.CreateEffect(c)
 	e05:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
@@ -268,9 +268,9 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	--if g:GetCount()>0 then
 	--  local tc=g:GetFirst()
 	--  while tc do
-	--	  Duel.HintSelection(Group.FromCards(tc))
-	--	  Duel.CalculateDamage(tc,ac,true)
-	--	  tc=g:GetNext()
+	--	Duel.HintSelection(Group.FromCards(tc))
+	--	Duel.CalculateDamage(tc,ac,true)
+	--	tc=g:GetNext()
 	--  end
 	--end
 	if g:GetCount()>0 then

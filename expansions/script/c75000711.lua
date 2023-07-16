@@ -1,4 +1,4 @@
---火焰纹章if·马库斯
+--闪驱的暗影圣骑士 马库斯
 local m=75000711
 local cm=_G["c"..m]
 function cm.initial_effect(c)

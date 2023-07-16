@@ -1,4 +1,4 @@
---火焰纹章if·龙马
+--至尊绝世的剑圣 龙马
 local m=75000709
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -55,7 +55,7 @@ end
 --synchro summon
 function cm.f(c,tp,tc)
 	local b1=c:IsFaceup() and cm.SynchroMaterial(c)
-	local b2=c:IsControler(1-tp) and (c:IsSetCard(0x750) or c:IsHasEffect(EFFECT_SYNCHRO_MATERIAL))
+	local b2=c:IsControler(1-tp) and (c:IsSetCard(0xe75) or c:IsHasEffect(EFFECT_SYNCHRO_MATERIAL))
 	return c:IsLevelAbove(1) and b1 and (c:IsControler(tp) or b2)
 end
 function cm.f1(c)

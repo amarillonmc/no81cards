@@ -37,15 +37,28 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.DiscardHand(1-tp,nil,1,1,REASON_DISCARD+REASON_EFFECT,nil)
 		Duel.NegateEffect(ev)
 	elseif not ac and bc then
-		local op=re:GetOperation() or (function() end)
+		local op0=re:GetOperation() or (function() end)
 		local op2=function(e,tp,eg,ep,ev,re,r,rp)
-					e:SetOperation(op)
-					op(e,tp,eg,ep,ev,re,r,rp)
+					e:SetOperation(op0)
+					op0(e,tp,eg,ep,ev,re,r,rp)
 					local ct=6-Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 					if ct>0 then
 						Duel.Draw(tp,ct,REASON_EFFECT)
 					end
 				end
 		re:SetOperation(op2)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetCode(EVENT_CHAIN_SOLVED)
+		e1:SetCountLimit(1)
+		e1:SetLabel(ev)
+		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==e:GetLabel() end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) re:SetOperation(op0) end)
+		e1:SetReset(RESET_CHAIN)
+		Duel.RegisterEffect(e1,tp)
+		local e2=e1:Clone()
+		e2:SetCode(EVENT_CHAIN_NEGATED)
+		Duel.RegisterEffect(e2,tp)
 	end
 end

@@ -23,8 +23,11 @@ function c29065521.initial_effect(c)
 	e2:SetOperation(c29065521.ctop)
 	c:RegisterEffect(e2)
 end
+function c29065521.cfilter(c)
+	return c:IsFacedown() or not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+end
 function c29065521.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+	return not Duel.IsExistingMatchingCard(c29065521.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c29065521.spfilter(c,e,tp)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -56,13 +59,14 @@ function c29065521.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if e:GetHandler():IsRelateToEffect(e) then  
 	local n=1 
-	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
-	n=n+1
-	end
+	--if Duel.IsPlayerAffectedByEffect(tp,29065580) then
+	--n=n+1
+	--end
 	e:GetHandler():AddCounter(0x10ae,n)
 	if Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(29065521,0)) then
 	Duel.BreakEffect()
 	local tc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
+		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(29065521,2))
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CANNOT_TRIGGER)

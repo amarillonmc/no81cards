@@ -78,10 +78,11 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		rc:RegisterEffect(e2,true)
 	end
+	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cc=e:GetHandler():GetOverlayCount()
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,cc,REASON_COST) end
+	if chk==0 then return cc>0 and e:GetHandler():CheckRemoveOverlayCard(tp,cc,REASON_COST) end
 	local og=e:GetHandler():GetOverlayGroup()
 	Duel.SendtoGrave(og,REASON_EFFECT)
 	e:SetLabel(cc)

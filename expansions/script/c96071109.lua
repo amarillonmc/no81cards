@@ -1,7 +1,7 @@
 --式神•神雷剑圣 龙马
 local m=96071109
 local set=0xff7
-local set=0x95e
+local set=0x750
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--pendulum summon

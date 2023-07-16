@@ -1,4 +1,4 @@
---火焰纹章if·扩海
+--曲射的疾風隼騎士 日乃香
 local m=75000710
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -71,7 +71,7 @@ function cm.f2(c)
 	return not c:IsSynchroType(TYPE_TUNER)
 end
 function cm.f3(c,tp)
-	return c:IsSetCard(0x750) and c:IsControler(1-tp) and not c:IsHasEffect(EFFECT_SYNCHRO_MATERIAL)
+	return c:IsSetCard(0xe75) and c:IsControler(1-tp) and not c:IsHasEffect(EFFECT_SYNCHRO_MATERIAL)
 end
 function cm.fs(g,tp,tc) 
 	return g:FilterCount(cm.f3,nil,tp)<=1
@@ -130,7 +130,7 @@ end
 function cm.sp(c,e,tp)
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 	local b2=Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)
-	return c:IsSetCard(0x95e) and (b1 or b2)
+	return c:IsSetCard(0x750) and (b1 or b2)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp
@@ -179,3 +179,4 @@ function cm.posop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ChangePosition(tc,POS_FACEUP_DEFENSE)
 	end
 end
+

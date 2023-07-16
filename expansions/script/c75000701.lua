@@ -1,77 +1,79 @@
---火焰纹章if·阿库娅-黑
+--选择纹章士 神威
 local m=75000701
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--Effect 1
 	local e01=Effect.CreateEffect(c)
-	e01:SetDescription(aux.Stringid(m,0))
-	e01:SetType(EFFECT_TYPE_FIELD)
-	e01:SetCode(EFFECT_SPSUMMON_PROC)
-	e01:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SPSUM_PARAM)
-	e01:SetRange(LOCATION_HAND)
-	e01:SetTargetRange(POS_FACEUP,1)
-	e01:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
-	e01:SetCondition(cm.sprcon)
+	e01:SetType(EFFECT_TYPE_SINGLE)
+	e01:SetCode(EFFECT_UPDATE_ATTACK)
+	e01:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e01:SetRange(LOCATION_MZONE)
+	e01:SetValue(cm.atkval)
 	c:RegisterEffect(e01)
-	--Effect 2 
+	--Effect 2  
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_DRAW)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,m+m)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.operation)
-	c:RegisterEffect(e1) 
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCountLimit(1,m)
+	e1:SetTarget(cm.thtg)
+	e1:SetOperation(cm.thop)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2)
 	--Effect 3 
-	local e2=Effect.CreateEffect(c)  
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetTarget(cm.cttg)
-	e2:SetOperation(cm.ctop)
-	c:RegisterEffect(e2) 
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,0))
+	e4:SetCategory(CATEGORY_CONTROL)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e4:SetCode(EVENT_BATTLE_START)
+	e4:SetCondition(cm.descon)
+	e4:SetTarget(cm.destg)
+	e4:SetOperation(cm.desop)
+	c:RegisterEffect(e4)
 end
 --Effect 1
-function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x750)
+function cm.f(c)
+	local b1=c:IsSetCard(0x750,0x751)
+	local b2=c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)
+	local b3=c:IsLocation(LOCATION_MZONE) or (c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_GRAVE))
+	return b1 and b2 and b3
 end
-function cm.sprcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+function cm.atkval(e,c)
+	local ct=Duel.GetMatchingGroupCount(cm.f,e:GetHandlerPlayer(),LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,nil)
+	return ct*500
 end
 --Effect 2
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local p=e:GetHandlerPlayer()
-	Duel.SetTargetPlayer(1-p)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,1)
+function cm.thfilter(c)
+	return not c:IsCode(m) and c:IsSetCard(0x750) and c:IsAbleToHand()
 end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end
 --Effect 3 
-function cm.ctfilter(c,tp)
-	return  c:GetOwner()==tp and c:IsAbleToHand()
+function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local bc=c:GetBattleTarget()
+	return bc and bc:GetOwner()==e:GetHandlerPlayer()
 end
-function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and cm.ctfilter(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(cm.ctfilter,tp,0,LOCATION_MZONE,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,cm.ctfilter,tp,0,LOCATION_MZONE,1,1,nil,tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_CONTROL,e:GetHandler():GetBattleTarget(),1,0,0)
 end
-function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local bc=e:GetHandler():GetBattleTarget()
+	if bc:IsRelateToBattle() then
+		Duel.GetControl(bc,e:GetHandlerPlayer())
 	end
 end

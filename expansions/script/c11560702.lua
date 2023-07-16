@@ -1,7 +1,7 @@
 --星海航线 光之惩戒 伊卡洛斯
 function c11560702.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,c11560702.mfilter,10,5)
+	aux.AddXyzProcedure(c,c11560702.mfilter,10,2)
 	c:EnableReviveLimit() 
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -48,6 +48,14 @@ function c11560702.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F) 
 	e3:SetCode(EVENT_LEAVE_FIELD) 
 	e3:SetLabel(0) 
+	e3:SetCondition(function(e) 
+	local tp=e:GetHandlerPlayer() 
+	if e:GetLabel()==0 then return false end 
+	if c:IsReason(REASON_EFFECT) then 
+	return e:GetHandler():GetReasonPlayer()==1-tp 
+	elseif c:IsReason(REASON_BATTLE) then 
+	return true 
+	else return false end end)
 	e3:SetTarget(c11560702.sptg) 
 	e3:SetOperation(c11560702.spop) 
 	c:RegisterEffect(e3) 
@@ -106,28 +114,42 @@ function c11560702.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function c11560702.spop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then 
-	local e1=Effect.CreateEffect(c) 
-	e1:SetType(EFFECT_TYPE_SINGLE) 
-	e1:SetCode(EFFECT_SET_ATTACK_FINAL) 
-	e1:SetRange(LOCATION_MZONE) 
-	e1:SetValue(c:GetBaseAttack()*2)	
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
-	c:RegisterEffect(e1)   
-	--
-	local e1=Effect.CreateEffect(c) 
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
-	e1:SetCode(EVENT_PHASE+PHASE_BATTLE) 
-	e1:SetRange(LOCATION_MZONE) 
-	e1:SetCountLimit(1)  
-	e1:SetLabel(Duel.GetTurnCount())
-	e1:SetCondition(c11560702.descon) 
-	e1:SetOperation(c11560702.desop) 
-	c:RegisterEffect(e1) 
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then  
+		--
+		local e1=Effect.CreateEffect(c) 
+		e1:SetType(EFFECT_TYPE_SINGLE) 
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL) 
+		e1:SetRange(LOCATION_MZONE) 
+		e1:SetValue(c:GetBaseAttack()*2)		
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
+		c:RegisterEffect(e1)   
+		--
+		local e1=Effect.CreateEffect(c) 
+		e1:SetType(EFFECT_TYPE_SINGLE) 
+		e1:SetCode(EFFECT_IMMUNE_EFFECT) 
+		e1:SetRange(LOCATION_MZONE) 
+		e1:SetValue(function(e,te) 
+		return te:GetOwner()~=e:GetOwner() end)   
+		if Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) then   
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN,2) 
+		else 
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN)  
+		end  
+		c:RegisterEffect(e1)  
+		--
+		local e1=Effect.CreateEffect(c) 
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
+		e1:SetCode(EVENT_PHASE+PHASE_BATTLE) 
+		e1:SetRange(LOCATION_MZONE) 
+		e1:SetCountLimit(1)  
+		e1:SetLabel(Duel.GetTurnCount())
+		e1:SetCondition(c11560702.descon) 
+		e1:SetOperation(c11560702.desop) 
+		c:RegisterEffect(e1) 
 	end 
 end 
 function c11560702.descon(e,tp,eg,ep,ev,re,r,rp)   
-	return Duel.GetTurnPlayer()==tp 
+	return Duel.GetTurnPlayer()==tp and Duel.GetTurnCount()~=e:GetLabel() 
 end  
 function c11560702.desop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 

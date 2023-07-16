@@ -1,6 +1,6 @@
---火焰纹章if 面灵气•锥面百向
+--火焰纹章：选择 面灵气•锥面百向
 local m=96071111
-local set=0x95e
+local set=0x750
 local set=0xff7
 local cm=_G["c"..m]
 function cm.initial_effect(c)
