@@ -47,11 +47,9 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	 local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	if Duel.Draw(p,2,REASON_EFFECT)==2 then
-		Duel.ShuffleHand(tp)
-		Duel.BreakEffect()
-		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
-	end  
+	 Duel.Draw(p,2,REASON_EFFECT)
+	 
+	
 end
 
 function cm.cfilter(c,tp)
