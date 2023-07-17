@@ -2,7 +2,7 @@
 function c98930014.initial_effect(c)
 	--fusion
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,98930014,aux.FilterBoolFunction(Card.IsFusionSetCard,0xad0),4,true,true)
+	aux.AddFusionProcCodeFun(c,98930019,aux.FilterBoolFunction(Card.IsFusionSetCard,0xad0),4,true,true)
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
