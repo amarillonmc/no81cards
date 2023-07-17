@@ -347,18 +347,18 @@ function cm.IsSumReleasable(c,sc)
 	local res=true
 	local le1={c:IsHasEffect(EFFECT_UNRELEASABLE_SUM)}
 	for _,v in pairs(le1) do
-		local val=v:GetValue()
-		if not val or val(v,c) then res=false end
+		local val1=v:GetValue()
+		if not val1 or val1(v,c) then res=false end
 	end
 	local le2={Duel.IsPlayerAffectedByEffect(sc:GetControler(),EFFECT_CANNOT_RELEASE)}
 	for _,v in pairs(le2) do
-		local val=v:GetValue()
-		if not val or val(v,c) then res=false end
+		local val2=v:GetTarget()
+		if not val2 or val2(v,c,sc:GetControler(),sc:GetControler()) then res=false end
 	end
 	local le3={sc:IsHasEffect(EFFECT_TRIBUTE_LIMIT)}
 	for _,v in pairs(le3) do
-		local val=v:GetValue()
-		if not val or val(v,c) then res=false end
+		local val3=v:GetValue()
+		if not val3 or val3(v,c) then res=false end
 	end
 	return res
 end

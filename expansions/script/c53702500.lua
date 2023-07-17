@@ -2662,7 +2662,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			if aux.GetValueType(le)=="Effect" then
 				local e1=Effect.CreateEffect(se:GetOwner())
 				e1:SetType(EFFECT_TYPE_FIELD)
-				e1:SetCode(m)
+				e1:SetCode(53759012)
 				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 				c53759012[1](e1,se)
 				e1:SetTargetRange(1,1)

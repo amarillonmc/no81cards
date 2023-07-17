@@ -15,7 +15,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local tc=Duel.SelectMatchingCard(tp,cm.dfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil):GetFirst()
 	local attr=tc:GetAttribute()
-	if Duel.Destroy(tc,REASON_EFFECT)~=0 and bit.band(attr,ATTRIBUTE_WIND)~=0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) then
+	if Duel.Destroy(tc,REASON_EFFECT)~=0 and bit.band(attr,ATTRIBUTE_WIND)~=0 then
 		Duel.BreakEffect()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -30,12 +30,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_PHASE+PHASE_STANDBY)
 		end
 		e1:SetOperation(cm.thop)
-		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 	end
-end
-function cm.thfilter(c)
-	return c:IsRace(RACE_FIEND) and c:IsAbleToHand()
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
@@ -44,6 +40,7 @@ function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	return cm.thcon(e,tp,eg,ep,ev,re,r,rp) and Duel.GetTurnCount()~=e:GetLabel()
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message(2)
 	if not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then return end
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
