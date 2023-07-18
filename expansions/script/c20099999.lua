@@ -1,7 +1,7 @@
 if fucg then return end
 fucg, fusf = { }, { }
 --------------------------------------"Support function"
-function fusf.CutString(str,cut)
+function fusf.CutString(str,cut,from)
 	str = str..cut
 	local list, index, ch = {}, 1, ""
 	while index <= #str do
@@ -28,9 +28,9 @@ function fusf.DeleteNil(list)
 	end
 	return setlist
 end
-function fusf.Loc(locs,chk)
+function fusf.Loc(locs,chk,from)
 	local Loc = {0,0}
-	for i,l1 in ipairs(fusf.CutString(locs,"+")) do
+	for i,l1 in ipairs(fusf.CutString(locs,"+","fusf.Loc")) do
 		for j = 1,#l1 do
 			local loc = string.sub(l1,j,j)
 			Loc[i] = Loc[i] + fucg.ran[string.upper(loc)]
@@ -55,7 +55,7 @@ end
 function fusf.Func(func)
 	return function(e,val)
 		if not (fusf.NotNil(val) and func) then return end
-		if type(val) == "string" then val = (string.match(val,"%d") and tonumber(val)) or aux["val"] or val end
+		if type(val) == "string" then val = (string.match(val,"%d") and tonumber(val)) or aux[val] or val end
 		Effect["Set"..func](e,val)
 	end
 end
@@ -107,9 +107,9 @@ function fusf.PostFix_Trans(str,val)
 	return tTrans
 end
 function fusf.CutDis(str,dis)
-	if Dis == "" then return fusf.CutString(str,",") end
-	local ch, Dis = "", fusf.CutString(dis,",")
-	for _,S in ipairs(fusf.CutString(str,",")) do
+	if Dis == "" then return fusf.CutString(str,",","CutDis1") end
+	local ch, Dis = "", fusf.CutString(dis,",","CutDis2")
+	for _,S in ipairs(fusf.CutString(str,",","CutDis3")) do
 		for i,D in ipairs(Dis) do
 			if S == D then 
 				table.remove(Dis,i)
@@ -118,14 +118,14 @@ function fusf.CutDis(str,dis)
 		end
 		if S ~= "" then ch = ch..","..S end
 	end
-	return fusf.CutString(string.sub(ch,2),",")
+	return fusf.CutString(string.sub(ch,2),",","CutDis4")
 end
 function fusf.Value_Trans(val)
 	val = type(val) == "table" and val or { val }
 	local var = {}
 	for i,V in ipairs(val) do
 		if type(V) == "string" then
-			for _,ch in ipairs(fusf.CutString(V,",")) do
+			for _,ch in ipairs(fusf.CutString(V,",","Value_Trans")) do
 				if ch == "%" then 
 					ch = table.remove(val, i + 1)
 				elseif ch == "" then
@@ -247,7 +247,7 @@ fucg.pro = {
 	DE  = EFFECT_FLAG_DELAY  ,
 	SR  = EFFECT_FLAG_SINGLE_RANGE   ,
 	HINT  = EFFECT_FLAG_CLIENT_HINT   ,
-	O	= EFFECT_FLAG_OATH   ,
+	O   = EFFECT_FLAG_OATH   ,
 	AR  = EFFECT_FLAG_IGNORE_RANGE   ,
 	IG  = EFFECT_FLAG_IGNORE_IMMUNE   ,
 	CD  = EFFECT_FLAG_CANNOT_DISABLE   ,
@@ -432,7 +432,6 @@ fucg.eff = {
 	OP   = fusf.Func("Operation"),
 	RES  = function(e,...) if #{...}>0 then Effect.SetReset(e,fusf.res({...})) end end,
 	LAB  = Effect.SetLabel,
-	OBJ  = Effect.SetLabelObject,
 }
 function fucg.eff.DES(e,val)
 	if not fusf.NotNil(val) then return end
@@ -449,7 +448,7 @@ function fucg.eff.CAT(e,val)
 	if not fusf.NotNil(val) then return end
 	local cat = type(val) == "string" and 0 or val
 	if type(val) == "string" then
-		for _,V in ipairs(fusf.CutString(val,"+")) do
+		for _,V in ipairs(fusf.CutString(val,"+","CAT")) do
 			cat = cat + fucg.cat[string.upper(V)]
 		end
 	end
@@ -463,7 +462,7 @@ function fucg.eff.PRO(e,val)
 	if not fusf.NotNil(val) then return end
 	local pro = type(val) == "string" and 0 or val
 	if type(val) == "string" then
-		for _,V in ipairs(fusf.CutString(val,"+")) do
+		for _,V in ipairs(fusf.CutString(val,"+","PRO")) do
 			pro = pro + fucg.pro[string.upper(V)]
 		end
 	end
@@ -473,7 +472,7 @@ function fucg.eff.CTL(e,val)
 	if not fusf.NotNil(val) then return end
 	local ctl = {nil,nil,0}
 	if type(val) == "string" then
-		for _,v in ipairs(fusf.CutString(val,"+")) do
+		for _,v in ipairs(fusf.CutString(val,"+","CTL")) do
 			ctl[3] = string.match(v,"[ODS]") and fucg.ctl[v] or ctl[3]
 			ctl[2] = string.match(v,"m") and e:GetOwner():GetOriginalCode() or ctl[2]
 			ctl[1] = string.match(v,"%d") and tonumber(v) or ctl[1]
@@ -487,17 +486,22 @@ function fucg.eff.CTL(e,val)
 		end
 	end
 	if ctl[3] ~= 0 and not ctl[2] then ctl[2] = e:GetOwner():GetOriginalCode() end
-	ctl[2] = ctl[2] + table.remove(ctl)
+	ctl[2] = (ctl[2] or 0) + table.remove(ctl)
 	ctl[1] = ctl[1] or 1
 	e:SetCountLimit(table.unpack(ctl))
 end
 function fucg.eff.RAN(e,val)
 	if not fusf.NotNil(val) then return end
-	e:SetRange(fusf.Loc(val))
+	e:SetRange(fusf.Loc(val,nil,"RAN"))
 end
 function fucg.eff.TRAN(e,val)
 	if not fusf.NotNil(val) then return end
-	e:SetTargetRange(fusf.Loc(val))
+	e:SetTargetRange(fusf.Loc(val,nil,"TRAN"))
+end
+function fucg.eff.OBJ(e,val)
+	if not fusf.NotNil(val) then return end
+	if type(val) == "table" then val = val[1] end
+	e:SetLabelObject(val)
 end
 function fucg.eff.CLO(e)
 	if not fusf.NotNil(e) then return end
