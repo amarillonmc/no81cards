@@ -49,7 +49,7 @@ function cm.efilter(e,te)
 end
 function cm.atcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return Duel.GetAttacker()==c and c:IsChainAttackable(0)
+	return Duel.GetAttacker()==c and c:IsChainAttackable(0) and e:GetHandler():GetOverlayCount()>0
 end
 function cm.atcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=e:GetHandler():GetOverlayGroup()
