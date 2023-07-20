@@ -57,7 +57,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not cm.spfilter(c,e,tp) then return false end
-	if not Duel.IsPlayerCanSpecialSummonCount(tp,2) or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,c,e,tp)
 	local cg=Duel.GetMatchingGroup(cm.chkfilter,tp,LOCATION_EXTRA,0,nil,tp)

@@ -17,16 +17,15 @@ function c33711004.initial_effect(c)
 		ge1:SetCode(EVENT_DRAW)
 		ge1:SetOperation(c33711004.checkop)
 		Duel.RegisterEffect(ge1,0)
-		local ge2=ge1:Clone()
-		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(ge2,0)
 	end
 end
 function c33711004.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
-	while tc do
-		Duel.RegisterFlagEffect(tc:GetControler(),33711004,RESET_PHASE+PHASE_END,0,1)
-		tc=eg:GetNext()
+	if Duel.GetCurrentPhase()~=PHASE_DRAW then
+		while tc do
+			Duel.RegisterFlagEffect(tc:GetControler(),33711004,RESET_PHASE+PHASE_END,0,1)
+			tc=eg:GetNext()
+		end
 	end
 end
 function c33711004.condition(e,tp,eg,ep,ev,re,r,rp)
