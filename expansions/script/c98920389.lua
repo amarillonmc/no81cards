@@ -49,7 +49,7 @@ end
 function c98920389.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if ep==tp or c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
-	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev) and e:GetHandler():GetFlagEffectLabel(98920390) and e:GetHandler():GetFlagEffectLabel(98920390)>0
+	return Duel.IsChainNegatable(ev) and c:GetFlagEffectLabel(98920390) and c:GetFlagEffectLabel(98920390)>0
 end
 function c98920389.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
