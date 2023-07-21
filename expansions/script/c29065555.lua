@@ -1,4 +1,5 @@
 --方舟骑士-玛恩纳
+c29065555.named_with_Arknight=1
 function c29065555.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()

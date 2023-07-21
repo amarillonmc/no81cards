@@ -101,7 +101,6 @@ end
 
 end
 if cm then
-cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x10ae)
 	c:EnableReviveLimit()
@@ -162,12 +161,12 @@ function c29017393.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if e:GetHandler():IsRelateToEffect(e) then  
 	local n=1
-	if Duel.IsPlayerAffectedByEffect(tp,29065580) then
-	n=n+1
-	end
+	--if Duel.IsPlayerAffectedByEffect(tp,29065580) then
+	--n=n+1
+	--end
 	e:GetHandler():AddCounter(0x10ae,n)
 	end
-	if Duel.IsExistingMatchingCard(c29017393.refilter,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(29065523,2)) then
+	if Duel.IsExistingMatchingCard(c29017393.refilter,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(29017393,2)) then
 	local sg=Duel.GetMatchingGroup(c29017393.refilter,tp,0,LOCATION_ONFIELD,nil)
 		if sg:GetCount()>0 then
 		Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)

@@ -34,8 +34,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		c:AddCounter(0x625,2)
 		if Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local g=Duel.SelectMatchingCard(tp,cm.filter,tp,0,LOCATION_GRAVE,1,1,nil)
-			Duel.Remove(g:GetFirst(),POS_FACEUP,REASON_EFFECT)
+			local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil)
+			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 			Duel.Recover(tp,1500,REASON_EFFECT)
 		end
 		--cost

@@ -1,4 +1,5 @@
 --引领者 -方舟骑士-
+c29068155.named_with_Arknight=1
 function c29068155.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
