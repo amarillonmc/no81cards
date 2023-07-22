@@ -27,7 +27,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function cm.costfilter(c)
-	return (c:IsSetCard(0xfe) and c:IsType(TYPE_MONSTER) and c:IsDiscardable()
+	return c:IsSetCard(0xfe) and c:IsType(TYPE_MONSTER) and c:IsDiscardable()
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND,0,1,nil) end
