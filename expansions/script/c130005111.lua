@@ -16,12 +16,13 @@ function cm.gcheck(g,e,tp)
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rg=Duel.GetReleaseGroup(tp,true)
+	local tg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
 	if chk==0 then 
-		return e:GetLabel()==100 and rg:CheckSubGroup(cm.gcheck,1,#rg,e,tp)
+		return e:GetLabel()==100 and #rg>0 and #tg>0 --rg:CheckSubGroup(cm.gcheck,1,#rg,e,tp)
 	end
 	e:SetLabel(0)
 	rshint.Select(tp,"res")
-	local rg2=rg:SelectSubGroup(tp,cm.gcheck,false,1,#rg,e,tp)  
+	local rg2=rg:Select(tp,1,#rg,nil) --rg:SelectSubGroup(tp,cm.gcheck,false,1,#rg,e,tp)  
 	local ct=Duel.Release(rg2,REASON_COST)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,ct,1-tp,LOCATION_ONFIELD)   
 	e:SetValue(ct)

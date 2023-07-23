@@ -39,6 +39,7 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e4:SetTargetRange(0,1)
+	e4:SetCondition(cm.costcon)
 	e4:SetCost(cm.costchk)
 	e4:SetTarget(cm.costtg)
 	e4:SetOperation(cm.costop)
@@ -97,7 +98,11 @@ function cm.eqlimit(e,c)
 end
 function cm.accon(e)
 	c15004386[0]=false
-	return true
+	return e:GetHandler():GetEquipCount()~=0
+end
+function cm.costcon(e)
+	c15004386[0]=false
+	return e:GetHandler():GetEquipCount()~=0
 end
 function cm.actarget(e,te,tp)
 	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP)
