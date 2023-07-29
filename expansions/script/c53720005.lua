@@ -61,7 +61,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.descfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_FIEND) and c:IsLevelAbove(5)
+	return c:IsFaceup() and c:IsSetCard(0x45)
 end
 function cm.descon1(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(cm.descfilter,tp,LOCATION_MZONE,0,1,nil)
