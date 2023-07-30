@@ -44,7 +44,8 @@ function c11560312.initial_effect(c)
 	--to deck and draw  
 	local e3=Effect.CreateEffect(c) 
 	e3:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
-	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetType(EFFECT_TYPE_QUICK_O) 
+	e3:SetCode(EVENT_FREE_CHAIN) 
 	e3:SetRange(LOCATION_REMOVED) 
 	e3:SetCountLimit(1,11560312)
 	e3:SetCost(c11560312.stcost) 
@@ -125,7 +126,7 @@ function c11560312.xgck(g)
 	   and g:FilterCount(Card.IsType,nil,TYPE_TRAP)==1
 end 
 function c11560312.sttg(e,tp,eg,ep,ev,re,r,rp,chk)   
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,e:GetHandler())
 	if chk==0 then return g:CheckSubGroup(c11560312.xgck,3,3) and Duel.IsPlayerCanDraw(tp,2) end 
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,3,tp,LOCATION_REMOVED)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
@@ -134,11 +135,11 @@ function c11560312.stop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,nil)
 	if g:CheckSubGroup(c11560312.xgck,3,3) then 
-	local sg=g:SelectSubGroup(tp,c11560312.xgck,false,3,3) 
-	Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) 
-	if Duel.IsPlayerCanDraw(tp,2) then 
-	Duel.Draw(tp,2,REASON_EFFECT)
-	end 
+		local sg=g:SelectSubGroup(tp,c11560312.xgck,false,3,3) 
+		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) 
+		if Duel.IsPlayerCanDraw(tp,2) then 
+			Duel.Draw(tp,2,REASON_EFFECT)
+		end 
 	end 
 end 
 function c11560312.spcost(e,tp,eg,ep,ev,re,r,rp,chk)  

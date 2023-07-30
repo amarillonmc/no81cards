@@ -35,16 +35,19 @@ function c11560307.initial_effect(c)
 	--remove 
 	local e3=Effect.CreateEffect(c) 
 	e3:SetCategory(CATEGORY_REMOVE) 
-	e3:SetType(EFFECT_TYPE_IGNITION) 
+	e3:SetType(EFFECT_TYPE_QUICK_O) 
+	e3:SetCode(EVENT_FREE_CHAIN) 
 	e3:SetRange(LOCATION_FZONE)   
 	e3:SetCountLimit(1,11560307) 
+	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2 end)
 	e3:SetTarget(c11560307.rmtg) 
 	e3:SetOperation(c11560307.rmop) 
 	c:RegisterEffect(e3)
 	--tohand
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e4:SetType(EFFECT_TYPE_IGNITION)
+	local e4=Effect.CreateEffect(c) 
+	e4:SetType(EFFECT_TYPE_QUICK_O) 
+	e4:SetCode(EVENT_FREE_CHAIN) 
 	e4:SetRange(LOCATION_REMOVED) 
 	e4:SetCountLimit(1,21560307)  
 	e4:SetTarget(c11560307.rthtg)
@@ -70,7 +73,7 @@ function c11560307.xrmtg(e,c)
 	return c:GetOwner()==e:GetHandlerPlayer()
 end 
 function c11560307.rmfil(c,tp) 
-	return c:IsAbleToRemove() and Duel.IsExistingMatchingCard(c11560307.thfil,tp,LOCATION_REMOVED,0,1,nil,c)  
+	return c:IsAbleToRemove() and Duel.IsExistingMatchingCard(c11560307.thfil,tp,LOCATION_REMOVED+LOCATION_DECK,0,1,nil,c)  
 end  
 function c11560307.thfil(c,rc) 
 	return c.SetCard_XdMcy and c:IsAbleToHand() and not c:IsCode(rc:GetCode())
@@ -83,18 +86,19 @@ function c11560307.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
 end 
 function c11560307.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler() 
-	local xg=Duel.GetDecktopGroup(tp,1)
+	local c=e:GetHandler()  
 	local g=Duel.GetMatchingGroup(c11560307.rmfil,tp,LOCATION_HAND,0,nil,tp)
 	if g:GetCount()>0 then 
-	local tc=g:Select(tp,1,1,nil):GetFirst()  
-	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT) 
-	local sg=Duel.SelectMatchingCard(tp,c11560307.thfil,tp,LOCATION_REMOVED,0,1,1,nil,tc) 
-	Duel.SendtoHand(sg,tp,REASON_EFFECT) 
-	Duel.ConfirmCards(1-tp,sg) 
-	if xg:GetCount()==xg:FilterCount(Card.IsAbleToRemove,nil) then 
-	Duel.Remove(xg,POS_FACEUP,REASON_EFFECT)
-	end 
+		local tc=g:Select(tp,1,1,nil):GetFirst()  
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT) 
+		local sg=Duel.SelectMatchingCard(tp,c11560307.thfil,tp,LOCATION_REMOVED+LOCATION_DECK,0,1,1,nil,tc) 
+		Duel.SendtoHand(sg,tp,REASON_EFFECT) 
+		Duel.ConfirmCards(1-tp,sg) 
+		local xg=Duel.GetDecktopGroup(tp,1)
+		if xg:GetCount()==xg:FilterCount(Card.IsAbleToRemove,nil) then 
+			Duel.BreakEffect() 
+			Duel.Remove(xg,POS_FACEUP,REASON_EFFECT)
+		end 
 	end 
 end 
 function c11560307.rgck(g)
@@ -111,8 +115,13 @@ function c11560307.rthtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c11560307.rthop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	if c:IsRelateToEffect(e) then   
-	Duel.SendtoHand(c,nil,REASON_EFFECT)  
+	if c:IsRelateToEffect(e) then  
+		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		if fc then
+			Duel.SendtoGrave(fc,REASON_RULE)
+			Duel.BreakEffect()
+		end 
+		Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 	end 
 end 
 
