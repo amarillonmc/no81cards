@@ -45,7 +45,7 @@ function c98920224.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if not Duel.IsPlayerCanSpecialSummonCount(tp,2) then return false end
 		if Duel.IsPlayerAffectedByEffect(tp,59822133) then return false end
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=1 then return false end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=2 then return false end
 		local cg=Duel.GetMatchingGroup(c98920224.chkfilter,tp,LOCATION_EXTRA,0,nil,tp)
 		if #cg==0 then return false end
 		local g=Duel.GetMatchingGroup(c98920224.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
