@@ -59,11 +59,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,100,1400,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
-	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-		Duel.Damage(1-tp,500,REASON_EFFECT,true)
-		Duel.Recover(tp,500,REASON_EFFECT,true)
-		Duel.RDComplete()
-	end
+	--if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	--	Duel.Damage(1-tp,500,REASON_EFFECT,true)
+	--	Duel.Recover(tp,500,REASON_EFFECT,true)
+	--	Duel.RDComplete()
+	--end
 end
 --02
 function cm.ntrfilter(c)

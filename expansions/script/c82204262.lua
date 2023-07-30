@@ -30,8 +30,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)   
 end
 cm.SetCard_01_RedHat=true 
+function cm.isRedHat(c)
+	local code=c:GetCode()
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_RedHat
+end
 function cm.spfilter(c,e,tp)  
-	return c.SetCard_01_RedHat and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)  
+	return cm.isRedHat(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)  
 end  
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.spfilter(chkc,e,tp) end  
@@ -48,7 +53,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function cm.cfilter(c)  
-	return c:IsFaceup() and c.SetCard_01_RedHat
+	return c:IsFaceup() and cm.isRedHat(c)
 end  
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.GetFlagEffect(tp,m)==0 and rp~=tp and Duel.IsChainDisablable(ev) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)

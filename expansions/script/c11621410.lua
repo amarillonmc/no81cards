@@ -62,16 +62,16 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,700,0,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
-	local g=Duel.GetMatchingGroup(cm.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-		local ag=Duel.SelectTarget(tp,cm.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-		if ag:GetCount()>0 then
-			Duel.HintSelection(ag)
-			Duel.BreakEffect()
-			Duel.ChangePosition(ag,POS_FACEDOWN_DEFENSE)
-		end
-	end
+	--local g=Duel.GetMatchingGroup(cm.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	--if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	--	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	--	local ag=Duel.SelectTarget(tp,cm.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	--	if ag:GetCount()>0 then
+	--		Duel.HintSelection(ag)
+	--		Duel.BreakEffect()
+	--		Duel.ChangePosition(ag,POS_FACEDOWN_DEFENSE)
+	--	end
+	--end
 end
 --02
 function cm.ntrfilter(c)

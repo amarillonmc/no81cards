@@ -20,26 +20,36 @@ function c29065608.initial_effect(c)
 	e3:SetOperation(c29065608.spop)
 	c:RegisterEffect(e3)
 end
-function c29065608.filter0(c)
-	return c:IsAbleToRemove()
+function c29065608.filter0(c,e)
+	return c:GetOriginalType()&TYPE_MONSTER>0 and c:GetEquipTarget() and c:IsCanBeFusionMaterial()
+		and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function c29065608.filter1(c,e)
-	return c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
+	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function c29065608.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCode(29065607)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
-function c29065608.filter3(c)
-	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove()
+function c29065608.fcheck(tp,sg,fc)
+	return sg:FilterCount(Card.IsLocation,nil,LOCATION_SZONE)<=1
+end
+function c29065608.gcheck(sg)
+	return sg:FilterCount(Card.IsLocation,nil,LOCATION_SZONE)<=1
 end
 function c29065608.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp):Filter(c29065608.filter0,nil)
-		local mg2=Duel.GetMatchingGroup(c29065608.filter3,tp,LOCATION_MZONE+LOCATION_HAND+LOCATION_GRAVE,0,nil)
-		mg1:Merge(mg2)
+		local mg1=Duel.GetMatchingGroup(c29065608.filter1,tp,LOCATION_MZONE+LOCATION_HAND+LOCATION_GRAVE,0,nil,e)
+		local mg2=Duel.GetMatchingGroup(c29065608.filter0,tp,LOCATION_SZONE,0,nil,e)
+		if mg2:GetCount()>0 then
+			mg1:Merge(mg2)
+			aux.FCheckAdditional=c29065608.fcheck
+			aux.GCheckAdditional=c29065608.gcheck
+		end
 		local res=Duel.IsExistingMatchingCard(c29065608.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
+		aux.FCheckAdditional=nil
+		aux.GCheckAdditional=nil
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
 			if ce~=nil then
@@ -56,10 +66,20 @@ function c29065608.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c29065608.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
-	local mg1=Duel.GetFusionMaterial(tp):Filter(c29065608.filter1,nil,e)
-	local mg2=Duel.GetMatchingGroup(c29065608.filter3,tp,LOCATION_MZONE+LOCATION_HAND+LOCATION_GRAVE,0,nil)
-	mg1:Merge(mg2)
+	local mg1=Duel.GetMatchingGroup(c29065608.filter1,tp,LOCATION_MZONE+LOCATION_HAND+LOCATION_GRAVE,0,nil,e)
+	local exmat=false
+	local mg2=Duel.GetMatchingGroup(c29065608.filter0,tp,LOCATION_SZONE,0,nil,e)
+	if mg2:GetCount()>0 then
+		mg1:Merge(mg2)
+		exmat=true
+	end
+	if exmat then
+		aux.FCheckAdditional=c29065608.fcheck
+		aux.GCheckAdditional=c29065608.gcheck
+	end
 	local sg1=Duel.GetMatchingGroup(c29065608.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
+	aux.FCheckAdditional=nil
+	aux.GCheckAdditional=nil
 	local mg3=nil
 	local sg2=nil
 	local ce=Duel.GetChainMaterial(tp)
@@ -75,8 +95,15 @@ function c29065608.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=sg:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
+		mg1:RemoveCard(tc)
 		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
+			if exmat then
+				aux.FCheckAdditional=c29065608.fcheck
+				aux.GCheckAdditional=c29065608.gcheck
+			end
 			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
+			aux.FCheckAdditional=nil
+			aux.GCheckAdditional=nil
 			tc:SetMaterial(mat1)
 			Duel.Remove(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()

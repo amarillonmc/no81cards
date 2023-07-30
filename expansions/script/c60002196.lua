@@ -28,17 +28,22 @@ function cm.filter(c,e,tp)
 	return c:IsCode(m-3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	local a=Duel.GetTurnCount()
 	local b=Duel.GetFlagEffect(tp,60002177)
 	local s=a+b-1
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c:IsLevelBelow(),tp,LOCATION_DECK,0,1,nil,e,tp,s) end
+		and Duel.IsExistingMatchingCard(Card.IsLevelBelow,tp,LOCATION_DECK,0,1,nil,s) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local a=Duel.GetTurnCount()
+	local b=Duel.GetFlagEffect(tp,60002177)
+	local s=a+b-1
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c:IsLevelBelow(),tp,LOCATION_DECK,0,1,1,nil,e,tp,s)
+	local g=Duel.SelectMatchingCard(tp,Card.IsLevelBelow,tp,LOCATION_DECK,0,1,1,nil,s)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		if Duel.GetFlagEffect(tp,60002148)<5 then

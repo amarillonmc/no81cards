@@ -43,7 +43,7 @@ function cm.f(c)
 end
 function cm.atkval(e,c)
 	local ct=Duel.GetMatchingGroupCount(cm.f,e:GetHandlerPlayer(),LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,nil)
-	return ct*500
+	return ct*200
 end
 --Effect 2
 function cm.thfilter(c)

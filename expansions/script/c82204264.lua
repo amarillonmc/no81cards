@@ -32,13 +32,18 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3) 
 end
 cm.SetCard_01_RedHat=true 
+function cm.isRedHat(c)
+	local code=c:GetCode()
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_RedHat
+end
 function cm.srcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) end  
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())  
 	Duel.SendtoGrave(g,REASON_COST)  
 end  
 function cm.srfilter(c)  
-	return c.SetCard_01_RedHat and c:IsAbleToHand() and not c:IsCode(m) 
+	return cm.isRedHat(c) and c:IsAbleToHand() and not c:IsCode(m) 
 end  
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.srfilter,tp,LOCATION_DECK,0,1,nil) end  
@@ -54,7 +59,7 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function cm.tdfilter(c)  
-	return c.SetCard_01_RedHat and c:IsAbleToDeck()  
+	return cm.isRedHat(c) and c:IsAbleToDeck()  
 end  
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	local c=e:GetHandler()

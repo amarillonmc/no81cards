@@ -64,7 +64,7 @@ end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc:IsSetCard(0x750) and rc~=c
+	return re:IsActiveType(TYPE_MONSTER) and rc:IsSetCard(0x750) and not rc:IsCode(m)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

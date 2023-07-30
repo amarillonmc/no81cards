@@ -6,7 +6,7 @@ function c29065508.initial_effect(c)
 	c:EnableReviveLimit()
 	-- attack
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(29065508,4))
+	e2:SetDescription(aux.Stringid(29065508,1))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1)
@@ -16,6 +16,35 @@ function c29065508.initial_effect(c)
 	e2:SetTarget(c29065508.bttg)
 	e2:SetOperation(c29065508.btop)
 	c:RegisterEffect(e2)
+	--set
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(29065508,0))
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1,29065508)
+	e3:SetCondition(c29065508.secon)
+	e3:SetTarget(c29065508.settg)
+	e3:SetOperation(c29065508.setop)
+	c:RegisterEffect(e3)
+end
+function c29065508.ffilter(c,chk)
+	return c:IsCode(29065500) and c:IsFaceup()
+end
+function c29065508.secon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c29065508.ffilter,tp,LOCATION_MZONE,0,1,nil,true)
+end
+function c29065508.filter(c,chk)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_TRAP) and c:IsSSetable(chk)
+end
+function c29065508.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065508.filter,tp,LOCATION_DECK,0,1,nil,true) end
+end
+function c29065508.setop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,c29065508.filter,tp,LOCATION_DECK,0,1,1,nil,false)
+	if g:GetCount()>0 then
+		Duel.SSet(tp,g:GetFirst())
+	end
 end
 function c29065508.mfilter(c,xyzc)
 	local b1=(c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
@@ -57,16 +86,6 @@ function c29065508.btop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if tc:IsType(TYPE_MONSTER) and tc:IsCanBeBattleTarget(c) and tc:IsControler(1-tp) and tc:IsLocation(LOCATION_MZONE) then
 			Duel.CalculateDamage(c,tc)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
-		e1:SetValue(c29065508.efilter)
-		c:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		e2:SetValue(1)
-		c:RegisterEffect(e2)
 		end
 	end
 end

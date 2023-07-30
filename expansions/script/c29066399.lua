@@ -1,17 +1,16 @@
 --方舟骑士-流星
 c29066399.named_with_Arknight=1
 function c29066399.initial_effect(c)
-	--search
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(29066399,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,29066399)
-	e1:SetCost(c29066399.thcost)
-	e1:SetTarget(c29066399.thtg)
-	e1:SetOperation(c29066399.thop)
-	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(29066399,0))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_REMOVE)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,29066399)
+	e2:SetTarget(c29066399.sptg)
+	e2:SetOperation(c29066399.spop)
+	c:RegisterEffect(e2)
 	--change atk/def
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -43,6 +42,24 @@ function c29066399.initial_effect(c)
 	e5:SetCondition(c29066399.con5)
 	e5:SetOperation(c29066399.op5)
 	c:RegisterEffect(e5)
+end
+function c29066399.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c29066399.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+		if c:IsRelateToEffect(e) and Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		   local e1=Effect.CreateEffect(c)
+		   e1:SetType(EFFECT_TYPE_SINGLE)
+		   e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		   e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		   e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+		   e1:SetValue(LOCATION_DECKBOT)
+		   c:RegisterEffect(e1)
+	   end
+	Duel.SpecialSummonComplete()
 end
 --e5
 function c29066399.con5(e,tp,eg,ep,ev,re,r,rp)

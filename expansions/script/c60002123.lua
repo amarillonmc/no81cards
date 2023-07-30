@@ -52,17 +52,17 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Draw(tp,1,REASON_EFFECT)
 			end
 		end
-		g2=g:GetNext()		
-	end	 
+		g2=g:GetNext()	  
+	end  
 end
 function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetFlagEffect(tp,m)<=2 then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
-		Duel.RegisterFlagEffect(c,m,nil,0,1)
+		Card.RegisterFlagEffect(c,m,nil,0,1)
 	else
 		Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		Duel.SetFlagEffectLabel(c,m,0)
+		Card.SetFlagEffectLabel(c,m,0)
 	end
 end
 

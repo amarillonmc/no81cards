@@ -31,9 +31,14 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 cm.SetCard_01_RedHat=true 
+function cm.isRedHat(c)
+	local code=c:GetCode()
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_RedHat
+end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)  
 	local at=Duel.GetAttacker()  
-	return at:IsControler(tp) and at.SetCard_01_RedHat  
+	return at:IsControler(tp) and cm.isRedHat(at)
 end  
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)  
 	if not e:GetHandler():IsRelateToEffect(e) then return end  

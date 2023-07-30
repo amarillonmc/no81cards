@@ -22,6 +22,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 cm.SetCard_01_RedHat=true 
+function cm.isRedHat(c)
+	local code=c:GetCode()
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_RedHat
+end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()  
 	e:SetLabel(0)  

@@ -23,8 +23,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 cm.SetCard_01_RedHat=true 
+function cm.isRedHat(c)
+	local code=c:GetCode()
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_RedHat
+end
 function cm.costfilter(c)  
-	return c:IsFaceup() and c.SetCard_01_RedHat and c:IsAbleToGraveAsCost()  
+	return c:IsFaceup() and cm.isRedHat(c) and c:IsAbleToGraveAsCost()  
 end  
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_ONFIELD,0,1,nil) end  
@@ -59,7 +64,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function cm.thfilter(c,tp)  
-	return c.SetCard_01_RedHat and c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS)
+	return cm.isRedHat(c) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS)
 		and (c:IsAbleToHand() or c:GetActivateEffect():IsActivatable(tp))  
 end  
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  

@@ -1,14 +1,13 @@
 --战械人形 AR15
 function c29065604.initial_effect(c)
-	--special summon while equipped
+	--Equip
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(29065604,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetCountLimit(1,29065604)
-	e1:SetTarget(c29065604.sptg)
-	e1:SetOperation(c29065604.spop)
+	e1:SetTarget(c29065604.eqtg)
+	e1:SetOperation(c29065604.eqop)
 	c:RegisterEffect(e1)
 	--effect gain
 	local e2=Effect.CreateEffect(c)
@@ -37,27 +36,41 @@ function c29065604.initial_effect(c)
 	e5:SetLabelObject(e4)
 	c:RegisterEffect(e5)
 end
-function c29065604.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function c29065604.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(29065604,0)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local dg=g:Select(tp,1,1,nil)
-			Duel.HintSelection(dg)
-			Duel.Destroy(dg,REASON_EFFECT)
-		end
-	end
-end
 function c29065604.eftg1(e,c)
 	return e:GetHandler():GetEquipTarget()==c and c:IsSetCard(0x7ad)
 end
 function c29065604.eftg2(e,c)
 	return e:GetHandler():GetEquipTarget()==c and c:IsSetCard(0x7ad) and c:IsType(TYPE_SYNCHRO)
+end
+function c29065604.eqfil(c,tp) 
+	return c:IsSetCard(0x87ad) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 
+end
+function c29065604.eqtfil(c)
+	return c:IsSetCard(0x7ad)
+end
+function c29065604.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065604.eqfil,tp,LOCATION_DECK,0,1,nil,tp)
+		and Duel.IsExistingMatchingCard(c29065604.eqtfil,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,0,0)
+end
+function c29065604.eqop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(c29065604.eqfil,tp,LOCATION_DECK,0,nil,tp)
+	if g:GetCount()<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+	local tc=Duel.SelectMatchingCard(tp,c29065604.eqtfil,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+	local ec=g:Select(tp,1,1,nil):GetFirst()
+	if Duel.Equip(tp,ec,tc) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
+			e1:SetCode(EFFECT_EQUIP_LIMIT)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetLabelObject(tc)
+			e1:SetValue(c29065604.eqlimit)
+			ec:RegisterEffect(e1)
+	end
+end
+function c29065604.eqlimit(e,c)
+	return c==e:GetLabelObject() 
 end

@@ -62,21 +62,21 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,1100,900,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
-	local g=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_MZONE,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		local ag=Duel.SelectMatchingCard(tp,cm.filter,tp,0,LOCATION_MZONE,1,1,nil)
-		if ag:GetCount()>0 then
-			Duel.HintSelection(ag)
-			Duel.BreakEffect()
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(-1000)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			ag:GetFirst():RegisterEffect(e1)
-		end
-	end
+	--local g=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_MZONE,nil)
+	--if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	--  local ag=Duel.SelectMatchingCard(tp,cm.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	--  if ag:GetCount()>0 then
+	--	  Duel.HintSelection(ag)
+	--	  Duel.BreakEffect()
+	--	  local e1=Effect.CreateEffect(e:GetHandler())
+	--	 e1:SetType(EFFECT_TYPE_SINGLE)
+	--	  e1:SetCode(EFFECT_UPDATE_ATTACK)
+	--	  e1:SetValue(-1000)
+	--	  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	--	  ag:GetFirst():RegisterEffect(e1)
+	--  end
+	--end
 end
 --02
 function cm.ntrfilter(c)
@@ -106,11 +106,11 @@ function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(RACE_ZOMBIE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_CANNOT_ATTACK)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
+			--local e2=Effect.CreateEffect(c)
+			--e2:SetType(EFFECT_TYPE_SINGLE)
+			--e2:SetCode(EFFECT_CANNOT_ATTACK)
+			--e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			--tc:RegisterEffect(e2)
 			local e3=Effect.CreateEffect(c)
 			e3:SetType(EFFECT_TYPE_SINGLE)
 			e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)

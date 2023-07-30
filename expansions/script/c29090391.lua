@@ -1,6 +1,7 @@
 --方舟骑士-埃拉托
 local m=29090391
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--synchro summon rule
@@ -23,7 +24,7 @@ function cm.initial_effect(c)
 	e51:SetCode(EVENT_FREE_CHAIN)
 	e51:SetRange(LOCATION_MZONE)
 	e51:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e51:SetCountLimit(1)
+	e51:SetCountLimit(1,m)
 	e51:SetTarget(cm.postg)
 	e51:SetOperation(cm.posop)
 	c:RegisterEffect(e51)  

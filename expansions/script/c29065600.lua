@@ -3,7 +3,7 @@ function c29065600.initial_effect(c)
 	--Equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29065600,1))
-	e1:SetCategory(CATEGORY_EQUIP)
+	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
@@ -63,7 +63,16 @@ function c29065600.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(c29065600.eqlimit)
 		tc:RegisterEffect(e1)
+			local g1=Duel.GetMatchingGroup(c29065600.thfilter,tp,LOCATION_DECK,0,nil)
+			if g1:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(29065600,2)) then
+			local hg=g1:Select(tp,1,1,nil)
+			Duel.SendtoHand(hg,tp,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,hg)
+		end
 	end
+end
+function c29065600.thfilter(c)
+	return c:IsLevel(4) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x87ad) and c:IsAbleToHand()
 end
 function c29065600.eftg1(e,c)
 	return e:GetHandler():GetEquipTarget()==c and c:IsSetCard(0x7ad) and not c:IsType(TYPE_XYZ)

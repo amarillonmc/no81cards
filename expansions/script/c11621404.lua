@@ -31,7 +31,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not (c:IsRace(RACE_ZOMBIE) or c:IsSummonLocation(LOCATION_EXTRA))
+	return (not c:IsRace(RACE_ZOMBIE)) and c:IsLocation(LOCATION_EXTRA)
 end
 function cm.filter(c)
 	return c.SetCard_THY_PeachblossomCountry and c:IsAbleToHand()

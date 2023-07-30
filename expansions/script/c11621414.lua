@@ -123,6 +123,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.mfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc then
+		Duel.HintSelection(g)
 		local te=tc[tc]   
 		local tg=te:GetTarget()
 		if tg then

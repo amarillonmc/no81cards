@@ -34,8 +34,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 cm.SetCard_01_RedHat=true 
+function cm.isRedHat(c)
+	local code=c:GetCode()
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_RedHat
+end
 function cm.cfilter(c,tp)  
-	return c:IsFaceup() and c.SetCard_01_RedHat and c:IsControler(tp)  
+	return c:IsFaceup() and cm.isRedHat(c) and c:IsControler(tp)  
 end  
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)  
 	return eg:IsExists(cm.cfilter,1,nil,tp)  

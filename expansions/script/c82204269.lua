@@ -32,6 +32,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)  
 end
 cm.SetCard_01_RedHat=true 
+function cm.isRedHat(c)
+	local code=c:GetCode()
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_RedHat
+end
 function cm.reg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	e:GetHandler():RegisterFlagEffect(m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
@@ -40,22 +45,23 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)~=0
 end
 function cm.thfilter(c)  
-	return c.SetCard_01_RedHat and c:IsAbleToHand()  
+	return cm.isRedHat(c) and c:IsAbleToHand()  
 end  
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) end  
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)  
 end  
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)  
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)  
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)  
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE,0,1,1,nil)  
 	if #g>0 then  
 		Duel.SendtoHand(g,nil,REASON_EFFECT)  
 		Duel.ConfirmCards(1-tp,g)  
 	end  
 end  
 function cm.costfilter(c)  
-	return c.SetCard_01_RedHat and c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToRemoveAsCost()  
+	return cm.isRedHat(c) and c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToRemoveAsCost()  
 end  
 function cm.skipcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local g=Duel.GetMatchingGroup(cm.costfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)  
@@ -77,7 +83,6 @@ function cm.skipop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)  
 	e1:SetCode(EFFECT_SKIP_TURN)  
 	e1:SetTargetRange(0,1)  
-	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)  
-	e1:SetCondition(cm.skipcon)  
+	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)   
 	Duel.RegisterEffect(e1,tp)  
 end  

@@ -32,6 +32,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 cm.SetCard_01_RedHat=true 
+function cm.isRedHat(c)
+	local code=c:GetCode()
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_RedHat
+end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.IsAbleToEnterBP()  
 end  
@@ -40,7 +45,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)  
 end  
 function cm.filter(c)  
-	return c:IsFaceup() and not c:IsHasEffect(EFFECT_EXTRA_ATTACK) and c.SetCard_01_RedHat
+	return c:IsFaceup() and not c:IsHasEffect(EFFECT_EXTRA_ATTACK) and cm.isRedHat(c)
 end  
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.filter(chkc) end  
@@ -62,7 +67,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function cm.thfilter(c)  
-	return c.SetCard_01_RedHat and c:IsAbleToHand()  
+	return cm.isRedHat(c) and c:IsAbleToHand()  
 end  
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	local c=e:GetHandler()

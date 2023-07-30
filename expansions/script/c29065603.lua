@@ -1,18 +1,14 @@
 --战械人形 RO635
 function c29065603.initial_effect(c)
-	--to hand
+	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCategory(CATEGORY_TOHAND)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,29065603)
-	e1:SetTarget(c29065603.thtg)
-	e1:SetOperation(c29065603.thop)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,29065603+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(c29065603.spcon)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2)
 	--effect gain
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(29065603,1))
@@ -32,6 +28,14 @@ function c29065603.initial_effect(c)
 	e4:SetTarget(c29065603.eftg)
 	e4:SetLabelObject(e3)
 	c:RegisterEffect(e4)
+end
+function c29065603.spfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x87ad)
+end
+function c29065603.spcon(e,c)
+	if c==nil then return true end
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c29065603.spfilter,c:GetControler(),LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 end
 function c29065603.thfilter(c)
 	return c:IsRace(RACE_MACHINE) and c:IsAbleToHand()

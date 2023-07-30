@@ -30,6 +30,7 @@ function cm.sprcon(e,c)
 	return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD,e:GetHandler())
 	local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_OATH+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)

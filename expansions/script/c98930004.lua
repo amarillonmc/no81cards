@@ -67,16 +67,16 @@ end
 function c98930004.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	local g=Duel.SelectMatchingCard(tp,aux.nzatk,tp,0,LOCATION_MZONE,1,1,nil)
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
-		and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98930004,0)) then
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(aux.nzatk,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(98930004,0)) then
+		local g=Duel.SelectMatchingCard(tp,aux.nzatk,tp,0,LOCATION_MZONE,1,1,nil)
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 		Duel.HintSelection(g)
+		local atk=g:GetFirst():GetAttack()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetValue(0)
+		e1:SetValue(atk/2)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		g:GetFirst():RegisterEffect(e1)
 	end 

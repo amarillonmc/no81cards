@@ -74,20 +74,12 @@ function c98930002.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(c98930002.tgfilter,tp,LOCATION_DECK,0,nil)
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
-		and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98930002,1)) then
+		and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98930002,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end 
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c98930002.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
@@ -95,7 +87,4 @@ function c98930002.spop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_EVENT+RESETS_REDIRECT)
 	e2:SetValue(LOCATION_REMOVED)
 	c:RegisterEffect(e2,true)
-end
-function c98930002.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0xad0)
 end

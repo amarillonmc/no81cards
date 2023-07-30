@@ -59,16 +59,16 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,1100,900,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
-	local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEDOWN)
-		local ag=Duel.SelectMatchingCard(tp,Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-		if ag:GetCount()>0 then
-			Duel.HintSelection(ag)
-			Duel.BreakEffect()
-			Duel.Release(ag,REASON_EFFECT)
-		end
-	end
+	--local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	--if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	--	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEDOWN)
+	--	local ag=Duel.SelectMatchingCard(tp,Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	--	if ag:GetCount()>0 then
+	--		Duel.HintSelection(ag)
+	--		Duel.BreakEffect()
+	--		Duel.Release(ag,REASON_EFFECT)
+	--	end
+	--end
 end
 --02
 function cm.ntrfilter(c)

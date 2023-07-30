@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)	
 end
 function cm.handcon(e)
-	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
+	return Duel.IsExistingMatchingCard(Card.IsFaceup,0,LOCATION_FZONE,LOCATION_FZONE,2,nil)
 end
 function cm.xfilter(c,e,tp)
 	return cm.Cardinal(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

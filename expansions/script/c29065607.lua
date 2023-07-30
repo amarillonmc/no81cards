@@ -26,7 +26,7 @@ function c29065607.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c29065607.ffilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsFusionSetCard(0x87ad)
+	return c:IsFusionSetCard(0x87ad)
 end
 function c29065607.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION) and e:GetHandler():GetMaterial():Filter(Card.IsSetCard,nil,0x7ad):GetCount()>0
@@ -61,15 +61,18 @@ function c29065607.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,g:GetFirst():GetAttack())
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,g:GetFirst():GetBaseAttack())
 end
 function c29065607.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		local dam=tc:GetAttack()
-		if dam<0 or tc:IsFacedown() then dam=0 end
-		if Duel.Destroy(tc,REASON_EFFECT)~=0 then
-			Duel.Damage(1-tp,dam,REASON_EFFECT)
-		end
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then
+		Duel.Damage(1-tp,tc:GetBaseAttack(),REASON_EFFECT)
 	end
 end
+
+
+
+
+
+
+

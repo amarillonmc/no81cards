@@ -33,7 +33,7 @@ function c75000720.mfilter(c)
 	return c:IsType(TYPE_SYNCHRO) or c:IsType(TYPE_XYZ)
 end
 function c75000720.atkval(e,c)
-	return Duel.GetMatchingGroupCount(c75000720.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,nil)*700
+	return Duel.GetMatchingGroupCount(c75000720.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,nil)*200
 end
 function c75000720.atkfilter(c)
 	return c:IsSetCard(0x750)
@@ -54,7 +54,7 @@ function c75000720.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		e1:SetValue(1600)
+		e1:SetValue(800)
 		tc:RegisterEffect(e1)
 	end
 end

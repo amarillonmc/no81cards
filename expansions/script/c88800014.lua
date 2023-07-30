@@ -1,4 +1,3 @@
---黄巾步卒
 function c88800014.initial_effect(c)
 	--splimit
 	local e0=Effect.CreateEffect(c)

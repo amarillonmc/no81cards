@@ -51,7 +51,7 @@ end
 function c65130342.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local b1=Duel.GetLocationCountFromEx(1-tp,1-tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,0,1-tp,false,false)
-	local b2=Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and c:IsAbleToGrave()
+	local b2=c:IsAbleToGrave()
 	local s=0
 	if b1 and not b2 then
 		s=Duel.SelectOption(1-tp,aux.Stringid(65130342,3))
@@ -65,7 +65,7 @@ function c65130342.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not b1 and not b2 then return end
 	if s==0 then
 		if c then
-			Duel.SpecialSummonStep(c,0,1-tp,1-tp,false,false,POS_FACEUP)
+			Duel.SpecialSummonStep(c,0,1-tp,1-tp,false,false,POS_FACEDOWN_DEFENSE)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
@@ -73,16 +73,11 @@ function c65130342.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
 			e1:SetValue(LOCATION_HAND)
 			c:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_CANNOT_TRIGGER)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			c:RegisterEffect(e2)
 			Duel.SpecialSummonComplete()			
 		end
 	end
 	if s==1 then
-		if c and Duel.SendtoGrave(c,REASON_EFFECT)~=0 then
+		if c and Duel.SendtoGrave(c,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(65130342,0)) then
 			local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
 			local val=aux.SequenceToGlobal(tc:GetControler(),LOCATION_MZONE,tc:GetSequence())
 			if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then

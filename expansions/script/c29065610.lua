@@ -24,7 +24,7 @@ function c29065610.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c29065610.lfilter(c)
-	return c:IsLinkRace(RACE_MACHINE) and c:IsLinkSetCard(0x87ad)
+	return c:IsLinkSetCard(0x87ad)
 end
 function c29065610.lcheck(g)
 	return g:IsExists(c29065610.lfilter,1,nil)
@@ -81,3 +81,11 @@ function c29065610.chop(e,tp,eg,ep,ev,re,r,rp)
 	local fop=re:GetOperation()
 	fop(e,tp,eg,ep,ev,re,r,rp)
 end
+
+
+
+
+
+
+
+

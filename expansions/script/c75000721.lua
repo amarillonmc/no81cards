@@ -102,6 +102,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) then return end
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -115,10 +116,44 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		op=Duel.SelectOption(tp,aux.Stringid(m,2))+1
 	else return end
 	if op==0 then
-		res=Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		res=Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
+		--synchro limit
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_SINGLE)
+		e0:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+		e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e0:SetValue(cm.synlimit)
+		tc:RegisterEffect(e0)
+		--xyz limit
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetValue(cm.synlimit)
+		tc:RegisterEffect(e1)
+		Duel.SpecialSummonComplete()
 	else
-		res=Duel.SpecialSummon(tc,0,tp,1-tp,false,false,POS_FACEUP)
+		res=Duel.SpecialSummonStep(tc,0,tp,1-tp,false,false,POS_FACEUP)
+		--synchro limit
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_SINGLE)
+		e0:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+		e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e0:SetValue(cm.synlimit)
+		tc:RegisterEffect(e0)
+		--xyz limit
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetValue(cm.synlimit)
+		tc:RegisterEffect(e1)
+		Duel.SpecialSummonComplete()
 	end
+end
+function cm.synlimit(e,c)
+	if not c then return false end
+	return not c:IsSetCard(0x750)
 end
 --Effect 2
 function cm.con(e,tp,eg,ep,ev,re,r,rp)

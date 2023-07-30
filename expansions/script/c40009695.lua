@@ -1,7 +1,7 @@
 --柩机之枢
 local m=40009695
 local cm=_G["c"..m]
-cm.named_with_Cardinal=1
+
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

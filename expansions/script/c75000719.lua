@@ -2,7 +2,7 @@
 function c75000719.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFunRep(c,75000701,c75000719.mfilter,1,63,true,true)
+	aux.AddFusionProcCodeFunRep(c,75000701,c75000719.mfilter,1,1,true,true)
 	aux.AddContactFusionProcedure(c,c75000719.cfilter,LOCATION_ONFIELD,LOCATION_ONFIELD,Duel.SendtoGrave,REASON_COST)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -43,7 +43,7 @@ function c75000719.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
 function c75000719.atkval(e,c)
-	return Duel.GetMatchingGroupCount(c75000719.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,nil)*500
+	return Duel.GetMatchingGroupCount(c75000719.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,nil)*200
 end
 function c75000719.atkfilter(c)
 	return c:IsSetCard(0x750)

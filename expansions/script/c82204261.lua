@@ -30,11 +30,16 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)	
 end
 cm.SetCard_01_RedHat=true 
+function cm.isRedHat(c)
+	local code=c:GetCode()
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_RedHat
+end
 function cm.cfilter(c)  
-	return c:IsFaceup() and c.SetCard_01_RedHat
+	return c:IsFaceup() and cm.isRedHat(c)
 end  
 function cm.atkfilter(e,c)  
-	return c:IsFaceup() and c.SetCard_01_RedHat
+	return c:IsFaceup() and cm.isRedHat(c)
 end  
 function cm.damcon(e,tp,eg,ep,ev,re,r,rp)  
 	return tp~=Duel.GetTurnPlayer() and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil) 

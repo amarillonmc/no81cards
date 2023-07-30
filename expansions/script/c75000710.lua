@@ -108,6 +108,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) then return end
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -121,9 +122,35 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		op=Duel.SelectOption(tp,aux.Stringid(m,2))+1
 	else return end
 	if op==0 then
-		res=Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		res=Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+			tc=sg:GetNext()
+		Duel.SpecialSummonComplete()
 	else
-		res=Duel.SpecialSummon(tc,0,tp,1-tp,false,false,POS_FACEUP)
+		res=Duel.SpecialSummonStep(tc,0,tp,1-tp,false,false,POS_FACEUP)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+			tc=sg:GetNext()
+		Duel.SpecialSummonComplete()
 	end
 end
 --Effect 2
@@ -157,10 +184,34 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		op=Duel.SelectOption(tp,aux.Stringid(m,3))+1
 	else return end
 	if op==0 then
-		res=Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		res=Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+		Duel.SpecialSummonComplete()
 	else
-		res=Duel.SpecialSummon(tc,0,tp,1-tp,false,false,POS_FACEUP)
-	end   
+		res=Duel.SpecialSummonStep(tc,0,tp,1-tp,false,false,POS_FACEUP)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+		Duel.SpecialSummonComplete()
+	end  
 end
 --Effect 3
 function cm.posfilter(c)

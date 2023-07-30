@@ -63,47 +63,47 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,600,500,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
-	local g=Duel.GetMatchingGroup(cm.posfilter,tp,0,LOCATION_MZONE,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-		local ag=Duel.SelectMatchingCard(tp,cm.posfilter,tp,0,LOCATION_MZONE,1,1,nil)
-		if ag:GetCount()>0 then
-			Duel.HintSelection(ag)
-			Duel.BreakEffect()
-			local tc=ag:GetFirst()
-			local code=tc:GetOriginalCodeRule()
-			--disable
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetValue(ATTRIBUTE_LIGHT)
-			e1:SetReset(RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
-			local e2=e1:Clone()
-			e2:SetCode(EFFECT_CHANGE_RACE)
-			e2:SetValue(RACE_ZOMBIE)
-			tc:RegisterEffect(e2)
-			local e3=e1:Clone()
-			if tc:IsLevelAbove(1) then
-				e2:SetCode(EFFECT_CHANGE_LEVEL)
-			end
-			if tc:IsRankAbove(1) then
-				e3:SetCode(EFFECT_CHANGE_RANK)
-			end
-			if tc:IsLinkAbove(1) then
-				e3:SetCode(EFFECT_UPDATE_LINK)
-			end
-			e3:SetValue(3)
-			tc:RegisterEffect(e3)
-			local e4=e1:Clone()
-			e4:SetCode(EFFECT_CHANGE_CODE)
-			e4:SetType(EFFECT_TYPE_SINGLE)
-			e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e4:SetValue(11621402)
-			tc:RegisterEffect(e4)
-		end
-	end
+	--local g=Duel.GetMatchingGroup(cm.posfilter,tp,0,LOCATION_MZONE,nil)
+	--if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	--	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	--	local ag=Duel.SelectMatchingCard(tp,cm.posfilter,tp,0,LOCATION_MZONE,1,1,nil)
+	--	if ag:GetCount()>0 then
+	--		Duel.HintSelection(ag)
+	--		Duel.BreakEffect()
+	--		local tc=ag:GetFirst()
+	--		local code=tc:GetOriginalCodeRule()
+	--		--disable
+	--		local e1=Effect.CreateEffect(c)
+	--		e1:SetType(EFFECT_TYPE_SINGLE)
+	--		e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	--		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	--		e1:SetValue(ATTRIBUTE_LIGHT)
+	--		e1:SetReset(RESET_PHASE+PHASE_END)
+	--		tc:RegisterEffect(e1)
+	--		local e2=e1:Clone()
+	--		e2:SetCode(EFFECT_CHANGE_RACE)
+	--		e2:SetValue(RACE_ZOMBIE)
+	--		tc:RegisterEffect(e2)
+	--		local e3=e1:Clone()
+	--		if tc:IsLevelAbove(1) then
+	--			e2:SetCode(EFFECT_CHANGE_LEVEL)
+	--		end
+	--		if tc:IsRankAbove(1) then
+	--			e3:SetCode(EFFECT_CHANGE_RANK)
+	--		end
+	--		if tc:IsLinkAbove(1) then
+	--			e3:SetCode(EFFECT_UPDATE_LINK)
+	--		end
+	--	   e3:SetValue(3)
+	--		tc:RegisterEffect(e3)
+	--		local e4=e1:Clone()
+	--		e4:SetCode(EFFECT_CHANGE_CODE)
+	--		e4:SetType(EFFECT_TYPE_SINGLE)
+	--		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	--		e4:SetValue(11621402)
+	--		tc:RegisterEffect(e4)
+	--	end
+	--end
 end
 --02
 function cm.ntrfilter(c)

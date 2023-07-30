@@ -68,3 +68,15 @@ end
 function c29065606.indtg(e,c)
 	return (c:IsFaceup() or c:GetEquipTarget()) and c:IsType(TYPE_EQUIP)
 end
+
+
+
+
+
+
+
+
+
+
+
+

@@ -55,13 +55,41 @@ function c29096814.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x10ae)
 end
 function c29096814.ctop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if e:GetHandler():IsRelateToEffect(e) then 
-	e:GetHandler():AddCounter(0x10ae,1) 
-	Duel.RegisterFlagEffect(tp,29096814,RESET_PHASE+PHASE_END,0,1)
+			e:GetHandler():AddCounter(0x10ae,1)
+			Duel.RegisterFlagEffect(tp,29096815,RESET_PHASE+PHASE_END,0,1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetDescription(aux.Stringid(29096814,0))
+			e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+			e2:SetType(EFFECT_TYPE_IGNITION)
+			e2:SetRange(LOCATION_HAND)
+			e2:SetTarget(c29096814.sptg)
+			e2:SetOperation(c29096814.spop)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			e1:SetTargetRange(LOCATION_HAND,0)
+			e1:SetTarget(c29096814.eftg)
+			e1:SetLabelObject(e2)
+			Duel.RegisterEffect(e1,tp)
 	end
 end
-
-
+function c29096814.eftg(e,c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsLocation(LOCATION_HAND) and c:IsType(TYPE_MONSTER)
+end
+function c29096814.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.GetFlagEffect(tp,29096815)==1 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c29096814.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then 
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		Duel.ResetFlagEffect(tp,29096815)
+	end
+end
 
 
 

@@ -38,8 +38,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)  
 end
 cm.SetCard_01_RedHat=true 
+function cm.isRedHat(c)
+	local code=c:GetCode()
+	local ccode=_G["c"..code]
+	return ccode.SetCard_01_RedHat
+end
 function cm.matfilter(c)
-	return c.SetCard_01_RedHat and (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS)))
+	return cm.isRedHat(c) and (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS)))
 end
 function cm.matval(e,lc,mg,c,tp)
 	if e:GetHandler()~=lc then return false,nil end
@@ -49,10 +54,10 @@ function cm.val(e,c)
 	return Duel.GetMatchingGroupCount(cm.atkfilter,c:GetControler(),LOCATION_MZONE,0,e:GetHandler())*500  
 end  
 function cm.atkfilter(c)  
-	return c:IsFaceup() and c.SetCard_01_RedHat 
+	return c:IsFaceup() and cm.isRedHat(c) 
 end  
 function cm.costfilter(c)  
-	return c:IsFaceup() and c.SetCard_01_RedHat and c:IsAbleToGraveAsCost()  
+	return c:IsFaceup() and cm.isRedHat(c) and c:IsAbleToGraveAsCost()  
 end  
 function cm.negcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_ONFIELD,0,1,nil) end  
