@@ -54,7 +54,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		Duel.SetChainLimit(s.chlimit(ctype))
 	end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,dg,cg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,cg:GetCount(),0,0)
 end
 function s.chlimit(ctype)
 	return function(e,ep,tp)

@@ -45,17 +45,19 @@ function s.wd(e,tp,eg,ep,ev,re,r,rp,chk)
 	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetFlagEffect(tp,id)==0
 end
 function s.IsLpZone(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(0)==0 or Duel.GetLP(1)==0
+	return Duel.GetLP(0)<=0 or Duel.GetLP(1)<=0
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLP(0)==0 and Duel.GetFlagEffect(0,id)==0 then
+	if Duel.GetLP(0)<=0 and Duel.GetFlagEffect(0,id)==0 then
+		Duel.SetLP(0,0)
 		Duel.Recover(0,4000,REASON_EFFECT)
 		Duel.RegisterFlagEffect(0,id,nil,0,1)
 		local sg=Duel.GetMatchingGroup(s.cfilter,0,LOCATION_ONFIELD,0,nil)
 		Duel.SendtoGrave(sg,REASON_EFFECT+REASON_REPLACE)
 	end
-	if Duel.GetLP(1)==0 and Duel.GetFlagEffect(1,id)==0 then
-		Duel.Recover(0,4000,REASON_EFFECT)
+	if Duel.GetLP(1)<=0 and Duel.GetFlagEffect(1,id)==0 then
+		Duel.SetLP(1,0)
+		Duel.Recover(1,4000,REASON_EFFECT)
 		Duel.RegisterFlagEffect(1,id,nil,0,1)
 		local sg=Duel.GetMatchingGroup(s.cfilter,1,LOCATION_ONFIELD,0,nil)
 		Duel.SendtoGrave(sg,REASON_EFFECT+REASON_REPLACE)
