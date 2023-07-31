@@ -18,6 +18,7 @@ function c11500100.initial_effect(c)
 	e1:SetRange(LOCATION_EXTRA) 
 	e1:SetCondition(c11500100.espcon)
 	e1:SetOperation(c11500100.espop)
+	e1:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e1) 
 	--atk/def
 	local e1=Effect.CreateEffect(c)
@@ -96,21 +97,21 @@ function c11500100.mtop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(c,POS_FACEDOWN,REASON_COST)
 	end
 end
-function c11500100.ovfil(c,tp) 
+function c11500100.covfil(c,e,tp) 
 	local g=Duel.GetDecktopGroup(tp,c:GetLevel())
-	return c:IsCanOverlay() and c:IsLevelAbove(1) and g:FilterCount(Card.IsAbleToRemove,nil)==c:GetLevel() 
+	return c:IsCanBeXyzMaterial(e:GetHandler()) and c:IsLevelAbove(1) and g:FilterCount(Card.IsAbleToRemoveAsCost,nil)==c:GetLevel() 
 end 
 function c11500100.ovgck(g,e,tp) 
-	return Duel.GetLocationCountFromEx(tp,tp,g,e:GetHandler())>0 and g:GetClassCount(Card.GetLevel)==g:GetCount()  
+	return Duel.GetLocationCountFromEx(tp,tp,g,e:GetHandler())>0 and g:GetClassCount(Card.GetLevel)==1 
 end 
 function c11500100.espcon(e,c)
 	if c==nil then return true end 
 	local tp=c:GetControler() 
-	local g=Duel.GetMatchingGroup(c11500100.ovfil,tp,LOCATION_MZONE,0,nil,tp)
+	local g=Duel.GetMatchingGroup(c11500100.covfil,tp,LOCATION_MZONE,0,nil,e,tp)
 	return g:CheckSubGroup(c11500100.ovgck,3,3,e,tp)  
 end
 function c11500100.espop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(c11500100.ovfil,tp,LOCATION_MZONE,0,nil,tp)
+	local g=Duel.GetMatchingGroup(c11500100.covfil,tp,LOCATION_MZONE,0,nil,e,tp)
 	local og=g:SelectSubGroup(tp,c11500100.ovgck,false,3,3,e,tp) 
 	local lv=og:GetFirst():GetLevel() 
 	local rg=Duel.GetDecktopGroup(tp,lv)
