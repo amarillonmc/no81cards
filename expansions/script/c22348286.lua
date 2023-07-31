@@ -90,7 +90,7 @@ end
 
 
 function c22348286.costfilter(c)
-	return c:IsSetCard(0x70a6) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x70a6) and c:IsAbleToGraveAsCost()
 end
 function c22348286.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348286.costfilter,tp,LOCATION_DECK,0,1,nil) end

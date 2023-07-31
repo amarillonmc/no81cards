@@ -1,5 +1,7 @@
 --方舟骑士深层归还
+c29065511.named_with_Arknight=1
 function c29065511.initial_effect(c)
+	aux.AddCodeList(c,29065500)
 	--Activate
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
