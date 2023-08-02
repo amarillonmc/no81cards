@@ -76,39 +76,11 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(m,14)) then return end
 	Duel.ConfirmCards(1-tp,e:GetHandler())
 	Duel.Hint(HINT_CARD,0,m)
-	if ev==1 then
-		Debug.Message("「此战，即为生存而战」")
-	elseif ev==2 then
-		Debug.Message("「此战，即为抗争强于自身之人之战」")
-	elseif ev==3 then
-		Debug.Message("「此战，非背离人道之战」")
-	elseif ev==4 then
-		Debug.Message("「此战，即为追求真实之战」")
-	elseif ev==5 then
-		Debug.Message("「此战，非抗争精灵之战」")
-	elseif ev==6 then
-		Debug.Message("「此战，即为公平之战」")
-	elseif ev==7 then
-		Debug.Message("「此战，乃讨伐邪恶之战」")
-	elseif ev==8 then
-		Debug.Message("「此战，非为私欲而战」")
-	elseif ev==9 then
-		Debug.Message("「此战，即高贵荣誉之战」")
-	elseif ev==10 then
-		Debug.Message("「此战，即勇者同行之战」")
-	elseif ev==11 then
-		Debug.Message("「此战，非向善者挥剑之战」")
-	elseif ev==12 then
-		Debug.Message("「此战，即守护弱者之战」")
-	elseif ev==13 then
-		Debug.Message("「此战，即拯救世界之战」")
-	end
 	re:SetCategory(cat0|cat[ev])
 	re:SetOperation(repop)
 	e:SetLabel(ev)
 	if ev==13 then
 		if Duel.IsExistingMatchingCard(Card.IsAbleToHandAsCost,tp,LOCATION_MZONE,0,1,nil) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.SelectYesNo(tp,aux.Stringid(m,15)) then
-			Debug.Message("「十三拘束解放(シール・サーティーン)──円卓議決開始(デシジョン・スタート)」！")
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHandAsCost,tp,LOCATION_MZONE,0,1,1,nil)
 			Duel.SendtoHand(g,nil,REASON_COST)
@@ -137,7 +109,7 @@ function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 	local ev=Duel.GetCurrentChain()
-	if ev==1 and cm[ev]==nil and Duel.SelectYesNo(tp,aux.Stringid(m,ev))then
+	if ev==1 and cm[ev]==nil and Duel.SelectYesNo(tp,aux.Stringid(m,ev)) then
 		Duel.Recover(tp,100,REASON_EFFECT)
 	elseif ev==2 and cm[ev]==nil and Duel.SelectYesNo(tp,aux.Stringid(m,ev)) then
 		Duel.Damage(1-tp,100,REASON_EFFECT)
@@ -261,10 +233,15 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_CHAIN_SOLVING)
 	e2:SetCountLimit(1)
+	e2:SetCondition(cm.dis2con)
 	e2:SetOperation(cm.dis2op)
+	e2:SetLabelObject(re)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 	e:Reset()
+end
+function cm.dis2con(e,tp,eg,ep,ev,re,r,rp)
+	return re and e:GetLabelObject() and re==e:GetLabelObject()
 end
 function cm.dis2op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
