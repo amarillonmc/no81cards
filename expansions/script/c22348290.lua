@@ -127,6 +127,7 @@ function c22348290.ddtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c22348290.ddop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,c)
 	local tc=g:GetFirst()

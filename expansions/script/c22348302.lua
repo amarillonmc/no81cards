@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 end
 
 function c22348302.spfilter(c,e,tp)
-	return c:IsSetCard(0x70a6) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+	return c:IsSetCard(0x70a6) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx()
 end
 function c22348302.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1
