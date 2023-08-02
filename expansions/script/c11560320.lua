@@ -58,7 +58,7 @@ function c11560320.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		aux.RGCheckAdditional=nil
 		return res
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_REMOVED)
 end
 function c11560320.activate(e,tp,eg,ep,ev,re,r,rp)
 	local m=Duel.GetRitualMaterial(tp)

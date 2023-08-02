@@ -1,7 +1,7 @@
 --逆元构造 绯耀
 function c79029819.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,3,3,c79029819.ovfilter,aux.Stringid(79029819,0),99,c79029819.xyzop)
+	aux.AddXyzProcedure(c,function(c) return c:IsRace(RACE_MACHINE) end,3,3,c79029819.ovfilter,aux.Stringid(79029819,0),99,c79029819.xyzop)
 	c:EnableReviveLimit()   
 	--search
 	local e1=Effect.CreateEffect(c)

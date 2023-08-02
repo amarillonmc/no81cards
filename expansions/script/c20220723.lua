@@ -25,9 +25,11 @@ function s.initial_effect(c)
 	e2:SetOperation(s.op)
 	c:RegisterEffect(e2)
 end
+function s.cfilter(c)
+	return c:IsRace(RACE_WYRM) and c:IsFaceup()
+end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-		or Duel.IsExistingMatchingCard(aux.FilterFaceupFunction(Card.IsRace,RACE_WYRM),tp,LOCATION_MZONE,0,1,nil)
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

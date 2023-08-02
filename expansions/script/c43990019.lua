@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	aux.AddCodeList(c,43990016)
 	--draw
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DRAW+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,43990019)

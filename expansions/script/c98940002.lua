@@ -28,7 +28,7 @@ function c98940002.cfilter(c)
 end
 function c98940002.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local ct1=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
-	local ct2=Duel.GetMatchingGroupCount(c98940002.spfilter,tp,LOCATION_MZONE,0,nil)
+	local ct2=Duel.GetMatchingGroupCount(c98940002.cfilter,tp,LOCATION_MZONE,0,nil)
 	local chk1=ct1==0
 	local chk2=ct2>0 and ct1-ct2==0
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)

@@ -79,7 +79,7 @@ end
 function cm.remop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_MZONE,nil) 
-	local x=Duel.Remove(g,POS_DEFENSE,REASON_EFFECT)
+	local x=Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	if e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,57707471) and x>0 then 
 		Duel.BreakEffect()
 		Duel.Damage(1-tp,800,REASON_EFFECT) 

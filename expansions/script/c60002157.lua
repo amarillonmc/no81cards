@@ -57,7 +57,7 @@ end
 function cm.incon(e)
 	return Card.GetCounter(e:GetHandler(),0x624)>=1
 end
-function cm.spcon(e,c)
+function cm.spcon(e,c,tp)
 	if c==nil then return true end
 	return Duel.GetFlagEffect(tp,60002148)>=6
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0

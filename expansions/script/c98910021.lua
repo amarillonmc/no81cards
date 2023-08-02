@@ -52,11 +52,11 @@ end
 function c98910021.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and c98910021.xyzfilter(chkc,e,tp) end
 	if chk==0 then return Duel.IsExistingTarget(c98910021.xyzfilter,tp,LOCATION_MZONE,0,1,nil,e,tp)
-		and Duel.IsExistingTarget(c98910021.mafilter,tp,0,LOCATION_ONFIELD,1,nil) end
+		and Duel.IsExistingTarget(c98910021.matfilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g1=Duel.SelectTarget(tp,c98910021.xyzfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(37564025,0))
-	local g2=Duel.SelectTarget(tp,c98910021.mafilter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g2=Duel.SelectTarget(tp,c98910021.matfilter,tp,0,LOCATION_MZONE,1,1,nil)
 	e:SetLabelObject(g2:GetFirst())
 end
 function c98910021.activate1(e,tp,eg,ep,ev,re,r,rp)

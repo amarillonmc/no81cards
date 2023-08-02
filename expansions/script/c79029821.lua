@@ -2,7 +2,7 @@
 function c79029821.initial_effect(c)
 	--synchro summon
 	c:EnableReviveLimit()
-	aux.AddSynchroMixProcedure(c,c79029821.matfilter1,nil,nil,aux.NonTuner(nil),1,99)
+	aux.AddSynchroMixProcedure(c,c79029821.matfilter1,nil,nil,aux.NonTuner(Card.IsRace,RACE_MACHINE),1,99)
 	--Remove and lv 
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_REMOVE)
