@@ -59,7 +59,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			if not opt then return end
 			if opt==0 then
 				Duel.ConfirmCards(tp,Duel.GetFieldGroup(tp,0,LOCATION_DECK))
-				local tg=dg:Select(tp,#og,#og,nil)
+				local tg=dg:Select(1-tp,#og,#og,nil)
 				if #tg>0 then
 					Duel.SendtoHand(tg,1-tp,REASON_EFFECT)
 				end

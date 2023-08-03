@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	
 end
 function c35399335.efcon(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_SYNCHRO
+	return r&REASON_SYNCHRO>0
 end
 function c35399335.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

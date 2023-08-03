@@ -75,7 +75,7 @@ function c35399328.splimit(e,c)
 end
 function c35399328.sppcon(e)
 	local tp=e:GetHandler():GetControler()
-	return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)-Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>1
+	return Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)-Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>1
 end
 function c35399328.spptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
