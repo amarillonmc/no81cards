@@ -62,7 +62,7 @@ function cm.initial_effect(c)
 		function Effect.GetActiveType(e)
 			local cost=e:GetCost()
 			if cost and cost==cm.cost then
-				return TYPE_SPELL+TYPE_PENDULUM
+				return TYPE_TRAP
 			end
 			return _GetActiveType(e)
 		end
