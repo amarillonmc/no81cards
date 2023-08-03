@@ -492,14 +492,14 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	for k,v in pairs(ret3) do
-		if ret4[k]==4 then
+		if ret4[k]==1 then
 			local val=v:GetValue()
 			if aux.GetValueType(val)=="number" then val=aux.TRUE end
 			if val(v,de,p) then
 				v:SetValue(cm.chval(val,true,de))
 			end
 		end
-		if ret4[k]==5 then
+		if ret4[k]==2 then
 			local cost=v:GetCost()
 			if cost and not cost(v,de,p) then
 				local tg=v:GetTarget()

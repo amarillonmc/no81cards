@@ -27,6 +27,10 @@ function s.initial_effect(c)
 	ge0:SetCondition(s.wd)
 	ge0:SetValue(1)
 	Duel.RegisterEffect(ge0,tp)
+	local ge1=ge0:Clone()
+	ge1:SetTargetRange(0,1)
+	ge1:SetCondition(s.wd2)
+	Duel.RegisterEffect(ge1,tp)
 	if not s.global_check then
 		s.global_check=true
 		--set
@@ -44,24 +48,27 @@ end
 function s.wd(e,tp,eg,ep,ev,re,r,rp,chk)
 	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetFlagEffect(tp,id)==0
 end
+function s.wd2(e,tp,eg,ep,ev,re,r,rp,chk)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetFlagEffect(tp,id+1)==0
+end
 function s.IsLpZone(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLP(0)<=0 or Duel.GetLP(1)<=0
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLP(0)<=0 and Duel.GetFlagEffect(0,id)==0 then
+	local sg1=Duel.GetMatchingGroup(s.cfilter,0,LOCATION_ONFIELD,0,nil)
+	local sg2=Duel.GetMatchingGroup(s.cfilter,1,LOCATION_ONFIELD,0,nil)
+	if Duel.GetLP(0)<=0 and Duel.GetFlagEffect(0,id)==0 and Duel.SendtoGrave(sg1,REASON_EFFECT+REASON_REPLACE)>0 then
 		Duel.SetLP(0,0)
 		Duel.Recover(0,4000,REASON_EFFECT)
 		Duel.RegisterFlagEffect(0,id,nil,0,1)
-		local sg=Duel.GetMatchingGroup(s.cfilter,0,LOCATION_ONFIELD,0,nil)
-		Duel.SendtoGrave(sg,REASON_EFFECT+REASON_REPLACE)
 	end
-	if Duel.GetLP(1)<=0 and Duel.GetFlagEffect(1,id)==0 then
+	if Duel.GetLP(1)<=0 and Duel.GetFlagEffect(1,id)==0 and Duel.SendtoGrave(sg2,REASON_EFFECT+REASON_REPLACE)>0 then
 		Duel.SetLP(1,0)
 		Duel.Recover(1,4000,REASON_EFFECT)
 		Duel.RegisterFlagEffect(1,id,nil,0,1)
-		local sg=Duel.GetMatchingGroup(s.cfilter,1,LOCATION_ONFIELD,0,nil)
-		Duel.SendtoGrave(sg,REASON_EFFECT+REASON_REPLACE)
 	end
+	Duel.RegisterFlagEffect(0,id+1,nil,0,1)
+	Duel.RegisterFlagEffect(1,id+1,nil,0,1)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttacker():IsControler(1-tp) and Duel.GetAttackTarget()==nil

@@ -18,12 +18,13 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,sg:GetCount(),0,0)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		Duel.SetChainLimit(cm.chainlm)
+		Duel.SetChainLimit(cm.chainlm(c))
 	end
 end
-function cm.chainlm(e,rp,tp)
-	local seq=e:GetLabel()
-	return aux.GetColumn(c,tp)==seq
+function cm.chainlm(c)
+	return function(e,ep,tp)
+		return tp==ep or not e:GetHandler():GetColumnGroup():IsContains(c)
+	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -42,7 +43,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 					Duel.SendtoHand(tc,rtp,REASON_EFFECT)
 				end
 			end
-			tc=sg:GetNext()	
+			tc=sg:GetNext() 
 		end
 	end
 end
