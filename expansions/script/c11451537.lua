@@ -48,6 +48,156 @@ function cm.initial_effect(c)
 	e5:SetCode(m)
 	e5:SetRange(LOCATION_MZONE)
 	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetCode(EFFECT_DECREASE_TRIBUTE)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetTargetRange(LOCATION_HAND,LOCATION_HAND)
+	e6:SetTarget(aux.TRUE)
+	e6:SetValue(cm.decval)
+	--c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD)
+	e7:SetCode(EFFECT_SUMMON_COST)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetTargetRange(LOCATION_HAND,LOCATION_HAND)
+	e7:SetCost(cm.costchk)
+	e7:SetOperation(cm.costop)
+	--c:RegisterEffect(e7)
+	if not cm.global_check then
+		cm.global_check=true
+		local _CheckTribute=Duel.CheckTribute
+		local _SelectTribute=Duel.SelectTribute
+		local _Release=Duel.Release
+		function Duel.CheckTribute(c,mi,ma,mg,top,...)
+			local tp=c:GetControler()
+			local xg=Duel.GetMatchingGroup(cm.tcfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
+			if #xg==0 then return _CheckTribute(c,mi,ma,mg,top,...) end
+			local og=Group.CreateGroup()
+			for oc in aux.Next(xg) do og:Merge(oc:GetOverlayGroup()) end
+			og=og:Filter(Card.IsType,nil,TYPE_MONSTER)
+			local eset4={c:IsHasEffect(EFFECT_TRIBUTE_LIMIT)}
+			if #eset4>0 then
+				for _,te in pairs(eset4) do
+					local val=te:GetValue()
+					if aux.GetValueType(val)=="function" then
+						for oc in aux.Next(og) do
+							if val(te,oc) then og:RemoveCard(oc) end
+						end
+					end
+				end
+			end
+			if #og>=mi and Duel.GetMZoneCount(top)>0 then return true end
+			return _CheckTribute(c,mi-#og,ma,mg,top,...)
+		end
+		function Duel.SelectTribute(tp,c,mi,ma,mg,...)
+			local g=mg or Duel.GetTributeGroup(c)
+			local xg=Duel.GetMatchingGroup(cm.tcfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+			if #xg==0 then return _SelectTribute(tp,c,mi,ma,mg,...) end
+			local og=Group.CreateGroup()
+			for oc in aux.Next(xg) do og:Merge(oc:GetOverlayGroup()) end
+			og=og:Filter(Card.IsType,nil,TYPE_MONSTER)
+			local eset4={c:IsHasEffect(EFFECT_TRIBUTE_LIMIT)}
+			if #eset4>0 then
+				for _,te in pairs(eset4) do
+					local val=te:GetValue()
+					if aux.GetValueType(val)=="function" then
+						for oc in aux.Next(og) do
+							if val(te,oc) then og:RemoveCard(oc) end
+						end
+					end
+				end
+			end
+			g:Merge(og)
+			local tp=c:GetControler()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TRIBUTE)
+			local sg=g:SelectSubGroup(tp,cm.fselect,false,mi,ma)
+			--sg:KeepAlive()
+			return sg
+		end
+		function Duel.Release(sg,r)
+			if r&(REASON_SUMMON+REASON_MATERIAL)~=REASON_SUMMON+REASON_MATERIAL then return _Release(sg,r) end
+			local xg=Duel.GetMatchingGroup(cm.tcfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
+			if #xg==0 then return _Release(sg,r) end
+			local tab={}
+			local og=Group.CreateGroup()
+			local tab={}
+			for oc in aux.Next(xg) do
+				tab[oc]=oc:GetOverlayGroup()
+				og:Merge(tab[oc])
+			end
+			og=og:Filter(Card.IsType,nil,TYPE_MONSTER)
+			local eset4={c:IsHasEffect(EFFECT_TRIBUTE_LIMIT)}
+			if #eset4>0 then
+				for _,te in pairs(eset4) do
+					local val=te:GetValue()
+					if aux.GetValueType(val)=="function" then
+						for oc in aux.Next(og) do
+							if val(te,oc) then og:RemoveCard(oc) end
+						end
+					end
+				end
+			end
+			local sg2=Group.__band(og,sg)
+			sg:Sub(sg2)
+			local tg=Group.CreateGroup()
+			if #sg2>0 then
+				Duel.SendtoGrave(sg2,r|REASON_COST)
+				tg=Duel.GetOperatedGroup()
+			end
+			_Release(sg,r)
+			if #tg>0 then
+				for ec in aux.Next(xg) do
+					local ct=#Group.__band(tab[ec],tg)
+					if ct>0 then
+						local e1=Effect.CreateEffect(ec)
+						e1:SetType(EFFECT_TYPE_SINGLE)
+						e1:SetCode(EFFECT_UPDATE_ATTACK)
+						e1:SetValue(ct*1050)
+						e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+						ec:RegisterEffect(e1)
+					end
+				end
+			end
+		end
+	end
+end
+function cm.tdfilter(c)
+	return c:IsAbleToDeckOrExtraAsCost() and not (cm[1] and aux.GetValueType(cm[1])=="Group" and cm[1]:IsContains(c))
+end
+function cm.costchk(e,te_or_c,tp)
+	e:SetLabelObject(te_or_c)
+	return true
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if cm[0] then return end
+	local xg=Duel.GetMatchingGroup(cm.tcfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if #xg==0 then return end
+	local og=Group.CreateGroup()
+	for oc in aux.Next(xg) do og:Merge(oc:GetOverlayGroup()) end
+	og=og:Filter(Card.IsType,nil,TYPE_MONSTER)
+	local tp=tc:GetControler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TRIBUTE)
+	local sg=og:SelectSubGroup(tp,cm.fselect,false,mi,ma)
+	tc:SetMaterial(sg)
+	local ct=Duel.SendtoGrave(sg,REASON_SUMMON+REASON_COST+REASON_MATERIAL)
+	if ct>0 then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(ct*1050)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		e:GetHandler():RegisterEffect(e1)
+	end
+	cm[0]=tc
+end
+function cm.decval(e,c)
+	local xg=Duel.GetMatchingGroup(cm.tcfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local og=Group.CreateGroup()
+	for oc in aux.Next(xg) do og:Merge(oc:GetOverlayGroup()) end
+	og=og:Filter(Card.IsType,nil,TYPE_MONSTER)
+	return #og
 end
 function cm.xyzcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_BATTLE_STEP and e:GetHandler():IsSpecialSummonable(SUMMON_TYPE_XYZ)
@@ -117,28 +267,58 @@ function cm.tcfilter(c)
 end
 function cm.otcon(e,c,minc)
 	if c==nil then return true end
+	local eset1={c:IsHasEffect(EFFECT_LIMIT_SUMMON_PROC)}
+	if #eset1>0 then return false end
+	local eset2={c:IsHasEffect(EFFECT_SUMMON_PROC)}
+	local eset3={c:IsHasEffect(EFFECT_SET_PROC)}
+	--if #eset2>1 or #eset3>1 then return false end
 	local xg=Duel.GetMatchingGroup(cm.tcfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if #xg==0 then return false end
 	local og=Group.CreateGroup()
 	for oc in aux.Next(xg) do og:Merge(oc:GetOverlayGroup()) end
-	local ct=og:FilterCount(Card.IsType,nil,TYPE_MONSTER)
-	if ct==0 then return false end
+	og=og:Filter(Card.IsType,nil,TYPE_MONSTER)
+	local eset4={c:IsHasEffect(EFFECT_TRIBUTE_LIMIT)}
+	if #eset4>0 then
+		for _,te in pairs(eset4) do
+			local val=te:GetValue()
+			if aux.GetValueType(val)=="function" then
+				for oc in aux.Next(og) do
+					if val(te,oc) then og:RemoveCard(oc) end
+				end
+			end
+		end
+	end
+	if #og==0 then return false end
 	local tp=c:GetControler()
 	local mi,ma=c:GetTributeRequirement()
-	return ma>0 and minc<=ma and ((math.max(mi,minc)<=ct and Duel.GetMZoneCount(tp)>0) or Duel.CheckTribute(c,math.max(1,math.max(mi,minc)-ct)))
+	return ma>0 and minc<=ma and ((math.max(mi,minc)<=#og and Duel.GetMZoneCount(tp)>0) or _CheckTribute(c,math.max(1,math.max(mi,minc)-#og)))
 end
 function cm.fselect(g)
 	return Duel.GetMZoneCount(tp,g)>0
 end
 function cm.otop(e,tp,eg,ep,ev,re,r,rp,c)
-	local ec=e:GetHandler()
 	local mi,ma=c:GetTributeRequirement()
 	local g=Duel.GetTributeGroup(c)
 	local xg=Duel.GetMatchingGroup(cm.tcfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if #xg==0 then return end
 	local og=Group.CreateGroup()
-	for oc in aux.Next(xg) do og:Merge(oc:GetOverlayGroup()) end
+	local tab={}
+	for oc in aux.Next(xg) do
+		tab[oc]=oc:GetOverlayGroup()
+		og:Merge(tab[oc])
+	end
 	og=og:Filter(Card.IsType,nil,TYPE_MONSTER)
+	local eset4={c:IsHasEffect(EFFECT_TRIBUTE_LIMIT)}
+	if #eset4>0 then
+		for _,te in pairs(eset4) do
+			local val=te:GetValue()
+			if aux.GetValueType(val)=="function" then
+				for oc in aux.Next(og) do
+					if val(te,oc) then og:RemoveCard(oc) end
+				end
+			end
+		end
+	end
 	g:Merge(og)
 	local tp=c:GetControler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TRIBUTE)
@@ -146,14 +326,23 @@ function cm.otop(e,tp,eg,ep,ev,re,r,rp,c)
 	c:SetMaterial(sg)
 	local sg2=Group.__band(og,sg)
 	sg:Sub(sg2)
-	local ct=Duel.SendtoGrave(sg2,REASON_SUMMON+REASON_COST+REASON_MATERIAL)
+	local tg=Group.CreateGroup()
+	if #sg2>0 then
+		Duel.SendtoGrave(sg2,REASON_SUMMON+REASON_COST+REASON_MATERIAL)
+		tg=Duel.GetOperatedGroup()
+	end
 	Duel.Release(sg,REASON_SUMMON+REASON_MATERIAL)
-	if ct>0 then
-		local e1=Effect.CreateEffect(ec)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(ct*1050)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		ec:RegisterEffect(e1)
+	if #tg>0 then
+		for ec in aux.Next(xg) do
+			local ct=#Group.__band(tab[ec],tg)
+			if ct>0 then
+				local e1=Effect.CreateEffect(ec)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_UPDATE_ATTACK)
+				e1:SetValue(ct*1050)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+				ec:RegisterEffect(e1)
+			end
+		end
 	end
 end
