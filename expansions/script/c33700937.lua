@@ -37,7 +37,7 @@ function s.xyzcheck(g)
 	return g:GetClassCount(Card.GetCode)==3
 end
 function s.ovfilter(c)
-	return c:IsFaceup() and c:IsMonster(TYPE_XYZ) and c:IsSetCard(0x442) and not c:IsCode(id)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x442) and not c:IsCode(id)
 end
 function s.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end

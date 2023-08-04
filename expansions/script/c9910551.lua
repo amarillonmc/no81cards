@@ -7,7 +7,7 @@ function c9910551.initial_effect(c)
 	Txjp.AddTgFlag(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_REMOVE+CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCost(c9910551.thcost)

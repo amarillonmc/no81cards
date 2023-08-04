@@ -64,11 +64,12 @@ function c67200300.ctcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c67200300.filter(c,tp)
-	return c:IsFaceup() and c:IsControlerCanBeChanged()
+	return c:IsFaceup() and c:IsControlerCanBeChanged(true)
 end
 function c67200300.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c67200300.filter(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c67200300.filter,tp,0,LOCATION_MZONE,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c67200300.filter,tp,0,LOCATION_MZONE,1,nil,tp)
+		and Duel.GetMZoneCount(tp,e:GetHandler(),tp,LOCATION_REASON_CONTROL)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
 	local g=Duel.SelectTarget(tp,c67200300.filter,tp,0,LOCATION_MZONE,1,1,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,g,1,0,0)
