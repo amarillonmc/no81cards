@@ -90,7 +90,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 			res=(c:CheckActivateEffect(false,false,false)~=nil)
 		end
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		return res and ((ft>0 and c:IsLocation(LOCATION_HAND)) or (((Duel.GetLocationCountFromEx(tp,tp,nil,c,0x60)>0 and ft>0) or (Duel.GetLocationCountFromEx(tp,tp,nil,c,0x1f)>0 and ft>1)) and c:IsLocation(LOCATION_EXTRA)))
+		return res and ((ft>1 and c:IsLocation(LOCATION_HAND)) or (((Duel.GetLocationCountFromEx(tp,tp,nil,c,0x60)>0 and ft>0) or (Duel.GetLocationCountFromEx(tp,tp,nil,c,0x1f)>0 and ft>1)) and c:IsLocation(LOCATION_EXTRA)))
 	end
 end
 function cm.spfilter(c,e,tp)
