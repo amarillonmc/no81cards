@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.filter(c,e)
-	return c:GetPreviousLocation()==LOCATION_DECK and c:IsOnField() and not ((Duel.CheckEvent(EVENT_SUMMON_SUCCESS) or Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS)) and e:GetCode()==EVENT_MOVE and c:IsLocation(LOCATION_MZONE))
+	return c:GetPreviousLocation()==LOCATION_DECK and c:IsOnField() and (c:IsStatus(STATUS_EFFECT_ENABLED) or not c:IsLocation(LOCATION_MZONE) or c:IsStatus(STATUS_CHAINING) or c:IsFacedown()) and not ((Duel.CheckEvent(EVENT_SUMMON_SUCCESS) or Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS)) and e:GetCode()==EVENT_MOVE and c:IsLocation(LOCATION_MZONE))
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil,e)
@@ -46,10 +46,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CUSTOM+m)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetOperation(cm.desop3)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) local g=eg:Filter(cm.filter,nil,e) Duel.SendtoDeck(g,nil,2,REASON_RULE) end)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,0)
-end
-function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(cm.filter,nil,e)
-	Duel.SendtoDeck(g,nil,2,REASON_RULE)
 end
