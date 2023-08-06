@@ -43,7 +43,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.winop)  
 	c:RegisterEffect(e4)   
 end
-cm.xyz_number=88  
+aux.xyz_number[m]=88
 function cm.ovfilter(c)  
 	return c:IsFaceup() and c:IsSetCard(0x1083) and c:IsRankBelow(8)
 end  

@@ -4278,6 +4278,37 @@ function cm.RabbitTeamspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local ct=Duel.GetFlagEffect(tp,num)
 	Duel.ResetFlagEffect(tp,num)
 	for i=1,ct-1 do Duel.RegisterFlagEffect(tp,num,RESET_PHASE+PHASE_END,0,1) end
+    local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_SPSUMMON_NEGATED)
+	e2:SetOperation(cm.RTreset1)
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetLabelObject(e2)
+	e3:SetOperation(cm.RTreset2)
+	Duel.RegisterEffect(e3,tp)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_CUSTOM+53728000)
+	e4:SetLabelObject(e3)
+	e4:SetOperation(cm.RTreset3)
+	Duel.RegisterEffect(e4,tp)
+end
+function cm.RTreset1(e,tp,eg,ep,ev,re,r,rp)
+    Duel.ShuffleDeck(tp)
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+53728000,re,r,rp,ep,ev)
+	e:Reset()
+end
+function cm.RTreset2(e,tp,eg,ep,ev,re,r,rp)
+    Duel.ShuffleDeck(tp)
+    if e:GetLabelObject() then e:GetLabelObject():Reset() end
+    e:Reset()
+end
+function cm.RTreset3(e,tp,eg,ep,ev,re,r,rp)
+    if e:GetLabelObject() then e:GetLabelObject():Reset() end
+    e:Reset()
 end
 function cm.RabbitTeamrecon(e)
 	local c=e:GetHandler()

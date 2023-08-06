@@ -1,7 +1,6 @@
 --终至楼兰
 --21.06.20
-local m=11451577
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--act in hand
 	local e0=Effect.CreateEffect(c)
@@ -11,6 +10,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	--activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetHintTiming(TIMING_STANDBY_PHASE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
