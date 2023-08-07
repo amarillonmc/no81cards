@@ -27,10 +27,10 @@ function cm.filter(c,tp)
 	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) --and (c:GetActivateEffect():IsActivatable(tp,true,true) or c:CheckActivateEffect(false,false,false)~=nil)
 end
 function cm.filter0(c)
-	return (not c:IsLocation(LOCATION_REMOVED) or c:IsFaceup()) and c:IsCanBeFusionMaterial()
+	return c:IsCanBeFusionMaterial() --and (not c:IsLocation(LOCATION_REMOVED) or c:IsFaceup())
 end
 function cm.filter1(c,e)
-	return (not c:IsLocation(LOCATION_REMOVED) or c:IsFaceup()) and c:IsCanBeFusionMaterial() and not c:IsImmuneToEffect(e)
+	return c:IsCanBeFusionMaterial() and not c:IsImmuneToEffect(e) --and (not c:IsLocation(LOCATION_REMOVED) or c:IsFaceup())
 end
 function cm.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)

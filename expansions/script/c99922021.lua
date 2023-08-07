@@ -11,12 +11,13 @@ function s.initial_effect(c)
 	--atk/set
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetCategory(CATEGORY_ATKCHANGE)	
+	e2:SetCategory(CATEGORY_ATKCHANGE)  
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_DAMAGE_STEP+TIMING_END_PHASE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
+	e2:SetCountLimit(1,id+EFFECT_COUNT_CODE_CHAIN)
 	e2:SetTarget(s.atktg)
 	e2:SetOperation(s.atkop)
 	c:RegisterEffect(e2)								
@@ -40,14 +41,14 @@ end
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.atkfilter(chkc) end
 	if chk==0 then return e:GetHandler():IsSSetable() and Duel.IsExistingTarget(s.atkfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetFlagEffect(tp,id)==0 end
-	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)	
-	    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)  
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	   Duel.SelectTarget(tp,s.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	local c=e:GetHandler()		
+	local c=e:GetHandler()	  
 	if c:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsRelateToEffect(e) and Duel.SSet(tp,c)~=0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
