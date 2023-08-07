@@ -23,7 +23,7 @@ function c9910182.initial_effect(c)
 end
 function c9910182.condition(e,tp,eg,ep,ev,re,r,rp)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return re:IsActiveType(TYPE_MONSTER) and (LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)&loc~=0
+	return re:IsActiveType(TYPE_MONSTER) and (LOCATION_HAND+LOCATION_GRAVE)&loc~=0
 end
 function c9910182.cfilter(c)
 	return c:IsSetCard(0x3954) and c:IsFacedown()
