@@ -54,7 +54,7 @@ end
 
 --e1
 function c64800120.cfilter(c)
-	return (c:IsSetCard(0x341a) or c:IsLevelBelow(4)) and c:IsDiscardable()
+	return (c:IsSetCard(0x341a) or c:IsLevelBelow(4)) and c:IsType(TYPE_MONSTER) and c:IsDiscardable(REASON_EFFECT)
 end
 function c64800120.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c64800120.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) end
@@ -63,7 +63,7 @@ function c64800120.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c64800120.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	if Duel.DiscardHand(tp,c64800120.cfilter,1,1,REASON_EFFECT+REASON_DISCARD,e:GetHandler()) and c:IsRelateToEffect(e) then
+	if Duel.DiscardHand(tp,c64800120.cfilter,1,1,REASON_EFFECT+REASON_DISCARD,c)>0 and c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
