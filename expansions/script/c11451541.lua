@@ -137,36 +137,38 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	local ac=g:GetFirst()
 	local bc=g:GetNext()
 	local e1=Effect.CreateEffect(e:GetHandler())
+	local eid=e1:GetFieldID()
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(0,1)
+	e1:SetLabel(eid)
 	e1:SetCondition(cm.con)
 	if ac:IsAttribute(bc:GetAttribute()) and (ac:GetAttribute()==bc:GetAttribute() or Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))==0) then
-		ac:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
-		bc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+		ac:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,2))
+		bc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,2))
 		e1:SetTarget(cm.sumlimit)
 	else
-		ac:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
-		bc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
+		ac:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,3))
+		bc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,3))
 		e1:SetTarget(cm.sumlimit2)
 	end
 	Duel.RegisterEffect(e1,tp)
 end
-function cm.cfilter2(c)
-	return c:IsFaceup() and c:GetFlagEffect(m)~=0
+function cm.cfilter2(c,eid)
+	return c:IsFaceup() and c:GetFlagEffect(m)~=0 and c:GetFlagEffectLabel(m)==eid
 end
 function cm.con(e)
-	return Duel.IsExistingMatchingCard(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	return Duel.IsExistingMatchingCard(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,1,nil,e:GetLabel())
 end
 function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp)
-	local g=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,nil,e:GetLabel())
 	local ac=g:GetFirst()
 	local bc=g:GetNext()
 	return not (c:IsAttribute(ac:GetAttribute()) and (not bc or c:IsAttribute(bc:GetAttribute())))
 end
 function cm.sumlimit2(e,c,sump,sumtype,sumpos,targetp)
-	local g=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,nil,e:GetLabel())
 	local ac=g:GetFirst()
 	local bc=g:GetNext()
 	return not (not c:IsAttribute(ac:GetAttribute()) and (not bc or not c:IsAttribute(bc:GetAttribute())))

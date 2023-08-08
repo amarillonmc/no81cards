@@ -172,4 +172,6 @@ function cm.sortop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+	if #mg[2]>0 then Duel.ConfirmCards(tp,mg[2]) end
+	if #mg[1]>0 then Duel.ConfirmCards(1-tp,mg[1]) end
 end
