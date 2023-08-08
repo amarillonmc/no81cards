@@ -27,7 +27,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function cm.thfilter(c,tp)
-	return c:IsSetCard(0x6410) and c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)
+	return c:IsSetCard(0x9da0) and c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)
 		and  c:GetActivateEffect():IsActivatable(tp)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -69,10 +69,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.filter1(c)
-	return c:IsSetCard(0x6410) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.filter2(c,e,tp)
-	return c:IsSetCard(0x6410) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.filter3(c)
 	return c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)
