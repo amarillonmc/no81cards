@@ -1,7 +1,6 @@
 --方舟骑士-稀音
 --21.08.27
-local m=11451622
-local cm=_G["c"..m]
+local cm,m=GetID()
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--link summon
@@ -21,10 +20,10 @@ function cm.initial_effect(c)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
-	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.spcon2)
 	c:RegisterEffect(e2)
 	--immune
@@ -69,7 +68,7 @@ end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial():Filter(Card.IsType,nil,TYPE_TOKEN)
 	local eid=e:GetFieldID()
-	e:SetLabel(eid)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,eid)
 	cm[eid]={}
 	for tc in aux.Next(g) do
 		table.insert(cm[eid],{tc:GetOriginalCode(),cm.getsetcard(tc),TYPES_TOKEN_MONSTER,math.max(0,tc:GetTextAttack()),math.max(0,tc:GetTextDefense()),tc:GetOriginalLevel(),tc:GetOriginalRace(),tc:GetOriginalAttribute()})
@@ -86,8 +85,8 @@ function cm.cfilter(c,tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
-		local lab=e:GetLabelObject():GetLabel()
+		local lab=e:GetHandler():GetFlagEffectLabel(m)
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not lab then return false end
 		local tkset=cm[lab]
 		for i=1,#tkset do
 			if type(tkset[i])=="table" and Duel.IsPlayerCanSpecialSummonMonster(tp,table.unpack(tkset[i])) then return true end
@@ -99,7 +98,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local lab=e:GetLabelObject():GetLabel()
+	local lab=e:GetHandler():GetFlagEffectLabel(m)
 	local tkset=cm[lab]
 	local spset={}
 	for i=1,#tkset do
@@ -109,6 +108,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if #spset==0 then return end
 	while #spset>1 do
+		local token=Duel.CreateToken(tp,spset[1])
 		Duel.Hint(HINT_CARD,tp,spset[1])
 		if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			spset={spset[1]}

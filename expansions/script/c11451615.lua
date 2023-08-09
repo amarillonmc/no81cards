@@ -117,6 +117,8 @@ function cm.ceop(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	if ep~=tp and #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_CARD,0,m)
+		local g=Group.CreateGroup()
+		Duel.ChangeTargetCard(ev,g)
 		Duel.ChangeChainOperation(ev,cm.reop)
 		e:Reset()
 	end

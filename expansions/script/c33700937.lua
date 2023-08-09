@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	aux.AddXyzProcedureLevelFree(c,s.matfilter,s.xyzcheck,3,3,s.ovfilter,aux.Stringid(id,2),s.xyzop)
 	--[[Once per turn: You can detach all materials from this card; this card gains 1 additional attack during each Battle Phase this turn for each material detached.]]
 	local e1=Effect.CreateEffect(c)
-	e1:Desc(0)
+	--e1:Desc(0)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
@@ -21,7 +21,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	--[[If this card destroys a monster(s) by battle while you have no cards with the same name in your GY: You can attach it to this card as material.]]
 	local e2=Effect.CreateEffect(c)
-	e2:Desc(1)
+	--e2:Desc(1)
 	e2:SetType(EFFECT_TYPE_SINGLE|EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_BATTLE_DESTROYING)
@@ -37,7 +37,7 @@ function s.xyzcheck(g)
 	return g:GetClassCount(Card.GetCode)==3
 end
 function s.ovfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x442) and not c:IsCode(id)
+	return c:IsFaceup() and c:IsMonster(TYPE_XYZ) and c:IsSetCard(0x442) and not c:IsCode(id)
 end
 function s.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end

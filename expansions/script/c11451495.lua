@@ -1,6 +1,5 @@
 --贴贴
-local m=11451495
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e0=Effect.CreateEffect(c)
@@ -22,6 +21,8 @@ function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
+	local g=Group.CreateGroup()
+	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,cm.operation)
 	e:Reset()
 end
