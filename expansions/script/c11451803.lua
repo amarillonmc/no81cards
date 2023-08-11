@@ -100,6 +100,11 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge2,0)
 	end
 end
+local _IsActiveType=Effect.IsActiveType
+local _GetActiveType=Effect.GetActiveType
+local _IsType=Card.IsType
+local _GetType=Card.GetType
+local _GetOriginalType=Card.GetOriginalType
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
@@ -121,6 +126,32 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	if not KOISHI_CHECK then
 		Duel.Hint(HINT_CARD,0,code_list[val])
 	else
+		function Effect.GetActiveType(se)
+			if se==te then
+				return TYPE_MONSTER
+			end
+			return _GetActiveType(se)
+		end
+		function Effect.IsActiveType(se,typ)
+			local typ2=se:GetActiveType()
+			return typ&typ2~=0
+		end
+		function Card.GetType(sc)
+			if sc==e:GetHandler() then
+				return TYPE_MONSTER+TYPE_EFFECT
+			end
+			return _GetType(sc)
+		end
+		function Card.IsType(sc,typ)
+			local typ2=sc:GetType()
+			return typ&typ2~=0
+		end
+		function Card.GetOriginalType(sc)
+			if sc==e:GetHandler() then
+				return TYPE_MONSTER+TYPE_EFFECT
+			end
+			return _GetOriginalType(sc)
+		end
 		c:SetEntityCode(code_list[val],false)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -128,7 +159,15 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EVENT_CHAINING)
 		e1:SetCountLimit(1)
 		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return re==te end)
-		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) c:SetEntityCode(m,false) Duel.ShuffleHand(tp) end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+							c:SetEntityCode(m,false)
+							Duel.ShuffleHand(tp)
+							Effect.IsActiveType=_IsActiveType
+							Effect.GetActiveType=_GetActiveType
+							Card.IsType=_IsType
+							Card.GetType=_GetType
+							Card.GetOriginalType=_GetOriginalType
+						end)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 	end
@@ -225,6 +264,15 @@ function cm.cost6(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.IsPlayerCanDraw(tp,1) end
+	--[[if KOISHI_CHECK then
+		e:GetHandler():SetEntityCode(m,false)
+		Duel.ShuffleHand(tp)
+		Effect.IsActiveType=_IsActiveType
+		Effect.GetActiveType=_GetActiveType
+		Card.IsType=_IsType
+		Card.GetType=_GetType
+		Card.GetOriginalType=_GetOriginalType
+	end--]]
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end

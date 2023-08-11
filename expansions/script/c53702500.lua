@@ -2500,7 +2500,7 @@ function cm.HartrazCheck(c)
 	e0:SetRange(0xff)
 	e0:SetCost(cm.Hztfcost)
 	e0:SetOperation(cm.Hztfop)
-	c:RegisterEffect(e0)
+	--c:RegisterEffect(e0)
 end
 function cm.Hztfcost(e,c,tp,st)
 	if bit.band(st,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK then
@@ -2656,7 +2656,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 	local rstg=Duel.GetMatchingGroup(function(c)return c.Snnm_Ef_Rst end,0,0xff,0xff,nil)
 	local rstt={}
 	for rstc in aux.Next(rstg) do if not cm.IsInTable(rstc:GetOriginalCode(),rstt) then table.insert(rstt,rstc:GetOriginalCode()) end end
-	if cm.IsInTable(53759012,rstt) then 
+	if cm.IsInTable(53759012,rstt) then
 		c53759012[1]=Effect.SetLabelObject
 		Effect.SetLabelObject=function(se,le)
 			if aux.GetValueType(le)=="Effect" then
@@ -2671,6 +2671,22 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			return c53759012[1](se,le)
 		end
 	end
+	if cm.IsInTable(53765001,rstt) then
+		AD_Helltaker=Effect.SetLabelObject
+		Effect.SetLabelObject=function(se,le)
+			if aux.GetValueType(le)=="Effect" then
+				local hte1=Effect.CreateEffect(se:GetOwner())
+				hte1:SetType(EFFECT_TYPE_FIELD)
+				hte1:SetCode(53765050)
+				hte1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+				AD_Helltaker(hte1,se)
+				hte1:SetTargetRange(1,1)
+				Duel.RegisterEffect(hte1,0)
+			end
+			return AD_Helltaker(se,le)
+		end
+	end
+	Duel.RegisterFlagEffect(0,53764007,0,0,0)
 	local code=e:GetHandler():GetOriginalCode()
 	Card.RegisterEffect=function(sc,se,bool)
 		if cm.IsInTable(25000008,rstt) then
@@ -2795,6 +2811,8 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Card.RegisterEffect=reg
 	if cm.IsInTable(53759012,rstt) then Effect.SetLabelObject=c53759012[1] end
+	if cm.IsInTable(53765001,rstt) then Effect.SetLabelObject=AD_Helltaker end
+	Duel.ResetFlagEffect(0,53764007)
 	e:Reset()
 end
 function cm.reni(c,sdes,scat,styp,spro,scod,sran,sct,sht,scon,scos,stg,sop)
@@ -4278,7 +4296,7 @@ function cm.RabbitTeamspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local ct=Duel.GetFlagEffect(tp,num)
 	Duel.ResetFlagEffect(tp,num)
 	for i=1,ct-1 do Duel.RegisterFlagEffect(tp,num,RESET_PHASE+PHASE_END,0,1) end
-    local e2=Effect.CreateEffect(c)
+	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_SPSUMMON_NEGATED)
 	e2:SetOperation(cm.RTreset1)
@@ -4297,18 +4315,18 @@ function cm.RabbitTeamspop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.RegisterEffect(e4,tp)
 end
 function cm.RTreset1(e,tp,eg,ep,ev,re,r,rp)
-    Duel.ShuffleDeck(tp)
+	Duel.ShuffleDeck(tp)
 	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+53728000,re,r,rp,ep,ev)
 	e:Reset()
 end
 function cm.RTreset2(e,tp,eg,ep,ev,re,r,rp)
-    Duel.ShuffleDeck(tp)
-    if e:GetLabelObject() then e:GetLabelObject():Reset() end
-    e:Reset()
+	Duel.ShuffleDeck(tp)
+	if e:GetLabelObject() then e:GetLabelObject():Reset() end
+	e:Reset()
 end
 function cm.RTreset3(e,tp,eg,ep,ev,re,r,rp)
-    if e:GetLabelObject() then e:GetLabelObject():Reset() end
-    e:Reset()
+	if e:GetLabelObject() then e:GetLabelObject():Reset() end
+	e:Reset()
 end
 function cm.RabbitTeamrecon(e)
 	local c=e:GetHandler()
@@ -4462,4 +4480,61 @@ function cm.Ranclockspop2(att2)
 			Duel.SpecialSummonComplete()
 		end
 	end
+end
+function cm.TentuScout(c)
+	aux.EnableSpiritReturn(c,EVENT_SUMMON_SUCCESS,EVENT_FLIP)
+	local e1=Effect.CreateEffect(c)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.FALSE)
+	c:RegisterEffect(e1)
+	--[[local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_TRIBUTE_LIMIT)
+	e2:SetValue(function(e,c)
+		return (not c:IsAttribute(e:GetHandler():GetAttribute()) and not c:IsType(TYPE_SPIRIT)) or (c:IsFacedown() and c:IsControler(1-e:GetHandlerPlayer()))
+	end)
+	c:RegisterEffect(e2)--]]
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetCode(EFFECT_ADD_EXTRA_TRIBUTE)
+	e3:SetTargetRange(0,LOCATION_MZONE)
+	e3:SetTarget(function(e,c)return c:IsFaceup() and c:IsAttribute(e:GetHandler():GetAttribute())end)
+	e3:SetValue(POS_FACEUP_ATTACK)
+	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetCode(EVENT_TO_GRAVE)
+	e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+		local c=e:GetHandler()
+		return c:IsReason(REASON_SUMMON) and c:IsReason(REASON_MATERIAL) and c:IsReason(REASON_RELEASE)
+	end)
+	e4:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		e:GetHandler():RegisterFlagEffect(53764000,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	end)
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(1104)
+	e5:SetCategory(CATEGORY_TOHAND)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e5:SetCode(EVENT_PHASE+PHASE_END)
+	e5:SetRange(LOCATION_GRAVE)
+	e5:SetCountLimit(1)
+	e5:SetCondition(cm.thcon)
+	e5:SetTarget(cm.thtg)
+	e5:SetOperation(cm.thop)
+	c:RegisterEffect(e5)
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(53764000)>0
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsRelateToEffect(e) then Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT) end
 end

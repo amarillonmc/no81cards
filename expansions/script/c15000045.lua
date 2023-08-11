@@ -7,14 +7,7 @@ function cm.initial_effect(c)
 	--fusion material  
 	c:EnableReviveLimit()  
 	aux.AddFusionProcFunRep(c,c15000045.ffilter,2,false) 
-	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE+LOCATION_PZONE,0,Duel.Release,REASON_COST+REASON_MATERIAL)
-	--spsummon condition
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(aux.fuslimit)
-	c:RegisterEffect(e0)
+	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE+LOCATION_PZONE,0,Duel.Release,REASON_COST)
 	--synchro custom  
 	local e1=Effect.CreateEffect(c)  
 	e1:SetType(EFFECT_TYPE_SINGLE)  
@@ -91,10 +84,6 @@ function c15000045.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)
 		local sg=cg:Select(tp,minct,1,nil)  
 		if sg:GetCount()==0 then break end  
 		g:Merge(sg)  
-	end  
-	if g:IsExists(Card.IsLocation,1,nil,LOCATION_PZONE) then  
-		for tc in aux.Next(g) do  
-		end  
 	end  
 	Duel.SetSynchroMaterial(g)  
 end

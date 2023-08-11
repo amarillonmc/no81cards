@@ -37,7 +37,7 @@ function cm.cfilter(c)
 	return not c:IsSetCard(0x10b)
 end
 function cm.sprcon(e,tp,eg,ep,ev,re,r,rp)
-	local ag=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
+	local ag=Duel.GetMatchingGroup(Card.IsFaceup,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
 	return ag:GetCount()==0 or ag:FilterCount(cm.cfilter,nil)==0
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp)

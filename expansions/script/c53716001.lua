@@ -196,6 +196,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			table.insert(t2,4)
 		end
 	end
+	--[[Waiting for further repair
 	for _,te3 in pairs(re3) do
 		if not te3:GetLabelObject() then
 			local cost=te3:GetCost()
@@ -207,7 +208,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 		end
-	end
+	end--]]
 	local dc=Duel.CreateToken(tp,m+50)
 	local de=dc:GetActivateEffect()
 	local ae2={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
@@ -220,6 +221,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			table.insert(t4,4)
 		end
 	end
+	--[[Waiting for further repair
 	for _,te3 in pairs(ae3) do
 		if not te3:GetLabelObject() then
 			local cost=te3:GetCost()
@@ -231,7 +233,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 		end
-	end
+	end--]]
 	local ret1,ret2={},{}
 	for k,v1 in pairs(t1) do
 		local equal=false
