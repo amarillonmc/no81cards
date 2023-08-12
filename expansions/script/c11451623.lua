@@ -1,7 +1,6 @@
 --闪光魔术栗子球
 --21.08.25
-local m=11451623
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--tohand
 	local e1=Effect.CreateEffect(c)
@@ -59,11 +58,23 @@ function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetCondition(cm.flcon)
 	e1:SetTarget(cm.imlimit)
 	e1:SetValue(cm.efilter)
 	e1:SetOwnerPlayer(tp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(0x10000000+m)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetTargetRange(1,0)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e:GetHandler():RegisterEffect(e2)
+end
+function cm.flcon(e)
+	return Duel.GetFlagEffect(e:GetHandlerPlayer(),m)~=0
 end
 function cm.imlimit(e,c)
 	return c:IsFaceup() and c:IsSetCard(0xa4)
