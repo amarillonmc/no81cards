@@ -29,15 +29,19 @@ function cm.initial_effect(c)
 	e3:SetTarget(c64600101.thtg)
 	e3:SetOperation(c64600101.thop)
 	c:RegisterEffect(e3)
-	--inactivatable
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_CANNOT_INACTIVATE)
-	e4:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,64601101)
-	e4:SetValue(c64600101.efilter)
-	c:RegisterEffect(e4)
-	
+	--change effect
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(64600101,1))
+	e2:SetCategory(CATEGORY_RECOVER)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_DESTROYED)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,64610101)
+	e2:SetCondition(c64600101.chcon)
+	e2:SetTarget(c64600101.rectg)
+	e2:SetOperation(c64600101.recop)
+	c:RegisterEffect(e2)
 end
 function c64600101.condition(e,c)
 	if c==nil then return true end
@@ -70,12 +74,25 @@ function c64600101.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c64600101.efilter(e,ct)
-	local p=e:GetHandlerPlayer()
-	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	local tc=te:GetHandler()
-	return p==tp and tc:IsCode(53129443)
+function c64600101.cfilter(c)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsReason(REASON_EFFECT) and not c:GetReasonEffect():IsHasProperty(EFFECT_FLAG_CARD_TARGET)
 end
-
-
+function c64600101.chcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c64600101.cfilter,1,nil)
+end
+function c64600101.recfilter(c)
+	return c:IsFaceup() and aux.IsCodeListed(c,53129443)
+end
+function c64600101.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local Rec=Duel.GetMatchingGroupCount(c64600101.recfilter,tp,LOCATION_GRAVE,0,nil)*500
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(Rec)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,Rec)
+end
+function c64600101.recop(e,tp,eg,ep,ev,re,r,rp)
+	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	local Rec=Duel.GetMatchingGroupCount(c64600101.recfilter,tp,LOCATION_GRAVE,0,nil)*500
+	Duel.Recover(p,Rec,REASON_EFFECT)
+end
 

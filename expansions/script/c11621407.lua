@@ -67,14 +67,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	--  local ag=Duel.SelectMatchingCard(tp,cm.filter,tp,0,LOCATION_MZONE,1,1,nil)
 	--  if ag:GetCount()>0 then
-	--	  Duel.HintSelection(ag)
-	--	  Duel.BreakEffect()
-	--	  local e1=Effect.CreateEffect(e:GetHandler())
-	--	 e1:SetType(EFFECT_TYPE_SINGLE)
-	--	  e1:SetCode(EFFECT_UPDATE_ATTACK)
-	--	  e1:SetValue(-1000)
-	--	  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	--	  ag:GetFirst():RegisterEffect(e1)
+	--  Duel.HintSelection(ag)
+	--  Duel.BreakEffect()
+	--  local e1=Effect.CreateEffect(e:GetHandler())
+	--   e1:SetType(EFFECT_TYPE_SINGLE)
+	--  e1:SetCode(EFFECT_UPDATE_ATTACK)
+	--  e1:SetValue(-1000)
+	--  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	--  ag:GetFirst():RegisterEffect(e1)
 	--  end
 	--end
 end
@@ -96,8 +96,7 @@ end
 function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local c=e:GetHandler()
-	if not tc then return end
-	if tc:IsRelateToEffect(e) and c:IsSSetable() and not tc:IsImmuneToEffect(e) then
+	if tc:IsRelateToEffect(e) and c:IsRelateToEffect(e) and c:IsSSetable() and not tc:IsImmuneToEffect(e) then
 		Duel.SSet(tp,c)
 		if tc:IsFaceup() and tc:IsControlerCanBeChanged() then
 			local e1=Effect.CreateEffect(c)

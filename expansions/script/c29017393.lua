@@ -1,6 +1,7 @@
 --方舟骑士-嵯峨
 local m=29017393
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 if not Cuoe then
    Cuoe=Cuoe or {}
    ce=Cuoe

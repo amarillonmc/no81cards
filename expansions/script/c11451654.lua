@@ -22,7 +22,7 @@ function cm.filter0(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToGrave()
 end
 function cm.fcheck(tp,sg,fc)
-	return sg:GetClassCount(Card.GetCode)<=1
+	return sg:GetClassCount(Card.GetCode)<=1 and #sg>1
 end
 function cm.gcheck(sg)
 	return sg:GetClassCount(Card.GetCode)<=1

@@ -1,6 +1,5 @@
---旭光与黄昏同在
-local m=60000056
-local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
+local cm,m=lanp.U("设置卡","黄昏+黄昏骑士","旭日与黄昏同在")
 function cm.initial_effect(c)
 	--Effect 1
 	local e0=Effect.CreateEffect(c)
@@ -47,7 +46,7 @@ function cm.initial_effect(c)
 end
 --Effect 1
 function cm.cfilter(c)
-	return c:IsSetCard(0x62a) and c:IsFaceup()
+	return lanc.IsSeries(c,"黄昏") and c:IsFaceup()
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	if not (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) then return false end
@@ -72,7 +71,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --Effect 2
 function cm.togfilter(c)
-	return c:IsSetCard(0x62a) and c:IsAbleToGrave()
+	return lanc.IsSeries(c,"黄昏骑士") and c:IsAbleToGrave()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return  Duel.IsExistingMatchingCard(cm.togfilter,tp,LOCATION_DECK,0,1,nil)
@@ -103,7 +102,7 @@ function cm.con1(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x62a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and lanc.IsSeries(c,"黄昏骑士") and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -1,6 +1,7 @@
 --方舟骑士-白雪
 local m=29047427
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--synchro summon rule

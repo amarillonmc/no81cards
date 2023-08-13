@@ -42,13 +42,6 @@ function c33332211.ovop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and g:GetCount()>0 then 
 		local og=g:Select(tp,1,1,nil) 
 		Duel.Overlay(c,og) 
-		local e1=Effect.CreateEffect(c) 
-		e1:SetType(EFFECT_TYPE_SINGLE) 
-		e1:SetCode(EFFECT_ADD_CODE) 
-		e1:SetRange(LOCATION_MZONE) 
-		e1:SetValue(33332200)  
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
-		c:RegisterEffect(e1) 
 	end 
 end 
 function c33332211.idcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -75,9 +68,20 @@ function c33332211.idop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 		c:RegisterEffect(e2) 
+		local e3=Effect.CreateEffect(c) 
+		e3:SetType(EFFECT_TYPE_SINGLE) 
+		e3:SetCode(EFFECT_ADD_CODE) 
+		e3:SetRange(LOCATION_MZONE) 
+		e3:SetValue(33332200)  
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
+		c:RegisterEffect(e3) 
 		if Duel.IsExistingMatchingCard(c33332211.xovfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,c) and Duel.SelectYesNo(tp,aux.Stringid(33332211,1)) then 
-			local og=Duel.SelectMatchingCard(tp,c33332211.xovfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,1,c) 
-			Duel.Overlay(c,og) 
+			local oc=Duel.SelectMatchingCard(tp,c33332211.xovfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,1,c):GetFirst()
+			local og=oc:GetOverlayGroup()
+			if og:GetCount()>0 then
+				Duel.SendtoGrave(og,REASON_RULE)
+			end 
+			Duel.Overlay(c,oc) 
 		end 
 	end 
 end 

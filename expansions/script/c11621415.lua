@@ -64,25 +64,25 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
 	--local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	--if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-	--	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	--	local ag=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	--	if ag:GetCount()>0 then
-	--		Duel.HintSelection(ag)
-	--		Duel.BreakEffect()
-	--		--immune
-	--		local e1=Effect.CreateEffect(e:GetHandler())
-	--		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	--		e1:SetCode(EFFECT_DESTROY_REPLACE)
-	--		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	--	   e1:SetRange(LOCATION_MZONE)
-	--		e1:SetTarget(cm.reptg)
-	--		e1:SetValue(cm.repval)
-	--		e1:SetLabel(p)
-	--		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	--		--e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	--		ag:GetFirst():RegisterEffect(e1,true)
-	--		ag:GetFirst():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
-	--	end
+	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	--  local ag=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	--  if ag:GetCount()>0 then
+	--	  Duel.HintSelection(ag)
+	--	  Duel.BreakEffect()
+	--	  --immune
+	--	  local e1=Effect.CreateEffect(e:GetHandler())
+	--	  e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	--	  e1:SetCode(EFFECT_DESTROY_REPLACE)
+	--	  e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	--	 e1:SetRange(LOCATION_MZONE)
+	--	  e1:SetTarget(cm.reptg)
+	--	  e1:SetValue(cm.repval)
+	--	  e1:SetLabel(p)
+	--	  e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	--	  --e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	--	  ag:GetFirst():RegisterEffect(e1,true)
+	--	  ag:GetFirst():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+	--  end
 	--end
 end
 function cm.repfilter(c,tp)
@@ -122,7 +122,7 @@ end
 function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local turnp=Duel.GetTurnPlayer()
-	if c:IsSSetable() then
+	if c:IsRelateToEffect(e) and c:IsSSetable() then
 		Duel.SSet(tp,c)
 		local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,turnp,LOCATION_EXTRA,0,nil)
 		Duel.Hint(HINT_SELECTMSG,turnp,HINTMSG_TOGRAVE)

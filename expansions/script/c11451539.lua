@@ -1,7 +1,6 @@
 --霜华绚绽
 --21.06.19
-local m=11451539
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--act in set turn
 	local e0=Effect.CreateEffect(c)

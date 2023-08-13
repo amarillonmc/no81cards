@@ -1,4 +1,5 @@
 --怒号光明
+c29009961.named_with_Arknight=1
 function c29009961.initial_effect(c)
 	--negate
 	local e1=Effect.CreateEffect(c)
@@ -25,7 +26,7 @@ function c29009961.initial_effect(c)
 end
 --negate
 function c29009961.stf(c)
-	return c:IsFaceup() and c:IsSetCard(0x87af)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29009961.condition(e,tp,eg,ep,ev,re,r,rp)
 	return  Duel.IsChainNegatable(ev) and Duel.IsExistingMatchingCard(c29009961.stf,tp,LOCATION_MZONE,0,1,nil)

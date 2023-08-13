@@ -1,11 +1,12 @@
 --方舟骑士-白铁
 local m=29093139
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	aux.AddCodeList(c,29065500,29065502)
 	--Effect 1
 	local e1=Effect.CreateEffect(c)  
-	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCountLimit(1,m)
@@ -14,7 +15,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1) 
 	--Effect 2  
 	local e2=Effect.CreateEffect(c)  
-	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetDescription(aux.Stringid(m,3))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)

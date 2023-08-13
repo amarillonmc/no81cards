@@ -61,18 +61,18 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
 	--local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	--if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-	--	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	--	local ag=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
-	--	if ag:GetCount()>0 then
-	--		Duel.HintSelection(ag)
-	--		Duel.BreakEffect()
-	--		local e1=Effect.CreateEffect(e:GetHandler())
-	--		e1:SetType(EFFECT_TYPE_SINGLE)
-	--		e1:SetCode(EFFECT_UPDATE_ATTACK)
-	--		e1:SetValue(800)
-	--		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	--		ag:GetFirst():RegisterEffect(e1)
-	--	end
+	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	--  local ag=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
+	--  if ag:GetCount()>0 then
+	--	Duel.HintSelection(ag)
+	--	Duel.BreakEffect()
+	--	local e1=Effect.CreateEffect(e:GetHandler())
+	--	e1:SetType(EFFECT_TYPE_SINGLE)
+	--	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	--	e1:SetValue(800)
+	--	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	--	ag:GetFirst():RegisterEffect(e1)
+	--  end
 	--end
 end
 --02
@@ -89,7 +89,7 @@ function cm.ntrtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsSSetable() then
+	if c:IsRelateToEffect(e) and c:IsSSetable() then
 		Duel.SSet(tp,c)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,1,nil)

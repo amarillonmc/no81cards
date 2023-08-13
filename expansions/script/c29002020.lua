@@ -22,13 +22,11 @@ function c29002020.initial_effect(c)
 	--indes
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(29002020,1))
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCountLimit(1)
-	e3:SetTarget(c29002020.itarget)
-	e3:SetOperation(c29002020.ioperation)
+	e3:SetCode(EFFECT_IMMUNE_EFFECT)
+	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetValue(c29002020.efilter)
 	c:RegisterEffect(e3)
 	if not c29002020.global_check then
 		c29002020.global_check=true
@@ -59,7 +57,7 @@ function c29002020.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local x=Duel.GetFlagEffect(0,29002020)
-	return x>=12 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.CheckReleaseGroup(tp,c29002020.cfilter,3,nil)
+	return x>=12 and Duel.CheckReleaseGroup(tp,c29002020.cfilter,3,nil)
 end
 function c29002020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)

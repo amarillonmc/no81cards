@@ -6,7 +6,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_DOUBLE_TRIBUTE)
 	e1:SetValue(cm.dccon)
-	c:RegisterEffect(e1)
+	--c:RegisterEffect(e1)
 	--hand tribute
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e3:SetTargetRange(LOCATION_HAND,0)
 	e3:SetTarget(cm.dccon)
 	e3:SetLabelObject(e2)
-	c:RegisterEffect(e3)
+	--c:RegisterEffect(e3)
 	--search
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_DECKDES+CATEGORY_TOGRAVE)
@@ -35,6 +35,42 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.catg)
 	e4:SetOperation(cm.caop)
 	c:RegisterEffect(e4)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetCode(m)
+	e6:SetRange(LOCATION_HAND)
+	e6:SetCondition(cm.condition)
+	c:RegisterEffect(e6)
+	if not cm.global_check then
+		cm.global_check=true
+		local _RegisterEffect=Card.RegisterEffect
+		function Card.RegisterEffect(c,e,bool)
+			local tp=c:GetControler()
+			local extg=Duel.GetMatchingGroup(cm.extfilter,tp,LOCATION_HAND,0,c)
+			if c:IsLocation(LOCATION_HAND) and e:GetCode()==EFFECT_PUBLIC and e:IsHasType(EFFECT_TYPE_SINGLE) and #extg>0 and Duel.IsPlayerCanDraw(tp,1) then
+				Duel.HintSelection(Group.FromCards(c))
+				if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+					local tc=extg:GetFirst()
+					if #extg>1 then tc=extg:Select(tp,1,1,nil):GetFirst() end
+					if tc then
+						Duel.Hint(HINT_CARD,0,m)
+						Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+						_RegisterEffect(tc,e,bool)
+						Duel.Draw(tp,1,REASON_EFFECT)
+						return
+					end
+				end
+			end
+			_RegisterEffect(c,e,bool)
+		end
+	end
+end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(e:GetHandlerPlayer(),m)==0
+end
+function cm.extfilter(c)
+	return c:IsHasEffect(m) and not c:IsPublic()
 end
 function cm.dccon(e,c)
 	return c:IsRace(RACE_MACHINE) and c~=e:GetHandler()

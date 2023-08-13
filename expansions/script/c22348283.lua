@@ -132,10 +132,10 @@ function c22348283.disop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348283.splimit(e,c)
-	return not c:IsSetCard(0x70a5)
+	return not c:IsSetCard(0x570a)
 end
 function c22348283.spfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x70a5)
+	return c:IsFaceup() and c:IsSetCard(0x570a)
 end
 function c22348283.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
@@ -145,7 +145,7 @@ function c22348283.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and ct<4 and g>0 and not ((ph==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or ph==PHASE_DAMAGE_CAL) and (ph==PHASE_MAIN1 or (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) or ph==PHASE_MAIN2)
 end
 function c22348283.filter(c,e,tp)
-	return c:IsSetCard(0x70a5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
+	return c:IsSetCard(0x570a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
 function c22348283.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

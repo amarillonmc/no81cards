@@ -1,6 +1,5 @@
---血腥与黄昏散去
-local m=60000058
-local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
+local cm,m=lanp.U("设置卡","黄昏+黄昏骑士","血腥与黄昏散去")
 function cm.initial_effect(c)
 	--Effect 1
 	local e0=Effect.CreateEffect(c)
@@ -39,7 +38,7 @@ function cm.initial_effect(c)
 end
 --Effect 1
 function cm.cfilter(c)
-	return c:IsSetCard(0x62a) and c:IsFaceup()
+	return lanc.IsSeries(c,"黄昏") and c:IsFaceup()
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	if not (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) then return false end

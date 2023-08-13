@@ -1,6 +1,5 @@
---黄昏之下
-local m=60000062
-local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
+local cm,m=lanp.U("设置卡","黄昏+黄昏骑士","黄昏之下")
 function cm.initial_effect(c)
 	--activate
 	local e0=Effect.CreateEffect(c)
@@ -31,7 +30,7 @@ function cm.handcon(e)
 end
 --Effect 1
 function cm.thfilter(c)
-	return c:IsSetCard(0x62a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return lanc.IsSeries(c,"黄昏骑士") and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler() 

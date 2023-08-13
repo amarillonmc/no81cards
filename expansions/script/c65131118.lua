@@ -30,12 +30,19 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+function s.checkfilter(c)
+	return c:GetOriginalCode()==id
+end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
 		Duel.RegisterFlagEffect(tc:GetControler(),id,nil,0,1)
 		tc=eg:GetNext()
-	end
+	end 
+	Duel.GetFieldGroup(0,0xff,0xff):Filter(s.checkfilter,nil):ForEach(s.hintop)
+end
+function s.hintop(c)
+	c:SetHint(CHINT_NUMBER,Duel.GetFlagEffect(c:GetControler(),id))
 end
 function s.filter(c,dam)
 	return c:IsFaceup() and c:IsAttackBelow(dam)

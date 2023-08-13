@@ -45,8 +45,8 @@ function c189129.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c189129.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)   
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_MZONE,0,1,nil) end 
-	local tc=Duel.SelectTarget(tp,nil,tp,LOCATION_MZONE,0,1,1,nil):GetFirst() 
+	if chk==0 then return Duel.IsExistingTarget(function(c) return c:IsFaceup() and c:IsLevelAbove(1) end,tp,LOCATION_MZONE,0,1,nil) end 
+	local tc=Duel.SelectTarget(tp,function(c) return c:IsFaceup() and c:IsLevelAbove(1) end,tp,LOCATION_MZONE,0,1,1,nil):GetFirst() 
 	if tc:IsAttackPos() then 
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 		Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
@@ -98,7 +98,7 @@ function c189129.xxop(e,tp,eg,ep,ev,re,r,rp)
 				e2:SetValue(RESET_TURN_SET)
 				e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 				xc:RegisterEffect(e2)
-			end	  
+			end   
 		end 
 	end 
 end 

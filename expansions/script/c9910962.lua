@@ -1,73 +1,141 @@
 --永夏的篝火
-require("expansions/script/c9910950")
 function c9910962.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCategory(CATEGORY_COUNTER+CATEGORY_RELEASE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCountLimit(1,9910961)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetTarget(c9910962.target)
 	e1:SetOperation(c9910962.activate)
 	c:RegisterEffect(e1)
-	--synchro effect
+	--disable
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetHintTiming(0,TIMING_BATTLE_START)
 	e2:SetCountLimit(1,9910962)
-	e2:SetCondition(c9910962.sccon)
-	e2:SetCost(c9910962.sccost)
-	e2:SetTarget(c9910962.sctg)
-	e2:SetOperation(c9910962.scop)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetCost(c9910962.discost)
+	e2:SetTarget(c9910962.distg)
+	e2:SetOperation(c9910962.disop)
 	c:RegisterEffect(e2)
+	if not c9910962.global_check then
+		c9910962.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAIN_SOLVED)
+		ge1:SetOperation(c9910962.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
-function c9910962.filter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x5954) and c:IsAbleToRemove(tp,POS_FACEDOWN)
+function c9910962.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if not rc:IsRelateToEffect(re) or not re:IsActiveType(TYPE_MONSTER) then return end
+	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
+	if loc==LOCATION_MZONE and rc:GetFlagEffect(9910961+p)==0 then
+		rc:RegisterFlagEffect(9910961+p,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	end
 end
 function c9910962.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c9910962.filter,tp,LOCATION_MZONE,0,1,nil,tp)
-		and Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil,tp,POS_FACEDOWN) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g1=Duel.SelectTarget(tp,c9910962.filter,tp,LOCATION_MZONE,0,1,1,nil,tp)
-	local res=g1:GetFirst():IsType(TYPE_SYNCHRO)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g2=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,2,nil,tp,POS_FACEDOWN)
-	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g1,g1:GetCount(),0,0)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and chkc:IsCanAddCounter(0x6954,1) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsCanAddCounter,tp,LOCATION_MZONE,0,1,nil,0x6954,1) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
+	Duel.SelectTarget(tp,Card.IsCanAddCounter,tp,LOCATION_MZONE,0,1,1,nil,0x6954,1)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x6954)
 end
 function c9910962.activate(e,tp,eg,ep,ev,re,r,rp)
-	local res=false
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
-	res=Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)>0
-	QutryYx.ExtraEffectSelect(e,tp,res)
-end
-function c9910962.sccon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
-end
-function c9910962.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToRemoveAsCost(POS_FACEDOWN) end
-	Duel.HintSelection(Group.FromCards(c))
-	Duel.Remove(c,POS_FACEDOWN,REASON_COST)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanAddCounter(0x6954,1) then
+		tc:AddCounter(0x6954,1)
+	end
+	local fid=c:GetFieldID()
+	tc:RegisterFlagEffect(9910984,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetLabel(fid)
+	e1:SetLabelObject(tc)
+	e1:SetOperation(c9910962.rlop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
-function c9910962.scfilter(c)
-	return c:IsSetCard(0x5954) and c:IsSynchroSummonable(nil)
+function c9910962.rfilter(c,p)
+	return c:IsFaceup() and c:GetFlagEffect(9910961+p)>0
 end
-function c9910962.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910962.scfilter,tp,LOCATION_EXTRA,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+function c9910962.rlop(e,tp,eg,ep,ev,re,r,rp)
+	local rg=Duel.GetMatchingGroup(c9910962.rfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,1-tp)
+	local tc=e:GetLabelObject()
+	if tc and tc:GetFlagEffectLabel(9910984)==e:GetLabel() then rg:AddCard(tc) end
+	if #rg>0 then
+		Duel.Hint(HINT_CARD,0,9910962)
+		Duel.Release(rg,REASON_EFFECT)
+	end
 end
-function c9910962.scop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c9910962.scfilter,tp,LOCATION_EXTRA,0,nil)
-	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SynchroSummon(tp,sg:GetFirst(),nil)
+function c9910962.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(1)
+	return true
+end
+function c9910962.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and aux.NegateAnyFilter(chkc) end
+	if chk==0 then
+		if e:GetLabel()==1 then
+			e:SetLabel(0)
+			return Duel.IsCanRemoveCounter(tp,1,0,0x6954,1,REASON_COST)
+				and Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil)
+		else return false end
+	end
+	e:SetLabel(0)
+	local rt=Duel.GetTargetCount(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
+	local lvt={}
+	local pc=1
+	for i=1,rt do
+		if Duel.IsCanRemoveCounter(tp,1,0,0x6954,i,REASON_COST) then lvt[pc]=i pc=pc+1 end
+	end
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910962,0))
+	local ct=Duel.AnnounceNumber(tp,table.unpack(lvt))
+	Duel.RemoveCounter(tp,1,0,0x6954,ct,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,ct,ct,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
+end
+function c9910962.disfilter(c,e)
+	return aux.NegateAnyFilter(c) and c:IsRelateToEffect(e)
+end
+function c9910962.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c9910962.disfilter,nil,e)
+	local tc=g:GetFirst()
+	while tc do
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e2)
+		if tc:IsType(TYPE_TRAPMONSTER) then
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e3)
+		end
+		tc=g:GetNext()
 	end
 end

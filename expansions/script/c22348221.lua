@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_TO_HAND)
-	e1:SetRange(LOCATION_PZONE)
+	e1:SetRange(LOCATION_EXTRA)
 	e1:SetCountLimit(1)
 	e1:SetCondition(c22348221.sumcon)
 	e1:SetTarget(c22348221.sumtg)
@@ -46,12 +46,9 @@ end
 function c22348221.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c22348221.hdfilter,1,nil,1-tp)
 end
-function c22348221.smfilter(c,lscale,rscale)
-	local lv=c:GetLevel()
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x708) and c:IsAbleToHand() and lv>lscale and lv<rscale
-end
 function c22348221.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
+	local lv=c:GetLevel()
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
 	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
 	if chk==0 then
@@ -59,26 +56,24 @@ function c22348221.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lscale=lpz:GetLeftScale()
 	local rscale=rpz:GetRightScale()
 	if lscale>rscale then lscale,rscale=rscale,lscale end
-	return Duel.IsExistingMatchingCard(c22348221.smfilter,tp,LOCATION_EXTRA,0,1,nil,lscale,rscale)end
+	return c:IsFaceup() and c:IsAbleToHand() and lv>lscale and lv<rscale end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_EXTRA)
 end
 function c22348221.smmfilter(c)
-	return c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)
+	return c:IsType(TYPE_PENDULUM) and c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)
 end
 function c22348221.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local lv=c:GetLevel()
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
 	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
 	if rpz==nil or lpz==nil then return false end
 	local lscale=lpz:GetLeftScale()
 	local rscale=rpz:GetRightScale()
 	if lscale>rscale then lscale,rscale=rscale,lscale end
-	local counta=e:GetLabel()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c22348221.smfilter,tp,LOCATION_EXTRA,0,1,1,nil,lscale,rscale)
-	local tc=g:GetFirst()
-	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
-			Duel.ConfirmCards(1-tp,tc)
+	if not c:IsRelateToEffect(e) then return end
+	if c:IsFaceup() and c:IsAbleToHand() and lv>lscale and lv<rscale and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 then
+			Duel.ConfirmCards(1-tp,c)
 		if Duel.SelectYesNo(tp,aux.Stringid(22348221,2)) and Duel.IsExistingMatchingCard(c22348221.smmfilter,tp,LOCATION_HAND,0,1,nil) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)

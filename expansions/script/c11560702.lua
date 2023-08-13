@@ -1,7 +1,7 @@
 --星海航线 光之惩戒 伊卡洛斯
 function c11560702.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,c11560702.mfilter,10,2)
+	aux.AddXyzProcedure(c,c11560702.mfilter,10,3)
 	c:EnableReviveLimit() 
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)

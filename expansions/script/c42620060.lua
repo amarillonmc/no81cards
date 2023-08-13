@@ -1,121 +1,73 @@
---新年祈愿 若狭悠里
-local m=42620060
-local cm=_G["c"..m]
+--魔偶甜点·甜甜饼大厨
+local cm,m=GetID()
 
 function cm.initial_effect(c)
-	aux.EnablePendulumAttribute(c)
-    --adjust
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_TODECK+CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.operation)
-	c:RegisterEffect(e1)
-    local e2=e1:Clone()
-    e2:SetCode(EVENT_SUMMON_SUCCESS)
-    c:RegisterEffect(e2)
-    --pzone
-    local e3=Effect.CreateEffect(c)
-    e3:SetCategory(CATEGORY_DRAW+CATEGORY_RECOVER)
-    e3:SetType(EFFECT_TYPE_IGNITION)
-    e3:SetProperty(EFFECT_FLAG_BOTH_SIDE)
-    e3:SetRange(LOCATION_PZONE)
-    e3:SetCountLimit(1)
-    e3:SetCost(cm.pcost)
-    e3:SetTarget(cm.ptg)
-    e3:SetOperation(cm.pop)
-    c:RegisterEffect(e3)
+    --search
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+    e2:SetProperty(EFFECT_FLAG_DELAY)
+    e2:SetCountLimit(1,m)
+	e2:SetTarget(cm.shtg)
+	e2:SetOperation(cm.shop)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+	c:RegisterEffect(e3)
+    local e4=e2:Clone()
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e4)
+	--to deck
+	local e7=Effect.CreateEffect(c)
+	e7:SetDescription(aux.Stringid(42620060,0))
+	e7:SetCategory(CATEGORY_TODECK)
+	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e7:SetCode(EVENT_TO_GRAVE)
+	e7:SetCondition(cm.retcon)
+	e7:SetTarget(cm.rettg)
+	e7:SetOperation(cm.retop)
+	c:RegisterEffect(e7)
 end
 
-function cm.tgfilter(c,tp)
-	return c:IsFaceup() and c:IsAbleToRemove(tp,POS_FACEDOWN)
+function cm.filter(c,e,tp)
+	return c:IsSetCard(0x71) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsRace(RACE_WARRIOR) and c:GetBaseDefense()>0 and c:IsFaceup()
 end
 
-function cm.tgtfilter(c)
-	return c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+function cm.shtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,0x30,0,1,nil,e,tp) and Duel.GetLocationCount(tp,0x04)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0x30)
 end
 
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g1=Duel.GetMatchingGroup(cm.tgfilter,tp,0,LOCATION_EXTRA,nil,tp)
-	local g2=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_REMOVED,nil)
-	local g3=Duel.GetMatchingGroup(cm.tgtfilter,tp,LOCATION_GRAVE,0,nil)
-    local g4=Duel.GetMatchingGroup(cm.tgtfilter,tp,0,LOCATION_GRAVE,nil)
-	if chk==0 then return #g1>0 or #g2>0 or (Duel.CheckLPCost(tp,Duel.GetLP(tp)-10) and #g3>0 and #g4>0) end
-	g3:Merge(g4)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g1,1,nil,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g2,3,nil,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g3,1,nil,nil)
-end
-
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(cm.tgfilter,tp,0,LOCATION_EXTRA,nil,tp)
-	local g2=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_REMOVED,nil)
-	local g3=Duel.GetMatchingGroup(cm.tgtfilter,tp,LOCATION_GRAVE,0,nil)
-    local g4=Duel.GetMatchingGroup(cm.tgtfilter,tp,0,LOCATION_GRAVE,nil)
-	local off=1
-	local ops={}
-	local opval={}
-	if #g1>0 then
-		ops[off]=aux.Stringid(m,0)
-		opval[off-1]=1
-		off=off+1
-	end
-	if #g2>0 then
-		ops[off]=aux.Stringid(m,1)
-		opval[off-1]=2
-		off=off+1
-	end
-	if Duel.CheckLPCost(tp,Duel.GetLP(tp)-10) and #g3>0 and #g4>0 then
-		ops[off]=aux.Stringid(m,2)
-		opval[off-1]=3
-		off=off+1
-	end
-	if off==1 then return end
-	local op=Duel.SelectOption(tp,table.unpack(ops))
-	if opval[op]==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,0,LOCATION_EXTRA,1,1,nil,tp)
-		if g:GetCount()>0 then
-			Duel.HintSelection(g)
-			Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
-		end
-	elseif opval[op]==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_REMOVED,1,3,nil)
-		if g:GetCount()>0 then
-			Duel.HintSelection(g)
-			Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-		end
-	elseif opval[op]==3 then
-        Duel.PayLPCost(tp,Duel.GetLP(tp)-10)
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local g=Duel.SelectMatchingCard(tp,cm.tgtfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local tg=Duel.SelectMatchingCard(1-tp,cm.tgtfilter,tp,0,LOCATION_GRAVE,1,1,nil)
-        Duel.SendtoHand(g,nil,REASON_EFFECT)
-        Duel.SendtoHand(tg,nil,REASON_EFFECT)
-        Duel.ConfirmCards(1-tp,g)
-        Duel.ConfirmCards(tp,tg)
-        Duel.ShuffleHand(tp)
-        Duel.ShuffleHand(1-tp)
+function cm.shop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,0x04)==0 then return false end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,0x30,0,1,1,nil,e,tp):GetFirst()
+	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) and tc:IsFaceup() and tc:IsOnField() then
+        local c=e:GetHandler()
+        if c:IsRelateToChain() and c:IsFaceup() then
+            local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e1:SetValue(tc:GetDefense())
+			c:RegisterEffect(e1)
+        end
 	end
 end
 
-function cm.pcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,2023) end
-	Duel.PayLPCost(tp,2023)
+function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsReason(REASON_DESTROY) and e:GetHandler():GetReasonPlayer()==1-tp
+		and e:GetHandler():IsPreviousControler(tp)
 end
 
-function cm.ptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) end
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,1-tp,2023)
-    Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,PLAYER_ALL,1)
+function cm.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
 end
 
-function cm.pop(e,tp,eg,ep,ev,re,r,rp)
-    Duel.Recover(1-tp,2023,REASON_EFFECT)
-	Duel.Draw(tp,1,REASON_EFFECT)
-    Duel.Draw(1-tp,1,REASON_EFFECT)
+function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsRelateToEffect(e) then
+		Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
 end

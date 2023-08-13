@@ -4,12 +4,12 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.AddCodeList(c,53129443)
 	--link summon
-	aux.AddLinkProcedure(c,nil,3,3,c64600108.lcheck)
+	aux.AddLinkProcedure(c,nil,1,1,c64600108.lcheck)
 	c:EnableReviveLimit()
 	--des
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(64600108,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,64600108)
@@ -29,16 +29,6 @@ function cm.initial_effect(c)
 	e2:SetTarget(c64600108.drtg)
 	e2:SetOperation(c64600108.drop)
 	c:RegisterEffect(e2)
-	--Atk
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetRange(LOCATION_GRAVE)
-	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e3:SetTarget(c64600108.atk)
-	e3:SetValue(1600)
-	c:RegisterEffect(e3)
-	
 end
 function c64600108.atk(e,c)
 	return aux.IsCodeListed(c,53129443)
@@ -70,14 +60,24 @@ end
 function c64600108.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
+function c64600108.spfilter(c,e,tp)
+	return c:IsCode(72880377) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
 function c64600108.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if chk==0 then return g:GetCount()>0 end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function c64600108.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if g:GetCount()>0 then
 		Duel.Destroy(g,REASON_EFFECT)
+	end
+	local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c64600108.spfilter),tp,LOCATION_DECK,0,nil,e,tp)
+	if sg:GetCount()~=0 and Duel.SelectYesNo(tp,aux.Stringid(64600108,1)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sp=sg:Select(tp,1,1,nil)
+		Duel.SpecialSummon(sp,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

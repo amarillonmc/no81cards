@@ -1,4 +1,5 @@
 --画中人
+c29009255.named_with_Arknight=1
 function c29009255.initial_effect(c)
 	aux.AddCodeList(c,29002021)
 	--Activate

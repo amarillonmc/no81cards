@@ -40,7 +40,7 @@ function cm.fselect(g,tp)
 	return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g,tp)
 end
 function cm.xyzfilter(c,g,tp)
-	return c:IsRace(RACE_MACHINE) and c:IsXyzSummonable(g,#g,#g) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0
+	return c:IsRace(RACE_MACHINE) and c:IsXyzSummonable(g,#g,#g) --and Duel.GetLocationCountFromEx(tp,tp,g,c)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

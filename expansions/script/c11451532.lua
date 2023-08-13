@@ -43,7 +43,7 @@ function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:GetFlagEffect(m)>0 or not c:IsRelateToEffect(e) then return end
+	if not c:IsRelateToEffect(e) then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11451531,3))
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -51,6 +51,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_PUBLIC)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
+	if c:GetFlagEffect(m)>0 then return end
 	--summon or send to grave
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -70,7 +71,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:GetFlagEffect(m)==0 or not c:IsLocation(LOCATION_HAND) or c:GetFlagEffectLabel(m)~=c:GetFieldID() then
+	if c:GetFlagEffect(m)==0 or not c:IsLocation(LOCATION_HAND) or not c:IsPublic() or c:GetFlagEffectLabel(m)~=c:GetFieldID() then
 		e:Reset()
 		return false
 	else

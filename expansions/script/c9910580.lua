@@ -62,8 +62,7 @@ function c9910580.operation(e,tp,eg,ep,ev,re,r,rp)
 	if chain==1 then return end
 	local te=Duel.GetChainInfo(chain-1,CHAININFO_TRIGGERING_EFFECT)
 	local mg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if te and te:GetHandler()==e:GetHandler() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and mg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910580,1)) then
+	if te and te:GetHandler()==e:GetHandler() and #mg>0 and Duel.SelectYesNo(tp,aux.Stringid(9910580,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local sg=mg:Select(tp,1,1,nil)

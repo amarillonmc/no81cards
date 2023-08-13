@@ -46,32 +46,34 @@ function s.cfilter(c)
 	return c:GetOriginalCode()==id and c:IsAbleToGrave() and c:IsFacedown()
 end
 function s.wd(e,tp,eg,ep,ev,re,r,rp,chk)
-	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetFlagEffect(tp,id)==0
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_SZONE,0,1,nil) and Duel.GetFlagEffect(tp,id)==0
 end
 function s.wd2(e,tp,eg,ep,ev,re,r,rp,chk)
-	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetFlagEffect(tp,id+1)==0
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_SZONE,0,1,nil) and Duel.GetFlagEffect(tp,id+1)==0
 end
 function s.IsLpZone(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLP(0)<=0 or Duel.GetLP(1)<=0
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local sg1=Duel.GetMatchingGroup(s.cfilter,0,LOCATION_ONFIELD,0,nil)
-	local sg2=Duel.GetMatchingGroup(s.cfilter,1,LOCATION_ONFIELD,0,nil)
+	local sg1=Duel.GetMatchingGroup(s.cfilter,0,LOCATION_SZONE,0,nil)
+	local sg2=Duel.GetMatchingGroup(s.cfilter,1,LOCATION_SZONE,0,nil)
 	if Duel.GetLP(0)<=0 and Duel.GetFlagEffect(0,id)==0 and Duel.SendtoGrave(sg1,REASON_EFFECT+REASON_REPLACE)>0 then
 		Duel.SetLP(0,0)
-		Duel.Recover(0,4000,REASON_EFFECT)
+		Duel.Hint(HINT_CARD,0,id)
+		Duel.Recover(0,1,REASON_EFFECT)
 		Duel.RegisterFlagEffect(0,id,nil,0,1)
 	end
 	if Duel.GetLP(1)<=0 and Duel.GetFlagEffect(1,id)==0 and Duel.SendtoGrave(sg2,REASON_EFFECT+REASON_REPLACE)>0 then
 		Duel.SetLP(1,0)
-		Duel.Recover(1,4000,REASON_EFFECT)
+		Duel.Hint(HINT_CARD,0,id)
+		Duel.Recover(1,1,REASON_EFFECT)
 		Duel.RegisterFlagEffect(1,id,nil,0,1)
 	end
 	Duel.RegisterFlagEffect(0,id+1,nil,0,1)
 	Duel.RegisterFlagEffect(1,id+1,nil,0,1)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetAttacker():IsControler(1-tp) and Duel.GetAttackTarget()==nil
+	return Duel.GetAttacker():IsControler(1-tp)
 end
 function s.spcfilter(c)
 	return c:IsFacedown() and c:IsAbleToHand()
@@ -104,8 +106,9 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCondition(s.sscon)
 		e2:SetOperation(s.ssop)
 		Duel.RegisterEffect(e2,tp)
+		Duel.SpecialSummonComplete()
+		Duel.ChangeAttackTarget(c)
 	end
-	Duel.SpecialSummonComplete()
 end
 function s.sscon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()

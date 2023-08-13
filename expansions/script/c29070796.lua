@@ -1,4 +1,5 @@
 --方舟骑士-夜烟
+c29070796.named_with_Arknight=1
 function c29070796.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)

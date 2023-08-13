@@ -1,6 +1,5 @@
---黎明与黄昏相依
-local m=60000061
-local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
+local cm,m=lanp.U("设置卡","黄昏+黄昏骑士","黎明与黄昏相依")
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
@@ -65,7 +64,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function cm.cfilter(c)
-	return c:IsSetCard(0x62a) and c:IsFaceup()
+	return lanc.IsSeries(c,"黄昏") and c:IsFaceup()
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	if not (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) then return false end
@@ -85,7 +84,7 @@ function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 end
 --Effect 2
 function cm.thfilter1(c)
-	return c:IsSetCard(0x62a) and c:IsAbleToHand()
+	return lanc.IsSeries(c,"黄昏骑士") and c:IsAbleToHand()
 end
 function cm.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil) end
@@ -145,6 +144,6 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.indtg(e,c)
-	return c:IsSetCard(0x62a)
+	return lanc.IsSeries(c,"黄昏骑士")
 end
 

@@ -32,7 +32,7 @@ function c22348300.handcon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
 end
 function c22348300.filter(c,e,tp)
-	return c:IsSetCard(0x70a6) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x670a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348300.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -53,6 +53,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.ShuffleDeck(tp)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
+		Duel.ConfirmCards(1-tp,cg)
 		local tg=cg:Select(1-tp,1,1,nil)
 		local tc=tg:GetFirst()
 		if tc:IsAbleToHand() and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then

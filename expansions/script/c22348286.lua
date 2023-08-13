@@ -91,7 +91,7 @@ end
 
 
 function c22348286.costfilter(c)
-	return c:IsSetCard(0x70a6) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x670a) and c:IsAbleToGraveAsCost()
 end
 function c22348286.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348286.costfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -116,10 +116,10 @@ function c22348286.dsop(e,tp,eg,ep,ev,re,r,rp)
 		if c:IsRelateToEffect(e)
 			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-			and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+			and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 			and Duel.SelectYesNo(tp,aux.Stringid(22348286,1)) then
 			Duel.BreakEffect()
-			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 		end
 	end
 end

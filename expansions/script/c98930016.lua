@@ -31,7 +31,7 @@ function c98930016.initial_effect(c)
   --Act 2
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(98930016,1))
-	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
+	e3:SetCategory(CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SUMMON_SUCCESS)
 	e3:SetRange(LOCATION_MZONE)
@@ -125,13 +125,12 @@ function c98930016.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(c98930016.dfilter,1,nil,nil,1-tp) end
 	local g=eg:Filter(c98930016.dfilter,nil,nil,1-tp)
 	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,800)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,g:GetCount(),0,0)
 end
 function c98930016.damop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(c98930016.dfilter,nil,e,1-tp)
 	if e:GetHandler():IsRelateToEffect(e) and g:GetCount()~=0 then
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end
 function c98930016.adcost(e,tp,eg,ep,ev,re,r,rp,chk)

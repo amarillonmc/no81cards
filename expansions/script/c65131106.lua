@@ -13,9 +13,9 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
-	e1:SetCondition(s.condition)
-	e1:SetTarget(s.target)
-	e1:SetOperation(s.activate)
+	e1:SetCondition(s.sscon)
+	e1:SetTarget(s.sstg)
+	e1:SetOperation(s.ssop)
 	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
@@ -29,27 +29,27 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 end
-function s.condition(e,tp,eg,ep,ev,re,r,rp)
+function s.sscon(e,tp,eg,ep,ev,re,r,rp)
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and rp==1-tp
 end
 function s.cfilter(c,type)
 	return c:IsType(type) and c:IsSetCard(0x836) and c:IsSSetable()
 end
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.sstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local type=bit.band(re:GetActiveType(),0x7)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>1
 		and e:GetHandler():IsSSetable() and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_DECK,0,1,nil,type) end
 	e:SetLabel(type)
 end
-function s.activate(e,tp,eg,ep,ev,re,r,rp)
+function s.ssop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<2 or not c:IsRelateToEffect(e) or not c:IsSSetable() then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_DECK,0,1,1,nil,e:GetLabel())
 	local tc=g:GetFirst()
 	if tc then
-		local sg=Group.FromCards(c,tc)
-		Duel.SSet(tp,sg)
+		Duel.ConfirmCards(1-tp,tc)
+		Duel.SSet(tp,Group.FromCards(c,tc))
 	end
 end
 function s.spcfilter(c)

@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	--material
 	aux.AddFusionProcFunRep(c,s.mfilter,3,true)
 	--spsum condition
-	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_ONFIELD,0,Duel.SendtoGrave,REASON_COST)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_ONFIELD,0,Duel.SendtoGrave,REASON_COST):SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
 	--tribute check
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

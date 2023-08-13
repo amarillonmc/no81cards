@@ -89,7 +89,7 @@ function c98930017.adop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	tc:RegisterEffect(e1)
 	local e2=e1:Clone()
-	e2:SetCode(EFFECT_UPDATE_DEFENSE)
+	e2:SetCode(EFFECT_SET_DEFENSE)
 	tc:RegisterEffect(e2)
 end
 function c98930017.discost(e,tp,eg,ep,ev,re,r,rp,chk)

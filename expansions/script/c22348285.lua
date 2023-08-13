@@ -92,7 +92,7 @@ function c22348285.dscon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousControler(tp) and not (c:IsReason(REASON_EFFECT) and rp==tp and re:IsActivated())
 end
 function c22348285.filter(c)
-	return c:IsSetCard(0x70a6) and c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSSetable()
+	return c:IsSetCard(0x670a) and c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSSetable()
 end
 function c22348285.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348285.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -106,10 +106,10 @@ function c22348285.dsop(e,tp,eg,ep,ev,re,r,rp)
 			and c:IsRelateToEffect(e)
 			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-			and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+			and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 			and Duel.SelectYesNo(tp,aux.Stringid(22348285,1)) then
 			Duel.BreakEffect()
-			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 		end
 	end
 end

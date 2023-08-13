@@ -93,7 +93,7 @@ function cm.ntrtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	if c:IsSSetable() then
+	if c:IsRelateToEffect(e) and c:IsSSetable() then
 		Duel.SSet(tp,c)
 		local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,tp)
 		if g:GetCount()<=0 or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

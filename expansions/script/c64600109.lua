@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_CHAINING)
+	e4:SetCode(EVENT_DESTROYED)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCountLimit(1,64601109)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DELAY)
@@ -81,8 +81,11 @@ end
 function c64600109.filter(c)
 	return aux.IsCodeListed(c,53129443) and c:IsType(TYPE_MONSTER)
 end
+function c64600109.cfilter(c)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsReason(REASON_EFFECT) and not c:GetReasonEffect():IsHasProperty(EFFECT_FLAG_CARD_TARGET)
+end
 function c64600109.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(53129443)
+	return eg:IsExists(c64600109.cfilter,1,nil)
 end
 function c64600109.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c64600109.filter,tp,LOCATION_DECK,0,1,nil) end

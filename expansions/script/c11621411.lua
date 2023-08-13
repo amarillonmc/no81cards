@@ -65,44 +65,44 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
 	--local g=Duel.GetMatchingGroup(cm.posfilter,tp,0,LOCATION_MZONE,nil)
 	--if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-	--	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-	--	local ag=Duel.SelectMatchingCard(tp,cm.posfilter,tp,0,LOCATION_MZONE,1,1,nil)
-	--	if ag:GetCount()>0 then
-	--		Duel.HintSelection(ag)
-	--		Duel.BreakEffect()
-	--		local tc=ag:GetFirst()
-	--		local code=tc:GetOriginalCodeRule()
-	--		--disable
-	--		local e1=Effect.CreateEffect(c)
-	--		e1:SetType(EFFECT_TYPE_SINGLE)
-	--		e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
-	--		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	--		e1:SetValue(ATTRIBUTE_LIGHT)
-	--		e1:SetReset(RESET_PHASE+PHASE_END)
-	--		tc:RegisterEffect(e1)
-	--		local e2=e1:Clone()
-	--		e2:SetCode(EFFECT_CHANGE_RACE)
-	--		e2:SetValue(RACE_ZOMBIE)
-	--		tc:RegisterEffect(e2)
-	--		local e3=e1:Clone()
-	--		if tc:IsLevelAbove(1) then
-	--			e2:SetCode(EFFECT_CHANGE_LEVEL)
-	--		end
-	--		if tc:IsRankAbove(1) then
-	--			e3:SetCode(EFFECT_CHANGE_RANK)
-	--		end
-	--		if tc:IsLinkAbove(1) then
-	--			e3:SetCode(EFFECT_UPDATE_LINK)
-	--		end
-	--	   e3:SetValue(3)
-	--		tc:RegisterEffect(e3)
-	--		local e4=e1:Clone()
-	--		e4:SetCode(EFFECT_CHANGE_CODE)
-	--		e4:SetType(EFFECT_TYPE_SINGLE)
-	--		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	--		e4:SetValue(11621402)
-	--		tc:RegisterEffect(e4)
-	--	end
+	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	--  local ag=Duel.SelectMatchingCard(tp,cm.posfilter,tp,0,LOCATION_MZONE,1,1,nil)
+	--  if ag:GetCount()>0 then
+	--	  Duel.HintSelection(ag)
+	--	  Duel.BreakEffect()
+	--	  local tc=ag:GetFirst()
+	--	  local code=tc:GetOriginalCodeRule()
+	--	  --disable
+	--	  local e1=Effect.CreateEffect(c)
+	--	  e1:SetType(EFFECT_TYPE_SINGLE)
+	--	  e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	--	  e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	--	  e1:SetValue(ATTRIBUTE_LIGHT)
+	--	  e1:SetReset(RESET_PHASE+PHASE_END)
+	--	  tc:RegisterEffect(e1)
+	--	  local e2=e1:Clone()
+	--	  e2:SetCode(EFFECT_CHANGE_RACE)
+	--	  e2:SetValue(RACE_ZOMBIE)
+	--	  tc:RegisterEffect(e2)
+	--	  local e3=e1:Clone()
+	--	  if tc:IsLevelAbove(1) then
+	--		  e2:SetCode(EFFECT_CHANGE_LEVEL)
+	--	  end
+	--	  if tc:IsRankAbove(1) then
+	--		  e3:SetCode(EFFECT_CHANGE_RANK)
+	--	  end
+	--	  if tc:IsLinkAbove(1) then
+	--		  e3:SetCode(EFFECT_UPDATE_LINK)
+	--	  end
+	--	 e3:SetValue(3)
+	--	  tc:RegisterEffect(e3)
+	--	  local e4=e1:Clone()
+	--	  e4:SetCode(EFFECT_CHANGE_CODE)
+	--	  e4:SetType(EFFECT_TYPE_SINGLE)
+	--	  e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	--	  e4:SetValue(11621402)
+	--	  tc:RegisterEffect(e4)
+	--  end
 	--end
 end
 --02
@@ -119,61 +119,63 @@ end
 function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA+LOCATION_DECK)
-	if Duel.SSet(tp,c)>0 and g:GetCount()>0 then
-		Duel.ConfirmCards(tp,g) 
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD)
-		local tg=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_EXTRA+LOCATION_DECK,1,1,nil,TYPE_MONSTER)
-		if tg:GetCount()==0 then return end
-		Duel.ConfirmCards(tp,tg)
-		local tc=tg:GetFirst()
-		local code=tc:GetOriginalCodeRule()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CHANGE_CODE)
-		e1:SetTargetRange(0,0x7f)
-		e1:SetTarget(cm.crtg)
-		e1:SetLabel(code)
-		e1:SetValue(11621402)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-		--
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetCode(EFFECT_CHANGE_RACE)
-		e2:SetTargetRange(0,0x7f)
-		e2:SetTarget(cm.crtg)
-		e2:SetLabel(code)
-		e2:SetValue(RACE_ZOMBIE)
-		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
-		--
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_FIELD)
-		e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
-		e3:SetTargetRange(0,0x7f)
-		e3:SetTarget(cm.crtg)
-		e3:SetLabel(code)
-		e3:SetValue(ATTRIBUTE_LIGHT)
-		e3:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e3,tp)
-		--
-		local e4=Effect.CreateEffect(c)
-		e4:SetType(EFFECT_TYPE_FIELD)
-		if tc:IsLevelAbove(1) then
-			e4:SetCode(EFFECT_CHANGE_LEVEL)
+	if c:IsRelateToEffect(e) and c:IsSSetable() then
+		if Duel.SSet(tp,c)>0 and g:GetCount()>0 then
+			Duel.ConfirmCards(tp,g) 
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD)
+			local tg=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_EXTRA+LOCATION_DECK,1,1,nil,TYPE_MONSTER)
+			if tg:GetCount()==0 then return end
+			Duel.ConfirmCards(tp,tg)
+			local tc=tg:GetFirst()
+			local code=tc:GetOriginalCodeRule()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_CHANGE_CODE)
+			e1:SetTargetRange(0,0x7f)
+			e1:SetTarget(cm.crtg)
+			e1:SetLabel(code)
+			e1:SetValue(11621402)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+			--
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_FIELD)
+			e2:SetCode(EFFECT_CHANGE_RACE)
+			e2:SetTargetRange(0,0x7f)
+			e2:SetTarget(cm.crtg)
+			e2:SetLabel(code)
+			e2:SetValue(RACE_ZOMBIE)
+			e2:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e2,tp)
+			--
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_FIELD)
+			e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+			e3:SetTargetRange(0,0x7f)
+			e3:SetTarget(cm.crtg)
+			e3:SetLabel(code)
+			e3:SetValue(ATTRIBUTE_LIGHT)
+			e3:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e3,tp)
+			--
+			local e4=Effect.CreateEffect(c)
+			e4:SetType(EFFECT_TYPE_FIELD)
+			if tc:IsLevelAbove(1) then
+				e4:SetCode(EFFECT_CHANGE_LEVEL)
+			end
+			if tc:IsRankAbove(1) then
+				e4:SetCode(EFFECT_CHANGE_RANK)
+			end
+			if tc:IsLinkAbove(1) then
+				e4:SetCode(EFFECT_UPDATE_LINK)
+			end
+			e4:SetTargetRange(0,0x7f)
+			e4:SetTarget(cm.crtg2)
+			e4:SetLabel(code)
+			e4:SetValue(3)
+			e4:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e4,tp)
 		end
-		if tc:IsRankAbove(1) then
-			e4:SetCode(EFFECT_CHANGE_RANK)
-		end
-		if tc:IsLinkAbove(1) then
-			e4:SetCode(EFFECT_UPDATE_LINK)
-		end
-		e4:SetTargetRange(0,0x7f)
-		e4:SetTarget(cm.crtg2)
-		e4:SetLabel(code)
-		e4:SetValue(3)
-		e4:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e4,tp)
 	end
 end
 function cm.crtg(e,c)

@@ -1,5 +1,6 @@
 --方舟骑士-临光
 local cm,m,o=GetID()
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--change effect type
 	local e2=Effect.CreateEffect(c)

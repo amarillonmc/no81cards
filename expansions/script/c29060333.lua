@@ -1,7 +1,9 @@
 --编外方舟骑士-莱蒂丝
+c29060333.named_with_Arknight=1
 function c29060333.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(29060333,1))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_HAND)

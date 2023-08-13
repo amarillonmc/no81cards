@@ -51,7 +51,7 @@ function c22348267.flipcon(e)
 	return e:GetHandler():GetSequence()<5
 end
 function c22348267.spfilter(c,e,tp)
-	return c:IsSetCard(0x70a3) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
+	return c:IsSetCard(0x370a) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
 end
 function c22348267.flipcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -128,7 +128,7 @@ function c22348267.xyzfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
 end
 function c22348267.xyzfilter2(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x70a3) and c:IsCanOverlay()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x370a) and c:IsCanOverlay()
 end
 function c22348267.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return false end

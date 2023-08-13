@@ -1,7 +1,6 @@
 --于黄昏中窥见真实
-local m=60000091
-local cm=_G["c"..m]
-
+if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
+local cm,m=lanp.U("设置卡","黄昏","于黄昏中窥见真实")
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,cm.ffilter,13,false)
@@ -71,19 +70,17 @@ function cm.ffilter(c,fc,sub,mg,sg)
 end
 
 function cm.getfusionfilter(c,tp,tc)
-	return c:IsPosition(POS_FACEDOWN) and c:IsAbleToDeckAsCost() and c:IsSetCard(0x628) and Duel.GetLocationCountFromEx(tp,tp,c,tc)>0
+	return c:IsPosition(POS_FACEDOWN) and c:IsAbleToDeckOrExtraAsCost() and c:IsSetCard(0x628) and Duel.GetLocationCountFromEx(tp,tp,c,tc)>0
 end
 
 function cm.sprcon(e,c)
 	if c==nil then return true end
-	local c=e:GetHandler()
-	local tp=e:GetHandler():GetControler()
 	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_ONFIELD,0,nil,tp,c)
 	return g:GetCount()>0
 end
 
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_ONFIELD,0,nil,tp,c)
+	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_ONFIELD,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local tc=g:Select(tp,1,1,nil)

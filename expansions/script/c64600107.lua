@@ -49,7 +49,7 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_CHAINING)
+	e4:SetCode(EVENT_DESTROYED)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCountLimit(1,64601107)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
@@ -114,8 +114,11 @@ function c64600107.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(sg,REASON_EFFECT)
 end
 
+function c64600107.cfilter2(c)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsReason(REASON_EFFECT) and not c:GetReasonEffect():IsHasProperty(EFFECT_FLAG_CARD_TARGET)
+end
 function c64600107.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(53129443)
+	return eg:IsExists(c64600107.cfilter2,1,nil)
 end
 function c64600107.rcfilter(c)
 	return aux.IsCodeListed(c,53129443) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

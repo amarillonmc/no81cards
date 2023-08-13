@@ -60,7 +60,7 @@ function c29072102.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --e3e4
 function c29072102.thfilter(c)
-	return c:IsSetCard(0x47af) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x67af) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
 end
 function c29072102.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29072102.thfilter,tp,LOCATION_DECK,0,1,nil) end

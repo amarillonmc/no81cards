@@ -2671,7 +2671,8 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			return c53759012[1](se,le)
 		end
 	end
-	if cm.IsInTable(53765001,rstt) then
+	local helltaker=Duel.GetMatchingGroup(function(c)return c.AD_Ht end,0,0xff,0xff,nil)
+	if #helltaker>0 then
 		AD_Helltaker=Effect.SetLabelObject
 		Effect.SetLabelObject=function(se,le)
 			if aux.GetValueType(le)=="Effect" then
@@ -2811,7 +2812,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Card.RegisterEffect=reg
 	if cm.IsInTable(53759012,rstt) then Effect.SetLabelObject=c53759012[1] end
-	if cm.IsInTable(53765001,rstt) then Effect.SetLabelObject=AD_Helltaker end
+	if #helltaker>0 then Effect.SetLabelObject=AD_Helltaker end
 	Duel.ResetFlagEffect(0,53764007)
 	e:Reset()
 end
@@ -4523,18 +4524,18 @@ function cm.TentuScout(c)
 	e5:SetCode(EVENT_PHASE+PHASE_END)
 	e5:SetRange(LOCATION_GRAVE)
 	e5:SetCountLimit(1)
-	e5:SetCondition(cm.thcon)
-	e5:SetTarget(cm.thtg)
-	e5:SetOperation(cm.thop)
+	e5:SetCondition(cm.Tentuthcon)
+	e5:SetTarget(cm.Tentuthtg)
+	e5:SetOperation(cm.Tentuthop)
 	c:RegisterEffect(e5)
 end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.Tentuthcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(53764000)>0
 end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.Tentuthtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+function cm.Tentuthop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT) end
 end

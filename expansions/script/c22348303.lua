@@ -101,7 +101,7 @@ function c22348303.afcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c22348303.filter(c)
-	return c:IsSetCard(0x70a6) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x670a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c22348303.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348303.filter,tp,LOCATION_DECK,0,1,nil) end

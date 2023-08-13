@@ -61,13 +61,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
 	--local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	--if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-	--	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEDOWN)
-	--	local ag=Duel.SelectMatchingCard(tp,Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	--	if ag:GetCount()>0 then
-	--		Duel.HintSelection(ag)
-	--		Duel.BreakEffect()
-	--		Duel.Release(ag,REASON_EFFECT)
-	--	end
+	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEDOWN)
+	--  local ag=Duel.SelectMatchingCard(tp,Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	--  if ag:GetCount()>0 then
+	--	  Duel.HintSelection(ag)
+	--	  Duel.BreakEffect()
+	--	  Duel.Release(ag,REASON_EFFECT)
+	--  end
 	--end
 end
 --02
@@ -83,7 +83,7 @@ function cm.ntrtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	if c:IsSSetable() then
+	if c:IsRelateToEffect(e) and c:IsSSetable() then
 		Duel.SSet(tp,c)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 		local selected_zone=Duel.SelectField(tp,1,0,LOCATION_ONFIELD,nil)

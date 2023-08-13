@@ -70,7 +70,7 @@ end
 function c22348290.checkop1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		 if tc:IsSetCard(0x70a6) and not tc:IsCode(22348290) then
+		 if tc:IsSetCard(0x670a) and not tc:IsCode(22348290) then
 			 Duel.RegisterFlagEffect(0,22348290,RESET_PHASE+PHASE_END,0,1)
 			 Duel.RegisterFlagEffect(1,22348290,RESET_PHASE+PHASE_END,0,1)
 		 end
@@ -142,14 +142,14 @@ function c22348290.dscon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousControler(tp) and not (c:IsReason(REASON_EFFECT) and rp==tp and re:IsActivated())
 end
 function c22348290.filter(c)
-	return c:IsSetCard(0x70a6) and c:IsAbleToHand() and c:IsFaceupEx()
+	return c:IsSetCard(0x670a) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function c22348290.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348290.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,0)
 end
 function c22348290.spfilter(c,e,tp)
-	return c:IsSetCard(0x70a6) and not c:IsCode(22348290) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x670a) and not c:IsCode(22348290) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348290.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

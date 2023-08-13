@@ -69,7 +69,7 @@ end
 function c22348288.checkop1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		 if tc:IsSetCard(0x70a6) and not tc:IsCode(22348288) then
+		 if tc:IsSetCard(0x670a) and not tc:IsCode(22348288) then
 			 Duel.RegisterFlagEffect(0,22348288,RESET_PHASE+PHASE_END,0,1)
 			 Duel.RegisterFlagEffect(1,22348288,RESET_PHASE+PHASE_END,0,1)
 		 end
@@ -135,7 +135,7 @@ function c22348288.dscon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousControler(tp) and not (c:IsReason(REASON_EFFECT) and rp==tp and re:IsActivated()) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function c22348288.filter(c,e,tp)
-	return c:IsSetCard(0x70a6) and not c:IsCode(22348288) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x670a) and not c:IsCode(22348288) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348288.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

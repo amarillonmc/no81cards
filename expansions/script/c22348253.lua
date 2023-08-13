@@ -51,7 +51,7 @@ function c22348253.condition(e,tp,eg,ep,ev,re,r,rp)
 	return aux.dsercon(e) and c:IsDualState()
 end
 function c22348253.thfilter(c)
-	return c:IsSetCard(0x70a3) and c:IsAbleToHand()
+	return c:IsSetCard(0x370a) and c:IsAbleToHand()
 end
 function c22348253.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348253.thfilter,tp,LOCATION_DECK,0,1,nil) end

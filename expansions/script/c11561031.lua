@@ -296,21 +296,21 @@ function c11561031.cncon3(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN2 
 end 
 function c11561031.cntg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil) or (Duel.IsExistingMatchingCard(Card.IsFacedown,tp,0,LOCATION_SZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or (Duel.IsExistingMatchingCard(function(c) return c:IsFacedown() and Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)) end 
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,nil,1,tp,LOCATION_ONFIELD)
 end 
 function c11561031.cnop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
-	if not (Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil) or (Duel.IsExistingMatchingCard(Card.IsFacedown,tp,0,LOCATION_SZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0)) then return end 
-	local g1=Duel.GetMatchingGroup(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,nil) 
-	local g2=Duel.GetMatchingGroup(nil,tp,0,LOCATION_SZONE,nil) 
+	if not (Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil) or (Duel.IsExistingMatchingCard(function(c) return c:IsFacedown() and Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil))) then return end 
+	local g1=Duel.GetMatchingGroup(Card.IsControlerCanBeChanged,tp,LOCATION_MZONE,LOCATION_MZONE,nil) 
+	local g2=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,nil) 
 	g1:Merge(g2) 
 	if g1:GetCount()>0 then 
 		local tc=g1:Select(tp,1,1,nil):GetFirst() 
 		if tc:IsLocation(LOCATION_MZONE) then 
-			Duel.GetControl(tc,tp)  
+			Duel.GetControl(tc,1-tc:GetControler())  
 		elseif tc:IsLocation(LOCATION_SZONE) then 
-			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true) 
+			Duel.MoveToField(tc,tp,1-tc:GetControler(),LOCATION_SZONE,POS_FACEDOWN,true) 
 			Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0) 
 		end  
 	end 
@@ -364,9 +364,8 @@ end
 function c11561031.ovop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
 	local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil) 
-	local x=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)-e:GetHandler():GetOverlayCount() 
-	if g:GetCount()>0 and c:IsRelateToEffect(e) and x>0 then  
-		local og=g:Select(tp,1,x,nil) 
+	if g:GetCount()>0 and c:IsRelateToEffect(e) then  
+		local og=g:Select(tp,1,1,nil) 
 		Duel.Overlay(c,og)  
 	end 
 end 

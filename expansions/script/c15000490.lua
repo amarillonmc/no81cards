@@ -2,90 +2,84 @@ local m=15000490
 local cm=_G["c"..m]
 cm.name="无名者之地"
 function cm.initial_effect(c)
-	--activate
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_ACTIVATE)
-	e0:SetCode(EVENT_FREE_CHAIN)
-	c:RegisterEffect(e0)
-	--spsummon limit
+	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_FZONE)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,1)
-	e1:SetTarget(cm.sumlimit)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
 	c:RegisterEffect(e1)
-	local e2=Effect.Clone(e1)
-	e2:SetCode(EFFECT_CANNOT_SUMMON)
+	--only one
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(15000490)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,1)
 	c:RegisterEffect(e2)
-	--target
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetRange(LOCATION_FZONE)
-	e3:SetCode(EVENT_BECOME_TARGET)
-	e3:SetCondition(cm.tgcon)
-	e3:SetOperation(cm.tgop)
-	c:RegisterEffect(e3)
-	--target
+	--cannot summon,spsummon,flipsummon
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetRange(LOCATION_FZONE)
-	e4:SetCode(EVENT_CHAIN_END)
-	e4:SetCondition(cm.tcon)
-	e4:SetOperation(cm.top)
+	e4:SetCode(EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetTargetRange(1,1)
+	e4:SetTarget(cm.sumlimit)
 	c:RegisterEffect(e4)
-	--cannot be target
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e5:SetRange(LOCATION_FZONE)
-	e5:SetTargetRange(0xff,0xff)
-	e5:SetTarget(cm.target)
-	e5:SetValue(1)
+	local e5=e4:Clone()
+	e5:SetCode(EFFECT_CANNOT_SUMMON)
 	c:RegisterEffect(e5)
-end
-function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return Duel.IsExistingMatchingCard(Card.IsCode,c:GetControler(),LOCATION_ONFIELD,0,1,nil,c:GetCode())
-end
-function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return g:IsExists(Card.IsType,1,nil,TYPE_MONSTER)
-end
-function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local ag=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	if ag:GetCount()==0 then return end
-	local g=ag:Filter(Card.IsType,nil,TYPE_MONSTER)
-	if g:GetCount()==0 then return end
-	local tc=g:GetFirst()
-	while tc do
-		tc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,0,99)
-		tc=g:GetNext()
+	local e6=e4:Clone()
+	e6:SetCode(EFFECT_CANNOT_FLIP_SUMMON)
+	c:RegisterEffect(e6)
+	if not cm.global_check then
+		cm.global_check=true
+		--adjust
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		ge1:SetCode(EVENT_ADJUST)
+		ge1:SetOperation(cm.adjustop)
+		Duel.RegisterEffect(ge1,0)
 	end
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 end
-function cm.tgfilter(c)
-	return c:GetFlagEffect(m)~=0 and c:IsType(TYPE_MONSTER)
+function cm.rmfilter(c,code)
+	return c:IsFaceup() and c:IsCode(code) and c:IsStatus(STATUS_EFFECT_ENABLED)
 end
-function cm.tcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(m)~=0
+function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp)
+	if sumtype==SUMMON_TYPE_DUAL then return false end
+	if sumpos and bit.band(sumpos,POS_FACEDOWN)>0 then return false end
+	local tp=sump
+	if targetp then tp=targetp end
+	return Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_MZONE,0,1,nil,c:GetCode())
 end
-function cm.top(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.Hint(HINT_CARD,1-tp,15000490)
-	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,0xff,0xff,nil)
-	if g:GetCount()==0 then return end
-	local tc=g:GetFirst()
-	while tc do
-		tc:ResetFlagEffect(m)
-		tc:RegisterFlagEffect(15000491,RESET_EVENT+RESETS_STANDARD,0,1)
-		tc:RegisterFlagEffect(15000492,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))  
-		tc=g:GetNext()
+function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.IsPlayerAffectedByEffect(0,15000490) then
+		return
 	end
-	e:GetHandler():ResetFlagEffect(m)
-end
-function cm.target(e,c)
-	return c:GetFlagEffect(15000491)~=0
+	local phase=Duel.GetCurrentPhase()
+	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL then return end
+	local sg=Group.CreateGroup()
+	for p=0,1 do
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,p,LOCATION_MZONE,0,nil)
+		local tc=g:GetFirst()
+		local ag=g:Clone()
+		while tc do
+			if ag:IsContains(tc) then
+				local code=tc:GetCode()
+				local rg=g:Filter(Card.IsCode,nil,code)
+				local rc=rg:GetCount()
+				if rc>1 then
+					Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOGRAVE)
+					local dg=rg:Select(p,rc-1,rc-1,nil)
+					ag:Sub(rg)
+					sg:Merge(dg)
+				end
+			end
+			tc=g:GetNext()
+		end
+	end
+	if sg:GetCount()>0 then
+		Duel.SendtoGrave(sg,REASON_RULE)
+		Duel.Readjust()
+	end
 end

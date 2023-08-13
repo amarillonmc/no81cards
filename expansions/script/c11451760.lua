@@ -8,9 +8,9 @@ function cm.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(aux.XyzLevelFreeCondition(cm.mfilter,nil,2,99))
-	e0:SetTarget(aux.XyzLevelFreeTarget(cm.mfilter,nil,2,99))
-	e0:SetOperation(aux.XyzLevelFreeOperation(cm.mfilter,nil,2,99))
+	e0:SetCondition(aux.XyzLevelFreeCondition(cm.mfilter,cm.lvcheck,2,99))
+	e0:SetTarget(aux.XyzLevelFreeTarget(cm.mfilter,cm.lvcheck,2,99))
+	e0:SetOperation(aux.XyzLevelFreeOperation(cm.mfilter,cm.lvcheck,2,99))
 	e0:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e0)
 	c:EnableReviveLimit()
@@ -94,6 +94,9 @@ end
 function cm.XyzLevelFreeGoal(g,tp,xyzc,gf)
 	return (not gf or gf(g)) and Duel.GetLocationCountFromEx(tp,tp,g,TYPE_XYZ)>0
 end
+function cm.lvcheck(g)
+	return g:FilterCount(Card.IsRank,nil,0)<=1
+end
 function cm.XyzLevelFreeCondition(f,gf,minct,maxct)
 	return  function(e,c,og,min,max)
 				if c==nil then return true end
@@ -126,7 +129,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local te=e:GetLabelObject()
 	if chk==0 then
 		c:RegisterFlagEffect(m-17,0,0,1)
-		local res=(c:IsCanBeSpecialSummoned(te,SUMMON_TYPE_XYZ,tp,true,true) and cm.XyzLevelFreeCondition(cm.mfilter,nil,2,99)(te,c,nil,2,99) and c:IsAbleToDeck() and c:GetFlagEffect(m-16)==0)
+		local res=(c:IsCanBeSpecialSummoned(te,SUMMON_TYPE_XYZ,tp,true,true) and cm.XyzLevelFreeCondition(cm.mfilter,cm.lvcheck,2,99)(te,c,nil,2,99) and c:IsAbleToDeck() and c:GetFlagEffect(m-16)==0)
 		c:ResetFlagEffect(m-17)
 		return res
 	end

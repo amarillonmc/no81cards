@@ -1,90 +1,84 @@
 --永夏的花海
-require("expansions/script/c9910950")
 function c9910970.initial_effect(c)
-	--Activate
+	--activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,9910970+EFFECT_COUNT_CODE_OATH)
 	e1:SetOperation(c9910970.activate)
 	c:RegisterEffect(e1)
-	--synchro summon
+	--counter
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910970,0))
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetDescription(aux.Stringid(9910970,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,9910970)
-	e2:SetCondition(c9910970.thcon)
-	e2:SetTarget(c9910970.thtg)
-	e2:SetOperation(c9910970.thop)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,9910981)
+	e2:SetTarget(c9910970.cttg)
+	e2:SetOperation(c9910970.ctop)
 	c:RegisterEffect(e2)
-	--level
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,9910981)
-	e3:SetCost(c9910970.lvcost)
-	e3:SetTarget(c9910970.lvtg)
-	e3:SetOperation(c9910970.lvop)
-	c:RegisterEffect(e3)
+end
+function c9910970.filter(c)
+	return c:IsSetCard(0x5954) and c:IsAbleToGrave()
 end
 function c9910970.activate(e,tp,eg,ep,ev,re,r,rp)
-	QutryYx.ExtraEffectSelect(e,tp,false)
-end
-function c9910970.cfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x5954) and c:IsSummonLocation(LOCATION_DECK+LOCATION_EXTRA) and c:IsSummonPlayer(tp)
-end
-function c9910970.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c9910970.cfilter,1,nil,tp)
-end
-function c9910970.thfilter(c)
-	return c:IsSetCard(0x5954) and c:IsAbleToHand() and not c:IsCode(9910970)
-end
-function c9910970.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(QutryYx.Filter0,tp,LOCATION_REMOVED,0,3,nil)
-		and Duel.IsExistingMatchingCard(c9910970.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,3,tp,LOCATION_REMOVED)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c9910970.thop(e,tp,eg,ep,ev,re,r,rp)
-	if QutryYx.ToDeck(tp,3) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c9910970.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if #g>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-		end
+	local g=Duel.GetMatchingGroup(c9910970.filter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910970,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end
 end
-function c9910970.lvcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToRemoveAsCost(POS_FACEDOWN) end
-	Duel.HintSelection(Group.FromCards(c))
-	Duel.Remove(c,POS_FACEDOWN,REASON_COST)
+function c9910970.tgfilter(c,e,tp,chk)
+	local b1=c:IsCanAddCounter(0x6954,1)
+	local b2=c:IsCanRemoveCounter(tp,0x6954,1,REASON_EFFECT) and Duel.IsPlayerCanDraw(tp,1)
+	return c:IsCanHaveCounter(0x6954) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsControler(tp)
+		and c:IsCanBeEffectTarget(e) and (chk or b1 or b2)
 end
-function c9910970.lvfilter(c)
-	return c:IsSetCard(0x5954) and c:IsFaceup() and c:IsLevelAbove(1)
+function c9910970.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return eg:IsContains(chkc) and c9910970.tgfilter(chkc,e,tp,true) end
+	local g=eg:Filter(c9910970.tgfilter,nil,e,tp,false)
+	if chk==0 then return g:GetCount()>0 end
+	local tc=nil
+	if g:GetCount()==1 then
+		tc=g:GetFirst()
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		tc=g:Select(tp,1,1,nil):GetFirst()
+	end
+	Duel.SetTargetCard(tc)
+	local b1=tc:IsCanAddCounter(0x6954,1)
+	local b2=tc:IsCanRemoveCounter(tp,0x6954,1,REASON_EFFECT) and Duel.IsPlayerCanDraw(tp,1)
+	local op=0
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EFFECT)
+	if b1 and b2 then
+		op=Duel.SelectOption(tp,aux.Stringid(9910970,2),aux.Stringid(9910970,3))
+	elseif b1 then
+		op=Duel.SelectOption(tp,aux.Stringid(9910970,2))
+	else
+		op=Duel.SelectOption(tp,aux.Stringid(9910970,3))+1
+	end
+	e:SetLabel(op)
+	if op==0 then
+		e:SetCategory(CATEGORY_COUNTER)
+	else
+		e:SetCategory(CATEGORY_DRAW)
+		Duel.SetTargetPlayer(tp)
+		Duel.SetTargetParam(1)
+		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	end
 end
-function c9910970.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910970.lvfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9910970.lvfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectTarget(tp,c9910970.lvfilter,tp,LOCATION_MZONE,0,1,1,nil)
-end
-function c9910970.lvop(e,tp,eg,ep,ev,re,r,rp)
+function c9910970.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		local lv=Duel.AnnounceNumber(tp,1,2,3)
-		local e1=Effect.CreateEffect(c)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_LEVEL)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(lv)
-		tc:RegisterEffect(e1)
+	if not tc:IsRelateToEffect(e) then return end
+	if e:GetLabel()==0 and tc:IsCanAddCounter(0x6954,1) then
+		tc:AddCounter(0x6954,1)
+	end
+	if e:GetLabel()==1 and tc:RemoveCounter(tp,0x6954,1,REASON_EFFECT) then
+		local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+		Duel.Draw(p,d,REASON_EFFECT)
 	end
 end

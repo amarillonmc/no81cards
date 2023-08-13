@@ -1,8 +1,8 @@
 --哈伊瓦纳斯 黄昏宰制者
-local m=60000050
-local cm=_G["c"..m]
+if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
+local cm,m=lanp.U("设置卡","黄昏","哈伊瓦纳斯 黄昏宰制者")
 function cm.initial_effect(c)
-    aux.AddCodeList(c,60000043)
+	aux.AddCodeList(c,60000043)
 	c:EnableReviveLimit()
 	--spsummon limit 
 	local e0=Effect.CreateEffect(c)

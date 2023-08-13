@@ -44,10 +44,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c22348261.extg(e,c)
-	return c:IsSetCard(0x70a3)
+	return c:IsSetCard(0x370a)
 end
 function c22348261.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x70a3)
+	return c:IsFaceup() and c:IsSetCard(0x370a)
 end
 function c22348261.actcon(e)
 	local a=Duel.GetAttacker()
@@ -55,7 +55,7 @@ function c22348261.actcon(e)
 	return (a and c22348261.cfilter(a)) or (b and c22348261.cfilter(b))
 end
 function c22348261.atktg(e,c)
-	return c:IsSetCard(0x70a3)
+	return c:IsSetCard(0x370a)
 end
 function c22348261.val(e,re,tp)
 	local tp=Duel.GetTurnPlayer()

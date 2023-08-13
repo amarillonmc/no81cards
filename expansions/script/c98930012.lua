@@ -91,7 +91,7 @@ function c98930012.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c98930012.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+	return e:GetHandler():IsPreviousLocation(LOCATION_MZONE) and e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c98930012.thfilter(c)
 	return c:IsSetCard(0xad0) and c:IsAbleToHand()

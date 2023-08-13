@@ -1,6 +1,7 @@
 --方舟骑士源石秘仪
 local m=29065532
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

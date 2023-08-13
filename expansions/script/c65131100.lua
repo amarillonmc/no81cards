@@ -56,7 +56,7 @@ function s.initial_effect(c)
 		end
 		_SortDecktop=Duel.SortDecktop
 		function Duel.SortDecktop(sort_player,target_player,count)
-			_SortDecktop(sort_player,target_player,conut)
+			_SortDecktop(sort_player,target_player,count)
 			local sg=Duel.GetDecktopGroup(target_player,count)
 			local tc=sg:GetFirst() 
 			while tc do

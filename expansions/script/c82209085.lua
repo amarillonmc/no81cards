@@ -2,6 +2,12 @@
 local m=82209085
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	--spsummon limit  
+	local e0=Effect.CreateEffect(c)  
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)  
+	e0:SetCode(EVENT_SPSUMMON_SUCCESS)  
+	e0:SetOperation(cm.regop)  
+	c:RegisterEffect(e0)  
 	--special summon  
 	local e1=Effect.CreateEffect(c)  
 	e1:SetType(EFFECT_TYPE_FIELD)  
@@ -44,6 +50,23 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)  
 end
 cm.toss_coin=true  
+
+--spsummon limit
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)  
+	Debug.Message("F**K U KONAMI，喜欢印SB淑女回滚、SB红龙加速厄是吧")
+	local e1=Effect.CreateEffect(e:GetHandler())  
+	e1:SetType(EFFECT_TYPE_FIELD)  
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)  
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)  
+	e1:SetTargetRange(1,0)  
+	e1:SetTarget(cm.splimit)  
+	e1:SetReset(RESET_PHASE+PHASE_END)  
+	Duel.RegisterEffect(e1,tp)  
+end  
+function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)  
+	return (c:IsType(TYPE_SYNCHRO) and c:IsRace(RACE_DRAGON) and c:IsLevel(12)) 
+		or (c:IsType(TYPE_XYZ) and c:IsRace(RACE_FAIRY) and c:IsRank(6)) 
+end  
 
 --special summon
 function cm.spcon(e,c)  

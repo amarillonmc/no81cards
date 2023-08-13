@@ -52,8 +52,8 @@ function c29065510.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		if tc then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
 		end
 	end
 end
@@ -67,9 +67,9 @@ end
 function c29065510.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	local g=Duel.GetMatchingGroup(c29065510.tgfilter,tp,LOCATION_GRAVE,0,nil,e)
-	if chk==0 then return g:CheckSubGroup(c29065510.fselect,5,5,tp) and Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return g:CheckSubGroup(c29065510.fselect,1,5,tp) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=g:SelectSubGroup(tp,c29065510.fselect,false,5,5,tp)
+	local sg=g:SelectSubGroup(tp,c29065510.fselect,false,1,5,tp)
 	Duel.SetTargetCard(sg)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,sg:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
