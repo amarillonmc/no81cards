@@ -14,6 +14,9 @@ function c98920193.initial_effect(c)
 	local e3=e1:Clone()
 	e3:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
 	c:RegisterEffect(e3)
+	local e7=e1:Clone()
+	e7:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e7)
 	--atk/def
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -63,7 +66,7 @@ function c98920193.tfop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCondition(c98920193.rmcon)
 			e1:SetOperation(c98920193.rmop)
 			Duel.RegisterEffect(e1,tp)
-	end		   
+	end		
 end
 function c98920193.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
