@@ -61,7 +61,7 @@ function c67200921.desop1(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	Duel.HintSelection(g)
 	local tc=g:GetFirst()
-	if tc and and Duel.SelectYesNo(tp,aux.Stringid(67200921,3)) then
+	if tc and Duel.SelectYesNo(tp,aux.Stringid(67200921,3)) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)

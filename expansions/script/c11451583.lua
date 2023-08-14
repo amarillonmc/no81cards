@@ -43,6 +43,15 @@ function cm.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
 	e5:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	c:RegisterEffect(e5)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge0=Effect.CreateEffect(c)
+		ge0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge0:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		ge0:SetOperation(cm.geop)
+		Duel.RegisterEffect(ge0,0)
+	end
 end
 function cm.actarget(e,te,tp)
 	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
@@ -143,9 +152,11 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then Duel.Draw(tp,1,REASON_EFFECT) end
 end
-Duel.DisableActionCheck(true)
-cm[0]=Duel.CreateToken(0,m)
-cm[1]=Duel.CreateToken(1,m)
-cm[0]:SetCardData(CARDDATA_TYPE,TYPE_QUICKPLAY+TYPE_SPELL)
-cm[1]:SetCardData(CARDDATA_TYPE,TYPE_QUICKPLAY+TYPE_SPELL)
-Duel.DisableActionCheck(false)
+function cm.geop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	cm[0]=Duel.CreateToken(0,m)
+	cm[1]=Duel.CreateToken(1,m)
+	cm[0]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+	cm[1]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+	e:Reset()
+end

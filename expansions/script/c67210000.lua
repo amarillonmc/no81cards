@@ -16,6 +16,7 @@ function c67210000.initial_effect(c)
 	e1:SetOperation(c67210000.operation)
 	c:RegisterEffect(e1)
 end
+c67210000.SetCard_Relics=true 
 function c67210000.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
