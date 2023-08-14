@@ -34,7 +34,7 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		Duel.RegisterFlagEffect(tp,60001209,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		tc=eg:GetNext()
 	end
 end
