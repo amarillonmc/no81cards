@@ -121,7 +121,7 @@ function cm.initial_effect(c)
 			rpz:RegisterEffect(e4)--]]
 			return sg
 		end
-	end		 
+	end	  
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -177,7 +177,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.repfilter(c,tp)
-	return cm.tdfilter(c,tp) and c:IsOnField() and c:IsFaceup()
+	return cm.tdfilter(c,tp) and c:IsOnField() and c:IsFaceup() and c:GetFlagEffect(m)==0 
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp) and rp~=tp end

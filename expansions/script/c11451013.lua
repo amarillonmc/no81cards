@@ -77,13 +77,8 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
 		local res=true
-		if KOISHI_CHECK then
-			Duel.DisableActionCheck(true)
-			local dc=Duel.CreateToken(tp,m)
-			Duel.DisableActionCheck(false)
-			dc:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
-			res=dc:GetActivateEffect():IsActivatable(tp,true)
-			dc:SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_PENDULUM+TYPE_EFFECT)
+		if KOISHI_CHECK and cm[tp] then
+			res=cm[tp]:GetActivateEffect():IsActivatable(tp,true)
 		else
 			res=(c:CheckActivateEffect(false,false,false)~=nil)
 		end
@@ -222,3 +217,9 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 end
+Duel.DisableActionCheck(true)
+cm[0]=Duel.CreateToken(0,m)
+cm[1]=Duel.CreateToken(1,m)
+cm[0]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+cm[1]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+Duel.DisableActionCheck(false)

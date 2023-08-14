@@ -48,7 +48,7 @@ function cm.SynOperation(f1,f2,minct,maxc)
 	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
 				local g=e:GetLabelObject()
 				c:SetMaterial(g)
-				Duel.Destroy(g,REASON_MATERIAL+REASON_SYNCHRO+REASON_REPLACE+REASON_EFFECT)
+				Duel.Destroy(g,REASON_MATERIAL+REASON_SYNCHRO+REASON_REPLACE+REASON_EFFECT+REASON_RULE)
 				--Duel.SendtoGrave(g,REASON_MATERIAL+REASON_SYNCHRO)
 				g:DeleteGroup()
 			end

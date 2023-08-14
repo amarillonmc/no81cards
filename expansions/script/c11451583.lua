@@ -91,13 +91,8 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
 		local res=true
-		if Card.SetCardData then
-			Duel.DisableActionCheck(true)
-			local dc=Duel.CreateToken(tp,m)
-			Duel.DisableActionCheck(false)
-			dc:SetCardData(CARDDATA_TYPE,TYPE_QUICKPLAY+TYPE_SPELL)
-			res=dc:GetActivateEffect():IsActivatable(tp)
-			dc:SetCardData(CARDDATA_TYPE,TYPE_SPELL)
+		if KOISHI_CHECK and cm[tp] then
+			res=cm[tp]:GetActivateEffect():IsActivatable(tp,true)
 		else
 			res=(c:CheckActivateEffect(false,false,false)~=nil)
 		end
@@ -148,3 +143,9 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then Duel.Draw(tp,1,REASON_EFFECT) end
 end
+Duel.DisableActionCheck(true)
+cm[0]=Duel.CreateToken(0,m)
+cm[1]=Duel.CreateToken(1,m)
+cm[0]:SetCardData(CARDDATA_TYPE,TYPE_QUICKPLAY+TYPE_SPELL)
+cm[1]:SetCardData(CARDDATA_TYPE,TYPE_QUICKPLAY+TYPE_SPELL)
+Duel.DisableActionCheck(false)
