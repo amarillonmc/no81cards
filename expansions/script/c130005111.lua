@@ -22,7 +22,7 @@ function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	e:SetLabel(0)
 	rshint.Select(tp,"res")
-	local rg2=rg:Select(tp,1,#rg,nil) --rg:SelectSubGroup(tp,cm.gcheck,false,1,#rg,e,tp)  
+	local rg2=rg:Select(tp,1,#tg,nil) --rg:SelectSubGroup(tp,cm.gcheck,false,1,#rg,e,tp)  
 	local ct=Duel.Release(rg2,REASON_COST)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,ct,1-tp,LOCATION_ONFIELD)   
 	e:SetValue(ct)

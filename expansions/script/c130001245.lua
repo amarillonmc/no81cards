@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,cm.lfilter,2)
 	local e1=rsef.QO(c,nil,{m,0},nil,"sp",nil,LOCATION_EXTRA,cm.spcon,cm.spcost,rsop.target(aux.TRUE,"sp"),cm.spop)
-	local e2=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,1},nil,"sp,tg","de,dsp",rscon.sumtype("link"),nil,cm.eftg,cm.efop)
+	local e2=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,1},nil,"sp,tg","de,dsp",cm.efcon,nil,cm.eftg,cm.efop)
 end
 function cm.lfilter(c)
 	return c:IsLinkType(TYPE_PENDULUM) and not c:IsAttribute(ATTRIBUTE_DARK) and not c:IsAttribute(ATTRIBUTE_LIGHT)
@@ -40,17 +40,25 @@ function cm.tgfilter(c)
 	g:AddCard(c)
 	return g:IsExists(Card.IsAbleToGrave,1,nil)
 end
+function cm.efcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+end
 function cm.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(rscf.spfilter2(Card.IsType,TYPE_PENDULUM),tp,LOCATION_REMOVED,0,1,nil,e,tp)
 	local b2=Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 	local b3=Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 	if chk==0 then return b1 or b2 or b3 end
+	if c:GetFlagEffectLabel(m) then
+		e:SetLabel(c:GetFlagEffectLabel(m))
+	else
+		e:SetLabel(0)
+	end
 end
 function cm.efop(e,tp)
 	local c=e:GetHandler()
 	local ct=1
-	if c:IsRelateToEffect(e) and c:GetFlagEffectLabel(m) then
-		ct=math.floor(c:GetFlagEffectLabel(m)/2)
+	if e:GetLabel()>0 then
+		ct=math.floor(e:GetLabel()/2)
 	end
 	for i=1,ct do
 		local b1=Duel.IsExistingMatchingCard(rscf.spfilter2(Card.IsType,TYPE_PENDULUM),tp,LOCATION_REMOVED,0,1,nil,e,tp)

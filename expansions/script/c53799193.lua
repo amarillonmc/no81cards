@@ -35,6 +35,14 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetOperation(cm.adjustop)
 	c:RegisterEffect(e3)
+	if not cm.global_check then
+		cm.global_check=true
+		Duel.DiscardDeck=function(tp,ct,reason)
+			local g=Duel.GetDecktopGroup(tp,ct)
+			Duel.DisableShuffleCheck()
+			return Duel.SendtoGrave(g,reason)
+		end
+	end
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -61,17 +69,29 @@ end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 		e1:SetCountLimit(1)
 		e1:SetLabelObject(tc)
-		e1:SetReset(RESET_PHASE+PHASE_END)
+		if Duel.GetCurrentPhase()==PHASE_END then
+			e1:SetReset(RESET_PHASE+PHASE_END,2)
+			e1:SetValue(Duel.GetTurnCount())
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
+		else
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			e1:SetValue(0)
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		end
+		e1:SetCondition(cm.descon)
 		e1:SetOperation(cm.desop)
 		Duel.RegisterEffect(e1,tp)
 	end
+end
+function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetTurnCount()==e:GetValue() then return false end
+	return e:GetLabelObject():GetFlagEffect(m)~=0
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
@@ -159,7 +179,7 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)
 		local xyzc=Duel.GetFirstMatchingCard(Card.IsOriginalCodeRule,tp,LOCATION_MZONE,0,nil,53799193)
-		if xyzc and e:GetHandler():IsRelateToEffect(e) and e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and e:GetHandler():IsOnField() and e:GetHandler():IsFaceup() and e:GetHandler():IsCanOverlay() then
+		if xyzc and e:GetHandler():IsRelateToEffect(e) and e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and not e:GetHandler():IsHasEffect(EFFECT_REMAIN_FIELD) and e:GetHandler():IsOnField() and e:GetHandler():IsFaceup() and e:GetHandler():IsCanOverlay() then
 			e:GetHandler():CancelToGrave()
 			Duel.Overlay(xyzc,Group.FromCards(e:GetHandler()))
 		end

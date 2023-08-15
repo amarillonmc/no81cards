@@ -13,24 +13,25 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 end
-function cm.cfilter(c,tp)
+function cm.cfilter(c,tp,ac)
 	local cg=c:GetColumnGroup()
-	local dg=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,cg,tp)
+	local dg=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,ac,cg,tp)
 	return c:IsFaceup() and c:IsSetCard(0x18b) and #dg>0
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
-function cm.desfilter(c,g,tp)
+function cm.desfilter(c,g)
 	return g:IsContains(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local ac=e:GetHandler()
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and cm.mfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.cfilter,tp,LOCATION_MZONE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingTarget(cm.cfilter,tp,LOCATION_MZONE,0,1,nil,tp,ac) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.cfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
+	local g=Duel.SelectTarget(tp,cm.cfilter,tp,LOCATION_MZONE,0,1,1,nil,tp,ac)
 	local cg=g:GetFirst():GetColumnGroup()
-	local dg=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,cg,tp)
+	local dg=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,ac,cg)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,#dg,0,0)
 end
 function cm.checkfilter(c)
@@ -38,10 +39,11 @@ function cm.checkfilter(c)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ac=aux.ExceptThisCard(e)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		local cg=tc:GetColumnGroup()
-		local dg=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,cg)
+		local dg=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,ac,cg)
 		if #dg>0 and Duel.Destroy(dg,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(cm.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) then
 			local g=Duel.GetOperatedGroup():Filter(Card.IsControler,nil,1-tp)
 			Duel.BreakEffect()
