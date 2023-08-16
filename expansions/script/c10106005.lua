@@ -48,11 +48,11 @@ function s.drop(e,tp)
 	Scl.CreateFieldBuffEffect({c,tp},"+Level",s.val2,s.limtg,{0, "MonsterZone"},nil, nil, RESET_EP_SCL)
 end
 function s.val1(e,c)
-	local ct = Duel.GetFlagEffect(tp, id)
+	local ct = Duel.GetFlagEffect(e:GetHandlerPlayer(), id)
 	return ct * -800
 end
 function s.val2(e,c)
-	local ct = Duel.GetFlagEffect(tp, id)
+	local ct = Duel.GetFlagEffect(e:GetHandlerPlayer(), id)
 	return ct * -1
 end
 function s.limtg(e,c)

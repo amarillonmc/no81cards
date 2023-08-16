@@ -2,7 +2,7 @@
 --the old library (c10199990.lua and c10199991.lua) has gone out of service, becuase it has become a SHIT MOUNTAIN, hard for reading.
 --any problems, you can call me: QQ/VX 852415212, PLZ note sth. about YGO while you add me, otherwise I will reject your friend request.
 
-local Version_Number = "2023.07.01"
+local Version_Number = "2023.08.04"
 
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constant <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -24,66 +24,65 @@ scl = { }
 local id = 10100000
 --this table's contents can only be used in this library. 
 local s = { }
---Record Scl's custom card filter functions and group filter functions.
-Scl.Card = { }
-Scl.Group = { }
---Value for inside series, inside type, etc.
+--Recording non numeric format effect values, like inside series, inside type, etc.
 Scl.String_Value   = { } 
---Record some cost's operate count.
+--Recording some effect costs' successfully operate count.
 Scl.Cost_Count= { }
---Record some operation's infomation.
+--Recording some effect operations' infomation.
 Scl.Operation_Info = { }
---Record token
+--Recording token code, using for some functions like "scl.target_special_summon_token".
 Scl.Token_List = { }
---Record attach effects, for 10170008 to repeat
+--Recording attach effects, using for card "10170008" to repeat the effects.
 Scl.Add_Additional_Effect_Before_Original_List = { } 
 Scl.Add_Additional_Effect_List = { }
 Scl.Add_Additional_Effect_Original_List  = { }
---For some creat effect functions. If = true, that function will only creat effects but not register them.
+--Using for some effect-creating-functions. If == true, that function will only create effects but not register them.
 Scl.Creat_Effect_Without_Register = false 
---For some operate functions, check if they can operate
+--Using for some operate-functions, checking if they can operate correctly.
 Scl.Operate_Check = 1
 Scl.Operate_Check_Effect = nil
 Scl.Operate_Check_Player = 0
 Scl.Card_Target_Count_Check = 0
 Scl.Player_Cost_And_Target_Value = { }
---Use for checking current effect 
+--Using for checking the effect currently being operated.
 Scl.Current_Effect = nil
---Record previous inside series
+--Recording previous inside series
 Scl.Previous_Series_List = { }
---Record global effects
+--Recording global effects
 Scl.Global_Effet_List = { } 
---Record reason for some operate
+--Recording reason for some operate-functions.
 Scl.Reason_List = { }
---Record card's activate
+--Recording spells and traps' activate effects.
 Scl.Activate_List = { }
---When register property, add this additional property in
+--When registering the effect property, add this additional property.
 Scl.Global_Property = 0
---Record buffs for Scl.SpecialSummon/ Scl.Equip
+--Recording buffs for Scl.SpecialSummon/ Scl.Equip
 Scl.Single_Buff_List = { }
 Scl.Single_Buff_Affect_Self_List = { }
 Scl.Equip_Buff_List = { }
---Record official filters 
+--Recording Ygocore's official filter-functions.
 Scl.Official_Filter = { }
---Use for Scl.SpecialSummonStep to call Scl.AddSingleBuff
+--Using for "Scl.SpecialSummonStep" to call "Scl.AddSingleBuff".
 Scl.Global_Zone = nil
---Use for Scl.SetExtraSelectAndOperateParama
+--Using for "Scl.SetExtraSelectAndOperateParama"
 Scl.Extra_Operate_Parama_Check_Hint = would_hint
 Scl.Extra_Operate_Parama_Need_Break = need_break
 Scl.Extra_Operate_Parama_Select_Hint = sel_hint
---Use for Scl.CreateActivateEffect_Activate1ofTheseEffects
+Scl.Extra_Operate_Parama_Target_Hint = true
+--Using for "Scl.CreateActivateEffect_Activate1ofTheseEffects".
 Scl.Choose_One_Effect_Condition_Index = nil
 Scl.Choose_One_Effect_Select_Index = { }
---Use for Scl.GetPreviousXyzMaterials
+--Recording the Xyz monsters' previous xyz materials, using for "Scl.GetPreviousXyzMaterials".
 Scl.Previous_Xyz_Material_List = { }
---Use for debug error message
+--Using for debug error messages.
 Scl.Global_Effect_Owner_ID = nil
 --Some special effects like "black hole", affect the whole card group, record that group's cards count in scl.list_format_cost_or_target_or_operation
 scl.black_hole_count = 0
 --For a mandatory trigger effect, the target check will always return TRUE, but if you want to copy that effect, you should do a common target check, like optional trigger effects. 
 Scl.Mandatory_Effect_Target_Check = false
---For function Scl.RegisterZone to recording effects' appliable zones.
+--Using for function "Scl.RegisterZone" to recording effects' appliable zones.
 Scl.Effect_Zone_List = { }
+
 
 --Attach extra effect
 EFFECT_ADDITIONAL_EFFECT_SCL  =   id + 100 
@@ -139,11 +138,11 @@ HINTMSG_WOULD_SET_SCL = aux.Stringid(id, 13)
 DESC_RESET_COPY_SCL = aux.Stringid(14017402, 1)
 HINTMSG_RETURN_TO_FIELD_SCL = aux.Stringid(80335817, 0)
 
+
 TYPEM_EXTRA_SCL = TYPE_FUSION + TYPE_SYNCHRO + TYPE_XYZ + TYPE_LINK 
 TYPEM_RFSXL_SCL = TYPEM_EXTRA_SCL + TYPE_RITUAL
 TYPEM_PFSXL_SCL = TYPEM_EXTRA_SCL + TYPE_PENDULUM
 TYPEM_RPFSXL_SCL = TYPEM_EXTRA_SCL + TYPE_RITUAL + TYPE_PENDULUM
-TYPE_NORMAL_SPELL_OR_TRAP_SCL = 0x10000000
 
 
 ZONE_HAND_SCL = LOCATION_HAND
@@ -257,18 +256,10 @@ Scl.Card_Type_List   =   {
 	["Flip"] = TYPE_FLIP, ["Spirit"] = TYPE_SPIRIT, ["Spell"] = TYPE_SPELL, 
 	["Equip"] = TYPE_EQUIP, ["Field"] = TYPE_FIELD, ["Continuous"] = TYPE_CONTINUOUS, 
 	["QuickPlay"] = TYPE_QUICKPLAY, ["Trap"] = TYPE_TRAP, ["Counter"] = TYPE_COUNTER, 
-	["TrapMonster"] = TYPE_TRAPMONSTER, ["NormalSpell"] = TYPE_SPELL + TYPE_NORMAL_SPELL_OR_TRAP_SCL,
-	["NormalTrap"] = TYPE_TRAP + TYPE_NORMAL_SPELL_OR_TRAP_SCL
+	["TrapMonster"] = TYPE_TRAPMONSTER, ["NormalSpell"] = TYPE_SPELL + TYPE_NORMAL,
+	["NormalTrap"] = TYPE_TRAP + TYPE_NORMAL
 
 }
---add TYPE_NORMAL_SPELL_OR_TRAP_SCL to normal spells and normal traps
-function s.add_type_normal_spell_or_trap_scl()
-	local e1 = Scl.CreateFieldBuffEffect({ true, 0 }, "+ExtraType", TYPE_NORMAL_SPELL_OR_TRAP_SCL, s.add_type_normal_spell_or_trap_scl_target, { 0xff, 0xff })
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_IGNORE_RANGE + EFFECT_FLAG_SET_AVAILABLE)
-end
-function s.add_type_normal_spell_or_trap_scl_target(e, c)
-	return c:GetType() == TYPE_SPELL or c:GetType() == TYPE_TRAP
-end
 
 --Effect type list
 --use for some functions that need to check activate effect's type.
@@ -302,7 +293,6 @@ Scl.Summon_Type_List = {
 	["NormalSummon"] = SUMMON_TYPE_NORMAL
 
 }
-
 --Timing list
 function s.create_timing_list()
 
@@ -325,6 +315,7 @@ function s.create_timing_list()
 	["BeNormalSummoned"] = { EVENT_SUMMON_SUCCESS },
 	["BeNormalSet"] = { EVENT_MSET },
 	["BeSpecialSummoned"] = { EVENT_SPSUMMON_SUCCESS },
+	["BeSpecialSummonedBySelf"] = { EVENT_SPSUMMON_SUCCESS, { Card.IsSummonType, SUMMON_VALUE_SELF } },
 	["BeNormal/SpecialSummoned"] = { EVENT_SUMMON_SUCCESS, aux.TRUE, aux.TRUE, EVENT_SPSUMMON_SUCCESS, aux.TRUE, aux.TRUE },
 	["BeRitualSummoned"] = { EVENT_SPSUMMON_SUCCESS, { Card.IsSummonType, SUMMON_TYPE_RITUAL } },
 	["BeFusionSummoned"] = { EVENT_SPSUMMON_SUCCESS, { Card.IsSummonType, SUMMON_TYPE_FUSION } },
@@ -454,13 +445,13 @@ Scl.Effect_Property_List =   {
 	["AbsoluteTarget"] = EFFECT_FLAG_ABSOLUTE_TARGET, 
 	["SummonParama"] = EFFECT_FLAG_SPSUM_PARAM, 
 	["EventPlayer"] = EFFECT_FLAG_EVENT_PLAYER, 
-	["Oath"] = EFFECT_FLAG_OATH, 
+	["Oath"] = EFFECT_FLAG_OATH,
 	["NoTurnReset"] = EFFECT_FLAG_NO_TURN_RESET,
 	["!NegateActivation"] = EFFECT_FLAG_CANNOT_INACTIVATE,
 	["!NegateEffect"] = EFFECT_FLAG_CANNOT_DISABLE,
 	["!NegateEffect2"] = EFFECT_FLAG_CANNOT_NEGATE
 
-}   
+}
 
 --Creat effect category list (Scl.Category_List)
 --the Scl.Category_List is using for some functions that creat effects or get a effect/select hint.
@@ -511,6 +502,7 @@ function s.create_category_list()
 	["Draw"] = { "Draw", CATEGORY_DRAW, 0, { 4732017, 0 }, { 3679218, 1 }, { s.draw_special, 2, sg, r } },
 	["Damage"] = { "Inflict/take Damage", CATEGORY_DAMAGE, 0, { 3775068, 0 }, { 12541409, 1 } },
 	["GainLP"] = { "Gain LP", CATEGORY_RECOVER, 0, { 16259549, 0 }, { 54527349, 0 } },
+	["LoseLP"] = { "Lose LP", 0, 0, { 54239282, 1 } },
 	["NormalSummon/Set"] = { "Normal Summon", CATEGORY_SUMMON, HINTMSG_SUMMON, { 80921533, 0 }, { 41139112, 0 }, { Scl.NormalSummon, 7, sg, tp, true, nil } },
 	["NormalSummon"] = { "Normal Summon in attack position", CATEGORY_SUMMON, HINTMSG_SUMMON, { 65247798, 0 }, { 41139112, 0 }, { Scl.NormalSummon, 7, sg, tp, true, nil, nil, nil, POS_FACEUP_ATTACK } },
 	["NormalSet"] = { "Normal Summon in face-down position", CATEGORY_SUMMON, HINTMSG_SUMMON, { 65247798, 0 }, { 41139112, 0 }, { Scl.NormalSummon, 7, sg, tp, true, nil, nil, nil, POS_FACEDOWN_DEFENSE } },
@@ -700,11 +692,11 @@ function s.create_buff_list()
 	["Instead2Deck"] = { EFFECT_TO_DECK_REDIRECT, false, LOCATION_REMOVED, nil, EFFECT_FLAG_CANNOT_DISABLE, EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE, RESETS_REDIRECT },
 	["Instead2Hand"] = { EFFECT_TO_HAND_REDIRECT, false, LOCATION_REMOVED, nil, EFFECT_FLAG_CANNOT_DISABLE, EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE, RESETS_REDIRECT },
 	["InsteadLeaveField"] = { EFFECT_LEAVE_FIELD_REDIRECT, false, LOCATION_REMOVED, nil, EFFECT_FLAG_CANNOT_DISABLE, EFFECT_FLAG_IGNORE_IMMUNE + EFFECT_FLAG_SET_AVAILABLE, RESETS_REDIRECT },
-	["OpponentTakeBattleDamageInstead"] = { EFFECT_REFLECT_BATTLE_DAMAGE },
+	["OpponentTakesBattleDamageInstead"] = { EFFECT_REFLECT_BATTLE_DAMAGE },
 	["ChangeBattleDamage"] = { EFFECT_CHANGE_INVOLVING_BATTLE_DAMAGE },
 	["HalveBattleDamageYouTake"] = { EFFECT_CHANGE_INVOLVING_BATTLE_DAMAGE, false, aux.ChangeBattleDamage(0,HALF_DAMAGE) },
 	["YouTakeNoBattleDamage"] = { EFFECT_AVOID_BATTLE_DAMAGE }, 
-	["YourOpponentTakesNoBattleDamage"] = { EFFECT_NO_BATTLE_DAMAGE },  
+	["OpponentTakesNoBattleDamage"] = { EFFECT_NO_BATTLE_DAMAGE },  
 	["NeitherPlayerTakesNoBattleDamage"] = { { "YouTakeNoBattleDamage", "YourOpponentTakesNoBattleDamage" } },  
 	["ActivateQuickPlaySpellFromHand"] = { EFFECT_QP_ACT_IN_NTPHAND },
 	["ActivateQuickPlaySpellInSetTurn"] = { EFFECT_QP_ACT_IN_SET_TURN, false,1, nil, EFFECT_FLAG_SET_AVAILABLE, EFFECT_FLAG_SET_AVAILABLE },
@@ -753,8 +745,8 @@ function s.create_buff_list()
 	["ChangeDamage"] = { EFFECT_CHANGE_DAMAGE, false },
 	["ChangeBattleDamage"] = { EFFECT_CHANGE_BATTLE_DAMAGE, false  },
 	["DoubleBattleDamage"] = { EFFECT_CHANGE_BATTLE_DAMAGE, false, DOUBLE_DAMAGE  },
-	["OpponentTakeDamageInstead"] = { EFFECT_REFLECT_DAMAGE },
-	["OpponentTakeBattleDamageInstead"] = { EFFECT_REFLECT_BATTLE_DAMAGE },
+	["OpponentTakesDamageInstead"] = { EFFECT_REFLECT_DAMAGE },
+	["OpponentTakesBattleDamageInstead"] = { EFFECT_REFLECT_BATTLE_DAMAGE },
 	["=GYRace"] = { EFFECT_CHANGE_GRAVE_RACE },
 	["YouChooseAttackTargets4OpponentsAttacks"] = { EFFECT_PATRICIAN_OF_DARKNESS },
 	["GainLPInsteadOfTakingDamage"] = { EFFECT_REVERSE_DAMAGE },
@@ -768,13 +760,13 @@ function s.create_buff_list()
 	["!NegateActivatedEffect"] = { EFFECT_CANNOT_DISEFFECT_SCL },
 	
 	}
-	
+
 	--Special case1  "ActivateSpell&TrapFromAnyZone"
 	--"This card (Spell/Trap) can activate from Deck/GY ..."
 	--normally, activate from hand or activate on the set turn, plz use Scl.CreateSingleBuffEffect(reg_arr, "ActivateTrapFromHand"/"ActivateTrapInSetTurn"/"ActivateQuickPlayFromHand"/"ActivateQuickPlayInSetTurn", ...), rather than use this function.
 	--its value is a dummy value.
 	--it can be set the cost (Effect.SetCost), means if you activate card by this buff, you should pay this cost. 
-	-->>eg1. local e1 = Scl.CreateFieldBuffEffect({c, tp}, "ActivateSpell&TrapFromAnyZone", 1, aux.TRUE, {LOCATION_DECK,0} )
+	--*1. local e1 = Scl.CreateFieldBuffEffect({c, tp}, "ActivateSpell&TrapFromAnyZone", 1, aux.TRUE, {LOCATION_DECK,0} )
 	-->>this function make any Spell & Trap in your Deck can activate from Deck directly, if activate this way, you should pay s.cost as cost.
 	local ge1 = Scl.SetGlobalFieldTriggerEffect(0, EVENT_ADJUST, EFFECT_ACTIVATE_SPELL_AND_TRAP_FROM_ANY_ZONE_SCL, nil, s.activate_from_any_zone_regop)
 	--Special case2  "AddAdditionalEffect"
@@ -989,7 +981,7 @@ end
 --Mix several single events that meet their condition to 1 global event (code).
 --the ... format: event code1, that event's condition, event code2, that event's condition, and so on ...
 --//return the trigger effects for each single event.
--->>eg1. Scl.RaiseGlobalEvent(114514, EVENT_ATTACK_ANNOUNCE, s.con1, EVENT_BE_BATTLE_TARGET, s.con2)
+--*1. Scl.RaiseGlobalEvent(114514, EVENT_ATTACK_ANNOUNCE, s.con1, EVENT_BE_BATTLE_TARGET, s.con2)
 -->>this when a monster is declaring an attack announce, and the scene meets s.con1(e, tp, ...), OR a monster is being select as the battle target, and the scene meets s.son2(e, tp, ...), system will creat a global event by use 114514 as code.
 -->>return the trigger effect for EVENT_ATTACK_ANNOUNCE, and the trigger effect for EVENT_BE_BATTLE_TARGET
 function Scl.RaiseGlobalEvent(code, ...)
@@ -1033,9 +1025,9 @@ end
 --eff_str can be  combined freely by the follow strings:
 --"a" (means Spell/Trap card activate), "s" (means Spell's effect), "t" (means Trap's effect), "m" (means monster's effect).
 --return if has the certain property(s).
---[[>>eg1. Scl.EffectTypeCheck("s,t",e)
+--[[*1. Scl.EffectTypeCheck("s,t",e)
 	when you activate an effect of a Spell or Trap, it return true.
-	>>eg2. Scl.EffectTypeCheck("a", e)
+	*2. Scl.EffectTypeCheck("a", e)
 	only when you activate a Spell or Trap, it return true.
 ]]--
 function Scl.EffectTypeCheck(eff_str, chk_e)
@@ -1099,7 +1091,7 @@ end
 --Get register information.
 --reg_obj can be card (self effect), or { card, card, boolean } (buff effect), {card, player} (player effet) or {boolean, player} (global effect)
 --//return owner, handler (default = owner), ignore immue (default = false)
--->>eg1. Scl.GetRegisterInfo({c, tc})
+--*1. Scl.GetRegisterInfo({c, tc})
 -->>return c, tc, false
 function Scl.GetRegisterInfo(reg_obj)
 	local reg_arr = type(reg_obj) == "table" and reg_obj or { reg_obj }
@@ -1108,9 +1100,9 @@ end
 --Get default effective zones for registing effects, by checking effect handler's card type.
 --reg_obj can be Card, or { card, card, boolean }
 --//return zones
--->>eg1. Scl.GetEffectApplyDefaultZone(monster card)
+--*1. Scl.GetEffectApplyDefaultZone(monster card)
 -->>return LOCATION_MZONE
--->>eg2. Scl.GetEffectApplyDefaultZone({monster card, field card})
+--*2. Scl.GetEffectApplyDefaultZone({monster card, field card})
 -->>return LOCATION_FZONE
 function Scl.GetEffectApplyDefaultZone(reg_obj)
 	local rng
@@ -1130,9 +1122,9 @@ end
 --flag_obj can be number (directly return those number), 
 --OR can be string, split the string, and use the split subset strings as indexes to find number-format flags in Scl.Effect_Property_List.
 --//return number-format flag, flag array contains each single flag.
--->>eg1. Scl.GetNumFormatProperty(EFFECT_FLAG_CARD_TARGET)
+--*1. Scl.GetNumFormatProperty(EFFECT_FLAG_CARD_TARGET)
 -->>return EFFECT_FLAG_CARD_TARGET, { EFFECT_FLAG_CARD_TARGET }
--->>eg2. Scl.GetNumFormatProperty("!NegateEffect,Uncopyable")
+--*2. Scl.GetNumFormatProperty("!NegateEffect,Uncopyable")
 -->>return EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE, { EFFECT_FLAG_CANNOT_DISABLE, EFFECT_FLAG_UNCOPYABLE }
 function Scl.GetNumFormatProperty(flag_obj)
 	local crt_flag, flag, flag_arr = 0, 0, { }
@@ -1156,9 +1148,9 @@ end
 --ctgy_obj can be number (directly return those number), 
 --OR can be string, split the string, and use the split subset strings as indexes to find number-format categories in Scl.Category_List.
 --//return number-format category, category array contains each single number-format category, string array contains each single string-format category
--->>eg1. Scl.GetNumFormatCategory(CATEGORY_TOGRAVE)
+--*1. Scl.GetNumFormatCategory(CATEGORY_TOGRAVE)
 -->>return CATEGORY_TOGRAVE, { CATEGORY_TOGRAVE }, { "Send2GY" }
--->>eg2. Scl.GetNumFormatCategory("AddFromDeck2Hand")
+--*2. Scl.GetNumFormatCategory("AddFromDeck2Hand")
 -->>return CATEGORY_SEARCH + CATEGORY_TOHAND, { CATEGORY_SEARCH, CATEGORY_TOHAND }, { "AddFromDeck2Hand" }
 function Scl.GetNumFormatCategory(ctgy_obj)
 	local ctr_ctgy, ctgy, ctgy_arr, str_arr = 0, 0, { }, { }
@@ -1200,7 +1192,7 @@ end
 --Clone the base_eff to reg_obj.
 --the ... format : string-format clone object1, that object's value, string-format clone object2, that object's value, and so on ...
 --//return clone effect, that effect's id.
--->>eg1. Scl.CloneEffect(c, e1, "code", EVENT_SPSUMMON_SUCCESS)
+--*1. Scl.CloneEffect(c, e1, "code", EVENT_SPSUMMON_SUCCESS)
 -->>card c will get a same effect as e1, but change the cloned effect's trigger event to EVENT_SPSUMMON_SUCCESS
 -->>return clone effect, that effect's id.
 function Scl.CloneEffect(reg_obj, base_eff, ...)
@@ -1237,7 +1229,7 @@ end
 --the base_eff cannot be activated if meets the quick_con, and the cloned Quick Effect cannot be activated if miss the quick_con.
 --tmg_arr default = { 0, TIMINGS_CHECK_MONSTER + TIMING_END_PHASE }, using for the cloned Quick Effect's activate timing.
 --//return cloned Quick Effect, that effet's id.
--->>eg1. Scl.CloneEffectAsQucikEffect(c, e1, scl.cond_in_phase("M2"))
+--*1. Scl.CloneEffectAsQucikEffect(c, e1, scl.cond_in_phase("M2"))
 -->>clone e1 as e2, while in M2, you can activate e2 as Quick Effect but cannot activate e1, otherwise, you can activate e1 but cannot activate e2.
 -->>return cloned Quick Effect, that effet's id.
 function Scl.CloneEffectAsQucikEffect(reg_obj, base_eff, quick_con, tmg_arr)
@@ -1250,8 +1242,8 @@ function Scl.CloneEffectAsQucikEffect(reg_obj, base_eff, quick_con, tmg_arr)
 end
 --Register Condition,  Cost,  Target and Operation for reg_eff 
 --cost, target and operation can be function or array. If be array-format, it calls  scl.list_format_cost_or_target_or_operation to change it to function.
--->>eg1. Scl.RegisterSolvePart(e, s.con, s.cost, s.tg, s.op)
--->>eg1. Scl.RegisterSolvePart(e, s.con, s.cost, { "~Target", "Add2Hand", Card.IsAbleToHand, LOCATION_DECK }, s.op)
+--*1. Scl.RegisterSolvePart(e, s.con, s.cost, s.tg, s.op)
+--*1. Scl.RegisterSolvePart(e, s.con, s.cost, { "~Target", "Add2Hand", Card.IsAbleToHand, LOCATION_DECK }, s.op)
 function Scl.RegisterSolvePart(reg_eff, con, cost, tg, op)
 	local error_code = s.get_error_card_id()
 	if con then
@@ -1282,7 +1274,7 @@ end
 --Register property and category for reg_eff.
 --reg_obj is use to print the error infomation. 
 --ctgy and flag's formats see Scl.GetNumFormatCategory, Scl.GetNumFormatProperty.
--->>eg1. Scl.RegisterCategoryAndProperty(e1, "AddFromDeck2Hand", "Delay")
+--*1. Scl.RegisterCategoryAndProperty(e1, "AddFromDeck2Hand", "Delay")
 -->>e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 -->>e1:SetProperty(EFFECT_FLAG_DELAY)
 function Scl.RegisterCategoryAndProperty(reg_eff, ctgy, flag)
@@ -1294,9 +1286,9 @@ function Scl.RegisterCategoryAndProperty(reg_eff, ctgy, flag)
 end
 --Register description for reg_eff.
 --desc_obj can be number, array, or string format, refer to s.switch_hint_object_format for details.
--->>eg1. Scl.RegisterDescription(e1, {id, 1})
+--*1. Scl.RegisterDescription(e1, {id, 1})
 -->>e1:SetDescription(aux.Stringid(id, 1))
--->>eg2. Scl.RegisterDescription(e1, "Add2Hand")
+--*2. Scl.RegisterDescription(e1, "Add2Hand")
 -->>set e1's description to "add to hand".
 function Scl.RegisterDescription(reg_eff, desc_obj)
 	if not desc_obj and ctgy_str then 
@@ -1313,9 +1305,9 @@ end
 				special is depending to lim_obj[3], 
 				lim_obj[3] can be: "Share" - EFFECT_COUNT_CODE_SINGLE, "Duel" - EFFECT_COUNT_CODE_DUEL, "Oath" - EFFECT_COUNT_CODE_OATH 
 --]]
--->>eg1. Scl.RegisterActivateCountLimit(e1, 1)
+--*1. Scl.RegisterActivateCountLimit(e1, 1)
 -->>e1:SetCountLimit(1)
--->>eg2. Scl.RegisterActivateCountLimit(e1, {1, id, "Oath"})
+--*2. Scl.RegisterActivateCountLimit(e1, {1, id, "Oath"})
 -->>e1:SetCountLimit(1, id + EFFECT_COUNT_CODE_OATH)
 function Scl.RegisterActivateCountLimit(reg_eff, lim_obj)
 	if lim_obj then
@@ -1371,9 +1363,9 @@ end
 --Switch different formats zone_obj to number-format.
 --zone_obj can be number-format (like LOCATION_MZONE), or can be string-format (Like "Hand" or "Hand,Deck")
 --//return number-format zone, array contains each number-format zone
--->>eg1. Scl.GetNumFormatZone(LOCATION_DECK)
+--*1. Scl.GetNumFormatZone(LOCATION_DECK)
 -->>return LOCATION_DECK, { LOCATION_DECK }
--->>eg2. Scl.GetNumFormatZone("Hand,Deck,XyzMaterial")
+--*2. Scl.GetNumFormatZone("Hand,Deck,XyzMaterial")
 -->>return LOCATION_HAND + LOCATION_DECK + LOCATION_OVERLAY, { LOCATION_HAND, LOCATION_DECK, LOCATION_OVERLAY }
 function Scl.GetNumFormatZone(zone_obj)
 	if type(zone_obj) == "number" then 
@@ -1394,9 +1386,9 @@ function Scl.GetNumFormatZone(zone_obj)
 end
 --Register apply zone for reg_eff.
 --format for zone_obj: see Scl.GetNumFormatZone
--->>eg1. Scl.RegisterZone(e1, LOCATION_MZONE)
+--*1. Scl.RegisterZone(e1, LOCATION_MZONE)
 -->>e1:SetRange(LOCATION_MZONE)
--->>eg2. Scl.RegisterZone(e1, "Hand,MonsterZone,GY")
+--*2. Scl.RegisterZone(e1, "Hand,MonsterZone,GY")
 -->>e1:SetRange(LOCATION_HAND + LOCATION_MZONE + LOCATION_GRAVE)
 function Scl.RegisterZone(reg_eff, zone_obj)
 	local zone = Scl.GetNumFormatZone(zone_obj)
@@ -1405,9 +1397,9 @@ function Scl.RegisterZone(reg_eff, zone_obj)
 end
 --Register target range for reg_eff. 
 --tgrng_obj can be number-format, dircetly use it as target range, OR can be table-format like { self rng, oppo rng }.
--->>eg1. Scl.RegisterTargetRange(e1, LOCATION_HAND)
+--*1. Scl.RegisterTargetRange(e1, LOCATION_HAND)
 -->>e1:SetTargetRange(LOCATION_HAND, 0)
--->>eg2. Scl.RegisterTargetRange(e1, { LOCATION_HAND, LOCATION_MZONE })
+--*2. Scl.RegisterTargetRange(e1, { LOCATION_HAND, LOCATION_MZONE })
 -->>e1:SetTargetRange(LOCATION_HAND, LOCATION_MZONE)
 function Scl.RegisterTargetRange(reg_eff, tgrng_obj)
 	local tgrng_arr = type(tgrng_obj) == "table" and tgrng_obj or { tgrng_obj }
@@ -1417,9 +1409,9 @@ function Scl.RegisterTargetRange(reg_eff, tgrng_obj)
 end
 --Register hint timing for Quick Effect reg_eff.
 --tmg_obj can be number-format, dircetly use it as HintTiming, OR can be table-format like { self timing, oppo timing }.
--->>eg1. Scl.RegisterHintTiming(e1, TIMING_SUMMON)
+--*1. Scl.RegisterHintTiming(e1, TIMING_SUMMON)
 -->>e1:SetHintTiming(TIMING_SUMMON)
--->>eg2. Scl.RegisterHintTiming(e1, { TIMING_SUMMON, TIMINGS_CHECK_MONSTER })
+--*2. Scl.RegisterHintTiming(e1, { TIMING_SUMMON, TIMINGS_CHECK_MONSTER })
 -->>e1:SetTargetRange(TIMING_SUMMON, TIMINGS_CHECK_MONSTER)
 function Scl.RegisterHintTiming(reg_eff, tmg_obj)
 	local tmg_arr = type(tmg_obj) == "table" and tmg_obj or { tmg_obj }
@@ -1427,9 +1419,9 @@ function Scl.RegisterHintTiming(reg_eff, tmg_obj)
 end
 --Switch number or table-format rst_obj to number-format reset event and reset turn count.
 --//return reset event, reset turn count
--->>eg1. Scl.GetNumFormatReset(RESET_EVENT + RESETS_STANDARD)
+--*1. Scl.GetNumFormatReset(RESET_EVENT + RESETS_STANDARD)
 -->>return RESET_EVENT + RESETS_STANDARD, 1
--->>eg2. Scl.GetNumFormatReset({ RESET_PHASE + PHASE_END, 2 })
+--*2. Scl.GetNumFormatReset({ RESET_PHASE + PHASE_END, 2 })
 -->>return RESET_PHASE + PHASE_END, 2
 function Scl.GetNumFormatReset(rst_obj)
 	local rst_arr = type(rst_obj) == "table" and rst_obj or { rst_obj }
@@ -1444,11 +1436,11 @@ end
 --Register reg_eff on the reg_obj.
 --//if Scl.Creat_Effect_Without_Register = true, this function won't do the RegisterEffect operation, only return reg_eff, -1.
 --//else do the RegisterEffect operation, and return register effect, that effect's id.
--->>eg1. Scl.RegisterEffect(c, e1)
+--*1. Scl.RegisterEffect(c, e1)
 -->>c:RegisterEffect(e1)
--->>eg2. Scl.RegisterEffect({c, tc}, e1)
+--*2. Scl.RegisterEffect({c, tc}, e1)
 -->>tc:RegisterEffect(e1)
--->>eg3. Scl.RegisterEffect({c, 0}, e1)
+--*3. Scl.RegisterEffect({c, 0}, e1)
 -->>Duel.RegisterEffect(e1, 0)
 function Scl.RegisterEffect(reg_obj, reg_eff)
 	if Scl.Creat_Effect_Without_Register then
@@ -1465,7 +1457,7 @@ end
 --Switch different formats phase_obj to number-format.
 --phase_obj can be number-format (like PHASE_END), or can be string-format (Like "EP")
 --//return number-format phase, array contains each number-format phase
--->>eg1. Scl.GetNumFormatPhase(PHASE_END)
+--*1. Scl.GetNumFormatPhase(PHASE_END)
 -->>return PHASE_END, { PHASE_END }
 function Scl.GetNumFormatPhase(phase_obj)
 	if type(phase_obj) == "number" then 
@@ -1490,9 +1482,9 @@ end
 --tmg_obj: see Scl.RegisterHintTiming(reg_eff, tmg_obj)
 --rst_obj: see Scl.RegisterReset(reg_eff, rst_obj)
 --//return register effect1, register effect2, ...
--->>eg1. Scl.CreateEffect(c, EFFECT_TYPE_IGNITION, nil, "Add2Hand", {id, 1}, "Search,Add2Hand", nil, LOCATION_MZONE, nil, nil, s.thtg, s.thop)
+--*1. Scl.CreateEffect(c, EFFECT_TYPE_IGNITION, nil, "Add2Hand", {id, 1}, "Search,Add2Hand", nil, LOCATION_MZONE, nil, nil, s.thtg, s.thop)
 -->>register an Ignition effect on the card c, seems this effect is a search effect.
--->>eg2. Scl.CreateEffect(c, EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O, "BeNormalSummoned,BeSpecialSummoned", "Add2Hand", {id, 1}, "Search,Add2Hand", nil, nil, nil, s.thtg, s.thop)
+--*2. Scl.CreateEffect(c, EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O, "BeNormalSummoned,BeSpecialSummoned", "Add2Hand", {id, 1}, "Search,Add2Hand", nil, nil, nil, s.thtg, s.thop)
 -->>register 2 single trigger effects on the card c, when it is normal summoned or speical summoned, the effect could be activated.
 function Scl.CreateEffect(reg_obj, eff_typ, code_obj, desc_obj, lim_obj, ctgy, flag, zone_obj, con, cost, tg, op, val, tgrng_obj, tmg_obj, rst_obj)
 	s.set_global_error_code(reg_obj)
@@ -1595,7 +1587,7 @@ end
 --[[turn the eff_obj (can be single effect or effect list) to the EFFECT_TYPE_GRANT effect(s)
 --the cards meets tg(e, c) and is in tgrng_obj will gain effects from eff_obj
 --//return the effects with code EFFECT_TYPE_GRANT
--->>eg1. local e1 = Scl.CreateSingleBuffEffect(c, "!BeDestroyedByBattle", 1, "MonsterZone")
+--*1. local e1 = Scl.CreateSingleBuffEffect(c, "!BeDestroyedByBattle", 1, "MonsterZone")
 		local e2 = Scl.Turn2GainedEffect(c, e1, s.tg, { "MonsterZone", 0 }, "Spell&TrapZone")
 	>>while card c is in your spell and trap zone, each faceup monsters in your monster zone and meet s.tg(e,c) will gain the effect e1.
 --]]
@@ -1744,11 +1736,11 @@ end
 --paramas format: see Scl.CreateBuffEffect
 --if you want to use an effect to add a buff, better use Scl.AddSingleBuff
 --//return effect for code1, effect for code2, ...
--->>eg1. Scl.CreateSingleBuffEffect(c, "+ATK", 1000, LOCATION_MZONE)
+--*1. Scl.CreateSingleBuffEffect(c, "+ATK", 1000, LOCATION_MZONE)
 -->>register 1 buff on the card c, the effect will increase 1000 ATK for c, while it is on the MZONE.
--->>eg2. Scl.CreateSingleBuffEffect(c, "+ATK,+DEF", 1000, LOCATION_MZONE)
+--*2. Scl.CreateSingleBuffEffect(c, "+ATK,+DEF", 1000, LOCATION_MZONE)
 -->>register 2 buffs on the card c, increase 1000 ATK and 1000 DEF for c, while it is on the MZONE.
--->>eg3. Scl.CreateSingleBuffEffect({c, tc}, "+ATK,+DEF", {1000, 2000}, nil, nil, RESETS_DISABLE_SCL)
+--*3. Scl.CreateSingleBuffEffect({c, tc}, "+ATK,+DEF", {1000, 2000}, nil, nil, RESETS_DISABLE_SCL)
 -->>register 2 buffs on the card tc, increase 1000 ATK and 2000 DEF for tc, and the buff will be reset cause RESETS_DISABLE_SCL.
 function Scl.CreateSingleBuffEffect(reg_obj, att_obj, val_obj, rng, con, rst_obj, desc_obj, lim_obj, flag)
 	local flag2 = Scl.GetNumFormatProperty(flag)
@@ -1766,11 +1758,11 @@ end
 --rng default == "0xff" (in any where)
 --other paramas format: see Scl.CreateBuffEffect
 --//return effect for code1, effect for code2, ...
--->>eg1. Scl.CreateSingleBuffCondition(c, "!FusionMaterial", 1)
+--*1. Scl.CreateSingleBuffCondition(c, "!FusionMaterial", 1)
 -->>register 1 buff on the card c, the condition will forbid it be fusion material in any time any where.
--->>eg2. Scl.CreateSingleBuffCondition(c, "!FusionMaterial,!SynchroMaterial", 1)
+--*2. Scl.CreateSingleBuffCondition(c, "!FusionMaterial,!SynchroMaterial", 1)
 -->>register 2 buff on the card c, the condition will forbid it be fusion and synchro material in any time any where.
--->>eg3. Scl.CreateSingleBuffCondition(c, "SpecialSummonCondition", aux.FALSE)
+--*3. Scl.CreateSingleBuffCondition(c, "SpecialSummonCondition", aux.FALSE)
 -->>register 1 buff on the card c, the condition will forbid it be speical summoned from any where in any time.
 function Scl.CreateSingleBuffCondition(reg_obj, att_obj, val_obj, rng, con, rst_obj, desc_obj, lim_obj, flag)
 	local flag2 = Scl.GetNumFormatProperty(flag)
@@ -1789,11 +1781,11 @@ end
 --Creat a field buff effect.
 --paramas format: see Scl.CreateBuffEffect
 --//return effect for code1, effect for code2, ...
--->>eg1. Scl.CreateFieldBuffEffect(c, "+ATK", 1000, aux.TRUE, { LOCATION_MZONE, 0 }, LOCATION_MZONE)
+--*1. Scl.CreateFieldBuffEffect(c, "+ATK", 1000, aux.TRUE, { LOCATION_MZONE, 0 }, LOCATION_MZONE)
 -->>register 1 buff on the card c, the buff will increase 1000 ATK for any monsters your control, while card c is on the MZONE.
--->>eg2. Scl.CreateFieldBuffEffect(c, "+ATK,+DEF", -1000, s.atktg, { 0, LOCATION_MZONE }, LOCATION_MZONE)
+--*2. Scl.CreateFieldBuffEffect(c, "+ATK,+DEF", -1000, s.atktg, { 0, LOCATION_MZONE }, LOCATION_MZONE)
 -->>register 2 buffs on the card c, decrease 1000 ATK and 1000 DEF for any monsters your opponent controls that meet the filter s.atktg, while card c is on the MZONE.
--->>eg3. Scl.CreateFieldBuffEffect({c, tp}, "+ATK,+DEF", {1000, 2000}, aux.TRUE, { LOCATION_MZONE, 0 }, nil, nil, RESET_EP_SCL)
+--*3. Scl.CreateFieldBuffEffect({c, tp}, "+ATK,+DEF", {1000, 2000}, aux.TRUE, { LOCATION_MZONE, 0 }, nil, nil, RESET_EP_SCL)
 -->>register 2 buffs on player tp, increase 1000 ATK and 2000 DEF for any monsters you control, and the buff will be reset cause RESET_EP_SCL
 function Scl.CreateFieldBuffEffect(reg_obj, att_obj, val_obj, tg, tgrng_obj, rng, con, rst_obj, desc_obj, lim_obj, flag)
 	return Scl.CreateBuffEffect(reg_obj, "FieldBuff", att_obj, val_obj, tg, tgrng_obj, rng, con, rst_obj, desc_obj, lim_obj, flag)
@@ -1809,11 +1801,11 @@ end
 --paramas format: see Scl.CreateBuffEffect
 --flag will auto add EFFECT_FLAG_PLAYER_TARGET
 --//return effect for code1, effect for code2, ...
--->>eg1. Scl.CreatePlayerBuffEffect(c, "!2Hand", 1, nil, { 1, 1 }, nil, LOCATION_MZONE)
+--*1. Scl.CreatePlayerBuffEffect(c, "!2Hand", 1, nil, { 1, 1 }, nil, LOCATION_MZONE)
 -->>register 1 buff on the card c, the buff will limit both player add card to their hand, while card c is on the MZONE.
--->>eg2. Scl.CreatePlayerBuffEffect(c, "!2Hand,!SpecialSummon", 1, nil, { 0, 1 }, LOCATION_MZONE)
+--*2. Scl.CreatePlayerBuffEffect(c, "!2Hand,!SpecialSummon", 1, nil, { 0, 1 }, LOCATION_MZONE)
 -->>register 2 buffs on the card c, limit your opponent add card to their hand and Speical Summon any monsters, while card c is on the MZONE.
--->>eg3. Scl.CreatePlayerBuffEffect({c, tp}, "!SpecialSummon", 1, s.limit, { 1, 0 }, nil, nil, RESET_EP_SCL)
+--*3. Scl.CreatePlayerBuffEffect({c, tp}, "!SpecialSummon", 1, s.limit, { 1, 0 }, nil, nil, RESET_EP_SCL)
 -->>register 1 buff on player tp, limit him cannot Special Summon any monsters meets the filter s.limit, and the buff will be reset cause RESET_EP_SCL
 function Scl.CreatePlayerBuffEffect(reg_obj, att_obj, val_obj, tg, tgrng_obj, rng, con, rst_obj, desc_obj, lim_obj, flag)
 	local flag2 = Scl.GetNumFormatProperty(flag)
@@ -1830,11 +1822,11 @@ end
 --Creat an equip buff condition(s).
 --other paramas format: see Scl.CreateBuffEffect
 --//return effect for code1, effect for code2, ...
--->>eg1. Scl.CreateEquipBuffEffect(c, "!FusionMaterial", 1)
+--*1. Scl.CreateEquipBuffEffect(c, "!FusionMaterial", 1)
 -->>register 1 buff on the card c, the buff will forbid its equip target be fusion material.
--->>eg2. Scl.CreateEquipBuffEffect(c, "+ATK,+DEF", 1000)
+--*2. Scl.CreateEquipBuffEffect(c, "+ATK,+DEF", 1000)
 -->>register 2 buff on the card c, the buff will increase 1000 ATK and DEF for its equip target.
--->>eg3. Scl.CreateEquipBuffEffect({c, tc}, "+Type", TYPE_TUNER, "ImmuneEffect", s.imval)
+--*3. Scl.CreateEquipBuffEffect({c, tc}, "+Type", TYPE_TUNER, "ImmuneEffect", s.imval)
 -->>register 2 buffs on the card tc, the buff will make its equip target becomes a tunner, and make it immune to effects that meet s.imval
 function Scl.CreateEquipBuffEffect(reg_obj, att_obj, val_obj, con, rst_obj, desc_obj, lim_obj, flag)
 	return Scl.CreateBuffEffect(reg_obj, "EquipBuff", att_obj, val_obj, nil, nil, nil, con, rst_obj, desc_obj, lim_obj, flag)
@@ -1842,7 +1834,7 @@ end
 --Create an effect buff effect(s), affect to effects
 --other paramas format: see Scl.CreateBuffEffect
 --//return effect for code1, effect for code2, ...
--->>eg1. Scl.CreateEffectBuffEffect(c, "!NegateActivation", s.val)
+--*1. Scl.CreateEffectBuffEffect(c, "!NegateActivation", s.val)
 -->>creat a buff affect any effects meet s.val(e, chain_index), make their activations cannot be negated.
 function Scl.CreateEffectBuffEffect(reg_obj, att_obj, val_obj, rng, con, rst_obj, desc_obj, lim_obj, flag)
 	return Scl.CreateBuffEffect(reg_obj, "EffectBuff", att_obj, val_obj, nil, nil, rng, con, rst_obj, desc_obj, lim_obj, flag)
@@ -1918,16 +1910,16 @@ end
 --Quick add single buff(s) to reg_obj.
 --paramas format: see Scl.CreateBuffEffect
 --if c == nil, it won't add buff(s), it turn to record the buff paramas into Scl.Single_Buff_Affect_Self_List, become a outcase function, plug in to some functions to add buff(s) in those functions (like Scl.SpecialSummon)
--->>eg1. Scl.AddSingleBuff({c, tc}, "+ATK", 1000)
+--*1. Scl.AddSingleBuff({c, tc}, "+ATK", 1000)
 -->>add a buff to tc that increase its 1000 ATK while it is in current zone (default), this buff will reset when RESETS_SCL (default)
 -->>return buff_effect 
--->>eg2. Scl.AddSingleBuff(c, "+ATK,+DEF", 1000, "Reset", RESETS_DISABLE_SCL)
+--*2. Scl.AddSingleBuff(c, "+ATK,+DEF", 1000, "Reset", RESETS_DISABLE_SCL)
 -->>add a buff to c that increase its 1000 ATK and DEF while it is in current zone (default), those buffs will reset when RESETS_DISABLE_SCL 
 -->>return buff_effect1, buff_effect2
--->>eg3. Scl.AddSingleBuff(c, "+Level", -1, "+Race", RACE_WARRIOR, "Reset", RESETS_WITHOUT_TO_FIELD_SCL,"Zone","Hand,MonsterZone")
+--*3. Scl.AddSingleBuff(c, "+Level", -1, "+Race", RACE_WARRIOR, "Reset", RESETS_WITHOUT_TO_FIELD_SCL,"Zone","Hand,MonsterZone")
 -->>add a buff to c that decrease its 1 Level and make it become a Warrior monster while it is in your hand or monster zone, those buffs will reset when RESETS_WITHOUT_TO_FIELD_SCL
 -->>return buff_effect1, buff_effect2 
--->>eg4. Scl.AddSingleBuff({c, g, true}, "!FusionMaterial", 1)
+--*4. Scl.AddSingleBuff({c, g, true}, "!FusionMaterial", 1)
 -->>add a buff to each card in g, that forbid them be used as fusion material while they are in current zone (default), this buff will reset when RESETS_SCL (default)
 -->>return buff_effect_4_card1, buff_effect_4_card2,...
 function Scl.AddSingleBuff(reg_obj, ...)
@@ -1941,7 +1933,7 @@ end
 --Quick add single buff(s) to card c self (owner == handler), the buff can only affect owner. If Scl.Buff_Code_List[buff_str][2] == true, the buff will be reset while it is disabled.
 --if c == nil, it won't add buff(s), it turn to record the buff paramas into Scl.Single_Buff_Affect_Self_List, become a outcase function, plug in to some functions to add buff(s) in those functions (like Scl.SpecialSummon)
 --paramas format: see Scl.CreateBuffEffect
--->>eg1. Scl.AddSingleBuff2Self(c, "+ATK", 1000)
+--*1. Scl.AddSingleBuff2Self(c, "+ATK", 1000)
 -->>card c add a buff to self that increase its 1000 ATK while it is in current zone (default), this buff will reset when RESETS_DISABLE_SCL (default)
 function Scl.AddSingleBuff2Self(c, ...)
 	if not c then 
@@ -1954,16 +1946,16 @@ end
 --Quick add equip buff(s) to reg_obj.
 --paramas format: see Scl.CreateBuffEffect
 --if c == nil, it won't add buff(s), it turn to record the buff paramas into Scl.Single_Buff_Affect_Self_List, become a outcase function, plug in to some functions to add buff(s) in those functions (like Scl.Equip)
--->>eg1. Scl.AddEquipBuff({c, tc}, "+ATK", 1000)
+--*1. Scl.AddEquipBuff({c, tc}, "+ATK", 1000)
 -->>add a buff to tc that increase its equip target's 1000 ATK, this buff will reset when RESETS_SCL (default)
 -->>return buff_effect 
--->>eg2. Scl.AddEquipBuff(c, "+ATK,+DEF", 1000, "Reset",RESETS_DISABLE_SCL)
+--*2. Scl.AddEquipBuff(c, "+ATK,+DEF", 1000, "Reset",RESETS_DISABLE_SCL)
 -->>add a buff to c that increase its equip target's 1000 ATK and DEF, those buffs will reset when RESETS_DISABLE_SCL 
 -->>return buff_effect1, buff_effect2
--->>eg3. Scl.AddEquipBuff(c, "+Level", -1, "+Race", RACE_WARRIOR, "Reset", RESETS_WITHOUT_TO_FIELD_SCL,"Zone","Hand,MonsterZone")
+--*3. Scl.AddEquipBuff(c, "+Level", -1, "+Race", RACE_WARRIOR, "Reset", RESETS_WITHOUT_TO_FIELD_SCL,"Zone","Hand,MonsterZone")
 -->>add a buff to c that decrease its equip target's 1 Level and make it become a Warrior monster while it is in your hand or monster zone, those buffs will reset when RESETS_WITHOUT_TO_FIELD_SCL
 -->>return buff_effect1, buff_effect2 
--->>eg4. Scl.AddEquipBuff({c, g, true}, "!FusionMaterial", 1)
+--*4. Scl.AddEquipBuff({c, g, true}, "!FusionMaterial", 1)
 -->>add a buff to each card in g, that forbid their equip targets be used as fusion material, those buffs will reset when RESETS_WITHOUT_TO_FIELD_SCL
 -->>return buff_effect_4_card1, buff_effect_4_card2,...
 function Scl.AddEquipBuff(reg_obj, ...)
@@ -1987,7 +1979,7 @@ end
 --if the register handler is a Trap or Quick Play Spell, tmg_obj will automatic set to { 0, TIMINGS_CHECK_MONSTER + TIMING_END_PHASE }.
 --other parama format : see Scl.CreateEffect
 --//return effect, effect id
--->>eg1. Scl.CreateActivateEffect(c, nil, nil, {1, "Oath"}, "Search,Add2Hand", nil, nil, nil, s.tg, s.op)
+--*1. Scl.CreateActivateEffect(c, nil, nil, {1, "Oath"}, "Search,Add2Hand", nil, nil, nil, s.tg, s.op)
 -->>register an activate effect to card c, it can only activate once per turn, it is an searcher.
 -->>return effect, effect id
 function Scl.CreateActivateEffect(reg_obj, code, desc_obj, lim_obj, ctgy, flag, con, cost, tg, op, tmg_obj, rst_obj)
@@ -2000,9 +1992,9 @@ end
 --Create an activate equip effect for Equip Spell, and automatic set the Equip Limit effect.
 --eqfilter(c ,e, tp) is the condition the equip card should meet, it will automatic add a "Card.IsFaceup" check.
 --//return equip activate effect, EFFECT_EQUIP_LIMIT buff condition
--->>eg1. Scl.CreateActivateEffect_Equip(c)
+--*1. Scl.CreateActivateEffect_Equip(c)
 -->>create an equip effect that make the Equip Spell can equip to any faceup monster on the field.
--->>eg2. Scl.CreateActivateEffect_Equip(c, aux.FilterBoolFunction(Card.IsRace, RACE_WARRIOR), nil, nil, nil, s.cost)
+--*2. Scl.CreateActivateEffect_Equip(c, aux.FilterBoolFunction(Card.IsRace, RACE_WARRIOR), nil, nil, nil, s.cost)
 -->>create an equip effect that make the Equip Spell can only equip to Warrior-monster on the field, and should pay s.cost when activate.
 function Scl.CreateActivateEffect_Equip(reg_obj, eqfilter, desc_obj, lim_obj, con, cost) 
 	eqfilter = eqfilter or Card.IsFaceup
@@ -2029,9 +2021,9 @@ end
 --Create an activate effect, negate the card's effect.
 --param see Scl.CreateQuickOptionalEffect_Negate
 --//return effect
--->>eg1. Scl.CreateActivateEffect_NegateEffect(c, "Destroy")
+--*1. Scl.CreateActivateEffect_NegateEffect(c, "Destroy")
 -->>create an activate effect that can negate any effect and destroy that effect's handler.
--->>eg2. Scl.CreateActivateEffect_NegateEffect(c, "Dummy", {1, "Oath"}, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
+--*2. Scl.CreateActivateEffect_NegateEffect(c, "Dummy", {1, "Oath"}, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
 -->>create an activate effect that can negate monster effect, and can only activate once per turn. You must pay s.cost for its activation, and add the s.op ass the additional operation.
 function Scl.CreateActivateEffect_NegateEffect(reg_obj, op_str, lim_obj, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 	local e1 = Scl.CreateQuickOptionalEffect_Negate(reg_obj, "NegateEffect", op_str, lim_obj, nil, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
@@ -2041,9 +2033,9 @@ end
 --Create an activate effect, negate the effect's activation.
 --param see Scl.CreateQuickOptionalEffect_Negate
 --//return effect
--->>eg1. Scl.CreateActivateEffect_NegateActivation(c, "Destroy")
+--*1. Scl.CreateActivateEffect_NegateActivation(c, "Destroy")
 -->>create an activate effect that can negate any activation and destroy that activate effect's handler.
--->>eg2. Scl.CreateActivateEffect_NegateActivation(c, "Dummy", {1, "Oath"}, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
+--*2. Scl.CreateActivateEffect_NegateActivation(c, "Dummy", {1, "Oath"}, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
 -->>create an activate effect that can negate monster effect's activations, and can only activate once per turn. You must pay s.cost for its activation, and add the s.op ass the additional operation.
 function Scl.CreateActivateEffect_NegateActivation(reg_obj, op_str, lim_obj, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 	local e1 = Scl.CreateQuickOptionalEffect_Negate(reg_obj, "NegateActivation", op_str, lim_obj, nil, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
@@ -2068,12 +2060,12 @@ end
 ]]--
 --//return fusion summon effect
 --[[
-	>>eg1. "Polymerization" (24094653) =
+	*1. "Polymerization" (24094653) =
 		local e1 = Scl.CreateActivateEffect_FusionSummon(c, nil, aux.TRUE, s.mat, "Send2GY")
 		function s.mat(e,tp)
 			return Duel.GetFusionMaterial(tp)
 		end
-	>>eg2. "Super Polymerization" (48130397) =
+	*2. "Super Polymerization" (48130397) =
 		local e1 = Scl.CreateActivateEffect_FusionSummon(c, nil, aux.TRUE, s.mat, "Send2GY", nil, nil, nil, nil, nil, nil, nil, { "PlayerCost", "Discard", 1 }, s.extg)
 		function s.mat(e,tp)
 			local g1 = Duel.GetFusionMaterial(tp):Filter(Card.IsOnField, nil)
@@ -2088,7 +2080,7 @@ end
 				Duel.SetChainLimit(aux.FALSE)
 			end
 		end
-	>>eg3. "Cynet Fusion" (65801012) =
+	*3. "Cynet Fusion" (65801012) =
 		local e1 = Scl.CreateActivateEffect_FusionSummon(c, nil, aux.FilterBoolFunction(Card.IsRace, RACE_CYBERSE), s.mat, s.matop, nil, s.fcheck, nil, s.gcheck, nil, nil, "Banished,GYAction")
 		function s.exfilter(c)
 			return c:IsType(TYPE_LINK) and c:IsRace(RACE_CYBERSE) and c:IsAbleToRemove()
@@ -2256,7 +2248,7 @@ end
 --... is the single activate effects that you want to mix in.
 --the single activate effects that be mixed cannot be activated.
 --//return the mixed effect.
--->>eg1. local e1 = Scl.CreateActivateEffect(c, nil, "Banish", { 1, id, "Oath" }, "Banish", "Target", nil, nil, s.tg, s.op)
+--*1. local e1 = Scl.CreateActivateEffect(c, nil, "Banish", { 1, id, "Oath" }, "Banish", "Target", nil, nil, s.tg, s.op)
 -->>	 local e2 = Scl.CreateActivateEffect(c, nil, "Destroy", { 1, id, "Oath" }, "Destroy", "Target", nil, nil, s.tg2, s.op2)
 -->>	 local e3 = Scl.CreateActivateEffect_Activate1ofTheseEffects(c, e1, e2)
 -->>mix effect e1 and e2 into e3.
@@ -2274,7 +2266,7 @@ end
 --Create single trigger optional effect.
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateSingleTriggerOptionalEffect(c, EVENT_SPSUMMON_SUCCESS, "Add2Hand", nil, "Add2Hand", "Delay", nil, nil, s.tg, s.op)
+--*1. Scl.CreateSingleTriggerOptionalEffect(c, EVENT_SPSUMMON_SUCCESS, "Add2Hand", nil, "Add2Hand", "Delay", nil, nil, s.tg, s.op)
 --create an effect to card c, if card c is  special summon success, it can activate this effect. 
 function Scl.CreateSingleTriggerOptionalEffect(reg_obj, code, desc_obj, lim_obj, cgty, flag, con, cost, tg, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_TRIGGER_O + EFFECT_TYPE_SINGLE, code, desc_obj, lim_obj, cgty, flag, nil, con, cost, tg, op, nil, nil, nil, rst_obj)
@@ -2282,7 +2274,7 @@ end
 --Create single trigger mandatory effect.
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateSingleTriggerMandatoryEffect(c, EVENT_SPSUMMON_SUCCESS, "Add2Hand", nil, "Add2Hand", "Delay", nil, nil, s.tg, s.op)
+--*1. Scl.CreateSingleTriggerMandatoryEffect(c, EVENT_SPSUMMON_SUCCESS, "Add2Hand", nil, "Add2Hand", "Delay", nil, nil, s.tg, s.op)
 --create an effect to card c, if card c is  special summon success, it must activate this effect.
 function Scl.CreateSingleTriggerMandatoryEffect(reg_obj, code, desc_obj, lim_obj, cgty, flag, con, cost, tg, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_TRIGGER_F + EFFECT_TYPE_SINGLE, code, desc_obj, lim_obj, cgty, flag, nil, con, cost, tg, op, nil, nil, nil, rst_obj)
@@ -2290,7 +2282,7 @@ end
 --Create flip optional effect.
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateFlipOptionalEffect(c, "Add2Hand", 1, "Add2Hand", "Delay", nil, nil, s.tg, s.op)
+--*1. Scl.CreateFlipOptionalEffect(c, "Add2Hand", 1, "Add2Hand", "Delay", nil, nil, s.tg, s.op)
 --create an effect to the flip card c, if it is flipped, it can activate this effect.
 function Scl.CreateFlipOptionalEffect(reg_obj, desc_obj, lim_obj, ctgy, flag, con, cost, tg, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_TRIGGER_O + EFFECT_TYPE_SINGLE + EFFECT_TYPE_FLIP, nil, desc_obj, lim_obj, ctgy, flag, nil, con, cost, tg, op, nil, nil, nil, rst_obj)
@@ -2298,7 +2290,7 @@ end
 --Create flip optional effect.
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateFlipMandatoryEffect(c, "Add2Hand", 1, "Add2Hand", "Target", nil, nil, s.tg, s.op)
+--*1. Scl.CreateFlipMandatoryEffect(c, "Add2Hand", 1, "Add2Hand", "Target", nil, nil, s.tg, s.op)
 --create an effect to the flip card c, if it is flipped, it must activate this effect.
 function Scl.CreateFlipMandatoryEffect(reg_obj, desc_obj, lim_obj, ctgy, flag, con, cost, tg, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_SINGLE + EFFECT_TYPE_FLIP, nil, desc_obj, lim_obj, ctgy, flag, nil, con, cost, tg, op, nil, nil, nil, rst_obj)
@@ -2306,7 +2298,7 @@ end
 --Create field trigger optional effect 
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateFieldTriggerOptionalEffect(c, EVENT_SPSUMMON_SUCCESS, "Add2Hand", 1, "Add2Hand", "Delay", LOCATION_MZONE, nil, nil, s.tg, s.op)
+--*1. Scl.CreateFieldTriggerOptionalEffect(c, EVENT_SPSUMMON_SUCCESS, "Add2Hand", 1, "Add2Hand", "Delay", LOCATION_MZONE, nil, nil, s.tg, s.op)
 --Create an field trigger effect: Once per turn, if a monster(s) is special summoned, you can activate this effect to do s.op. 
 function Scl.CreateFieldTriggerOptionalEffect(reg_obj, code, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_TRIGGER_O + EFFECT_TYPE_FIELD, code, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, nil, nil, nil, rst_obj)
@@ -2314,7 +2306,7 @@ end
 --Create field trigger optional effect 
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateFieldTriggerMandatoryEffect(c, EVENT_SPSUMMON_SUCCESS, "Add2Hand", 1, "Add2Hand", "Delay", LOCATION_MZONE, nil, nil, s.tg, s.op)
+--*1. Scl.CreateFieldTriggerMandatoryEffect(c, EVENT_SPSUMMON_SUCCESS, "Add2Hand", 1, "Add2Hand", "Delay", LOCATION_MZONE, nil, nil, s.tg, s.op)
 -->>create an field trigger effect: Once per turn, if a monster(s) is special summoned, you must activate this effect to do s.op. 
 function Scl.CreateFieldTriggerMandatoryEffect(reg_obj, code, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_TRIGGER_F + EFFECT_TYPE_FIELD, code, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, nil, nil, nil, rst_obj)
@@ -2329,7 +2321,7 @@ end
 --Create an ignition effect.
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateIgnitionEffect(c, "Add2Hand", 1, "Add2Hand", "Target", LOCATION_MZONE, nil, nil, s.tg, s.op)
+--*1. Scl.CreateIgnitionEffect(c, "Add2Hand", 1, "Add2Hand", "Target", LOCATION_MZONE, nil, nil, s.tg, s.op)
 -->>create an ignition effect: Once per turn, you can activate this effect and do s.tg, s.op.
 function Scl.CreateIgnitionEffect(reg_obj, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_IGNITION, nil, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, nil, nil, nil, rst_obj)
@@ -2340,7 +2332,7 @@ end
 --... is the single activate effects that you want to mix in.
 --the single activate effects that be mixed cannot be activated.
 --//return the mixed effect.
--->>eg1. local e1 = Scl.CreateIgnitionEffect(c, "Banish", { 1, id, "Oath" }, "Banish", "Target", "Hand,MonsterZone", nil, nil, s.tg, s.op)
+--*1. local e1 = Scl.CreateIgnitionEffect(c, "Banish", { 1, id, "Oath" }, "Banish", "Target", "Hand,MonsterZone", nil, nil, s.tg, s.op)
 -->>	 local e2 = Scl.CreateIgnitionEffect(c, "Destroy", { 1, id, "Oath" }, "Destroy", "Target", "MonsterZone", nil, nil, s.tg2, s.op2)
 -->>	 local e3 = Scl.CreateIgnitionEffect_Activate1ofTheseEffects(c, e1, e2)
 -->>mix effect e1 and e2 into e3.
@@ -2524,7 +2516,7 @@ end
 --code default == EVENT_FREE_CHAIN
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateQuickOptionalEffect(c, nil, "Add2Hand", 1, "Add2Hand", nil, LOCATION_MZONE, nil, nil, s.tg, s.op)
+--*1. Scl.CreateQuickOptionalEffect(c, nil, "Add2Hand", 1, "Add2Hand", nil, LOCATION_MZONE, nil, nil, s.tg, s.op)
 -->>create a quick effect: Once per either player's turn, you can activate this effect and do s.tg, s.op.
 function Scl.CreateQuickOptionalEffect(reg_obj, code, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, tmg_obj, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_QUICK_O, code or EVENT_FREE_CHAIN, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, nil, nil, tmg_obj or { 0, TIMINGS_CHECK_MONSTER + TIMING_END_PHASE }, rst_obj)
@@ -2535,7 +2527,7 @@ end
 --... is the single activate effects that you want to mix in.
 --the single activate effects that be mixed cannot be activated.
 --//return the mixed effect.
--->>eg1. local e1 = Scl.CreateQuickOptionalEffect(c, nil, "Banish", { 1, id, "Oath" }, "Banish", "Target", "Hand,MonsterZone", nil, nil, s.tg, s.op)
+--*1. local e1 = Scl.CreateQuickOptionalEffect(c, nil, "Banish", { 1, id, "Oath" }, "Banish", "Target", "Hand,MonsterZone", nil, nil, s.tg, s.op)
 -->>	 local e2 = Scl.CreateQuickOptionalEffect(c, nil, "Destroy", { 1, id, "Oath" }, "Destroy", "Target", "MonsterZone", nil, nil, s.tg2, s.op2)
 -->>	 local e3 = Scl.CreateQuickOptionalEffect_Activate1ofTheseEffects(c, e1, e2)
 -->>mix effect e1 and e2 into e3.
@@ -2579,9 +2571,9 @@ end
 --Create a quick effect, negate the card's effect.
 --param see Scl.CreateQuickOptionalEffect_Negate
 --//return effect
--->>eg1. Scl.CreateQuickOptionalEffect_NegateEffect(c, "Destroy", 1, LOCATION_MZONE)
+--*1. Scl.CreateQuickOptionalEffect_NegateEffect(c, "Destroy", 1, LOCATION_MZONE)
 -->>create a quick optional effect that can negate any effect and destroy that effect's handler once per turn.
--->>eg2. Scl.CreateQuickOptionalEffect_NegateEffect(c, "Dummy", 1, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
+--*2. Scl.CreateQuickOptionalEffect_NegateEffect(c, "Dummy", 1, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
 -->>create a quick optional effect that can negate monster effect, and can only activate once per turn. You must pay s.cost for its activation, and add the s.op ass the additional operation.
 function Scl.CreateQuickOptionalEffect_NegateEffect(reg_obj, op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 	return Scl.CreateQuickOptionalEffect_Negate(reg_obj, "NegateEffect", op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
@@ -2589,9 +2581,9 @@ end
 --Create a quick effect, negate the effect's activation.
 --param see Scl.CreateQuickOptionalEffect_Negate
 --//return effect
--->>eg1. Scl.CreateQuickOptionalEffect_NegateActivation(c, "Destroy", 1, LOCATION_MZONE)
+--*1. Scl.CreateQuickOptionalEffect_NegateActivation(c, "Destroy", 1, LOCATION_MZONE)
 -->>create a quick optional effect that can negate any activation and destroy that activation's handler once per turn.
--->>eg2. Scl.CreateQuickOptionalEffect_NegateActivation(c, "Dummy", 1, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
+--*2. Scl.CreateQuickOptionalEffect_NegateActivation(c, "Dummy", 1, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
 -->>create a quick optional effect that can negate monster effect's activation, and can only activate once per turn. You must pay s.cost for its activation, and add the s.op ass the additional operation.
 function Scl.CreateQuickOptionalEffect_NegateActivation(reg_obj, op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 	return Scl.CreateQuickOptionalEffect_Negate(reg_obj, "NegateActivation", op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
@@ -2680,7 +2672,7 @@ end
 --code default == EVENT_FREE_CHAIN
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateQuickOptionalEffect(c, nil, "Add2Hand", 1, "Add2Hand", nil, LOCATION_MZONE, nil, nil, s.tg, s.op)
+--*1. Scl.CreateQuickOptionalEffect(c, nil, "Add2Hand", 1, "Add2Hand", nil, LOCATION_MZONE, nil, nil, s.tg, s.op)
 -->>create a quick effect: Once per either player's turn, you must activate this effect and do s.tg, s.op.
 function Scl.CreateQuickMandatoryEffect(reg_obj, code, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_QUICK_F, code, desc_obj, lim_obj, ctgy, flag, rng, con, cost, tg, op, nil, nil, nil, rst_obj)
@@ -2695,7 +2687,7 @@ end
 --Create a single trigger continous effect.
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateSingleTriggerContinousEffect(c, EVENT_TO_GRAVE, nil, nil, "!NegateEffect", nil, s.op)
+--*1. Scl.CreateSingleTriggerContinousEffect(c, EVENT_TO_GRAVE, nil, nil, "!NegateEffect", nil, s.op)
 -->>create a single trigger continous effect, when it is send to GY, do s.op, and this effect cannot be negated.
 function Scl.CreateSingleTriggerContinousEffect(reg_obj, code, desc_obj, lim_obj, flag, con, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_SINGLE + EFFECT_TYPE_CONTINUOUS, code, desc_obj, lim_obj, nil, flag, nil, con, nil, nil, op, nil, nil, nil, rst_obj)
@@ -2704,7 +2696,7 @@ end
 --repfilter default == not c:IsReason(REASON_REPLACE), the card must first meet repfilter(c, e, tp, ...)
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateSingleTriggerContinousEffect_DestroyReplace(c, 1, LOCATION_MZONE, nil, s.tg, s.op)
+--*1. Scl.CreateSingleTriggerContinousEffect_DestroyReplace(c, 1, LOCATION_MZONE, nil, s.tg, s.op)
 -->>If card c is destroyed by any ways except replace, you can do s.tg and s.op to replace the destroy.
 function Scl.CreateSingleTriggerContinousEffect_DestroyReplace(reg_obj, lim_obj, rng, repfilter, tg, op, con, flag, rst_obj)
 	local flag2 = Scl.GetNumFormatProperty(flag)
@@ -2734,7 +2726,7 @@ end
 --Create a field trigger continous effect.
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateFieldTriggerContinousEffect(c, EVENT_TO_GRAVE, nil, nil, "!NegateEffect", LOCATION_MZONE, nil, s.op)
+--*1. Scl.CreateFieldTriggerContinousEffect(c, EVENT_TO_GRAVE, nil, nil, "!NegateEffect", LOCATION_MZONE, nil, s.op)
 -->>create a field trigger continous effect, when any cards is send to GY, do s.op, and this effect cannot be negated.
 function Scl.CreateFieldTriggerContinousEffect(reg_obj, code, desc_obj, lim_obj, flag, rng, con, op, rst_obj)
 	return Scl.CreateEffect(reg_obj, EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS, code, desc_obj, lim_obj, nil, flag, rng, con, nil, nil, op, nil, nil, nil, rst_obj)
@@ -2744,7 +2736,7 @@ end
 --if force(default == false) == true, it is a force-replace, won't ask you whether you want to replace or not.
 --other parama format : see Scl.CreateEffect
 --//return effect
--->>eg1. Scl.CreateFieldTriggerContinousEffect_DestroyReplace(c, 1, LOCATION_MZONE, nil, s.tg, s.op)
+--*1. Scl.CreateFieldTriggerContinousEffect_DestroyReplace(c, 1, LOCATION_MZONE, nil, s.tg, s.op)
 -->>If a card(s) meet s.tg(chk == 0) is destroyed by any ways except replace, you can do s.tg and s.op to replace the destroy.
 function Scl.CreateFieldTriggerContinousEffect_DestroyReplace(reg_obj, lim_obj, rng, repfilter, tg, op, con, force, flag, rst_obj)
 	repfilter = repfilter or aux.TRUE 
@@ -2789,11 +2781,11 @@ end
 --]]
 --fun_obj can be string-format, as the index to find the operate function in Scl.Category_List, or can be a function that will be call operate(g, e, tp, ...)
 --//return effect
--->>eg1. Scl.CreateFieldTriggerContinousEffect_PhaseOpearte({c, tp}, c, "Destroy", 1, nil, PHASE_END, nil)
+--*1. Scl.CreateFieldTriggerContinousEffect_PhaseOpearte({c, tp}, c, "Destroy", 1, nil, PHASE_END, nil)
 -->>in 1st EP after this effect is applied (equal to this turn's EP), destroy card c.
--->>eg2. Scl.CreateFieldTriggerContinousEffect_PhaseOpearte({c, tp}, g, "Add2Hand", 0, 1-tp, PHASE_STANDBY, nil)
+--*2. Scl.CreateFieldTriggerContinousEffect_PhaseOpearte({c, tp}, g, "Add2Hand", 0, 1-tp, PHASE_STANDBY, nil)
 -->>in next your opponent's SP, add g to the hand.
--->>eg2. Scl.CreateFieldTriggerContinousEffect_PhaseOpearte({c, tp}, g, s.op, 2, tp, PHASE_STANDBY, nil)
+--*2. Scl.CreateFieldTriggerContinousEffect_PhaseOpearte({c, tp}, g, s.op, 2, tp, PHASE_STANDBY, nil)
 -->>in 2nd SP after this effect is applied, do s.op(g, e, tp, ...)
 function Scl.CreateFieldTriggerContinousEffect_PhaseOpearte(reg_obj, op_obj, fun_obj, times, whos, phase, ex_con)
 	local owner = Scl.GetRegisterInfo(reg_obj)
@@ -2890,7 +2882,7 @@ end
 --the global effect with the same event will be created only once, if you try to use this function to create a same event global effect once more, it won't create but will return the first created global effect, and will insert con and op to that first created global effect.
 --same_code is the distinguishing mark, if event and same_code are all the same, it will only insert the first con and op into the global effect with that event, ignore the subsequent calls.
 --//return that event's global effect
--->>eg1. Scl.SetGlobalFieldTriggerEffect(0, EVENT_TO_GRAVE, id, s.con, s.op)
+--*1. Scl.SetGlobalFieldTriggerEffect(0, EVENT_TO_GRAVE, id, s.con, s.op)
 -->>create (or get, if you have used this function to create a global effect with EVENT_TO_GRAVE) a global effect, each time a card(s) is sent to GY and meets s.con, do s.op.
 function Scl.SetGlobalFieldTriggerEffect(reg_player, event, same_code, con, op)
 	if type(reg_player) ~= "number" then 
@@ -2930,11 +2922,11 @@ end
 
 --Normal summon sum_card, same as Duel.Summon + Duel.MSet, but switch the sequences of the parama "sum_pl" and "sum_card"
 --//return summon count, summon group, first summon card(FAKE return, beacuse the normal summon will solve after the effect solved)
--->>eg1. Scl.NormalSummon(c, tp, true, nil)
+--*1. Scl.NormalSummon(c, tp, true, nil)
 -->>Normal summon card-c
--->>eg2. Scl.NormalSummon(c, tp, true, nil, nil, nil, POS_FACEUP_ATTACK)
+--*2. Scl.NormalSummon(c, tp, true, nil, nil, nil, POS_FACEUP_ATTACK)
 -->>Summon card-c
--->>eg3. Scl.NormalSummon(c, tp, true, nil, nil, nil, POS_FACEDOWN_DEFENSE)
+--*3. Scl.NormalSummon(c, tp, true, nil, nil, nil, POS_FACEDOWN_DEFENSE)
 -->>Normal set card-c
 function Scl.NormalSummon(sum_card, sum_pl, ignore_ct, sum_eff, min_tri_ct, zone, sum_pos)
 	sum_pl = sum_pl or sum_card:GetControler()
@@ -3041,7 +3033,7 @@ end
 --but the parama - zone_pl is useless, and be removed.
 --also the parama - sum_zone is change to array-format { [0] = number-format zone0, [1] = number-format zone1 }, means can special summon to player 0's zone0, or special summon to player1's zone1 (default == { [0] == 0x1f }, { [1] == 0x1f }). 
 --//return successfully, summon monster 
--->>eg1. Scl.SpecialSummon2EitherFieldStep(c, 0, tp, false, false, POS_FACEUP, { [0] = 0x2, [1] = 0x1 }) 
+--*1. Scl.SpecialSummon2EitherFieldStep(c, 0, tp, false, false, POS_FACEUP, { [0] = 0x2, [1] = 0x1 }) 
 -->>special summon c in step to your 0x2 zone or your opponent's 0x1 zone.
 function Scl.SpecialSummon2EitherFieldStep(sum_card, sum_typ, sum_pl, ignore_con, ignore_revie, pos, sum_zone) 
 	local sum_eff = Scl.GetCurrentEffectInfo()
@@ -3077,7 +3069,7 @@ end
 --but the parama - zone_pl is useless, it is replaced by sum_eff (summon effect), to check whether the card(s) can be special summoned.
 --also the parama - sum_zone is change to array-format { [0] = number-format zone0, [1] = number-format zone1 }, means can special summon to player 0's zone0, or special summon to player1's zone1 (default == { [0] == 0x1f }, { [1] == 0x1f }). 
 --//return successfully summon monster count, summon group, first summon monster
--->>eg1. Scl.SpecialSummon2EitherField(c, 0, tp, e, false, false, POS_FACEUP, { [0] = 0x2, [1] = 0x1 }) 
+--*1. Scl.SpecialSummon2EitherField(c, 0, tp, e, false, false, POS_FACEUP, { [0] = 0x2, [1] = 0x1 }) 
 -->>special summon c in step to your 0x2 zone or your opponent's 0x1 zone.
 function Scl.SpecialSummon2EitherField(sum_obj, sum_typ, sum_pl, sum_eff, ignore_con, ignore_revie, pos, sum_zone) 
 	local g = Group.CreateGroup()
@@ -3100,7 +3092,7 @@ end
 --Nested function
 --value for "this card cannot be special summoned from extra, except by Scl.Summon_Type_List[sum_str][1]"
 --usually use in EFFECT_SPSUMMON_CONDITION.
--->>eg1. scl.value_special_summon_from_extra("LinkSummon")(e, se, sp, st)
+--*1. scl.value_special_summon_from_extra("LinkSummon")(e, se, sp, st)
 -->>"This card cannot be special summoned from extra, except by Link Summon".
 function scl.value_special_summon_from_extra(sum_str)
 	return function(e, se, sp, st)
@@ -3118,7 +3110,7 @@ end
 --Nested function
 --value for "include a reason (battle/cost/material/effect ...)"
 --will call Scl.IsReason(nil, ...) to check if "r" include your point reason(s), paramas see Scl.IsReason
--->>eg1. scl.value_check_r(0, REASON_BATTLE/"Battle")
+--*1. scl.value_check_r(0, REASON_BATTLE/"Battle")
 -->>check if r include REASON_BATTLE
 function scl.value_check_r(...)  
 	local arr = { ... }
@@ -3129,7 +3121,7 @@ end
 --Nested function
 --value for "once per turn, Card(s) cannot be destroyed by XXX-REASON"..
 --will call Scl.IsReason(nil, ...) to check if "r" include your point reason(s), paramas see Scl.IsReason
--->>eg1. scl.value_indestructable_count(0, REASON_BATTLE/"Battle")
+--*1. scl.value_indestructable_count(0, REASON_BATTLE/"Battle")
 -->>the value for "once per turn, this card cannot be destroyed by battle"
 function scl.value_indestructable_count(...)
 	local arr = { ... }
@@ -3174,7 +3166,7 @@ end
 --Nested function
 --value for "this effect's /this effect's activation cannot be negated"
 --the effect must meet filter(e, tp, ct, re, rp, target_group, activate_zone, activate_zone_sequence, activate_card_controler)
--->>eg1. scl.value_cannot_be_negated(aux.TRUE)
+--*1. scl.value_cannot_be_negated(aux.TRUE)
 -->>any activate-effects/or their activations cannot be negated
 function scl.value_cannot_be_negated(filter)
 	return function(e, ct)
@@ -3226,44 +3218,64 @@ end
 --Target: special summon a number of (ct) token(s), that meet the condition tk_code_or_fun, in sum_pos position (default == POS_FACEUP), to tg_p's field (default == 0, means you, == 1 means your opponent).
 --tk_code_or_fun can be card code, OR can be a card-attribute list { token's code, token's series, token's ATK, token's DEF, token's level, token's race, token's attribute, token's summon position (will replace sum_pos), token's summon target (will replace tg_p), token's summon type }
 --OR can be function, call tk_code_or_fun(e, tp, ...) to get above variables.
+--if ct == true, means special summon as much as you can.
 --leave_obj can be card or group， means if have the enough zone to special summon token(s) after the leave_obj leave the field.
--->>eg1. scl.target_special_summon_token(114514)
+--*1. scl.target_special_summon_token(114514)
 -->>check if you can special summon 114514 on your field.
--->>eg2. scl.target_special_summon_token(s.tokenfun, 2, POS_FACEUP_ATTACK, 1)
+--*2. scl.target_special_summon_token(s.tokenfun, 2, POS_FACEUP_ATTACK, 1)
 -->>check if you can special summon 2 tokens meets s.tokenfun to your opponent's field, in faceup attack position.
 function scl.target_special_summon_token(tk_code_or_fun, ct, sum_pos, tg_p, leave_obj)
 	local error_code = s.get_error_card_id()
 	if type(tk_code_or_fun) == "number" and not Scl.Token_List[tk_code_or_fun] then 
 		Debug.Message(error_code .. "-- Token: " .. tk_code_or_fun .. " hasn't been registered by 'Scl.AddTokenList'")
 	end
+	tg_p = tg_p or 0
 	return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-		tg_p = tg_p or 0
 		local sp = tg_p == 0 and tp or 1 - tp
-		local res = Scl.IsCanSpecialSummonToken(e, tp, tk_code_or_fun, sum_pos, sp, nil, eg, ep, ev, re, r, rp, 0) 
-		if Scl.IsAffectedByBlueEyesSpiritDragon(tp) and type(ct) == "number" and ct > 1 then 
-			res = false 
-		end
-		local ft = Duel.GetMZoneCount(sp, leave_obj, tp)
-		if type(ct) == "number" and ft < ct then 
-			res = false 
-		end
 		if chkc then 
 			return true 
 		end
 		if chk == 0 then 
-			return res 
+			--case1 cannot special summon
+			if not Scl.IsCanSpecialSummonToken(e, tp, tk_code_or_fun, sum_pos, sp, nil, eg, ep, ev, re, r, rp, 0)  then
+				return false
+			end
+			--case2 0 zone
+			local ft = Duel.GetMZoneCount(sp, leave_obj, tp)
+			if ft <= 0 then
+				return false
+			end
+			local limit = Scl.IsAffectedByBlueEyesSpiritDragon(tp)
+			local spct = type(ct) == "function" and ct(e, tp, eg, ep, ev, re, r, rp) or ct
+			if Scl.CheckBoolean(ct, true) then
+				spct = limit and 1 or ft
+			end
+			--case3 no more tokens
+			if spct <= 0 then
+				return false
+			end
+			--case4 multiple meet blue eyes spirit dragon
+			if limit and spct > 1 then 
+				return false
+			end
+			--case5 no more zone
+			if ft < spct then 
+				return false
+			end
+			return true 
 		end
-		Duel.SetOperationInfo(0, CATEGORY_TOKEN, nil, spct, 0, 0)
-		Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, spct, 0, 0)
+		Duel.SetOperationInfo(0, CATEGORY_TOKEN, nil, spct, sp, 0)
+		Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, spct, sp, 0)
+		return true
 	end
 end
 --Check if tp can special summon a token meets condition - tk_code_or_fun, in sum_pos position(default == POS_FACEUP), to tg_p's field (default == tp), in the sum_zone (default == 0x1f).
 --tk_code_or_fun can be card code, OR can be a card-attribute list { token's code, token's series, token's ATK, token's DEF, token's level, token's race, token's attribute, token's summon position (will replace sum_pos), token's summon target (will replace tg_p), token's summon type }
 --OR can be function, call tk_code_or_fun(e, tp, ...) to get above variables.
 --//return bool 
--->>eg1. Scl.IsCanSpecialSummonToken(e, tp, 114514)
+--*1. Scl.IsCanSpecialSummonToken(e, tp, 114514)
 -->>check if you can speical summon token 114514
--->>eg2. Scl.IsCanSpecialSummonToken(e, tp, s.tokenfun, POS_FACEUP_ATTACK, 1-tp)
+--*2. Scl.IsCanSpecialSummonToken(e, tp, s.tokenfun, POS_FACEUP_ATTACK, 1-tp)
 -->>check if you can special summon token meets condition s.tokenfun, to your opponent's field, in faceup attack position.
 function Scl.IsCanSpecialSummonToken(e, tp, tk_code_or_fun, sum_pos, tg_p, sum_zone, ...)
 	local tk
@@ -3279,7 +3291,6 @@ function Scl.IsCanSpecialSummonToken(e, tp, tk_code_or_fun, sum_pos, tg_p, sum_z
 	else
 		tk_code, tk_set, tk_type, tk_atk, tk_def, tk_lv, tk_race, tk_att, sum_pos2, sp, sum_typ = table.unpack(tk_code_or_fun)
 	end
-	ct = ct or 1 
 	sp = sp or tg_p or tp 
 	sum_pos = sum_pos2 or sum_pos or POS_FACEUP
 	sum_typ = sum_typ or 0 
@@ -3299,9 +3310,17 @@ end
 --Check if tp can special summon minct ~ maxct token(s) meets condition - tk_code_or_fun, in sum_pos position(default == POS_FACEUP), to tg_p's field (default == tp), in the sum_zone (default == 0x1f), if can, speical summon it.
 --parama see Scl.IsCanSpecialSummonToken
 function Scl.SpecialSummonToken(e, tp, tk_code_or_fun, minct, maxct, sum_pos, tg_p, sum_zone, ...)
-	local res_ct = 0
+	local sum_min, sum_max = 0, 0
+	--case1 cannot special summon
 	local res = Scl.IsCanSpecialSummonToken(e, tp, tk_code_or_fun, sum_pos, tg_p, sum_zone, ...)
-	if not res then return res_ct end
+	if not res then 
+		return 0 
+	end
+	local ft = Duel.GetLocationCount(sp, LOCATION_MZONE, tp)  
+	--case2 0 zone
+	if ft <= 0 then 
+		return 0 
+	end
 	local tk_code, tk_set, tk_type, tk_atk, tk_def, tk_lv, tk_race, tk_att, sum_pos2, sp, sum_typ
 	if type(tk_code_or_fun) == "number" then
 		tk_code = tk_code_or_fun
@@ -3313,34 +3332,44 @@ function Scl.SpecialSummonToken(e, tp, tk_code_or_fun, minct, maxct, sum_pos, tg
 	sp = sp or tg_p or tp 
 	sum_pos = sum_pos2 or sum_pos or POS_FACEUP
 	sum_typ = sum_typ or 0 
-	local ft = Duel.GetLocationCount(sp, LOCATION_MZONE, tp)   
-	if ft <= 0 then return res_ct end
-	if Scl.IsAffectedByBlueEyesSpiritDragon(tp) and type(minct) == "number" and minct > 1 then return res_ct end
-	if type(minct) == "number" and ft < minct then return res_ct end
-	local sum_min, sum_max
-	sum_min = Scl.CheckBoolean(minct) and ft or (minct or 1)
-	sum_max = math.min(maxct or sum_min, ft)
-	if Scl.IsAffectedByBlueEyesSpiritDragon(tp) then 
-		sum_min, sum_max = 1, 1
+	local limit = Scl.IsAffectedByBlueEyesSpiritDragon(tp)
+	sum_min = type(minct) == "function" and minct(e, tp, eg, ep, ev, re, r, rp) or minct
+	sum_max = type(maxct) == "function" and maxct(e, tp, eg, ep, ev, re, r, rp) or maxct
+	if Scl.CheckBoolean(ct, true) then
+		sum_min = limit and 1 or ft
+		sum_max = limit and 1 or ft
 	end
-	if sum_min > sum_max then return res_ct end
+	--case3 no more tokens
+	if sum_min <= 0 then
+		return 0
+	end
+	--case4 multiple meet blue eyes spirit dragon
+	if limit and sum_min > 1 then 
+		return 0
+	end
+	--case5 no more zone
+	if ft < sum_min then 
+		return 0 
+	end
+	sum_max = limit and 1 or sum_max
 	local would_hint, need_break = Scl.Extra_Operate_Parama_Check_Hint, Scl.Extra_Operate_Parama_Need_Break
-	Scl.SetExtraSelectAndOperateParama(nil, nil, nil)
+	Scl.SetExtraSelectAndOperateParama(nil, nil, nil, false)
 	if would_hint and not Scl.SelectYesNo(sp, would_hint) then 
 		return 0, Group.CreateGroup()
 	end 
 	if need_break then
 		Duel.BreakEffect()
 	end
-	local sp_ct = sum_min
+	local sum_ct = sum_min
 	if sum_max > sum_min then 
 		local list = { }
 		for idx = sum_min, sum_max do 
 			table.insert(list, idx)
 		end
-		sp_ct = Duel.AnnounceNumber(tp, table.unpack(list))
+		sum_ct = Duel.AnnounceNumber(tp, table.unpack(list))
 	end
-	for idx = 1, sp_ct do 
+	local res_ct = 0
+	for idx = 1, sum_ct do 
 		tk = Duel.CreateToken(tp, tk_code)
 		if type(tk_code_or_fun) ~= "number" then 
 			local e1, e2, e3, e4, e5, e6 = Scl.AddSingleBuff({e:GetHandler(), tk, true}, "type", tk_type, "batk", tk_atk, "bdef", tk_def, "lv", tk_lv, "race", tk_race, "att", tk_att,"rst",RESETS_SCL_ntf)
@@ -3417,7 +3446,7 @@ end
 function s.get_cost_or_target_or_operation_paramas(arr, e, tp, eg, ep, ev, re, r, rp)
 	--1.list type  ("Cost", "~Target", "Target","PlayerTarget","Operation","ExtraCheck","ExtraOperation")
 	local list_typ = arr[1]
-	if list_typ ~= "PlayerTarget" and list_typ ~= "PlayerCost" and list_typ ~= "ExtraCheck" and list_typ ~= "ExtraOperation" then
+	if list_typ ~= "PlayerTarget" and list_typ ~= "PlayerCost" and list_typ ~= "ExtraTarget" and list_typ ~= "ExtraCost" then
 		--2.category string, replace operation
 		local category_obj = type(arr[2]) == "table" and arr[2] or { arr[2] }
 		local category_str, replace_operation = table.unpack(category_obj)
@@ -3501,7 +3530,7 @@ function s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, 
 	local card_filter, group_filter, zone_self, zone_oppo, minct, maxct, except_group, reuse_idx
 	local self_minct, self_maxct, oppo_minct, oppo_maxct
 	local extra_fun
-	if list_typ ~= "PlayerTarget" and list_typ ~= "PlayerCost" and list_typ ~= "ExtraCheck" and list_typ ~= "ExtraOperation" then 
+	if list_typ ~= "PlayerTarget" and list_typ ~= "PlayerCost" and list_typ ~= "ExtraTarget" and list_typ ~= "ExtraCost" then 
 		category_str, category, category_arr, category_str_arr, replace_operation, card_filter, group_filter, zone_self, zone_oppo, minct, maxct, except_group, reuse_idx = v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14
 	elseif list_typ == "PlayerTarget" or list_typ == "PlayerCost" then 
 		category_str, category, category_arr, category_str_arr, replace_operation, self_minct, self_maxct, oppo_minct, oppo_maxct = v2, v3, v4, v5, v6, v7, v8, v9, v10
@@ -3511,7 +3540,7 @@ function s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, 
 	local reason = (list_typ == "Cost" or list_typ == "PlayerCost") and REASON_COST or REASON_EFFECT
 	--step3 chkc check
 	if chkc then
-		if list_typ == "Target" then 
+		if list_typ == "Target" then
 			Scl.Card_Target_Count_Check = Scl.Card_Target_Count_Check + (type(minct) == "number" and minct or 1)
 			--case1 Scl.Operate_Mandatory_Group not contains chkc 
 			if Scl.Operate_Mandatory_Group and not Group.IsContains(Scl.Operate_Mandatory_Group, chkc) then 
@@ -3539,6 +3568,12 @@ function s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, 
 			if group_filter and not s.operate_filter(group_filter)(Scl.Mix2Group(chkc), e, tp, e, tp, eg, ep, ev, re, r, rp) then 
 				return false
 			end
+		--case1 extra function format target check.
+		elseif list_typ == "ExtraTarget" then
+			local res = extra_fun(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
+			if Scl.CheckBoolean(res, false) then
+				return false
+			end
 		end
 		return s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, r, rp, chk, chkc, arr2, ...)
 	end 
@@ -3551,9 +3586,7 @@ function s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, 
 			end
 		end
 		--case1 extra check 
-		if list_typ == "ExtraOperation" then
-			return s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, r, rp, chk, chkc, used_arr, arr2, ...)
-		elseif list_typ == "ExtraCheck" then 
+		if list_typ == "ExtraTarget" or list_typ == "ExtraCost" then 
 			if not extra_fun(e, tp, eg, ep, ev, re, r, rp, 0) then 
 				return false
 			else 
@@ -3565,7 +3598,7 @@ function s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, 
 			Scl.Player_Cost_And_Target_Value[category_str] = Scl.CloneArray(op_arr)
 			if not Scl.OperateSelectedObjects(Scl.Player_Cost_And_Target_Value[category_str], category_str, reason, 0, e, tp, eg, ep, ev, re, r, rp)() then
 				return false
-			else 
+			else
 				return s.cost_or_target_or_operation_feasibility_check(e, tp, eg, ep, ev, re, r, rp, chk, chkc, used_arr, arr2, ...)
 			end
 		--case3 target effect check
@@ -3627,10 +3660,10 @@ function s.do_cost_or_target_or_operation(e, tp, eg, ep, ev, re, r, rp, current_
 	local card_filter, group_filter, zone_self, zone_oppo, minct, maxct, except_group, reuse_idx
 	local self_minct, self_maxct, oppo_minct, oppo_maxct
 	local extra_fun
-	if list_typ ~= "PlayerTarget" and list_typ ~= "PlayerCost" and list_typ ~= "ExtraCheck" and list_typ ~= "ExtraOperation" then 
+	if list_typ ~= "PlayerTarget" and list_typ ~= "PlayerCost" and list_typ ~= "ExtraTarget" and list_typ ~= "ExtraCost"  then 
 		category_str, category, category_arr, category_str_arr, replace_operation, card_filter, group_filter, zone_self, zone_oppo, minct, maxct, except_group, reuse_idx = v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14
 	elseif list_typ == "PlayerTarget" or list_typ == "PlayerCost" then 
-		category_str, category, category_arr, category_str_arr, replace_operation, self_minct, self_maxct, oppo_minct, oppo_maxct = v2, v3, v4, v5, v6, v7, v8, v9, v10
+		category_str, category, category_arr, category_str_arr, replace_operation, self_minct, self_maxct, oppo_minct, oppo_maxct = v2, v3, v4, v5,  v6, v7, v8, v9, v10
 	else
 		extra_fun = v2
 	end
@@ -3639,10 +3672,9 @@ function s.do_cost_or_target_or_operation(e, tp, eg, ep, ev, re, r, rp, current_
 	if (list_typ == "Cost" or list_typ == "PlayerCost") and not e:IsCostChecked() then
 		return s.do_cost_or_target_or_operation(e, tp, eg, ep, ev, re, r, rp, current_sel_group, total_sel_group, used_arr, arr2, ...)
 	--step4 extra operate
-	elseif list_typ == "ExtraCheck" then	
-		return s.do_cost_or_target_or_operation(e, tp, eg, ep, ev, re, r, rp, current_sel_group, total_sel_group, used_arr, arr2, ...)
-	elseif list_typ == "ExtraOperation" then 
-		if not extra_fun(current_sel_group, total_sel_group, e, tp, eg, ep, ev, re, r, rp) then 
+	elseif list_typ == "ExtraCost" or list_typ == "ExtraTarget" then
+		local res = extra_fun(e, tp, eg, ep, ev, re, r, rp, 1)
+		if Scl.CheckBoolean(res, false) then
 			return false
 		else 
 			return s.do_cost_or_target_or_operation(e, tp, eg, ep, ev, re, r, rp, current_sel_group, total_sel_group, used_arr, arr2, ...)
@@ -3914,11 +3946,11 @@ end
 --minct default == 1, maxct default == minct 
 --if minct == true, means remove all ct_typ counters from this card.
 --the removed count will be record in Scl.Cost_Count[e]
--->>eg1. scl.cost_remove_counter(0x1, 1)
+--*1. scl.cost_remove_counter(0x1, 1)
 -->>remove 1 0x1 from this card.
--->>eg2. scl.cost_remove_counter(0x1, 2, 5)
+--*2. scl.cost_remove_counter(0x1, 2, 5)
 -->>remove 2 ~ 5 0x1 from this card.
--->>eg3. scl.cost_remove_counter(0x1, true)
+--*3. scl.cost_remove_counter(0x1, true)
 -->>remove all 0x1 from this card.
 function scl.cost_remove_counter(ct_typ, minct, maxct)
 	minct = minct or 1
@@ -3939,8 +3971,11 @@ function scl.cost_remove_counter(ct_typ, minct, maxct)
 		   Scl.Hint(tp, HINTMSG_OPERATE_COUNT_SCL)
 		   rmct = Duel.AnnounceNumber(tp, table.unpack(arr))
 		end
-		c:RemoveCounter(tp, ct_typ, rmct, REASON_COST)
-		Scl.Cost_Count[e] = rmct
+		local res = c:RemoveCounter(tp, ct_typ, rmct, REASON_COST)
+		if res then
+			Scl.Cost_Count[e] = rmct
+		end
+		return res
 	end
 end
 --cost: remove a number of ct_typ counters (minct ~ maxct) from self_zone and/or oppo_zone.
@@ -3948,11 +3983,11 @@ end
 --minct default == 1, maxct default == minct 
 --if minct == true, means remove all ct_typ counters from this card.
 --the removed count will be record in Scl.Cost_Count[e]
--->>eg1. scl.cost_remove_counter_from_field(0x1, 1, 0, 1)
+--*1. scl.cost_remove_counter_from_field(0x1, 1, 0, 1)
 -->>remove 1 0x1 from your field.
--->>eg2. scl.cost_remove_counter(0x1, 1, 1, 2, 5)
+--*2. scl.cost_remove_counter(0x1, 1, 1, 2, 5)
 -->>remove 2 ~ 5 0x1 from either player's field.
--->>eg3. scl.cost_remove_counter(0x1, 1, 0, true)
+--*3. scl.cost_remove_counter(0x1, 1, 0, true)
 -->>remove all 0x1 from your field.
 function scl.cost_remove_counter_from_field(ct_typ, self_zone, oppo_zone, minct, maxct)
 	self_zone = self_zone or 1
@@ -3982,11 +4017,11 @@ end
 --minct default == 1, maxct default == minct 
 --if minct == true, means deatch all materials from this card.
 --the detached count will be record in Scl.Cost_Count[e]
--->>eg1. scl.cost_detach_xyz_material(1)
+--*1. scl.cost_detach_xyz_material(1)
 -->>"deatch 1 material from this card"
--->>eg2. scl.cost_detach_xyz_material(1, 3)
+--*2. scl.cost_detach_xyz_material(1, 3)
 -->>"detach up to 3 materials from this card"
--->>eg3. scl.cost_detach_xyz_material(true)
+--*3. scl.cost_detach_xyz_material(true)
 -->>"detach all materials from this card"
 function scl.cost_detach_xyz_material(minct, maxct)
 	minct = minct or 1
@@ -3998,8 +4033,9 @@ function scl.cost_detach_xyz_material(minct, maxct)
 		if chk == 0 then 
 			return c:CheckRemoveOverlayCard(tp, minct2, REASON_COST) 
 		end
-		c:RemoveOverlayCard(tp, minct2, maxct2, REASON_COST)
-		Scl.Cost_Count[e] = Duel.GetOperatedGroup():GetCount()
+		local ct = c:RemoveOverlayCard(tp, minct2, maxct2, REASON_COST)
+		Scl.Cost_Count[e] = ct
+		return ct > 0
 	end
 end
 --Set label as the dummy cost. 
@@ -4015,11 +4051,11 @@ end
 --if pay_ct == true, means "pay half your LP"
 --is_directly default == false, if == true, means "pay LP so that you only have "pay_ct" left"
 --the paid count will be record in Scl.Cost_Count[e]
--->>eg1. scl.cost_pay_lp(1000)
+--*1. scl.cost_pay_lp(1000)
 -->>"pay 1000 LP"
--->>eg2. scl.cost_pay_lp(true)
+--*2. scl.cost_pay_lp(true)
 -->>"pay half you LP"
--->>eg2. scl.cost_pay_lp(1000, true)
+--*2. scl.cost_pay_lp(1000, true)
 -->>"pay LP so that you only have 1000 left"
 function scl.cost_pay_lp(pay_ct, is_directly)
 	return function(e, tp, eg, ep, ev, re, r, rp, chk)
@@ -4035,14 +4071,15 @@ function scl.cost_pay_lp(pay_ct, is_directly)
 		end
 		Duel.PayLPCost(tp, pay_lp)   
 		Scl.Cost_Count[e] = pay_lp
+		return true
 	end
 end
 --cost: pay LP in multiples of "base_pay" (max. "max_pay")
 --max_pay default == your current LP
 --the paid count will be record in Scl.Cost_Count[e]
--->>eg1. scl.cost_pay_lp_in_multiples(1000)
+--*1. scl.cost_pay_lp_in_multiples(1000)
 -->>"pay LP in multiples of 1000"
--->>eg2. scl.cost_pay_lp_in_multiples(500, 4000)
+--*2. scl.cost_pay_lp_in_multiples(500, 4000)
 -->>"pay LP in multiples of 1000 (max. 4000)"
 function scl.cost_pay_lp_in_multiples(base_pay, max_pay)
 	return function(e, tp, eg, ep, ev, re, r, rp, chk)
@@ -4061,14 +4098,15 @@ function scl.cost_pay_lp_in_multiples(base_pay, max_pay)
 		local pay_lp = Duel.AnnounceNumber(tp, table.unpack(pay_list))
 		Duel.PayLPCost(tp, pay_lp)
 		Scl.Cost_Count[e] = pay_lp 
+		return true
 	end
 end
 --cost: once per chain
 --flag_code default == the effect handler's original code.
 --player_lim default == false, == true means "you can only use xxx's effect once per chain"
--->>eg1. scl.cost_set_once_per_chain_limit(114514)
+--*1. scl.cost_set_once_per_chain_limit(114514)
 -->>"Once per Chain: XXXXXXXX"
--->>eg2. scl.cost_set_once_per_chain_limit(114514, true)
+--*2. scl.cost_set_once_per_chain_limit(114514, true)
 -->>"you can only use 114514 once per chain"
 function scl.cost_set_once_per_chain_limit(flag_code, player_lim)
 	return function(e, tp, eg, ep, ev, re, r, rp, chk)
@@ -4084,6 +4122,7 @@ function scl.cost_set_once_per_chain_limit(flag_code, player_lim)
 		elseif b2 then
 			Duel.RegisterFlagEffect(tp, flag_code, RESET_CHAIN, 0, 1)
 		end
+		return true
 	end
 end
 --now useless 
@@ -4175,7 +4214,7 @@ function scl.cond_check_rp(player_idx)
 end
 --Nested function
 --will call Scl.IsReason(nil, ...) to check if "r" include your point reason(s), paramas see Scl.IsReason
--->>eg1. scl.cond_check_r(0, REASON_EFFECT/"Effect")
+--*1. scl.cond_check_r(0, REASON_EFFECT/"Effect")
 -->>check if "r" has REASON_EFFECT
 function scl.cond_check_r(...)
 	local arr = { ... }
@@ -4186,7 +4225,7 @@ end
 --Nested function
 --condition: check turn player
 --pl == 0, means in your turn, == 1 means in your opponent's turn
--->>eg1. scl.cond_check_tp(0)
+--*1. scl.cond_check_tp(0)
 -->>check if this turn is your turn.
 function scl.cond_check_tp(pl)
 	return function(e)
@@ -4198,9 +4237,9 @@ end
 --condition: check self's position
 --pos can be constant like POS_ATTACK, or can be string-format, "+" means faceup, "-" means facedown, "1" means attack, "0" means defense (see Scl.Position_List)
 --if pre = true, means check previous position
--->>eg1. scl.cond_check_position("+1")
+--*1. scl.cond_check_position("+1")
 -->>check if handler is faceup attack position.
--->>eg2. scl.cond_check_position("0", true)
+--*2. scl.cond_check_position("0", true)
 -->>check if handler is previously facedown.
 function scl.cond_check_position(pos, pre)
 	return function(e)
@@ -4219,15 +4258,15 @@ end
 --phase_str can be string-fromat (like "MP" or "MP,BP"), the function will split phase_obj to single phase strings and use them as index to find the corresponding number or function format phase in Scl.Phase_List.
 --you can add "~" as prefix to the phase_str, the function will turn to mean "excpet in XXX Phase".
 --player (default == nil): if == 0, means in your turn, if == 1, means in your opponent's turn, if == 2, means in any player's turn.
--->>eg1. scl.cond_in_phase("M1", 2)
+--*1. scl.cond_in_phase("M1", 2)
 -->>check the current phase is the Main Phase1 or not.
--->>eg2. scl.cond_in_phase("M1,BP", 2)
+--*2. scl.cond_in_phase("M1,BP", 2)
 -->>check the current phase is the Main Phase1 or Battle Phase, or not.
--->>eg3. scl.con_phase("~MP", 2)
+--*3. scl.con_phase("~MP", 2)
 -->>check the current phase is not Main Phase.
--->>eg4. scl.con_phase("~MP", 0, "BP", 1)
+--*4. scl.con_phase("~MP", 0, "BP", 1)
 -->>check the current phase is not in your turn's Main Phase, or in your opponent's Battle Phase.
--->>eg4. scl.con_phase({"~MP", 0, "~BP", 1})
+--*4. scl.con_phase({"~MP", 0, "~BP", 1})
 -->>check the current phase is not in your turn's Main Phase, and not in your opponent's Battle Phase.
 function scl.cond_during_phase_check(tp, ph_str, pl)
 	local cur_ph = Duel.GetCurrentPhase()
@@ -4279,9 +4318,9 @@ end
 --condition: If this card is XXX summoned
 --will use typ_str as index to find the number-format summon type from Scl.Summon_Type_List.
 --if field_check(default == false) == true, means check is "eg" contains at least 1 monster meets summon type.
--->>eg1. scl.cond_check_summon_type("LinkSummon")
+--*1. scl.cond_check_summon_type("LinkSummon")
 -->>check whether this card is link summoned.
--->>eg1. scl.cond_check_summon_type("LinkSummon", true)
+--*1. scl.cond_check_summon_type("LinkSummon", true)
 -->>check whether eg include a monster that is link summoned.
 function scl.cond_check_summon_type(typ_str, field_check)
 	return function(e, tp, eg)
@@ -4298,7 +4337,7 @@ end
 --Nested function
 --condition: is special summoned from "zone_obj"
 --player (default == nil): if == 0, means from your zone(s), if == 1, means from your opponent's zone(s), if == nil, means from any player's zone(s).
--->>eg1. scl.cond_check_summon_zone("Hand")
+--*1. scl.cond_check_summon_zone("Hand")
 -->>check if this card is special summon from hand.
 function scl.cond_check_summon_zone(zone_obj, player)
 	return function(e)
@@ -4314,11 +4353,11 @@ end
 --self_zone default == LOCATION_MZONE
 --oppo_zone default == 0
 --ct default == 1
--->>eg1. scl.cond_check_cards(false, aux.TRUE)
+--*1. scl.cond_check_cards(false, aux.TRUE)
 -->>check if you control a card(s)
--->>eg2. scl.cond_check_cards(false, s.filter, 0, "GY", 5)
+--*2. scl.cond_check_cards(false, s.filter, 0, "GY", 5)
 -->>check if there are 5 cards meet s.filter(c) in your opponent's GY.
--->>eg2. scl.cond_check_cards(true, Card.IsRace, 0, "MonsterZone", 1, nil, RACE_CYBERSE)
+--*2. scl.cond_check_cards(true, Card.IsRace, 0, "MonsterZone", 1, nil, RACE_CYBERSE)
 -->>check if your opponent controls at least 1 faceup cyberse monster.
 function scl.cond_check_cards(faceup, filter_obj, self_zone, oppo_zone, ct, except_obj, ...)
 	local arr = { ... }
@@ -4336,21 +4375,23 @@ end
 --would_hint: if you set would_hint, the select will be a optional, and will show would_hint as the YES OR NO option.
 --need_break: if == true, means the operation has a different timing than the earlier operations (Duel.BreakEffect)
 --sel_hint: if you set the sel_hint, it will replace the default select hint message.
--->>eg1. Scl.SetExtraSelectAndOperateParama("Add2Hand", true)
+--no_target_hint: default == true,  if you use the Scl select functions to select a card(s) from field/GY/banished cards, that function will auto add Duel.HintSelection to the selected cards, but if you set the parama no_target_hint = false, that function won't.
+--*1. Scl.SetExtraSelectAndOperateParama("Add2Hand", true)
 -->>system will ask you whether you wolud add a card to your hand (if possible), and before you adding, system will do Duel.BreakEffect
-function Scl.SetExtraSelectAndOperateParama(would_hint, need_break, sel_hint)
+function Scl.SetExtraSelectAndOperateParama(would_hint, need_break, sel_hint, no_target_hint)
 	if would_hint then
 		would_hint = s.switch_hint_object_format(would_hint, "WouldSelect")
 	end
 	Scl.Extra_Operate_Parama_Check_Hint = would_hint
 	Scl.Extra_Operate_Parama_Need_Break = need_break
 	Scl.Extra_Operate_Parama_Select_Hint = sel_hint
+	Scl.Extra_Operate_Parama_Target_Hint = target_hint
 	return true
 end
 --Nearly same as Duel.GetMatchingGroup.
 --zone_self and zone_oppo can be string-format (see Scl.Zone_List)
 --//return group
--->>eg1. Scl.GetMatchingGroup(Card.IsAbleToHand, tp, "Deck", 0, nil)
+--*1. Scl.GetMatchingGroup(Card.IsAbleToHand, tp, "Deck", 0, nil)
 -->>check whether there is a card in your deck that can be added to the hand, return that group
 function Scl.GetMatchingGroup(filter_obj, tp, zone_self, zone_oppo, except_obj, ...)
 	local card_filter = type(filter_obj) == "table" and filter_obj[1] or filter_obj
@@ -4362,9 +4403,9 @@ end
 --filter_obj can be card_filter or { card_filter, group_filter }
 --zone_self and zone_oppo can be string-format (see Scl.Zone_List)
 --//return is existing
--->>eg1. Scl.IsExistingMatchingCard(Card.IsAbleToHand, tp, "Deck", 0, 1, nil)
+--*1. Scl.IsExistingMatchingCard(Card.IsAbleToHand, tp, "Deck", 0, 1, nil)
 -->>check whether there is a card in your deck that can be added to the hand.
--->>eg2. Scl.IsExistingMatchingCard({ Card.IsAbleToHand, aux.dncheck }, tp, "Deck", 0, 2, nil)
+--*2. Scl.IsExistingMatchingCard({ Card.IsAbleToHand, aux.dncheck }, tp, "Deck", 0, 2, nil)
 -->>check whether there are 2 cards in your deck that have different names and can be added to the hand.
 function Scl.IsExistingMatchingCard(filter_obj, tp, zone_self, zone_oppo, ct, except_obj, ...)
 	local g = Scl.GetMatchingGroup(filter_obj, tp, zone_self, zone_oppo, except_obj, ...)
@@ -4380,9 +4421,9 @@ end
 --Nearly same as Group.IsExists, but has follow changes.
 --filter_obj can be card_filter or { card_filter, group_filter }
 --//return is existing
--->>eg1. Scl.IsExists(g, Card.IsAbleToHand, 1, nil)
+--*1. Scl.IsExists(g, Card.IsAbleToHand, 1, nil)
 -->>check whether there is a card in group g that can be added to the hand.
--->>eg2. Scl.IsExists(g, { Card.IsAbleToHand, aux.dncheck }, 2, nil)
+--*2. Scl.IsExists(g, { Card.IsAbleToHand, aux.dncheck }, 2, nil)
 -->>check whether there are 2 cards in group g that have different names and can be added to the hand.
 function Scl.IsExists(chk_obj, filter_obj, ct, except_obj, ...)
 	local chkg = Scl.Mix2Group(chk_obj)
@@ -4400,9 +4441,9 @@ end
 --use sel_hint as select hint (see Scl.HintSelect)
 --filter_obj can be single card_filter, or be { card_filter, group_filter }, the selected cards must meet card_filter(c, ...), and the selected group must meet group_filter(g, ...)
 --//return select group, the first select card
--->>eg1. Scl.SelectCards("Add2Hand", tp, s.thfilter, tp, "Deck,GY", 0, 1, 1, nil)
+--*1. Scl.SelectCards("Add2Hand", tp, s.thfilter, tp, "Deck,GY", 0, 1, 1, nil)
 -->>select from your Deck or GY, 1 card meets s.thfilter(c), and use "Add2Hand" as select hint.
--->>eg2. Scl.SelectCards("Send2GY", tp, {s.tgfilter, aux.dncheck}, tp, "Deck", 0, 2, 3, nil)
+--*2. Scl.SelectCards("Send2GY", tp, {s.tgfilter, aux.dncheck}, tp, "Deck", 0, 2, 3, nil)
 -->>Select from your Deck, 2 ~ 3 cards with different names and meet s.tgfilter(c), and use "Send2GY" as select hint.
 function Scl.SelectCards(sel_hint, sp, filter_obj, tp, self_zone, oppo_zone, minct, maxct, except_obj, ...)
 	local filter_arr = type(filter_obj) == "table" and filter_obj or { filter_obj }
@@ -4413,15 +4454,24 @@ function Scl.SelectCards(sel_hint, sp, filter_obj, tp, self_zone, oppo_zone, min
 	local g = Duel.GetMatchingGroup(card_filter, tp, self_zone2, oppo_zone2, except_obj, ...)
 	return Scl.SelectCardsFromGroup(sel_hint, g, sp, { aux.TRUE, group_filter }, minct, maxct, except_obj)  
 end
+--Same as Scl.SelectCards, but will check if the selectable cards can be treated as the effect targets, and will set the selected cards as the effect targets.
+function Scl.SelectTargets(sel_hint, sp, filter_obj, tp, self_zone, oppo_zone, minct, maxct, except_obj, ...)
+	Scl.Extra_Operate_Parama_Target_Hint = false
+	local tg, tc = Scl.SelectCards(sel_hint, sp, filter_obj, tp, self_zone, oppo_zone, minct, maxct, except_obj, ...)
+	if #tg > 0 then
+		Duel.SetTargetCard(tg)
+	end
+	return tg, tc
+end
 --Nested function
 --Select minct ~ maxct cards that meets filter_obj, from self_zone and/or oppo_zone, except except_obj, and do operation on the selected cards.
 --use sel_hint as select hint, and find the operate-function (see Scl.Category_List)
 --the nested paramas ... is the operate-function's paramas.
 --other paramas fromat: see Scl.SelectCards
 -->>return operated count, operated group, first operated card
--->>eg1. Scl.SelectAndOperateCards("Add2Hand", tp, s.thfilter, tp, "Deck,GY", 0, 1, 1, nil)()
+--*1. Scl.SelectAndOperateCards("Add2Hand", tp, s.thfilter, tp, "Deck,GY", 0, 1, 1, nil)()
 -->>add from your Deck or GY, 1 card meets s.thfilter(c) to your hand.
--->>eg2. Scl.SelectAndOperateCards("Send2GY", tp, {s.tgfilter, aux.dncheck}, tp, "Deck", 0, 2, 3, nil)(REASON_COST)
+--*2. Scl.SelectAndOperateCards("Send2GY", tp, {s.tgfilter, aux.dncheck}, tp, "Deck", 0, 2, 3, nil)(REASON_COST)
 -->>send from your Deck to GY as cost, 2 ~ 3 cards with different names and meet s.tgfilter(c).
 function Scl.SelectAndOperateCards(sel_hint, sp, filter_obj, tp, self_zone, oppo_zone, minct, maxct, except_obj, ...)
 	local sel_list = { ... }
@@ -4441,15 +4491,15 @@ end
 --Select minct ~ maxct cards that meets filter_obj, from group "g", except except_obj.
 --other paramas formats: see Scl.SelectCards
 --//return select group, the first select card
--->>eg1. Scl.SelectCardsFromGroup("Add2Hand", g, tp, s.thfilter, 1, 1, nil)
+--*1. Scl.SelectCardsFromGroup("Add2Hand", g, tp, s.thfilter, 1, 1, nil)
 -->>select from your g or GY, 1 card meets s.thfilter(c), and use "Add2Hand" as select hint.
--->>eg2. Scl.SelectCardsFromGroup("Send2GY", g, tp, {s.tgfilter, aux.dncheck}, 2, 3, nil)
+--*2. Scl.SelectCardsFromGroup("Send2GY", g, tp, {s.tgfilter, aux.dncheck}, 2, 3, nil)
 -->>Select from your g, 2 ~ 3 cards with different names and meet s.tgfilter(c), and use "Send2GY" as select hint.
 function Scl.SelectCardsFromGroup(sel_hint, g, sp, filter_obj, minct, maxct, except_obj, ...)
 	minct = minct or 1
 	maxct = maxct or minct
-	local would_hint, need_break, sel_hint2 = Scl.Extra_Operate_Parama_Check_Hint, Scl.Extra_Operate_Parama_Need_Break, Scl.Extra_Operate_Parama_Select_Hint
-	Scl.SetExtraSelectAndOperateParama(nil, nil, nil)
+	local would_hint, need_break, sel_hint2, target_hint = Scl.Extra_Operate_Parama_Check_Hint, Scl.Extra_Operate_Parama_Need_Break, Scl.Extra_Operate_Parama_Select_Hint, Scl.Extra_Operate_Parama_Target_Hint
+	Scl.SetExtraSelectAndOperateParama(nil, nil, nil, true)
 	local filter_arr = type(filter_obj) == "table" and filter_obj or { filter_obj }
 	local card_filter, group_filter = table.unpack(filter_arr)
 	card_filter = card_filter or aux.TRUE 
@@ -4469,7 +4519,7 @@ function Scl.SelectCardsFromGroup(sel_hint, g, sp, filter_obj, minct, maxct, exc
 			tg = tg:Filter(aux.TRUE,except_obj)
 			tg = tg:SelectSubGroup(sp, group_filter, false, minct, maxct, ...)
 		end
-		if tg:IsExists(Scl.IsInZone, 1, nil, "OnField,GY,Banished") then
+		if tg:IsExists(Scl.IsInZone, 1, nil, "OnField,GY,Banished") and Scl.Extra_Operate_Parama_Target_Hint then
 			Duel.HintSelection(tg)
 		end
 	end 
@@ -4484,9 +4534,9 @@ end
 --the nested paramas ... is the operate-function's paramas.
 --other paramas fromat: see Scl.SelectCards
 -->>return operated count, operated group, first operated card
--->>eg1. Scl.SelectAndOperateCardsFromGroup("Add2Hand", g, tp, s.thfilter, 1, 1, nil)()
+--*1. Scl.SelectAndOperateCardsFromGroup("Add2Hand", g, tp, s.thfilter, 1, 1, nil)()
 -->>add from your Deck or GY, 1 card meets s.thfilter(c) to your hand.
--->>eg2. Scl.SelectAndOperateCardsFromGroup("Send2GY", g, tp, {s.tgfilter, aux.dncheck}, 2, 3, nil)(REASON_COST)
+--*2. Scl.SelectAndOperateCardsFromGroup("Send2GY", g, tp, {s.tgfilter, aux.dncheck}, 2, 3, nil)(REASON_COST)
 -->>send from your Deck to GY as cost, 2 ~ 3 cards with different names and meet s.tgfilter(c).
 function Scl.SelectAndOperateCardsFromGroup(sel_hint, g, sp, filter, minct, maxct, except_obj, ...)
 	local sel_arr = { ... }
@@ -4503,7 +4553,7 @@ function Scl.SelectAndOperateCardsFromGroup(sel_hint, g, sp, filter, minct, maxc
 		end
 	end
 end
---get more return value
+--Get more return value
 --//return operated count, operated group, first operated card
 function s.more_returns_operate(fun1, ...)
 	local ct, og, tc =  fun1(...)
@@ -4513,15 +4563,15 @@ function s.more_returns_operate(fun1, ...)
 	end
 	return ct, og ,tc
 end
---equip the "equip_obj" as equip card to "equip_target", on "ep"'s (default == e's handler player) field.
+--Equip the "equip_obj" as equip card to "equip_target", on "ep"'s (default == e's handler player) field.
 --"equip_obj" can be card or group, if is a group, and there are not enough zones form all of them to equip, you will select cards witch you want to keep equip. 
 --keep_face_up (default == true) == false, means equip with "equip_obj"'s current position.
 --if the "equip_obj" don't have EFFECT_EQUIP_LIMIT buff, this function will auto register to it.
 --this function can call Scl.AddEquipBuff to add equip buffs to the "equip_obj" 
 --//return equiped count, equiped group, first equiped card
--->>eg1. Scl.Equip(tc, c)
+--*1. Scl.Equip(tc, c)
 -->>equip tc to c.
--->>eg2. Scl.Equip(g, c, 1 - tp )
+--*2. Scl.Equip(g, c, 1 - tp )
 -->>equip g to c, on your opponent's field.
 function Scl.Equip(equip_obj, equip_target, ep, keep_face_up)
 	local e, c, tp = Scl.GetCurrentEffectInfo()
@@ -4565,7 +4615,7 @@ function s.equip_limit(e, c)
 end
 --Get correctly operated group, the operated card(s) must in "zone_obj"
 --//return group
--->>eg1. Scl.Banish(g, REASON_EFFECT)
+--*1. Scl.Banish(g, REASON_EFFECT)
 -->>Scl.GetCorrectlyOperatedGroup("Banished")
 -->>return the card group successfully be banished by the above function.
 function Scl.GetCorrectlyOperatedGroup(zone_obj)
@@ -4573,7 +4623,7 @@ function Scl.GetCorrectlyOperatedGroup(zone_obj)
 end
 --Get correctly operated cards' count, the operated card(s) must in "zone_obj"
 --//return ct
--->>eg1. Scl.Banish(g, REASON_EFFECT)
+--*1. Scl.Banish(g, REASON_EFFECT)
 -->>Scl.GetCorrectlyOperatedCount("Banished")
 -->>return the count of the cards successfully be banished by the above function.
 function Scl.GetCorrectlyOperatedCount(zone_obj)
@@ -4582,10 +4632,10 @@ end
 --Check whether the last operate-function has operated the card(s) correctly (the operated card(s) must in "zone_obj)
 --if you set the parama - chk_ct (default == nil), the function will do an additional check that whether the correctly operated cards's count is equal to chk_ct.
 --//return bool
--->>eg1. Scl.Banish(g, REASON_EFFECT)
+--*1. Scl.Banish(g, REASON_EFFECT)
 -->> Scl.IsCorrectlyOperated("Banished")
 -->>check whether you have banished a card(s) successfully.
--->>eg2. Duel.SendtoDeck(g, nil, 2, REASON_EFFECT)
+--*2. Duel.SendtoDeck(g, nil, 2, REASON_EFFECT)
 -->> Scl.IsCorrectlyOperated("Deck,Extra", 3)
 -->>check whether you successfully send 3 cards to the Deck and/or Extra.
 function Scl.IsCorrectlyOperated(zone_obj, chk_ct)
@@ -4598,9 +4648,9 @@ end
 --if you send card to your Deck, 
 --if you set the parama chk_ct (default == false), the function will do an additional check that whether the correctly sent cards's count is equal to chk_ct, only they are equal so that you can draw. 
 --//return draw count, draw group, first draw card
--->>eg1. Scl.ShuffleIn2DeckAndDraw(g, nil, 2, REASON_EFFECT, tp, 2)
+--*1. Scl.ShuffleIn2DeckAndDraw(g, nil, 2, REASON_EFFECT, tp, 2)
 -->>shuffle obj into the Deck/Extra, and if you do, draw 2 cards.
--->>eg1. Scl.ShuffleIn2DeckAndDraw(g, nil, 2, REASON_EFFECT, tp, 2, true, 5)
+--*1. Scl.ShuffleIn2DeckAndDraw(g, nil, 2, REASON_EFFECT, tp, 2, true, 5)
 -->>shuffle all 5 obj into the Deck/Extra, then, draw 2 cards.
 function Scl.ShuffleIn2DeckAndDraw(obj, tp, seq, dp, dct, reason, need_break, chk_ct)
 	local g = Group.CreateGroup()
@@ -4634,24 +4684,68 @@ function Scl.Destroy(card_obj, reason, loc)
 	end
 	return s.more_returns_operate(Duel.Destroy, sg, reason, loc)
 end
---Operation: Tribute
---use same as Duel.Release 
-function Scl.Tribute(card_obj, reason)
-	reason= reason or REASON_EFFECT 
+--Filter: single `Scl.IsCanBeTributed`
+function s.is_can_be_tributed(c, p, rsn)
+	local rsn2 = Scl.GetNumFormatReason(rsn or REASON_COST)
+	if rsn2 & REASON_EFFECT ~= 0 then
+		return c:IsReleasableByEffect()
+	else
+		if Scl.IsInZone(c, "OnField") then
+			return c:IsReleasable() 
+		--# ocgcore won't give a correct tribute-able check while the card(s) is not on the field. (20230804)
+		else
+			if Scl.IsInZone(c, "Hand") and Scl.IsCardType(c, 0, "Monster") then 
+				return c:IsReleasable() 
+			else
+				local _, _, p2 = Scl.GetCurrentEffectInfo()
+				p = p or p2
+				if not  Duel.IsPlayerCanRelease(p, c) then 
+					return false
+				end
+				if rsn2 & REASON_SUMMON ~= 0 then 
+					return not c:IsHasEffect(EFFECT_UNRELEASABLE_SUM) 
+				else
+					return not c:IsHasEffect(EFFECT_UNRELEASABLE_NONSUM) 
+				end
+			end
+		end
+	end
+end
+--Filter: Is player `p` can tribute `card_obj` with `rsn` reason.
+---@param card_obj Card|Group
+---@param p player
+---@param rsn hex|string
+---@return boolean TF
+function Scl.IsCanBeTributed(card_obj, p, rsn)
+	local sg = Scl.Mix2Group(card_obj)
+	return sg:IsExists(s.is_can_be_tributed, 1, nil, p, rsn)
+end
+---Operation: Tribute `card_obj` with reason `rsn`.
+---
+---Return: tributed count, tributed cards, first tributed card
+---@param card_obj Card|Group
+---@param rsn hex|string
+---@return decimal tributed_count, Group tributed_cards, Card first_tributed_card
+function Scl.Tribute(card_obj, rsn)
+	rsn= rsn or REASON_EFFECT 
 	local sg = Scl.Mix2Group(card_obj)
 	if Scl.Operate_Check == 0 then 
-		local f = reason & REASON_EFFECT ~= 0 and Card.IsReleasableByEffect or Card.IsReleasable
-		return #sg >0 and sg:FilterCount(f, nil) == #sg
+		return Scl.IsCanBeTributed(card_obj, nil, nil, rsn)
 	end
 	if #sg <= 0 then return 0, nil end
 	local f = function(c)
 		return (c:IsType(TYPE_SPELL + TYPE_TRAP) and not c:IsOnField()) or c:IsLocation(LOCATION_DECK + LOCATION_EXTRA)
 	end
 	if sg:IsExists(f, 1, nil, LOCATION_DECK + LOCATION_EXTRA + LOCATION_HAND) then
-		return s.more_returns_operate(Duel.SendtoGrave, sg, reason | REASON_RELEASE)
+		return s.more_returns_operate(Duel.SendtoGrave, sg, rsn | REASON_RELEASE)
 	else
-		return s.more_returns_operate(Duel.Release, sg, reason)
+		return s.more_returns_operate(Duel.Release, sg, rsn)
 	end
+end
+---Filter: Is player `p` can banish `card_obj` in `pos` position with `rsn` reason.
+function Scl.IsCanBeBanished(card_obj, p, pos, rsn)
+	local sg = Scl.Mix2Group(card_obj)
+	return sg:IsExists(Card.IsAbleToRemove, 1, nil, p, pos, rsn)
 end
 --Operation: Banish
 --use same as Duel.Remove 
@@ -4974,7 +5068,7 @@ function Scl.Look(card_obj)
 end
 --Operation : reveal "card_obj", until "rst_arr" (default == RESETS_SCL )
 --//return revealed count, revealed group, first revealed card
--->>eg1. Scl.RevealCards(g, RESETS_SCL)
+--*1. Scl.RevealCards(g, RESETS_SCL)
 function Scl.RevealCards(card_obj, rst_obj)
 	local sg = Scl.Mix2Group(card_obj)
 	if Scl.Operate_Check == 0 then  
@@ -5043,9 +5137,9 @@ end
 --it will do the cost of the activated effect
 --if apply_effect == true (default == false), it will do the target and operation of the activated effect.
 --//return activated count, activated group, first activated card
--->>eg1. Scl.ActivateCard(tc, tp)
+--*1. Scl.ActivateCard(tc, tp)
 -->>activate tc, not apply effect.
--->>eg2. Scl.ActivateCard(tc, 1 - tp, true)
+--*2. Scl.ActivateCard(tc, 1 - tp, true)
 -->>your opponent activate tc and apply its effect immediately.
 function Scl.ActivateCard(tc, actp, apply_effect, lim_zone)
 	if aux.GetValueType(tc) == "Group" then
@@ -5099,9 +5193,9 @@ end
 --Operation: Return the temporary banished "card_obj" to "zone"(default == 0x1f), in "pos" position (default == previous position)
 --if the returned player's zone count is less than his returned monster count, that player must pick a number of monsters from "card_obj" to return to his field, equal to his zone count.
 --//return returned count, returned group, first returned card
--->>eg1. Scl.Return2Field(g)
+--*1. Scl.Return2Field(g)
 -->>return the temporary banished cards from g to their owner's field.
--->>eg2. Scl.Return2Field(tc, POS_FACEUP_ATTACK, 0x1)
+--*2. Scl.Return2Field(tc, POS_FACEUP_ATTACK, 0x1)
 -->>return the temporary banished card tc to it's owner's field (zone number 0x1), in attack position.
 function Scl.Return2Field(card_obj, pos, zone)
 	local e, _, tp = Scl.GetCurrentEffectInfo()
@@ -5224,9 +5318,9 @@ end
 --if force (default == false) == true, means ignore effect immune of "card_obj".
 --reset default == RESETS_SCL
 --//return negated cards count, negated group, first negated card, effect "EFFECT_DISABLE_EFFECT", effect "EFFECT_DISABLE", effect "EFFECT_DISABLE_TRAPMONSTER"
--->>eg1. Scl.NegateCardEffects(tc)
+--*1. Scl.NegateCardEffects(tc)
 -->>negate tc's effects.
--->>eg2. Scl.NegateCardEffects(g, nil, RESETS_EP_SCL)
+--*2. Scl.NegateCardEffects(g, nil, RESETS_EP_SCL)
 -->>negate effects of the cards in g, until end phase
 function Scl.NegateCardEffects(card_obj, force, reset)
 	local e, neg_owner = Scl.GetCurrentEffectInfo()
@@ -5264,7 +5358,7 @@ end
 --if seq == 0, means place to the deck top in any order, == 1 means place to the deck bottom in any order.
 --confirm (default == false) == true means confirm "card_obj" before sort their sequence.
 --//return the sort count, sort group, first sort card
--->>eg1. Scl.PlaceOnDeckTopOrBottom(g, 0)
+--*1. Scl.PlaceOnDeckTopOrBottom(g, 0)
 -->>place cards in g to the top of your deck in any order
 function Scl.PlaceOnDeckTopOrBottom(card_obj, seq, confirm)
 	local g = Scl.Mix2Group(card_obj)   
@@ -5294,9 +5388,9 @@ end
 --if set_sum_mat (default == false) == true, means set the attached cards as "xyzc"'s xyz summon material.
 --if ex_over (default == false) == true, means transfer the xyz materials attached on the obj's cards to xyz monster "xyzc" too (otherwise will send them to GY)
 --//return attached count, attached group, first attached card.
--->>eg1. Scl.AttachAsXyzMaterial(c, xyzc)
+--*1. Scl.AttachAsXyzMaterial(c, xyzc)
 -->>attach c to xyzc as material
--->>eg1. Scl.AttachAsXyzMaterial(g, xyzc, true, true)
+--*1. Scl.AttachAsXyzMaterial(g, xyzc, true, true)
 -->>attach g to xyzc as material, and set g as xyzc's xyz summon materials, transfer xyz materials attached on the cards in g to xyzc as xyz material too.
 function Scl.AttachAsXyzMaterial(obj, xyzc, set_sum_mat, ex_over)
 	local e = Scl.GetCurrentEffectInfo()
@@ -5437,9 +5531,9 @@ end
 --tp: use this player's camera to see the zone index
 --contain_self (default == false): include itself's zone (mid)
 --//return zones
--->>eg1. Scl.GetSurroundingZone(c, "OnField", tp, true)
+--*1. Scl.GetSurroundingZone(c, "OnField", tp, true)
 -->>get zones that surround to card c on the field, include c's zone.
--->>eg2. Scl.GetSurroundingZone(0x100, "MonsterZone", tp)
+--*2. Scl.GetSurroundingZone(0x100, "MonsterZone", tp)
 -->>get monster zones that surround to the zone "0x100"
 function s.switch_zone_camera(base_zone, tp)
 	local _, _, p = Scl.GetCurrentEffectInfo()
@@ -5522,9 +5616,9 @@ end
 --tp: use this player's camera to see the zone index
 --contain_self (default == false): include itself's zone (mid)
 --//return zones
--->>eg1. Scl.GetAdjacentZone(c, "OnField", tp, true)
+--*1. Scl.GetAdjacentZone(c, "OnField", tp, true)
 -->>get zones that adjacent to card c on the field, include c's zone.
--->>eg2. Scl.GetAdjacentZone(0x100, "MonsterZone", tp)
+--*2. Scl.GetAdjacentZone(0x100, "MonsterZone", tp)
 -->>get monster zones that adjacent to the zone "0x100"
 function Scl.GetAdjacentZone(obj, lim_zone_obj, tp, contain_self)
 	local zone_arr = { }
@@ -5595,9 +5689,9 @@ end
 --obj: can be card or group, or zone index (if you want to transfer zone index, you can use aux.SequenceToGlobal to get that zone index).
 --contains (default = false): Include itself (mid)
 --//return group
--->>eg1. Scl.GetSurroundingGroup(c, true)
+--*1. Scl.GetSurroundingGroup(c, true)
 -->>return cards surround to card c, include c self.
--->>eg2. Scl.GetSurroundingGroup(0x1000)
+--*2. Scl.GetSurroundingGroup(0x1000)
 -->>return cards surround to zone 0x1000
 function Scl.GetSurroundingGroup(obj, contains)
 	local srd_zone = Scl.GetSurroundingZone(obj, "OnField", nil, contains)
@@ -5618,9 +5712,9 @@ end
 --obj: can be card or group, or zone index (if you want to transfer zone index, you can use aux.SequenceToGlobal to get that zone index).
 --contains (default = false): Include itself (mid)
 --//return group
--->>eg1. Scl.GetAdjacentGroup(c, true)
+--*1. Scl.GetAdjacentGroup(c, true)
 -->>return cards adjacent to card c, include c self.
--->>eg2. Scl.GetAdjacentGroup(0x1000)
+--*2. Scl.GetAdjacentGroup(0x1000)
 -->>return cards adjacent to zone 0x1000
 function Scl.GetAdjacentGroup(obj, contains)
 	local ajt_zone = Scl.GetAdjacentZone(obj, "OnField", nil, contains)
@@ -5629,9 +5723,9 @@ end
 --Mix cards or groups into a new group.
 --the ... format: can be card, group, or table contains card or group.
 --//return the mixed group.
--->>eg1. Scl.Mix2Group(c, tc1, tc2)
+--*1. Scl.Mix2Group(c, tc1, tc2)
 -->>return a group contains c, tc1 and tc2, that group's length
--->>eg2. Scl.Mix2Group(c, g1)
+--*2. Scl.Mix2Group(c, g1)
 -->>return a group contains c and group g1's card(s), that group's length
 function Scl.Mix2Group(...)
 	local g = Group.CreateGroup()
@@ -5656,9 +5750,9 @@ function Scl.Mix2Group(...)
 end
 --Mix cards or groups into the base_g group.
 --the ... format: see Scl.Mix2Group(...)
--->>eg1. Scl.MixIn2Group(g, tc1, tc2)
+--*1. Scl.MixIn2Group(g, tc1, tc2)
 -->>g = g + tc1 + tc2 
--->>eg1. Scl.MixIn2Group(g, g2, tc)
+--*1. Scl.MixIn2Group(g, g2, tc)
 -->>g = g + g2 + tc 
 function Scl.MixIn2Group(base_g, ...)
 	base_g:Merge(Scl.Mix2Group(...))
@@ -5666,8 +5760,8 @@ end
 --local s and id set "inside_series_str" as the inside series for this "s".
 --inside_series_str can be "ABCD", "AB,CD", "AB_CD", "AB_CD,EF" ...
 --//return s, id
--->>eg1. Scl.SetID(114514)
--->>eg2. Scl.SetID(114514, "Scl_XCard")
+--*1. Scl.SetID(114514)
+--*2. Scl.SetID(114514, "Scl_XCard")
 function Scl.SetID(code, inside_series_str)
 	if not _G["c"..code] then _G["c"..code] = { }
 		setmetatable(_G["c"..code], Card)
@@ -5692,7 +5786,7 @@ end
 --"series_str": inside series string
 --"typ_idx"(default == nil): use "typ_idx" to differ different check functions with the same series_mata
 --[[
-	>>eg1. Scl.DefineInsideSeries(Love, "YiFanJiang")
+	*1. Scl.DefineInsideSeries(Love, "YiFanJiang")
 	will create those functions:
 	1. Love.IsSeries(c)   -- equal to Scl.IsSeries(c, "YiFanJiang") 
 	2. Love.IsFusionSeries(c)   -- equal to Scl.IsFusionSeries(c, "YiFanJiang") 
@@ -5703,7 +5797,7 @@ end
 	11~15 Love.IsXXXXSeriesSpell(c) (XXXX can be "", "Fusion", "Link" ……, see above)		-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL)
 	16~20 Love.IsXXXXSeriesTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)   -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_TRAP)
 	21~25 Love.IsXXXXSeriesSpellOrTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)  -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL + TYPE_TRAP)
-	>>eg2. Scl.DefineInsideSeries(Love, "YiFanJiang", 1)
+	*2. Scl.DefineInsideSeries(Love, "YiFanJiang", 1)
 		   Scl.DefineInsideSeries(Love, "PlayGame", 2)
 	will use the suffix 1 and 2 to differ 2 inside series check functions with the same series_mata "Love", like:
 	Love.IsSeries1(c)   -- equal to Scl.IsSeries(c, "YiFanJiang") 
@@ -5748,16 +5842,16 @@ function Scl.GetActivateCard(faceup)
 end
 --Get effect target(s) that is releate to chain and meets filter(c, ...)
 --//return target group, first target card
--->>eg1. Scl.GetTargetsReleate2Chain()
+--*1. Scl.GetTargetsReleate2Chain()
 -->>return tg, tc
--->>eg2. Scl.GetTargetsReleate2Chain(Card.IsFaceup)
+--*2. Scl.GetTargetsReleate2Chain(Card.IsFaceup)
 -->>return tg with faceup cards, faceup tc or nil.
 function Scl.GetTargetsReleate2Chain(filter, ...)
 	filter = card_filter or aux.TRUE
 	if not Duel.GetFirstTarget() then
 		return Group.CreateGroup()
 	else
-		local g = Duel.GetChainInfo(0, CHAININFO_TARGET_CARDS):Filter(s.get_target_releate_filter, nil, filter, ...)
+		local g = Duel.GetChainInfo(ev, CHAININFO_TARGET_CARDS):Filter(s.get_target_releate_filter, nil, filter, ...)
 		return g, g:GetFirst()
 	end
 end
@@ -5767,15 +5861,17 @@ function s.get_target_releate_filter(c, filter, ...)
 	return filter(c, ...)
 end
 --Get target player and that num-format value for an effect that register player target information in Effect.SetTarget
+--ev: chain id, == 0 means get the current chain's info.
 --//return target player, target value
 --[[
-	>>eg1.  Duel.SetTargetPlayer(tp)
+	*1.  Duel.SetTargetPlayer(tp)
 			Duel.SetTargetParam(1000)
-			Scl.GetPlayerTargetParamas()
+			Scl.GetPlayerTargetParamas(0)
 	>> return tp, 1000
 --]]
-function Scl.GetPlayerTargetParamas()
-	local player, value = Duel.GetChainInfo(0, CHAININFO_TARGET_PLAYER, CHAININFO_TARGET_PARAM)
+function Scl.GetPlayerTargetParamas(ev)
+	ev = ev or 0
+	local player, value = Duel.GetChainInfo(ev, CHAININFO_TARGET_PLAYER, CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
 	return player, value
 end
@@ -5810,11 +5906,11 @@ end
 --if the parama "limit" (default == false) == true, means force that monster's normal summon procedure by this function, it cannot be normal summoned by other ways, and the summon procedure will auto set property "!NegateEffect,Uncopyable".
 --this function will also auto add c == nil check to "con", and add the parama "tp" to "con" check (return con(e, c, tp, minct))
 --//return summon effect
--->>eg1. Scl.AddNormalSummonProcedure(c, false, s.con)
+--*1. Scl.AddNormalSummonProcedure(c, false, s.con)
 -->>card "c" can be normal summoned when meet s.con
--->>eg2. Scl.AddNormalSummonProcedure(c, false, s.con, nil, s.op, nil, { 1, id, "Oath" })
+--*2. Scl.AddNormalSummonProcedure(c, false, s.con, nil, s.op, nil, { 1, id, "Oath" })
 -->>if meet s.con(e, c, tp, minct), once per turn, card with same name as "c" can be normal summoned by do s.op(e, tp, eg, ep, ev, re, r, rp, c).
--->>eg3. Scl.AddNormalSummonProcedure(c, true, s.con, nil, s.op, nil, { 1, id, "Oath" }, SUMMON_TYPE_ADVANCE, POS_FACEUP_DEFENSE, 1)
+--*3. Scl.AddNormalSummonProcedure(c, true, s.con, nil, s.op, nil, { 1, id, "Oath" }, SUMMON_TYPE_ADVANCE, POS_FACEUP_DEFENSE, 1)
 -->>card with same name as "c" can only be normal summoned by the follow way: once per turn, if meet s.con(e, c, tp, minct), once per turn, advance summon to your opponent's field in faceup defense position to your by do s.op(e, tp, eg, ep, ev, re, r, rp, c).
 function Scl.AddNormalSummonProcedure(reg_obj, limit, con, tg, op, desc_obj, lim_obj, val, pos, tg_player, flag, rst_obj)
 	return Scl.AddSummonProcedure(reg_obj, not limit and EFFECT_SUMMON_PROC or EFFECT_LIMIT_SUMMON_PROC, limit, con, tg, op, desc_obj, lim_obj, val, pos, tg_player, flag, rst_obj)
@@ -5823,11 +5919,11 @@ end
 --if the parama "limit" (default == false) == true, means force that monster's normal summon procedure by this function, it cannot be normal summoned by other ways, and the summon procedure will auto set property "!NegateEffect,Uncopyable".
 --this function will also auto add c == nil check to "con", and add the parama "tp" to "con" check (return con(e, c, tp, minct))
 --//return summon effect
--->>eg1. Scl.AddNormalSetProcedure(c, false, s.con)
+--*1. Scl.AddNormalSetProcedure(c, false, s.con)
 -->>card "c" can be normal set when meet s.con
--->>eg2. Scl.AddNormalSetProcedure(c, false, s.con, nil, s.op, nil, { 1, id, "Oath" })
+--*2. Scl.AddNormalSetProcedure(c, false, s.con, nil, s.op, nil, { 1, id, "Oath" })
 -->>if meet s.con(e, c, tp, minct), once per turn, card with same name as "c" can be normal set by do s.op(e, tp, eg, ep, ev, re, r, rp, c).
--->>eg3. Scl.AddNormalSetProcedure(c, true, s.con, nil, s.op, nil, { 1, id, "Oath" }, SUMMON_TYPE_ADVANCE, POS_FACEUP_DEFENSE, 1)
+--*3. Scl.AddNormalSetProcedure(c, true, s.con, nil, s.op, nil, { 1, id, "Oath" }, SUMMON_TYPE_ADVANCE, POS_FACEUP_DEFENSE, 1)
 -->>card with same name as "c" can only be normal set by the follow way: once per turn, if meet s.con(e, c, tp, minct), once per turn, advance set to your opponent's field in faceup defense position to your by do s.op(e, tp, eg, ep, ev, re, r, rp, c).
 function Scl.AddNormalSetProcedure(reg_obj, limit, con, tg, op, desc_obj, lim_obj, val, pos, tg_player, flag, rst_obj)
 	return Scl.AddSummonProcedure(reg_obj, not limit and EFFECT_SET_PROC or EFFECT_LIMIT_SET_PROC, limit, con, tg, op, desc_obj, lim_obj, val, pos, tg_player, flag, rst_obj)
@@ -5838,11 +5934,11 @@ end
 --if con == nil, this function will auto check whether there are enough zones for handler's special summon.
 --this function will also auto add c == nil check to "con", and add the parama "tp" to "con" check (return con(e, c, tp))
 --//return summon effect
--->>eg1. Scl.AddSpecialSummonProcedure(c, "Hand")
+--*1. Scl.AddSpecialSummonProcedure(c, "Hand")
 -->>card "c" can be speical summoned from hand
--->>eg2. Scl.AddSpecialSummonProcedure(c, "Extra", s.con, s.tg, s.op, nil, { 1, id, "Oath" }, "LinkSummon")
+--*2. Scl.AddSpecialSummonProcedure(c, "Extra", s.con, s.tg, s.op, nil, { 1, id, "Oath" }, "LinkSummon")
 -->>if meet s.con(e, c, tp), once per turn, card with same name as "c" can be special summoned from extra by do s.tg(e, tp, eg, ep, ev, re, r, rp, chk, c) and s.op(e, tp, eg, ep, ev, re, r, rp, c), and treat that summon as a link summon.
--->>eg3. Scl.AddSpecialSummonProcedure(c, "Deck", s.con, s.tg, s.op, nil, { 1, id, "Oath" }, nil, POS_FACEUP_ATTACK, 1)
+--*3. Scl.AddSpecialSummonProcedure(c, "Deck", s.con, s.tg, s.op, nil, { 1, id, "Oath" }, nil, POS_FACEUP_ATTACK, 1)
 -->>if meet s.con(e, c, tp), once per turn, card with same name as "c" can be special summoned from deck to your opponent's field in attack position by do s.tg(e, tp, eg, ep, ev, re, r, rp, chk, c) and s.op(e, tp, eg, ep, ev, re, r, rp, c).
 function Scl.AddSpecialSummonProcedure(reg_obj, zone, con, tg, op, desc_obj, lim_obj, val, pos, tg_player, flag, rst_obj)
 	local _, handler = Scl.GetRegisterInfo(reg_obj)
@@ -5877,9 +5973,9 @@ end
 --if revive (default == false) == true, will do handler:EnableReviveLimit()
 --if spsum_lim (default == nil) ~= nil, will set spsum_lim as value to the "EFFECT_SPSUMMON_CONDITION" effect.
 --lim_ct_sum_typ can be "SpecialSummon", "RitualSummon", ... (see Scl.Summon_Type_List), if you set this parama, means handler can only be special summoned once per turn, by the summon type that "lim_ct_sum_typ" points to.
--->>eg1. Scl.SetSummonCondition(c, false, aux.FALSE)
+--*1. Scl.SetSummonCondition(c, false, aux.FALSE)
 -->>this card cannot be Special Summoned
--->>eg2. Scl.SetSummonCondition(c, true, scl.value_spsummon_from_extra("FusionSummon"), "FusionSummon")
+--*2. Scl.SetSummonCondition(c, true, scl.value_spsummon_from_extra("FusionSummon"), "FusionSummon")
 -->>this card cannot be special summoned from extra, except by Fusion Summon, and cards with this card's card code can only be FusionSummoned once per turn.
 function Scl.SetSummonCondition(reg_obj, revive, spsum_lim, lim_ct_sum_typ)
 	local _, handler = Scl.GetRegisterInfo(reg_obj)
@@ -5911,7 +6007,7 @@ function s.summon_count_limit_tg(sum_typ_str)
 end
 --Special add fusion material record
 --now equal to Auxiliary.AddFusionProcMixRep + EnableReviveLimit()
--->>eg1. Scl.SetFusionMaterial(c, false, false, 114514, 1, 3, s.filter, 2, 2)
+--*1. Scl.SetFusionMaterial(c, false, false, 114514, 1, 3, s.filter, 2, 2)
 -->>this fusion monster needs 1~3 monsters witch name is 114514, and 2 other monsters meets s.filter(c, fc) as materials to fusion summon it.
 function Scl.SetFusionMaterial(c, instant_fusion_able, replace_name_able, ...)
 	c:EnableReviveLimit()
@@ -6440,9 +6536,9 @@ end
 --Switch different formats typ_obj to number-format.
 --typ_obj can be number-format (like TYPE_SPELL), or can be string-format (Like "Spell" or "Spell,Trap")
 --//return number-format card type, array contains each number-format card type
--->>eg1. Scl.GetNumFormatCardType(TYPE_SPELL)
+--*1. Scl.GetNumFormatCardType(TYPE_SPELL)
 -->>return TYPE_SPELL, { TYPE_SPELL }
--->>eg2. Scl.GetNumFormatCardType("Monster,Spell")
+--*2. Scl.GetNumFormatCardType("Monster,Spell")
 -->>return TYPE_MONSTER + TYPE_SPELL, { TYPE_MONSTER, TYPE_MONSTER }
 function Scl.GetNumFormatCardType(typ_obj)
 	if type(typ_obj) == "number" then 
@@ -6472,8 +6568,20 @@ function s.is_card_type(c, typ_str, public_typ, ...)
 	local num_public_typ = Scl.GetNumFormatCardType(public_typ)
 	for _, ctype in pairs(typ_arr) do 
 		local num_ctype = Scl.GetNumFormatCardType(ctype)
-		if type_fun(c) & (num_ctype | num_public_typ) == (num_ctype | num_public_typ) then 
-			return true 
+		local chk_typ = num_ctype | num_public_typ
+		--special case, normal spell/trap
+		if chk_typ == TYPE_NORMAL + TYPE_SPELL then
+			if type_fun(c) == TYPE_SPELL then
+				return true
+			end
+		elseif chk_typ == TYPE_NORMAL + TYPE_TRAP then
+			if type_fun(c) == TYPE_TRAP then
+				return true
+			end
+		else
+			if type_fun(c) & (num_ctype | num_public_typ) == (num_ctype | num_public_typ) then 
+				return true 
+			end
 		end
 	end 
 	return false
@@ -6485,19 +6593,19 @@ end
 --obj must fully include the check type1 or check type2 ...
 --if public type > 0, means obj must fully include the public type + check type1, or public type + check type2 ...
 --//return bool
--->>eg1. Scl.IsType(c, 0, "Monster")
+--*1. Scl.IsCardType(c, 0, "Monster")
 -->>check card c is a monster.
--->>eg2. Scl.IsType(c, 0, "Monster,Fusion", "Spell,QuickPlay")
+--*2. Scl.IsCardType(c, 0, "Monster,Fusion", "Spell,QuickPlay")
 -->>check card c is a fusion monster, or a quickplay spell
--->>eg3. Scl.IsType(c, "Monster", "Fusion", "Xyz")
+--*3. Scl.IsCardType(c, "Monster", "Fusion", "Xyz")
 -->>check card c is a fusion monster, or a xyz monster
-function Scl.IsType(obj , ...)
+function Scl.IsCardType(obj , ...)
 	local g = Scl.Mix2Group(obj)
 	return g:IsExists(s.is_card_type, 1, nil, nil, ...)
 end
 --Filter
 --check whether obj is has a type while it leaves the field
---paramas see Scl.IsType
+--paramas see Scl.IsCardType
 --//return bool
 function Scl.IsPreviousType(obj, ...)
 	local g = Scl.Mix2Group(obj)
@@ -6505,11 +6613,31 @@ function Scl.IsPreviousType(obj, ...)
 end
 --Filter
 --check whether obj is has an original type
---paramas see Scl.IsType
+--paramas see Scl.IsCardType
 --//return bool
 function Scl.IsOriginalType(obj, ...)
 	local g = Scl.Mix2Group(obj)
 	return g:IsExists(s.is_card_type, 1, nil, "Original", ...)
+end
+--Switch different formats rsn_obj to number-format.
+--rsn_obj can be number-format (like REASON_EFFECT), or can be string-format (Like "Effect" or "Effect,Destroy")
+--//return number-format reason, array contains each number-format reason
+--*1. Scl.GetNumFormatReason(REASON_EFFECT)
+-->>return TYPE_SPELL, { TYPE_SPELL }
+--*2. Scl.GetNumFormatReason("Effect,Destroy")
+-->>return REASON_EFFECT + REASON_DESTROY, { REASON_EFFECT, REASON_DESTROY }
+function Scl.GetNumFormatReason(rsn_obj)
+	if type(rsn_obj) == "number" then 
+		return rsn_obj, Scl.SplitNumber2PowerOf2(rsn_obj)
+	else
+		local ctyp, ctyp2, ctyp_arr = 0, 0, { }
+		for _, chk_typ in pairs(Scl.SplitString(rsn_obj)) do 
+			ctyp2 = Scl.Reason_List[chk_typ]
+			ctyp = ctyp | ctyp2
+			table.insert(ctyp_arr, zone2)
+		end
+		return ctyp, ctyp_arr
+	end
 end
 --Filter
 --check whether obj is has a reason
@@ -6519,31 +6647,31 @@ end
 --obj must fully include the check reason1 or check reason2 ...
 --if public reason > 0, means obj must fully include the public reason + check reason1, or public reason + check reason2 ...
 --//return bool
--->>eg1. Scl.IsReason(c, 0, "Effect")
+--*1. Scl.IsReason(c, 0, "Effect")
 -->>check card c is has a reason by card effect
--->>eg2. Scl.IsReason(c, 0, "Effect", "Battle")
+--*2. Scl.IsReason(c, 0, "Effect", "Battle")
 -->>check card c is has a reason by card effect or by battle
--->>eg3. Scl.IsReason(c, "Destroy", "Effect", "Battle")
+--*3. Scl.IsReason(c, "Destroy", "Effect", "Battle")
 -->>check card c is has a reason by effect destroyed or by battle destroyed
--->>eg4. Scl.IsReason(r, 0, "Fusion")
+--*4. Scl.IsReason(r, 0, "Fusion")
 -->>check the parama "r" has a reason by fusion summon.
 function Scl.IsReason(rsn_obj, public_reason, ...)
 	public_reason = public_reason or 0
-	local num_public_rsn = Scl.GetNumFormatCardType(public_reason)
+	local num_public_rsn = Scl.GetNumFormatReason(public_reason)
 	local res_arr = { ... }
 	local obj_typ = type(rsn_obj)
 	if obj_typ == "userdata" then
 		local g = Scl.Mix2Group(rsn_obj)
 		for _, reason in pairs(res_arr) do
-			local num_reason = Scl.GetNumFormatCardType(reason)
+			local num_reason = Scl.GetNumFormatReason(reason)
 			if g:IsExists(s.is_reason_check, 1, nil, num_reason, num_public_rsn) then 
 				return true 
 			end
 		end
 	elseif obj_typ == "string" or obj_typ == "number" then
-		local chk_rsn = Scl.GetNumFormatCardType(rsn_obj)
+		local chk_rsn = Scl.GetNumFormatReason(rsn_obj)
 			for _, reason in pairs(res_arr) do
-				local num_reason = Scl.GetNumFormatCardType(reason)
+				local num_reason = Scl.GetNumFormatReason(reason)
 				if chk_rsn & (num_reason | num_public_rsn) == (num_reason | num_public_rsn) then 
 					return true 
 				end
@@ -6635,9 +6763,9 @@ end
 --Filter
 --check if the obj has 1 of the inside series ... (of course, can check official series too.)
 --//return bool
--->>eg1. Scl.IsSeries(c, "WoAiJiangYiFan")
+--*1. Scl.IsSeries(c, "WoAiJiangYiFan")
 --check whether card c has an inside series "WoAiJiangYiFan"
--->>eg2. Scl.IsSeries(c, "WoAiJiangYiFan", "JiangYiFanAiWo")
+--*2. Scl.IsSeries(c, "WoAiJiangYiFan", "JiangYiFanAiWo")
 --check whether card c has inside series "WoAiJiangYiFan" or "JiangYiFanAiWo"
 function Scl.IsSeries(obj, ...) 
 	local g = Scl.Mix2Group(obj)
@@ -6646,9 +6774,9 @@ end
 --Filter
 --check if the obj has 1 of the inside fusion series ... (of course, can check official series too.)
 --//return bool
--->>eg1. Scl.IsFusionSeries(c, "WoAiJiangYiFan")
+--*1. Scl.IsFusionSeries(c, "WoAiJiangYiFan")
 --check whether card c has an inside fusion series "WoAiJiangYiFan"
--->>eg2. Scl.IsFusionSeries(c, "WoAiJiangYiFan", "JiangYiFanAiWo")
+--*2. Scl.IsFusionSeries(c, "WoAiJiangYiFan", "JiangYiFanAiWo")
 --check whether card c has inside fusion series "WoAiJiangYiFan" or "JiangYiFanAiWo"
 function Scl.IsFusionSeries(obj, ...) 
 	local g = Scl.Mix2Group(obj)
@@ -6657,9 +6785,9 @@ end
 --Filter
 --check if the obj has 1 of the inside link series ... (of course, can check official series too.)
 --//return bool
--->>eg1. Scl.IsLinkSeries(c, "WoAiJiangYiFan")
+--*1. Scl.IsLinkSeries(c, "WoAiJiangYiFan")
 --check whether card c has an inside link series "WoAiJiangYiFan"
--->>eg2. Scl.IsLinkSeries(c, "WoAiJiangYiFan", "JiangYiFanAiWo")
+--*2. Scl.IsLinkSeries(c, "WoAiJiangYiFan", "JiangYiFanAiWo")
 --check whether card c has inside link series "WoAiJiangYiFan" or "JiangYiFanAiWo"
 function Scl.IsLinkSeries(obj, ...) 
 	local g = Scl.Mix2Group(obj)
@@ -6668,9 +6796,9 @@ end
 --Filter
 --check if the obj has 1 of the inside original series ... (of course, can check official series too.)
 --//return bool
--->>eg1. Scl.IsOriginalSeries(c, "WoAiJiangYiFan")
+--*1. Scl.IsOriginalSeries(c, "WoAiJiangYiFan")
 --check whether card c has an inside original series "WoAiJiangYiFan"
--->>eg2. Scl.IsOriginalSeries(c, "WoAiJiangYiFan", "JiangYiFanAiWo")
+--*2. Scl.IsOriginalSeries(c, "WoAiJiangYiFan", "JiangYiFanAiWo")
 --check whether card c has inside original series "WoAiJiangYiFan" or "JiangYiFanAiWo"
 function Scl.IsOriginalSeries(obj, ...) 
 	local g = Scl.Mix2Group(obj)
@@ -6679,9 +6807,9 @@ end
 --Filter
 --check if the obj has 1 of the inside pervious series ... (of course, can check official series too.)
 --//return bool
--->>eg1. Scl.IsPreviousSeries(c, "WoAiJiangYiFan")
+--*1. Scl.IsPreviousSeries(c, "WoAiJiangYiFan")
 --check whether card c has an inside pervious series "WoAiJiangYiFan"
--->>eg2. Scl.IsPreviousSeries(c, "WoAiJiangYiFan", "JiangYiFanAiWo")
+--*2. Scl.IsPreviousSeries(c, "WoAiJiangYiFan", "JiangYiFanAiWo")
 --check whether card c has inside pervious series "WoAiJiangYiFan" or "JiangYiFanAiWo"
 function Scl.IsPreviousSeries(obj, ...) 
 	local g = Scl.Mix2Group(obj)
@@ -6692,7 +6820,7 @@ end
 --obj can be card, group, or can be number format (like LOCATION_SZONE, LOCATION_MZONE + LOCATION_HAND), or be string format (see Scl.Zone_List).
 --zone_obj can be number format (like LOCATION_SZONE, LOCATION_MZONE + LOCATION_HAND), or be string format (see Scl.Zone_List).
 --//return bool
--->>eg1. Scl.IsInZone(c, "Hand,Deck")
+--*1. Scl.IsInZone(c, "Hand,Deck")
 --check whether c is in hand or deck.
 function Scl.IsInZone(obj, zone_obj)
 	local obj_typ = type(obj)
@@ -6716,7 +6844,7 @@ end
 --check if obj is perviously in zone_obj
 --zone_obj can be number format (like LOCATION_SZONE, LOCATION_MZONE + LOCATION_HAND), or be string format (see Scl.Zone_List)
 --//return bool
--->>eg1. Scl.IsPreviouslyInZone(c, "Hand,Deck")
+--*1. Scl.IsPreviouslyInZone(c, "Hand,Deck")
 --check whether c is perviously in hand or deck.
 function Scl.IsPreviouslyInZone(obj, zone_obj)
 	for tc in aux.Next(Scl.Mix2Group(obj)) do 
@@ -6732,7 +6860,26 @@ function Scl.IsPreviouslyInZone(obj, zone_obj)
 	end
 	return false
 end 
-
+--Filter
+--check if obj is summon from zone_obj
+--zone_obj can be number format (like LOCATION_SZONE, LOCATION_MZONE + LOCATION_HAND), or be string format (see Scl.Zone_List)
+--//return bool
+--*1. Scl.IsSummonFormZone(c, "Hand,Deck")
+--check whether c is summon from hand or deck.
+function Scl.IsSummonFormZone(obj, zone_obj)
+	for tc in aux.Next(Scl.Mix2Group(obj)) do 
+		if type(zone_obj) == "number" then 
+			return c:IsSummonLocation(zone_obj)
+		end
+		local zone_arr = Scl.SplitString(zone_obj)
+		for _, zone_str in pairs(zone_arr) do
+			if tc:IsSummonLocation(Scl.Zone_List[zone_str]) then 
+				return true
+			end
+		end
+	end
+	return false
+end
 
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Hint<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -6749,9 +6896,9 @@ end
 	 str_pfx == "w", find hint "would you want to do sth.", commonly used for Duel.SelectYesNo and Duel.SelectOption
 --]]
 --//return the number-format hint 
--->>eg1. s.switch_hint_object_format({114514, 1})
+--*1. s.switch_hint_object_format({114514, 1})
 -->>return aux.Stringid(114514, 1)
--->>eg2. s.switch_hint_object_format("Add2Hand",'WouldSelect')
+--*2. s.switch_hint_object_format("Add2Hand",'WouldSelect')
 -->>return a number-format hint that show "Would you want to add to hand?"
 function s.switch_hint_object_format(hint_obj, str_pfx)
 	str_pfx = str_pfx or ""
@@ -6798,9 +6945,9 @@ end
 --hint_par's parama: see s.switch_hint_object_format
 --if you set hint_code (default == nil), will show hint_code card's flashing animation.
 --//return true (select yes) or false (select no)
--->>eg1. Scl.SelectYesNo(tp, "SpecialSummon")
+--*1. Scl.SelectYesNo(tp, "SpecialSummon")
 -->>show the hint "Would you want to Special Summon?"
--->>eg1. Scl.SelectYesNo(tp, "Add2Hand", 114514)
+--*1. Scl.SelectYesNo(tp, "Add2Hand", 114514)
 -->>show the hint "Would you want to add to hand?" and show the 114514's flashing animation.
 function Scl.SelectYesNo(p, hint_par, hint_code)
 	local string = s.switch_hint_object_format(hint_par, "WouldSelect")
@@ -6814,7 +6961,7 @@ end
 --... params format: boolean1(feasible), hint1, boolean2, hint2, ...
 --if boolean = false, it can't be selected (and will not be displayed)
 --//return the selected option's real index
--->>eg1: Scl.SelectOption(p, true, "Add2Hand", false, "Send2Deck", true, "Banish")
+--*1: Scl.SelectOption(p, true, "Add2Hand", false, "Send2Deck", true, "Banish")
 -->>if you select "Add2Hand", it will return 1, "Banish" will return 3, and you can't select "Send2Deck".
 function Scl.SelectOption(p, ...)
 	local res_arr, hint_arr = Scl.SplitArrayByParity({ ... })
@@ -6843,7 +6990,7 @@ end
 
 --Return any "true" out, for registing some default effect values
 --//return 1st true, 2nd true, ..., ct-th true.
--->>eg. Scl.ReturnTrue(3)
+--*. Scl.ReturnTrue(3)
 -->>return true, true, true
 function Scl.ReturnTrue(ct)
 	return function()
@@ -6854,38 +7001,58 @@ function Scl.ReturnTrue(ct)
 		return table.unpack(arr)
 	end
 end
---Print debug message in the game window and the error.log
+--Print debug messages in the game window and the error.log
+--connector use to connect the front and back 2 messages, default == ", ".
+--if connector == "/n", means print the messages line by line.
 --if an element is "0x", this element will not be print, but the next element will be print by HEX form (if feasible).
--->>eg. Scl.Debug("0x",16," abcd ",16," def ","0x",11) 
--->>print "0x10 abcd 16 def, 0xa"
-function Scl.Debug(...)
+--*1. Scl.Debug(nil, "0x", 16,"abcd", 16, "def", "0x", 11) 
+-->>print "0x10, abcd, 16, def, 0xa"
+--*2. Scl.Debug("/n", 1, "aaa", 2)
+-->>print 1
+-->>print "aaa"
+-->>print 2
+function Scl.Debug(connector, ...)
+	connector = connector or ", "
 	local arr = { ... }
-	local hint = ""
+	local hint_str = ""
+	local hint_cache = ""
+	local next_hex = false
 	for idx, val in pairs(arr) do 
-		if type(val) == "string" then
-			hint = hint .. val == "0x" and "" or val
-		elseif type(val) == "number" then
-			if arr[idx - 1] and type(arr[idx - 1]) == "string" and arr[idx - 1] == "0x" then
-				hint = hint .. Scl.Dec2Hex(val)
-			else
-				hint = hint .. val
-			end
+		--check hex format 
+		if type(val) == "string" and val == "0x" then
+			next_hex = true
 		else
-			hint = hint .. tostring(val) 
+			if type(val) == "number" then
+				if next_hex then
+					hint_cache = Scl.Dec2Hex(val)
+				else
+					hint_cache = val
+				end
+			else
+				hint_cache = tostring(val) 
+			end
+			if connector == "/n" then
+				Debug.Message(hint_cache)
+			else
+				hint_str = hint_str .. hint_cache .. (idx == #arr and "" or connector)
+			end
+			next_hex = false
 		end
 	end
-	Debug.Message(hint)
+	if connector ~= "/n" then
+		Debug.Message(hint_str)
+	end
 end
 --transfer 10 DEC to 16 HEX
 --//return string
--->>eg1. Scl.Dec2Hex(16)
+--*1. Scl.Dec2Hex(16)
 -->>return "0x10"
 function Scl.Dec2Hex(num)
 	return string.format("0x%0X", num)
 end
 --transfer 16 HEX to 2 BIN
 --//return string
--->>eg1. Scl.Hex2Bin(ff)
+--*1. Scl.Hex2Bin(ff)
 -->>return "11111111"
 function Scl.Hex2Bin(hex_str)
 	local bin_str = ""
@@ -6897,7 +7064,7 @@ end
 --use to split the BIG ARRAY to 2 subset arrays, by the parity of the element's indexs as the grouping method.
 --the BIG ARRAY must be successive.
 --//return the odd array and the even array.
--->>eg1 Scl.SplitArrayByParity( 1, 2, 3, 4 )
+--*1 Scl.SplitArrayByParity( 1, 2, 3, 4 )
 -->>return { 1, 3 }, { 2, 4 }
 function Scl.SplitArrayByParity(arr)
 	local odd, even = { }, { }
@@ -6913,7 +7080,7 @@ end
 --use to split the BIG ARRAY to 3 subset arrays, index 1/4/7/... in first group, index 2/5/8/... in second group, index 3/6/9/... in third group
 --the BIG ARRAY must be successive.
 --//return first array, second array, third array
--->>eg1. Scl.SplitArrayByMultipleOf3({ "a", "b", "c", "d", "e", "f" })
+--*1. Scl.SplitArrayByMultipleOf3({ "a", "b", "c", "d", "e", "f" })
 -->>return { "a", "d" }, { "b", "e" }, { "c", "f" }
 function Scl.SplitArrayByMultipleOf3(arr)
 	local res_arr = { { }, { }, { } }
@@ -6930,10 +7097,10 @@ end
 --Split the string by dlmt(delimiter)
 --default ues ", " as delimiter
 --//return the array contains every split subset strings.
--->>eg1. Scl.SplitString("I,love,JYF")
+--*1. Scl.SplitString("I,love,JYF")
 -->>return { I, love, JYF }  
 --specially, if you use "_" as delimiter, it is use for spliting the inside series, the returned value will be different.
--->>eg2. Scl.SplitString("ABC_DEF","_")
+--*2. Scl.SplitString("ABC_DEF","_")
 -->>return { ABC_DEF, ABC, DEF }, means that card has 3 inside series - "ABC_DEF", "ABC" and "DEF".
 function Scl.SplitString(str_input, dlmt)  
 	str_input = string.gsub(str_input, " ", "")
@@ -6968,7 +7135,7 @@ function Scl.SplitString(str_input, dlmt)
 end  
 --Remove the prefix symbol or suffix symbol from a string.
 --//return the new string, symbol.
--->>eg1. Scl.RemoveStringSymbol("~MP", "~")
+--*1. Scl.RemoveStringSymbol("~MP", "~")
 -->>return "MP", "~"
 function Scl.RemoveStringSymbol(str, symbol)
 	--case1 suffix 
@@ -6983,9 +7150,9 @@ end
 --Switch some different formats strings or string-arrays to a same fromat string-array.
 --you can use "a, b, c" or { "a, b, c" } or { "a", "b", "c" } as a same.
 --//return the same array
--->>eg1. Scl.UniformSclParamaFormat("asd,bff,ghh")
+--*1. Scl.UniformSclParamaFormat("asd,bff,ghh")
 -->>return { "asd", "bff", "ghh" }
--->>eg2. Scl.UniformSclParamaFormat({ "asd,bff,ghh" })
+--*2. Scl.UniformSclParamaFormat({ "asd,bff,ghh" })
 -->>return { "asd", "bff", "ghh" }
 function Scl.UniformSclParamaFormat(obj)
 	local arr = { }
@@ -7010,7 +7177,7 @@ end
 --for each string in obj1, find its index in obj2, and use this index to find the ELEMENT1 in obj3 and the ELEMENT2 in obj4 (obj4 is an optional parama).
 --if obj4 only have 1 element A, but the obj1 has 2+ strings, that element A will corresponding to all strings.
 --//return the ELEMENT1-array, ELEMENT2-array, first ELEMENT1, first ELEMENT2 
---[[>>eg1.  obj1 = { "fmat~,lmat~" }
+--[[*1.  obj1 = { "fmat~,lmat~" }
 			obj2 = { "fmat", "smat~", "xmat~", "lmat~" }
 			obj3 = { EFFECT_CANNOT_BE_FUSION_MATERIAL, EFFECT_CANNOT_BE_SYNCHRO_MATERIAL, EFFECT_CANNOT_BE_XYZ_MATERIAL, EFFECT_CANNOT_BE_LINK_MATERIAL }
 			obj4 = 1 
@@ -7042,7 +7209,7 @@ function Scl.MatchArrays(obj1, obj2, obj3, obj4)
 end
 --Check is the array has an secified element.
 --//return is exist, that element's index in the array(if not exist, return 0).
--->>eg1. Scl.IsArrayContains_Single({a,b,c,d}, c)
+--*1. Scl.IsArrayContains_Single({a,b,c,d}, c)
 -->>return true, 3
 --other function: Find correct element in table
 function s.IsArrayContains_Base(chk_typ, base_arr, ...)
@@ -7083,32 +7250,32 @@ function Scl.IsArrayContains_Single(base_arr, chk_obj)
 end
 --Check is the array has an secified element(s).
 --//return is the 1st element exist, that element's index in the array(if not exist, return 0), is the 2nd element exist, that element's index in the array(if not exist, return 0), and so on ...
--->>eg1. Scl.IsArrayContains({a,b,c,d}, a,c,f)
+--*1. Scl.IsArrayContains({a,b,c,d}, a,c,f)
 -->>return true, 1, true, 3, false, 0
 function Scl.IsArrayContains(...)
 	return s.IsArrayContains_Base("normal", ...)
 end
 --Check is the array has any 1 secified element(s).
 --//return is exist.
--->>eg1. Scl.IsArrayContains({a,b,c,d}, a,f,g)
+--*1. Scl.IsArrayContains({a,b,c,d}, a,f,g)
 -->>return true
--->>eg2. Scl.IsArrayContains({a,b,c,d}, f,g)
+--*2. Scl.IsArrayContains({a,b,c,d}, f,g)
 -->>return false
 function Scl.IsArrayContains_OR(...)
 	return s.IsArrayContains_Base("or", ...)
 end
 --Check is the array has all secified element(s).
 --//return is exist.
--->>eg1. Scl.IsArrayContains({a,b,c,d}, a,c,d)
+--*1. Scl.IsArrayContains({a,b,c,d}, a,c,d)
 -->>return true
--->>eg2. Scl.IsArrayContains({a,b,c,d}, a,b,c,f)
+--*2. Scl.IsArrayContains({a,b,c,d}, a,b,c,f)
 -->>return false
 function Scl.IsArrayContains_AND(...)
 	return s.IsArrayContains_Base("and", ...)
 end
 --Find if 2 arrays has an intersection.
 --//return is has, the intersection.
--->>eg1. Scl.IsArraysHasIntersection({ 1,2,3,4 },  { 1,3,5,7 })
+--*1. Scl.IsArraysHasIntersection({ 1,2,3,4 },  { 1,3,5,7 })
 -->>return true, { 1, 3 }
 function Scl.IsArraysHasIntersection(arr1, arr2)
 	local istn = { }
@@ -7123,7 +7290,7 @@ function Scl.IsArraysHasIntersection(arr1, arr2)
 end
 --Clone an array, the base array won't be changed by this function.
 --//return the new array.
--->>eg1. Scl.CloneArray({1,2,3})
+--*1. Scl.CloneArray({1,2,3})
 -->>return {1,2,3}
 function Scl.CloneArray(arr)
 	local arr2 = { }
@@ -7145,7 +7312,7 @@ end
 --//return the new array.
 --error at "nil" value !!!!!!!!!
 --error at no number key !!!!!!!!!
--->>eg. Scl.MixArrays({1,2,3,4}, {1,4,5,6}, {"a","b","c"})
+--*. Scl.MixArrays({1,2,3,4}, {1,4,5,6}, {"a","b","c"})
 -->>return {1,2,3,4,1,4,5,6,"a","b","c"}
 function Scl.MixArrays(...)
 	local res_arr = { }
@@ -7164,11 +7331,11 @@ end
 --Check is the chk_obj is a boolean-type element, and is equal to bool.
 --bool default true.
 --//return is equal 
--->>eg1. Scl.CheckBoolean("false")
+--*1. Scl.CheckBoolean("false")
 -->>return false
--->>eg2. Scl.CheckBoolean(true)
+--*2. Scl.CheckBoolean(true)
 -->>return true
--->>eg3. Scl.CheckBoolean(true, false)
+--*3. Scl.CheckBoolean(true, false)
 -->>return false
 function Scl.CheckBoolean(chk_obj, bool)
 	if type(bool) == "nil" or bool == true then return 
@@ -7179,9 +7346,9 @@ function Scl.CheckBoolean(chk_obj, bool)
 end 
 --Split a number to different power-of-2 number's sum. 
 --//return the splitted array.
--->>eg1. Scl.SplitNumber2PowerOf2(3) 1111
+--*1. Scl.SplitNumber2PowerOf2(3) 1111
 -->>return { 1, 2 }
--->>eg1. Scl.SplitNumber2PowerOf2(15)
+--*1. Scl.SplitNumber2PowerOf2(15)
 -->>return { 1, 2, 4, 8 }
 function Scl.SplitNumber2PowerOf2(num)
 	local arr = { }
@@ -7201,7 +7368,7 @@ function Scl.SplitNumber2PowerOf2(num)
 end
 --Get elements in a number-index array (base_arr), from base_arr[st_idx] to base_arr[fns_idx].
 --//return base_arr[start], base_arr[start + 1], ..., base_arr[fns]
--->>eg1. Scl.GetArrayElementsByNumIndex({ 1, 2, "a", 3, "b" }, 2, 4)
+--*1. Scl.GetArrayElementsByNumIndex({ 1, 2, "a", 3, "b" }, 2, 4)
 -->>return 2, "a", 3, "b"
 function Scl.GetArrayElementsByNumIndex(base_arr, start, fns)
 	local new_arr = { }
@@ -7214,7 +7381,7 @@ function Scl.GetArrayElementsByNumIndex(base_arr, start, fns)
 end
 --Add cards from a card group into an array
 --//return that array 
--->>eg1. Scl.Group2CardList(Group.FromCards(c1, c2, c3, c4))
+--*1. Scl.Group2CardList(Group.FromCards(c1, c2, c3, c4))
 -->>return { c1, c2, c3, c4 }
 function Scl.Group2CardList(g)
 	local arr = { }
@@ -7225,7 +7392,7 @@ function Scl.Group2CardList(g)
 end 
 --Get the kinds of elements in array
 --//return kinds number
--->>eg1. Scl.GetValuesKindsFromArray({ 1, 1, 4, 5, 1, 4 })
+--*1. Scl.GetValuesKindsFromArray({ 1, 1, 4, 5, 1, 4 })
 -->>return 3 (1/4/5)
 function Scl.GetValuesKindsFromArray(arr)
 	local arr2 = { }
@@ -7264,5 +7431,4 @@ s.record_previous_inside_series()
 s.previous_xyz_material_record()
 s.record_official_filter()
 s.add_current_effect_check()
---s.add_type_normal_spell_or_trap_scl()
 Scl.RaiseGlobalSetEvent()
