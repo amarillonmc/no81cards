@@ -4,7 +4,7 @@ local s,id = GetID()
 function s.initial_effect(c)
 	local e1 = Scl.CreateFieldTriggerOptionalEffect(c, "BeSpecialSummoned",
 		"Equip", nil, "Equip,NormalSummon", 
-		"Target", "Hand,MonsterZone", s.eqcon, nil,
+		"Target,Delay", "Hand,MonsterZone", s.eqcon, nil,
 		{ "Target", "Equip", s.eqfilter, 0, "MonsterZone" }, s.eqop)
 	--local e2 = Scl.CreateFieldTriggerContinousEffect(c, "Adjust", nil, nil, nil, "Spell&TrapZone", nil, s.bnop)
 	local e3 = Scl.CreateFieldTriggerContinousEffect(c, "BeEffectTarget", nil, nil, nil, "Spell&TrapZone", s.bncon2, s.bnop2)

@@ -10,7 +10,7 @@ function s.initial_effect(c)
 		{ "Target", "BanishFacedown", s.bfilter, 0, "GY"}, { "~Target", "Return2Hand", s.rtfilter, "OnField", 0, 1, 1, c }} , s.bop)
 end
 function s.pfilter(c,e,tp)
-	return aux.IsCodeListed(c, 10106003) and Scl.IsType(c,TYPE_CONTINUOUS,TYPE_TRAP,TYPE_SPELL) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0
+	return aux.IsCodeListed(c, 10106003) and Scl.IsCardType(c,TYPE_CONTINUOUS,TYPE_TRAP,TYPE_SPELL) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0
 end
 function s.tfop(e,tp)
 	Scl.SelectAndOperateCards("PlaceInSpell&TrapZone",tp,aux.NecroValleyFilter(s.pfilter),tp,"Deck,GY",0,1,1,nil,e,tp)()
