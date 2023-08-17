@@ -62,7 +62,7 @@ end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local c=e:GetHandler()
 	if chk==0 then return c:GetFlagEffect(m)==0 end
-	c:RegisterFlagEffect(m,RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.GetCurrentChain()==0 and eg:IsExists(cm.filter,1,nil,1-tp)  
