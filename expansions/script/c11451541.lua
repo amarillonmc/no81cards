@@ -47,7 +47,7 @@ function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:Filter(Card.IsLocation,nil,LOCATION_MZONE)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+			tc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1)
 		end
 	end
 end
@@ -55,12 +55,12 @@ function cm.checkop6(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+			tc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1)
 		end
 	end
 end
 function cm.ctgfilter(c)
-	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(m)==0
+	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(m+1)==0
 end
 function cm.filter(c,tp)
 	return c:IsControler(tp)
@@ -120,7 +120,7 @@ function cm.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and c:GetFlagEffect(m)==0
+	return c:IsFaceup() and c:GetFlagEffect(m+1)==0
 end
 function cm.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -171,5 +171,5 @@ function cm.sumlimit2(e,c,sump,sumtype,sumpos,targetp)
 	local g=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,nil,e:GetLabel())
 	local ac=g:GetFirst()
 	local bc=g:GetNext()
-	return not (not c:IsAttribute(ac:GetAttribute()) and (not bc or not c:IsAttribute(bc:GetAttribute())))
+	return not (c:GetAttribute()~=ac:GetAttribute() and (not bc or c:GetAttribute()~=bc:GetAttribute()))
 end
