@@ -7,6 +7,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(cm.condition)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -14,8 +15,15 @@ end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.GetTurnPlayer()==1-tp and Duel.GetCurrentChain()==0 and not Duel.CheckPhaseActivity()
 end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(100)
+	return true
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then
+		if e:GetLabel()>0 then e:SetLabel(0) return true end
+		return false
+	end
 	Duel.SetTargetPlayer(tp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)

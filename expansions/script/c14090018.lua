@@ -34,15 +34,15 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_DUAL_STATUS)
 	e3:SetCondition(cm.dscon)
 	c:RegisterEffect(e3)
-	--search
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,2))
-	e4:SetCategory(CATEGORY_TOHAND)
-	e4:SetType(EFFECT_TYPE_IGNITION)
-	e4:SetRange(LOCATION_HAND)
-	e4:SetCost(cm.thcost1)
-	e4:SetTarget(cm.thtg1)
-	e4:SetOperation(cm.thop1)
+	e4:SetCategory(CATEGORY_DRAW)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_BE_MATERIAL)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetCondition(cm.bmcon)
+	e4:SetTarget(cm.bmtg)
+	e4:SetOperation(cm.bmop)
 	c:RegisterEffect(e4)
 	if not cm.global_check then
 		cm.global_check=true
@@ -125,23 +125,4 @@ end
 function cm.bmop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
-end
-function cm.thcost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsDiscardable() end
-	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
-end
-function cm.thfilter1(c)
-	return c:IsCode(14090020) and c:IsAbleToHand() and c:IsFaceup()
-end
-function cm.thtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
-end
-function cm.thop1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tg=Duel.GetFirstMatchingCard(cm.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	if tg then
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tg)
-	end
 end
