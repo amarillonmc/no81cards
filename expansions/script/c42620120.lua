@@ -29,6 +29,7 @@ function cm.initial_effect(c)
     --indes
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e4:SetRange(0x04)
 	e4:SetTargetRange(0x0c,0x08)
@@ -38,7 +39,7 @@ function cm.initial_effect(c)
 	--cannot be target
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e5:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e5:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e5:SetRange(0x04)
 	e5:SetTargetRange(0x0c,0x08)
@@ -120,5 +121,5 @@ end
 
 function cm.tgifilter(e,c)
     local g=Duel.GetMatchingGroup(cm.immtg,e:GetHandlerPlayer(),0x04,0,nil)
-	return g:IsContains(c) or Duel.GetMatchingGroup(cm.immtg2,e:GetHandlerPlayer(),0x08,0x08,nil,g):IsContains(c)
+	return (g:IsContains(c) and c:IsFaceup()) or Duel.GetMatchingGroup(cm.immtg2,e:GetHandlerPlayer(),0x08,0x08,nil,g):IsContains(c)
 end

@@ -1,83 +1,64 @@
 --方舟骑士将火照影
+c29091651.named_with_Arknight=1
 function c29091651.initial_effect(c)
-We're no strangers to love
-你我对于爱情均非陌生之人
-You know the rules and so do I
-你对规则知根晓底我也如此
-A full commitment's what I'm thinking of
-我想给的就是一份真心忠贞
-You wouldn't get this from any other guy
-这你将不会从其他人那得到
-I just wanna tell you how I'm feeling
-我只想告诉你我的感受体会
-Gotta make you understand
-渴望让你也能懂得我的心意
-Never gonna give you up
-永远不会将你放弃
-Never gonna let you down
-永远不会让你失望
-Never gonna run around and desert you
-永远不会四处招摇将你抛弃
-Never gonna make you cry
-绝对不会让你哭泣
-Never gonna say goodbye
-绝对不会说出再见
-Never gonna tell a lie and hurt you
-绝对不会口出谎言将你伤害
-We've known each other for so long
-我们相识相知已然太长太久
-Your heart's been aching but you're too shy to say it
-你心一直作痛你却羞于出口
-Inside we both know what's been going on
-内心你我都清楚发生着什么
-We know the game and we're gonna play it
-我们深谙这场游戏将要继续
-And if you ask me how I'm feeling
-而若你问我此刻我是何情感
-Don't tell me you're too blind to see
-别告诉我你已盲目视而不见
-Never gonna give you up
-永远不会将你放弃
-Never gonna let you down
-永远不会让你失望
-Never gonna run around and desert you
-永远不会四处招摇将你抛弃
-Never gonna make you cry
-绝对不会让你哭泣
-Never gonna say goodbye
-绝对不会说出再见
-Never gonna tell a lie and hurt you
-绝对不会口出谎言将你伤害
-No I'm never gonna give you up
-永远不会将你放弃
-No I'm never gonna let you down
-永远不会让你失望
-No I'll never run around and hurt you
-永远不会四处招摇将你伤害
-Never ever desert you
-永远不会将你抛弃
-We've known each other for so long
-我们相识相知已然太长太久
-Your heart's been aching but
-你的心一直隐隐作痛你却是
-Never gonna give you up
-永远不会将你放弃
-Never gonna let you down
-永远不会让你失望
-Never gonna run around and desert you
-永远不会寻花问柳将你抛弃
-Never gonna make you cry
-绝对不会让你哭泣
-Never gonna say goodbye
-绝对不会说出再见
-Never gonna tell a lie and hurt you
-绝对不会对你欺瞒将你伤害
-No I'm never gonna give you up
-永远不会将你放弃
-No I'm never gonna let you down
-永远不会让你失望
-No I'll never run around and hurt you
-永远不会寻花问柳将你伤害
-I'll never, ever desert you
-我将永不将你抛弃	
+	aux.AddCodeList(c,29008292)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_DAMAGE+CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetTarget(c29091651.target)
+	e1:SetOperation(c29091651.activate)
+	c:RegisterEffect(e1)
+end
+function c29091651.filter(c,e,tp)
+	return c:IsCode(29008292)
+end
+function c29091651.filter2(c,e,tp)
+	return bit.band(c:GetType(),0x81)==0x81 and c:IsCode(29008292) and Duel.GetLP(tp)>c:GetLevel()*400
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true)
+end
+function c29091651.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local mg=Duel.GetRitualMaterial(tp)
+		local b1=Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,c29091651.filter,e,tp,mg,nil,Card.GetLevel,"Greater")
+		local b2=Duel.IsExistingMatchingCard(c29091651.filter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp)
+		return b1 or b2
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+end
+function c29091651.activate(e,tp,eg,ep,ev,re,r,rp)
+	local g=Group.CreateGroup()
+	local mg=Duel.GetRitualMaterial(tp)
+	local g1=Duel.GetMatchingGroup(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,c29091651.filter,e,tp,mg,nil,Card.GetLevel,"Greater")
+	local g2=Duel.GetMatchingGroup(c29091651.filter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
+	g:Merge(g1)
+	g:Merge(g2)
+	if g:GetCount()==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local tc=g:Select(tp,1,1,nil):GetFirst()
+	if g1:IsContains(tc) and (not g2:IsContains(tc) or Duel.SelectOption(tp,aux.Stringid(29091651,0),aux.Stringid(29091651,1))==0) then
+		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
+		if tc.mat_filter then
+			mg=mg:Filter(tc.mat_filter,tc,tp)
+		else
+			mg:RemoveCard(tc)
+		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
+		local mat=mg:SelectSubGroup(tp,aux.RitualCheck,false,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater")
+		aux.GCheckAdditional=nil
+		if not mat or mat:GetCount()==0 then return end
+		tc:SetMaterial(mat)
+		Duel.ReleaseRitualMaterial(mat)
+		Duel.BreakEffect()
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+		tc:CompleteProcedure()
+	else
+		local dam=tc:GetLevel()*400
+		if Duel.Damage(tp,dam,REASON_EFFECT)~=dam then return end
+		tc:SetMaterial(nil)
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,true,true,POS_FACEUP)
+		tc:CompleteProcedure()
+	end
 end

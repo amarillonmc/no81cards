@@ -2,7 +2,7 @@
 if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
 local s,id = GetID()
 function s.initial_effect(c)
-	local e1 = Scl.CreateQuickOptionalEffect(c, "ActivateEffect", "Equip", nil, 
+	local e1 = Scl.CreateQuickOptionalEffect(c, "ActivateEffect", "Equip", {1, "Chain"}, 
 		"Equip", "Target", "Hand,MonsterZone", s.eqcon, nil, 
 		s.eqtg, s.eqop)
 	local e2 = Scl.CreateFieldTriggerContinousEffect(c, "BeforeEffectResolving", nil, nil, nil, "Spell&TrapZone", s.cecon, s.ceop)

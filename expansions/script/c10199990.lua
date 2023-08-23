@@ -792,11 +792,12 @@ function s.get_effect_array(checkfun, endfun, list_typ, a1, a2, a3, ...)
 			end
 		end
 	end
+	local ex_type = list_typ == "Cost" and "ExtraCost" or "ExtraTarget"
 	if checkfun then
-		table.insert(cache_arr, 1, { "ExtraCheck", checkfun })
+		table.insert(cache_arr, 1, { ex_type, s.chk_fun(checkfun) })
 	end
 	if endfun then
-		table.insert(cache_arr,{ "ExtraOperation", s.end_fun(endfun) })
+		table.insert(cache_arr,{ ex_type, s.end_fun(endfun) })
 	end
 	local cache_arr2 = Scl.CloneArray(cache_arr)
 	--switch string
@@ -876,9 +877,23 @@ function s.get_effect_array(checkfun, endfun, list_typ, a1, a2, a3, ...)
 	end
 	return cache_arr2
 end
+function s.chk_fun(chkfun)
+	return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
+		if chkc then 
+			return true
+		end
+		if chk == 0 then
+			return chkfun(e, tp, eg, ep, ev, re, r, rp, 0)
+		end
+		return true
+	end
+end
 function s.end_fun(endfun)
-	return function(g1, g2, ...)
-		return endfun(g1, ...)
+	return function(e, tp, eg, ep, ev, re, r, rp, chk)
+		if chk == 0 then
+			return true
+		end
+		return endfun(Scl.Last_Selected_Group, e, tp, eg, ep, ev, re, r, rp)
 	end
 end
 function rstg.target0(checkfun,  endfun,  ...)
@@ -1263,9 +1278,9 @@ function rscf.rdesfilter(f1, ...)
 end
 function rscf.IsComplexType(c, type1, type2, ...)
 	if type(type2) == "boolean" then
-		return Scl.IsType(c, type1, ...)
+		return Scl.IsCardType(c, type1, ...)
 	else
-		return Scl.IsType(c, 0, type1, type2, ...)
+		return Scl.IsCardType(c, 0, type1, type2, ...)
 	end
 end
 Card.IsComplexType = rscf.IsComplexType
@@ -1369,10 +1384,12 @@ end
 
 rsop.CheckOperateSuccess = rsop.CheckOperateCorrectly
 
+rsef.SV = rsef.SV_Card
 rsef.SV_UTILITY_XYZ_MATERIAL = rsef.SV_UtilityXyzMaterial
 rsef.SV_ACTIVATE_SPECIAL = rsef.SV_ActivateDirectly_Special
 rsef.SV_CANNOT_DISABLE_S = rsef.SV_CannotDisable_NoEffect
 rsef.SV_EXTRA_MATERIAL =   rsef.SV_ExtraMaterial
+rsef.FV = rsef.FV_Player --- only 33700938 33700940 call this function, and all of them call this function to register a player buff, so don't need to define rsef.FV_Card.
 rsef.FV_EXTRA_MATERIAL =   rsef.FV_ExtraMaterial
 rsef.FV_EXTRA_MATERIAL_SELF =   rsef.FV_ExtraMaterial_Self
 rsef.ACT_EQUIP  =   rsef.A_Equip

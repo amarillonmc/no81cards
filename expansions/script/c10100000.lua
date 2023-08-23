@@ -82,7 +82,9 @@ scl.black_hole_count = 0
 Scl.Mandatory_Effect_Target_Check = false
 --Using for function "Scl.RegisterZone" to recording effects' appliable zones.
 Scl.Effect_Zone_List = { }
-
+--Using for some functions that call the old library (c10199990.lua), like rsop.target2/rstg.target2/rscost.cost2/rsop.target3/rstg.target3/rscost.cost3
+Scl.Last_Selected_Group = Group.CreateGroup()
+Scl.Last_Selected_Group:KeepAlive()
 
 --Attach extra effect
 EFFECT_ADDITIONAL_EFFECT_SCL  =   id + 100 
@@ -1326,6 +1328,8 @@ function Scl.RegisterActivateCountLimit(reg_eff, lim_obj)
 				if (type(val) == "number" and (val == 3 or val == 0x1)) or
 					 (type(val) == "string" and val == "Share") then
 					lim_code = EFFECT_COUNT_CODE_SINGLE 
+				elseif type(val) == "string" and val == "Chain" then
+			 	  	lim_code = EFFECT_COUNT_CODE_CHAIN 
 				else
 					lim_code = lim_obj[2]
 				end
@@ -3433,15 +3437,10 @@ end
 			6.oppo max count (default == oppo min count): your opponent's max operate count.
 		//return list_typ, category_str, category, category_arr, category_str_arr, replace_operation, self_minct, self_maxct, oppo_minct, oppo_maxct
 	 3.
-	 { 1.list_typ == "ExtraCheck", 2.extra_check_function }  
+	 { 1.list_typ == "ExtraCost/ExtraTarget", 2.extra_cost_function/extra_target_function }  
 		Paramas explain: 
-			2.extra_check_function: add an additional check to the effect cost/target, call extra_check_function(e, tp, eg, ...) to check.
-		//return list_typ, extra_check_function
-	 4.
-	 { 1.list_typ == "ExtraOperation", 2.extra_operate_function }	
-		Paramas explain: 
-			2.extra_operate_function: add an additional operate to the effect cost/target, call extra_operate_function(current list's selected card(s), all above lists's selected card(s),e, tp, eg, ...) to operate.
-		//return list_typ, extra_operate_function
+			2.extra_cost_function/extra_target_function: add an additional cost/target to the effect cost/target, call extra_check_function(e, tp, eg, ..., chk, chkc) .
+		//return list_typ, extra_function
 ]]-- 
 function s.get_cost_or_target_or_operation_paramas(arr, e, tp, eg, ep, ev, re, r, rp)
 	--1.list type  ("Cost", "~Target", "Target","PlayerTarget","Operation","ExtraCheck","ExtraOperation")
@@ -3776,6 +3775,8 @@ function s.do_cost_or_target_or_operation(e, tp, eg, ep, ev, re, r, rp, current_
 		local total_sel_group2 = total_sel_group:Clone()
 		total_sel_group2:Merge(mandatory_group)
 		if need_operate then
+			Scl.Last_Selected_Group:Clear()
+			Scl.Last_Selected_Group:Merge(current_sel_group)
 			if not s.operate_selected_cost_or_operat_objects(mandatory_group, total_sel_group2, category_str, replace_operation, reason, e, tp, eg, ep, ev, re, r, rp) then
 				return false
 			end
