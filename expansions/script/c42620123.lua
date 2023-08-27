@@ -5,14 +5,14 @@ function cm.initial_effect(c)
     --act in hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
-    e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+    e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(cm.handcon)
 	c:RegisterEffect(e2)
     --standby
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
     e1:SetRange(0x01)
     e1:SetCountLimit(1,m)
@@ -22,9 +22,7 @@ function cm.initial_effect(c)
     --standby
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_ACTIVATE)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE)
 	e3:SetCode(EVENT_FREE_CHAIN)
-    e3:SetTarget(cm.actg)
 	e3:SetOperation(cm.acop)
 	c:RegisterEffect(e3)
     if not cm.blue_check then
@@ -45,7 +43,7 @@ function cm.initial_effect(c)
 end
 
 function cm.handcon(e)
-	return Duel.GetFlagEffectLabel(e:GetHandlerPlayer(),m+1)//10>=15
+	return Duel.GetFlagEffectLabel(e:GetHandlerPlayer(),m+1)==1
 end
 
 function cm.opafilter(c)
@@ -54,12 +52,13 @@ end
 
 function cm.adjop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.GetFlagEffect(0,m)==0 then
-        Duel.RegisterFlagEffect(0,m,0,0,1,0)
-        Duel.RegisterFlagEffect(1,m,0,0,1,0)
+        Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1,0)
+        Duel.RegisterFlagEffect(1,m,RESET_PHASE+PHASE_END,0,1,0)
     end
 	if eg:IsExists(cm.opafilter,1,nil) then
         for tc in aux.Next(eg:Filter(cm.opafilter,nil)) do
-            Duel.SetFlagEffectLabel(tc:GetControler(),m,Duel.GetFlagEffectLabel(tc:GetControler(),m)+1)
+            local cp=tc:GetControler()
+            Duel.SetFlagEffectLabel(cp,m,Duel.GetFlagEffectLabel(cp,m)+1)
         end
     end
 end
@@ -68,22 +67,15 @@ function cm.ckdeckop(e,tp,eg,ep,ev,re,r,rp)
     local sg0=Duel.GetFieldGroup(0,0x03,0)
     local sg1=Duel.GetFieldGroup(1,0x03,0)
     if sg0:FilterCount(Card.IsSetCard,nil,0x71)>0 then
-        local n=sg0:FilterCount(Card.IsSetCard,nil,0x71)
-        local per=0
+        local n,per=sg0:FilterCount(Card.IsSetCard,nil,0x71),0
         if (#sg0)/n<=2 then per=1 end
-        Duel.RegisterFlagEffect(0,m+1,0,0,1,10*n+per)
-    else
-        Duel.RegisterFlagEffect(0,m+1,0,0,1,0)
+        Duel.RegisterFlagEffect(0,m+1,0,0,1,per)
     end
     if sg1:FilterCount(Card.IsSetCard,nil,0x71)>0 then
-        local n=sg1:FilterCount(Card.IsSetCard,nil,0x71)
-        local per=0
+        local n,per=sg1:FilterCount(Card.IsSetCard,nil,0x71),0
         if (#sg1)/n<=2 then per=1 end
-        Duel.RegisterFlagEffect(1,m+1,0,0,1,10*n+per)
-    else
-        Duel.RegisterFlagEffect(1,m+1,0,0,1,0)
+        Duel.RegisterFlagEffect(1,m+1,0,0,1,per)
     end
-
     e:Reset()
 end
 
@@ -92,7 +84,7 @@ function cm.consfilter(c)
 end
 
 function cm.stcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.consfilter,tp,0x01,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,0x02,0,1,nil) and Duel.GetFlagEffectLabel(tp,m+1)%10==1
+	return Duel.IsExistingMatchingCard(cm.consfilter,tp,0x01,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,0x02,0,1,nil) and cm.handcon(e)
 end
 
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
@@ -107,15 +99,6 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
             end
         end
     end
-end
-
-function cm.chainlm(e,ep,tp)
-	return tp==ep
-end
-
-function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return true end
-    Duel.SetChainLimit(cm.chainlm)
 end
 
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
@@ -172,11 +155,13 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
 		e1:SetTargetRange(0,1)
+        e1:SetReset(RESET_PHASE+PHASE_END)
 		e1:SetValue(cm.aclimit)
 		Duel.RegisterEffect(e1,tp)
         local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_FIELD)
 		e3:SetCode(EFFECT_CANNOT_INACTIVATE)
+        e3:SetReset(RESET_PHASE+PHASE_END)
 		e3:SetValue(cm.efilter)
 		Duel.RegisterEffect(e3,tp)
 		local e5=e3:Clone()

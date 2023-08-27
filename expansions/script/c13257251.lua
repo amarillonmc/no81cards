@@ -93,8 +93,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,ct,nil,e,tp)
 		if g:GetCount()>0 then
-			Duel.SpecialSummonStep(g,0,tp,tp,false,false,POS_FACEUP)
 			for tc in aux.Next(g) do
+				Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_SET_ATTACK)
