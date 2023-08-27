@@ -36,7 +36,7 @@ function c49811182.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c49811182.filter(c)
-    return c:IsSetCard(1) and c:IsAbleToHand() and c:IsLevelBelow(10) and c:IsType(TYPE_MONSTER)
+    return c:IsSetCard(0x1) and c:IsAbleToHand() and c:IsLevelBelow(10) and c:IsType(TYPE_MONSTER)
 end
 function c49811182.gselect(g)
     return g:GetSum(Card.GetLevel)<=10 and g:GetClassCount(Card.GetCode)==#g
@@ -81,7 +81,7 @@ function c49811182.gthcon(e,tp,eg,ep,ev,re,r,rp)
     return Duel.IsExistingMatchingCard(c49811182.gthfilter1,e:GetHandlerPlayer(),0,LOCATION_MZONE,1,nil) or Duel.IsExistingMatchingCard(c49811182.gthfilter2,e:GetHandlerPlayer(),0,LOCATION_GRAVE,1,nil)
 end
 function c49811182.rfilter(c,e)
-    return c:IsLevelAbove(1) and c:IsSetCard(1) and c:IsAbleToRemoveAsCost()
+    return c:IsLevelAbove(1) and c:IsSetCard(0x1) and c:IsAbleToRemoveAsCost()
 end
 function c49811182.fselect(g,tp)
     Duel.SetSelectedCard(g)
@@ -110,7 +110,7 @@ function c49811182.gthtg(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,c,1,0,0)
 end
 function c49811182.sfilter(c,e,tp)
-    return c:IsSetCard(1) and c:IsSummonable(true,nil)
+    return c:IsSetCard(0x1) and c:IsSummonable(true,nil)
 end
 function c49811182.gthop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()

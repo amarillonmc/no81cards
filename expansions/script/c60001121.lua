@@ -3,7 +3,7 @@ local m=60001121
 local cm=_G["c"..m]
 
 function cm.initial_effect(c)
-	aux.AddSynchroMixProcedure(c,cm.matfilter1,nil,nil,aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),1,99)
+	aux.AddSynchroMixProcedure(c,cm.matfilter1,nil,nil,aux.NonTuner(Card.IsSynchroType,TYPE_SYNCHRO),2,99)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -30,6 +30,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
+	e3:SetCountLimit(1, m)
 	e3:SetCondition(cm.spcon1)
 	e3:SetTarget(cm.sptg1)
 	e3:SetOperation(cm.spop1)
@@ -53,7 +54,7 @@ function cm.matfilter1(c)
 end
 
 function cm.indtg(e,c)
-	return c:IsSetCard(0x62e)
+	return c:IsSetCard(0x62e) and not c:IsCode(m)
 end
 
 function cm.efilter(e,te,ev)

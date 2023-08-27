@@ -20,17 +20,23 @@ function c9910941.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,9910941)
+	e2:SetCountLimit(1,9910942)
+	e2:SetCost(c9910941.thcost)
 	e2:SetTarget(c9910941.thtg)
 	e2:SetOperation(c9910941.thop)
 	c:RegisterEffect(e2)
 end
+function c9910941.tgfilter(c)
+	return c:IsCode(9910947) and c:IsAbleToGraveAsCost()
+end
 function c9910941.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,600) end
-	Duel.PayLPCost(tp,600)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910941.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9910941.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9910941.spfilter(c,e,tp)
-	return c:IsSetCard(0x3954) and c:IsRace(RACE_WARRIOR) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelBelow(6) and c:IsRace(RACE_WARRIOR) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910941.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -84,6 +90,10 @@ function c9910941.disop(e,tp,eg,ep,ev,re,r,rp)
 		if seq==4-tseq then res=true end
 	end
 	return res
+end
+function c9910941.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,600) end
+	Duel.PayLPCost(tp,600)
 end
 function c9910941.thfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3954) and c:IsAbleToHand()

@@ -27,7 +27,8 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_SZONE)  
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)  
 	e3:SetCountLimit(1)  
-	e3:SetCondition(cm.rmcon)  
+  --  e3:SetCondition(cm.rmcon) 
+	e3:SetCost(cm.rmcost)
 	e3:SetTarget(cm.rmtg)  
 	e3:SetOperation(cm.rmop)  
 	c:RegisterEffect(e3) 
@@ -45,12 +46,21 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.thop)  
 	c:RegisterEffect(e4)   
 end
-function cm.cfilter(c)  
-	return c:IsCode(82204200) and c:IsFaceup()  
+--function cm.cfilter(c)  
+--  return c:IsCode(82204200) and c:IsFaceup()  
+--end  
+--function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)  
+--  local tp=e:GetHandler():GetControler()
+--  return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil) 
+--end  
+function cm.rmfilter(c)  
+	return c:IsPosition(POS_FACEUP) and c:IsCode(82204200) and c:IsAbleToGraveAsCost()  
 end  
-function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)  
-	local tp=e:GetHandler():GetControler()
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil) 
+function cm.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)  
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_MZONE,0,1,nil) end  
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)  
+	local g=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_MZONE,0,1,1,nil)  
+	Duel.SendtoGrave(g,REASON_COST)  
 end  
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsAbleToRemove() end  

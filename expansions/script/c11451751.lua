@@ -101,8 +101,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(m,3))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
+		e1:SetCode(EVENT_ADJUST)
+		--e1:SetCountLimit(1)
+		e1:SetLabel(Duel.GetCurrentPhase())
 		e1:SetLabelObject(tc)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		e1:SetCondition(cm.retcon)
@@ -124,5 +125,7 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
+	if Duel.GetCurrentPhase()~=e:GetLabel() then
+		Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
+	end
 end

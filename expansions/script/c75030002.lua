@@ -1,5 +1,12 @@
 --苍炎圣击者 奈菲尼
 function c75030002.initial_effect(c)
+	--cannot be link material
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	e0:SetValue(1)
+	c:RegisterEffect(e0)
 	--SpecialSummon
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY) 

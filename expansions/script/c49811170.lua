@@ -1,10 +1,8 @@
 --煉獄の獄炎機
 function c49811170.initial_effect(c)
-	--splimit
-	c:SetSPSummonOnce(49811170)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,c49811170.matfilter,1,1)
+	aux.AddLinkProcedure(c,c49811170.matfilter,2,2)
 	--extra summon
     local e1=Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(49811171,0))
@@ -39,20 +37,20 @@ function c49811170.initial_effect(c)
     c:RegisterEffect(e3)
 end
 function c49811170.matfilter(c)
-	return c:IsLinkRace(RACE_FIEND)
+	return c:IsLinkRace(RACE_FIEND) and not c:IsSummonableCard()
 end
 function c49811170.cfilter(c)
-    return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_FIEND) and c:IsAbleToGraveAsCost()
+    return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_FIEND) and c:IsAbleToGraveAsCost() and not c:IsSummonableCard()
 end
 function c49811170.spcon(e,c)
     if c==nil then return true end
     local tp=c:GetControler()
-    return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-        and Duel.IsExistingMatchingCard(c49811170.cfilter,tp,LOCATION_HAND,0,1,c)
+    return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+        and Duel.IsExistingMatchingCard(c49811170.cfilter,tp,LOCATION_HAND,0,2,c)
 end
 function c49811170.spop(e,tp,eg,ep,ev,re,r,rp,c)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-    local g=Duel.SelectMatchingCard(tp,c49811170.cfilter,tp,LOCATION_HAND,0,1,1,c)
+    local g=Duel.SelectMatchingCard(tp,c49811170.cfilter,tp,LOCATION_HAND,0,2,2,c)
     Duel.SendtoGrave(g,REASON_COST)
 end
 function c49811170.stcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -84,7 +82,17 @@ function c49811170.stop(e,tp,eg,ep,ev,re,r,rp)
         Duel.BreakEffect()
         if sn<=0 then return end
         Duel.DiscardHand(tp,nil,sn,sn,REASON_EFFECT+REASON_DISCARD)
-    end    
+    end
+    local e1=Effect.CreateEffect(e:GetHandler())
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+    e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+    e1:SetTargetRange(1,0)
+    e1:SetValue(c49811170.aclimit)
+    Duel.RegisterEffect(e1,tp)    
+end
+function c49811170.aclimit(e,re,tp)
+    return not re:GetHandler():IsSetCard(0xc5) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function c49811170.spfilter(c)
     return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0xc5)

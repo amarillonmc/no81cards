@@ -55,22 +55,16 @@ function s.IsLpZone(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLP(0)<=0 or Duel.GetLP(1)<=0
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local sg1=Duel.GetMatchingGroup(s.cfilter,0,LOCATION_SZONE,0,nil)
-	local sg2=Duel.GetMatchingGroup(s.cfilter,1,LOCATION_SZONE,0,nil)
-	if Duel.GetLP(0)<=0 and Duel.GetFlagEffect(0,id)==0 and Duel.SendtoGrave(sg1,REASON_EFFECT+REASON_REPLACE)>0 then
-		Duel.SetLP(0,0)
-		Duel.Hint(HINT_CARD,0,id)
-		Duel.Recover(0,1,REASON_EFFECT)
-		Duel.RegisterFlagEffect(0,id,nil,0,1)
+	for p=0,1 do	
+		if Duel.GetLP(p)<=0 and Duel.GetFlagEffect(p,id)==0 and Duel.SendtoGrave(Duel.GetMatchingGroup(s.cfilter,p,LOCATION_SZONE,0,nil),REASON_EFFECT+REASON_REPLACE)>0 then
+			Duel.SetLP(p,0)
+			Duel.Hint(HINT_CARD,0,id)
+			Duel.Recover(p,1,REASON_EFFECT)
+			Duel.RegisterFlagEffect(p,id,RESET_PHASE+PHASE_END,0,1)
+		end
 	end
-	if Duel.GetLP(1)<=0 and Duel.GetFlagEffect(1,id)==0 and Duel.SendtoGrave(sg2,REASON_EFFECT+REASON_REPLACE)>0 then
-		Duel.SetLP(1,0)
-		Duel.Hint(HINT_CARD,0,id)
-		Duel.Recover(1,1,REASON_EFFECT)
-		Duel.RegisterFlagEffect(1,id,nil,0,1)
-	end
-	Duel.RegisterFlagEffect(0,id+1,nil,0,1)
-	Duel.RegisterFlagEffect(1,id+1,nil,0,1)
+	Duel.RegisterFlagEffect(0,id+1,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(1,id+1,RESET_PHASE+PHASE_END,0,1)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttacker():IsControler(1-tp)

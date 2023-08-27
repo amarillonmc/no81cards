@@ -22,9 +22,12 @@ function c9910623.initial_effect(c)
 	c:RegisterEffect(e2)
 	--switch locations
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e3:SetCountLimit(1,9910622)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e3:SetCondition(c9910623.chcon)
 	e3:SetCost(c9910623.chcost)
 	e3:SetTarget(c9910623.chtg)
 	e3:SetOperation(c9910623.chop)
@@ -56,6 +59,9 @@ function c9910623.thop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
 	e1:SetValue(LOCATION_HAND)
 	c:RegisterEffect(e1)
+end
+function c9910623.chcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c9910623.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,500) end

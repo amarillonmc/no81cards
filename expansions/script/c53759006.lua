@@ -2,6 +2,7 @@ local m=53759006
 local cm=_G["c"..m]
 cm.name="心术对抗域"
 function cm.initial_effect(c)
+	c:SetUniqueOnField(1,0,m)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

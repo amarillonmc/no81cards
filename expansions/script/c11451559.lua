@@ -44,7 +44,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.ffilter(c,fc,sub,mg,sg)
-	return not sg or sg:FilterCount(aux.TRUE,c)==0 or (sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()) and sg:IsExists(Card.IsRace,1,c,c:GetRace()))
+	return c:IsOnField() and (not sg or sg:FilterCount(aux.TRUE,c)==0 or (sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()) and sg:IsExists(Card.IsRace,1,c,c:GetRace())))
 end
 function cm.eqfilter(c)
 	return c:GetFlagEffect(m)~=0
@@ -53,7 +53,7 @@ function cm.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function cm.equipfd(c,tp,tc)
-	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) return true end
+	if tc:IsPosition(POS_FACEUP) then return Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
 	if not Duel.Equip(tp,tc,c,false) then return false end
 	--Add Equip limit
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)

@@ -86,8 +86,9 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 end
 function cm.spfilter(c,ft,e,tp,...)
+	if c:IsCode(m) then return false end
 	if not c:IsSetCard(0x5536) or not c:IsCode(...) then return false end
-	return (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsForbidden() and c:CheckUniqueOnField(tp))
+	return (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) or (c:IsType(TYPE_CONTINUOUS) and not c:IsForbidden() and c:CheckUniqueOnField(tp))
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

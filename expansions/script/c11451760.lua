@@ -86,7 +86,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x9977)
+	return c:IsFaceup() and c:IsRace(RACE_DRAGON) --c:IsSetCard(0x9977)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.spfilter,1,nil)

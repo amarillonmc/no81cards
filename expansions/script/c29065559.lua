@@ -2,66 +2,60 @@
 c29065559.named_with_Arknight=1
 function c29065559.initial_effect(c)
 	aux.AddCodeList(c,29065500)
-	--special summon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(c29065559.hspcon)
-	e1:SetOperation(c29065559.hspop)
-	c:RegisterEffect(e1)
-	--to deck
+	--summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(6616912,0))
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_SUMMON_PROC)
+	e0:SetCondition(c29065559.ntcon)
+	e0:SetOperation(c29065559.ntop)
+	c:RegisterEffect(e0)
+	--
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,19065559)
-	e2:SetTarget(c29065559.drtg)
-	e2:SetOperation(c29065559.drop)
+	e2:SetCountLimit(1,29065559)
+	e2:SetTarget(c29065559.rctg)
+	e2:SetOperation(c29065559.rcop)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 	c29065559.summon_effect=e2
 end
-function c29065559.hspcon(e,c)
+function c29065559.ntcon(e,c,minc)
 	if c==nil then return true end
-	local tp=c:GetControler()
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	return ft>0 and (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST) or Duel.GetFlagEffect(tp,29096814)==1)
+	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
-function c29065559.hspop(e,tp,eg,ep,ev,re,r,rp,c)
-	if Duel.GetFlagEffect(tp,29096814)==1 then
-	Duel.ResetFlagEffect(tp,29096814)
-	else
-	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_EFFECT)
-	end
+function c29065559.ntop(e,tp,eg,ep,ev,re,r,rp,c)
+	--change base attack
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SET_BASE_ATTACK)
+	e1:SetValue(1500)
+	e1:SetReset(RESET_EVENT+0xff0000)
+	c:RegisterEffect(e1)
 end
-function c29065559.filter(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
-		and c:IsAbleToDeck()
+function c29065559.rcfilter(c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function c29065559.checkfilter(c)
+function c29065559.rctg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065559.rcfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
+end
+function c29065559.amyfilter(c)
 	return c:IsFaceup() and c:IsCode(29065500)
 end
-function c29065559.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local draw=Duel.IsExistingMatchingCard(c29065559.checkfilter,tp,LOCATION_ONFIELD,0,1,nil)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29065559.filter,tp,LOCATION_GRAVE,0,1,nil)
-		and (not draw or Duel.IsPlayerCanDraw(tp,1)) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
-	if draw then
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	end
-end
-function c29065559.drop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c29065559.filter),tp,LOCATION_GRAVE,0,1,3,nil)
-	if g:GetCount()>0 and Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0
-		and Duel.IsExistingMatchingCard(c29065559.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(2857636,1)) then
-		Duel.BreakEffect()
-		Duel.ShuffleDeck(tp)
-		Duel.Draw(tp,1,REASON_EFFECT)
+function c29065559.rcop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c29065559.rcfilter),tp,LOCATION_GRAVE,0,1,1,nil)
+	local c=g:GetFirst()
+	if g:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c29065559.amyfilter,tp,LOCATION_MZONE,0,1,nil)  and Duel.SelectOption(tp,1190,1152)==1 then
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		else
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
 	end
 end

@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	--search
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
-	e3:SetCategory(CATEGORY_DRAW+CATEGORY_RECOVER)
+	e3:SetCategory(CATEGORY_RECOVER)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,m)
@@ -50,5 +50,4 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(1-tp,1000,REASON_EFFECT)
-	Duel.Draw(tp,1,REASON_EFFECT)
 end

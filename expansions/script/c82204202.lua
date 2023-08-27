@@ -55,7 +55,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end  
 end  
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)  
-	return re:GetHandler()~=e:GetHandler()
+	return re:GetHandler()~=e:GetHandler() and rp==1-tp
 end  
 function cm.spfilter(c,e,tp)  
 	return (c:IsCode(82204200) or aux.IsCodeListed(c,82204200)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)  

@@ -3,14 +3,13 @@ function c98930018.initial_effect(c)
 	--link Summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xad0),2,2)
 	c:EnableReviveLimit() 
-	--cannot spsummon
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e2:SetRange(LOCATION_EXTRA)
-	e2:SetValue(c98930018.splimit)
-	c:RegisterEffect(e2)  
+	--cannot be link material
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)
 	--draw
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(98930018,0))

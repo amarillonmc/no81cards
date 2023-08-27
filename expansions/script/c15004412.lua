@@ -56,7 +56,7 @@ function cm.cfilter(c,e,tp)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return eg:IsContains(chkc) and cm.cfilter(chkc,e,tp) end
-	if chk==0 then return eg:IsExists(cm.cfilter,1,nil,e,tp) end
+	if chk==0 then return eg:IsExists(cm.cfilter,1,nil,e,tp) and not eg:IsContains(e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=eg:FilterSelect(tp,cm.cfilter,1,1,nil,e,tp)
 	Duel.SetTargetCard(g)

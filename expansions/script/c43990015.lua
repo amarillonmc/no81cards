@@ -2,6 +2,7 @@
 local m=43990015
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	c:SetUniqueOnField(1,0,43990015)
 	aux.AddCodeList(c,43990016)
 	--activate
 	local e0=Effect.CreateEffect(c)
@@ -9,16 +10,16 @@ function cm.initial_effect(c)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
 	--CATEGORY_DISABLE
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_TOGRAVE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_SZONE)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1)
-	e1:SetTarget(c43990015.destg)
-	e1:SetOperation(c43990015.desop)
-	c:RegisterEffect(e1)
+--  local e1=Effect.CreateEffect(c)
+--  e1:SetCategory(CATEGORY_DISABLE+CATEGORY_TOGRAVE)
+--  e1:SetType(EFFECT_TYPE_QUICK_O)
+--  e1:SetCode(EVENT_FREE_CHAIN)
+--  e1:SetRange(LOCATION_SZONE)
+--  e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+--  e1:SetCountLimit(1)
+--  e1:SetTarget(c43990015.destg)
+--  e1:SetOperation(c43990015.desop)
+--  c:RegisterEffect(e1)
 	--Draw
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DRAW+CATEGORY_TOGRAVE+CATEGORY_TODECK)
@@ -35,33 +36,75 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_LEAVE_GRAVE)
 	c:RegisterEffect(e3)  
 	--untarget
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e4:SetTargetRange(LOCATION_MZONE,0)
-	e4:SetTarget(c43990015.atktg)
-	e4:SetValue(1)
-	c:RegisterEffect(e4)
+--  local e4=Effect.CreateEffect(c)
+--  e4:SetType(EFFECT_TYPE_FIELD)
+--  e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+--  e4:SetRange(LOCATION_SZONE)
+--  e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+--  e4:SetTargetRange(LOCATION_MZONE,0)
+ --   e4:SetTarget(c43990015.atktg)
+--  e4:SetValue(1)
+--  c:RegisterEffect(e4)
 	--atkup
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_UPDATE_ATTACK)
-	e5:SetRange(LOCATION_SZONE)
-	e5:SetTargetRange(LOCATION_MZONE,0)
-	e5:SetTarget(c43990015.atktg)
-	e5:SetValue(500)
-	c:RegisterEffect(e5)
+--  local e5=Effect.CreateEffect(c)
+--  e5:SetType(EFFECT_TYPE_FIELD)
+--  e5:SetCode(EFFECT_UPDATE_ATTACK)
+--  e5:SetRange(LOCATION_SZONE)
+--  e5:SetTargetRange(LOCATION_MZONE,0)
+--  e5:SetTarget(c43990015.atktg)
+--  e5:SetValue(500)
+--  c:RegisterEffect(e5)
+	--Draw
+	local e6=Effect.CreateEffect(c)
+	e6:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+CATEGORY_TODECK)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e6:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e6:SetCode(EVENT_LEAVE_FIELD)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetCountLimit(1)
+	e6:SetCondition(c43990015.spcon)
+	e6:SetTarget(c43990015.sptg)
+	e6:SetOperation(c43990015.spop)
+	c:RegisterEffect(e6)
 	
 end
-function c43990015.atktg(e,c)
-	return aux.IsCodeListed(c,43990016) and c:IsFaceup()
+function c43990015.spconf(c,tp)
+	return aux.IsCodeListed(c,43990016) and c:IsPreviousControler(tp)
 end
+function c43990015.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c43990015.spconf,1,nil,tp)
+end
+
 
 function c43990015.tgfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCode(43990016) and c:IsAbleToGrave()
 end
+function c43990015.spfilter(c,e,tp)
+	return aux.IsCodeListed(c,43990016) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c43990015.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c43990015.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c43990015.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function c43990015.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c43990015.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			Duel.BreakEffect()
+			local g=Duel.SelectMatchingCard(tp,c43990015.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+			if g:GetCount()>0 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+			end
+		end
+end
+
+function c43990015.atktg(e,c)
+	return aux.IsCodeListed(c,43990016) and c:IsFaceup()
+end
+
 function c43990015.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(c43990015.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)

@@ -2,6 +2,7 @@
 local m=43990014
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	c:SetUniqueOnField(1,0,43990014)
 	aux.AddCodeList(c,43990016)
 	--activate
 	local e0=Effect.CreateEffect(c)
@@ -9,16 +10,16 @@ function cm.initial_effect(c)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
 	--destroy
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_TOGRAVE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_SZONE)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1)
-	e1:SetTarget(c43990014.destg)
-	e1:SetOperation(c43990014.desop)
-	c:RegisterEffect(e1)
+--  local e1=Effect.CreateEffect(c)
+--  e1:SetCategory(CATEGORY_DESTROY+CATEGORY_TOGRAVE)
+--  e1:SetType(EFFECT_TYPE_QUICK_O)
+--  e1:SetCode(EVENT_FREE_CHAIN)
+ --   e1:SetRange(LOCATION_SZONE)
+--  e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+--  e1:SetCountLimit(1)
+--  e1:SetTarget(c43990014.destg)
+--  e1:SetOperation(c43990014.desop)
+--  c:RegisterEffect(e1)
 	--Draw
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DRAW+CATEGORY_TOGRAVE+CATEGORY_TODECK)
@@ -34,27 +35,90 @@ function cm.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_LEAVE_GRAVE)
 	c:RegisterEffect(e3)  
+	--destroy
+	local e6=Effect.CreateEffect(c)
+	e6:SetCategory(CATEGORY_DESTROY+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_CHAINING)  
+	e6:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetCondition(c43990014.decon)
+	e6:SetTarget(c43990014.detg)
+	e6:SetOperation(c43990014.deop)
+	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetCategory(CATEGORY_DESTROY+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e7:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e7:SetRange(LOCATION_SZONE)
+	e7:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e7:SetCondition(c43990014.decon2)
+	e7:SetTarget(c43990014.detg2)
+	e7:SetOperation(c43990014.deop2)
+	c:RegisterEffect(e7)
 	--untarget
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e4:SetTargetRange(LOCATION_MZONE,0)
-	e4:SetTarget(c43990014.atktg)
-	e4:SetValue(1)
-	c:RegisterEffect(e4)
+--  local e4=Effect.CreateEffect(c)
+--  e4:SetType(EFFECT_TYPE_FIELD)
+--  e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+--  e4:SetRange(LOCATION_SZONE)
+--  e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+--  e4:SetTargetRange(LOCATION_MZONE,0)
+--  e4:SetTarget(c43990014.atktg)
+--  e4:SetValue(1)
+--  c:RegisterEffect(e4)
 	--atkup
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_UPDATE_ATTACK)
-	e5:SetRange(LOCATION_SZONE)
-	e5:SetTargetRange(LOCATION_MZONE,0)
-	e5:SetTarget(c43990014.atktg)
-	e5:SetValue(500)
-	c:RegisterEffect(e5)
+--  local e5=Effect.CreateEffect(c)
+--  e5:SetType(EFFECT_TYPE_FIELD)
+--  e5:SetCode(EFFECT_UPDATE_ATTACK)
+--  e5:SetRange(LOCATION_SZONE)
+--  e5:SetTargetRange(LOCATION_MZONE,0)
+--  e5:SetTarget(c43990014.atktg)
+--  e5:SetValue(500)
+--  c:RegisterEffect(e5)
 	
 end
+function c43990014.decon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and re:IsActiveType(TYPE_MONSTER)
+
+end
+function c43990014.detg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) and Duel.IsExistingMatchingCard(c43990014.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	 Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function c43990014.deop(e,tp,eg,ep,ev,re,r,rp)
+		if re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)~=0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			Duel.BreakEffect()
+			local g=Duel.SelectMatchingCard(tp,c43990014.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+			if g:GetCount()>0 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+			end
+		end
+end
+
+
+function c43990014.decon2(e,tp,eg,ep,ev,re,r,rp)
+	return tp~=Duel.GetTurnPlayer()
+end
+function c43990014.detg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tc=Duel.GetAttacker()
+	if chk==0 then return tc:IsOnField() end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tc,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function c43990014.deop2(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetAttacker()
+		if tc:IsAttackable() and not tc:IsStatus(STATUS_ATTACK_CANCELED) and Duel.Destroy(tc,REASON_EFFECT)~=0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			Duel.BreakEffect()
+			local g=Duel.SelectMatchingCard(tp,c43990014.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+			if g:GetCount()>0 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+			end
+		end
+end
+
 function c43990014.atktg(e,c)
 	return aux.IsCodeListed(c,43990016) and c:IsFaceup()
 end
