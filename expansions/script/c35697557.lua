@@ -39,7 +39,7 @@ function s.counterfilter(c)
 	return not c:IsSummonLocation(LOCATION_EXTRA) or c:IsSetCard(0x104)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(44362883,tp,ACTIVITY_SPSUMMON)==0 end
+	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_SPSUMMON)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
@@ -72,10 +72,10 @@ end
 --function s.activate(e,tp,eg,ep,ev,re,r,rp)
 --  local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
 --  if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
---	  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
---	  local sg=g:Select(tp,1,1,nil)
---	  Duel.SendtoHand(sg,nil,REASON_EFFECT)
---	  Duel.ConfirmCards(1-tp,sg)
+--	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+--	local sg=g:Select(tp,1,1,nil)
+--	Duel.SendtoHand(sg,nil,REASON_EFFECT)
+--	Duel.ConfirmCards(1-tp,sg)
 --  end
 --end
 function s.poscon(e,tp,eg,ep,ev,re,r,rp)
