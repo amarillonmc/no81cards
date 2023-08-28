@@ -53,7 +53,7 @@ function c88888888.filter(c,tp)
 end
 function c88888888.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c88888888.filter(chkc,tp) end
-	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
+	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_SZONE)>-1
 		and Duel.IsExistingTarget(c88888888.filter,tp,LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local x=5-Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_SZONE,nil)
