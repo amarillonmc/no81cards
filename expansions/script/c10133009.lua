@@ -25,7 +25,7 @@ function s.ceop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,s.repop)
 end
 function s.repop(e,tp)
-	rsop.SelectSpecialSummon(1-tp,s.spfilter,1-tp,LOCATION_EXTRA,0,1,1,nil,{},e,1-tp)
+	rsop.SelectSpecialSummon(1-tp,s.spfilter,1-tp,LOCATION_EXTRA,0,1,1,nil,{0,1-tp,1-tp},e,1-tp)
 end
 function s.hint(g,e,tp)
 	Duel.ConfirmCards(1-tp,g)

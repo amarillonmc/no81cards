@@ -132,7 +132,7 @@ end
 -------------------------
 function cm.initial_effect(c)
 	local e2=rsef.QO(c,nil,{m,2},nil,"sp",nil,LOCATION_HAND+LOCATION_MZONE,nil,rsds.cost1,rsop.target2(cm.resetfun,cm.spfilter,"sp",LOCATION_HAND),cm.spop)
-	local e3=rsef.QO(c,nil,{m,4},nil,"atk,def",nil,LOCATION_HAND+LOCATION_MZONE,nil,rsds.cost1,rsop.target2(cm.resetfun,cm.atkfilter,"dum",LOCATION_MZONE,LOCATION_MZONE),cm.atkop)
+	local e3=rsef.QO(c,nil,{m,4},nil,"atk,def","dsp",LOCATION_HAND+LOCATION_MZONE,nil,rsds.cost1,rsop.target(cm.atkfilter,"dum",LOCATION_MZONE,LOCATION_MZONE),cm.atkop)
 	local e4=rsef.FTF(c,EVENT_LEAVE_FIELD,{m,0},nil,"th",nil,LOCATION_REMOVED,cm.embthcon,cm.embthcost,rsop.target(Card.IsAbleToHand,"th"),cm.embthop)
 end
 function cm.recop(e,tp)
@@ -158,7 +158,7 @@ function cm.rmop(e,tp)
 	end
 end
 function cm.atkfilter(c,e,tp)
-	return c:IsFaceup() and (e:GetLabel()~=100 or c~=e:GetHandler()) and c:IsSetCard(0xa335,0xc335)
+	return c:IsFaceup() and ( not e:IsCostChecked() or c~=e:GetHandler())
 end
 function cm.atkop(e,tp)
 	local ct=rsop.SelectSolve(HINTMSG_FACEUP,tp,cm.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,aux.ExceptThisCard(e),cm.solvefun,e,tp)
@@ -166,6 +166,7 @@ end
 function cm.solvefun(g,e,tp)
 	local tc=g:GetFirst()
 	local c=e:GetHandler()
+	Duel.HintSelection(Group.FromCards(tc))
 	local e1,e2=rscf.QuickBuff({c,tc},"atk+,def+",500,"rst",rsreset.est_pend)
 	tc:RegisterFlagEffect(m,rsreset.est_pend-RESET_LEAVE,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,5))
 	local e3,e4=rsef.FV_CANNOT_DISABLE({c,tp},"neg,dise",cm.imval(tc),nil,nil,nil,rsreset.pend)
