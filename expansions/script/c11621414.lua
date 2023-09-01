@@ -63,7 +63,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,1500,300,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
-	Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
+	Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 	if g:GetCount()>0 and Duel.GetFlagEffect(tp,m)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

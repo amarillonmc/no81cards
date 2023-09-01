@@ -75,7 +75,7 @@ end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	local ag=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,aux.ExceptThisCard(e))
+	local ag=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_HAND,0,e:GetHandler())
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
 		ag:Merge(eg)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,ag,2,0,0)
@@ -84,7 +84,7 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,ag,1,0,0)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	local ag=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,aux.ExceptThisCard(e))
+	local ag=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_HAND,0,aux.ExceptThisCard(e))
 	if #ag~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=ag:Select(tp,1,1,nil)
