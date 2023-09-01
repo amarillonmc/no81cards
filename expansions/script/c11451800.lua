@@ -62,7 +62,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 local loc=LOCATION_DECK
 function cm.synfilter(c,syncard,tuner,f)
-	return (c:IsFaceup() or c:IsLocation(loc)) and c:IsCanBeSynchroMaterial(syncard,tuner) and (f==nil or f(c,syncard))
+	return c:IsFaceupEx() and c:IsCanBeSynchroMaterial(syncard,tuner) and (f==nil or f(c,syncard))
 end
 function cm.syncheck(c,g,mg,tp,lv,syncard,minc,maxc)
 	g:AddCard(c)
@@ -85,7 +85,9 @@ function cm.syntg(e,syncard,f,min,max)
 	local lv=syncard:GetLevel()
 	if lv<=c:GetLevel() then return false end
 	local g=Group.FromCards(c)
-	local mg=Duel.GetMatchingGroup(cm.synfilter,tp,LOCATION_MZONE+loc,LOCATION_MZONE,c,syncard,c,f)
+	local mg=Duel.GetSynchroMaterial(tp):Filter(cm.synfilter,c,syncard,c,f)
+	local exg=Duel.GetMatchingGroup(cm.synfilter,tp,LOCATION_DECK,0,c,syncard,c,f)
+	mg:Merge(exg)
 	return mg:IsExists(cm.syncheck,1,g,g,mg,tp,lv,syncard,minc,maxc)
 end
 function cm.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)
@@ -94,7 +96,9 @@ function cm.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)
 	local c=e:GetHandler()
 	local lv=syncard:GetLevel()
 	local g=Group.FromCards(c)
-	local mg=Duel.GetMatchingGroup(cm.synfilter,tp,LOCATION_MZONE+loc,LOCATION_MZONE,c,syncard,c,f)
+	local mg=Duel.GetSynchroMaterial(tp):Filter(cm.synfilter,c,syncard,c,f)
+	local exg=Duel.GetMatchingGroup(cm.synfilter,tp,LOCATION_DECK,0,c,syncard,c,f)
+	mg:Merge(exg)
 	for i=1,maxc do
 		local cg=mg:Filter(cm.syncheck,g,g,mg,tp,lv,syncard,minc,maxc)
 		if cg:GetCount()==0 then break end
