@@ -3,7 +3,7 @@ local cm=_G["c"..m]
 cm.name="纯粹容器 空洞骑士"
 function cm.initial_effect(c)
 	aux.AddCodeList(c,15000351)
-	aux.AddSynchroProcedure(c,aux.Tuner(nil),aux.FilterBoolFunction(Card.IsCode,15000351),1,1)
+	aux.AddSynchroProcedure(c,nil,aux.FilterBoolFunction(Card.IsCode,15000351),1,1)
 	c:EnableReviveLimit()
 	--code
 	local e0=Effect.CreateEffect(c)

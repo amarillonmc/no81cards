@@ -57,11 +57,9 @@ function cm.initial_effect(c)
 	end
 end
 function cm.etg(e,c)
-	e:SetLabelObject(c)
 	return c:GetOriginalCode()==m and c:IsFaceup()
 end
-function cm.efilter(e,te)
-	local c=e:GetLabelObject()
+function cm.efilter(e,te,c)
 	return not te:IsActiveType(c:GetType()&0x7)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
@@ -72,23 +70,25 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x97d) and not c:IsForbidden()
+	return c:IsSetCard(0x97d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsForbidden() and c:IsHasEffect(EFFECT_REMAIN_FIELD)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	local ft=0
-	if not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
+	if not c:IsLocation(LOCATION_SZONE) then ft=1 end
 	local rg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
-	if chk==0 then return #rg>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,rg,1,PLAYER_ALL,LOCATION_ONFIELD)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
+	if #rg>0 then Duel.SetOperationInfo(0,CATEGORY_TOHAND,rg,1,PLAYER_ALL,LOCATION_ONFIELD) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	local rg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 	if ft>0 then
 		local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_HAND,0,nil)
 		if #g>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-			local sg=g:Select(tp,1,math.min(#g,ft,#rg),nil)
+			local sg=g:Select(tp,1,math.min(#g,ft),nil)
 			local dr=0
 			for tc in aux.Next(sg) do
 				if Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then dr=dr+1 end
@@ -97,13 +97,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				local rg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 				if #rg>=dr then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-					local dg=rg:Select(tp,1,dr,nil)
+					local dg=rg:Select(tp,dr,dr,nil)
 					Duel.SendtoHand(dg,nil,REASON_EFFECT)
 				end
 			end
 		end
 	end
-	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
 		Duel.BreakEffect()
 		c:CancelToGrave()

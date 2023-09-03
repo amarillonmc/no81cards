@@ -8,14 +8,14 @@ function cm.initial_effect(c)
 	--destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,m)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetTarget(cm.tg)
-	e1:SetOperation(cm.op)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
 	--draw
 	local e2=Effect.CreateEffect(c)
@@ -35,18 +35,17 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
 end
 function cm.spfilter(c,e,tp)
 	return c:IsLevel(10) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_EFFECT)
-	local ct=Duel.GetOperatedGroup():GetFirst()
-	if ct:IsSetCard(0x412) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,1,nil,e,tp)
-	and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_EFFECT)
+	local tc=Duel.GetOperatedGroup():GetFirst()
+	if tc and tc:IsSetCard(0x412) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,1,nil,e,tp)
+		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
@@ -85,7 +84,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabel()==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-		if g:GetCount()==0 then return end
+		if g:GetCount()>0 then
+			Duel.HintSelection(g)
+			Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+		end
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
@@ -95,6 +97,3 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
-
-

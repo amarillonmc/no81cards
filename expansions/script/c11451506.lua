@@ -37,7 +37,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.filter(c)
-	return c:GetOriginalType()&0x100004==0x100004 and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and not c:IsCode(m) and c:CheckActivateEffect(false,true,false)~=nil
+	return c:GetType()&0x100004==0x100004 and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and not c:IsCode(m) and c:CheckActivateEffect(false,true,false)~=nil
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then

@@ -38,7 +38,7 @@ function cm.cfilter(c,code)
 	return c:IsFaceup() and c:IsCode(code)
 end
 function cm.filter(c,act)
-	return c:IsSetCard(0x97d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode()) and not (act and c:IsCode(m))
+	return c:IsSetCard(0x97d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode()) and not (act and c:IsCode(m)) and not c:IsForbidden() and c:IsHasEffect(EFFECT_REMAIN_FIELD)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end

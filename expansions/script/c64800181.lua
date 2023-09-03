@@ -64,7 +64,7 @@ function cm.eqlimit(e,c)
 	return c==e:GetLabelObject()
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x412) and not c:IsCode(64800181) and c:IsAbleToHand()
+	return c:IsSetCard(0x412) and c:IsType(TYPE_MONSTER) and not c:IsCode(64800181) and c:IsAbleToHand()
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) end

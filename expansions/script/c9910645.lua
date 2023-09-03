@@ -64,9 +64,20 @@ function c9910645.retop(e,tp,eg,ep,ev,re,r,rp)
 	local loc=tc:GetPreviousLocation()
 	if loc==LOCATION_MZONE then
 		Duel.ReturnToField(tc)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(1,1)
+		e1:SetValue(c9910645.aclimit)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
 	end
 	if loc==LOCATION_GRAVE then
 		Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
 	end
 	e:Reset()
+end
+function c9910645.aclimit(e,re,tp)
+	return re:GetHandler():IsOnField() and re:IsHasType(EFFECT_TYPE_SINGLE) and re:GetCode() and re:GetCode()==EVENT_REMOVE
 end
