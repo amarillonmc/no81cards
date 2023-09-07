@@ -1,6 +1,7 @@
 local m=53757005
 local cm=_G["c"..m]
 cm.name="次元秽界 律"
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -65,6 +66,7 @@ function cm.initial_effect(c)
 	e6_1:SetTarget(cm.actarget3)
 	e6_1:SetOperation(cm.repoperation)
 	Duel.RegisterEffect(e6_1,0)
+	SNNM.Global_in_Initial_Reset(c,{e3,e4,e5,e6,e6_1})
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_SINGLE)
 	e7:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)

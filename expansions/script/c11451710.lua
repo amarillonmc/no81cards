@@ -56,6 +56,7 @@ function cm.initial_effect(c)
 					if tc then
 						Duel.Hint(HINT_CARD,0,m)
 						Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+						Duel.ConfirmCards(1-tp,c)
 						_RegisterEffect(tc,e,bool)
 						Duel.Draw(tp,1,REASON_EFFECT)
 						return

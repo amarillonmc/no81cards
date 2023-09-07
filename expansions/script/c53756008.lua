@@ -282,6 +282,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.immval(e,te)
 	local c=e:GetHandler()
+	if not c:IsLocation(LOCATION_FZONE) then return false end
 	local tp=c:GetControler()
 	local eset={c:IsHasEffect(m+50)}
 	local res=te:GetOwner()~=e:GetOwner() and Duel.CheckReleaseGroup(tp,nil,1,nil)
