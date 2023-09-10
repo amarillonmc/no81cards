@@ -81,11 +81,11 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		for tc in aux.Next(g) do
 			tc:CancelToGrave()
 			if (tc:IsType(TYPE_MONSTER) and Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)>0) or Duel.ChangePosition(tc,POS_FACEDOWN)>0 then flag=1 end
-			local loc=0
+			--[[local loc=0
 			if tc:IsType(TYPE_FIELD) then loc=LOCATION_FZONE
 			elseif tc:IsType(TYPE_SPELL+TYPE_TRAP) then loc=LOCATION_SZONE end
-			if tc:GetOriginalType()&TYPE_MONSTER==0 and tc:IsLocation(LOCATION_MZONE) then Duel.MoveToField(tc,tp,tp,loc,POS_FACEDOWN,false) end
-			if tc:IsType(TYPE_SPELL+TYPE_TRAP) then setg:AddCard(tc) end
+			if tc:GetOriginalType()&TYPE_MONSTER==0 and tc:IsLocation(LOCATION_MZONE) then Duel.MoveToField(tc,tp,tp,loc,POS_FACEDOWN,false) end--]]
+			if tc:IsType(TYPE_SPELL+TYPE_TRAP) and tc:IsFacedown() then setg:AddCard(tc) end
 		end
 		if #setg>0 then
 			setg:KeepAlive()

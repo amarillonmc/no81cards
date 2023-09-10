@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetTarget(cm.psptg)
 	e2:SetOperation(cm.pspop)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	--only
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -42,14 +42,14 @@ function cm.seqfilter(c)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local tg=Duel.GetMatchingGroup(cm.seqfilter,tp,LOCATION_SZONE,0,nil)
+	local tg=Duel.GetMatchingGroup(cm.seqfilter,tp,LOCATION_SZONE,0,nil,tp)
 	local num=0
 	if Duel.CheckLocation(tp,LOCATION_PZONE,0) then num=num+1 end
 	if Duel.CheckLocation(tp,LOCATION_PZONE,1) then num=num+1 end
 	if chk==0 then return (#Group.__band(tg,eg)>0 or num>0) and eg:IsExists(cm.repfilter,1,c,tp) end
 	local g=eg:Filter(cm.repfilter,c,tp)
 	if Duel.GetFlagEffect(tp,m)~=0 then return false end
-	Duel.HintSelection(g)
+	if g:IsExists(Card.IsOnField,1,nil) then Duel.HintSelection(g) end
 	if not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then return false end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	if #g>1 then
@@ -76,7 +76,17 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		for tc in aux.Next(g) do
 			Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 		end
-		Duel.RaiseSingleEvent(c,EVENT_CUSTOM+m,e,fid,0,0,0)
+		local e2=Effect.CreateEffect(c)
+		e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+		e2:SetCode(EVENT_CUSTOM+m)
+		e2:SetLabel(fid)
+		e2:SetProperty(EFFECT_FLAG_DELAY)
+		e2:SetTarget(cm.psptg)
+		e2:SetOperation(cm.pspop)
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e2,tp)
+		Duel.RaiseEvent(c,EVENT_CUSTOM+m,e,fid,0,0,0)
 	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,3))
@@ -97,7 +107,17 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(g) do
 		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
-	Duel.RaiseSingleEvent(c,EVENT_CUSTOM+m,e,fid,0,0,0)
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_CUSTOM+m)
+	e2:SetLabel(fid)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetTarget(cm.psptg)
+	e2:SetOperation(cm.pspop)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+	Duel.RaiseEvent(c,EVENT_CUSTOM+m,e,fid,0,0,0)
 end
 function cm.PConditionFilter(c,e,tp,lscale,rscale,eset)
 	local lv=0
@@ -113,7 +133,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local c=e:GetHandler()
 		local ph=Duel.GetCurrentPhase()
-		if not r or r~=c:GetFieldID() or ph==PHASE_DAMAGE or ph==PHASE_DAMAGE_CAL then return false end
+		if not r or r~=e:GetLabel() or ph==PHASE_DAMAGE or ph==PHASE_DAMAGE_CAL then return false end
 		local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
 		local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
 		if rpz==nil or lpz==nil then return false end
@@ -124,8 +144,12 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
 		if Duel.GetLocationCountFromEx(tp)>0 then loc=loc+LOCATION_EXTRA end
 		if loc==0 then return false end
-		local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,loc,0,nil,0x97c)
-		return g:IsExists(cm.PConditionFilter,1,nil,e,tp,lscale,rscale,nil)
+		local g=Duel.GetMatchingGroup(nil,tp,loc,0,nil)
+		local _PendulumChecklist=aux.PendulumChecklist
+		aux.PendulumChecklist=0
+		local res=g:IsExists(aux.PConditionFilter,1,nil,e,tp,lscale,rscale,nil)
+		aux.PendulumChecklist=_PendulumChecklist
+		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
@@ -146,14 +170,25 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	if ft1>0 then loc=loc|LOCATION_HAND end
 	if ft2>0 then loc=loc|LOCATION_EXTRA end
 	if loc==0 then return false end
-	local tg=Duel.GetMatchingGroup(Card.IsSetCard,tp,loc,0,nil,0x97c)
-	tg=tg:Filter(cm.PConditionFilter,nil,e,tp,lscale,rscale,nil)
+	local tg=Duel.GetMatchingGroup(nil,tp,loc,0,nil)
+	local _PendulumChecklist=aux.PendulumChecklist
+	aux.PendulumChecklist=0
+	tg=tg:Filter(aux.PConditionFilter,nil,e,tp,lscale,rscale,nil)
+	aux.PendulumChecklist=_PendulumChecklist
 	if #tg==0 then return false end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=tg:SelectSubGroup(tp,aux.PendOperationCheck,false,1,1,ft1,ft2,ft)
+	aux.GCheckAdditional=Auxiliary.PendOperationCheck(ft1,ft2,ft)
+	local g=tg:SelectSubGroup(tp,aux.TRUE,true,1,1)
+	aux.GCheckAdditional=nil
 	if not g then return end
 	Duel.HintSelection(Group.FromCards(lpz))
 	Duel.HintSelection(Group.FromCards(rpz))
+	--[[for tc in aux.Next(g) do
+		local bool=aux.PendulumSummonableBool(tc)
+		Duel.SpecialSummonStep(tc,SUMMON_TYPE_PENDULUM,tp,tp,bool,bool,POS_FACEUP)
+	end
+	Duel.SpecialSummonComplete()
+	for tc in aux.Next(g) do tc:CompleteProcedure() end--]]
 	local tc=g:GetFirst()
 	if not tc.pendulum_rule then
 		local e1=Effect.CreateEffect(tc)

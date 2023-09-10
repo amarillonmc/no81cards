@@ -1,7 +1,6 @@
 --块斩机 算子汉密尔顿
 --21.08.08
-local m=11451605
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,4,1,nil,nil,99)
@@ -67,6 +66,7 @@ function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 			e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+			e1:SetTarget(aux.xyzlimit)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			e1:SetTargetRange(1,0)
 			Duel.RegisterEffect(e1,tp)

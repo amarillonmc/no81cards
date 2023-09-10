@@ -67,6 +67,24 @@ function cm.initial_effect(c)
 	e11:SetTarget(cm.actarget)
 	e11:SetOperation(cm.costop)
 	c:RegisterEffect(e11)
+	if not cm.global_check then
+		cm.global_check=true
+		cm.activate_sequence={}
+		local _GetActivateLocation=Effect.GetActivateLocation
+		local _GetActivateSequence=Effect.GetActivateSequence
+		function Effect.GetActivateLocation(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return LOCATION_SZONE
+			end
+			return _GetActivateLocation(e)
+		end
+		function Effect.GetActivateSequence(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return cm.activate_sequence[e]
+			end
+			return _GetActivateSequence(e)
+		end
+	end
 end
 function cm.filter(c,event)
 	if not (c:IsCanOverlay(tp) and c:GetType()&0x100004==0x100004) then return false end
@@ -131,6 +149,7 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=te:GetTarget()
 		local op=te:GetOperation()
 		local e1=Effect.CreateEffect(oc)
+		e1:SetDescription(aux.Stringid(m,0))
 		e1:SetCategory(te:GetCategory())
 		e1:SetType(EFFECT_TYPE_ACTIVATE)
 		e1:SetCode(EVENT_CHAINING)
@@ -161,6 +180,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	local tc=te:GetHandler()
 	Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	cm.activate_sequence[te]=tc:GetSequence()
 	e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	tc:CreateEffectRelation(te)
 	local c=e:GetHandler()
@@ -168,7 +188,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -180,7 +200,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then

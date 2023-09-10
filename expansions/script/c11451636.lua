@@ -18,6 +18,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	local e3=e1:Clone()
+	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetRange(LOCATION_DECK)
 	e3:SetCondition(cm.condition)
 	e3:SetCost(cm.cost)
@@ -32,6 +33,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.costop)
 	c:RegisterEffect(e4)
 	local e5=e1:Clone()
+	e5:SetDescription(aux.Stringid(m,0))
 	e5:SetRange(LOCATION_GRAVE)
 	e5:SetCost(cm.cost2)
 	c:RegisterEffect(e5)
@@ -48,6 +50,24 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.actg)
 	e2:SetOperation(cm.actop)
 	c:RegisterEffect(e2)
+	if not cm.global_check then
+		cm.global_check=true
+		cm.activate_sequence={}
+		local _GetActivateLocation=Effect.GetActivateLocation
+		local _GetActivateSequence=Effect.GetActivateSequence
+		function Effect.GetActivateLocation(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return LOCATION_SZONE
+			end
+			return _GetActivateLocation(e)
+		end
+		function Effect.GetActivateSequence(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return cm.activate_sequence[e]
+			end
+			return _GetActivateSequence(e)
+		end
+	end
 end
 function cm.handcon(e)
 	local tp=e:GetHandlerPlayer()
@@ -78,16 +98,17 @@ function cm.actarget(e,te,tp)
 	return te:GetHandler()==e:GetHandler() and te:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local te=e:GetLabelObject()
 	Duel.DisableShuffleCheck()
 	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
-	local te=e:GetLabelObject()
-	e:GetHandler():CreateEffectRelation(te)
-	local c=e:GetHandler()
+	cm.activate_sequence[te]=c:GetSequence()
+	c:CreateEffectRelation(te)
 	local ev0=Duel.GetCurrentChain()+1
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -99,7 +120,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then

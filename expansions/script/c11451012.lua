@@ -67,6 +67,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 	if not cm.global_check then
 		cm.global_check=true
+		cm.activate_sequence={}
 		local ge0=Effect.CreateEffect(c)
 		ge0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -75,9 +76,12 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge0,0)
 		local _IsActiveType=Effect.IsActiveType
 		local _GetActiveType=Effect.GetActiveType
+		local _GetActivateLocation=Effect.GetActivateLocation
+		local _GetActivateSequence=Effect.GetActivateSequence
+		local _GetChainInfo=Duel.GetChainInfo
+		local _NegateActivation=Duel.NegateActivation
 		function Effect.GetActiveType(e)
-			local cost=e:GetCost()
-			if cost and cost==cm.cost then
+			if e:GetDescription()==aux.Stringid(m,0) then
 				return TYPE_TRAP
 			end
 			return _GetActiveType(e)
@@ -85,6 +89,54 @@ function cm.initial_effect(c)
 		function Effect.IsActiveType(e,typ)
 			local typ2=e:GetActiveType()
 			return typ&typ2~=0
+		end
+		function Effect.GetActivateLocation(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return LOCATION_MZONE
+			end
+			return _GetActivateLocation(e)
+		end
+		function Effect.GetActivateSequence(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return cm.activate_sequence[e]
+			end
+			return _GetActivateSequence(e)
+		end
+		function Duel.GetChainInfo(ev,...)
+			local ext_params={...}
+			if #ext_params==0 then return _GetChainInfo(ev,...) end
+			local re=_GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			if aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if re:GetDescription()==aux.Stringid(m,0) then
+					local res={}
+					for _,ci in ipairs(ext_params) do
+						if ci==CHAININFO_TYPE or ci==CHAININFO_EXTTYPE then
+							res[#res+1]=TYPE_TRAP
+						else
+							res[#res+1]=_GetChainInfo(ev,ci)
+						end
+					end
+					return table.unpack(res)
+				end
+			end
+			return _GetChainInfo(ev,...)
+		end
+		function Duel.NegateActivation(ev)
+			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			if aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if re:GetDescription()==aux.Stringid(m,0) then
+					--tograve
+					local e1=Effect.CreateEffect(rc)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_CANNOT_TO_DECK)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					rc:RegisterEffect(e1)
+					return _NegateActivation(ev)
+				end
+			end
+			return _NegateActivation(ev)
 		end
 	end
 end
@@ -127,6 +179,8 @@ function cm.tdfilter(c,lab)
 	return c:IsLocation(LOCATION_DECK) and fid and fid==lab
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	--Debug.Message(Duel.GetChainInfo(0,CHAININFO_EXTTYPE))
+	--Debug.Message(Duel.GetChainInfo(0,CHAININFO_TRIGGERING_LOCATION))
 	local c=e:GetHandler()
 	local g0=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	Duel.ConfirmCards(tp,g0)
@@ -195,6 +249,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	Duel.MoveToField(c,tp,tp,LOCATION_MZONE,POS_FACEUP,false)
+	cm.activate_sequence[te]=c:GetSequence()
 	c:CreateEffectRelation(te)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -210,7 +265,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -221,38 +276,24 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 	--control
 	local e3=Effect.CreateEffect(c)
-	e3:SetCode(EFFECT_CANNOT_CHANGE_CONTROL)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
-	c:RegisterEffect(e3,true)
-	local e4=e2:Clone()
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetLabelObject(e2)
-	e4:SetOperation(function(e) e:GetLabelObject():Reset() end)
-	Duel.RegisterEffect(e4,tp)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_SET_CONTROL)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetLabel(c:GetFieldID())
+	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e3:SetTarget(function(se,sc) return se:GetLabel()==sc:GetFieldID() end)
+	e3:SetValue(tp)
+	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+	Duel.RegisterEffect(e3,tp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
-		if KOISHI_CHECK then
-			rc:SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_EFFECT)
-			local e2=Effect.CreateEffect(rc)
-			e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-			e2:SetCode(EVENT_MOVE)
-			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e2:SetOperation(function(e)
-				rc:SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_EFFECT+TYPE_PENDULUM)
-				e:Reset()
-			end)
-			rc:RegisterEffect(e2)
-		end
 	end
 	re:Reset()
 end
@@ -302,7 +343,10 @@ function cm.geop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	cm[0]=Duel.CreateToken(0,m)
 	cm[1]=Duel.CreateToken(1,m)
-	cm[0]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
-	cm[1]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+	if KOISHI_CHECK then
+		cm[0]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+		cm[1]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+	end
+	--Duel.SendtoHand(cm[1],0,REASON_EFFECT)
 	e:Reset()
 end

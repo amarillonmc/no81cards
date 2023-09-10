@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
@@ -54,21 +55,40 @@ function cm.initial_effect(c)
 	if not CONVIATRESS_BUFF then
 		CONVIATRESS_BUFF={}
 	end
+	if not cm.global_check then
+		cm.global_check=true
+		cm.activate_sequence={}
+		local _GetActivateLocation=Effect.GetActivateLocation
+		local _GetActivateSequence=Effect.GetActivateSequence
+		function Effect.GetActivateLocation(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return LOCATION_SZONE
+			end
+			return _GetActivateLocation(e)
+		end
+		function Effect.GetActivateSequence(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return cm.activate_sequence[e]
+			end
+			return _GetActivateSequence(e)
+		end
+	end
 end
 function cm.actarget(e,te,tp)
 	e:SetLabelObject(te)
 	return te:GetHandler()==e:GetHandler()
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
-	local te=e:GetLabelObject()
-	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
-	e:GetHandler():CreateEffectRelation(te)
 	local c=e:GetHandler()
+	local te=e:GetLabelObject()
+	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	cm.activate_sequence[te]=c:GetSequence()
+	c:CreateEffectRelation(te)
 	local ev0=Duel.GetCurrentChain()+1
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -77,6 +97,15 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_CHAIN_NEGATED)
 	Duel.RegisterEffect(e2,tp)
+end
+function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+	end
 end
 function cm.costcon(e)
 	cm[0]=false
@@ -182,15 +211,6 @@ function cm.imfilter(e,re)
 		i=i+1
 	end
 	return false
-end
-function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
-		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
-	end
-	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
-		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
-	end
 end
 function cm.filter(c,tp)
 	return (c:IsRace(RACE_WARRIOR) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()) or (c:IsCode(m+1) and c:GetActivateEffect():IsActivatable(tp))

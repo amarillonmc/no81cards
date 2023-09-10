@@ -84,7 +84,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			e2:SetAbsoluteRange(tp,1,0)
 			e2:SetTarget(function(e,c) return not c:IsRace(RACE_INSECT) end)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2,true)
+			--tc:RegisterEffect(e2,true)
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
 			tc=g:GetNext()
 		end

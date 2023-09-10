@@ -11,6 +11,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
+	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(cm.condition)
 	e2:SetCost(cm.cost)
@@ -31,21 +32,40 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_TO_GRAVE)
 	e5:SetOperation(cm.chkop)
 	c:RegisterEffect(e5)
+	if not cm.global_check then
+		cm.global_check=true
+		cm.activate_sequence={}
+		local _GetActivateLocation=Effect.GetActivateLocation
+		local _GetActivateSequence=Effect.GetActivateSequence
+		function Effect.GetActivateLocation(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return LOCATION_SZONE
+			end
+			return _GetActivateLocation(e)
+		end
+		function Effect.GetActivateSequence(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return cm.activate_sequence[e]
+			end
+			return _GetActivateSequence(e)
+		end
+	end
 end
 function cm.actarget(e,te,tp)
 	e:SetLabelObject(te)
 	return te:GetHandler()==e:GetHandler()
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
-	local te=e:GetLabelObject()
-	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
-	e:GetHandler():CreateEffectRelation(te)
 	local c=e:GetHandler()
+	local te=e:GetLabelObject()
+	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	cm.activate_sequence[te]=c:GetSequence()
+	c:CreateEffectRelation(te)
 	local ev0=Duel.GetCurrentChain()+1
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -57,7 +77,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
@@ -107,169 +127,191 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 		tc:RegisterEffect(e1,true)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
-		e2:SetCode(EVENT_LEAVE_FIELD_P)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e2:SetOperation(cm.efop1)
-		local e3=Effect.CreateEffect(e:GetHandler())
-		e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
-		e3:SetCode(EVENT_BE_MATERIAL)
-		e3:SetOperation(cm.efop2)
-		e2:SetLabelObject(e3)
-		e3:SetLabelObject(e2)
-		tc:RegisterEffect(e2,true)
-		tc:RegisterEffect(e3,true)
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_DELAY)
-		e4:SetCode(EVENT_MOVE)
-		e4:SetLabelObject(e3)
-		e4:SetOperation(cm.resop2)
-		tc:RegisterEffect(e4,true)
-		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+		tc:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	end
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
+	e2:SetCode(EVENT_LEAVE_FIELD_P)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	e2:SetOperation(cm.efop1)
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(e:GetHandler())
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
+	e3:SetCode(EVENT_BE_MATERIAL)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	e3:SetOperation(cm.efop2)
+	Duel.RegisterEffect(e3,tp)
+	--[[local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
+	e2:SetCode(EVENT_LEAVE_FIELD_P)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e2:SetOperation(cm.efop1)
+	local e3=Effect.CreateEffect(e:GetHandler())
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
+	e3:SetCode(EVENT_BE_MATERIAL)
+	e3:SetOperation(cm.efop2)
+	e2:SetLabelObject(e3)
+	e3:SetLabelObject(e2)
+	tc:RegisterEffect(e2,true)
+	tc:RegisterEffect(e3,true)
+	local e4=Effect.CreateEffect(e:GetHandler())
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_DELAY)
+	e4:SetCode(EVENT_MOVE)
+	e4:SetLabelObject(e3)
+	e4:SetOperation(cm.resop2)
+	tc:RegisterEffect(e4,true)--]]
+end
+function cm.flfilter(c)
+	return c:GetOriginalType()&TYPE_MONSTER>0
 end
 function cm.efop1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ref=c:GetReasonEffect()
-	if not ((c:IsReason(REASON_COST) or c:IsReason(REASON_MATERIAL)) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC) then return end
-	local rc=ref:GetHandler()
-	if not rc then return end
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_ADD_TYPE)
-	e0:SetValue(TYPE_EFFECT)
-	e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
-	local ab=c:GetOriginalAttribute()
-	if bit.band(ab,ATTRIBUTE_EARTH+ATTRIBUTE_WIND)~=0 and rc:GetFlagEffect(m)==0 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(aux.Stringid(m,1))
-		e1:SetCategory(CATEGORY_DESTROY)
-		e1:SetType(EFFECT_TYPE_QUICK_O)
-		e1:SetCode(EVENT_CHAINING)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetCountLimit(1)
-		e1:SetCondition(cm.descon)
-		e1:SetTarget(cm.destg)
-		e1:SetOperation(cm.desop)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
-		rc:RegisterEffect(e1,true)
-		if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
-		rc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+	local g=eg:Filter(cm.flfilter,nil)
+	for c in aux.Next(g) do
+		local ref=c:GetReasonEffect()
+		if not ((c:IsLocation(LOCATION_SZONE) and c:IsReason(REASON_COST) or c:IsReason(REASON_MATERIAL)) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC) then return end
+		local rc=ref:GetHandler()
+		if not rc then return end
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_SINGLE)
+		e0:SetCode(EFFECT_ADD_TYPE)
+		e0:SetValue(TYPE_EFFECT)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+		local ab=c:GetOriginalAttribute()
+		if bit.band(ab,ATTRIBUTE_EARTH+ATTRIBUTE_WIND)~=0 and rc:GetFlagEffect(m)==0 then
+			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(m,1))
+			e1:SetCategory(CATEGORY_DESTROY)
+			e1:SetType(EFFECT_TYPE_QUICK_O)
+			e1:SetCode(EVENT_CHAINING)
+			e1:SetRange(LOCATION_MZONE)
+			e1:SetCountLimit(1)
+			e1:SetCondition(cm.descon)
+			e1:SetTarget(cm.destg)
+			e1:SetOperation(cm.desop)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+			rc:RegisterEffect(e1,true)
+			if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
+			rc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+		end
+		if bit.band(ab,ATTRIBUTE_WATER+ATTRIBUTE_FIRE)~=0 and rc:GetFlagEffect(m+1)==0 then
+			local e2=Effect.CreateEffect(c)
+			e2:SetDescription(aux.Stringid(m,2))
+			e2:SetCategory(CATEGORY_DRAW)
+			e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+			e2:SetProperty(EFFECT_FLAG_DELAY)
+			e2:SetCode(EVENT_BATTLE_DESTROYING)
+			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			--e2:SetCountLimit(1)
+			e2:SetCondition(cm.drcon1)
+			e2:SetTarget(cm.drtg)
+			e2:SetOperation(cm.drop)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+			rc:RegisterEffect(e2,true)
+			local e3=e2:Clone()
+			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+			e3:SetCode(EVENT_DESTROYED)
+			e3:SetRange(LOCATION_MZONE)
+			e3:SetCondition(cm.drcon2)
+			rc:RegisterEffect(e3,true)
+			if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
+			rc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+		end
+		if bit.band(ab,ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)~=0 and rc:GetFlagEffect(m+2)==0 then
+			local e5=Effect.CreateEffect(c)
+			e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e5:SetRange(LOCATION_MZONE)
+			e5:SetCode(EVENT_CHAINING)
+			e5:SetCondition(cm.discon)
+			e5:SetOperation(cm.disop)
+			e5:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+			rc:RegisterEffect(e5,true)
+			if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
+			rc:RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
+		end
+		c:ResetFlagEffect(m-1)
 	end
-	if bit.band(ab,ATTRIBUTE_WATER+ATTRIBUTE_FIRE)~=0 and rc:GetFlagEffect(m+1)==0 then
-		local e2=Effect.CreateEffect(c)
-		e2:SetDescription(aux.Stringid(m,2))
-		e2:SetCategory(CATEGORY_DRAW)
-		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-		e2:SetProperty(EFFECT_FLAG_DELAY)
-		e2:SetCode(EVENT_BATTLE_DESTROYING)
-		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		--e2:SetCountLimit(1)
-		e2:SetCondition(cm.drcon1)
-		e2:SetTarget(cm.drtg)
-		e2:SetOperation(cm.drop)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
-		rc:RegisterEffect(e2,true)
-		local e3=e2:Clone()
-		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-		e3:SetCode(EVENT_DESTROYED)
-		e3:SetRange(LOCATION_MZONE)
-		e3:SetCondition(cm.drcon2)
-		rc:RegisterEffect(e3,true)
-		if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
-		rc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
-	end
-	if bit.band(ab,ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)~=0 and rc:GetFlagEffect(m+2)==0 then
-		local e5=Effect.CreateEffect(c)
-		e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e5:SetRange(LOCATION_MZONE)
-		e5:SetCode(EVENT_CHAINING)
-		e5:SetCondition(cm.discon)
-		e5:SetOperation(cm.disop)
-		e5:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
-		rc:RegisterEffect(e5,true)
-		if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
-		rc:RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
-	end
-	c:ResetFlagEffect(0)
-	local te=e:GetLabelObject()
-	if te~=nil and aux.GetValueType(te)=="Effect" then te:Reset() end
-	e:Reset()
+	--local te=e:GetLabelObject()
+	--if te~=nil and aux.GetValueType(te)=="Effect" then te:Reset() end
+	--e:Reset()
 end
 function cm.efop2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local rc=c:GetReasonCard()
-	if eg~=nil then
-		rc=eg:GetFirst()
-		local ref=rc:GetReasonEffect()
-		if not (ref and ref==c:GetReasonEffect()) then return end
+	local g=eg:Filter(cm.flfilter,nil)
+	for c in aux.Next(g) do
+		if not c:IsPreviousLocation(LOCATION_SZONE) then return end
+		local rc=c:GetReasonCard()
+		if eg~=nil then
+			rc=eg:GetFirst()
+			local ref=rc:GetReasonEffect()
+			if not (ref and ref==c:GetReasonEffect()) then return end
+		end
+		if not rc then return end
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_SINGLE)
+		e0:SetCode(EFFECT_ADD_TYPE)
+		e0:SetValue(TYPE_EFFECT)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
+		local ab=c:GetOriginalAttribute()
+		if bit.band(ab,ATTRIBUTE_EARTH+ATTRIBUTE_WIND)~=0 and rc:GetFlagEffect(m)==0 then
+			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(m,1))
+			e1:SetCategory(CATEGORY_DESTROY)
+			e1:SetType(EFFECT_TYPE_QUICK_O)
+			e1:SetCode(EVENT_CHAINING)
+			e1:SetRange(LOCATION_MZONE)
+			e1:SetCountLimit(1)
+			e1:SetCondition(cm.descon)
+			e1:SetTarget(cm.destg)
+			e1:SetOperation(cm.desop)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			rc:RegisterEffect(e1,true)
+			if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
+			rc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+		end
+		if bit.band(ab,ATTRIBUTE_WATER+ATTRIBUTE_FIRE)~=0 and rc:GetFlagEffect(m+1)==0 then
+			local e2=Effect.CreateEffect(c)
+			e2:SetDescription(aux.Stringid(m,2))
+			e2:SetCategory(CATEGORY_DRAW)
+			e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+			e2:SetProperty(EFFECT_FLAG_DELAY)
+			e2:SetCode(EVENT_BATTLE_DESTROYING)
+			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e2:SetCountLimit(1)
+			e2:SetCondition(cm.drcon1)
+			e2:SetTarget(cm.drtg)
+			e2:SetOperation(cm.drop)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			rc:RegisterEffect(e2,true)
+			local e3=e2:Clone()
+			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+			e3:SetCode(EVENT_DESTROYED)
+			e3:SetRange(LOCATION_MZONE)
+			e3:SetCondition(cm.drcon2)
+			rc:RegisterEffect(e3,true)
+			if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
+			rc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+		end
+		if bit.band(ab,ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)~=0 and rc:GetFlagEffect(m+2)==0 then
+			local e5=Effect.CreateEffect(c)
+			e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e5:SetRange(LOCATION_MZONE)
+			e5:SetCode(EVENT_CHAINING)
+			e5:SetCondition(cm.discon)
+			e5:SetOperation(cm.disop)
+			e5:SetReset(RESET_EVENT+RESETS_STANDARD)
+			rc:RegisterEffect(e5,true)
+			if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
+			rc:RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
+		end
+		c:ResetFlagEffect(m-1)
 	end
-	if not rc then return end
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_ADD_TYPE)
-	e0:SetValue(TYPE_EFFECT)
-	e0:SetReset(RESET_EVENT+RESETS_STANDARD)
-	local ab=c:GetOriginalAttribute()
-	if bit.band(ab,ATTRIBUTE_EARTH+ATTRIBUTE_WIND)~=0 and rc:GetFlagEffect(m)==0 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(aux.Stringid(m,1))
-		e1:SetCategory(CATEGORY_DESTROY)
-		e1:SetType(EFFECT_TYPE_QUICK_O)
-		e1:SetCode(EVENT_CHAINING)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetCountLimit(1)
-		e1:SetCondition(cm.descon)
-		e1:SetTarget(cm.destg)
-		e1:SetOperation(cm.desop)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		rc:RegisterEffect(e1,true)
-		if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
-		rc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
-	end
-	if bit.band(ab,ATTRIBUTE_WATER+ATTRIBUTE_FIRE)~=0 and rc:GetFlagEffect(m+1)==0 then
-		local e2=Effect.CreateEffect(c)
-		e2:SetDescription(aux.Stringid(m,2))
-		e2:SetCategory(CATEGORY_DRAW)
-		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-		e2:SetProperty(EFFECT_FLAG_DELAY)
-		e2:SetCode(EVENT_BATTLE_DESTROYING)
-		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e2:SetCountLimit(1)
-		e2:SetCondition(cm.drcon1)
-		e2:SetTarget(cm.drtg)
-		e2:SetOperation(cm.drop)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		rc:RegisterEffect(e2,true)
-		local e3=e2:Clone()
-		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-		e3:SetCode(EVENT_DESTROYED)
-		e3:SetRange(LOCATION_MZONE)
-		e3:SetCondition(cm.drcon2)
-		rc:RegisterEffect(e3,true)
-		if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
-		rc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
-	end
-	if bit.band(ab,ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)~=0 and rc:GetFlagEffect(m+2)==0 then
-		local e5=Effect.CreateEffect(c)
-		e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e5:SetRange(LOCATION_MZONE)
-		e5:SetCode(EVENT_CHAINING)
-		e5:SetCondition(cm.discon)
-		e5:SetOperation(cm.disop)
-		e5:SetReset(RESET_EVENT+RESETS_STANDARD)
-		rc:RegisterEffect(e5,true)
-		if not rc:IsType(TYPE_EFFECT) then rc:RegisterEffect(e0,true) end
-		rc:RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
-	end
-	c:ResetFlagEffect(0)
-	local te=e:GetLabelObject()
-	if te~=nil and aux.GetValueType(te)=="Effect" then te:Reset() end
-	e:Reset()
+	--local te=e:GetLabelObject()
+	--if te~=nil and aux.GetValueType(te)=="Effect" then te:Reset() end
+	--e:Reset()
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)

@@ -12,11 +12,16 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_EXTRA+LOCATION_SZONE)
+	e1:SetRange(LOCATION_SZONE)
 	e1:SetLabelObject(e0)
+	--e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+	local e3=e1:Clone()
+	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetRange(LOCATION_EXTRA)
+	c:RegisterEffect(e3)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_ACTIVATE_COST)
@@ -35,6 +40,24 @@ function cm.initial_effect(c)
 	e5:SetRange(0xff)
 	e5:SetValue(TYPE_FUSION)
 	c:RegisterEffect(e5)
+	if not cm.global_check then
+		cm.global_check=true
+		cm.activate_sequence={}
+		local _GetActivateLocation=Effect.GetActivateLocation
+		local _GetActivateSequence=Effect.GetActivateSequence
+		function Effect.GetActivateLocation(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return LOCATION_SZONE
+			end
+			return _GetActivateLocation(e)
+		end
+		function Effect.GetActivateSequence(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return cm.activate_sequence[e]
+			end
+			return _GetActivateSequence(e)
+		end
+	end
 end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()
@@ -58,14 +81,16 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	if #cg>0 then Duel.ConfirmCards(1-c:GetControler(),cg) end
 	c:SetMaterial(g)
 	Duel.SendtoDeck(g,nil,2,REASON_COST+REASON_MATERIAL)
+	Duel.BreakEffect()
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	cm.activate_sequence[te]=c:GetSequence()
 	e:GetHandler():CreateEffectRelation(te)
 	local c=e:GetHandler()
 	local ev0=Duel.GetCurrentChain()+1
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -77,7 +102,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
@@ -86,6 +111,15 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCode(11451406) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or not e:GetHandler():IsLocation(LOCATION_EXTRA) end
+	local c=e:GetHandler()
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,3,3,nil)
+	local cg=g:Filter(Card.IsFacedown,nil)
+	if #cg>0 then Duel.ConfirmCards(1-c:GetControler(),cg) end
+	c:SetMaterial(g)
+	Duel.SendtoDeck(g,nil,2,REASON_COST+REASON_MATERIAL)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)

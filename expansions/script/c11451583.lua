@@ -15,6 +15,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
+	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCondition(cm.condition2)
 	e2:SetCost(cm.cost)
@@ -51,8 +52,45 @@ function cm.initial_effect(c)
 		ge0:SetCode(EVENT_PHASE_START+PHASE_DRAW)
 		ge0:SetOperation(cm.geop)
 		Duel.RegisterEffect(ge0,0)
+		local _GetActivateLocation=Effect.GetActivateLocation
+		local _GetActivateSequence=Effect.GetActivateSequence
+		local _GetChainInfo=Duel.GetChainInfo
+		function Effect.GetActivateLocation(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return LOCATION_SZONE
+			end
+			return _GetActivateLocation(e)
+		end
+		function Effect.GetActivateSequence(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return cm.activate_sequence[e]
+			end
+			return _GetActivateSequence(e)
+		end
+		function Duel.GetChainInfo(ev,...)
+			local ext_params={...}
+			if #ext_params==0 then return _GetChainInfo(ev,...) end
+			local re=_GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			if aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if re:GetDescription()==aux.Stringid(m,0) then
+					local res={}
+					for _,ci in ipairs(ext_params) do
+						if ci==CHAININFO_TYPE or ci==CHAININFO_EXTTYPE then
+							res[#res+1]=TYPE_SPELL
+						else
+							res[#res+1]=_GetChainInfo(ev,ci)
+						end
+					end
+					return table.unpack(res)
+				end
+			end
+			return _GetChainInfo(ev,...)
+		end
 	end
 end
+local KOISHI_CHECK=false
+if Card.SetCardData then KOISHI_CHECK=true end
 function cm.actarget(e,te,tp)
 	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
 end
@@ -60,6 +98,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	cm.activate_sequence[te]=c:GetSequence()
 	e:GetHandler():CreateEffectRelation(te)
 	c:CancelToGrave(false)
 	local te2=te:Clone()
@@ -70,7 +109,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -82,7 +121,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
@@ -156,7 +195,9 @@ function cm.geop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	cm[0]=Duel.CreateToken(0,m)
 	cm[1]=Duel.CreateToken(1,m)
-	cm[0]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
-	cm[1]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+	if KOISHI_CHECK then
+		cm[0]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+		cm[1]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+	end
 	e:Reset()
 end
