@@ -1,5 +1,7 @@
 --初代怪异杀手
 function c1000377.initial_effect(c)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	c:EnableReviveLimit()
 	c:SetUniqueOnField(1,0,1000377)
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_FIELD)

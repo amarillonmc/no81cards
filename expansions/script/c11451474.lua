@@ -74,7 +74,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,1,nil)
 	if #g==0 then return end
 	local tc=g:GetFirst()
-	--if tc==c then c:CancelToGrave() end
+	if c:IsRelateToEffect(e) and tc==c then c:CancelToGrave() end
 	if Duel.SendtoHand(tc,1-tp,REASON_EFFECT)>0 then
 		if tc:IsPreviousLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
 		if not tc:IsLocation(LOCATION_HAND) or not tc:IsControler(1-tp) then return end

@@ -106,7 +106,7 @@ end
 function cm.adtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_GRAVE,0,nil)
-		return (Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_HAND,0,1,nil,cm.nfilter,e,tp,mg,nil,7,"Equal") and Duel.IsExistingMatchingCard(cm.mfilter2,tp,LOCATION_GRAVE,0,1,nil)) or Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_HAND,0,1,nil,cm.nfilter,e,tp,mg,nil,8,"Equal")
+		return not e:GetHandler():IsStatus(STATUS_CHAINING) and ((Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_HAND,0,1,nil,cm.nfilter,e,tp,mg,nil,7,"Equal") and Duel.IsExistingMatchingCard(cm.mfilter2,tp,LOCATION_GRAVE,0,1,nil)) or Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_HAND,0,1,nil,cm.nfilter,e,tp,mg,nil,8,"Equal"))
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)

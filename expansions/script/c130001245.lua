@@ -44,6 +44,7 @@ function cm.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function cm.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	local b1=Duel.IsExistingMatchingCard(rscf.spfilter2(Card.IsType,TYPE_PENDULUM),tp,LOCATION_REMOVED,0,1,nil,e,tp)
 	local b2=Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 	local b3=Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)

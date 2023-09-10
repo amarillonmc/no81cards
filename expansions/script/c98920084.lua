@@ -22,23 +22,26 @@ function c98920084.initial_effect(c)
 	e1:SetTarget(c98920084.target)
 	e1:SetOperation(c98920084.operation)
 	c:RegisterEffect(e1)
---effect gain
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(98920084,0))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCondition(c98920084.spcon)
-	e2:SetTarget(c98920084.sptg)
-	e2:SetOperation(c98920084.spop)
-	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e3:SetRange(LOCATION_GRAVE)
-	e3:SetTargetRange(LOCATION_MZONE+LOCATION_DECK+LOCATION_HAND+LOCATION_REMOVED+LOCATION_EXTRA+LOCATION_GRAVE,0)
-	e3:SetTarget(c98920084.eftg)
-	e3:SetLabelObject(e2)
-	c:RegisterEffect(e3)
+	--change effect
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetCode(98920084)
+	e5:SetRange(0xff)
+	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e5:SetTargetRange(1,1)
+	c:RegisterEffect(e5)
+	--workaround
+	if not aux.name_hack_check then
+		aux.name_hack_check=true
+		_code=Card.IsCode
+		function Card.IsCode(c,code)
+			if Duel.IsPlayerAffectedByEffect(c:GetControler(),98920084) and code==75041269 then
+				return _code(c,98920084) or _code(c,75041269)
+			end
+			return _code(c,code)
+		end
+	end
 end
 function c98920084.negfilter(c)
 	return aux.NegateMonsterFilter(c) and c:IsType(TYPE_XYZ)
@@ -99,33 +102,7 @@ function c98920084.operation(e,tp,eg,ep,ev,re,r,rp)
 		tc=g:GetFirst()
 		if tc:IsCode(40591390) then
 			Duel.BreakEffect()
-			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)			
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)		   
 		end
-	end
-end
-function c98920084.desfilter(c)
-	return c:IsFacedown() or not c:IsSetCard(0xc008)
-end
-function c98920084.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(c98920084.desfilter,tp,LOCATION_MZONE,0,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-end
-function c98920084.spfilter(c,e,tp)
-	return c:IsSetCard(0xc008) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c98920084.spop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c98920084.desfilter,tp,LOCATION_MZONE,0,nil)
-	Duel.Destroy(g,REASON_EFFECT)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if ft<=0 then return end
-	if ft>2 then ft=2 end
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
-	g=Duel.GetMatchingGroup(c98920084.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
-	if g:GetCount()~=0 and Duel.SelectYesNo(tp,aux.Stringid(98920084,1)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,ft,nil)
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

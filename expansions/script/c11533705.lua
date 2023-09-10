@@ -1,7 +1,7 @@
 --界十万
 function c11533705.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,nil,3)
+	aux.AddLinkProcedure(c,nil,3,3,c11533705.lcheck)
 	c:EnableReviveLimit()
 	--to deck and draw 
 	local e1=Effect.CreateEffect(c) 
@@ -14,6 +14,9 @@ function c11533705.initial_effect(c)
 	e1:SetOperation(c11533705.tddop) 
 	c:RegisterEffect(e1) 
 end 
+function c11533705.lcheck(g,lc)
+	return g:GetClassCount(Card.GetLinkCode)==g:GetCount()  
+end
 function c11533705.tddtg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) end 
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)  

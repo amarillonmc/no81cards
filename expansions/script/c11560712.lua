@@ -1,14 +1,14 @@
 --星海航线 天尊龙帝
 function c11560712.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,4,3) 
+	aux.AddXyzProcedure(c,nil,4,2) 
 	c:EnableReviveLimit()   
 	--disable 
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_DISABLE) 
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS) 
-	e1:SetProperty(EFFECT_FLAG_DELAY) 
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET) 
 	e1:SetTarget(c11560712.distg) 
 	e1:SetOperation(c11560712.disop) 
 	c:RegisterEffect(e1) 
@@ -28,14 +28,14 @@ function c11560712.initial_effect(c)
 end
 c11560712.SetCard_SR_Saier=true 
 function c11560712.distg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end  
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,1-tp,LOCATION_ONFIELD) 
+	if chk==0 then return Duel.IsExistingTarget(aux.NegateEffectMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end   
+	local g=Duel.SelectTarget(tp,aux.NegateEffectMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0) 
 end 
 function c11560712.disop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
-	if g:GetCount()>0 then 
-	local tc=g:Select(tp,1,1,nil):GetFirst() 
+	local tc=Duel.GetFirstTarget()
+	if tc and tc:IsRelateToEffect(e) then  
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -53,13 +53,14 @@ function c11560712.disop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e3)
 		end
 		if c:IsRelateToEffect(e) and Duel.GetLP(tp)>=8000 then 
-		local e1=Effect.CreateEffect(c) 
-		e1:SetType(EFFECT_TYPE_SINGLE) 
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL) 
-		e1:SetRange(LOCATION_MZONE) 
-		e1:SetValue(c:GetAttack()*2) 
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
-		c:RegisterEffect(e1) 
+			Duel.BreakEffect()
+			local e1=Effect.CreateEffect(c) 
+			e1:SetType(EFFECT_TYPE_SINGLE) 
+			e1:SetCode(EFFECT_SET_ATTACK_FINAL) 
+			e1:SetRange(LOCATION_MZONE) 
+			e1:SetValue(c:GetAttack()*2) 
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
+			c:RegisterEffect(e1) 
 		end 
 	end 
 end 
@@ -76,7 +77,7 @@ function c11560712.rpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end 
 function c11560712.rptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) end  
+	if chk==0 then return Duel.IsPlayerCanDraw(rp,1) end  
 end
 function c11560712.rpop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
@@ -85,11 +86,7 @@ function c11560712.rpop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,c11560712.repop)
 end
 function c11560712.repop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_ONFIELD,0,nil) 
-	if g:GetCount()>0 then 
-	local sg=g:Select(tp,1,1,nil) 
-	Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) 
-	end 
+	Duel.Draw(tp,1,REASON_EFFECT) 
 end
 
 

@@ -3,7 +3,7 @@ function c11561013.initial_effect(c)
 	c:EnableCounterPermit(0x1) 
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)
 	--counter 
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_COUNTER)
@@ -53,8 +53,8 @@ function c11561013.addop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end 
 function c11561013.accost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,5,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x1,5,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,4,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x1,4,REASON_COST)
 end
 function c11561013.filter(c,tp)
 	return c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
@@ -76,13 +76,16 @@ function c11561013.acop(e,tp,eg,ep,ev,re,r,rp)
 		if e:GetLabel()==1 then Duel.RegisterFlagEffect(tp,15248873,RESET_CHAIN,0,1) end 
 		local b2=te:IsActivatable(tp,true,true)
 		Duel.ResetFlagEffect(tp,15248873) 
-		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		local op=Duel.SelectOption(tp,aux.Stringid(11561013,1),aux.Stringid(11561013,2)) 
+		local p=tp 
+		if op==1 then p=1-tp end  
+		local fc=Duel.GetFieldCard(p,LOCATION_FZONE,0)
 		if fc then
 			Duel.SendtoGrave(fc,REASON_RULE)
 			Duel.BreakEffect()
 		end
-		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-		te:UseCountLimit(tp,1,true)
+		Duel.MoveToField(tc,tp,p,LOCATION_FZONE,POS_FACEUP,true) 
+		te:UseCountLimit(tp,1,true) 
 		local tep=tc:GetControler()
 		local cost=te:GetCost()
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end

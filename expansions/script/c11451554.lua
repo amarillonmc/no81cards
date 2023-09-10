@@ -31,7 +31,7 @@ function cm.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function cm.equipfd(c,tp,tc)
-	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) return true end
+	if tc:IsPosition(POS_FACEUP) then return Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
 	if not Duel.Equip(tp,tc,c,false) then return false end
 	--Add Equip limit
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
@@ -68,9 +68,9 @@ function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsChainNegatable(ev) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,0,1,nil,re:GetActiveType()&0x7) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,0,1,nil,re:GetHandler():GetOriginalType()&0x7) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,nil,re:GetActiveType()&0x7)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,nil,re:GetHandler():GetOriginalType()&0x7)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)

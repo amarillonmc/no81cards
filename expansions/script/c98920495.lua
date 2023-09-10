@@ -17,12 +17,12 @@ function c98920495.initial_effect(c)
 	e0:SetValue(SUMMON_TYPE_SYNCHRO) 
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
+	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_EXTRA,0)
 	e3:SetTarget(c98920495.eftg)
 	e3:SetLabelObject(e0)
 	c:RegisterEffect(e3)
---spsummon
+	--spsummon
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(98920495,0))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -33,6 +33,55 @@ function c98920495.initial_effect(c)
 	e4:SetTarget(c98920495.sptg)
 	e4:SetOperation(c98920495.spop)
 	c:RegisterEffect(e4)
+	--syr grave
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_SUMMON_SUCCESS)
+	e5:SetRange(LOCATION_GRAVE)
+	e5:SetCondition(c98920495.reccon)
+	e5:SetOperation(c98920495.recop)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e6)
+	local e7=e5:Clone()
+	e7:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+	c:RegisterEffect(e7)
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetCode(EVENT_TO_GRAVE)
+	e8:SetOperation(c98920495.recop)
+	c:RegisterEffect(e8)
+	local e9=Effect.CreateEffect(c)
+	e9:SetDescription(aux.Stringid(98920495,1))
+	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e9:SetCode(EVENT_SPSUMMON)
+	e9:SetRange(LOCATION_GRAVE)
+	e9:SetCondition(c98920495.setcon)
+	e9:SetOperation(c98920495.setop)
+	c:RegisterEffect(e9)
+	if not c98920495.global_check then
+		c98920495.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD)
+		ge1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE)
+		ge1:SetCode(EFFECT_MATERIAL_CHECK)
+		ge1:SetValue(c98920495.valcheck)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function c98920495.valcheck(e,c)
+	local g=c:GetMaterial()
+	local tp=c:GetOwner()
+	if g:IsExists(Card.IsControler,1,nil,1-tp) then
+		c:RegisterFlagEffect(98920495,RESET_EVENT+0x4fe0000,0,1)
+	end
+end
+function c98920495.setfilter(c,tp)
+	return c:IsFaceup() and c:IsControler(tp) and c:IsSummonType(SUMMON_TYPE_SYNCHRO) and c:GetFlagEffect(98920495)~=0
+end
+function c98920495.setcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c98920495.setfilter,1,nil,tp)
 end
 function c98920495.matval(e,c)
 	return c:IsControler(e:GetOwnerPlayer())
@@ -106,7 +155,7 @@ end
 function c98920495.syncon(e,c,tuner,mg)
 	if c==nil then return true end
 	if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
-	local tp=c:GetControler()	
+	local tp=c:GetControler()   
 	local minc=2
 	local maxc=c:GetLevel()
 	local g1=nil
@@ -117,9 +166,9 @@ function c98920495.syncon(e,c,tuner,mg)
 		g2=mg:Filter(c98920495.matfilter2,nil,c,tp)
 		g3=g2:Clone()
 	else
-		g1=Duel.GetMatchingGroup(c98920495.matfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,nil,c,tp)
-		g2=Duel.GetMatchingGroup(c98920495.matfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil,c,tp)
-		g3=Duel.GetMatchingGroup(c98920495.matfilter2,tp,LOCATION_MZONE+LOCATION_HAND,LOCATION_MZONE,nil,c,tp)
+		g1=Duel.GetMatchingGroup(c98920495.matfilter1,tp,LOCATION_MZONE,0,nil,c,tp)
+		g2=Duel.GetMatchingGroup(c98920495.matfilter2,tp,LOCATION_MZONE,0,nil,c,tp)
+		g3=Duel.GetMatchingGroup(c98920495.matfilter2,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,c,tp)
 	end
 	local pe=Duel.IsPlayerAffectedByEffect(tp,EFFECT_MUST_BE_SMATERIAL)
 	local lv=c:GetLevel()
@@ -143,9 +192,9 @@ function c98920495.syntg(e,tp,eg,ep,ev,re,r,rp,chk,c,tuner,mg)
 		g2=mg:Filter(c98920495.matfilter2,nil,c,tp)
 		g3=g2:Clone()
 	else
-		g1=Duel.GetMatchingGroup(c98920495.matfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,nil,c,tp)
-		g2=Duel.GetMatchingGroup(c98920495.matfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil,c,tp)
-		g3=Duel.GetMatchingGroup(c98920495.matfilter2,tp,LOCATION_MZONE+LOCATION_HAND,LOCATION_MZONE,nil,c,tp)
+		g1=Duel.GetMatchingGroup(c98920495.matfilter1,tp,LOCATION_MZONE,0,nil,c,tp)
+		g2=Duel.GetMatchingGroup(c98920495.matfilter2,tp,LOCATION_MZONE,0,nil,c,tp)
+		g3=Duel.GetMatchingGroup(c98920495.matfilter2,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,c,tp)
 	end
 	local pe=Duel.IsPlayerAffectedByEffect(tp,EFFECT_MUST_BE_SMATERIAL)
 	local lv=c:GetLevel()
@@ -162,7 +211,7 @@ function c98920495.syntg(e,tp,eg,ep,ev,re,r,rp,chk,c,tuner,mg)
 			Group.FromCards(tuc):Select(tp,1,1,nil)
 		end
 	end
-	tuc:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000,0,1)
+	tuc:RegisterFlagEffect(98920495,RESET_EVENT+0x1fe0000,0,1)
 	local tsg=tuc:IsHasEffect(EFFECT_HAND_SYNCHRO) and g3 or g2
 	local f=tuc.tuner_filter
 	if tuc.tuner_filter then tsg=tsg:Filter(f,nil) end
@@ -174,17 +223,11 @@ function c98920495.syntg(e,tp,eg,ep,ev,re,r,rp,chk,c,tuner,mg)
 	else return false end
 end
 function c98920495.SynOperation(f1,f2,minct,maxc)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)			 
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)			
 				local g=e:GetLabelObject()
-				c:SetMaterial(g)
-				if c:GetMaterial():IsExists(Card.IsControler,1,nil,1-tp) then
-				   local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c98920495.rmfilter),tp,LOCATION_GRAVE,0,1,1,nil)
-				   if sg:GetCount()>0 then
-					  Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
-				   end
-				end
+				c:SetMaterial(g)			
 				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_SYNCHRO)
-				g:DeleteGroup()	  
+				g:DeleteGroup()   
 			end
 end
 function c98920495.rmfilter(c,tp)
@@ -215,5 +258,40 @@ function c98920495.spop(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
+	end
+end
+function c98920495.cfilter(c,tp)
+	return c:IsSummonPlayer(tp)
+end
+function c98920495.reccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c98920495.cfilter,1,nil,1-tp)
+end
+function c98920495.recop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tg=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+	local tc=tg:GetFirst()
+	while tc do
+		c:SetCardTarget(tc)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_EXTRA_SYNCHRO_MATERIAL)
+		e1:SetOwnerPlayer(tp)
+		e1:SetValue(c98920495.matval)
+		e1:SetCondition(c98920495.rrcon)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		tc=tg:GetNext()
+	end
+end
+function c98920495.rrcon(e)
+	return e:GetOwner():IsHasCardTarget(e:GetHandler())
+end
+function c98920495.matval(e,c)
+	return c:IsControler(e:GetOwnerPlayer())
+end
+function c98920495.setop(e,tp,eg,ep,ev,re,r,rp)
+	local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c98920495.rmfilter),tp,LOCATION_GRAVE,0,1,1,nil)
+	if sg:GetCount()>0 then
+		  Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
 end

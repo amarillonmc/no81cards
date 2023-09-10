@@ -1673,6 +1673,26 @@ function cm.SorisonFish(c)
 	e2:SetCode(53721000)
 	e2:SetRange(LOCATION_HAND)
 	c:RegisterEffect(e2)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e4:SetCode(EFFECT_SEND_REPLACE)
+	e4:SetRange(LOCATION_HAND)
+	e4:SetTarget(cm.SorisonSpecialreptg)
+	c:RegisterEffect(e4)
+end
+function cm.SorisonSpecialreptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToDeck() and c:IsReason(REASON_SYNCHRO) and c:GetReasonCard():IsRace(RACE_AQUA) and c:GetReasonCard():IsCode(53721016) and c:GetDestination()==LOCATION_GRAVE end
+	Duel.ConfirmCards(1-tp,c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+	e1:SetValue(LOCATION_DECK)
+	e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+	c:RegisterEffect(e1,true)
+	return false
 end
 function cm.SorisonMark(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(0,53721000)>0 then return end
@@ -2801,6 +2821,10 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		reg(sc,se,bool)
 	end
+	--[[AD_Avoid_RegisterEffect=Duel.RegisterEffect
+	Duel.RegisterEffect=function(...)
+		return
+	end--]]
 	for tc in aux.Next(g) do
 		if tc.initial_effect then
 			local ini=cm.initial_effect
@@ -2811,6 +2835,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Card.RegisterEffect=reg
+	--Duel.RegisterEffect=AD_Avoid_RegisterEffect
 	if cm.IsInTable(53759012,rstt) then Effect.SetLabelObject=c53759012[1] end
 	if #helltaker>0 then Effect.SetLabelObject=AD_Helltaker end
 	Duel.ResetFlagEffect(0,53764007)
@@ -4322,6 +4347,7 @@ function cm.RTreset1(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.RTreset2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleDeck(tp)
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+53755008,re,r,rp,ep,ev)
 	if e:GetLabelObject() then e:GetLabelObject():Reset() end
 	e:Reset()
 end

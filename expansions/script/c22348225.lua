@@ -47,7 +47,7 @@ function c22348225.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c22348225.tdfilter(c)
-	return c:IsSetCard(0x708) and c:IsAbleToHand()
+	return not c:IsCode(22348225) and c:IsSetCard(0x708) and c:IsAbleToHand()
 end
 function c22348225.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348225.tdfilter,tp,LOCATION_DECK,0,1,nil) end

@@ -119,7 +119,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 				e1:SetRange(LOCATION_MZONE)
 				e1:SetCode(EFFECT_IMMUNE_EFFECT)
-				--e1:SetLabelObject(token)
+				e1:SetLabelObject(token)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 				e1:SetValue(cm.efilter)
 				token:RegisterEffect(e1,true)  
@@ -153,6 +153,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 
 end
-function cm.efilter(e,re)
-	return re:IsActiveType(TYPE_MONSTER) and e:GetHandler():GetColumnGroup():IsContains(re:GetHandler())
+function cm.efilter(e,te)
+	local seq=e:GetHandler():GetSequence()
+	return te:IsActiveType(TYPE_MONSTER) and seq==e:GetHandler():GetSequence()
 end

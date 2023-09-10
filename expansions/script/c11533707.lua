@@ -11,8 +11,8 @@ function c11533707.initial_effect(c)
 	c:RegisterEffect(e1) 
 end
 function c11533707.actg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local x1=Duel.GetMatchingGroupCount(function(c) return c:IsFacedown() or not c:IsCode(11533707) end,tp,LOCATION_ONFIELD,0,nil) 
-	local x2=Duel.GetMatchingGroupCount(function(c) return c:IsFacedown() or not c:IsCode(11533707) end,tp,0,LOCATION_ONFIELD,nil)  
+	local x1=Duel.GetMatchingGroupCount(nil,tp,LOCATION_ONFIELD,0,nil) 
+	local x2=Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_ONFIELD,nil)  
 	local g1=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	local g2=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,e:GetHandler())
 	if chk==0 then return g1:GetCount()>0 and g2:GetCount()>0 and x1>0 and x2>0 end 
@@ -20,8 +20,8 @@ function c11533707.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function c11533707.acop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local x1=Duel.GetMatchingGroupCount(function(c) return c:IsFacedown() or not c:IsCode(11533707) end,tp,LOCATION_ONFIELD,0,nil) 
-	local x2=Duel.GetMatchingGroupCount(function(c) return c:IsFacedown() or not c:IsCode(11533707) end,tp,0,LOCATION_ONFIELD,nil)  
+	local x1=Duel.GetMatchingGroupCount(nil,tp,LOCATION_ONFIELD,0,nil) 
+	local x2=Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_ONFIELD,nil)  
 	local g1=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	local g2=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,e:GetHandler()) 
 	if g1:GetCount()>0 and x1>0 then 

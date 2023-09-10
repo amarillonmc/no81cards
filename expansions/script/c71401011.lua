@@ -31,9 +31,9 @@ function c71401011.filterc1(c)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsAbleToRemoveAsCost()
 end
 function c71401011.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71401011.filterc1,tp,LOCATION_HAND,0,1,nil) and Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(c71401011.filterc1,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c71401011.filterc1,tp,LOCATION_HAND,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c71401011.filterc1,tp,LOCATION_HAND,0,1,1,e:GetHandler())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	yume.RegButterflyCostLimit(e,tp)
 end

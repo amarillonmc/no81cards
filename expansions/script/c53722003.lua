@@ -10,7 +10,7 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3531))
-	e1:SetCondition(cm.econ)
+	--e1:SetCondition(cm.econ)
 	e1:SetValue(cm.efilter)
 	c:RegisterEffect(e1)
 end
@@ -21,7 +21,7 @@ end
 function cm.efilter(e,te)
 	local tp=e:GetHandlerPlayer()
 	if te:GetHandlerPlayer()==tp or not te:IsActivated() then return false end
-	if not Duel.IsPlayerCanDiscardDeck(tp,1) then return false end
+	if not Duel.IsPlayerCanDiscardDeck(tp,2) then return false end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not g or not g:IsExists(function(c,e,tp)return c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0x3531) and c:IsType(TYPE_MONSTER) and not c:IsImmuneToEffect(e)end,1,nil,e,tp)  then
 		if Duel.GetFlagEffect(tp,m)==0 then
@@ -37,7 +37,7 @@ function cm.efilter(e,te)
 end
 function cm.imcop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	Duel.DiscardDeck(tp,1,REASON_EFFECT)
+	Duel.DiscardDeck(tp,2,REASON_EFFECT)
 	Duel.ResetFlagEffect(tp,m)
 	e:Reset()
 end 

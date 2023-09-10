@@ -1,0 +1,115 @@
+--变形斗士·步话机
+function c98920652.initial_effect(c)
+	--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(98920652,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1,98920652)
+	e1:SetCondition(c98920652.cond)
+	e1:SetTarget(c98920652.sptg)
+	e1:SetOperation(c98920652.spop)
+	c:RegisterEffect(e1)
+	--special summon
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(98920652,0))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1,98920652)
+	e3:SetCondition(c98920652.cona)
+	e3:SetTarget(c98920652.target)
+	e3:SetOperation(c98920652.operation)
+	c:RegisterEffect(e3)
+end
+function c98920652.cona(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsAttackPos()
+end
+function c98920652.cond(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsDefensePos()
+end
+function c98920652.filter1(c,e,tp)
+	local lv=c:GetLevel()
+	return c:IsType(TYPE_SYNCHRO) and c:IsLevelBelow(8)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+		and Duel.IsExistingMatchingCard(c98920652.filter2,tp,LOCATION_GRAVE,0,1,nil,tp,lv)
+end
+function c98920652.filter2(c,tp,lv)
+	local rlv=lv-c:GetLevel()
+	local rg=Duel.GetMatchingGroup(c98920652.filter3,tp,LOCATION_GRAVE,0,c)
+	return rlv>0 and c:IsType(TYPE_TUNER) and c:IsAbleToRemove() and c:IsSetCard(0x26)
+		and rg:CheckWithSumEqual(Card.GetLevel,rlv,1,63)
+end
+function c98920652.filter3(c)
+	return c:GetLevel()>0 and not c:IsType(TYPE_TUNER) and c:IsAbleToRemove() and c:IsSetCard(0x26)
+end
+function c98920652.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(c98920652.filter1,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end--
+function c98920652.operation(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g1=Duel.SelectMatchingCard(tp,c98920652.filter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	local lv=g1:GetFirst():GetLevel()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g2=Duel.SelectMatchingCard(tp,c98920652.filter2,tp,LOCATION_GRAVE,0,1,1,nil,tp,lv)
+	local rlv=lv-g2:GetFirst():GetLevel()
+	local rg=Duel.GetMatchingGroup(c98920652.filter3,tp,LOCATION_GRAVE,0,g2:GetFirst())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g3=rg:SelectWithSumEqual(tp,Card.GetLevel,rlv,1,63)
+	g2:Merge(g3)
+	Duel.Remove(g2,POS_FACEUP,REASON_EFFECT)
+	g1:GetFirst():SetMaterial(nil)
+	Duel.SpecialSummon(g1,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)
+	g1:GetFirst():CompleteProcedure()
+end
+function c98920652.cfilter1(c,e,tp)
+	local lv=c:GetLevel()
+	return c:IsType(TYPE_SYNCHRO) and c:IsAbleToRemove()
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
+		and Duel.IsExistingMatchingCard(c98920652.cfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp,lv)
+end
+function c98920652.cfilter2(c,e,tp,lv)
+	local rlv=lv-c:GetLevel()
+	local rg=Duel.GetMatchingGroup(c98920652.cfilter3,tp,LOCATION_GRAVE,0,c,e)
+	return rlv>0 and c:IsType(TYPE_TUNER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+		and rg:CheckWithSumEqual(Card.GetLevel,rlv,1,63)
+end
+function c98920652.cfilter3(c,e)
+	return c:GetLevel()>0 and not c:IsType(TYPE_TUNER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+end
+function c98920652.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c98920652.cfilter1,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+end
+function c98920652.spop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g1=Duel.SelectMatchingCard(tp,c98920652.cfilter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local lv=g1:GetFirst():GetLevel()
+	Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g2=Duel.SelectMatchingCard(tp,c98920652.cfilter2,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,lv)
+	local rlv=lv-g2:GetFirst():GetLevel()
+	local rg=Duel.GetMatchingGroup(c98920652.cfilter3,tp,LOCATION_GRAVE,0,g2:GetFirst(),e)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g3=rg:SelectWithSumEqual(tp,Card.GetLevel,rlv,1,63)
+	g2:Merge(g3)
+	local tc=g2:GetFirst()
+	while tc do
+		Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_DISABLE_EFFECT)
+		e3:SetValue(RESET_TURN_SET)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e3)
+		tc=g2:GetNext()
+	end
+	Duel.SpecialSummonComplete()
+end

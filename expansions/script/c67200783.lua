@@ -61,7 +61,7 @@ function c67200783.scop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67200783.spfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()>0 and c:IsAbleToGraveAsCost() and c:IsFaceup()
+	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()>0 and c:IsAbleToGraveAsCost() and c:IsFaceup() and c:IsSetCard(0x567c)
 end
 function c67200783.sumfilter(c)
 	return c:GetLeftScale()

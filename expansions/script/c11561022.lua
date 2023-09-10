@@ -8,21 +8,19 @@ function c11561022.initial_effect(c)
 	--counter 
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_COUNTER)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS) 
 	e1:SetCondition(function(e) 
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) end) 
-	e1:SetCountLimit(1,11561022) 
-	e1:SetTarget(c11561022.addtg)
+	e1:SetCountLimit(1,11561022)  
 	e1:SetOperation(c11561022.addop)
 	c:RegisterEffect(e1)   
 	-- 
 	local e2=Effect.CreateEffect(c) 
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F) 
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
 	e2:SetCode(EVENT_PREDRAW) 
 	e2:SetRange(LOCATION_MZONE)  
-	e2:SetCountLimit(1,21561022) 
-	e2:SetTarget(c11561022.xxtg) 
+	e2:SetCountLimit(1,21561022)  
 	e2:SetOperation(c11561022.xxop) 
 	c:RegisterEffect(e2)   
 	--remove and draw  
@@ -63,16 +61,12 @@ function c11561022.initial_effect(c)
 	e6:SetTarget(c11561022.ddrtg) 
 	e6:SetOperation(c11561022.ddrop) 
 	c:RegisterEffect(e6)
-end
-function c11561022.addtg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local x=e:GetHandler():GetMaterialCount() 
-	if chk==0 then return x>0 and e:GetHandler():IsCanAddCounter(0x1,x) end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,x,0,0x1)
-end
+end 
 function c11561022.addop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
+	Duel.Hint(HINT_CARD,0,11561022)
 	local x=c:GetMaterialCount()  
-	if c:IsRelateToEffect(e) then
+	if x>0 then
 		c:AddCounter(0x1,x) 
 		local e1=Effect.CreateEffect(c) 
 		e1:SetType(EFFECT_TYPE_SINGLE) 
@@ -89,37 +83,33 @@ function c11561022.addop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
 		c:RegisterEffect(e1)	 
 	end 
-end 
-function c11561022.xxtg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return true end 
-end 
+end  
 function c11561022.xxop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler() 
-	if c:IsRelateToEffect(e) then 
-		if c:IsCanRemoveCounter(tp,0x1,1,REASON_EFFECT) then 
-			if c:RemoveCounter(tp,0x1,1,REASON_EFFECT) then 
-				--
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_FIELD)
-				e1:SetCode(EFFECT_REVERSE_DECK)
-				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-				e1:SetRange(LOCATION_MZONE)
-				e1:SetTargetRange(1,1) 
-				e1:SetReset(RESET_PHASE+PHASE_END)
-				c:RegisterEffect(e1)  
-				local e2=Effect.CreateEffect(c)
-				e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e2:SetCode(EVENT_CHAIN_SOLVING)
-				e2:SetRange(LOCATION_MZONE)
-				e2:SetCondition(c11561022.discon)
-				e2:SetOperation(c11561022.disop) 
-				e2:SetReset(RESET_PHASE+PHASE_END)
-				c:RegisterEffect(e2) 
-			end 
-		else 
-			Duel.Destroy(c,REASON_EFFECT+REASON_RULE)
-		end  
-	end 
+	local c=e:GetHandler()  
+	Duel.Hint(HINT_CARD,0,11561022)
+	if c:IsCanRemoveCounter(tp,0x1,1,REASON_EFFECT) then 
+	   if c:RemoveCounter(tp,0x1,1,REASON_EFFECT) then 
+			--
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_REVERSE_DECK)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetRange(LOCATION_MZONE)
+			e1:SetTargetRange(1,1) 
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			c:RegisterEffect(e1)  
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_CHAIN_SOLVING)
+			e2:SetRange(LOCATION_MZONE)
+			e2:SetCondition(c11561022.discon)
+			e2:SetOperation(c11561022.disop) 
+			e2:SetReset(RESET_PHASE+PHASE_END)
+			c:RegisterEffect(e2)  
+		end 
+	else 
+		Duel.Destroy(c,REASON_EFFECT+REASON_RULE)
+	end   
 end 
 function c11561022.discon(e,tp,eg,ep,ev,re,r,rp) 
 	local typ=0

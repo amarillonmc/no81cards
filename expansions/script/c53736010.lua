@@ -3,7 +3,7 @@ local cm=_G["c"..m]
 cm.name="暗从者-灭迹"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsAttribute,ATTRIBUTE_DARK),2)
+	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),aux.Tuner(nil),nil,aux.NonTuner(Card.IsAttribute,ATTRIBUTE_DARK),1,1)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.limcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function cm.limop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetCurrentChain()==0 then

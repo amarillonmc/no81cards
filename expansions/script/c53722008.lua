@@ -86,7 +86,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,e:GetLabel(),tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,e:GetLabel()*800)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,e:GetLabel()*500)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
@@ -97,6 +97,6 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if #sg>0 and Duel.SendtoHand(sg,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,sg)
 		Duel.BreakEffect()
-		Duel.Damage(1-tp,ct*800,REASON_EFFECT)
+		Duel.Damage(1-tp,ct*500,REASON_EFFECT)
 	end
 end

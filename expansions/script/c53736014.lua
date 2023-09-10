@@ -64,7 +64,7 @@ function cm.matfilter(c)
 	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsSynchroType(TYPE_PENDULUM)
 end
 function cm.limcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function cm.limop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetCurrentChain()==0 then

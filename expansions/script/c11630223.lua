@@ -29,21 +29,40 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
-	if Duel.Remove(sg,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)>0 then
-		local tc=sg:GetFirst()
-		while tc do
-			if tc:IsLocation(LOCATION_REMOVED) then
-				local rtp = math.random(0, 1)
-				if tc:IsType(TYPE_MONSTER) then
-					--Duel.MoveToField(tc,tp,rtp,LOCATION_MZONE,tc:GetPreviousPosition(),true)
-					--if rtp~=tc:GetControler() then
-					Duel.ReturnToField(tc)
-					Duel.GetControl(tc,rtp)
-				else
-					Duel.SendtoHand(tc,rtp,REASON_EFFECT)
-				end
-			end
-			tc=sg:GetNext() 
+	local tc=sg:GetFirst()
+	while tc do
+		if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetCode(EVENT_PHASE+PHASE_END)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			e1:SetLabelObject(tc)
+			e1:SetCountLimit(1)
+			e1:SetOperation(cm.retop)
+			Duel.RegisterEffect(e1,tp)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_IMMUNE_EFFECT)
+			e2:SetValue(cm.efilter)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e2)
 		end
+		tc=sg:GetNext()
 	end
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e3:SetCode(EFFECT_CHANGE_DAMAGE)
+		e3:SetTargetRange(0,1)
+		e3:SetValue(0)
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e3,tp)
+	end
+end
+function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ReturnToField(e:GetLabelObject())
+end
+function cm.efilter(e,te)
+	return true
 end

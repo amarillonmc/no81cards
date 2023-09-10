@@ -15,8 +15,7 @@ function c11561006.initial_effect(c)
 	e1:SetOperation(c11561006.addop)
 	c:RegisterEffect(e1) 
 	--des 
-	local e2=Effect.CreateEffect(c)  
-	e2:SetCategory(CATEGORY_DESTROY)
+	local e2=Effect.CreateEffect(c)   
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)  
 	e2:SetRange(LOCATION_MZONE) 
@@ -31,8 +30,7 @@ function c11561006.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O) 
 	e3:SetCode(EVENT_FREE_CHAIN) 
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER)   
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,21561006)
+	e3:SetRange(LOCATION_MZONE) 
 	e3:SetCost(c11561006.xdescost) 
 	e3:SetTarget(c11561006.xdestg) 
 	e3:SetOperation(c11561006.xdesop) 
@@ -58,34 +56,35 @@ function c11561006.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c11561006.desfil,1,nil,e,tp)   
 end 
 function c11561006.destg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return true end 
-	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)
+	if chk==0 then return true end  
 end   
 function c11561006.desop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)
-	if g:GetCount()>0 then  
-		local x=Duel.Destroy(g,REASON_EFFECT) 
+	local x=c:GetLinkedGroupCount() 
+	if x>0 then   
 		if c:IsRelateToEffect(e) and c:IsCanAddCounter(0x1,x) then 
 			c:AddCounter(0x1,x)  
 		end 
 	end 
 end 
 function c11561006.xdescost(e,tp,eg,ep,ev,re,r,rp,chk)  
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,3,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x1,3,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x1,2,REASON_COST)
 end  
 function c11561006.xdestg(e,tp,eg,ep,ev,re,r,rp,chk)  
-	if chk==0 then return true end 
+	local c=e:GetHandler() 
+	local x=c:GetLinkedGroupCount() 
+	if chk==0 then return c:GetFlagEffect(11561006)<x end
+	c:RegisterFlagEffect(11561006,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) 
 end 
 function c11561006.xdesop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
 	if c:IsRelateToEffect(e) then 
 		local e1=Effect.CreateEffect(c) 
 		e1:SetType(EFFECT_TYPE_SINGLE) 
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL) 
+		e1:SetCode(EFFECT_UPDATE_ATTACK) 
 		e1:SetRange(LOCATION_MZONE) 
-		e1:SetValue(c:GetAttack()*2) 
+		e1:SetValue(2000) 
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
 		c:RegisterEffect(e1) 
 		--indes

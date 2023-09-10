@@ -1,7 +1,7 @@
 --星海航线 光之惩戒 伊卡洛斯
 function c11560702.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,c11560702.mfilter,10,3)
+	aux.AddXyzProcedure(c,c11560702.mfilter,10,2)
 	c:EnableReviveLimit() 
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -34,28 +34,25 @@ function c11560702.initial_effect(c)
 	e1:SetCondition(c11560702.actcon) 
 	c:RegisterEffect(e1) 
 	--double 
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_ATTACK_DISABLED) 
-	e2:SetCost(c11560702.dbcost)
-	e2:SetTarget(c11560702.dbtg)
-	e2:SetOperation(c11560702.dbop)
-	c:RegisterEffect(e2) 
+	--local e2=Effect.CreateEffect(c)
+	--e2:SetCategory(CATEGORY_ATKCHANGE)
+	--e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	--e2:SetCode(EVENT_ATTACK_DISABLED) 
+	--e2:SetCost(c11560702.dbcost)
+	--e2:SetTarget(c11560702.dbtg)
+	--e2:SetOperation(c11560702.dbop)
+	--c:RegisterEffect(e2) 
 	--SpecialSummon 
 	local e3=Effect.CreateEffect(c) 
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON) 
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F) 
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
 	e3:SetCode(EVENT_LEAVE_FIELD) 
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e3:SetLabel(0) 
 	e3:SetCondition(function(e) 
 	local tp=e:GetHandlerPlayer() 
 	if e:GetLabel()==0 then return false end 
-	if c:IsReason(REASON_EFFECT) then 
-	return e:GetHandler():GetReasonPlayer()==1-tp 
-	elseif c:IsReason(REASON_BATTLE) then 
-	return true 
-	else return false end end)
+	return e:GetHandler():GetReasonPlayer()==1-tp end)
 	e3:SetTarget(c11560702.sptg) 
 	e3:SetOperation(c11560702.spop) 
 	c:RegisterEffect(e3) 
@@ -109,7 +106,7 @@ function c11560702.dbop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c11560702.sptg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return e:GetHandler():IsReason(REASON_EFFECT) and e:GetHandler():GetReasonPlayer()==1-tp and e:GetLabel()~=0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,false) end 
+	if chk==0 then return e:GetLabel()~=0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,false) end 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0) 
 end 
 function c11560702.spop(e,tp,eg,ep,ev,re,r,rp)  

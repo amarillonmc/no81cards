@@ -84,7 +84,7 @@ function c71400034.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,tdg,1,0,0)
 end
 function c71400034.op2(e,tp,eg,ep,ev,re,r,rp)
-	local tdg=Duel.SelectMatchingCard(Card.IsAbleToDeck,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	local tdg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	if tdg:GetCount()==1 and Duel.SendtoDeck(tdg,nil,2,REASON_EFFECT)==1 then
 		local g=Duel.GetMatchingGroup(c71400034.filter2b,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler(),tp)
 		local lg=Duel.GetMatchingGroup(c71400034.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil)

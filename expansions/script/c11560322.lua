@@ -59,8 +59,9 @@ function c11560322.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()==0 then return false end
 		e:SetLabel(0)
-		return e:GetHandler():IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(c11560322.cpfilter,tp,LOCATION_DECK,0,1,nil)
-	end
+		return e:GetHandler():IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(c11560322.cpfilter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,11560322)==0 
+	end 
+	Duel.RegisterFlagEffect(tp,11560322,RESET_CHAIN,0,1) 
 	e:SetLabel(0)  
 	local g=Duel.SelectMatchingCard(tp,c11560322.cpfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true) 

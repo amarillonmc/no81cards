@@ -1,43 +1,129 @@
 --超级量子召唤 阿尔方连锁
 function c98920067.initial_effect(c)
---Activate
+--active1 XyzSummon
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(98920067,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCountLimit(1,98920067+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c98920067.target)
 	e1:SetOperation(c98920067.activate)
 	c:RegisterEffect(e1)
+--active2 LinkSummon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(98920067,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetType(EFFECT_TYPE_ACTIVATE)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCountLimit(1,98920067+EFFECT_COUNT_CODE_OATH)
+	e2:SetTarget(c98920067.target1)
+	e2:SetOperation(c98920067.activate1)
+	c:RegisterEffect(e2)
 end
-function c98920067.filter1(c,e,sp)
-	return c:IsSetCard(0xdc) and not c:IsType(TYPE_XYZ)
-		and Duel.IsExistingMatchingCard(c98920067.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetAttribute())
+function c98920067.filter(c,e,tp)
+	return c:IsCanBeEffectTarget(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c98920067.spfilter(c,e,tp,att)
-	return c:IsLocation(LOCATION_EXTRA) and c:IsSetCard(0x20dc) and c:IsAttribute(att) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
+function c98920067.xyzfilter(c,mg,ct)
+	return c:IsXyzSummonable(mg,2,2)
+end
+function c98920067.fgoal(sg,exg)
+	return sg:IsExists(Card.IsSetCard,1,nil,0xdc) and exg:IsExists(Card.IsXyzSummonable,1,nil,sg,2,2)
 end
 function c98920067.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c98920067.filter1(chkc,e,tp) end
+	if chkc then return false end
+	local mg=Duel.GetMatchingGroup(c98920067.filter,tp,LOCATION_GRAVE,0,nil,e,tp)
+	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ct<2 then return end
+	local exg=Duel.GetMatchingGroup(c98920067.xyzfilter,tp,LOCATION_EXTRA,0,nil,mg,ct)
 	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_XMATERIAL)
-		and Duel.IsExistingTarget(c98920067.filter1,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+		and not Duel.IsPlayerAffectedByEffect(tp,59822133)
+		and ct>1 and mg:CheckSubGroup(c98920067.fgoal,2,2,exg) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c98920067.filter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,2,tp,LOCATION_EXTRA)
+	local sg1=mg:SelectSubGroup(tp,c98920067.fgoal,false,2,2,exg)
+	Duel.SetTargetCard(sg1)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg1,sg1:GetCount(),0,0)
+end
+function c98920067.filter2(c,e,tp)
+	return c:IsRelateToEffect(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c98920067.spfilter(c,mg,ct)
+	return c:IsXyzSummonable(mg,ct,ct)
 end
 function c98920067.activate(e,tp,eg,ep,ev,re,r,rp)
-	 if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local tc=Duel.GetFirstTarget()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c98920067.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc,tc:GetAttribute())
-	local sc=g:GetFirst()
-	if sc then
-		Duel.BreakEffect()
-		sc:SetMaterial(Group.FromCards(tc))
-		Duel.Overlay(sc,Group.FromCards(tc))
-		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
-		sc:CompleteProcedure()
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c98920067.filter2,nil,e,tp)
+	local ct=Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	Duel.AdjustAll()
+	if g:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)<ct then return end
+	local xyzg=Duel.GetMatchingGroup(c98920067.spfilter,tp,LOCATION_EXTRA,0,nil,g,ct)
+	if ct>=2 and xyzg:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local xyz=xyzg:Select(tp,1,1,nil):GetFirst()
+		Duel.XyzSummon(tp,xyz,g)
 	end
+	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetTarget(c98920067.splimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+end
+function c98920067.splimit(e,c)
+	return not c:IsRace(RACE_MACHINE) and c:IsLocation(LOCATION_EXTRA)
+end
+function c98920067.ffilter(c,e,tp)
+	return c:IsSetCard(0x10dc) and c:IsCanBeEffectTarget(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c98920067.lkfilter(c,g)
+	return c:IsLinkSummonable(g,nil,g:GetCount(),g:GetCount())
+end
+function c98920067.fgoal1(sg,exg)
+	return aux.dncheck(sg) and Duel.IsExistingMatchingCard(c98920067.lkfilter,tp,LOCATION_EXTRA,0,1,nil,sg)
+end
+function c98920067.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return false end
+	local mg=Duel.GetMatchingGroup(c98920067.ffilter,tp,LOCATION_GRAVE,0,nil,e,tp)
+	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local exg=Duel.GetMatchingGroup(c98920067.lkfilter,tp,LOCATION_EXTRA,0,nil,mg,ct)
+	if #exg==0 then return false end
+	local _,maxlink=exg:GetMaxGroup(Card.GetLink)
+	if maxlink>ct then maxlink=ct end
+	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,3)
+		and not Duel.IsPlayerAffectedByEffect(tp,59822133)
+		and ct>1 and mg:CheckSubGroup(c98920067.fgoal1,2,maxlink,exg) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sg1=mg:SelectSubGroup(tp,c98920067.fgoal1,false,2,maxlink,exg)
+	Duel.SetTargetCard(sg1)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg1,sg1:GetCount(),0,0)
+end
+function c98920067.filter2(c,e,tp)
+	return c:IsRelateToEffect(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c98920067.activate1(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c98920067.filter2,nil,e,tp)
+	local ct=Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	Duel.AdjustAll()
+	if g:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)<ct then return end
+	local lkg=Duel.GetMatchingGroup(c98920067.lkfilter,tp,LOCATION_EXTRA,0,nil,g,ct)
+	if ct>=2 and lkg:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local rg=lkg:Select(tp,1,1,nil)
+		Duel.LinkSummon(tp,rg:GetFirst(),g,nil,#g,#g)
+	end
+	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetTarget(c98920067.splimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
 end

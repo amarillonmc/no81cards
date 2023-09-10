@@ -11,9 +11,14 @@ function c11533711.initial_effect(c)
 end
 function c11533711.actg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local g=Duel.GetFieldGroup(tp,LOCATION_EXTRA,0)
-	if chk==0 then return g:GetCount()==g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN) and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and not Duel.CheckPhaseActivity() end 
-	local x=math.ceil(g:GetCount()/2)-1  
-	local rg=g:Select(tp,x,x,nil) 
+	if chk==0 then return g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)>=4 and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end 
+	local x=0 
+	if g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)>=6 then 
+		x=Duel.AnnounceNumber(tp,4,6)  
+	else 
+		x=Duel.AnnounceNumber(tp,4)   
+	end 
+	local rg=g:RandomSelect(tp,x) 
 	e:SetLabel(Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT))   
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,PLAYER_ALL,LOCATION_ONFIELD)  
 	local b=Duel.GetFieldGroupCount(tp,0,LOCATION_EXTRA) 

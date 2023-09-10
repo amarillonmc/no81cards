@@ -71,7 +71,7 @@ function c22348019.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,1,0,0x1613,1,REASON_COST)
 end
 function c22348019.desfilter(c,tp)
-	return c:IsDisabled()
+	return c:IsFaceup() and c:IsDisabled() and c:IsType(TYPE_EFFECT)
 end
 function c22348019.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsDisabled() end
