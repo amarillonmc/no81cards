@@ -70,6 +70,12 @@ function cm.initial_effect(c)
 	e7:SetTarget(cm.uptg)
 	e7:SetOperation(cm.upop)
 	c:RegisterEffect(e7)
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e8:SetCode(EVENT_MOVE)
+	e8:SetOperation(cm.mvhint)
+	c:RegisterEffect(e8)
 	if not cm.global_check then
 		cm.global_check=true
 		local ge3=Effect.CreateEffect(c)
@@ -158,18 +164,51 @@ function cm.initial_effect(c)
 			if ad_ht_zc then ct=ct+ad_ht_zc end
 			return ct
 		end
-		cm[10]=Effect.IsActivatable
-		Effect.IsActivatable=function(re,tp,...)
-			local res=cm[10](re,tp,...)
-			if cm[9](tp,LOCATION_SZONE)<1 and ad_ht_ac_ignz then
-				local b=true
-				local pe={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
-				for _,v in pairs(pe) do
-					local val=v:GetValue()
-					if aux.GetValueType(val)=="number" or val(v,re,tp) then b=false end
+		cm[10]=Effect.GetActivateLocation
+		Effect.GetActivateLocation=function(re)
+			local rc=re:GetHandler()
+			local xe={rc:IsHasEffect(53765099)}
+			local b=false
+			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
+			if b then return LOCATION_SZONE else return cm[10](re) end
+		end
+		cm[11]=Effect.GetActivateSequence
+		Effect.GetActivateSequence=function(re)
+			local rc=re:GetHandler()
+			local xe={rc:IsHasEffect(53765099)}
+			local ls=0
+			local seq=cm[11](re)
+			for _,v in pairs(xe) do
+				if re==v:GetLabelObject() then
+					ls=v:GetLabel()
+					break
 				end
-				return b
-			else return res end
+			end
+			if ls>0 then return ls-1 else return seq end
+		end
+		cm[12]=Duel.GetChainInfo
+		Duel.GetChainInfo=function(chainc,...)
+			local re=cm[12](chainc,CHAININFO_TRIGGERING_EFFECT)
+			local rc=re:GetHandler()
+			local xe={rc:IsHasEffect(53765099)}
+			local b=false
+			local ls=0
+			for _,v in pairs(xe) do
+				if re==v:GetLabelObject() then
+					b=true
+					ls=v:GetLabel()
+					break
+				end
+			end
+			local t={cm[12](chainc,...)}
+			if b then
+				for k,info in ipairs({...}) do
+					if info==CHAININFO_TRIGGERING_LOCATION then t[k]=LOCATION_SZONE end
+					if info==CHAININFO_TRIGGERING_SEQUENCE and ls>0 then t[k]=ls-1 end
+					if info==CHAININFO_TRIGGERING_POSITION then t[k]=POS_FACEUP end
+				end
+			end
+			return table.unpack(t)
 		end
 	end
 end
@@ -325,6 +364,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	e0:SetValue(0x20004)
 	c:RegisterEffect(e0,true)
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	xe1:SetLabel(c:GetSequence()+1)
 	e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 	c:CreateEffectRelation(te)
 	local ev0=Duel.GetCurrentChain()+1
@@ -352,7 +392,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
-	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
 	end
@@ -380,7 +420,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetDescription(aux.Stringid(m,1))
 				if te:GetCode()==EVENT_FREE_CHAIN then
 					if te:IsActiveType(TYPE_TRAP+TYPE_QUICKPLAY) then e1:SetType(EFFECT_TYPE_QUICK_O) else e1:SetType(EFFECT_TYPE_IGNITION) end
-				elseif te:GetCode()==EVENT_CHAINING then e1:SetType(EFFECT_TYPE_QUICK_O) elseif te:GetCode() then e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) end
+				elseif te:GetCode()==EVENT_CHAINING then e1:SetType(EFFECT_TYPE_QUICK_O) elseif te:GetCode()~=0 then e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) else e1:SetType(EFFECT_TYPE_IGNITION) end
 				e1:SetRange(LOCATION_HAND)
 				local pro,pro2=te:GetProperty()
 				e1:SetProperty(pro|EFFECT_FLAG_UNCOPYABLE,pro2)
@@ -464,13 +504,25 @@ end
 function cm.faccost(_cost,fe,zone)
 	return function(e,te,tp)
 				ad_ht_zc=1
-				ad_ht_ac_ignz=true
-				if not fe:IsActivatable(tp) then
+				local fcost=fe:GetCost()
+				local ftg=fe:GetTarget()
+				local check=false
+				local code=fe:GetCode()
+				if code==0 or code==EVENT_FREE_CHAIN then
+					if (not fcost or fcost(fe,tp,nil,0,0,nil,0,0,0)) and (not ftg or ftg(fe,tp,nil,0,0,nil,0,0,0)) then check=true end
+				else
+					local cres,teg,tep,tev,tre,tr,trp=Duel.CheckEvent(code,true)
+					if cres and (not fcost or fcost(fe,tp,teg,tep,tev,tre,tr,trp,0)) and (not ftg or ftg(fe,tp,teg,tep,tev,tre,tr,trp,0)) then check=true end
+				end
+				local pe={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
+				for _,v in pairs(pe) do
+					local val=v:GetValue()
+					if aux.GetValueType(val)=="number" or val(v,fe,tp) then check=false end
+				end
+				if not fe:IsActivatable(tp) and not check then
 					ad_ht_zc=nil
-					ad_ht_ac_ignz=nil
 					return false
 				end
-				ad_ht_ac_ignz=nil
 				local c=e:GetHandler()
 				local xe={c:IsHasEffect(53765099)}
 				for _,v in pairs(xe) do v:Reset() end
@@ -524,6 +576,7 @@ function cm.mvcostop(e,tp,eg,ep,ev,re,r,rp)
 	local c=te:GetHandler()
 	local xe1=cm.regi(c,te)
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	xe1:SetLabel(c:GetSequence()+1)
 	c:CreateEffectRelation(te)
 	local ev0=Duel.GetCurrentChain()+1
 	local e1=Effect.CreateEffect(c)
@@ -548,7 +601,7 @@ function cm.mvrsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 		if not rc:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_PENDULUM) and not rc:IsHasEffect(EFFECT_REMAIN_FIELD) then rc:CancelToGrave(false) end
 	end
-	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
 	end
@@ -568,12 +621,22 @@ function cm.mvctfilter(c)
 end
 function cm.mvcount(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.mvctfilter,nil)
-	g:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD-RESET_LEAVE,0,1)
+	g:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+0x7e0000,0,1)
+end
+function cm.mvhint(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not (c:IsLocation(LOCATION_SZONE) and c:IsPreviousLocation(LOCATION_SZONE) and (c:GetPreviousSequence()~=c:GetSequence() or c:GetPreviousControler()~=c:GetControler())) then return end
+	local flag=c:GetFlagEffectLabel(m+50)
+	if flag then
+		flag=flag+1
+		c:ResetFlagEffect(m+50)
+		c:RegisterFlagEffect(m+50,RESET_EVENT+0x7e0000,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(53765000,flag-1))
+	else c:RegisterFlagEffect(m+50,RESET_EVENT+0x7e0000,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(53765000,0)) end
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=c:GetFlagEffect(m)
-	if ct==0 then return end
+	if ct==0 or ct>10 then return end
 	local eset={c:IsHasEffect(m)}
 	local res=true
 	for _,v in pairs(eset) do if v:GetLabel()==tp then res=false end end

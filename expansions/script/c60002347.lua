@@ -6,17 +6,13 @@ cm.name = "妖精骑士 高文"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 
-	local e0 = Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetCode(EFFECT_CANNOT_SUMMON)
-	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e0:SetRange(LOCATION_HAND)
-	e0:SetTargetRange(1, 0)
-	e0:SetTarget(cm.splimit)
-	c:RegisterEffect(e0)
-	local e00 = e0:Clone()
-	e0:SetCode(EFFECT_CANNOT_MSET)
-	c:RegisterEffect(e00)
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.FALSE)
+	c:RegisterEffect(e1)
 
 	--Special summon
 	local e1 = Effect.CreateEffect(c)
