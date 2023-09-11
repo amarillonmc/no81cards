@@ -56,14 +56,14 @@ function c98920067.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c98920067.filter2,nil,e,tp)
 	local ct=Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	Duel.AdjustAll()
+	Duel.AdjustAll() 
 	if g:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)<ct then return end
 	local xyzg=Duel.GetMatchingGroup(c98920067.spfilter,tp,LOCATION_EXTRA,0,nil,g,ct)
 	if ct>=2 and xyzg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local xyz=xyzg:Select(tp,1,1,nil):GetFirst()
 		Duel.XyzSummon(tp,xyz,g)
-	end
+	end  
 	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -71,11 +71,12 @@ function c98920067.activate(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,0)
 	e2:SetTarget(c98920067.splimit)
+	e2:SetLabel(xyzg:GetFirst():GetCode())
 	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
+	Duel.RegisterEffect(e2,tp) 
 end
 function c98920067.splimit(e,c)
-	return not c:IsRace(RACE_MACHINE) and c:IsLocation(LOCATION_EXTRA)
+	return not (c:IsRace(RACE_MACHINE) or c:IsCode(e:GetLabel())) and c:IsLocation(LOCATION_EXTRA)
 end
 function c98920067.ffilter(c,e,tp)
 	return c:IsSetCard(0x10dc) and c:IsCanBeEffectTarget(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -84,21 +85,19 @@ function c98920067.lkfilter(c,g)
 	return c:IsLinkSummonable(g,nil,g:GetCount(),g:GetCount())
 end
 function c98920067.fgoal1(sg,exg)
-	return aux.dncheck(sg) and Duel.IsExistingMatchingCard(c98920067.lkfilter,tp,LOCATION_EXTRA,0,1,nil,sg)
+	return Duel.IsExistingMatchingCard(c98920067.lkfilter,tp,LOCATION_EXTRA,0,1,nil,sg) and aux.dncheck(sg)
 end
 function c98920067.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	local mg=Duel.GetMatchingGroup(c98920067.ffilter,tp,LOCATION_GRAVE,0,nil,e,tp)
 	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local exg=Duel.GetMatchingGroup(c98920067.lkfilter,tp,LOCATION_EXTRA,0,nil,mg,ct)
-	if #exg==0 then return false end
-	local _,maxlink=exg:GetMaxGroup(Card.GetLink)
-	if maxlink>ct then maxlink=ct end
-	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,3)
+	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
 		and not Duel.IsPlayerAffectedByEffect(tp,59822133)
-		and ct>1 and mg:CheckSubGroup(c98920067.fgoal1,2,maxlink,exg) end
+		and ct>1 and mg:CheckSubGroup(c98920067.fgoal1,2,ct,exg)
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg1=mg:SelectSubGroup(tp,c98920067.fgoal1,false,2,maxlink,exg)
+	local sg1=mg:SelectSubGroup(tp,c98920067.fgoal1,false,2,ct,exg)
 	Duel.SetTargetCard(sg1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg1,sg1:GetCount(),0,0)
 end
@@ -109,20 +108,22 @@ function c98920067.activate1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c98920067.filter2,nil,e,tp)
 	local ct=Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	Duel.AdjustAll()
-	if g:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)<ct then return end
-	local lkg=Duel.GetMatchingGroup(c98920067.lkfilter,tp,LOCATION_EXTRA,0,nil,g,ct)
-	if ct>=2 and lkg:GetCount()>0 then
+	local og=Duel.GetOperatedGroup()
+	Duel.AdjustAll()   
+	if og:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)<ct then return end
+	local lkg=Duel.GetMatchingGroup(c98920067.lkfilter,tp,LOCATION_EXTRA,0,nil,og)
+	if og:GetCount()>=2 and lkg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local rg=lkg:Select(tp,1,1,nil)
-		Duel.LinkSummon(tp,rg:GetFirst(),g,nil,#g,#g)
-	end
+		Duel.LinkSummon(tp,rg:GetFirst(),og,nil,#og,#og)
+	end   
 	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,0)
+	e2:SetLabel(lkg:GetFirst():GetCode())
 	e2:SetTarget(c98920067.splimit)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
