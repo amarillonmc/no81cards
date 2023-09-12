@@ -2,7 +2,7 @@
 --the old library (c10199990.lua and c10199991.lua) has gone out of service, becuase it has become a SHIT MOUNTAIN, hard for reading.
 --any problems, you can call me: QQ/VX 852415212, PLZ note sth. about YGO while you add me, otherwise I will reject your friend request.
 
-local Version_Number = "2023.08.04"
+local Version_Number = "2023.09.12"
 
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constant <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -582,7 +582,11 @@ function s.create_category_list()
 	["Self"] = { "Select Your Card(s)", 0, HINTMSG_SELF, 0, 0, { s.dummy_operate, 1, sg } },
 	["Opponent"] = { "Select Your Card(s)", 0, HINTMSG_OPPO, 0, 0, { s.dummy_operate, 1, sg } },
 	["Target"] = { "Select Target(s)", 0, HINTMSG_TARGET, 0, 0, { s.dummy_operate, 1, sg } },
-	["GainEffect"] = { "Select Target(s)", 0, HINTMSG_TARGET, { 10032958, 0 } }
+	["GainEffect"] = { "Select Target(s)", 0, HINTMSG_TARGET, { 10032958, 0 } },
+	["FusionSummonMaterial"] = { "Select Special Summon Material(s)", 0, HINTMSG_FMATERIAL },
+	["SynchroSummonMaterial"] = { "Select Special Summon Material(s)", 0, HINTMSG_SMATERIAL },
+	["XyzSummonMaterial"] = { "Select Special Summon Material(s)", 0, HINTMSG_XFMATERIAL },
+	["LinkSummonMaterial"] = { "Select Special Summon Material(s)", 0, HINTMSG_LMATERIAL }
 
 	}
 end
@@ -658,7 +662,7 @@ function s.create_buff_list()
 	["!BeUsedAsMaterial4XyzSummon"] = { EFFECT_CANNOT_BE_XYZ_MATERIAL },
 	["!BeUsedAsLinkMaterial"] = { EFFECT_CANNOT_BE_LINK_MATERIAL },
 	["!BeUsedAsMaterial4LinkSummon"] = { EFFECT_CANNOT_BE_LINK_MATERIAL },
-	["!BeUsedAsMaterial4SpecialSummon"] = { { "!BeUsedAsMaterial4FusionSummon", "!BeUsedAsMaterial4SynchroSummon", "!BeUsedAsMaterial4XyzSummon", "!BeUsedAsMaterial4LinkSummon" } },
+	["!BeUsedAsMaterial4SpecialSummon"] = { { "!BeUsedAsFusionMaterial", "!BeUsedAsMaterial4SynchroSummon", "!BeUsedAsMaterial4XyzSummon", "!BeUsedAsMaterial4LinkSummon" } },
 	["!BeUsedAsMaterial4Fusion/Synchro/Xyz/LinkSummon"] = { { "!BeUsedAsMaterial4FusionSummon", "!BeUsedAsMaterial4SynchroSummon", "!BeUsedAsMaterial4XyzSummon", "!BeUsedAsMaterial4LinkSummon" } },
 	["!BeBattleTarget"] = { EFFECT_CANNOT_BE_BATTLE_TARGET, false, aux.imval1, nil, nil, EFFECT_FLAG_IGNORE_IMMUNE },
 	["!BeEffectTarget"] = { EFFECT_CANNOT_BE_EFFECT_TARGET, false, nil, nil, nil, EFFECT_FLAG_IGNORE_IMMUNE },
@@ -3772,11 +3776,11 @@ function s.do_cost_or_target_or_operation(e, tp, eg, ep, ev, re, r, rp, current_
 			end
 		end
 		--case9 do operate
+		Scl.Last_Selected_Group:Clear()
+		Scl.Last_Selected_Group:Merge(mandatory_group)
 		local total_sel_group2 = total_sel_group:Clone()
 		total_sel_group2:Merge(mandatory_group)
 		if need_operate then
-			Scl.Last_Selected_Group:Clear()
-			Scl.Last_Selected_Group:Merge(current_sel_group)
 			if not s.operate_selected_cost_or_operat_objects(mandatory_group, total_sel_group2, category_str, replace_operation, reason, e, tp, eg, ep, ev, re, r, rp) then
 				return false
 			end
@@ -5661,7 +5665,42 @@ end
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Card&Group<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
+--Using to replace function Scl.CheckSubGroup
+--If you want to check a few cards, Scl.CheckSubGroup is effective, but if you want to check more cards, use Scl.CheckSubGroup will stuck your ygopro, even crash it. 
+--Commonly using in a synchro/xyz/link summon that can use cards in hand/GY/Deck as materials.
+--filter_obj can be follow formats: first_filter, {first_filter} or {first_filter, final_filter}
+--first_filter: If the checking group don't suit first_filter(g, ...), it will directly return false 
+--final_filter (default == aux.TRUE): If the checking group don't suit final_filter(g, ...), it will continue add new cards into the checking group to do the next check.
+-->> return successfully
+function Scl.RecursionGroupCheck(card_obj, filter_obj, minct, maxct, ...)
+	filter_obj = type(filter_obj) == "table" and filter_obj or { filter_obj }
+	local first_filter, final_filter = table.unpack(filter_obj)
+	final_filter = final_filter or aux.TRUE
+	local mg = Scl.Mix2Group(card_obj)
+	return mg:IsExists(s.recursion_group_check_filter, 1, nil, { }, mg, first_filter, final_filter, minct, maxct, ...)
+end
+function s.recursion_group_check_filter(c, checked_cards, mg, first_filter, final_filter, minct, maxct, ...)
+	local sg = Scl.Mix2Group(c, checked_cards)
+	local checked_cards2 = Scl.Group2CardList(sg)
+	local res
+	--case0 not suit first_filter 
+	if not first_filter(sg, ...) then
+		return false
+	end
+	--case1 more cards
+	if #sg > maxct then
+		return false
+	end
+	--case2 less cards
+	if #sg < minct then 
+		return mg:IsExists(s.recursion_group_check_filter, 1, sg, checked_cards2, mg, first_filter, final_filter, minct, maxct, ...)
+	end
+	--case3 not suit final_filter
+	if not final_filter(sg, ...) then
+		return mg:IsExists(s.recursion_group_check_filter, 1, sg, checked_cards2, mg, first_filter, final_filter, minct, maxct, ...)
+	end
+	return true
+end
 --Get the xyz materials attach on the obj before obj leaves the field.
 --//return xyz materials group
 function Scl.GetPreviousXyzMaterials(obj)
@@ -6018,6 +6057,7 @@ end
 --can call some scl's custom functions in the procedure, like extra synchro material, dark synchro, custom level synchro, custom synchro material action, and so on
 --return summon effect
 function Scl.AddSynchroProcedure(c, f1, f2, f3, f4, minc, maxc, gc)
+	maxc = maxc or 99
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1164)
@@ -6129,6 +6169,7 @@ function s.SynMixOperation(f1, f2, f3, f4, minct, maxc, gc)
 				local res
 				--case 1,  Summon Effect Custom
 				if Scl.CustomSynchroMaterialAction then
+					Debug.Message("1231414")
 					res = Scl.CustomSynchroMaterialAction(mg, c, e, tp)
 					Scl.CustomSynchroMaterialAction = nil
 				--case 2,  Summon Procedure Custom 
@@ -6367,7 +6408,9 @@ function s.XyzLevelFreeOperationAlter(f, gf, minct, maxct, alterf, desc, op)
 	return  function(e, tp, eg, ep, ev, re, r, rp, c, og, min, max)
 			local res
 			local mg = e:GetLabelObject()
+			mg = mg or og
 			s.XExtraMaterialCount(mg, c, tp)
+			Debug.Message(22333)
 			if not Scl.CustomXyzMaterialAction and not c.scl_custom_xyz_material_action then
 				res = aux.XyzLevelFreeOperationAlter(f, gf, 1, maxct, alterf, desc, op)(e, tp, eg, ep, ev, re, r, rp, c, og, min, max)
 			else

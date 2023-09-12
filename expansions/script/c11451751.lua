@@ -125,7 +125,8 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	if Duel.GetCurrentPhase()~=e:GetLabel() then
+	local ph,ph2=Duel.GetCurrentPhase(),e:GetLabel()
+	if ph~=ph2 and (ph<=PHASE_MAIN1 or ph>=PHASE_MAIN2 or ph2<=PHASE_MAIN1 or ph2>=PHASE_MAIN2) then
 		Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
 	end
 end
