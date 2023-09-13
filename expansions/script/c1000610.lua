@@ -15,7 +15,6 @@ function c1000610.initial_effect(c)
 	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_BATTLE_START)
-	e2:SetCondition(c1000610.con)
 	e2:SetCondition(c1000610.remcon)
 	e2:SetTarget(c1000610.remtg)
 	e2:SetOperation(c1000610.remop)
@@ -74,15 +73,12 @@ end
 function c1000610.filter9(c,e,tp)
 	return c:IsSetCard(0xc204) and c:IsControler(tp) and not c:IsType(TYPE_PENDULUM) 
 end
-function c1000610.con(e,tp,eg,ep,ev,re,r,rp)
-   local g=Duel.GetMatchingGroup(c1000610.filter9,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil,e,tp)
-	local ct=g:GetClassCount(Card.GetCode)
-   return  ct>=3
-end
 function c1000610.remcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local bc=c:GetBattleTarget()
-	return bc and bit.band(bc:GetSummonType(),SUMMON_TYPE_SPECIAL)==SUMMON_TYPE_SPECIAL
+	local g=Duel.GetMatchingGroup(c1000610.filter9,tp,LOCATION_GRAVE,0,nil,e,tp)
+	local ct=g:GetClassCount(Card.GetCode)
+	return ct>=3 and bc and bit.band(bc:GetSummonType(),SUMMON_TYPE_SPECIAL)==SUMMON_TYPE_SPECIAL
 end
 function c1000610.remtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
