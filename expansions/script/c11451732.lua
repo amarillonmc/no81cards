@@ -96,7 +96,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	--limit
 	flag=flag+1
 	Duel.ResetFlagEffect(tp,11451731)
-	local ct=math.max(math.min(flag+5,16),0)
+	local ct=math.max(math.min(flag+5,15),0)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetDescription(aux.Stringid(11451731,ct))
 	e1:SetLabel(flag)

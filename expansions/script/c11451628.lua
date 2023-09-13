@@ -1,7 +1,6 @@
 --高速疾行机人 纸模空间船
 --21.09.14
-local m=11451628
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:SetSPSummonOnce(m)
 	aux.AddSynchroProcedure(c,cm.tfilter,cm.ntfilter,1)
@@ -241,7 +240,7 @@ function cm.syop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:Select(tp,1,1,nil)
-		local mg=aux.GetSynMaterials(tp,sg:GetFirst())
+		--[[local mg=aux.GetSynMaterials(tp,sg:GetFirst())
 		for tc in aux.Next(mg) do
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
@@ -260,7 +259,34 @@ function cm.syop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetOperation(cm.adjustop)
 			e2:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e2,tp)
-		end
+		end--]]
+		local sc=sg:GetFirst()
+		local _SendToGrave=Duel.SendtoGrave
+		Duel.SendtoGrave=function(g,r)
+							if r==REASON_MATERIAL+REASON_SYNCHRO and #g>0 and Duel.Remove(g,POS_FACEUP,REASON_MATERIAL+REASON_SYNCHRO+REASON_TEMPORARY)>0 then
+								local fid=sc:GetFieldID()
+								local og=Duel.GetOperatedGroup()
+								for oc in aux.Next(og) do
+									oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
+								end
+								og:KeepAlive()
+								local e1=Effect.CreateEffect(sc)
+								e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+								e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+								e1:SetCode(EVENT_PHASE+PHASE_END)
+								e1:SetCountLimit(1)
+								e1:SetLabel(fid)
+								e1:SetLabelObject(og)
+								e1:SetCondition(cm.retcon)
+								e1:SetOperation(cm.retop)
+								e1:SetReset(RESET_PHASE+PHASE_END)
+								Duel.RegisterEffect(e1,tp)
+								Duel.SendtoGrave=_SendToGrave
+								return #og
+							else
+								return _SendToGrave(tg,r)
+							end
+						end
 		Duel.SynchroSummon(tp,sg:GetFirst(),nil)
 	end
 end

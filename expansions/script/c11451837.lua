@@ -90,7 +90,7 @@ end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
-	cm.activate_sequence[te]=tc:GetSequence()
+	cm.activate_sequence[te]=e:GetHandler():GetSequence()
 	e:GetHandler():CreateEffectRelation(te)
 	local c=e:GetHandler()
 	local ev0=Duel.GetCurrentChain()+1

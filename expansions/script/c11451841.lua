@@ -52,7 +52,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		elseif acs and bcs then
 			local acpos=ac:GetPosition()
 			local bcpos=bc:GetPosition()
-			Duel.Overlay(ac,bc)
+			local tempc=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA+LOCATION_REMOVED,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA+LOCATION_REMOVED):GetFirst()
+			Duel.Overlay(tempc,bc)
 			Duel.MoveToField(ac,tp,1-ac:GetControler(),LOCATION_FZONE,acpos,true)
 			Duel.MoveToField(bc,tp,1-ac:GetControler(),LOCATION_FZONE,bcpos,true)
 		end
