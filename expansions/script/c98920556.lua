@@ -15,7 +15,7 @@ function c98920556.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c98920556.cfilter(c,tp)
-	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK) --and c:IsReason(REASON_EFFECT)
+	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK) and c:IsReason(REASON_EFFECT)
 end
 function c98920556.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c98920556.cfilter,1,nil,1-tp)

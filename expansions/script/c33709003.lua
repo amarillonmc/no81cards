@@ -58,7 +58,7 @@ function cm.repfilter(c,re)
 end
 function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.repfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,c,e) and c:IsCanRemoveCounter(0x1441,2,REASON_EFFECT+REASON_REPLACE) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.repfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,c,e) and c:IsCanRemoveCounter(tp,0x1441,2,REASON_EFFECT+REASON_REPLACE) end
 	if Duel.SelectEffectYesNo(tp,c,96) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESREPLACE)
 		local g=Duel.SelectMatchingCard(tp,cm.repfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,c,e)

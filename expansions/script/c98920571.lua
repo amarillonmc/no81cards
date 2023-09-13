@@ -42,10 +42,10 @@ function c98920571.initial_effect(c)
 	c:RegisterEffect(e3) 
 	if not c98920571.check then
 		c98920571.check=true
-		mg=Duel.GetFusionMaterial
+		jerrymg=Duel.GetFusionMaterial
 		Duel.GetFusionMaterial=function(p)  
 			   local g=Duel.GetMatchingGroup(c98920571.filter1,p,0,LOCATION_MZONE,nil)
-			   return Group.__add(mg(p),g)
+			   return Group.__add(jerrymg(p),g)
 		end
 	end
 end
@@ -73,7 +73,7 @@ function c98920571.operation(e,tp,eg,ep,ev,re,r,rp)
 	while tc do
 		tc:RegisterFlagEffect(98920571,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		tc=g:GetNext()
-	end	
+	end 
 end
 function c98920571.splimit(e,c)
 	return not c:IsSetCard(0x10f3,0x1046) and c:IsLocation(LOCATION_EXTRA)

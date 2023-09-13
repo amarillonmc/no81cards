@@ -52,8 +52,10 @@ function c98920270.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function c98920270.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98920270.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+function c98920270.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc) 
+	local c=e:GetHandler()
+	local bc=c:GetBattleTarget()
+	if chk==0 then return bc and bc:IsFaceup() and bc:IsRelateToBattle() and Duel.IsExistingMatchingCard(c98920270.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) and c:IsLocation(LOCATION_MZONE) and c:IsRelateToBattle() end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c98920270.setop(e,tp,eg,ep,ev,re,r,rp)

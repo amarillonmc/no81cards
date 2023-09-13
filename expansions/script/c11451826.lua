@@ -152,11 +152,53 @@ function cm.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.leave(e,tp,eg,ep,ev,re,r,rp)
+	local b1=r&REASON_SUMMON>0 or (re and (re:GetCode()==EFFECT_SUMMON_PROC or re:GetCode()==EFFECT_SUMMON_COST or re:GetCode()==EVENT_SUMMON)) or Duel.CheckEvent(EVENT_SUMMON)
+	local b2=re and (re:GetCode()==EFFECT_SET_PROC or re:GetCode()==EFFECT_MSET_COST)
+	local b3=(re and (re:GetCode()==EFFECT_SPSUMMON_PROC or re:GetCode()==EFFECT_SPSUMMON_PROC_G or re:GetCode()==EFFECT_SPSUMMON_COST or re:GetCode()==EVENT_SPSUMMON)) or Duel.CheckEvent(EVENT_SPSUMMON) --and (not re:GetHandler():IsLocation(LOCATION_EXTRA) or Duel.GetLocationCountFromEx(tp,tp,nil,re:GetHandler())==Duel.GetLocationCountFromEx(tp,tp,nil,re:GetHandler(),0x1f))
 	local c=e:GetHandler()
 	if c:IsPreviousControler(tp) then
 		local og=c:GetOverlayGroup()
 		local tg=og:Filter(cm.spfilter,nil,e,tp)
 		if #tg==0 then return end
+		if b1 or b2 or b3 then
+			tg:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE-RESET_REMOVE,0,1,c:GetFieldID())
+			if b1 then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e1:SetCode(EVENT_SUMMON_SUCCESS)
+				e1:SetProperty(EFFECT_FLAG_DELAY)
+				e1:SetLabel(c:GetFieldID())
+				e1:SetOperation(cm.leave2)
+				Duel.RegisterEffect(e1,tp)
+				local e2=e1:Clone()
+				e2:SetCode(EVENT_SUMMON_NEGATED)
+				Duel.RegisterEffect(e2,tp)
+				e1:SetLabelObject(e2)
+				e2:SetLabelObject(e1)
+			elseif b2 then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e1:SetCode(EVENT_MSET)
+				e1:SetProperty(EFFECT_FLAG_DELAY)
+				e1:SetLabel(c:GetFieldID())
+				e1:SetOperation(cm.leave2)
+				Duel.RegisterEffect(e1,tp)
+			elseif b3 then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+				e1:SetProperty(EFFECT_FLAG_DELAY)
+				e1:SetLabel(c:GetFieldID())
+				e1:SetOperation(cm.leave2)
+				Duel.RegisterEffect(e1,tp)
+				local e2=e1:Clone()
+				e2:SetCode(EVENT_SPSUMMON_NEGATED)
+				Duel.RegisterEffect(e2,tp)
+				e1:SetLabelObject(e2)
+				e2:SetLabelObject(e1)
+			end
+			return
+		end
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if ft<=0 then return end
 		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
@@ -165,5 +207,24 @@ function cm.leave(e,tp,eg,ep,ev,re,r,rp)
 		if #g>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
+	end
+end
+function cm.ffilter(c,fid)
+	return c:GetFlagEffect(m)>0 and fid==c:GetFlagEffectLabel(m)
+end
+function cm.leave2(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	if te and aux.GetValueType(te)=="Effect" then te:Reset() end
+	e:Reset()
+	local og=Duel.GetMatchingGroup(cm.ffilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e:GetLabel())
+	local tg=og:Filter(cm.spfilter,nil,e,tp)
+	if #tg==0 then return end
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=tg:Select(tp,ft,ft,nil)
+	if #g>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
