@@ -85,6 +85,7 @@ function cm.chainlm(e,rp,tp)
 	return tp==rp
 end
 function cm.sumcostfilter1(c)
+	local tp=c:GetControler()
 	return c:IsSetCard(0x20b5) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(cm.sumcostfilter2,tp,LOCATION_DECK,0,1,c)
 end
 function cm.sumcostfilter2(c)

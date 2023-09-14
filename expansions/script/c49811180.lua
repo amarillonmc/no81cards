@@ -17,7 +17,7 @@ function c49811180.initial_effect(c)
     e1:SetRange(LOCATION_PZONE)
     e1:SetCondition(c49811180.imcon)
     e1:SetTargetRange(LOCATION_MZONE,0)
-    e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,1))
+    e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x1))
     e1:SetValue(c49811180.indval)
     c:RegisterEffect(e1)
     --immune effect
@@ -27,7 +27,7 @@ function c49811180.initial_effect(c)
     e2:SetRange(LOCATION_PZONE)
     e1:SetCondition(c49811180.imcon)
     e2:SetTargetRange(LOCATION_MZONE,0)
-    e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,1))
+    e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x1))
     e2:SetValue(c49811180.efilter)
     c:RegisterEffect(e2)
     --spsummon
@@ -72,7 +72,7 @@ function c49811180.sdcon(e)
         and not Duel.IsExistingMatchingCard(Card.IsFacedown,e:GetHandlerPlayer(),0,LOCATION_ONFIELD,1,nil)
 end
 function c49811180.imfilter(c)
-    return c:IsSetCard(1) and c:IsType(TYPE_SYNCHRO) and c:IsFaceup()
+    return c:IsSetCard(0x1) and c:IsType(TYPE_SYNCHRO) and c:IsFaceup()
 end
 function c49811180.imcon(e)
     return Duel.IsExistingMatchingCard(c49811180.imfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
@@ -84,7 +84,7 @@ function c49811180.efilter(e,te)
     return te:GetHandler():IsAttribute(ATTRIBUTE_LIGHT) and te:IsActiveType(TYPE_MONSTER)
 end
 function c49811180.cfilter(c)
-    return c:IsSetCard(1) and not c:IsPublic()
+    return c:IsSetCard(0x1) and not c:IsPublic()
 end
 function c49811180.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c49811180.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
@@ -104,11 +104,11 @@ function c49811180.spop(e,tp,eg,ep,ev,re,r,rp)
     if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
 end
 function c49811180.filter(c,e,sp)
-    return c:IsSetCard(1) and c:IsCanBeSpecialSummoned(e,0,sp,false,false)
+    return c:IsSetCard(0x1) and c:IsCanBeSpecialSummoned(e,0,sp,false,false)
 end
 function c49811180.dsptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-        and Duel.IsExistingMatchingCard(c49811180.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+        and Duel.IsExistingMatchingCard(c49811180.filter,tp,LOCATION_DECK,0,1,nil,e,tp) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c49811180.dspop(e,tp,eg,ep,ev,re,r,rp)

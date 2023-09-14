@@ -22,7 +22,7 @@ function c49811184.initial_effect(c)
     c:RegisterEffect(e2)
     --destroy
     local e3=Effect.CreateEffect(c)
-    e3:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW)
+    e3:SetCategory(CATEGORY_DESTROY)
     e3:SetDescription(aux.Stringid(49811184,2))
     e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e3:SetType(EFFECT_TYPE_QUICK_O)
