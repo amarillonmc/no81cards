@@ -17,7 +17,7 @@ function cm.filter(c)
 	return c:IsCode(60002134) and c:IsAbleToHand()
 end
 function cm.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and aux.IsCodeListed(c,60002134) and c:IsAbleToHand()
+	return c:IsType(TYPE_MONSTER) and aux.IsCodeListed(c,60002134) and c:IsAbleToHand() and (c:IsLocation(LOCATION_GRAVE) or (c:IsLocation(LOCATION_ONFIELD) and c:IsFaceup()))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return (chkc:IsLocation(LOCATION_GRAVE) or chkc:IsLocation(LOCATION_MZONE)) and chkc:IsControler(tp) and cm.tgfilter(chkc) end

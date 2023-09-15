@@ -28,16 +28,37 @@ function c11561011.initial_effect(c)
 	e2:SetOperation(c11561011.xxop)
 	c:RegisterEffect(e2) 
 	--atk 
+	--local e3=Effect.CreateEffect(c) 
+	--e3:SetDescription(aux.Stringid(11561011,3))
+	--e3:SetType(EFFECT_TYPE_QUICK_O) 
+	--e3:SetCode(EVENT_CHAINING) 
+	--e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	--e3:SetRange(LOCATION_MZONE) 
+	--e3:SetCondition(c11561011.atkcon) 
+	--e3:SetTarget(c11561011.atktg)
+	--e3:SetOperation(c11561011.atkop) 
+	--c:RegisterEffect(e3)
+	--pendulum
 	local e3=Effect.CreateEffect(c) 
-	e3:SetDescription(aux.Stringid(11561011,3))
-	e3:SetType(EFFECT_TYPE_QUICK_O) 
-	e3:SetCode(EVENT_CHAINING) 
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetRange(LOCATION_MZONE) 
-	e3:SetCondition(c11561011.atkcon) 
-	e3:SetTarget(c11561011.atktg)
-	e3:SetOperation(c11561011.atkop) 
-	c:RegisterEffect(e3)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e3:SetCondition(c11561011.pencon)
+	e3:SetTarget(c11561011.pentg)
+	e3:SetOperation(c11561011.penop)
+	c:RegisterEffect(e3) 
+	--to hand
+	local e1=Effect.CreateEffect(c)  
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e1:SetRange(LOCATION_PZONE) 
+	e1:SetTarget(c11561011.patktg)
+	e1:SetOperation(c11561011.patkop)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2)
 end
 function c11561011.mfilter(c,xyzc)
 	return c:IsXyzLevel(xyzc,8) 
@@ -46,12 +67,12 @@ function c11561011.xyzcheck(g)
 	return g:GetClassCount(Card.GetRace)==g:GetCount() 
 end
 function c11561011.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,2) end  
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,2) 
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end  
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3) 
 end 
 function c11561011.tgop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	if Duel.IsPlayerCanDiscardDeck(tp,2) and Duel.DiscardDeck(tp,2,REASON_EFFECT)~=0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=20 and c:IsRelateToEffect(e) then  
+	if Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.DiscardDeck(tp,3,REASON_EFFECT)~=0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=20 and c:IsRelateToEffect(e) then  
 		local e1=Effect.CreateEffect(c) 
 		e1:SetType(EFFECT_TYPE_SINGLE)  
 		e1:SetCode(EFFECT_UPDATE_ATTACK) 
@@ -74,7 +95,7 @@ function c11561011.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function c11561011.xxop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()   
-	if Duel.IsPlayerCanDiscardDeck(tp,2) and Duel.DiscardDeck(tp,2,REASON_EFFECT)~=0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=20 then 
+	if Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.DiscardDeck(tp,3,REASON_EFFECT)~=0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=20 then 
 		for i=1,9 do 
 			local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)   
 			if g:GetCount()>0 then 
@@ -131,4 +152,55 @@ function c11561011.atkop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)  
 	end 
 end 
+function c11561011.pencon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsPreviousLocation(LOCATION_MZONE) 
+end
+function c11561011.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
+end
+function c11561011.penop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+	end
+end
+function c11561011.cfilter(c,tp)
+	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER+RACE_DRAGON) and c:IsSummonPlayer(tp)
+end 
+function c11561011.patktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=eg:Filter(c11561011.cfilter,nil,tp) 
+	if chk==0 then return g:GetCount()>0 end 
+	Duel.SetTargetCard(g)  
+end
+function c11561011.patkop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler() 
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e) 
+	if g:GetCount()>0 then 
+		local tc=g:GetFirst() 
+		while tc do 
+		if tc:IsFaceup() then 
+			local e1=Effect.CreateEffect(c) 
+			e1:SetType(EFFECT_TYPE_SINGLE) 
+			e1:SetCode(EFFECT_UPDATE_ATTACK) 
+			e1:SetRange(LOCATION_MZONE) 
+			e1:SetValue(800) 
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
+			tc:RegisterEffect(e1)
+			local e1=Effect.CreateEffect(c) 
+			e1:SetType(EFFECT_TYPE_SINGLE) 
+			e1:SetCode(EFFECT_UPDATE_DEFENSE) 
+			e1:SetRange(LOCATION_MZONE) 
+			e1:SetValue(800) 
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
+			tc:RegisterEffect(e1)
+		end 
+		tc=g:GetNext()  
+		end 
+	end 
+end  
+
+
+
+
 

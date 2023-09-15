@@ -74,34 +74,58 @@ end
 function c11561006.xdestg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local c=e:GetHandler() 
 	local x=c:GetLinkedGroupCount() 
-	if chk==0 then return c:GetFlagEffect(11561006)<x end
+	local b1=c:GetFlagEffect(21561006)==0 
+	local b2=c:GetFlagEffect(31561006)==0 and Duel.IsExistingMatchingCard(function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,0,LOCATION_MZONE,1,nil,c:GetAttack()) 
+	local b3=c:GetFlagEffect(41561006)==0
+	if chk==0 then return c:GetFlagEffect(11561006)<x and (b1 or b2 or b3) end
 	c:RegisterFlagEffect(11561006,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) 
 end 
 function c11561006.xdesop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler() 
-	if c:IsRelateToEffect(e) then 
-		local e1=Effect.CreateEffect(c) 
-		e1:SetType(EFFECT_TYPE_SINGLE) 
-		e1:SetCode(EFFECT_UPDATE_ATTACK) 
-		e1:SetRange(LOCATION_MZONE) 
-		e1:SetValue(2000) 
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
-		c:RegisterEffect(e1) 
-		--indes
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e3:SetRange(LOCATION_MZONE)
-		e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		e3:SetValue(1) 
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
-		c:RegisterEffect(e3)
-		local e4=e3:Clone()
-		e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-		c:RegisterEffect(e4)
-		if Duel.IsExistingMatchingCard(function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,0,LOCATION_MZONE,1,nil,c:GetAttack()) and Duel.SelectYesNo(tp,aux.Stringid(11561006,0)) then 
-			local dg=Duel.SelectMatchingCard(tp,function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,0,LOCATION_MZONE,1,1,nil,c:GetAttack())
-			Duel.Destroy(dg,REASON_EFFECT)   
-		end   
-	end 
+	local c=e:GetHandler()  
+		local b1=c:GetFlagEffect(21561006)==0 
+		local b2=c:GetFlagEffect(31561006)==0 and Duel.IsExistingMatchingCard(function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,0,LOCATION_MZONE,1,nil,c:GetAttack()) 
+		local b3=c:GetFlagEffect(41561006)==0
+		if (b1 or b2 or b3) then 
+			local op=0 
+			if b1 and b2 and b3 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11561006,1),aux.Stringid(11561006,2),aux.Stringid(11561006,3))
+			elseif b1 and b2 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11561006,1),aux.Stringid(11561006,2))
+			elseif b2 and b3 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11561006,2),aux.Stringid(11561006,3))+1 
+			elseif b1 and b3 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11561006,1),aux.Stringid(11561006,3)) 
+				if op==1 then op=op+1 end 
+			elseif b1 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11561006,1)) 
+			elseif b2 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11561006,2))+1 
+			elseif b3 then 
+				op=Duel.SelectOption(tp,aux.Stringid(11561006,3))+2 
+			end  
+			if op==0 then   
+				local e1=Effect.CreateEffect(c) 
+				e1:SetType(EFFECT_TYPE_SINGLE) 
+				e1:SetCode(EFFECT_UPDATE_ATTACK) 
+				e1:SetRange(LOCATION_MZONE) 
+				e1:SetValue(2000) 
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
+				c:RegisterEffect(e1) 
+				c:RegisterFlagEffect(21561006,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+			elseif op==1 then   
+				local dg=Duel.SelectMatchingCard(tp,function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,0,LOCATION_MZONE,1,1,nil,c:GetAttack())
+				Duel.Destroy(dg,REASON_EFFECT)   
+				c:RegisterFlagEffect(31561006,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+			elseif op==2 then   
+				local e1=Effect.CreateEffect(c) 
+				e1:SetType(EFFECT_TYPE_SINGLE) 
+				e1:SetCode(EFFECT_IMMUNE_EFFECT) 
+				e1:SetRange(LOCATION_MZONE) 
+				e1:SetValue(function(e,te) 
+				return e:GetOwner()~=te:GetOwner() end) 
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN) 
+				c:RegisterEffect(e1) 
+				c:RegisterFlagEffect(41561006,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+			end 
+		end  
 end 

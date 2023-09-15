@@ -101,14 +101,14 @@ function c11561025.drmop(e,tp,eg,ep,ev,re,r,rp)
 			end  
 		end 
 	end  
-	local e0=Effect.CreateEffect(e:GetHandler())
-	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
-	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e0:SetTargetRange(0,1)
-	e0:SetValue(1)
-	e0:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e0,tp)
+	--local e0=Effect.CreateEffect(e:GetHandler())
+	--e0:SetType(EFFECT_TYPE_FIELD)
+	--e0:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	--e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	--e0:SetTargetRange(0,1)
+	--e0:SetValue(1)
+	--e0:SetReset(RESET_PHASE+PHASE_END)
+	--Duel.RegisterEffect(e0,tp)
 end 
 	
 

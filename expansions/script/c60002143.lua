@@ -18,6 +18,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
+	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
 end
@@ -29,6 +30,20 @@ function cm.spcon(e,c)
 end
 function cm.filter(c,e,tp)
 	return c:IsCode(60002134) and c:IsAbleToHand()
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local b1=false
+	local b2=false
+	local b3=false
+	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_EXTRA,0,1,nil,m+1) and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,60002134) then b1=true end
+	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_EXTRA,0,1,nil,m+2) and Duel.IsPlayerCanDraw(tp,2) then b2=true end
+	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_EXTRA,0,1,nil,m+3) then b3=true end
+	if chk==0 then return b1 or b2 or b3 end
+	local op=aux.SelectFromOptions(tp,
+		{b1,aux.Stringid(m,1)},
+		{b2,aux.Stringid(m,2)},
+		{b3,aux.Stringid(m,3)})
+	e:SetLabel(op)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -52,14 +67,11 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,g)
 		end
 	end
-
-
 	if Card.GetFlagEffect(c,60002134)~=0 and Duel.GetFlagEffect(tp,60002135)>=4 then
 		Debug.Message("天之昭示，龙剑在此！")
 		local c=e:GetHandler()
 		Duel.Release(c,REASON_EFFECT)
-		local op=0
-		op=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2),aux.Stringid(m,3))
+		local op=e:GetLabel()
 		if op==0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)

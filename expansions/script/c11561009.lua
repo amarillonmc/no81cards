@@ -27,8 +27,8 @@ function c11561009.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c11561009.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,2) end  
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,2) 
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end  
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3) 
 end 
 function c11561009.filter0(c)
 	return c:IsOnField() and c:IsAbleToRemove()
@@ -45,7 +45,7 @@ function c11561009.filter3(c)
 end
 function c11561009.tgop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	if Duel.IsPlayerCanDiscardDeck(tp,2) and Duel.DiscardDeck(tp,2,REASON_EFFECT)~=0 then	  
+	if Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.DiscardDeck(tp,3,REASON_EFFECT)~=0 then	 
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp):Filter(c11561009.filter1,nil,e)
 		local mg2=Duel.GetMatchingGroup(c11561009.filter3,tp,LOCATION_GRAVE,0,nil)
@@ -85,19 +85,19 @@ function c11561009.thfil(c)
 	return c:IsAbleToHand() and c:IsLevel(4) and c:IsRace(RACE_SPELLCASTER)   
 end 
 function c11561009.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,2) and Duel.IsExistingMatchingCard(c11561009.thfil,tp,LOCATION_DECK,0,1,nil) end 
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,2)  
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.IsExistingMatchingCard(c11561009.thfil,tp,LOCATION_DECK,0,1,nil) end 
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3)  
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK) 
 end 
 function c11561009.xxop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()  
-	if Duel.IsPlayerCanDiscardDeck(tp,2) and Duel.DiscardDeck(tp,2,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(c11561009.thfil,tp,LOCATION_DECK,0,1,nil) then  
+	if Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.DiscardDeck(tp,3,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(c11561009.thfil,tp,LOCATION_DECK,0,1,nil) then  
 		local g=Duel.SelectMatchingCard(tp,c11561009.thfil,tp,LOCATION_DECK,0,1,1,nil)   
 		Duel.SendtoHand(g,tp,REASON_EFFECT) 
-		Duel.ConfirmCards(1-tp,g)	
+		Duel.ConfirmCards(1-tp,g)   
 		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=20 then 
-			Duel.Damage(1-tp,3200,REASON_EFFECT) 
-			Duel.Recover(tp,3200,REASON_EFFECT) 
+			Duel.Damage(1-tp,2400,REASON_EFFECT) 
+			Duel.Recover(tp,2400,REASON_EFFECT) 
 		end 
 	end 
 end 
