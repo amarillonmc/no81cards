@@ -82,15 +82,17 @@ function s.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if ft<=0 then return false end
 	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_GRAVE,0,c)
-	aux.GCheckAdditional=s.hspgcheck
-	local res=g:CheckSubGroup(s.hspcheck,1,#g)
-	aux.GCheckAdditional=nil
+	--aux.GCheckAdditional=s.hspgcheck
+	--local res=g:CheckSubGroup(s.hspcheck,1,#g)
+	--aux.GCheckAdditional=nil
+	local res=g:CheckWithSumGreater(Card.GetLevel,8)
 	if chk==0 then return res end
 	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_GRAVE,0,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	aux.GCheckAdditional=s.hspgcheck
-	local sg=g:SelectSubGroup(tp,s.hspcheck,true,1,#g)
-	aux.GCheckAdditional=nil
+	--aux.GCheckAdditional=s.hspgcheck
+	--local sg=g:SelectSubGroup(tp,s.hspcheck,true,1,#g)
+	--aux.GCheckAdditional=nil
+	local sg=g:SelectWithSumGreater(tp,Card.GetLevel,8)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
 function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)

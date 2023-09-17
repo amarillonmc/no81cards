@@ -36,15 +36,17 @@ function cm.initial_effect(c)
 		local _SpecialSummon=Duel.SpecialSummon
 		local _SpecialSummonStep=Duel.SpecialSummonStep
 		function Duel.SpecialSummon(tg,...)
-			tg:KeepAlive()
-			cm[1]=tg
+			if aux.GetValueType(tg)=="Group" then
+				tg:KeepAlive()
+				cm[1]=tg
+			end
 			return _SpecialSummon(tg,...)
 		end
-		function Duel.SpecialSummonStep(tg,...)
+		--[[function Duel.SpecialSummonStep(tg,...)
 			tg:KeepAlive()
 			cm[1]=tg
 			return _SpecialSummonStep(tg,...)
-		end
+		end--]]
 	end
 end
 function cm.matfilter(c)
