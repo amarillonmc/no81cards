@@ -99,7 +99,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 		local sg=Group.CreateGroup()
 		for tc in aux.Next(cm[0]) do
 			local con=tc.condition3

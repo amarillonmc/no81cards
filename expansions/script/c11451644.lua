@@ -34,19 +34,15 @@ function cm.initial_effect(c)
 	if cm.global_check==nil then
 		cm.global_check=true
 		local _SpecialSummon=Duel.SpecialSummon
-		local _SpecialSummonStep=Duel.SpecialSummonStep
 		function Duel.SpecialSummon(tg,...)
 			if aux.GetValueType(tg)=="Group" then
 				tg:KeepAlive()
 				cm[1]=tg
 			end
-			return _SpecialSummon(tg,...)
+			local ct=_SpecialSummon(tg,...)
+			cm[1]=nil
+			return ct
 		end
-		--[[function Duel.SpecialSummonStep(tg,...)
-			tg:KeepAlive()
-			cm[1]=tg
-			return _SpecialSummonStep(tg,...)
-		end--]]
 	end
 end
 function cm.matfilter(c)

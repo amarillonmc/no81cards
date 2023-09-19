@@ -27,7 +27,7 @@ function s.initial_effect(c)
 	e3:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3:SetCondition(s.recon)
-	e3:SetValue(LOCATION_DECK)
+	e3:SetValue(LOCATION_DECKSHF)
 	c:RegisterEffect(e3)
 end
 function s.filter(c,e,tp,chk)

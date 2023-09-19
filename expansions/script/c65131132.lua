@@ -129,7 +129,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e2)
 			eqg2:AddCard(tc)
 			tc=eqg:GetNext()
-		end	 
+		end  
 		Duel.RaiseEvent(eqg2,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 	end
 	local e0=Effect.CreateEffect(c) 
@@ -169,10 +169,10 @@ function s.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return dg:GetCount()>0
 end
 function s.efop(e,tp,eg,ep,ev,re,r,rp)
-	local dg=eg:Filter(s.effilter,nil,e:GetHandler())	
-	dg:ForEach(s.addeffect)	
+	local dg=eg:Filter(s.effilter,nil,e:GetHandler())   
+	dg:ForEach(s.addeffect) 
 end
-function s.addeffect(c)	
+function s.addeffect(c) 
 	local efft={c:GetActivateEffect()}
 	for i,v in pairs(efft) do
 		local e1=Effect.CreateEffect(c)
@@ -205,7 +205,7 @@ function s.cost(ae)
 	end
 end
 function s.condition(ae)
-	return function (e,tp,eg,ep,ev,re,r,rp)		
+	return function (e,tp,eg,ep,ev,re,r,rp)	 
 		local c=e:GetHandler()
 		local fcon=ae:GetCondition()
 		return c:IsFacedown() and (not fcon or fcon(e,tp,eg,ep,ev,re,r,rp))
@@ -228,6 +228,8 @@ function s.operation(ae)
 		local c=e:GetHandler()  
 		--e:GetHandler():ReleaseRelation(e:GetHandler():GetEquipTarget())
 		local fop=ae:GetOperation()
-		fop(e,tp,eg,ep,ev,re,r,rp)
+		if fop then
+			fop(e,tp,eg,ep,ev,re,r,rp)
+		end
 	end
 end

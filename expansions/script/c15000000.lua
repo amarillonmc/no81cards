@@ -503,7 +503,7 @@ function Satl.HearogenehirpXyzLevelFreeCondition(f,gf,minct,maxct)
 				else
 					mg=Duel.GetMatchingGroup(Satl.XyzLevelFreeFilter,tp,LOCATION_MZONE,0,nil,c,f)
 				end
-				local sg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 				if sg:IsExists(Auxiliary.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(sg)
 				Auxiliary.GCheckAdditional=Auxiliary.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
@@ -529,7 +529,7 @@ function Satl.HearogenehirpXyzLevelFreeTarget(f,gf,minct,maxct)
 				else
 					mg=Duel.GetMatchingGroup(Satl.XyzLevelFreeFilter,tp,LOCATION_MZONE,0,nil,c,f)
 				end
-				local sg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 				Duel.SetSelectedCard(sg)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 				local cancel=Duel.IsSummonCancelable()
