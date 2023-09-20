@@ -16,6 +16,7 @@ function c71401008.initial_effect(c)
 	--place
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401008,0))
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE+TIMING_EQUIP)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
