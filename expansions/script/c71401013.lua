@@ -60,8 +60,8 @@ function c71401013.op2(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(-2000)
 			sc:RegisterEffect(e1)
 		end
-		local dg=Duel.GetDecktopGroup(tp,3)
-		if Duel.IsExistingMatchingCard(c71401013.filter2,tp,LOCATION_ONFIELD,0,1,nil) and dg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)==3 and Duel.SelectYesNo(tp,aux.Stringid(71401013,1)) then
+		local dg=Duel.GetDecktopGroup(tp,5)
+		if Duel.IsExistingMatchingCard(c71401013.filter2,tp,LOCATION_ONFIELD,0,1,nil) and dg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)==5 and Duel.SelectYesNo(tp,aux.Stringid(71401013,1)) then
 			Duel.Remove(dg,POS_FACEDOWN,REASON_EFFECT)
 		end
 	end
