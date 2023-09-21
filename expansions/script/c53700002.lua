@@ -1,5 +1,6 @@
 --苏我屠自古
 function c53700002.initial_effect(c)
+	aux.AddCodeList(c,53700000)
 	aux.AddCodeList(c,53700001)
 	c:EnableReviveLimit()
 	--token
@@ -37,7 +38,7 @@ function c53700002.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c53700002.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>2
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,53700001,0,TYPES_TOKEN_MONSTER,0,0,2,RACE_ZOMBIE,ATTRIBUTE_LIGHT) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,3,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,3,0,0)

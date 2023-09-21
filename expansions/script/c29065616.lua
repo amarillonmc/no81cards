@@ -35,8 +35,7 @@ function s.initial_effect(c)
 end
 --spsu
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local tp=Duel.GetTurnPlayer()
-	return rp==tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+	return rp==Duel.GetTurnPlayer() and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

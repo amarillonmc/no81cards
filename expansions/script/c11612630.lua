@@ -74,9 +74,10 @@ function cm.valcheck(e,c)
 end
 --1
 function cm.efilter(e,re)
+	local tp=e:GetHandlerPlayer()
 	local ct1=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD+LOCATION_HAND,0)
 	local ct2=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD+LOCATION_HAND)
-	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and ct1<=ct2-2
+	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and ct1<=ct2-3
 end
 --2
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)

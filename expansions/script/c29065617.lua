@@ -37,17 +37,16 @@ function s.initial_effect(c)
 end
 --spsu
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local tp=Duel.GetTurnPlayer()
-	return rp==tp and re:IsActiveType(TYPE_MONSTER)
+	return rp==Duel.GetTurnPlayer() and re:IsActiveType(TYPE_MONSTER)
 end
 function s.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
-		and Duel.IsExistingMatchingCard(aux.NegateMonsterFilter,tp,0,LOCATION_MZONE,1,nil)
+		and Duel.IsExistingMatchingCard(aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-		local g=Duel.SelectMatchingCard(tp,aux.NegateMonsterFilter,tp,0,LOCATION_MZONE,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 		Duel.HintSelection(g)
 		local tc=g:GetFirst()
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)

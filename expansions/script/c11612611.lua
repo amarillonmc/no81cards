@@ -30,7 +30,7 @@ function c11612611.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e2:SetCountLimit(1,m)
-	e2:SetCondition(cm.spcon)
+	--e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
@@ -84,24 +84,30 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0 and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
 end
 function cm.etfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:IsReleasable()
+	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:IsReleasable()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.etfilter(chkc) end
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.etfilter,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.etfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+end
+function cm.spfilter(c,atk,e,tp)
+	return c:IsAttackBelow(atk) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and bit.band(c:GetType(),0x81)==0x81
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,cm.etfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.etfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,1,1,nil)
 	local tc=g:GetFirst()
-	local code=tc:GetCode()
-	if tc:IsFaceup() then -- tc:IsRelateToEffect(e) and
-		Duel.Release(tc,REASON_EFFECT)
-		if aux.NecroValleyFilter()(tc) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,false,POS_FACEUP)
-			tc:CompleteProcedure()
-			if tc:IsSetCard(0x154) then
-				tc:RegisterFlagEffect(code,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+	local code=tc:GetCode()-- tc:IsRelateToEffect(e) and
+	if Duel.Release(tc,REASON_EFFECT) then
+		local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,tc:GetAttack(),e,tp)
+		if rg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			local rc=rg:Select(tp,1,1,nil):GetFirst()
+			if Duel.SpecialSummon(rc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)>0 then
+				rc:CompleteProcedure()
+				local code=rc:GetCode()
+				if rc:GetFlagEffect(code)==0 and rc:IsOriginalSetCard(0x154) then
+					rc:RegisterFlagEffect(code,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+				end
 			end
 		end
 	end

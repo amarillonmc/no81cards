@@ -47,7 +47,7 @@ function cm.initial_effect(c)
 	--copy
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_DRAW)
+	e4:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e4:SetCountLimit(1,m*2+1)
@@ -156,7 +156,7 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	c:AddCounter(0x1161,1,REASON_EFFECT)
 	local seq=c:GetSequence()
 	local dg=Duel.GetMatchingGroup(cm.desfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil,seq,c:GetControler())
-	if seq<5 and dg:GetCount()>0 then	   
+	if seq<5 and dg:GetCount()>0 then	  
 		local dgc=dg:GetFirst()
 		while dgc do
 			if dgc:GetCounter(0x1161)<=0 then
@@ -172,7 +172,7 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 				e3:SetRange(LOCATION_MZONE)
 				e3:SetCode(EFFECT_SELF_DESTROY)
 				e3:SetCondition(cm.descon)
-				dgc:RegisterEffect(e3)						
+				dgc:RegisterEffect(e3)					  
 			end
 			dgc:AddCounter(0x1161,1,REASON_EFFECT)
 			dgc=dg:GetNext()
@@ -180,13 +180,18 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --03
+function cm.thfilter(c)
+	return c:IsSetCard(0x154) and c:IsAbleToHand()
+end
 function cm.detg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.deop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end

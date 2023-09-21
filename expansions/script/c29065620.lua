@@ -10,26 +10,26 @@ function cm.initial_effect(c)
 	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_CHAINING)
+	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
-	e3:SetCondition(cm.rmcon)
+	--e3:SetCondition(cm.rmcon)
 	e3:SetTarget(cm.rmtg)
 	e3:SetOperation(cm.rmop)
 	c:RegisterEffect(e3)
-	if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_REMOVE)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=ge1:Clone()
-		ge2:SetCode(EVENT_CHAINING)
-		ge2:SetLabelObject(ge1)
-		ge2:SetOperation(cm.reset)
-		Duel.RegisterEffect(ge2,0)
-	end
+	--if not cm.global_check then
+		--cm.global_check=true
+		--local ge1=Effect.CreateEffect(c)
+		--ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		--ge1:SetCode(EVENT_REMOVE)
+		--ge1:SetOperation(cm.checkop)
+		--Duel.RegisterEffect(ge1,0)
+		--local ge2=ge1:Clone()
+		--ge2:SetCode(EVENT_CHAINING)
+		--ge2:SetLabelObject(ge1)
+		--ge2:SetOperation(cm.reset)
+		--Duel.RegisterEffect(ge2,0)
+	--end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do

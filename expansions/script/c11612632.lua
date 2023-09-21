@@ -162,7 +162,7 @@ function cm.drawcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and re:GetHandler():IsCode(ac) and Duel.GetFlagEffect(tp,m)~=0
 end
 function cm.drawop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.DiscardDeck(tp,3,REASON_EFFECT)
+	Duel.Draw(tp,1,REASON_EFFECT)
 end
 --
 function cm.filter(c,sp,ac)
@@ -174,7 +174,7 @@ function cm.drcon1(e,tp,eg,ep,ev,re,r,rp)
 		and (not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS))
 end
 function cm.drop1(e,tp,eg,ep,ev,re,r,rp)
-	Duel.DiscardDeck(tp,3,REASON_EFFECT)
+	Duel.Draw(tp,1,REASON_EFFECT)
 end
 --
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
@@ -193,7 +193,7 @@ end
 function cm.drop2(e,tp,eg,ep,ev,re,r,rp)
 	local n=Duel.GetFlagEffect(tp,m*2+1)
 	Duel.ResetFlagEffect(tp,m*2+1)
-	Duel.DiscardDeck(tp,3*n,REASON_EFFECT)
+	Duel.Draw(tp,1,REASON_EFFECT)
 end
 --123
 --03

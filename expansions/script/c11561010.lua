@@ -41,6 +41,8 @@ function c11561010.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
 	e3:SetCode(EVENT_PHASE+PHASE_END) 
 	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED)  
+	e3:SetCondition(function(e) 
+	return e:GetHandler():IsFaceup() end)
 	e3:SetOperation(c11561010.xdesop)  
 	c:RegisterEffect(e3)  
 end

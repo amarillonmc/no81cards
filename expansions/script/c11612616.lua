@@ -115,12 +115,28 @@ function cm.copytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and cm.copyfilter(chkc) and chkc~=c end
 	if chk==0 then return Duel.IsExistingTarget(cm.copyfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,cm.copyfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c)
+	
+	Duel.SetChainLimit(cm.limit(Duel.SelectTarget(tp,cm.copyfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c):GetFirst()))
+end
+function cm.limit(c)
+	return  function (e,lp,tp)
+				return e:GetHandler()~=c
+			end
 end
 function cm.copyop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc and c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup() and not tc:IsType(TYPE_TOKEN) then
+		local e01=Effect.CreateEffect(c)
+		e01:SetType(EFFECT_TYPE_SINGLE)
+		e01:SetCode(EFFECT_DISABLE)
+		e01:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e01)
+		local e02=Effect.CreateEffect(c)
+		e02:SetType(EFFECT_TYPE_SINGLE)
+		e02:SetCode(EFFECT_DISABLE_EFFECT)
+		e02:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e02)
 		local code=tc:GetOriginalCodeRule()
 		local cid=0
 		local e1=Effect.CreateEffect(c)

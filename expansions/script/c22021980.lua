@@ -1,6 +1,11 @@
 --人理之诗 百人藏书
 function c22021980.initial_effect(c)
 	aux.AddCodeList(c,22021960)
+	--Activate
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e0)
 	--indes
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -29,7 +34,7 @@ function c22021980.filter(c)
 	return aux.IsCodeListed(c,22021960) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() and not c:IsCode(22021970) and c:IsFaceup()
 end
 function c22021980.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(+LOCATION_MZONE+LOCATION_GRAVE) and c22021980.filter(chkc) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and c22021980.filter(chkc) end
 	if chk==0 then
 		if not Duel.IsExistingTarget(c22021980.filter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) then return false end
 		if e:GetHandler():IsLocation(LOCATION_HAND) then

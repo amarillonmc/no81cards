@@ -81,5 +81,5 @@ function c88800025.spop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function c88800025.splimit(e,c)
-	return not c:IsAttribute(ATTRIBUTE_DARK) or c:IsSetCard(0x48)
+	return not c:IsAttribute(ATTRIBUTE_DARK)
 end

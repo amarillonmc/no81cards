@@ -13,6 +13,15 @@ function cm.initial_effect(c)
 	--
 	local e00=fpjdiy.Zhc(c,cm.text)
 	--
+	--adjust
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_ADJUST)
+	e1:SetRange(0xff)
+	e1:SetOperation(cm.adjustop)
+	c:RegisterEffect(e1)
+
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_SINGLE)
 	e6:SetCode(EFFECT_SPSUMMON_COST)
@@ -94,17 +103,28 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if not cm.globle_check then
+		cm.globle_check=true
+		local g=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,0,0xff,0xff,nil,22398665)
+		for tc in aux.Next(g) do
+			table_effect={}
+			tc:ReplaceEffect(m+1,0)
+		end
+	end
+	e:Reset()
+end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do
 		if tc:IsSetCard(0x154) and tc:GetSummonType()==SUMMON_TYPE_RITUAL  then
 			if Duel.GetFlagEffect(tc:GetSummonPlayer(),11612635)~=0 then
 				for _,i in ipairs{Duel.GetFlagEffectLabel(tc:GetSummonPlayer(),11612635)} do
-					if i==tc:GetCode() then return end			
+					if i==tc:GetCode() then return end		
 				end
 			end
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),11612635,0,0,0,tc:GetCode())
 			local set={Duel.GetFlagEffectLabel(tp,11612635)}
-			if ts1c==0 and (#set)>=count then			   
+			if ts1c==0 and (#set)>=count then			 
 				fpjdiy.printLines(cm.ts1)
 				--Debug.Message(cm.ts1)
 				ts1c=1

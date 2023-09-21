@@ -43,7 +43,7 @@ function c98920290.syop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:Select(tp,1,1,nil)
-		--[[local mg=aux.GetSynMaterials(tp,sg:GetFirst())
+		local mg=aux.GetSynMaterials(tp,sg:GetFirst())
 		for tc in aux.Next(mg) do
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
@@ -53,17 +53,7 @@ function c98920290.syop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(1)
 			e1:SetOperation(c98920290.synop)
 			tc:RegisterEffect(e1)
-		end--]]
-		local _SendToGrave=Duel.SendtoGrave
-		Duel.SendtoGrave=function(tg,r)
-							if r&REASON_SYNCHRO>0 then
-								local ct=Duel.Destroy(tg,r|REASON_EFFECT)
-								Duel.SendtoGrave=_SendToGrave
-								return ct
-							else
-								return _SendToGrave(tg,r)
-							end
-						end
+		end
 		Duel.SynchroSummon(tp,sg:GetFirst(),nil)
 	end
 end

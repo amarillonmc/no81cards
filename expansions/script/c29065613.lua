@@ -35,7 +35,7 @@ function c29065613.initial_effect(c)
 	e2:SetTarget(c29065613.sptg)
 	e2:SetOperation(c29065613.spop)
 	c:RegisterEffect(e2)
-	local e3=e1:Clone()
+	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 	--xyzsummon
@@ -53,6 +53,9 @@ function c29065613.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 --xyzsummon
+function c29065613.xyzfilter(c)
+	return c:IsXyzSummonable(nil)
+end
 function c29065613.xyzcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
@@ -60,24 +63,25 @@ function c29065613.mfilter(c)
 	return c:IsSetCard(0x87ad)
 end
 function c29065613.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local mg=Duel.GetMatchingGroup(c29065613.mfilter,tp,LOCATION_MZONE,0,nil)
-		return Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,nil,mg)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065613.xyzfilter,tp,LOCATION_EXTRA,0,1,nil)
+		--local mg=Duel.GetMatchingGroup(c29065613.mfilter,tp,LOCATION_MZONE,0,nil)
+		--return Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,nil,mg)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c29065613.xyzop(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(c29065613.mfilter,tp,LOCATION_MZONE,0,nil)
-	local g=Duel.GetMatchingGroup(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,nil,nil,mg)
+	--local mg=Duel.GetMatchingGroup(c29065613.mfilter,tp,LOCATION_MZONE,0,nil)
+	--local g=Duel.GetMatchingGroup(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,nil,nil,mg)
+	local g=Duel.GetMatchingGroup(c29065613.xyzfilter,tp,LOCATION_EXTRA,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:Select(tp,1,1,nil)
-		Duel.XyzSummon(tp,sg:GetFirst(),nil,mg)
+		Duel.XyzSummon(tp,sg:GetFirst(),nil)
 	end
 end
 --spsummon
-function c29065613.filter1(c)
-	return c:IsControler(Duel.GetTurnPlayer())
+function c29065613.filter1(c,tp)
+	return c:IsSummonPlayer(Duel.GetTurnPlayer())
 end
 function c29065613.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c29065613.filter1,1,nil,tp)

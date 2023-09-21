@@ -1,5 +1,6 @@
 --物部布都
 function c53700003.initial_effect(c)
+	aux.AddCodeList(c,53700000)
 	aux.AddCodeList(c,53700001)
 	c:EnableReviveLimit()
 	--tohand

@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,4))
 	e4:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetRange(LOCATION_HAND)
 	e4:SetCondition(cm.hancon)
@@ -95,7 +95,7 @@ end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local se=e:GetLabelObject()
 	if se and se:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		se:SetType(EFFECT_TYPE_QUICK_O)
+		se:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	end
 end
 function cm.tgfilter(c)
@@ -124,15 +124,15 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function cm.setfilter(c)
+function cm.setfilter(c,e,tp)
 	return aux.IsCodeListed(c,189131) and ((c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and c:IsSSetable()) or (c:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)))
 end
 function cm.setcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_GRAVE,0,1,nil)
+	return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function cm.setop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.setfilter),tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
 	if tc then
 		if tc:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 				and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) then
