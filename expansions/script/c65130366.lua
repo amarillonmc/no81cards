@@ -84,15 +84,17 @@ end
 function s.addop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=math.max(1,c:GetFlagEffect(id))
-	Duel.Destroy(c,REASON_REPLACE)
+	if Duel.Destroy(c,REASON_REPLACE)>0 then
 	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
-	for i=1,ct do
-		for tc in aux.Next(g) do
-			if tc:GetFlagEffect(id)==0 then
-				tc:CopyEffect(id,RESET_EVENT+RESETS_STANDARD)
+		for i=1,ct do
+			for tc in aux.Next(g) do
+				if tc:GetFlagEffect(id)==0 then
+					tc:CopyEffect(id,RESET_EVENT+RESETS_STANDARD)
+				end
+				if tc:GetFlagEffect(id)<256 then
+					tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
+				end
 			end
-			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
-			--
 		end
 	end
 end

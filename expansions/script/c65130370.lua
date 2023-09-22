@@ -63,7 +63,8 @@ function s.initial_effect(c)
 		s.global_check=true
 		_SetLP=Duel.SetLP
 		function Duel.SetLP(p,lp)
-			if Duel.GetFieldGroup(p,LOCATION_FZONE,0):GetFirst():GetOriginalCode()==id then
+			local fc=Duel.GetFieldGroup(p,LOCATION_FZONE,0):GetFirst()
+			if fc and fc:GetOriginalCode()==id then
 				Duel.Hint(HINT_CARD,0,id)
 				return
 			end
@@ -71,12 +72,14 @@ function s.initial_effect(c)
 		end
 		_CheckLPCost=Duel.CheckLPCost
 		function Duel.CheckLPCost(p,cost)
-			if Duel.GetFieldGroup(p,LOCATION_FZONE,0):GetFirst():GetOriginalCode()==id then return true end
+			local fc=Duel.GetFieldGroup(p,LOCATION_FZONE,0):GetFirst()
+			if fc and fc:GetOriginalCode()==id then return true end
 			return _CheckLPCost(p,cost)
 		end
 		_PayLPCost=Duel.PayLPCost
 		function Duel.PayLPCost(p,cost)
-			if Duel.GetFieldGroup(p,LOCATION_FZONE,0):GetFirst():GetOriginalCode()==id then
+			local fc=Duel.GetFieldGroup(p,LOCATION_FZONE,0):GetFirst()
+			if fc and fc:GetOriginalCode()==id then
 				Duel.Hint(HINT_CARD,0,id)
 				return
 			end
@@ -128,7 +131,7 @@ function s.actop(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_IMMUNE_EFFECT)
 	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
+	e4:SetRange(LOCATION_FZONE)
 	e4:SetValue(s.efilter)
 	c:RegisterEffect(e4,true)
 	--cannot

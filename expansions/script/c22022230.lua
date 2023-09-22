@@ -31,7 +31,6 @@ function c22022230.initial_effect(c)
 	e4:SetCode(EFFECT_DESTROY_REPLACE)
 	e4:SetTarget(c22022230.reptg)
 	c:RegisterEffect(e4)
-	Duel.AddCustomActivityCounter(22022230,ACTIVITY_CHAIN,c22022230.chainfilter)
 end
 function c22022230.condition1(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0xff1)

@@ -93,10 +93,16 @@ function s.aeop(e,tp,eg,ep,ev,re,r,rp)
 		cm.initial_effect=addinit
 		local g=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0xff,0xff,nil,ac)
 		local reg=Card.RegisterEffect
+		local Isscd={false,false}
 		for tc in aux.Next(g) do
-			local Type=Duel.ReadCard(tc,CARDDATA_TYPE)   
-			if Type&TYPE_NORMAL~=0 then Type=Type-TYPE_NORMAL end
-			tc:SetCardData(CARDDATA_TYPE,Type|TYPE_EFFECT)
+			local Type=Duel.ReadCard(tc,CARDDATA_TYPE)
+			local Type2=Type|TYPE_EFFECT
+			if Type2&TYPE_NORMAL~=0 then Type2=Type2-TYPE_NORMAL end
+			if Type2~=Type then
+				tc:SetCardData(CARDDATA_TYPE,Type|TYPE_EFFECT)
+				--There are some issues with the SetCardData function
+				if tc:IsLocation(LOCATION_EXTRA) then Isscd[tc:GetControler()]=true end
+			end
 			local mt=getmetatable(tc)
 			local ini=s.initial_effect
 			s.initial_effect=function() end
@@ -104,6 +110,10 @@ function s.aeop(e,tp,eg,ep,ev,re,r,rp)
 			s.initial_effect=ini
 			mt.initial_effect=addinit
 			tc.initial_effect(tc)
+		end
+		--If you don't confirm them, there may be bugs
+		for i=0,1 do
+			if Isscd[i]==true then Duel.ConfirmCards(i,Duel.GetFieldGroup(i,LOCATION_EXTRA,0)) end
 		end
 	else
 		Debug.Message("需要koishi函数！")
