@@ -25,7 +25,7 @@ function c98950003.cfilter(c)
 	return c:IsFaceup() and c:IsAttackAbove(1)
 end
 function c98950003.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c98950001.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return not Duel.IsExistingMatchingCard(c98950003.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c98950003.thfilter(c,tp)
 	return c:IsCode(4779091,78371393,98950001,98950004) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
@@ -41,10 +41,10 @@ function c98950003.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)   
 	local tg=Duel.SelectMatchingCard(tp,c98950003.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local tgc=tg:GetFirst()
-	if Duel.SendtoGrave(tgc,REASON_EFFECT)~=0 and tgc:IsLocation(LOCATION_GRAVE) then		
+	if Duel.SendtoGrave(tgc,REASON_EFFECT)~=0 and tgc:IsLocation(LOCATION_GRAVE) then	   
 		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND) 
 		 local g=Duel.SelectMatchingCard(tp,c98950003.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
-		 local tc=g:GetFirst()		
+		 local tc=g:GetFirst()	  
 		 Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		 Duel.ConfirmCards(1-tp,tc)
 	end

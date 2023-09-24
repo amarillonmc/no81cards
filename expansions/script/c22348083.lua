@@ -40,30 +40,38 @@ function c22348083.spfilter2(c,e,tp)
 	return c:IsSetCard(0x3703) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348083.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-  local tep=nil
-  if Duel.GetCurrentChain()>1 then tep=Duel.GetChainInfo(Duel.GetCurrentChain()-1,CHAININFO_TRIGGERING_PLAYER) end
-  if tep and tep==1-tp then
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348083.spfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
-	  e:SetLabel(1)
-  else
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348083.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
-	  e:SetLabel(0)
-  end
+	local tep=nil
+	if chk==0 then
+		if Duel.GetCurrentChain()>0 then tep=Duel.GetChainInfo(Duel.GetCurrentChain(),CHAININFO_TRIGGERING_PLAYER) end
+		if tep and tep==1-tp then
+			return Duel.IsExistingMatchingCard(c22348083.spfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+
+		else
+			return Duel.IsExistingMatchingCard(c22348083.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		end
+	end
+	if Duel.GetCurrentChain()>1 then tep=Duel.GetChainInfo(Duel.GetCurrentChain()-1,CHAININFO_TRIGGERING_PLAYER) end
+	if tep and tep==1-tp then
+		e:SetLabel(1)
+	else
+		e:SetLabel(0)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c22348083.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if e:GetLabel()==1 then
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348083.spfilter2),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348083.spfilter2),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+		if g:GetCount()>0 then
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		end
 	else 
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348083.spfilter1),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348083.spfilter1),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+		if g:GetCount()>0 then
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
 end
 function c22348083.spcostfilter(c,tp)

@@ -158,10 +158,6 @@ function cm.initial_effect(c)
 end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
-if Duel.GetRandomNumber then Debug.Message("You can use Duel.GetRandomNumber."..Duel.GetRandomNumber(1,20))
-else Debug.Message("You cannot use Duel.GetRandomNumber.") end
-if debug and debug.getregistry then Debug.Message("You can use debug.getregistry.")
-else Debug.Message("You cannot use debug.getregistry.") end
 function cm.filter(g,f,nc,...)
 	if aux.GetValueType(f)=="function" then return g:Filter(f,nc,...) end
 	local ng=g:Clone()
@@ -206,6 +202,7 @@ function cm.roll(min,max)
 	end
 	return cm.r
 end
+if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
 function cm.list(code)
 	for _,codes in pairs(cm.blacklist) do
 		if codes==code then return true end

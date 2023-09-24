@@ -84,10 +84,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	c:SetTurnCounter(0)
 end
 function cm.spfilter(c,e,p,zone)
-	return c:IsCanBeSpecialSummoned(e,0,p,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE,p)--,zone)
+	return c:IsCanBeSpecialSummoned(e,0,p,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE,p,zone)
 end
 function cm.ssfilter(c)
 	return c:IsSSetable() and not c:IsType(TYPE_FIELD)
+end
+function cm.ntfilter(c,p)
+	return c:IsControler(p) and not c:IsType(TYPE_TOKEN)
 end
 local A=1103515245
 local B=12345
@@ -106,6 +109,7 @@ function cm.roll(min,max)
 	end
 	return cm.r
 end
+if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
 function cm.evoperation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=c:GetTurnCounter()
@@ -165,9 +169,13 @@ function cm.evoperation(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+	local g12=g1+g2
 	local g123=g1+g2+g3
 	--if #g1>0 then Duel.Destroy(g1,REASON_RULE) end
 	if #g123>0 then Duel.Destroy(g123,REASON_EFFECT) end
+	local ct={}
+	ct[0]=g3:FilterCount(Card.IsControler,nil,0)+g12:FilterCount(cm.ntfilter,nil,0)
+	ct[1]=g3:FilterCount(Card.IsControler,nil,1)+g12:FilterCount(cm.ntfilter,nil,1)
 	for i=0,4 do
 		for j=0,4 do
 			--sequence?
@@ -196,7 +204,7 @@ function cm.evoperation(e,tp,eg,ep,ev,re,r,rp)
 						e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 						e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 						token:RegisterEffect(e1,true)
-					elseif (j==1 or j==3) and Duel.IsPlayerCanSpecialSummonMonster(tp,tokenid,nil,0x4011,0,0,1,RACE_AQUA,ATTRIBUTE_WATER,POS_FACEUP_ATTACK,p) then --and (not Duel.IsPlayerAffectedByEffect(tp,59822133) or #g1<=1) then
+					elseif (j==1 or j==3) and Duel.IsPlayerCanSpecialSummonMonster(tp,tokenid,nil,0x4011,0,0,1,RACE_AQUA,ATTRIBUTE_WATER,POS_FACEUP_ATTACK,p) and (not Duel.IsPlayerAffectedByEffect(tp,59822133) or ct[tp]<=1) then
 						local token=Duel.CreateToken(tp,tokenid)
 						--if tc then Duel.Destroy(tc,REASON_RULE) end
 						if p==tp then
@@ -218,53 +226,55 @@ function cm.evoperation(e,tp,eg,ep,ev,re,r,rp)
 				local p,loc,seq=cm.zone2seq(tp,zone)
 				local tc=cm.GetCardsInZone(tp,zone)
 				local g=Group.CreateGroup()
-				if loc==LOCATION_MZONE then
-					local zone2=zone
-					if zone>=1<<16 then zone2=zone>>16 end
-					g=Duel.GetMatchingGroup(cm.spfilter,p,LOCATION_DECK,0,g3,e,p)--,zone2)
-					if #g>0 then --and (not Duel.IsPlayerAffectedByEffect(tp,59822133) or #g3<=1) then
-						if p==tp then
-							local zone2=zone
-							if zone>=1<<16 then zone2=zone>>16 else zone2=zone<<16 end
-							Duel.Hint(HINT_ZONE,1-tp,zone2)
-						else
-							Duel.Hint(HINT_ZONE,tp,zone)
+				if Duel.CheckLocation(p,loc,seq) then
+					if loc==LOCATION_MZONE then
+						local zone2=zone
+						if zone>=1<<16 then zone2=zone>>16 end
+						g=Duel.GetMatchingGroup(cm.spfilter,p,LOCATION_DECK,0,g123,e,p,zone2)
+						if #g>0 and (not Duel.IsPlayerAffectedByEffect(tp,59822133) or ct[tp]<=1) then
+							if p==tp then
+								local zone2=zone
+								if zone>=1<<16 then zone2=zone>>16 else zone2=zone<<16 end
+								Duel.Hint(HINT_ZONE,1-tp,zone2)
+							else
+								Duel.Hint(HINT_ZONE,tp,zone)
+							end
+							Duel.Hint(HINT_SELECTMSG,p,aux.Stringid(m,2))
+							local tg=g:Select(p,1,1,nil)
+							--if tc then Duel.Destroy(tc,REASON_RULE) end
+							if p==tp then
+								Duel.SpecialSummonStep(tg:GetFirst(),0,p,p,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE,zone)
+								if tg:GetFirst():IsFacedown() then Duel.ConfirmCards(1-p,tg) end
+							else
+								Duel.SpecialSummonStep(tg:GetFirst(),0,p,p,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE,zone>>16)
+								if tg:GetFirst():IsFacedown() then Duel.ConfirmCards(1-p,tg) end
+							end
 						end
-						Duel.Hint(HINT_SELECTMSG,p,aux.Stringid(m,2))
-						local tg=g:Select(p,1,1,nil)
-						--if tc then Duel.Destroy(tc,REASON_RULE) end
-						if p==tp then
-							Duel.SpecialSummonStep(tg:GetFirst(),0,p,p,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE,zone)
-							if tg:GetFirst():IsFacedown() then Duel.ConfirmCards(1-p,tg) end
-						else
-							Duel.SpecialSummonStep(tg:GetFirst(),0,p,p,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE,zone>>16)
-							if tg:GetFirst():IsFacedown() then Duel.ConfirmCards(1-p,tg) end
-						end
-					end
-				elseif loc==LOCATION_SZONE then
-					g=Duel.GetMatchingGroup(cm.ssfilter,p,LOCATION_DECK,0,g3)
-					if #g>0 then
-						if p==tp then
-							local zone2=zone
-							if zone>=1<<16 then zone2=zone>>16 else zone2=zone<<16 end
-							Duel.Hint(HINT_ZONE,1-tp,zone2)
-						else
-							Duel.Hint(HINT_ZONE,tp,zone)
-						end
-						Duel.Hint(HINT_SELECTMSG,p,aux.Stringid(m,3))
-						local tg=g:Select(p,1,1,nil)
-						--if tc then Duel.Destroy(tc,REASON_RULE) end
-						cm.mv=true
-						if p==tp then
-							Duel.MoveToField(tg:GetFirst(),p,p,LOCATION_SZONE,POS_FACEDOWN,false,zone>>8)
-							--Duel.SSet(p,tg:GetFirst())
-							Duel.RaiseEvent(tg:GetFirst(),EVENT_SSET,e,REASON_EFFECT,p,p,0)
-							Duel.ConfirmCards(1-p,tg)
-						else
-							Duel.MoveToField(tg:GetFirst(),p,p,LOCATION_SZONE,POS_FACEDOWN,false,zone>>24)
-							--Duel.SSet(p,tg:GetFirst())
-							Duel.RaiseEvent(tg:GetFirst(),EVENT_SSET,e,REASON_EFFECT,p,p,0)
-							Duel.ConfirmCards(1-p,tg)
+					elseif loc==LOCATION_SZONE then
+						g=Duel.GetMatchingGroup(cm.ssfilter,p,LOCATION_DECK,0,g123)
+						if #g>0 then
+							if p==tp then
+								local zone2=zone
+								if zone>=1<<16 then zone2=zone>>16 else zone2=zone<<16 end
+								Duel.Hint(HINT_ZONE,1-tp,zone2)
+							else
+								Duel.Hint(HINT_ZONE,tp,zone)
+							end
+							Duel.Hint(HINT_SELECTMSG,p,aux.Stringid(m,3))
+							local tg=g:Select(p,1,1,nil)
+							--if tc then Duel.Destroy(tc,REASON_RULE) end
+							cm.mv=true
+							if p==tp then
+								Duel.MoveToField(tg:GetFirst(),p,p,LOCATION_SZONE,POS_FACEDOWN,false,zone>>8)
+								--Duel.SSet(p,tg:GetFirst())
+								Duel.RaiseEvent(tg:GetFirst(),EVENT_SSET,e,REASON_EFFECT,p,p,0)
+								Duel.ConfirmCards(1-p,tg)
+							else
+								Duel.MoveToField(tg:GetFirst(),p,p,LOCATION_SZONE,POS_FACEDOWN,false,zone>>24)
+								--Duel.SSet(p,tg:GetFirst())
+								Duel.RaiseEvent(tg:GetFirst(),EVENT_SSET,e,REASON_EFFECT,p,p,0)
+								Duel.ConfirmCards(1-p,tg)
+							end
 						end
 					end
 				end

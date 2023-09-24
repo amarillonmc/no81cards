@@ -1,6 +1,5 @@
 --闪刀姬-灵线
-local m=11451430
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:SetSPSummonOnce(m)
 	--xyz summon
@@ -97,7 +96,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local sg=g:Select(tp,1,1,nil)
 	Duel.HintSelection(sg)
-	if Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 then
+	if Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 and sg:GetFirst():IsLocation(LOCATION_HAND) then
 		local tc=Duel.GetFirstTarget()
 		if not tc:IsRelateToEffect(e) then return end
 		Duel.BreakEffect()
