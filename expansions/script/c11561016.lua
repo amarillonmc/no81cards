@@ -61,16 +61,19 @@ function c11561016.hxop(e,tp,eg,ep,ev,re,r,rp)
 			local d=math.floor(flag/4)  
 			local chk=0 
 			local a=0 
+			local msg=Group.CreateGroup()
 			for i=1,d do 
 				if chk==0 and g:IsExists(Card.IsAbleToHand,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11561016,0)) then  
 					local sg=g:Filter(Card.IsAbleToHand,nil):Select(tp,1,1,nil)
-					Duel.SendtoHand(sg,tp,REASON_EFFECT) 
-					Duel.ConfirmCards(1-tp,sg)   
+					g:Sub(sg) 
+					msg:Merge(sg) 
 					a=a+1 
 				else 
 					chk=1 
 				end 
 			end 
+			Duel.SendtoHand(msg,tp,REASON_EFFECT) 
+			Duel.ConfirmCards(1-tp,msg)   
 			if a>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,a,nil) then 
 				Duel.BreakEffect() 
 				local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,a,a,nil) 

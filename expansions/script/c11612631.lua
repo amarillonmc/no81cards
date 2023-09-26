@@ -156,23 +156,11 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	c:AddCounter(0x1161,1,REASON_EFFECT)
 	local seq=c:GetSequence()
 	local dg=Duel.GetMatchingGroup(cm.desfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil,seq,c:GetControler())
-	if seq<5 and dg:GetCount()>0 then	  
+	if seq<5 and dg:GetCount()>0 then	 
 		local dgc=dg:GetFirst()
 		while dgc do
 			if dgc:GetCounter(0x1161)<=0 then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_UPDATE_ATTACK)
-				e1:SetValue(cm.atkva)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				dgc:RegisterEffect(e1)
-				local e3=Effect.CreateEffect(c)
-				e3:SetType(EFFECT_TYPE_SINGLE)
-				e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-				e3:SetRange(LOCATION_MZONE)
-				e3:SetCode(EFFECT_SELF_DESTROY)
-				e3:SetCondition(cm.descon)
-				dgc:RegisterEffect(e3)					  
+				cm.counter(dgc,c)
 			end
 			dgc:AddCounter(0x1161,1,REASON_EFFECT)
 			dgc=dg:GetNext()

@@ -187,7 +187,7 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 end
 local A=1103515245
 local B=12345
-local M=32767
+local M=1073741824 --32767
 function cm.roll(min,max)
 	min=tonumber(min)
 	max=tonumber(max)
@@ -280,6 +280,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 			table.insert(tab1,ac)
+			table.insert(cm.blacklist,ac)
 			ac=nil
 		end
 		for i=1,ct1 do
@@ -356,6 +357,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 			table.insert(tab2,ac)
+			table.insert(cm.blacklist,ac)
 			ac=nil
 		end
 		for i=1,ct2 do

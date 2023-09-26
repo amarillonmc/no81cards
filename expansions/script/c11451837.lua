@@ -89,7 +89,9 @@ function cm.actarget(e,te,tp)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
-	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	local loc=LOCATION_SZONE
+	if e:GetHandler():IsType(TYPE_FIELD) then loc=LOCATION_FZONE end
+	Duel.MoveToField(e:GetHandler(),tp,tp,loc,POS_FACEUP,false)
 	cm.activate_sequence[te]=e:GetHandler():GetSequence()
 	e:GetHandler():CreateEffectRelation(te)
 	local c=e:GetHandler()

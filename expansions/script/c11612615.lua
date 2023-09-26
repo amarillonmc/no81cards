@@ -78,19 +78,19 @@ end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0
 end
-function cm.lvfilter(c)
+function cm.lvfilter1(c)
 	return c:IsFaceup() and (c:IsType(TYPE_RITUAL) or c:IsSetCard(0x154))
 		and c:IsLevelAbove(1)
 end
 function cm.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.lvfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.lvfilter,tp,LOCATION_MZONE,0,2,nil) end
+	if chk==0 then return Duel.IsExistingTarget(cm.lvfilter1,tp,LOCATION_MZONE,0,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,cm.lvfilter,tp,LOCATION_MZONE,0,2,99,nil)
+	Duel.SelectTarget(tp,cm.lvfilter1,tp,LOCATION_MZONE,0,2,99,nil)
 end
 function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(cm.lvfilter,nil,e)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(cm.lvfilter1,nil,e)
 	Duel.Hint(HINT_SELECTMSG,tp,HINGMSG_LVRANK)
 	local lv=Duel.AnnounceLevel(tp,1,12)
 	local tc=g:GetFirst()

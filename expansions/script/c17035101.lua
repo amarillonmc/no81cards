@@ -20,7 +20,7 @@ function Chikichikibanban.AddSynchroProcedure(c,f1,f2,minc,loc1,loc2,maxc,op)
 	c:RegisterEffect(e1)
 end
 function Chikichikibanban.SynCondition(f1,f2,minc,loc1,loc2,maxc,op)
-	return	function(e,c,smat,mg,min,max)
+	return  function(e,c,smat,mg,min,max)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local minc=minc
@@ -42,7 +42,7 @@ function Chikichikibanban.SynCondition(f1,f2,minc,loc1,loc2,maxc,op)
 			end
 end
 function Chikichikibanban.SynTarget(f1,f2,minc,loc1,loc2,maxc,op)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg,min,max)
 				local minc=minc
 				local maxc=maxc
 				if min then
@@ -71,7 +71,7 @@ function Chikichikibanban.SynTarget(f1,f2,minc,loc1,loc2,maxc,op)
 			end
 end
 function Chikichikibanban.SynOperation(f1,f2,minc,loc1,loc2,maxc,op)
-	return	function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
 				local g=e:GetLabelObject()
 				c:SetMaterial(g)
 				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_SYNCHRO)
@@ -103,7 +103,7 @@ end
 --Xyz Summon(normal)
 function Chikichikibanban.XyzCondition(f,lv,minc,loc1,loc2,maxc)
 	--og: use special material
-	return	function(e,c,og,min,max)
+	return  function(e,c,og,min,max)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
@@ -124,7 +124,7 @@ function Chikichikibanban.XyzCondition(f,lv,minc,loc1,loc2,maxc)
 			end
 end
 function Chikichikibanban.XyzTarget(f,lv,minc,loc1,loc2,maxc)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 				if og and not min then
 					return true
 				end
@@ -149,7 +149,7 @@ function Chikichikibanban.XyzTarget(f,lv,minc,loc1,loc2,maxc)
 			end
 end
 function Chikichikibanban.XyzOperation(f,lv,minc,loc1,loc2,maxc)
-	return	function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 				if og and not min then
 					local sg=Group.CreateGroup()
 					local tc=og:GetFirst()
@@ -179,7 +179,7 @@ function Chikichikibanban.XyzOperation(f,lv,minc,loc1,loc2,maxc)
 end
 --Xyz summon(alterf)
 function Chikichikibanban.XyzCondition2(f,lv,minc,loc1,loc2,maxc,alterf,desc,op)
-	return	function(e,c,og,min,max)
+	return  function(e,c,og,min,max)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
@@ -203,7 +203,7 @@ function Chikichikibanban.XyzCondition2(f,lv,minc,loc1,loc2,maxc,alterf,desc,op)
 			end
 end
 function Chikichikibanban.XyzTarget2(f,lv,minc,loc1,loc2,maxc,alterf,desc,op)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 				if og and not min then
 					return true
 				end
@@ -239,7 +239,7 @@ function Chikichikibanban.XyzTarget2(f,lv,minc,loc1,loc2,maxc,alterf,desc,op)
 			end
 end
 function Chikichikibanban.XyzOperation2(f,lv,minc,loc1,loc2,maxc,alterf,desc,op)
-	return	function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 				if og and not min then
 					local sg=Group.CreateGroup()
 					local tc=og:GetFirst()
@@ -303,7 +303,7 @@ function Chikichikibanban.XyzLevelFreeGoal(g,tp,xyzc,gf)
 	return (not gf or gf(g)) and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0
 end
 function Chikichikibanban.XyzLevelFreeCondition(f,gf,minc,loc1,loc2,maxc)
-	return	function(e,c,og,min,max)
+	return  function(e,c,og,min,max)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
@@ -333,7 +333,7 @@ function Chikichikibanban.XyzLevelFreeCondition(f,gf,minc,loc1,loc2,maxc)
 			end
 end
 function Chikichikibanban.XyzLevelFreeTarget(f,gf,minc,loc1,loc2,maxc)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 				if og and not min then
 					return true
 				end
@@ -367,7 +367,7 @@ function Chikichikibanban.XyzLevelFreeTarget(f,gf,minc,loc1,loc2,maxc)
 			end
 end
 function Chikichikibanban.XyzLevelFreeOperation(f,gf,minc,loc1,loc2,maxc)
-	return	function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 				if og and not min then
 					local sg=Group.CreateGroup()
 					local tc=og:GetFirst()
@@ -404,7 +404,7 @@ function Chikichikibanban.XyzLevelFreeOperation(f,gf,minc,loc1,loc2,maxc)
 end
 --Xyz summon(level free&alterf)
 function Chikichikibanban.XyzLevelFreeCondition2(f,gf,minc,loc1,loc2,maxc,alterf,desc,op)
-	return	function(e,c,og,min,max)
+	return  function(e,c,og,min,max)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
@@ -436,7 +436,7 @@ function Chikichikibanban.XyzLevelFreeCondition2(f,gf,minc,loc1,loc2,maxc,alterf
 			end
 end
 function Chikichikibanban.XyzLevelFreeTarget2(f,gf,minc,loc1,loc2,maxc,alterf,desc,op)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 				if og and not min then
 					return true
 				end
@@ -480,7 +480,7 @@ function Chikichikibanban.XyzLevelFreeTarget2(f,gf,minc,loc1,loc2,maxc,alterf,de
 			end
 end
 function Chikichikibanban.XyzLevelFreeOperation2(f,gf,minc,loc1,loc2,maxc,alterf,desc,op)
-	return	function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 				if og and not min then
 					local sg=Group.CreateGroup()
 					local tc=og:GetFirst()
@@ -542,7 +542,7 @@ function Chikichikibanban.FakeDarkSynchroMaterialFilter2(c,sc,e,tp,op)
 	return (not op or op(e,tp,0,c))
 end
 function Chikichikibanban.FakeDarkSynchroCondition(f,gf,minc,maxc,op,self_location,opponent_location)
-	return	function(e,c,og)
+	return  function(e,c,og)
 				if c==nil then return true end
 				local minc=minc
 				local maxc=maxc
@@ -554,7 +554,7 @@ function Chikichikibanban.FakeDarkSynchroCondition(f,gf,minc,maxc,op,self_locati
 			end
 end
 function Chikichikibanban.FakeDarkSynchroTarget(f,gf,minc,maxc,op,self_location,opponent_location)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,lmat)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,lmat)
 				local minc=minc
 				local maxc=maxc
 				local tp=c:GetControler()
@@ -571,7 +571,7 @@ function Chikichikibanban.FakeDarkSynchroTarget(f,gf,minc,maxc,op,self_location,
 			end
 end
 function Chikichikibanban.FakeDarkSynchroOperation(f,gf,minc,maxc,op,self_location,opponent_location,mat_operation,operation_params)
-	return	function(e,tp,eg,ep,ev,re,r,rp,c)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c)
 				local tg=e:GetLabelObject()
 				c:SetMaterial(tg)
 				mat_operation(tg,table.unpack(operation_params))
@@ -610,7 +610,7 @@ function Chikichikibanban.SpecialSummonProcedureMaterialFilter2(c,sc,e,tp,op)
 	return (not op or op(e,tp,0,c))
 end
 function Chikichikibanban.SpecialSummonProcedureCondition(f,gf,minc,maxc,op,self_location,opponent_location)
-	return	function(e,c,og,min,max)
+	return  function(e,c,og,min,max)
 				if c==nil then return true end
 				if og and not min then return true end
 				local minc=minc
@@ -627,7 +627,7 @@ function Chikichikibanban.SpecialSummonProcedureCondition(f,gf,minc,maxc,op,self
 			end
 end
 function Chikichikibanban.SpecialSummonProcedureTarget(f,gf,minc,maxc,op,self_location,opponent_location)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,lmat,min,max)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,lmat,min,max)
 				if og and not min then
 					return true
 				end
@@ -651,7 +651,7 @@ function Chikichikibanban.SpecialSummonProcedureTarget(f,gf,minc,maxc,op,self_lo
 			end
 end
 function Chikichikibanban.SpecialSummonProcedureOperation(f,gf,minc,maxc,op,self_location,opponent_location,mat_operation,operation_params)
-	return	function(e,tp,eg,ep,ev,re,r,rp,c)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c)
 				local tg=e:GetLabelObject()
 				c:SetMaterial(tg)
 				mat_operation(tg,table.unpack(operation_params))
@@ -679,7 +679,7 @@ function Chikichikibanban.SpecialSummonProcedureConditionN(c_condition,op)
 			return (not c_condition or c_condition(e,c)) and (not op or op(e,tp,0,c)) end
 end
 function Chikichikibanban.SpecialSummonProcedureOperationN(c_condition,op)
-	return	function(e,tp,eg,ep,ev,re,r,rp,c)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c)
 				if op then op(e,tp,1,e:GetHandler()) end
 			end
 end
@@ -706,7 +706,7 @@ function Chikichikibanban.SpecialSummonProcedureConditionS(c_condition,op)
 			return (not c_condition or c_condition(e,c)) and (not op or op(e,tp,0,c)) end
 end
 function Chikichikibanban.SpecialSummonProcedureOperationS(c_condition,op)
-	return	function(e,tp,eg,ep,ev,re,r,rp,c)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c)
 				if op then op(e,tp,1,e:GetHandler()) end
 			end
 end
@@ -714,7 +714,7 @@ function Chikichikibanban.releasablehspfilter(c,sc,f)
 	return (not f or f(c,sc)) and c:IsReleasable()
 end
 function Chikichikibanban.releasablehspcon(self_location,opponent_location,controler,f,gf,minc,maxc)
-	return	function(e,c)
+	return  function(e,c)
 				if c==nil then return true end
 				local minc=minc
 				if not minc then minc=1 end
@@ -731,7 +731,7 @@ function Chikichikibanban.releasablehspcon(self_location,opponent_location,contr
 			end
 end
 function Chikichikibanban.releasablehspop(self_location,opponent_location,controler,f,gf,minc,maxc)
-	return	function(e,tp,chk)
+	return  function(e,tp,chk)
 				if chk==0 then return true end
 				local minc=minc
 				if not minc then minc=1 end
@@ -751,7 +751,7 @@ function Chikichikibanban.togravehspfilter(c,sc,f)
 	return (not f or f(c,sc)) and c:IsAbleToGraveAsCost() 
 end
 function Chikichikibanban.togravehspcon(self_location,opponent_location,controler,f,gf,minc,maxc)
-	return	function(e,c)
+	return  function(e,c)
 			if c==nil then return true end
 				local minc=minc
 				if not minc then minc=1 end
@@ -768,7 +768,7 @@ function Chikichikibanban.togravehspcon(self_location,opponent_location,controle
 			end
 end
 function Chikichikibanban.togravehspop(self_location,opponent_location,controler,f,gf,minc,maxc)
-	return	function(e,tp,chk)
+	return  function(e,tp,chk)
 				if chk==0 then return true end
 				local minc=minc
 				if not minc then minc=1 end
@@ -788,7 +788,7 @@ function Chikichikibanban.todeckhspfilter(c,sc,f)
 	return (not f or f(c,sc)) and c:IsAbleToDeckAsCost() 
 end
 function Chikichikibanban.todeckhspcon(self_location,opponent_location,controler,f,gf,minc,maxc)
-	return	function(e,c)
+	return  function(e,c)
 				if c==nil then return true end
 				local minc=minc
 				if not minc then minc=1 end
@@ -805,7 +805,7 @@ function Chikichikibanban.todeckhspcon(self_location,opponent_location,controler
 			end
 end
 function Chikichikibanban.todeckhspop(self_location,opponent_location,controler,f,gf,minc,maxc)
-	return	function(e,tp,chk)
+	return  function(e,tp,chk)
 				if chk==0 then return true end
 				local minc=minc
 				if not minc then minc=1 end
@@ -825,7 +825,7 @@ function Chikichikibanban.removehspfilter(c,sc,f)
 	return (not f or f(c,sc)) and c:IsAbleToRemoveAsCost() 
 end
 function Chikichikibanban.removehspcon(self_location,opponent_location,controler,f,gf,minc,maxc)
-	return	function(e,c)
+	return  function(e,c)
 				if c==nil then return true end
 				local minc=minc
 				if not minc then minc=1 end
@@ -842,7 +842,7 @@ function Chikichikibanban.removehspcon(self_location,opponent_location,controler
 			end
 end
 function Chikichikibanban.removehspop(self_location,opponent_location,pos,controler,f,gf,minc,maxc)
-	return	function(e,tp,chk)
+	return  function(e,tp,chk)
 				if chk==0 then return true end
 				local minc=minc
 				if not minc then minc=1 end
@@ -864,7 +864,7 @@ function Chikichikibanban.handspfilter(c,e,tp,f)
 		(c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0))
 end
 function Chikichikibanban.handsptg(self_location,opponent_location,op,controler,f,minc,maxc,gf)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk)
 				local minc=minc
 				if not minc then minc=1 end
 				local maxc=maxc
@@ -882,7 +882,7 @@ function Chikichikibanban.SpecialSummonProcedureFreeGoal2(g,tp,gf)
 	return (not gf or gf(g))
 end
 function Chikichikibanban.handspop(self_location,opponent_location,op,controler,f,minc,maxc,gf)
-	return	function(e,tp,eg,ep,ev,re,r,rp)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
 				local minc=minc
 				if not minc then minc=1 end
 				local maxc=maxc
@@ -906,7 +906,7 @@ function Chikichikibanban.handspop(self_location,opponent_location,op,controler,
 			end
 end
 function Chikichikibanban.dccost(minc)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk)
 				local minc=minc
 				if not minc then minc=1 end
 				if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
@@ -966,13 +966,13 @@ function Chikichikibanban.thfilter(c,f)
 	return (not f or f(c)) and c:IsAbleToHand()
 end
 function Chikichikibanban.thtg(f)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk)
 				if chk==0 then return Duel.IsExistingMatchingCard(Chikichikibanban.thfilter,tp,LOCATION_DECK,0,1,nil,f) end
 				Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 			end
 end
 function Chikichikibanban.thop(f,op1,op2)
-	return	function(e,tp,eg,ep,ev,re,r,rp)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local g=Duel.SelectMatchingCard(tp,Chikichikibanban.thfilter,tp,LOCATION_DECK,0,1,1,nil,f)
 				if g:GetCount()>0 then
@@ -999,7 +999,7 @@ function Chikichikibanban.filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function Chikichikibanban.tgsptg(self_location,opponent_location,op,controler,f,minc,maxc,gf)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 				local minc=minc
 				if not minc then minc=1 end
 				local maxc=maxc
@@ -1027,7 +1027,7 @@ function Chikichikibanban.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function Chikichikibanban.tgspop1(op)
-	return	function(e,tp,eg,ep,ev,re,r,rp)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
 				local tc=Duel.GetFirstTarget()
 				if tc:IsRelateToEffect(e) then
 					Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
@@ -1036,7 +1036,7 @@ function Chikichikibanban.tgspop1(op)
 			end
 end
 function Chikichikibanban.tgspop2(op)
-	return	function(e,tp,eg,ep,ev,re,r,rp)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
 				local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 				if ft<=0 then return end
 				local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
@@ -1247,7 +1247,7 @@ function Chikichikibanban.c4a71Limitsplimit(e,c)
 	return c:IsLocation(LOCATION_EXTRA) and not c:IsType(TYPE_XYZ)
 end
 function Chikichikibanban.c4a71Limitsplimit2(e,se,sp,st)
-	return se:GetHandler():IsSetCard(0x4a71)
+	return se:GetHandler():IsSetCard(0x4a76)
 end
 --铳影通用回收(代写)
 function Chikichikibanban.c4a71tohand(c,tg,op,category)
@@ -1269,7 +1269,7 @@ function Chikichikibanban.c4a71tohand(c,tg,op,category)
 	c:RegisterEffect(e1)
 end
 function Chikichikibanban.c4a71tohandthfilter(c)
-	return c:IsSetCard(0x4a71) and c:IsAbleToHand()
+	return c:IsSetCard(0x4a76) and c:IsAbleToHand()
 end
 function Chikichikibanban.c4a71tohandthtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Chikichikibanban.c4a71tohandthfilter,tp,LOCATION_GRAVE,0,1,nil) end
@@ -1378,7 +1378,7 @@ function Chikichikibanban.c4a71kangdiscon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and e:GetHandler():GetFlagEffect(12825612)>0 
 end
 function Chikichikibanban.c4a71kangdiscon2(con,excode)
-	return	function(e,tp,eg,ep,ev,re,r,rp)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
 				return (not con or con(e,tp,eg,ep,ev,re,r,rp)) and e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,excode)
 			end
 end
@@ -1406,7 +1406,7 @@ function Chikichikibanban.c4a71rankupfilter2(c,e,tp,mc,f2)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function Chikichikibanban.c4a71rankuptarget(f1,f2)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 				if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and Chikichikibanban.c4a71rankupfilter1(chkc,e,tp,f1,f2) end
 				if chk==0 then return Duel.IsExistingTarget(Chikichikibanban.c4a71rankupfilter1,tp,LOCATION_MZONE,0,1,nil,e,tp,f1,f2) end
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
@@ -1415,7 +1415,7 @@ function Chikichikibanban.c4a71rankuptarget(f1,f2)
 			end
 end
 function Chikichikibanban.c4a71rankupactivate(f1,f2)
-	return	function(e,tp,eg,ep,ev,re,r,rp)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
 				local c=e:GetHandler()
 				local tc=Duel.GetFirstTarget()
 				if not aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) then return end
