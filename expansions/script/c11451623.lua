@@ -48,7 +48,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			else
 				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 			end
-			ct=ct-5
+			ct=ct-3
 		end
 		if ct>=0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) then Duel.BreakEffect() end
 	end

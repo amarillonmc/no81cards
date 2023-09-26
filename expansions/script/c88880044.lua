@@ -57,10 +57,10 @@ function cm.atkcon(e)
 	return Duel.GetTurnPlayer()==1-e:GetHandlerPlayer()
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xc06) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_FUSION)
+	return c:IsFaceup() and c:IsSetCard(0xc06) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(8)
 end
 function cm.econ(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(cm.cfilter,e:GetHandler():GetControler(),LOCATION_MZONE,0,1,nil)
 end
 function cm.tdfilter(c)
 	return c:IsSetCard(0xc06) and c:IsAbleToDeck()

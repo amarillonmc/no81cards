@@ -33,12 +33,12 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.cfilter(c,e)
-	return c:IsCode(id) and c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED)
+	return c:IsCode(id) and c:IsReleasable()
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil,e) end
 	local tc=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil,e)
-	Duel.Destroy(tc,REASON_EFFECT)
+	Duel.Release(tc,REASON_COST)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -84,16 +84,15 @@ end
 function s.addop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=math.max(1,c:GetFlagEffect(id))
-	if Duel.Destroy(c,REASON_REPLACE)>0 then
+	Duel.Destroy(c,REASON_REPLACE)
 	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
-		for i=1,ct do
-			for tc in aux.Next(g) do
-				if tc:GetFlagEffect(id)==0 then
-					tc:CopyEffect(id,RESET_EVENT+RESETS_STANDARD)
-				end
-				if tc:GetFlagEffect(id)<256 then
-					tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
-				end
+	for i=1,ct do
+		for tc in aux.Next(g) do				
+			if tc:GetFlagEffect(id)==0 then
+				tc:CopyEffect(id,RESET_EVENT+RESETS_STANDARD)
+			end
+			if tc:GetFlagEffect(id)<256 then
+				tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 			end
 		end
 	end

@@ -44,7 +44,7 @@ function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return not (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) or Duel.GetCurrentChain()>0
 end
 function s.cfilter1(c,tp)
-	return c:IsAbleToRemoveAsCost() and Duel.GetMZoneCount(tp,c)>0
+	return c:IsAbleToRemoveAsCost() and c:IsType(TYPE_MONSTER) and Duel.GetMZoneCount(tp,c)>0
 end
 function s.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -54,7 +54,7 @@ function s.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function s.cfilter2(c,tp)
-	return c:IsSetCard(0x835) and c:IsAbleToRemoveAsCost() and Duel.GetMZoneCount(tp,c)>0
+	return c:IsSetCard(0x835) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost() and Duel.GetMZoneCount(tp,c)>0
 end
 function s.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -108,6 +108,6 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 				tc:RegisterEffect(e2)
 				Duel.SpecialSummonComplete()
 			end
-		end	 
+		end  
 	end
 end

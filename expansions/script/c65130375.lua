@@ -63,18 +63,25 @@ end
 function s.cspfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_MONSTER)
 end
+function s.tdfilter(c,tp)
+	return c:IsAbleToDeck() and Duel.GetMZoneCount(tp,c)>0
+end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	if chk==0 then return (Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)) or #Mirrors_World_Card>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
+function s.fselect(g)
+	return g:IsExists(s.tdfilter,1,nil,tp)
+end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local op1=Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+	local op1=Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
 	local op2=#Mirrors_World_Card>0
 	if op1 and (not op2 or Duel.SelectOption(tp,aux.Stringid(id,1),aux.Stringid(id,2))==0) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,5,nil)
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+		local sg=g:SelectSubGroup(tp,s.fselect,false,1,5)
+		Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if ct<=0 then return end
 		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
@@ -92,6 +99,12 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		sg:DeleteGroup()
 		Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		local code=tc:GetOriginalCode()
+		for i,value in ipairs(Mirrors_World_Card) do
+			if value==code then
+				table.remove(Mirrors_World_Card,i)
+				break
+			end		
+		end
 		
 		local cg=Group.CreateGroup()
 		local strNumber = tostring(code)

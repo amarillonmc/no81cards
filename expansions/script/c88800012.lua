@@ -13,8 +13,10 @@ function c88800012.initial_effect(c)
 	c:RegisterEffect(e1)
 	--spsummon1
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_HAND)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetCountLimit(1,88800013)
 	e2:SetCost(c88800012.spcost1)
 	e2:SetTarget(c88800012.settg)
@@ -22,7 +24,7 @@ function c88800012.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c88800012.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xc01) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0xc01) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_FUSION)
 end
 function c88800012.condition(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(c88800012.filter,tp,LOCATION_MZONE,0,1,nil) then return false end

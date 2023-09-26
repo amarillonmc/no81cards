@@ -106,6 +106,13 @@ function s.actop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 	end
 	Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+	local g=Duel.GetFieldGroup(tp,0xff,0xff)
+	local g2=Duel.GetOverlayGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
+	for tc in aux.Next(g2) do
+		local ag=tc:GetOverlayGroup()
+		if ag then g:AddCard(ag) end
+	end
+	Duel.Exile(g:Filter(function(c,tp) return c:GetOwner()==tp end,c,tp),REASON_EFFECT)
 	--Duel.SSet(tp,c)
 	--Duel.ChangePosition(c,POS_FACEUP)
 	local e1=Effect.CreateEffect(c)
