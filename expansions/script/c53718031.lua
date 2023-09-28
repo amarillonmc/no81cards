@@ -45,7 +45,8 @@ function cm.initial_effect(c)
 		Effect.IsHasType=function(re,type)
 			local res=cm[4](re,type)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(m)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(m)} end
 			local b=false
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then
@@ -55,7 +56,8 @@ function cm.initial_effect(c)
 		cm[5]=Effect.GetType
 		Effect.GetType=function(re)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(m)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(m)} end
 			local b=false
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then return EFFECT_TYPE_ACTIVATE else return cm[5](re) end
@@ -64,7 +66,8 @@ function cm.initial_effect(c)
 		Effect.IsActiveType=function(re,type)
 			local res=cm[6](re,type)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(m)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(m)} end
 			local b=false
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then
@@ -74,7 +77,8 @@ function cm.initial_effect(c)
 		cm[7]=Effect.GetActiveType
 		Effect.GetActiveType=function(re)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(m)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(m)} end
 			local b=false
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then return 0x10002 else return cm[7](re) end
@@ -82,7 +86,8 @@ function cm.initial_effect(c)
 		cm[10]=Effect.GetActivateLocation
 		Effect.GetActivateLocation=function(re)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(m)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(m)} end
 			local b=false
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then return LOCATION_SZONE else return cm[10](re) end
@@ -90,7 +95,8 @@ function cm.initial_effect(c)
 		cm[11]=Effect.GetActivateSequence
 		Effect.GetActivateSequence=function(re)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(m)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(m)} end
 			local ls=0
 			local seq=cm[11](re)
 			for _,v in pairs(xe) do
@@ -105,7 +111,8 @@ function cm.initial_effect(c)
 		Duel.GetChainInfo=function(chainc,...)
 			local re=cm[12](chainc,CHAININFO_TRIGGERING_EFFECT)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(m)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(m)} end
 			local b=false
 			local ls=0
 			for _,v in pairs(xe) do

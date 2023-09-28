@@ -21,22 +21,20 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.tg)
 	c:RegisterEffect(e2)
 end
-cm[0]=0
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x353c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.exop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
-	local loc,id=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_CHAIN_ID)
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
 	local b1=rc:IsOriginalCodeRule(53718001) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp)
 	local b2=rc:IsOriginalCodeRule(53718002) and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil)
-	if id~=cm[0] and loc==LOCATION_SZONE and rc:IsFaceup() and (b1 or b2) and e:GetHandler():IsAbleToGrave() and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,0)) then
+	if loc==LOCATION_SZONE and rc:IsFaceup() and (b1 or b2) and e:GetHandler():IsAbleToGrave() and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
 		local op=re:GetOperation()
 		if b1 then
-			if not re:IsHasCategory(CATEGORY_SPECIAL_SUMMON) then re:SetCategory(re:GetCategory()+CATEGORY_SPECIAL_SUMMON) end
 			local repop=function(e,tp,eg,ep,ev,re,r,rp)
 				op(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -45,10 +43,10 @@ function cm.exop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			re:SetOperation(repop)
 		end
+		local opx=re:GetOperation()
 		if b2 then
-			if not re:IsHasCategory(CATEGORY_DESTROY) then re:SetCategory(re:GetCategory()+CATEGORY_DESTROY) end
 			local repop=function(e,tp,eg,ep,ev,re,r,rp)
-				op(e,tp,eg,ep,ev,re,r,rp)
+				opx(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 				local g2=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
 				if #g2>0 then
@@ -58,6 +56,20 @@ function cm.exop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			re:SetOperation(repop)
 		end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetCode(EVENT_CHAIN_SOLVED)
+		e1:SetLabelObject(re)
+		e1:SetOperation(cm.rsop(op))
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function cm.rsop(op)
+	return function(e,...)
+		local te=e:GetLabelObject()
+		if te then te:SetOperation(op) end
+		e:Reset()
 	end
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
