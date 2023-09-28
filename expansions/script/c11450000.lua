@@ -33,19 +33,18 @@ function cm.initial_effect(c)
 	local e1=_Effect.CreateEffect(c)
 	c:RegisterEffect(e1)
 end
-function read111(tab)
-		for k,v in pairs(tab) do
-			Debug.Message(k)
-			local sel=Duel.SelectOption(0,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2))
-			if sel==0 and aux.GetValueType(v)=="table" then
-				read111(v)
-			end
-			if sel==2 then return end
+function readtab(tab)
+	for k,v in pairs(tab) do
+		Debug.Message(k)
+		local sel=Duel.SelectOption(0,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2))
+		if sel==0 and aux.GetValueType(v)=="table" then
+			readtab(v)
 		end
+		if sel==2 then return end
 	end
+end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	
-	read111(package.loaded)
+	--readtab(package.loaded)
 	_Duel.Hint(HINT_CARD,0,m)
 	_Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,1))
 	local ct0=_Duel.GetMatchingGroupCount(_Card.IsCode,0,0xff,0,nil,m)

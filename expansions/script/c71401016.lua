@@ -109,6 +109,7 @@ function c71401016.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.IsExistingMatchingCard(c71401016.filter3,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_EXTRA,0,1,nil,tp,POS_FACEDOWN)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_EXTRA)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
