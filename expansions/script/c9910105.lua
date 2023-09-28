@@ -1,8 +1,8 @@
 --战车道装甲·四号坦克
-require("expansions/script/c9910106")
+Duel.LoadScript("c9910100.lua")
 function c9910105.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,nil,4,2,c9910105.xyzfilter,aux.Stringid(9910105,0),99)
+	QutryZcd.AddXyzProcedure(c,nil,4,2,c9910105.xyzfilter,99)
 	c:EnableReviveLimit()
 	--destroy & spsummon
 	local e1=Effect.CreateEffect(c)
@@ -17,14 +17,14 @@ function c9910105.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910105.xyzfilter(c)
-	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 end
 function c9910105.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9910105.spfilter(c,e,tp)
-	return c:IsSetCard(0x952) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x9958) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910105.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=0

@@ -23,7 +23,7 @@ function c9910101.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and c:IsAbleToDeck() end
 end
 function c9910101.thfilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910101)
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910101)
 end
 function c9910101.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -31,7 +31,7 @@ function c9910101.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
-	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
+	if tc:IsSetCard(0x9958) and tc:IsType(TYPE_MONSTER) then
 		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
 			and not tc:IsForbidden() then
 			Duel.DisableShuffleCheck()
