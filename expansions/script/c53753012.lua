@@ -1,6 +1,16 @@
 local m=53753012
 local cm=_G["c"..m]
 cm.name="生祭的异铜"
+if not require and Duel.LoadScript then
+	function require(str)
+		local name=str
+		for word in string.gmatch(str,"%w+") do
+			name=word
+		end
+		Duel.LoadScript(name..".lua")
+		return true
+	end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
@@ -9,7 +19,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(0x10000000+53753000)
+	e2:SetCode(EFFECT_FLAG_EFFECT+53753000)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetCondition(cm.con)

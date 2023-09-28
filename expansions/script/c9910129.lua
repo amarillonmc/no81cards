@@ -1,8 +1,8 @@
 --战车道装甲·谢尔曼
-require("expansions/script/c9910106")
+Duel.LoadScript("c9910100.lua")
 function c9910129.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),4,2,c9910129.xyzfilter,aux.Stringid(9910129,0),99)
+	QutryZcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),4,2,c9910129.xyzfilter,99)
 	c:EnableReviveLimit()
 	--spsummon from ex
 	local e1=Effect.CreateEffect(c)
@@ -17,7 +17,7 @@ function c9910129.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910129.xyzfilter(c)
-	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 		and c:IsRace(RACE_MACHINE)
 end
 function c9910129.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -25,7 +25,7 @@ function c9910129.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9910129.spfilter(c,e,tp)
-	return c:IsRankBelow(4) and c:IsSetCard(0x952) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsRankBelow(4) and c:IsSetCard(0x9958) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c9910129.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -56,5 +56,5 @@ function c9910129.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c9910129.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x952)
+	return not c:IsSetCard(0x9958)
 end

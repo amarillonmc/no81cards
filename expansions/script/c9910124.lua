@@ -37,7 +37,7 @@ function c9910124.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
-	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
+	if tc:IsSetCard(0x9958) and tc:IsType(TYPE_MONSTER) then
 		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
 			and not tc:IsForbidden() then
 			Duel.DisableShuffleCheck()
@@ -87,7 +87,7 @@ function c9910124.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9910124.thfilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9910124.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910124.thfilter,tp,LOCATION_DECK,0,1,nil) end

@@ -1,4 +1,14 @@
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not require and Duel.LoadScript then
+	function require(str)
+		local name=str
+		for word in string.gmatch(str,"%w+") do
+			name=word
+		end
+		Duel.LoadScript(name..".lua")
+		return true
+	end
+end
+if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
 local m=53799149
 local cm=_G["c"..m]
 cm.name="离你而去"
@@ -42,9 +52,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetHandler():GetControler()
 	local g=Duel.GetMatchingGroup(cm.filter,p,LOCATION_SZONE,0,nil)
 	if #g==0 then return end
-	for tc in aux.Next(g) do
-		Duel.RegisterFlagEffect(p,m,0,0,0,tc:GetSequence())
-	end
+	for tc in aux.Next(g) do Duel.RegisterFlagEffect(p,m,0,0,0,tc:GetSequence()) end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_STANDBY and Duel.GetTurnPlayer()~=tp
@@ -101,11 +109,7 @@ function cm.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local flag={Duel.GetFlagEffectLabel(tp,m)}
 	table.sort(flag)
 	local list={flag[1]}
-	if #flag>1 then
-		for i=2,#flag do
-			if flag[i]>flag[i-1] then table.insert(list,flag[i]) end
-		end
-	end
+	if #flag>1 then for i=2,#flag do if flag[i]>flag[i-1] then table.insert(list,flag[i]) end end end
 	local fg=Duel.GetMatchingGroup(cm.tffilter,tp,LOCATION_SZONE,0,nil,list)
 	if chk==0 then return #list+#fg<5 end
 end
@@ -114,24 +118,14 @@ function cm.tfop(e,tp,eg,ep,ev,re,r,rp)
 	local flag={Duel.GetFlagEffectLabel(tp,m)}
 	table.sort(flag)
 	local list={flag[1]}
-	if #flag>1 then
-		for i=2,#flag do
-			if flag[i]>flag[i-1] then table.insert(list,flag[i]) end
-		end
-	end
+	if #flag>1 then for i=2,#flag do if flag[i]>flag[i-1] then table.insert(list,flag[i]) end end end
 	local fg=Duel.GetMatchingGroup(cm.tffilter,tp,LOCATION_SZONE,0,nil,list)
 	if #list+#fg>4 or not c:IsRelateToEffect(e) then return end
 	table.insert(list,5)
-	if #fg>0 then
-		for tc in aux.Next(fg) do
-			table.insert(list,tc:GetSequence())
-		end
-	end
+	if #fg>0 then for tc in aux.Next(fg) do table.insert(list,tc:GetSequence()) end end
 	local filter=0
-	for i=1,#list do
-		filter=filter|1<<(list[i]+8)
-	end
+	for i=1,#list do filter=filter|1<<(list[i]+8) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	local flag=Duel.SelectField(tp,1,LOCATION_SZONE,0,filter)
-	rsop.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true,2^(math.log(flag,2)-8))
+	Scl.Place2Field(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true,2^(math.log(flag,2)-8))
 end

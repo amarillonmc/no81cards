@@ -2,6 +2,16 @@ local m=53734015
 local cm=_G["c"..m]
 cm.name="闻声而来的青缀"
 cm.Snnm_Ef_Rst=true
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.AllEffectReset(c)
@@ -21,6 +31,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.tg)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
+	cm.aozora_field_effect=e2
 	if not cm.Aozora_Check then
 		cm.Aozora_Check=true
 		cm[0]=Duel.RegisterEffect

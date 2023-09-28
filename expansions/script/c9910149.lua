@@ -44,7 +44,7 @@ function c9910149.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct
 end
 function c9910149.tofifilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c9910149.thfilter(c,mg)
 	local res=mg:IsContains(c)

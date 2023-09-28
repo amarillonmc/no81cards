@@ -1,6 +1,16 @@
 local m=53754012
 local cm=_G["c"..m]
 cm.name="失重屏风 明斯洛"
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.GelidimenFilpSummon(c,cm.fscost,cm.fsop)

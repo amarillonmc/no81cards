@@ -22,6 +22,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	--todeck
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,4))
 	e2:SetCategory(CATEGORY_ATKCHANGE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_TO_HAND)
@@ -55,7 +56,7 @@ function cm.cfilter1(c,tp)
 end
 function cm.cfilter2(c,tp,ec)
 	if not c:IsControler(tp) or c:IsPublic() or not c:IsLocation(LOCATION_HAND) then return end
-	local eset={ec:IsHasEffect(0x10000000+m)}
+	local eset={ec:IsHasEffect(0x20000000+m)}
 	for _,te in pairs(eset) do
 		if te:GetLabel()&c:GetType()>0 then return false end
 	end
@@ -95,7 +96,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetLabel(e:GetLabel())
 	e2:SetLabelObject(e3)
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(0x10000000+m)
+	e2:SetCode(0x20000000+m)
 	e2:SetCondition(function(e) return e:GetLabelObject():GetLabel()<100 end)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e2)

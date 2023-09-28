@@ -1,8 +1,8 @@
 --战车道装甲·MK.Ⅳ
-require("expansions/script/c9910106")
+Duel.LoadScript("c9910100.lua")
 function c9910161.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,nil,7,2,c9910161.xyzfilter,aux.Stringid(9910161,0),99)
+	QutryZcd.AddXyzProcedure(c,nil,7,2,c9910161.xyzfilter,99)
 	c:EnableReviveLimit()
 	--immune
 	local e1=Effect.CreateEffect(c)
@@ -28,7 +28,7 @@ function c9910161.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910161.xyzfilter(c)
-	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 end
 function c9910161.xfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ)

@@ -1,8 +1,8 @@
 --战车道装甲·玛蒂尔达
-require("expansions/script/c9910106")
+Duel.LoadScript("c9910100.lua")
 function c9910155.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),4,2,c9910155.xyzfilter,aux.Stringid(9910155,0),99)
+	QutryZcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),4,2,c9910155.xyzfilter,99)
 	c:EnableReviveLimit()
 	--material
 	local e1=Effect.CreateEffect(c)
@@ -18,7 +18,7 @@ function c9910155.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910155.xyzfilter(c)
-	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 		and c:IsRace(RACE_MACHINE)
 end
 function c9910155.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -26,7 +26,7 @@ function c9910155.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9910155.matfilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
 end
 function c9910155.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsCanChangePosition() end

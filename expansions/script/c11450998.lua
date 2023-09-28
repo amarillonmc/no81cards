@@ -88,12 +88,24 @@ function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCondition(cm.flcon)
 	e1:SetOperation(cm.thop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	if not Duel.SelectYesNo(1-tp,aux.Stringid(m,2)) then
 		e1:SetLabel(1)
 	end
 	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(0x20000000+m)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetTargetRange(1,0)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e:GetHandler():RegisterEffect(e2)
+end
+function cm.flcon(e)
+	return Duel.GetFlagEffect(e:GetHandlerPlayer(),m)~=0
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if rp==1-tp and e:GetLabel()==1 then return end

@@ -1,8 +1,8 @@
 --战车道装甲·丘吉尔MkⅦ
-require("expansions/script/c9910106")
+Duel.LoadScript("c9910100.lua")
 function c9910121.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),5,2,c9910121.xyzfilter,aux.Stringid(9910121,0),99)
+	QutryZcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),5,2,c9910121.xyzfilter,99)
 	c:EnableReviveLimit()
 	--to deck top
 	local e1=Effect.CreateEffect(c)
@@ -26,7 +26,7 @@ function c9910121.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910121.xyzfilter(c)
-	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 		and c:IsRace(RACE_MACHINE)
 end
 function c9910121.ttcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -34,14 +34,14 @@ function c9910121.ttcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9910121.tttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x952)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x9958)
 		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c9910121.ttop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910121,3))
-	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,nil,0x952)
+	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,nil,0x9958)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.ShuffleDeck(tp)
@@ -64,7 +64,7 @@ function c9910121.drop(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.Draw(p,d,REASON_EFFECT)==0 then return end
 	local tc=Duel.GetOperatedGroup():GetFirst()
 	Duel.ConfirmCards(1-p,tc)
-	if tc:IsSetCard(0x952) then
+	if tc:IsSetCard(0x9958) then
 		Duel.BreakEffect()
 		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 			Duel.Destroy(eg,REASON_EFFECT)

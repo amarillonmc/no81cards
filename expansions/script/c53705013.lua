@@ -1,6 +1,16 @@
 local m=53705013
 local cm=_G["c"..m]
 cm.name="幻海袭 游侠"
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.SeadowRover(c)
@@ -19,9 +29,6 @@ end
 function cm.thfilter(c)
 	return c:IsSetCard(0x3534) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
-function cm.tdfilter(c)
-	return c:IsPublic() and c:IsAbleToDeck()
-end
 function cm.gselect(g,e)
 	return g:IsExists(Card.IsSetCard,1,nil,0x3534) and not g:IsContains(e:GetHandler())
 end
@@ -35,16 +42,14 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local hg=g:SelectSubGroup(tp,cm.gselect,false,1,2,e)
 	Duel.ConfirmCards(1-tp,hg)
-	SNNM.SetPublic(c,3)
-	for tc in aux.Next(hg) do
-		SNNM.SetPublic(tc,3)
-	end
+	SNNM.SetPublic(c,4,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+	for tc in aux.Next(hg) do SNNM.SetPublic(tc,4,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2) end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g1=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	local g2=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_HAND,0,nil)
-	if g1:GetCount()>0 and g2:GetCount()>0 and Duel.SendtoHand(g1,nil,REASON_EFFECT)>0 then
+	local g2=Duel.GetMatchingGroup(function(c)return c:IsPublic() and c:IsAbleToDeck()end,tp,LOCATION_HAND,0,nil)
+	if g1:GetCount()>0 and Duel.SendtoHand(g1,nil,REASON_EFFECT)>0 and g2:GetCount()>0 then
 		Duel.ConfirmCards(1-tp,g1)
 		Duel.ShuffleHand(tp)
 		Duel.BreakEffect()

@@ -1,8 +1,8 @@
 --战车道装甲·追猎者
-require("expansions/script/c9910106")
+Duel.LoadScript("c9910100.lua")
 function c9910140.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,nil,3,2,c9910140.xyzfilter,aux.Stringid(9910140,0),99)
+	QutryZcd.AddXyzProcedure(c,nil,3,2,c9910140.xyzfilter,99)
 	c:EnableReviveLimit()
 	--remove & to hand
 	local e1=Effect.CreateEffect(c)
@@ -17,14 +17,14 @@ function c9910140.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910140.xyzfilter(c)
-	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 end
 function c9910140.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c9910140.thfilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c9910140.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0

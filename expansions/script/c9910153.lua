@@ -11,11 +11,11 @@ function c9910153.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910153.xyzfilter(c,tp)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_XYZ)
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_XYZ)
 		and Duel.IsExistingMatchingCard(c9910153.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetRank())
 end
 function c9910153.thfilter(c,lv)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and c:GetOriginalLevel()==lv and c:IsAbleToHand()
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_MONSTER) and c:GetOriginalLevel()==lv and c:IsAbleToHand()
 end
 function c9910153.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c9910153.xyzfilter,tp,LOCATION_EXTRA,0,nil,tp)

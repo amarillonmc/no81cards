@@ -25,7 +25,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(0x10000000+m)
+	e1:SetCode(0x20000000+m)
 	e1:SetLabelObject(re)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
@@ -76,7 +76,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 							reg(sc,se,true)
 							if cm[se] then
 								cm[se]=nil
-								local eset={sc:IsHasEffect(0x10000000+m)}
+								local eset={sc:IsHasEffect(0x20000000+m)}
 								if #eset>0 then
 									local ct=0
 									for _,ee in pairs(eset) do

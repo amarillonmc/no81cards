@@ -33,7 +33,7 @@ function c9910162.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c9910162.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x952) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and c:IsSetCard(0x9958) and c:IsType(TYPE_XYZ)
 end
 function c9910162.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

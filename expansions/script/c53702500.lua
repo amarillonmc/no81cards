@@ -4092,7 +4092,7 @@ function cm.MultiDualLabel(c,ct)
 		ex:SetDescription(aux.Stringid(53702600,ct+6))
 		ex:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
 	else ex:SetProperty(EFFECT_FLAG_SINGLE_RANGE) end
-	ex:SetCode(0x10000000+53753000)
+	ex:SetCode(EFFECT_FLAG_EFFECT+53753000)
 	ex:SetRange(LOCATION_MZONE)
 	ex:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(ex)

@@ -33,7 +33,7 @@ end
 function cm.immval(e,te)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
-	local eset={c:IsHasEffect(0x10000000+m)}
+	local eset={c:IsHasEffect(0x20000000+m)}
 	local res=(te:GetOwner()~=c)
 	local ctns=false
 	if not te:IsHasType(EFFECT_TYPE_ACTIONS) then
@@ -45,7 +45,7 @@ function cm.immval(e,te)
 		local flag=c:GetFlagEffect(m)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(0x10000000+m)
+		e1:SetCode(0x20000000+m)
 		e1:SetLabelObject(te)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
@@ -65,7 +65,7 @@ end
 function cm.fliptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local c=e:GetHandler()
-	local eset={c:IsHasEffect(0x10000000+m)}
+	local eset={c:IsHasEffect(0x20000000+m)}
 	if #eset>0 then
 		if rp>=2 then
 			if tp==0 then rp=1 end

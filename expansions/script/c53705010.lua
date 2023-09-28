@@ -1,6 +1,16 @@
 local m=53705010
 local cm=_G["c"..m]
 cm.name="幻海袭 模型"
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.SeadowRover(c)
@@ -24,22 +34,24 @@ function cm.thfilter(c)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	SNNM.SetPublic(c,3)
-	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(cm.pubfilter,tp,LOCATION_HAND,0,1,c) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_HAND,0,1,1,c)
-		local ct=Duel.SendtoGrave(g,REASON_EFFECT)
-		if ct==0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g2=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g2:GetCount()>0 then
-			Duel.SendtoHand(g2,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g2)
+	if not c:IsRelateToEffect(e) or c:IsPublic() then return end
+	if Duel.IsExistingMatchingCard(cm.pubfilter,tp,LOCATION_HAND,0,1,c) then
+		SNNM.SetPublic(c,3,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+		if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_HAND,0,1,c) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			local g=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_HAND,0,1,1,c)
+			local ct=Duel.SendtoGrave(g,REASON_EFFECT)
+			if ct==0 then return end
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local g2=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+			if g2:GetCount()>0 then
+				Duel.SendtoHand(g2,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,g2)
+			end
 		end
-	end
+	else SNNM.SetPublic(c,4,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2) end
 end

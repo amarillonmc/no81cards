@@ -23,7 +23,7 @@ function c9910142.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
 end
 function c9910142.thfilter(c,cardtype)
-	return c:IsSetCard(0x952) and c:IsType(cardtype) and c:IsAbleToHand()
+	return c:IsSetCard(0x9958) and c:IsType(cardtype) and c:IsAbleToHand()
 end
 function c9910142.gcheck(g)
 	return g:FilterCount(Card.IsType,nil,TYPE_MONSTER)<=1

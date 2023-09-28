@@ -40,7 +40,7 @@ function c9910109.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
-	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
+	if tc:IsSetCard(0x9958) and tc:IsType(TYPE_MONSTER) then
 		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
 			and not tc:IsForbidden() then
 			Duel.DisableShuffleCheck()

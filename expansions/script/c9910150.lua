@@ -1,8 +1,8 @@
 --战车道装甲·亨舍尔虎王
-require("expansions/script/c9910106")
+Duel.LoadScript("c9910100.lua")
 function c9910150.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,nil,6,3,c9910150.xyzfilter,aux.Stringid(9910150,0),99)
+	QutryZcd.AddXyzProcedure(c,nil,6,3,c9910150.xyzfilter,99)
 	c:EnableReviveLimit()
 	--atk & def
 	local e1=Effect.CreateEffect(c)
@@ -46,7 +46,7 @@ function c9910150.atkval(e,c)
 	return c:GetOverlayCount()*200
 end
 function c9910150.xyzfilter(c)
-	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 end
 function c9910150.hacon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp

@@ -1,8 +1,8 @@
 --战车道装甲·百夫长
-require("expansions/script/c9910106")
+Duel.LoadScript("c9910100.lua")
 function c9910147.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),7,3,c9910147.xyzfilter,aux.Stringid(9910147,0),99)
+	QutryZcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),7,3,c9910147.xyzfilter,99)
 	c:EnableReviveLimit()
 	--remove
 	local e1=Effect.CreateEffect(c)
@@ -18,11 +18,11 @@ function c9910147.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910147.xyzfilter(c)
-	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 		and c:IsRace(RACE_MACHINE)
 end
 function c9910147.xmfilter(c,e)
-	return c:IsSetCard(0x952) and c:IsCanOverlay() and not (c:IsOnField() and e and c:IsImmuneToEffect(e))
+	return c:IsSetCard(0x9958) and c:IsCanOverlay() and not (c:IsOnField() and e and c:IsImmuneToEffect(e))
 end
 function c9910147.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

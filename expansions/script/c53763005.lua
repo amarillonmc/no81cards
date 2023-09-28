@@ -1,6 +1,16 @@
 local m=53763005
 local cm=_G["c"..m]
 cm.name="绿色镜头特提拉希德隆"
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.Ranclock(c,0,ATTRIBUTE_DARK,cm.op,ATTRIBUTE_WIND)

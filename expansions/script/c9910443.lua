@@ -28,7 +28,7 @@ function c9910443.initial_effect(c)
 	Duel.AddCustomActivityCounter(9910443,ACTIVITY_CHAIN,c9910443.chainfilter)
 end
 function c9910443.chainfilter(re,tp,cid)
-	return not (re:GetHandler():IsSetCard(0x952) and re:IsActiveType(TYPE_MONSTER)
+	return not (re:GetHandler():IsSetCard(0x9958) and re:IsActiveType(TYPE_MONSTER)
 		and Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)==LOCATION_HAND)
 end
 function c9910443.ovfilter(c)
@@ -46,7 +46,7 @@ function c9910443.descon(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsChainNegatable(ev)
 end
 function c9910443.cfilter(c)
-	return c:IsSetCard(0x952) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x9958) and c:IsAbleToRemoveAsCost()
 end
 function c9910443.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Group.CreateGroup()

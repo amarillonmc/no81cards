@@ -3,10 +3,21 @@ local cm=_G["c"..m]
 cm.name="不腐心化 卡斯凯德"
 cm.upside_code=m
 cm.downside_code=m+25
+if not require and Duel.LoadScript then
+	function require(str)
+		local name=str
+		for word in string.gmatch(str,"%w+") do
+			name=word
+		end
+		Duel.LoadScript(name..".lua")
+		return true
+	end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
-	SNNM.HartrazCheck(c)
-	SNNM.ORsideLink(c,function(c)return c:IsLevelBelow(4) and c:IsLinkRace(RACE_PYRO)end,1,1,nil,53729012)
+	local es=aux.AddLinkProcedure(c,function(c)return c:IsLevelBelow(4) and c:IsLinkRace(RACE_PYRO)end,1,1)
+	es:SetProperty(es:GetProperty()&(~EFFECT_FLAG_UNCOPYABLE))
+	c:EnableReviveLimit()
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e0:SetCode(EVENT_SPSUMMON_SUCCESS)

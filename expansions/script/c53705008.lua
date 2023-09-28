@@ -1,6 +1,16 @@
 local m=53705008
 local cm=_G["c"..m]
 cm.name="幻海袭来之梦"
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
@@ -34,6 +44,7 @@ end
 function cm.repoperation(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	c:ResetEffect(EFFECT_PUBLIC,RESET_CODE)
+	Duel.ShuffleHand(tp)
 end
 function cm.filter(c)
 	return c:IsFaceup() and c:IsAbleToHandAsCost()
@@ -49,7 +60,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		SNNM.SetPublic(tc,3)
+		SNNM.SetPublic(tc,4,RESET_EVENT+RESETS_STANDARD,1)
 	end
 end
 function cm.handcon(e)

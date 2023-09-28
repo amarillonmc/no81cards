@@ -1,6 +1,16 @@
 local m=189115
 local cm=_G["c"..m]
 cm.name="恒夜骑士-向曜之尼格蒂姆"
+if not require and Duel.LoadScript then
+	function require(str)
+		local name=str
+		for word in string.gmatch(str,"%w+") do
+			name=word
+		end
+		Duel.LoadScript(name..".lua")
+		return true
+	end
+end
 if not pcall(function() require("expansions/script/c189113") end) then require("script/c189113") end
 function cm.initial_effect(c)
 	ven.EnableSpiritReturn(c,function(e,tp,eg,ep,ev,re,r,rp)

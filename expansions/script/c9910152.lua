@@ -48,13 +48,13 @@ function c9910152.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910152.rmfilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_SPELL) and c:IsAbleToRemove()
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_SPELL) and c:IsAbleToRemove()
 end
 function c9910152.matfilter1(c,e)
-	return c:IsFaceup() and c:IsSetCard(0x952) and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
+	return c:IsFaceup() and c:IsSetCard(0x9958) and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
 end
 function c9910152.matfilter2(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x952) and c:IsCanOverlay()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x9958) and c:IsCanOverlay()
 end
 function c9910152.matcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9910152.rmfilter,tp,LOCATION_GRAVE,0,1,nil)

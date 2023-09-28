@@ -1,6 +1,17 @@
 local m=53799167
 local cm=_G["c"..m]
 cm.name="龙王鲸"
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -13,16 +24,7 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,m+500)
-	e2:SetCost(cm.cost)
-	e2:SetTarget(cm.tgtg)
-	e2:SetOperation(cm.tgop)
-	c:RegisterEffect(e2)
+	local e2=SNNM.reni(c,aux.Stringid(m,1),CATEGORY_TOGRAVE+CATEGORY_DECKDES,EFFECT_TYPE_IGNITION,0,0,LOCATION_MZONE,{1,m+500},{0},0,cm.cost,cm.tgtg,cm.tgop)
 	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
 end
 function cm.counterfilter(c)

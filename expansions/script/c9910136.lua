@@ -31,7 +31,7 @@ function c9910136.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c9910136.cfilter2(c)
-	return c:IsFaceup() and c:IsSetCard(0x952)
+	return c:IsFaceup() and c:IsSetCard(0x9958)
 end
 function c9910136.ctfilter(c)
 	local g=Group.FromCards(c)

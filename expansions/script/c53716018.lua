@@ -1,6 +1,16 @@
 local m=53716018
 local cm=_G["c"..m]
 cm.name="断片折光 幻想诗汛"
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
@@ -29,7 +39,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return (c:IsLocation(LOCATION_HAND) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x353b,TYPES_NORMAL_TRAP_MONSTER,2000,400,4,RACE_AQUA,ATTRIBUTE_LIGHT))) and Duel.GetFlagEffect(tp,m)==0 and not c:IsLocation(LOCATION_ONFIELD) end
+	if chk==0 then return (not c:IsLocation(LOCATION_GRAVE) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x353b,TYPES_NORMAL_TRAP_MONSTER,2000,400,4,RACE_AQUA,ATTRIBUTE_LIGHT))) and Duel.GetFlagEffect(tp,m)==0 and not c:IsLocation(LOCATION_ONFIELD) end
 	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
 	if c:IsPreviousLocation(LOCATION_GRAVE) then
 		e:SetCategory(CATEGORY_SPECIAL_SUMMON)

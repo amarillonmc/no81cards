@@ -1,3 +1,13 @@
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
 local m=53756002
 local cm=_G["c"..m]
@@ -106,7 +116,7 @@ function cm.costchk(e,te_or_c,tp)
 	for i=0,4 do if Duel.CheckLocation(tp,LOCATION_SZONE,i) then fdzone=fdzone|1<<i end end
 	if aux.GetValueType(te_or_c)=="Effect" and te_or_c:IsHasProperty(EFFECT_FLAG_LIMIT_ZONE) then
 		local zone=te_or_c:GetValue()
-		if aux.GetValueType(c)=="function" then
+		if aux.GetValueType(zone)=="function" then
 			zone=zone(te_or_c,tp)
 		end
 		fdzone=fdzone&zone

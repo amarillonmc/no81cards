@@ -1,6 +1,16 @@
 local m=53728001
 local cm=_G["c"..m]
 cm.name="迅征啼鸟 火星之春"
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	aux.AddLinkProcedure(c,function(c)return c:IsLinkType(TYPE_UNION) and c:IsLinkRace(RACE_MACHINE)end,1,1)

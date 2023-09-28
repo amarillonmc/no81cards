@@ -1,7 +1,8 @@
 --平景清
 local s,id,o=GetID()
-xpcall(function() require("expansions/script/c17035101") end,function() require("script/c17035101") end)
+xpcall(function() dofile("expansions/script/c17035101.lua") end,function() dofile("script/c17035101.lua") end)
 function s.initial_effect(c)
+	c:SetSPSummonOnce(88884450)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_LIGHT),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()

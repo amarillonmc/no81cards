@@ -42,19 +42,18 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			local rc=re:GetCode()
 			local g4=Duel.GetMatchingGroup(Card.IsCode,tp,0,LOCATION_DECK,nil,rc)
 			if Duel.IsExistingMatchingCard(cm.afil,tp,0,LOCATION_DECK,1,g4) then
-				local g=Duel.GetMatchingGroup(cm.afil,tp,0,LOCATION_DECK,g4):RandomSelect(tp,1,1,nil):GetFirst()
-				if g:IsType(TYPE_FIELD) then
-					local te=g:GetActivateEffect()
-					Duel.MoveToField(g,1-tp,1-tp,LOCATION_FZONE,POS_FACEUP,true)
-					Duel.RaiseEvent(g,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+				local gc=Duel.GetMatchingGroup(cm.afil,tp,0,LOCATION_DECK,g4):RandomSelect(tp,1,1,nil):GetFirst()
+				local te=gc:GetActivateEffect()
+				if gc:IsType(TYPE_FIELD) then
+					Duel.MoveToField(gc,1-tp,1-tp,LOCATION_FZONE,POS_FACEUP,true)
+					Duel.RaiseEvent(gc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 				else
-					local te=g:GetActivateEffect()
-					Duel.MoveToField(g,1-tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
+					Duel.MoveToField(gc,1-tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
 				end 
 				te:UseCountLimit(1-tp,1,true)
-				cm.ActivateCard(g,1-tp,e)
-				if not (g:IsType(TYPE_CONTINUOUS) or g:IsType(TYPE_FIELD) or g:IsType(TYPE_EQUIP)) then
-					Duel.SendtoGrave(g,REASON_RULE)
+				cm.ActivateCard(gc,1-tp,e)
+				if not (gc:IsType(TYPE_CONTINUOUS) or gc:IsType(TYPE_FIELD) or gc:IsType(TYPE_EQUIP)) then
+					Duel.SendtoGrave(gc,REASON_RULE)
 				end
 			else
 				Duel.Draw(1-tp,1,REASON_EFFECT)

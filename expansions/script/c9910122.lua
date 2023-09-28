@@ -25,7 +25,7 @@ function c9910122.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,1000)
 end
 function c9910122.filter(c,e,tp)
-	return c:IsSetCard(0x952) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x9958) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910122.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -93,7 +93,7 @@ function c9910122.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,1)
 	local tg=Duel.GetDecktopGroup(tp,1)
 	local tc=tg:GetFirst()
-	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) and tc:GetAttack()>0 then
+	if tc:IsSetCard(0x9958) and tc:IsType(TYPE_MONSTER) and tc:GetAttack()>0 then
 		Duel.Recover(tp,tc:GetAttack(),REASON_EFFECT)
 	end
 end

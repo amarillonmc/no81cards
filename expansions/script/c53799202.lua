@@ -1,6 +1,16 @@
 local m=53799202
 local cm=_G["c"..m]
 cm.name="菓子工房代理店长 NYN"
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
@@ -20,7 +30,7 @@ end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>7 and Duel.GetDecktopGroup(tp,8):IsExists(Card.IsAbleToHand,1,nil) end
 	local t={}
-	Duel.Hint(24,0,aux.Stringid(m,1))
+	assert(false,"“それじゃあ”")
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CODE)
 	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT}
 	local ac1=Duel.AnnounceCard(1-tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))

@@ -1,3 +1,13 @@
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53765009
 local cm=_G["c"..m]
@@ -118,7 +128,8 @@ function cm.initial_effect(c)
 		Effect.IsHasType=function(re,type)
 			local res=cm[4](re,type)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(53765099)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
 			local b=false
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then
@@ -128,7 +139,8 @@ function cm.initial_effect(c)
 		cm[5]=Effect.GetType
 		Effect.GetType=function(re)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(53765099)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
 			local b=false
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then return EFFECT_TYPE_ACTIVATE else return cm[5](re) end
@@ -137,7 +149,8 @@ function cm.initial_effect(c)
 		Effect.IsActiveType=function(re,type)
 			local res=cm[6](re,type)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(53765099)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
 			local b=false
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then
@@ -147,7 +160,8 @@ function cm.initial_effect(c)
 		cm[7]=Effect.GetActiveType
 		Effect.GetActiveType=function(re)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(53765099)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
 			local b=false
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then return 0x20004 else return cm[7](re) end
@@ -167,7 +181,8 @@ function cm.initial_effect(c)
 		cm[10]=Effect.GetActivateLocation
 		Effect.GetActivateLocation=function(re)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(53765099)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
 			local b=false
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then return LOCATION_SZONE else return cm[10](re) end
@@ -175,7 +190,8 @@ function cm.initial_effect(c)
 		cm[11]=Effect.GetActivateSequence
 		Effect.GetActivateSequence=function(re)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(53765099)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
 			local ls=0
 			local seq=cm[11](re)
 			for _,v in pairs(xe) do
@@ -190,7 +206,8 @@ function cm.initial_effect(c)
 		Duel.GetChainInfo=function(chainc,...)
 			local re=cm[12](chainc,CHAININFO_TRIGGERING_EFFECT)
 			local rc=re:GetHandler()
-			local xe={rc:IsHasEffect(53765099)}
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
 			local b=false
 			local ls=0
 			for _,v in pairs(xe) do
@@ -203,6 +220,8 @@ function cm.initial_effect(c)
 			local t={cm[12](chainc,...)}
 			if b then
 				for k,info in ipairs({...}) do
+					if info==CHAININFO_TYPE then t[k]=0x20004 end
+					if info==CHAININFO_EXTTYPE then t[k]=0x20004 end
 					if info==CHAININFO_TRIGGERING_LOCATION then t[k]=LOCATION_SZONE end
 					if info==CHAININFO_TRIGGERING_SEQUENCE and ls>0 then t[k]=ls-1 end
 					if info==CHAININFO_TRIGGERING_POSITION then t[k]=POS_FACEUP end

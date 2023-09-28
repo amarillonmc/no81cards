@@ -1,6 +1,16 @@
 local m=53715016
 local cm=_G["c"..m]
 cm.name="欢乐树友？ 蓝英"
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.HTFSynchoro(c,7,m)

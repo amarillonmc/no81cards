@@ -15,7 +15,7 @@ function c9910110.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
 function c9910110.tofifilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c9910110.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -32,7 +32,7 @@ function c9910110.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
-	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
+	if tc:IsSetCard(0x9958) and tc:IsType(TYPE_MONSTER) then
 		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
 			and not tc:IsForbidden() then
 			Duel.DisableShuffleCheck()

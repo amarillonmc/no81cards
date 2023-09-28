@@ -31,7 +31,7 @@ function c9910164.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD,e:GetHandler())
 end
 function c9910164.tgfilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
 end
 function c9910164.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -52,10 +52,10 @@ function c9910164.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910164.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_GRAVE,0,2,nil,0x952)
+	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_GRAVE,0,2,nil,0x9958)
 end
 function c9910164.thfilter(c)
-	return c:IsSetCard(0x952) and c:IsAbleToHand()
+	return c:IsSetCard(0x9958) and c:IsAbleToHand()
 end
 function c9910164.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910164.thfilter(chkc) end

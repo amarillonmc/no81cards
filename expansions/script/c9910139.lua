@@ -28,7 +28,7 @@ function c9910139.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
-	if tc:IsSetCard(0x952) and tc:IsType(TYPE_MONSTER) then
+	if tc:IsSetCard(0x9958) and tc:IsType(TYPE_MONSTER) then
 		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
 			and not tc:IsForbidden() then
 			Duel.DisableShuffleCheck()
@@ -55,7 +55,7 @@ function c9910139.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910139.thfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x952) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsSetCard(0x9958) and c:IsAbleToHand()
 end
 function c9910139.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c9910139.thfilter,tp,LOCATION_ONFIELD,0,1,nil)

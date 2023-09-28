@@ -1,8 +1,8 @@
 --战车道装甲·保时捷虎式
-require("expansions/script/c9910106")
+Duel.LoadScript("c9910100.lua")
 function c9910112.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,nil,6,2,c9910112.xyzfilter,aux.Stringid(9910112,0),99)
+	QutryZcd.AddXyzProcedure(c,nil,6,2,c9910112.xyzfilter,99)
 	c:EnableReviveLimit()
 	--atk limit
 	local e1=Effect.CreateEffect(c)
@@ -25,7 +25,7 @@ function c9910112.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c9910112.xyzfilter(c)
-	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 end
 function c9910112.atcon(e)
 	return e:GetHandler():GetOverlayCount()>0

@@ -1,7 +1,17 @@
 local m=53734011
 local cm=_G["c"..m]
 cm.name="青缀归处 斑鸠舍"
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+if not require and Duel.LoadScript then
+	function require(str)
+		local name=str
+		for word in string.gmatch(str,"%w+") do
+			name=word
+		end
+		Duel.LoadScript(name..".lua")
+		return true
+	end
+end
+if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -19,6 +29,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
+	cm.aozora_field_effect=e2
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EFFECT_DESTROY_REPLACE)
@@ -98,7 +109,7 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	rsop.MoveToField(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),false,e:GetLabel())
+	Scl.Place2Field(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),false,e:GetLabel())
 	--Duel.ReturnToField(tc,tc:GetPreviousPosition(),e:GetLabel())
 	e:Reset()
 end

@@ -1,8 +1,8 @@
 --战车道装甲·T-34
-require("expansions/script/c9910106")
+Duel.LoadScript("c9910100.lua")
 function c9910134.initial_effect(c)
 	--xyz summon
-	Zcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),4,2,c9910134.xyzfilter,aux.Stringid(9910134,0),99)
+	QutryZcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),4,2,c9910134.xyzfilter,99)
 	c:EnableReviveLimit()
 	--material
 	local e1=Effect.CreateEffect(c)
@@ -23,7 +23,7 @@ function c9910134.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910134.xyzfilter(c,xyzc)
-	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x952) and c:IsFaceup()))
+	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 		and c:IsRace(RACE_MACHINE)
 end
 function c9910134.condition(e,tp,eg,ep,ev,re,r,rp)

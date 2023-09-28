@@ -2,6 +2,16 @@ local m=53734018
 local cm=_G["c"..m]
 cm.name="在这片青空下约定"
 cm.Snnm_Ef_Rst=true
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.AllEffectReset(c)

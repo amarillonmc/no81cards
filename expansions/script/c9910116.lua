@@ -15,13 +15,13 @@ function c9910116.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 end
 end
 function c9910116.cfilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_MONSTER)
 end
 function c9910116.spfilter(c,e,tp)
-	return c:IsSetCard(0x952) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x9958) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910116.tofifilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c9910116.xyzfilter(c)
 	return c:IsRace(RACE_MACHINE) and c:IsXyzSummonable(nil)

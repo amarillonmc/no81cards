@@ -2,6 +2,16 @@ local m=53707008
 local cm=_G["c"..m]
 cm.name="清响 妍叙梦"
 cm.main_peacecho=true
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.Peacecho(c,TYPE_MONSTER)

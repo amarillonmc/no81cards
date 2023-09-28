@@ -11,7 +11,7 @@ function c9910113.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x952))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x9958))
 	e2:SetValue(300)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
@@ -39,7 +39,7 @@ function c9910113.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c9910113.thfilter(c)
-	return c:IsSetCard(0x952) and c:IsAbleToHand()
+	return c:IsSetCard(0x9958) and c:IsAbleToHand()
 end
 function c9910113.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910113.thfilter,tp,LOCATION_DECK,0,1,nil)
@@ -68,7 +68,7 @@ function c9910113.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910113.tdfilter(c)
-	return c:IsSetCard(0x952) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return c:IsSetCard(0x9958) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function c9910113.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910113.tdfilter(chkc) end

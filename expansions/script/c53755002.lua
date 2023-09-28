@@ -2,6 +2,16 @@ local m=53755002
 local cm=_G["c"..m]
 cm.name="SRT兔子小队 咲"
 cm.Rabbit_Team_Number_2=true
+if not require and Duel.LoadScript then
+    function require(str)
+        local name=str
+        for word in string.gmatch(str,"%w+") do
+            name=word
+        end
+        Duel.LoadScript(name..".lua")
+        return true
+    end
+end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.RabbitTeam(c)
@@ -41,16 +51,18 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
 			local sg=g:Select(tp,1,ct,nil)
 			Duel.HintSelection(sg)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetDescription(aux.Stringid(m,2))
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
-			e1:SetCode(EFFECT_CANNOT_ATTACK)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			local e2=e1:Clone()
-			e2:SetCode(EFFECT_CANNOT_TRIGGER)
-			sg:ForEach(Card.RegisterEffect,e1)
-			sg:ForEach(Card.RegisterEffect,e2)
+			for tc in aux.Next(sg) do
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetDescription(aux.Stringid(m,2))
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
+				e1:SetCode(EFFECT_CANNOT_ATTACK)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+				tc:RegisterEffect(e1)
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_CANNOT_TRIGGER)
+				tc:RegisterEffect(e2)
+			end
 		end
 	end
 end
