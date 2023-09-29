@@ -1,14 +1,3 @@
-if not require and Duel.LoadScript then
-	function require(str)
-		local name=str
-		for word in string.gmatch(str,"%w+") do
-			name=word
-		end
-		Duel.LoadScript(name..".lua")
-		return true
-	end
-end
-if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
 local m=53716001
 local cm=_G["c"..m]
 cm.name="断片折光 幻想匿国"
@@ -134,7 +123,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local zone=e:GetLabel()
 	if zone==0 then Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false) else
 		local flag=Duel.SelectDisableField(tp,1,LOCATION_SZONE,0,~zone&0x1f00)
-		Scl.Place2Field(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false,2^(math.log(flag,2)-8))
+		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false,2^(math.log(flag,2)-8))
 	end
 	e:SetLabel(0)
 	c:CreateEffectRelation(te)

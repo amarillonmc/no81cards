@@ -1,10 +1,10 @@
 --甜心机仆 暖风的礼物
-require("expansions/script/c9910550")
+Duel.LoadScript("c9910550.lua")
 function c9910553.initial_effect(c)
 	--special summon
-	Txjp.AddSpProcedure(c,9910553)
+	QutryTxjp.AddSpProcedure(c,9910553)
 	--flag
-	Txjp.AddTgFlag(c)
+	QutryTxjp.AddTgFlag(c)
 	--disable
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_REMOVE+CATEGORY_TODECK+CATEGORY_GRAVE_ACTION)

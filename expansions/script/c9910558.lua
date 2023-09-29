@@ -1,10 +1,10 @@
 --甜心机仆 秋叶的礼物
-require("expansions/script/c9910550")
+Duel.LoadScript("c9910550.lua")
 function c9910558.initial_effect(c)
 	--special summon
-	Txjp.AddSpProcedure(c,9910558)
+	QutryTxjp.AddSpProcedure(c,9910558)
 	--flag
-	Txjp.AddTgFlag(c)
+	QutryTxjp.AddTgFlag(c)
 	--change effect
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_SEARCH+CATEGORY_TOHAND)

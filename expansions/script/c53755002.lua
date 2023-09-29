@@ -2,16 +2,7 @@ local m=53755002
 local cm=_G["c"..m]
 cm.name="SRT兔子小队 咲"
 cm.Rabbit_Team_Number_2=true
-if not require and Duel.LoadScript then
-    function require(str)
-        local name=str
-        for word in string.gmatch(str,"%w+") do
-            name=word
-        end
-        Duel.LoadScript(name..".lua")
-        return true
-    end
-end
+if not require and dofile then function require(str) return dofile(str..".lua") end end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.RabbitTeam(c)

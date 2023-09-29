@@ -1,13 +1,4 @@
-if not require and Duel.LoadScript then
-    function require(str)
-        local name=str
-        for word in string.gmatch(str,"%w+") do
-            name=word
-        end
-        Duel.LoadScript(name..".lua")
-        return true
-    end
-end
+if not require and dofile then function require(str) return dofile(str..".lua") end end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53765008
 local cm=_G["c"..m]

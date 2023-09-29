@@ -1,16 +1,7 @@
 local m=53753004
 local cm=_G["c"..m]
 cm.name="悬念镇抗 戴芙·伊斯特"
-if not require and Duel.LoadScript then
-    function require(str)
-        local name=str
-        for word in string.gmatch(str,"%w+") do
-            name=word
-        end
-        Duel.LoadScript(name..".lua")
-        return true
-    end
-end
+if not require and dofile then function require(str) return dofile(str..".lua") end end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.MultiDual(c)

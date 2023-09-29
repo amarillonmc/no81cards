@@ -1,10 +1,10 @@
 --甜心机仆 天镜的礼物
-require("expansions/script/c9910550")
+Duel.LoadScript("c9910550.lua")
 function c9910564.initial_effect(c)
 	--special summon
-	Txjp.AddSpProcedure(c,9910564)
+	QutryTxjp.AddSpProcedure(c,9910564)
 	--flag
-	Txjp.AddTgFlag(c)
+	QutryTxjp.AddTgFlag(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_GRAVE_ACTION+CATEGORY_TOHAND)

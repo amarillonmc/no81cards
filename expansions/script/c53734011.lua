@@ -1,17 +1,6 @@
 local m=53734011
 local cm=_G["c"..m]
 cm.name="青缀归处 斑鸠舍"
-if not require and Duel.LoadScript then
-	function require(str)
-		local name=str
-		for word in string.gmatch(str,"%w+") do
-			name=word
-		end
-		Duel.LoadScript(name..".lua")
-		return true
-	end
-end
-if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -109,7 +98,7 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Scl.Place2Field(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),false,e:GetLabel())
+	Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),false,e:GetLabel())
 	--Duel.ReturnToField(tc,tc:GetPreviousPosition(),e:GetLabel())
 	e:Reset()
 end

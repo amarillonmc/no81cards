@@ -1,8 +1,8 @@
 --甜心机仆 初见的礼物
-require("expansions/script/c9910550")
+Duel.LoadScript("c9910550.lua")
 function c9910559.initial_effect(c)
 	--flag
-	Txjp.AddTgFlag(c)
+	QutryTxjp.AddTgFlag(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()

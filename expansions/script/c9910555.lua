@@ -1,8 +1,8 @@
 --甜心机仆的欢笑
-require("expansions/script/c9910550")
+Duel.LoadScript("c9910550.lua")
 function c9910555.initial_effect(c)
 	--flag
-	Txjp.AddTgFlag(c)
+	QutryTxjp.AddTgFlag(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

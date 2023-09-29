@@ -1,14 +1,3 @@
-if not require and Duel.LoadScript then
-	function require(str)
-		local name=str
-		for word in string.gmatch(str,"%w+") do
-			name=word
-		end
-		Duel.LoadScript(name..".lua")
-		return true
-	end
-end
-if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
 local m=53799149
 local cm=_G["c"..m]
 cm.name="离你而去"
@@ -127,5 +116,5 @@ function cm.tfop(e,tp,eg,ep,ev,re,r,rp)
 	for i=1,#list do filter=filter|1<<(list[i]+8) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	local flag=Duel.SelectField(tp,1,LOCATION_SZONE,0,filter)
-	Scl.Place2Field(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true,2^(math.log(flag,2)-8))
+	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true,2^(math.log(flag,2)-8))
 end

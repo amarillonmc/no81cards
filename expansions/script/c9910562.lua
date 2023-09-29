@@ -1,8 +1,8 @@
 --甜心机仆 永恒的礼物
-require("expansions/script/c9910550")
+Duel.LoadScript("c9910550.lua")
 function c9910562.initial_effect(c)
 	--flag
-	Txjp.AddTgFlag(c)
+	QutryTxjp.AddTgFlag(c)
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,nil,2,4,c9910562.lcheck)

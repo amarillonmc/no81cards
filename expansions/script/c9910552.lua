@@ -1,10 +1,10 @@
 --甜心机仆 涟漪的礼物
-require("expansions/script/c9910550")
+Duel.LoadScript("c9910550.lua")
 function c9910552.initial_effect(c)
 	--special summon
-	Txjp.AddSpProcedure(c,9910552)
+	QutryTxjp.AddSpProcedure(c,9910552)
 	--flag
-	Txjp.AddTgFlag(c)
+	QutryTxjp.AddTgFlag(c)
 	--to grave
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_REMOVE+CATEGORY_DRAW)
