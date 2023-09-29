@@ -106,7 +106,6 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetTargetRange(1,0)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	Debug.Message(Duel.GetFlagEffect(tp,11451731))
 end
 function cm.thfilter(c)
 	return c:IsSetCard(0x6977) and c:IsAbleToHand() and not c:IsCode(m)

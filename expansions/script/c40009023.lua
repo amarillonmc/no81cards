@@ -3,6 +3,7 @@ local m=40009023
 local cm=_G["c"..m]
 cm.named_with_MobileAerialTeam=1
 function cm.MobileAerialTeam(c)
+	if c:IsSetCard(0xf13) then return true end
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_MobileAerialTeam
 end

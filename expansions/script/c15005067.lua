@@ -1,3 +1,16 @@
+if not require and dofile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=dofile(str)
+			else
+				require_list[str]=dofile(str..".lua")
+			end
+		end
+		return require_list[str]
+	end
+end
 if not pcall(function() require("expansions/script/c15000000") end) then require("script/c15000000") end
 local m=15005067
 local cm=_G["c"..m]

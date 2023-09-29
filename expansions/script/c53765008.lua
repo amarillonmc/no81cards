@@ -716,8 +716,11 @@ end
 function cm.imuval(e,c)
 	return e:GetHandler():GetFlagEffectLabel(m+50) or 0
 end
+function cm.imufilter(c,e)
+	return not c:IsImmuneToEffect(e) and c:IsSummonLocation(LOCATION_SZONE)
+end
 function cm.imuct(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.NOT(Card.IsImmuneToEffect),tp,LOCATION_MZONE,0,nil,e:GetLabelObject())
+	local g=Duel.GetMatchingGroup(cm.imufilter,tp,LOCATION_MZONE,0,nil,e:GetLabelObject())
 	local re=e:GetLabelObject():GetLabelObject()
 	for tc in aux.Next(g) do
 		local pe={Duel.IsPlayerAffectedByEffect(tp,m)}
@@ -740,7 +743,7 @@ function cm.imuct(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.efilter(e,te,c)
 	local tp=e:GetHandlerPlayer()
-	if not te:IsActivated() then return false end
+	if te:GetOwnerPlayer()==tp or not te:IsActivated() or te:GetActivateLocation()&LOCATION_ONFIELD==0 then return false end
 	if Akanekosan_Say_No then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -751,7 +754,6 @@ function cm.efilter(e,te,c)
 		return false
 	end
 	c:ResetEffect(53766006,RESET_CODE)
-	--if te:GetHandlerPlayer()==tp or not te:IsActivated() or te:GetActivateLocation()&LOCATION_ONFIELD==0 then return false end
 	local re=e:GetLabelObject()
 	local ct=0
 	local pe={Duel.IsPlayerAffectedByEffect(tp,m)}
