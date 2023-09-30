@@ -41,9 +41,7 @@ function cm.initial_effect(c)
 		e5:SetCode(EFFECT_CANNOT_SUMMON)
 		e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e5:SetTargetRange(1,1)
-		--e5:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 		e5:SetTarget(cm.costchk)
-		--e5:SetOperation(cm.costop)
 		Duel.RegisterEffect(e5,0)
 	end
 end
@@ -53,9 +51,13 @@ function cm.costchk(e,c,tp,st)
 	return false
 end
 function cm.filter(c,e)
-	return c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED)) --or not c:IsLocation(LOCATION_MZONE) or c:IsStatus(STATUS_CHAINING))
-		and not ((Duel.CheckEvent(EVENT_SUMMON_SUCCESS) or Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS)) and e:GetCode()==EVENT_MOVE and c:IsLocation(LOCATION_MZONE))
-		and not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(m)>0)
+	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))) then return false end
+	if e:GetCode()==EVENT_MOVE then
+		local b1,g1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
+		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
+		return (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c))
+	end
+	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(m)>0)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	if cm.mv then cm.mv=nil return false end
@@ -72,8 +74,8 @@ function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,ev)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if EVO_GAME then return end
-	EVO_GAME=true
+	--if EVO_GAME then return end
+	--EVO_GAME=true
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -94,7 +96,7 @@ function cm.ntfilter(c,p)
 end
 local A=1103515245
 local B=12345
-local M=32767
+local M=1073741824
 function cm.roll(min,max)
 	min=tonumber(min)
 	max=tonumber(max)
@@ -172,7 +174,7 @@ function cm.evoperation(e,tp,eg,ep,ev,re,r,rp)
 	local g12=g1+g2
 	local g123=g1+g2+g3
 	--if #g1>0 then Duel.Destroy(g1,REASON_RULE) end
-	if #g123>0 then Duel.Destroy(g123,REASON_EFFECT) end
+	if #g123>0 then Duel.Destroy(g123,REASON_RULE) end
 	local ct={}
 	ct[0]=g3:FilterCount(Card.IsControler,nil,0)+g12:FilterCount(cm.ntfilter,nil,0)
 	ct[1]=g3:FilterCount(Card.IsControler,nil,1)+g12:FilterCount(cm.ntfilter,nil,1)
