@@ -2,6 +2,7 @@
 local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,11451599)
+	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -26,6 +27,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetLabelObject(e0)
 	e2:SetCondition(cm.adcon2)
 	e2:SetCost(cm.adcost2)
 	e2:SetTarget(cm.adtg2)
@@ -35,7 +37,8 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e5)
 end
-function cm.filter(c,tp)
+function cm.filter(c,tp,se)
+	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	return c:IsControler(tp)
 end
 function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
@@ -85,7 +88,8 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter,1,nil,tp)
+	local se=e:GetLabelObject():GetLabelObject()
+	return eg:IsExists(cm.filter,1,nil,tp,se)
 end
 function cm.adcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end

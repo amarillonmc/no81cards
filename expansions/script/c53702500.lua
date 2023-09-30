@@ -4567,3 +4567,390 @@ end
 function cm.Tentuthop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT) end
 end
+function cm.ActivatedAsSpellorTrap(c,otyp)
+	local e1=Effect.CreateEffect(c)
+	--e1:SetDescription(aux.Stringid(m,0))
+	if otyp&TYPE_SPELL~=0 then e1:SetType(EFFECT_TYPE_IGNITION) elseif otyp&TYPE_TRAP~=0 then
+		e1:SetType(EFFECT_TYPE_QUICK_O)
+		e1:SetCode(EVENT_FREE_CHAIN)
+		e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	end
+	e1:SetRange(LOCATION_HAND)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	c:RegisterEffect(e1)
+	local e1_1=Effect.CreateEffect(c)
+	e1_1:SetType(EFFECT_TYPE_SINGLE)
+	e1_1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1_1:SetCode(53765098)
+	e1_1:SetRange(LOCATION_HAND)
+	e1_1:SetLabel(otyp)
+	e1_1:SetLabelObject(e1)
+	c:RegisterEffect(e1_1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_ADJUST)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetLabelObject(e1)
+	e2:SetOperation(cm.AASTadjustop(otyp))
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_ACTIVATE_COST)
+	e3:SetRange(LOCATION_HAND)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetTargetRange(1,1)
+	e3:SetLabelObject(e1)
+	e3:SetTarget(cm.AASTactarget)
+	e3:SetCost(cm.AASTcostchk)
+	e3:SetOperation(cm.AASTcostop(otyp))
+	c:RegisterEffect(e3)
+	return e1,e1_1,e2,e3
+end
+function cm.AASTadjustop(otyp)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local c=te:GetHandler()
+	local xe={c:IsHasEffect(53765099)}
+	for _,v in pairs(xe) do v:Reset() end
+	local p=te:GetHandlerPlayer()
+	local pe={Duel.IsPlayerAffectedByEffect(p,EFFECT_CANNOT_ACTIVATE)}
+	local ae={Duel.IsPlayerAffectedByEffect(p,EFFECT_ACTIVATE_COST)}
+	local t1,t2={},{}
+	for _,v in pairs(pe) do
+		local val=v:GetValue()
+		if aux.GetValueType(val)=="number" or val(v,te,p) then
+			table.insert(t1,v)
+			table.insert(t2,1)
+		end
+	end
+	for _,v in pairs(ae) do
+		local cost=v:GetCost()
+		if not v:GetLabelObject() and cost and not cost(v,te,p) then
+			local tg=v:GetTarget()
+			if not tg or tg(v,te,p) then
+				table.insert(t1,v)
+				table.insert(t2,2)
+			end
+		end
+	end
+	local xe1=cm.AASTregi(c,te)
+	xe1:SetLabel(c:GetSequence(),otyp)
+	local t3,t4={},{}
+	for _,v in pairs(pe) do
+		local val=v:GetValue()
+		if aux.GetValueType(val)=="number" or val(v,te,p) then
+			table.insert(t3,v)
+			table.insert(t4,1)
+		end
+	end
+	for _,v in pairs(ae) do
+		local cost=v:GetCost()
+		if not v:GetLabelObject() and cost and not cost(v,te,p) then
+			local tg=v:GetTarget()
+			if not tg or tg(v,te,p) then
+				table.insert(t3,v)
+				table.insert(t4,2)
+			end
+		end
+	end
+	xe1:Reset()
+	local ret1,ret2={},{}
+	for k,v1 in pairs(t1) do
+		local equal=false
+		for _,v2 in pairs(t3) do
+			if v1==v2 then
+				equal=true
+				break
+			end
+		end
+		if not equal then
+			table.insert(ret1,v1)
+			table.insert(ret2,t2[k])
+		end
+	end
+	local ret3,ret4={},{}
+	for k,v1 in pairs(t3) do
+		local equal=false
+		for _,v2 in pairs(t1) do
+			if v1==v2 then
+				equal=true
+				break
+			end
+		end
+		if not equal then
+			table.insert(ret3,v1)
+			table.insert(ret4,t4[k])
+		end
+	end
+	for k,v in pairs(ret1) do
+		if ret2[k]==1 then
+			local val=v:GetValue()
+			if aux.GetValueType(val)=="number" then val=aux.TRUE end
+			if val(v,te,p) then
+				v:SetValue(cm.AASTchval(val,false,te))
+			end
+		end
+		if ret2[k]==2 then
+			local cost=v:GetCost()
+			if not v:GetLabelObject() and cost and not cost(v,te,p) then
+				local tg=v:GetTarget()
+				if not tg then
+					v:SetTarget(cm.AASTchtg(aux.TRUE,false,te))
+				elseif tg(v,te,p) then
+					v:SetTarget(cm.AASTchtg(tg,false,te))
+				end
+			end
+		end
+	end
+	local xe1=cm.AASTregi(c,te)
+	xe1:SetLabel(c:GetSequence(),otyp)
+	for k,v in pairs(ret3) do
+		if ret4[k]==1 then
+			local val=v:GetValue()
+			if aux.GetValueType(val)=="number" then val=aux.TRUE end
+			if val(v,te,p) then
+				v:SetValue(cm.AASTchval(val,true,te))
+			end
+		end
+		if ret4[k]==2 then
+			local cost=v:GetCost()
+			if not v:GetLabelObject() and cost and not cost(v,te,p) then
+				local tg=v:GetTarget()
+				if not tg then
+					v:SetTarget(cm.AASTchtg(aux.TRUE,true,te))
+				elseif tg(v,te,p) then
+					v:SetTarget(cm.AASTchtg(tg,true,te))
+				end
+			end
+		end
+	end
+	xe1:Reset()
+	end
+end
+function cm.AASTbchval(_val,te)
+	return function(e,re,...)
+				if re==te then return false end
+				return _val(e,re,...)
+			end
+end
+function cm.AASTchval(_val,res,te)
+	return function(e,re,...)
+				if re==te then return res end
+				return _val(e,re,...)
+			end
+end
+function cm.AASTchtg(_tg,res,te)
+	return function(e,re,...)
+				if re==te then return res end
+				return _tg(e,re,...)
+			end
+end
+function cm.AASTactarget(e,te,tp)
+	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
+end
+function cm.AASTcostchk(e,te,tp)
+	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+end
+function cm.AASTcostop(otyp)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local c=te:GetHandler()
+	local xe1=cm.AASTregi(c,te)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_CHANGE_TYPE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e0:SetValue(otyp)
+	c:RegisterEffect(e0,true)
+	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	xe1:SetLabel(c:GetSequence()+1,otyp)
+	e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+	c:CreateEffectRelation(te)
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return ev==ev0 end)
+	e1:SetOperation(cm.AASTrsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+	if not c:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_PENDULUM) then return end
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_REMAIN_FIELD)
+	e3:SetProperty(EFFECT_FLAG_OATH+EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetReset(RESET_CHAIN)
+	c:RegisterEffect(e3)
+	end
+end
+function cm.AASTrsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+		if not rc:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_PENDULUM) and not rc:IsHasEffect(EFFECT_REMAIN_FIELD) then rc:CancelToGrave(false) end
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+		rc:CancelToGrave(false)
+	end
+	local xe={rc:IsHasEffect(53765099)}
+	for _,v in pairs(xe) do if v:GetLabelObject()==re then v:Reset() end end
+end
+function cm.AASTregi(c,e)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(53765099)
+	e1:SetLabelObject(e)
+	c:RegisterEffect(e1,true)
+	return e1
+end
+function cm.ActivatedAsSpellorTrapCheck(c)
+	if not AD_ActivatedAsSpellorTrap_Check then
+		AD_ActivatedAsSpellorTrap_Check=true
+		ADIMI_GetActivateEffect=Card.GetActivateEffect
+		Card.GetActivateEffect=function(ac)
+			local le={ADIMI_GetActivateEffect(ac)}
+			local xe={ac:IsHasEffect(53765098)}
+			local ae=nil
+			local typ=0
+			for _,v in pairs(xe) do ae=v:GetLabelObject() typ=v:GetLabel() end
+			if ae then
+				le={ae}
+				local xe1=cm.AASTregi(ac,ae)
+				xe1:SetLabel(ac:GetSequence(),typ)
+			end
+			return table.unpack(le)
+		end
+		ADIMI_IsType=Card.IsType
+		Card.IsType=function(rc,type)
+			local res=ADIMI_IsType(rc,type)
+			local xe={rc:IsHasEffect(53765099)}
+			local b=false
+			local seq,typ=0,0
+			for _,v in pairs(xe) do if rc==v:GetLabelObject():GetHandler() then b=true seq,typ=v:GetLabel() end end
+			if b and type&typ~=0 and rc:IsHasEffect(53765099) then return true else return res end
+		end
+		ADIMI_CGetType=Card.GetType
+		Card.GetType=function(rc)
+			local xe={rc:IsHasEffect(53765099)}
+			local b=false
+			local seq,typ=0,0
+			for _,v in pairs(xe) do if rc==v:GetLabelObject():GetHandler() then b=true seq,typ=v:GetLabel() end end
+			if b then return typ else return ADIMI_CGetType(rc) end
+		end
+		ADIMI_IsHasType=Effect.IsHasType
+		Effect.IsHasType=function(re,type)
+			local res=ADIMI_IsHasType(re,type)
+			local rc=re:GetHandler()
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
+			local b=false
+			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
+			if b then
+				if type&EFFECT_TYPE_ACTIVATE~=0 then return true else return false end
+			else return res end
+		end
+		ADIMI_EGetType=Effect.GetType
+		Effect.GetType=function(re)
+			local rc=re:GetHandler()
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
+			local b=false
+			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
+			if b then return EFFECT_TYPE_ACTIVATE else return ADIMI_EGetType(re) end
+		end
+		ADIMI_IsActiveType=Effect.IsActiveType
+		Effect.IsActiveType=function(re,type)
+			local res=ADIMI_IsActiveType(re,type)
+			local rc=re:GetHandler()
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
+			local b=false
+			local seq,typ=0,0
+			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true seq,typ=v:GetLabel() end end
+			if b then
+				if type&typ~=0 then return true else return false end
+			else return res end
+		end
+		ADIMI_GetActiveType=Effect.GetActiveType
+		Effect.GetActiveType=function(re)
+			local rc=re:GetHandler()
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
+			local b=false
+			local seq,typ=0,0
+			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true seq,typ=v:GetLabel() end end
+			if b then return typ else return ADIMI_GetActiveType(re) end
+		end
+		ADIMI_GetActivateLocation=Effect.GetActivateLocation
+		Effect.GetActivateLocation=function(re)
+			local rc=re:GetHandler()
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
+			local b=false
+			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
+			if b then return LOCATION_SZONE else return ADIMI_GetActivateLocation(re) end
+		end
+		ADIMI_GetActivateSequence=Effect.GetActivateSequence
+		Effect.GetActivateSequence=function(re)
+			local rc=re:GetHandler()
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
+			local ls=0
+			local seq=ADIMI_GetActivateSequence(re)
+			for _,v in pairs(xe) do
+				if re==v:GetLabelObject() then
+					ls=v:GetLabel()
+					break
+				end
+			end
+			if ls>0 then return ls-1 else return seq end
+		end
+		ADIMI_GetChainInfo=Duel.GetChainInfo
+		Duel.GetChainInfo=function(chainc,...)
+			local re=ADIMI_GetChainInfo(chainc,CHAININFO_TRIGGERING_EFFECT)
+			local rc=re:GetHandler()
+			local xe={}
+			if rc then xe={rc:IsHasEffect(53765099)} end
+			local b=false
+			local ls,typ=0
+			for _,v in pairs(xe) do
+				if re==v:GetLabelObject() then
+					b=true
+					ls,typ=v:GetLabel()
+					break
+				end
+			end
+			local t={ADIMI_GetChainInfo(chainc,...)}
+			if b then
+				for k,info in ipairs({...}) do
+					if info==CHAININFO_TYPE then t[k]=typ end
+					if info==CHAININFO_EXTTYPE then t[k]=typ end
+					if info==CHAININFO_TRIGGERING_LOCATION then t[k]=LOCATION_SZONE end
+					if info==CHAININFO_TRIGGERING_SEQUENCE and ls>0 then t[k]=ls-1 end
+					if info==CHAININFO_TRIGGERING_POSITION then t[k]=POS_FACEUP end
+				end
+			end
+			return table.unpack(t)
+		end
+		ADIMI_ChangeChainOperation=Duel.ChangeChainOperation
+		Duel.ChangeChainOperation=function(chainc,...)
+			local re=Duel.GetChainInfo(chainc,CHAININFO_TRIGGERING_EFFECT)
+			local xe={}
+			if re and re:GetHandler() then xe={re:GetHandler():IsHasEffect(53765099)} end
+			local b=false
+			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
+			if b then re:GetHandler():CancelToGrave(false) end
+			return ADIMI_ChangeChainOperation(chainc,...)
+		end
+	end
+end

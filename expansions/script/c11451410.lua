@@ -32,6 +32,11 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.actarget)
 	e2:SetOperation(cm.costop)
 	c:RegisterEffect(e2)
+	local e4=e3:Clone()
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCondition(cm.condition2)
+	e4:SetCost(cm.cost2)
+	c:RegisterEffect(e4)
 	--type
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
@@ -59,15 +64,39 @@ function cm.initial_effect(c)
 		end
 	end
 end
+local KOISHI_CHECK=false
+if Card.SetCardData then KOISHI_CHECK=true end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()
 	if #g>0 then e:SetLabel(g:GetClassCount(Card.GetCode)) end
 end
+function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetLocationCount(tp,LOCATION_SZONE)<=0
+end
+function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then
+		local res=true
+		if KOISHI_CHECK and cm[tp] then
+			res=cm[tp]:GetActivateEffect():IsActivatable(tp,true)
+		else
+			res=(c:CheckActivateEffect(false,false,false)~=nil)
+		end
+		return res
+	end
+end
 function cm.filter(c)
 	return c.traveler_saga and c:IsAbleToDeckAsCost()
 end
+function cm.fselect(g)
+	return g:IsExists(Card.IsLocation,1,nil,LOCATION_SZONE)
+end
 function cm.costchk(e,te,tp)
-	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,3,nil)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
+	if te:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		return #g>=3
+	end
+	return #g>=3 and g:IsExists(Card.IsLocation,1,nil,LOCATION_SZONE)
 end
 function cm.actarget(e,te,tp)
 	e:SetLabelObject(te)
@@ -76,7 +105,12 @@ end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	local c=e:GetHandler()
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,3,3,nil)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
+	if te:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		g=g:Select(tp,3,3,nil)
+	else
+		g=g:SelectSubGroup(tp,cm.fselect,false,3,3)
+	end
 	local cg=g:Filter(Card.IsFacedown,nil)
 	if #cg>0 then Duel.ConfirmCards(1-c:GetControler(),cg) end
 	c:SetMaterial(g)
@@ -85,12 +119,19 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 	cm.activate_sequence[te]=c:GetSequence()
 	e:GetHandler():CreateEffectRelation(te)
-	local c=e:GetHandler()
 	local ev0=Duel.GetCurrentChain()+1
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
+	if te:IsHasType(EFFECT_TYPE_QUICK_O) then
+		c:CancelToGrave(false)
+		local te2=te:Clone()
+		e:SetLabelObject(te2)
+		te:SetType(26)
+		c:RegisterEffect(te2,true)
+		e1:SetLabel(1)
+	end
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -108,6 +149,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 	end
+	if e:GetLabel()>0 then re:Reset() end
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCode(11451406) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

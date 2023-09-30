@@ -46,6 +46,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	if not cm.global_check then
 		cm.global_check=true
+		cm.activate_sequence={}
 		local ge0=Effect.CreateEffect(c)
 		ge0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -54,7 +55,6 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge0,0)
 		local _GetActivateLocation=Effect.GetActivateLocation
 		local _GetActivateSequence=Effect.GetActivateSequence
-		local _GetChainInfo=Duel.GetChainInfo
 		function Effect.GetActivateLocation(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
 				return LOCATION_SZONE
@@ -66,26 +66,6 @@ function cm.initial_effect(c)
 				return cm.activate_sequence[e]
 			end
 			return _GetActivateSequence(e)
-		end
-		function Duel.GetChainInfo(ev,...)
-			local ext_params={...}
-			if #ext_params==0 then return _GetChainInfo(ev,...) end
-			local re=_GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
-			if aux.GetValueType(re)=="Effect" then
-				local rc=re:GetHandler()
-				if re:GetDescription()==aux.Stringid(m,0) then
-					local res={}
-					for _,ci in ipairs(ext_params) do
-						if ci==CHAININFO_TYPE or ci==CHAININFO_EXTTYPE then
-							res[#res+1]=TYPE_SPELL
-						else
-							res[#res+1]=_GetChainInfo(ev,ci)
-						end
-					end
-					return table.unpack(res)
-				end
-			end
-			return _GetChainInfo(ev,...)
 		end
 	end
 end
@@ -196,8 +176,8 @@ function cm.geop(e,tp,eg,ep,ev,re,r,rp)
 	cm[0]=Duel.CreateToken(0,m)
 	cm[1]=Duel.CreateToken(1,m)
 	if KOISHI_CHECK then
-		cm[0]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
-		cm[1]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+		cm[0]:SetCardData(CARDDATA_TYPE,TYPE_QUICKPLAY+TYPE_SPELL)
+		cm[1]:SetCardData(CARDDATA_TYPE,TYPE_QUICKPLAY+TYPE_SPELL)
 	end
 	e:Reset()
 end

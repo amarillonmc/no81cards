@@ -1,6 +1,12 @@
 --汐击龙的汐刻
 local cm,m=GetID()
 function cm.initial_effect(c)
+	--check
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetCondition(aux.ThisCardInGraveAlreadyCheckReg)
+	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -17,6 +23,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_REMOVED)
+	e2:SetLabelObject(e0)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
@@ -46,20 +53,23 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 end
-function cm.spfilter(c)
+function cm.spfilter(c,se)
+	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	return c:IsFaceup() and c:IsSetCard(0x9977)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.spfilter,1,nil)
+	local se=e:GetLabelObject():GetLabelObject()
+	return eg:IsExists(cm.spfilter,1,nil,se)
 end
-function cm.tdfilter(c)
+function cm.tdfilter(c,se)
+	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	return c:IsFaceup() and c:IsSetCard(0x9977) and c:IsAbleToHand()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return eg:IsExists(cm.tdfilter,1,nil) and c:IsAbleToDeck() and c:GetFlagEffect(m-10)==0 end
+	if chk==0 then return eg:IsExists(cm.tdfilter,1,nil,se) and c:IsAbleToDeck() and c:GetFlagEffect(m-10)==0 end
 	c:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
-	local g=eg:Filter(cm.tdfilter,nil,tp)
+	local g=eg:Filter(cm.tdfilter,nil,se)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,#g,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)

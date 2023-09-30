@@ -1,18 +1,25 @@
 --归汐击龙“禁律”
 local cm,m=GetID()
 function cm.initial_effect(c)
-	--xyz summon
+	--check
 	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(1165)
-	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetCode(EFFECT_SPSUMMON_PROC)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(aux.XyzLevelFreeCondition(cm.mfilter,cm.lvcheck,2,99))
-	e0:SetTarget(aux.XyzLevelFreeTarget(cm.mfilter,cm.lvcheck,2,99))
-	e0:SetOperation(aux.XyzLevelFreeOperation(cm.mfilter,cm.lvcheck,2,99))
-	e0:SetValue(SUMMON_TYPE_XYZ)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetCondition(aux.ThisCardInGraveAlreadyCheckReg)
 	c:RegisterEffect(e0)
+	--xyz summon
+	local e10=Effect.CreateEffect(c)
+	e10:SetDescription(1165)
+	e10:SetType(EFFECT_TYPE_FIELD)
+	e10:SetCode(EFFECT_SPSUMMON_PROC)
+	e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e10:SetRange(LOCATION_EXTRA)
+	e10:SetCondition(aux.XyzLevelFreeCondition(cm.mfilter,cm.lvcheck,2,99))
+	e10:SetTarget(aux.XyzLevelFreeTarget(cm.mfilter,cm.lvcheck,2,99))
+	e10:SetOperation(aux.XyzLevelFreeOperation(cm.mfilter,cm.lvcheck,2,99))
+	e10:SetValue(SUMMON_TYPE_XYZ)
+	c:RegisterEffect(e10)
+	cm[c]=e10
 	c:EnableReviveLimit()
 	--effect1
 	local e1=Effect.CreateEffect(c)
@@ -55,7 +62,7 @@ function cm.mfilter(c,xyzc)
 	return c:IsXyzType(TYPE_MONSTER) and (c:IsRank(9) or (c:IsXyzLevel(xyzc,9) and xyzc:GetFlagEffect(m-17)>0))
 end
 function cm.spfilter2(c,e,tp,mc)
-	return c:IsSetCard(0x9977) and c:IsType(TYPE_XYZ) and c:IsRank(9) and mc:IsCanBeXyzMaterial(c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
+	return c:IsRace(RACE_DRAGON) and c:IsType(TYPE_XYZ) and c:IsRank(9) and mc:IsCanBeXyzMaterial(c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler())
@@ -85,11 +92,13 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.spfilter(c,tp)
-	return c:IsFaceup() and c:IsRace(RACE_DRAGON) --c:IsSetCard(0x9977)
+function cm.spfilter(c,se)
+	if not (se==nil or c:GetReasonEffect()~=se) then return false end
+	return c:IsFaceup() and c:IsSetCard(0x9977)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.spfilter,1,nil)
+	local se=e:GetLabelObject():GetLabelObject()
+	return eg:IsExists(cm.spfilter,1,nil,se)
 end
 function cm.XyzLevelFreeGoal(g,tp,xyzc,gf)
 	return (not gf or gf(g)) and Duel.GetLocationCountFromEx(tp,tp,g,TYPE_XYZ)>0
@@ -126,7 +135,7 @@ function cm.XyzLevelFreeCondition(f,gf,minct,maxct)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local te=e:GetLabelObject()
+	local te=c[c]
 	if chk==0 then
 		c:RegisterFlagEffect(m-17,0,0,1)
 		local res=(c:IsCanBeSpecialSummoned(te,SUMMON_TYPE_XYZ,tp,true,true) and cm.XyzLevelFreeCondition(cm.mfilter,cm.lvcheck,2,99)(te,c,nil,2,99) and c:IsAbleToDeck() and c:GetFlagEffect(m-16)==0)

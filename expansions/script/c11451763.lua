@@ -1,6 +1,12 @@
 --汐击龙的汐引
 local cm,m=GetID()
 function cm.initial_effect(c)
+	--check
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetCondition(aux.ThisCardInGraveAlreadyCheckReg)
+	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -18,6 +24,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_REMOVED)
+	e2:SetLabelObject(e0)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
@@ -46,11 +53,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function cm.spfilter(c)
+function cm.spfilter(c,se)
+	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	return c:IsFaceup() and c:IsSetCard(0x9977)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.spfilter,1,nil)
+	local se=e:GetLabelObject():GetLabelObject()
+	return eg:IsExists(cm.spfilter,1,nil,se)
 end
 function cm.refilter(c)
 	return c:IsAbleToRemove() and c:IsSetCard(0x9977)

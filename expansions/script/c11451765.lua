@@ -1,6 +1,12 @@
 --汐击龙潭“霞语涧”
 local cm,m=GetID()
 function cm.initial_effect(c)
+	--check
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetCondition(aux.ThisCardInGraveAlreadyCheckReg)
+	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -30,6 +36,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetLabelObject(e0)
 	e4:SetRange(LOCATION_REMOVED)
 	e4:SetCondition(cm.spcon)
 	e4:SetTarget(cm.sptg)
@@ -53,11 +60,13 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.Draw(tp,1,REASON_EFFECT)
 end
-function cm.spfilter(c)
+function cm.spfilter(c,se)
+	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	return c:IsFaceup() and c:IsSetCard(0x9977)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.spfilter,1,nil)
+	local se=e:GetLabelObject():GetLabelObject()
+	return eg:IsExists(cm.spfilter,1,nil,se)
 end
 function cm.refilter(c)
 	return c:IsAbleToRemove() and c:IsSetCard(0x9977)

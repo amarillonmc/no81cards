@@ -3,7 +3,24 @@ SUMMON_TYPE_SPLIT=15000001
 SUMMON_VALUE_SPLIT=0x15000001
 EFFECT_EXTRA_SPLIT_SUMMON=15000002
 EFFECT_CANNOT_BE_SPLIT_MATERIAL=15000003
+--if not require and dofile then
+--	function require(str)
+--		require_list=require_list or {}
+--		if not require_list[str] then
+--			if string.find(str,"%.") then
+--				require_list[str]=dofile(str)
+--			else
+--				require_list[str]=dofile(str..".lua")
+--			end
+--		end
+--		return require_list[str]
+--	end
+--end
 --if not pcall(function() require("expansions/script/c15000000") end) then require("script/c15000000") end
+if Satl_Library_Switch then
+	return
+end
+Satl_Library_Switch=true
 --为 卡 片 c添 加 裂 解 召 唤 手 续 ,mf为 裂 解 素 材 需 满 足 的 条 件
 function Satl.AddSplitProcedure(c,mf)
 	if not Satl.PendulumChecklist then
@@ -321,7 +338,7 @@ end
 function Satl.GetHearogenehirpSolvingCount(e,tp)
 	local g=Group.CreateGroup()
 	local code=15005050
-	while code<15006000 do
+	while code<15005070 do
 		if Duel.GetFlagEffect(tp,code)~=0 then
 			local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0xff,0xff,nil,code)
 			local tc=tg:GetFirst()
@@ -336,7 +353,7 @@ end
 function Satl.AddHearogenehirpSolving(e,tp)
 	local code=15005050
 	local g=Group.CreateGroup()
-	while code<15006000 do
+	while code<15005070 do
 		if Duel.GetFlagEffect(tp,code)~=0 then
 			local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0xff,0xff,nil,code)
 			local tc=tg:GetFirst()
@@ -350,7 +367,7 @@ function Satl.AddHearogenehirpSolving(e,tp)
 		g:Clear()
 		local list={}
 		local code=15005050
-		while code<15006000 do
+		while code<15005070 do
 			if Duel.GetFlagEffect(tp,code)~=0 then
 				local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0xff,0xff,nil,code)
 				local tc=tg:GetFirst()
@@ -381,7 +398,7 @@ function Satl.AddHearogenehirpSolving(e,tp)
 		end
 		g:Clear()
 		local code=15005050
-		while code<15006000 do
+		while code<15005070 do
 			if Duel.GetFlagEffect(tp,code)~=0 then
 				local tg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0xff,0xff,nil,code)
 				local tc=tg:GetFirst()
