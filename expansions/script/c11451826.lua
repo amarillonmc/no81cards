@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	e00:SetCode(EFFECT_SPSUMMON_PROC)
 	e00:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e00:SetRange(LOCATION_EXTRA)
-	e00:SetCondition(aux.XyzLevelFreeCondition(cm.mfilter,cm.xyzcheck,2,2))
+	e00:SetCondition(function(...) return aux.XyzLevelFreeCondition(cm.mfilter,cm.xyzcheck,2,2)(...) and cm[0]==1 and cm[1]==2 end)
 	e00:SetTarget(aux.XyzLevelFreeTarget(cm.mfilter,cm.xyzcheck,2,2))
 	e00:SetOperation(aux.XyzLevelFreeOperation(cm.mfilter,cm.xyzcheck,2,2))
 	e00:SetValue(SUMMON_TYPE_XYZ)
@@ -81,7 +81,7 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 	cm[1]=0
 end
 function cm.splimit(e,se,sp,st)
-	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or st&SUMMON_TYPE_XYZ~=SUMMON_TYPE_XYZ or (st&SUMMON_TYPE_XYZ==SUMMON_TYPE_XYZ and not se)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or st&SUMMON_TYPE_XYZ~=SUMMON_TYPE_XYZ or (st&SUMMON_TYPE_XYZ==SUMMON_TYPE_XYZ and not se and cm[0]==1 and cm[1]==2)
 end
 function cm.mfilter(c,xyzc)
 	return (not xyzc or cm[xyzc:GetControler()]) and c:IsXyzType(TYPE_MONSTER) and (c:IsXyzLevel(xyzc,8) or c:IsRank(8))
@@ -138,7 +138,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetCard(g)
 end
 function cm.imfilter(c,e)
-	return c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e)
+	return c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and c:IsCanOverlay()
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

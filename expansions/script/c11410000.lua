@@ -64,31 +64,6 @@ function cm.roll(min,max)
 	return cm.r
 end
 if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
-	if not KOISHI_CHECK or #g<36 then e:Reset() return end
-	local c=e:GetHandler()
-	local tp=c:GetControler()
-	if c:IsLocation(LOCATION_DECK) then
-		Duel.DisableShuffleCheck()
-		Duel.Exile(c,0)
-	elseif c:IsLocation(LOCATION_HAND) then
-		if not cm.r then
-			cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
-		end
-		local ct=cm.roll(1,#g)-1
-		local tc=g:Filter(function(c) return c:GetSequence()==ct end,nil):GetFirst()
-		c:SetEntityCode(tc:GetOriginalCode())
-		local ini=cm.initial_effect
-		cm.initial_effect=function() end
-		c:ReplaceEffect(m,0)
-		cm.initial_effect=ini
-		if tc.initial_effect then tc.initial_effect(c) end
-		Duel.DisableShuffleCheck()
-		Duel.Exile(tc,0)
-	end
-	e:Reset()
-end
 if not require and loadfile then
 	function require(str)
 		require_list=require_list or {}
@@ -116,4 +91,48 @@ if not require and Duel.LoadScript then
 		end
 		return require_list[str]
 	end
+end
+function cm.nnfilter(c)
+	return c:GetOriginalType()~=0x11 and c:GetOriginalType()~=0x1011 and not c.initial_effect
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)
+	local _TGetID=GetID
+	for ac in aux.Next(ag) do
+		local int=ac:GetOriginalCode()
+		if not _G["c"..int] then
+			_G["c"..int]={}
+			_G["c"..int].__index=_G["c"..int]
+		end
+		GetID=function()
+			return _G["c"..int],int
+		end
+		require("expansions/script/c"..int)
+		local ini=ac.initial_effect
+		if ini then ac.initial_effect(ac) end
+	end
+	GetID=_TGetID
+	local c=e:GetHandler()
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
+	if not KOISHI_CHECK or #g<36 then e:Reset() return end
+	if c:IsLocation(LOCATION_DECK) then
+		Duel.DisableShuffleCheck()
+		Duel.Exile(c,0)
+	elseif c:IsLocation(LOCATION_HAND) then
+		if not cm.r then
+			cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
+		end
+		local ct=cm.roll(1,#g)-1
+		local tc=g:Filter(function(c) return c:GetSequence()==ct end,nil):GetFirst()
+		c:SetEntityCode(tc:GetOriginalCode())
+		local ini=cm.initial_effect
+		cm.initial_effect=function() end
+		c:ReplaceEffect(m,0)
+		cm.initial_effect=ini
+		if tc.initial_effect then tc.initial_effect(c) end
+		Duel.DisableShuffleCheck()
+		Duel.Exile(tc,0)
+	end
+	e:Reset()
 end
