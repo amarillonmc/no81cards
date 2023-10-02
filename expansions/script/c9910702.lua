@@ -1,8 +1,8 @@
 --远古造物 三峡夷陵虫
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910702.initial_effect(c)
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DRAW)
@@ -24,9 +24,9 @@ function c9910702.operation(e,tp,eg,ep,ev,re,r,rp)
 		local tc=Duel.GetOperatedGroup():GetFirst()
 		Duel.ConfirmCards(1-p,tc)
 		Duel.BreakEffect()
-		if tc:IsType(TYPE_MONSTER) and tc:IsSetCard(0xc950) and Ygzw.SetFilter(tc,e,p)
+		if tc:IsType(TYPE_MONSTER) and tc:IsSetCard(0xc950) and QutryYgzw.SetFilter(tc,e,p)
 			and Duel.IsPlayerCanDraw(p,1) and Duel.SelectYesNo(p,aux.Stringid(9910702,0)) then
-			if Ygzw.Set(tc,e,p) then Duel.Draw(p,1,REASON_EFFECT) end
+			if QutryYgzw.Set(tc,e,p) then Duel.Draw(p,1,REASON_EFFECT) end
 		elseif not tc:IsSetCard(0xc950) then
 			Duel.SendtoGrave(tc,REASON_EFFECT)
 		end

@@ -30,7 +30,8 @@ function c22348318.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local loc=e:GetActivateLocation()
 	local b1=loc==LOCATION_HAND and Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(c22348318.drfilter,tp,LOCATION_HAND,0,1,c) and c:IsDiscardable()
 	local b2=loc==LOCATION_GRAVE and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c22348318.remfilter,tp,LOCATION_GRAVE,0,1,c)
-	if chk==0 then return b1 or b2 end
+	if chk==0 then return (b1 or b2) and c:GetFlagEffect(22348318)==0 end
+	c:RegisterFlagEffect(22348318,RESET_CHAIN,0,1)
 	if b1 then
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)

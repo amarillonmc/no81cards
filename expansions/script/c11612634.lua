@@ -1,4 +1,19 @@
 --龙仪巧-仙王流星＝CEP
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 local m=11612634
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
@@ -63,7 +78,7 @@ function cm.initial_effect(c)
 	e5:SetDescription(aux.Stringid(m,1))
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_NEGATE)
 	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCode(EVENT_FREE_CHAIN)
@@ -78,20 +93,20 @@ function cm.initial_effect(c)
 	e12:SetType(EFFECT_TYPE_SINGLE)
 	e12:SetRange(0x7f)
 	e12:SetCode(EFFECT_CANNOT_DISABLE)
-	e12:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE)
+	e12:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_NEGATE)
 	c:RegisterEffect(e12)
 	local e13=Effect.CreateEffect(c)
 	e13:SetType(EFFECT_TYPE_FIELD)
 	e13:SetRange(0x7f)
 	e13:SetCode(EFFECT_CANNOT_INACTIVATE)
-	e13:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE)
+	e13:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_NEGATE)
 	e13:SetValue(cm.effectfilter)
 	c:RegisterEffect(e13)
 	local e14=Effect.CreateEffect(c)
 	e14:SetType(EFFECT_TYPE_FIELD)
 	e14:SetRange(0x7f)
 	e14:SetCode(EFFECT_CANNOT_DISEFFECT)
-	e14:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE)
+	e14:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_NEGATE)
 	e14:SetValue(cm.effectfilter)
 	c:RegisterEffect(e14)
 	if not cm.global_flag then
@@ -119,12 +134,12 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 		if tc:IsSetCard(0x154) and tc:GetSummonType()==SUMMON_TYPE_RITUAL  then
 			if Duel.GetFlagEffect(tc:GetSummonPlayer(),11612635)~=0 then
 				for _,i in ipairs{Duel.GetFlagEffectLabel(tc:GetSummonPlayer(),11612635)} do
-					if i==tc:GetCode() then return end		
+					if i==tc:GetCode() then return end  
 				end
 			end
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),11612635,0,0,0,tc:GetCode())
 			local set={Duel.GetFlagEffectLabel(tp,11612635)}
-			if ts1c==0 and (#set)>=count then			 
+			if ts1c==0 and (#set)>=count then		 
 				fpjdiy.printLines(cm.ts1)
 				--Debug.Message(cm.ts1)
 				ts1c=1

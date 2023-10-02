@@ -1,11 +1,11 @@
 --远古造物 塞彭拉德蜗轴菊石
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910732.initial_effect(c)
 	--special summon
-	Ygzw.AddSpProcedure(c,1)
+	QutryYgzw.AddSpProcedure(c,1)
 	c:EnableReviveLimit()
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--set other monster
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910732,0))
@@ -35,7 +35,7 @@ function c9910732.somcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
 end
 function c9910732.setfilter(c,e,tp)
-	return c:IsSummonPlayer(1-tp) and Ygzw.SetFilter(c,e,tp)
+	return c:IsSummonPlayer(1-tp) and QutryYgzw.SetFilter(c,e,tp)
 end
 function c9910732.somtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=eg:Filter(c9910732.setfilter,nil,e,tp)
@@ -54,18 +54,18 @@ function c9910732.somop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Ygzw.Set(tc,e,tp)
+		QutryYgzw.Set(tc,e,tp)
 	end
 end
 function c9910732.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9910732.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Ygzw.SetFilter(e:GetHandler(),e,tp) end
+	if chk==0 then return QutryYgzw.SetFilter(e:GetHandler(),e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 end
 function c9910732.setop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then Ygzw.Set(c,e,tp) end
+	if c:IsRelateToEffect(e) then QutryYgzw.Set(c,e,tp) end
 end

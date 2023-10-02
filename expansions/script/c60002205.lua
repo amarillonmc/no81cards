@@ -12,6 +12,15 @@ function cm.initial_effect(c)
 	e3:SetCondition(cm.incon)
 	e3:SetValue(1600)
 	c:RegisterEffect(e3)
+	--untargetable
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_IGNORE_BATTLE_TARGET)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(cm.rincon)
+	e1:SetValue(1)
+	c:RegisterEffect(e1)
 	--search
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -34,6 +43,9 @@ function cm.initial_effect(c)
 end
 function cm.incon(e)
 	return Card.GetCounter(e:GetHandler(),0x624)>=1
+end
+function cm.rincon(e)
+	return not Card.GetCounter(e:GetHandler(),0x624)>=1
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

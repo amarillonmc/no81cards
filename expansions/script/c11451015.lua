@@ -72,6 +72,7 @@ function cm.initial_effect(c)
 		local _GetActivateLocation=Effect.GetActivateLocation
 		local _GetActivateSequence=Effect.GetActivateSequence
 		local _GetChainInfo=Duel.GetChainInfo
+		local _ChangeChainOperation=Duel.ChangeChainOperation
 		function Effect.GetActiveType(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
 				return TYPE_TRAP
@@ -100,7 +101,7 @@ function cm.initial_effect(c)
 			local re=_GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
 			if aux.GetValueType(re)=="Effect" then
 				local rc=re:GetHandler()
-				if re:GetDescription()==aux.Stringid(m,0) then
+				if rc and re:GetDescription()==aux.Stringid(m,0) then
 					local res={}
 					for _,ci in ipairs(ext_params) do
 						if ci==CHAININFO_TYPE or ci==CHAININFO_EXTTYPE then
@@ -113,6 +114,16 @@ function cm.initial_effect(c)
 				end
 			end
 			return _GetChainInfo(ev,...)
+		end
+		function Duel.ChangeChainOperation(ev,...)
+			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			if aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if rc and rc:IsOnField() and re:GetDescription()==aux.Stringid(m,0) then
+					rc:CancelToGrave(false)
+				end
+			end
+			return _ChangeChainOperation(ev,...)
 		end
 	end
 end
@@ -265,6 +276,7 @@ function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToDeckOrExtraAsCost() end
 	Duel.SendtoDeck(c,nil,2,REASON_COST)
+	Duel.ConfirmCards(1-tp,c)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

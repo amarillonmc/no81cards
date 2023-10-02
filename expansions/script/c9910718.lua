@@ -1,5 +1,5 @@
 --厮杀的远古造物
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910718.initial_effect(c)
 	c:SetUniqueOnField(1,0,9910718)
 	--Activate
@@ -60,11 +60,11 @@ function c9910718.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910718.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingMatchingCard(Ygzw.SetFilter2,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,nil,e,tp) end
+		and Duel.IsExistingMatchingCard(QutryYgzw.SetFilter2,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,nil,e,tp) end
 end
 function c9910718.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,Ygzw.SetFilter2,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,QutryYgzw.SetFilter2,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
-	if tc and Ygzw.Set(tc,e,tp) then Duel.Draw(tp,1,REASON_EFFECT) end
+	if tc and QutryYgzw.Set(tc,e,tp) then Duel.Draw(tp,1,REASON_EFFECT) end
 end

@@ -3,20 +3,24 @@ SUMMON_TYPE_SPLIT=15000001
 SUMMON_VALUE_SPLIT=0x15000001
 EFFECT_EXTRA_SPLIT_SUMMON=15000002
 EFFECT_CANNOT_BE_SPLIT_MATERIAL=15000003
---if not require and dofile then
---	function require(str)
---		require_list=require_list or {}
---		if not require_list[str] then
---			if string.find(str,"%.") then
---				require_list[str]=dofile(str)
---			else
---				require_list[str]=dofile(str..".lua")
---			end
---		end
---		return require_list[str]
---	end
---end
---if not pcall(function() require("expansions/script/c15000000") end) then require("script/c15000000") end
+--[[
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
+if not pcall(function() require("expansions/script/c15000000") end) then require("script/c15000000") end
+]]--
 if Satl_Library_Switch then
 	return
 end

@@ -1,5 +1,5 @@
 --穿梭的远古造物
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910730.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -27,15 +27,15 @@ function c9910730.initial_effect(c)
 end
 function c9910730.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp)
-		and Ygzw.SetFilter2(chkc,e,tp) end
+		and QutryYgzw.SetFilter2(chkc,e,tp) end
 	local ft=0
 	if e:GetHandler():IsLocation(LOCATION_HAND) then ft=1 end
 	local ct=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if chk==0 then return ct>ft
-		and Duel.IsExistingTarget(Ygzw.SetFilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
+		and Duel.IsExistingTarget(QutryYgzw.SetFilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
 	if ct>2 then ct=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectTarget(tp,Ygzw.SetFilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ct,nil,e,tp)
+	local g=Duel.SelectTarget(tp,QutryYgzw.SetFilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ct,nil,e,tp)
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) then
 		e:SetCategory(CATEGORY_LEAVE_GRAVE)
 	end
@@ -44,7 +44,7 @@ function c9910730.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if g:GetCount()==0 or g:GetCount()>ft then return end
-	Ygzw.Set2(g,e,tp)
+	QutryYgzw.Set2(g,e,tp)
 end
 function c9910730.cfilter(c,e,tp,mc)
 	if c:IsFaceup() or not c:IsAbleToGraveAsCost() then return false end
@@ -77,12 +77,12 @@ function c9910730.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910730.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp)
-		and Ygzw.SetFilter2(chkc,e,tp) end
+		and QutryYgzw.SetFilter2(chkc,e,tp) end
 	if chk==0 then return true end
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if ft>2 then ft=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectTarget(tp,Ygzw.SetFilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ft,nil,e,tp)
+	local g=Duel.SelectTarget(tp,QutryYgzw.SetFilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ft,nil,e,tp)
 	local cate=0
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) then
 		cate=cate+CATEGORY_LEAVE_GRAVE 
@@ -114,7 +114,7 @@ function c9910730.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if g:GetCount()==0 or g:GetCount()>ft then return end
-	local og=Ygzw.Set2(g,e,tp):Filter(Card.IsOnField,nil)
+	local og=QutryYgzw.Set2(g,e,tp):Filter(Card.IsOnField,nil)
 	if og:GetCount()==0 or not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
 	local tg=Duel.GetMatchingGroup(c9910730.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,og)
 	if tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910730,2)) then

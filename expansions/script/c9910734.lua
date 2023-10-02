@@ -1,11 +1,11 @@
 --远古造物 巴里纳斯鳄
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910734.initial_effect(c)
 	--special summon
-	Ygzw.AddSpProcedure(c,2)
+	QutryYgzw.AddSpProcedure(c,2)
 	c:EnableReviveLimit()
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--can not be effect target
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

@@ -1,11 +1,11 @@
 --远古造物 梅氏利维坦鲸
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910728.initial_effect(c)
 	--special summon
-	Ygzw.AddSpProcedure(c,3)
+	QutryYgzw.AddSpProcedure(c,3)
 	c:EnableReviveLimit()
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--to grave
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_LEAVE_GRAVE)
@@ -37,7 +37,7 @@ function c9910728.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,1-tp,LOCATION_MZONE+LOCATION_HAND)
 end
 function c9910728.setfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and Ygzw.SetFilter(c,e,tp)
+	return c:IsType(TYPE_MONSTER) and QutryYgzw.SetFilter(c,e,tp)
 end
 function c9910728.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsType,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil,TYPE_MONSTER)
@@ -52,7 +52,7 @@ function c9910728.tgop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 			local sg2=g2:Select(tp,1,1,nil)
 			local tc2=sg2:GetFirst()
-			if tc2 then Ygzw.Set(tc2,e,tp) end
+			if tc2 then QutryYgzw.Set(tc2,e,tp) end
 		end
 	end
 end

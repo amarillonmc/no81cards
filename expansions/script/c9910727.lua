@@ -1,5 +1,5 @@
 --远古造物栖所 冈瓦纳
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910727.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -42,14 +42,14 @@ function c9910727.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g3=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
 	if g3:GetCount()>0 then g1:Merge(g3) end
 	if Duel.IsExistingMatchingCard(c9910727.thfilter,tp,LOCATION_DECK,0,1,nil,g1)
-		and Ygzw.SetFilter(tc,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(9910727,0)) then
+		and QutryYgzw.SetFilter(tc,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(9910727,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c9910727.thfilter,tp,LOCATION_DECK,0,1,1,nil,g1)
 		if #g>0 then
 			Duel.BreakEffect()
 			if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 				Duel.ConfirmCards(1-tp,g)
-				Ygzw.Set(tc,e,tp)
+				QutryYgzw.Set(tc,e,tp)
 			end
 		end
 	end
@@ -60,7 +60,7 @@ function c9910727.setcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910727.setfilter(c,id,e)
 	local op=c:GetOwner()
-	return c:GetTurnID()==id and c:IsType(TYPE_MONSTER) and c:IsFaceup() and Ygzw.SetFilter(c,e,op)
+	return c:GetTurnID()==id and c:IsType(TYPE_MONSTER) and c:IsFaceup() and QutryYgzw.SetFilter(c,e,op)
 end
 function c9910727.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local id=Duel.GetTurnCount()
@@ -74,6 +74,6 @@ function c9910727.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local op=tc:GetOwner()
 	if tc:IsRelateToEffect(e) then
-		Ygzw.Set(tc,e,op)
+		QutryYgzw.Set(tc,e,op)
 	end
 end

@@ -1,11 +1,11 @@
 --远古造物 致命刃齿虎
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910735.initial_effect(c)
 	--special summon
-	Ygzw.AddSpProcedure(c,3)
+	QutryYgzw.AddSpProcedure(c,3)
 	c:EnableReviveLimit()
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_EQUIP)

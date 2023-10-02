@@ -1,11 +1,11 @@
 --远古造物 水龙兽
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910708.initial_effect(c)
 	--special summon
-	Ygzw.AddSpProcedure(c,2)
+	QutryYgzw.AddSpProcedure(c,2)
 	c:EnableReviveLimit()
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--disable
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_DISABLE+CATEGORY_TOGRAVE+CATEGORY_TOHAND)

@@ -23,6 +23,7 @@ end
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(cm.target)
@@ -30,7 +31,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--tohand
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(92067220,2))
+	e2:SetDescription(aux.Stringid(m,2))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
@@ -49,7 +50,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function cm.filter(c)
-	return c:IsCode(7419700,7419701,7419702,7419703) and c:IsFaceup() and c:IsAttackAbove(2000)
+	return c:IsCode(7419700,7419701,7419702,7419703) and c:IsFaceup() and c:IsAttackAbove(1500)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0

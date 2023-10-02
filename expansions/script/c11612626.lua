@@ -1,4 +1,19 @@
 --龙仪巧-双鱼流星=PIS
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 local m=11612626
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
@@ -98,7 +113,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if count<3 then Duel.BreakEffect() end   
 		if count==2 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP) 
-			g=Duel.SelectMatchingCard(tp,cm.etfilter,tp,0,LOCATION_MZONE,1,1,nil)		
+			g=Duel.SelectMatchingCard(tp,cm.etfilter,tp,0,LOCATION_MZONE,1,1,nil)	 
 			count=1
 		else			
 			local rg=Duel.GetMatchingGroup(cm.etfilter,1-tp,LOCATION_MZONE,0,nil)

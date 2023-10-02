@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	local e1=_Effect.CreateEffect(c)
 	c:RegisterEffect(e1)
 end
-function readtab(tab)
+--[[function readtab(tab)
 	for k,v in pairs(tab) do
 		Debug.Message(k)
 		local sel=Duel.SelectOption(0,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2))
@@ -42,7 +42,7 @@ function readtab(tab)
 		end
 		if sel==2 then return end
 	end
-end
+end--]]
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	--readtab(package.loaded)
 	_Duel.Hint(HINT_CARD,0,m)

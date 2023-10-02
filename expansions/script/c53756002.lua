@@ -5,7 +5,7 @@ local cm=_G["c"..m]
 cm.name="临终的暮辞 望美"
 function cm.initial_effect(c)
 	c:SetUniqueOnField(1,0,aux.FilterBoolFunction(Card.IsSetCard,0xa530),LOCATION_MZONE)
-	local e1,e1_1,e2,e3=SNNM.ActivatedAsSpellorTrap(c,0x20004)
+	local e1,e1_1,e2,e3=SNNM.ActivatedAsSpellorTrap(c,0x20004,LOCATION_HAND)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetTarget(cm.acsptg)
 	e1:SetOperation(cm.spop)

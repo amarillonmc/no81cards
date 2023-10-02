@@ -1,11 +1,11 @@
 --远古造物 桑氏远洋鸟
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910309.initial_effect(c)
 	--special summon
-	Ygzw.AddSpProcedure(c,2)
+	QutryYgzw.AddSpProcedure(c,2)
 	c:EnableReviveLimit()
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--remove
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

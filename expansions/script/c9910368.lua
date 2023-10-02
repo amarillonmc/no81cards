@@ -44,7 +44,7 @@ end
 function c9910368.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLocation(LOCATION_EXTRA)
 end
-function c9910368.cfilter(c,tp)
+function c9910368.cfilter(c)
 	return c:IsFacedown() and c:IsReleasable()
 end
 function c9910368.reccost(e,tp,eg,ep,ev,re,r,rp,chk)

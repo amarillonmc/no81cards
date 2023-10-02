@@ -2,11 +2,9 @@
 --23.09.08
 local cm,m=GetID()
 function cm.initial_effect(c)
-	c:EnableReviveLimit()
 	local e0=Effect.CreateEffect(c) 
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e0:SetCode(EVENT_ADJUST)
-	e0:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
 	e0:SetOperation(cm.op)
 	Duel.RegisterEffect(e0,0)
 end
@@ -48,32 +46,74 @@ function cm.sfilter(c,sc)
 end
 local KOISHI_CHECK=false
 if Duel.Exile then KOISHI_CHECK=true end
+local A=1103515245
+local B=12345
+local M=1073741824
+function cm.roll(min,max)
+	min=tonumber(min)
+	max=tonumber(max)
+	cm.r=((cm.r*A+B)%M)/M
+	if min~=nil then
+		if max==nil then
+			return math.floor(cm.r*min)+1
+		else
+			max=max-min+1
+			return math.floor(cm.r*max+min)
+		end
+	end
+	return cm.r
+end
+if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
+	if not KOISHI_CHECK or #g<36 then e:Reset() return end
 	local c=e:GetHandler()
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_EXTRA,0,c)
-	g=g:Filter(cm.nfilter,nil,g)
-	local tc=nil
-	local tg
-	--if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
-	if #g>0 then tg=g:Select(tp,0,1,nil) end
-	if tg and #tg>0 then tc=tg:GetFirst() end
-	if KOISHI_CHECK then Duel.Exile(c,REASON_RULE) end
-	if tc then
-		Duel.SendtoDeck(Duel.CreateToken(tp,tc:GetOriginalCode()),tp,2,REASON_RULE)
-	else
-		Duel.Hint(HINT_CARD,0,m)
+	if c:IsLocation(LOCATION_DECK) then
+		Duel.DisableShuffleCheck()
+		Duel.Exile(c,0)
+	elseif c:IsLocation(LOCATION_HAND) then
+		if not cm.r then
+			cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
+		end
+		local ct=cm.roll(1,#g)-1
+		local tc=g:Filter(function(c) return c:GetSequence()==ct end,nil):GetFirst()
+		c:SetEntityCode(tc:GetOriginalCode())
+		local ini=cm.initial_effect
+		cm.initial_effect=function() end
+		c:ReplaceEffect(m,0)
+		cm.initial_effect=ini
+		if tc.initial_effect then tc.initial_effect(c) end
+		Duel.DisableShuffleCheck()
+		Duel.Exile(tc,0)
+	end
+	e:Reset()
+end
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
 	end
 end
-if not require and dofile then function require(str) return dofile(str..".lua") end end
---[[if not require and Duel.LoadScript then
+if not require and Duel.LoadScript then
 	function require(str)
+		require_list=require_list or {}
 		local name=str
 		for word in string.gmatch(str,"%w+") do
 			name=word
 		end
-		Duel.LoadScript(name..".lua")
-		return true
+		if not require_list[str] then
+			require_list[str]=Duel.LoadScript(name..".lua")
+		end
+		return require_list[str]
 	end
-end--]]
+end

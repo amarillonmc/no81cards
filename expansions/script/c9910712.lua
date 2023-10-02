@@ -1,10 +1,11 @@
 --远古造物 塔利怪物
+Duel.LoadScript("c9910700.lua")
 function c9910712.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xc950),2,2)
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910712,0))

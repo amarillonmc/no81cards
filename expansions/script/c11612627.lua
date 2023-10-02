@@ -1,4 +1,19 @@
 --龙仪巧-巨蟹流星=CAN
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 local m=11612627
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
@@ -108,7 +123,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD) 
-	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)	  
+	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)   
 	local tc=g:GetFirst()
 	local seq=c:GetSequence()
 	if seq==0 then

@@ -1,4 +1,19 @@
 --龙仪巧-仙英流星=PER
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 local m=11612612
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end

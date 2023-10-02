@@ -1,11 +1,11 @@
 --远古造物 白垩刺甲鲨
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910726.initial_effect(c)
 	--special summon
-	Ygzw.AddSpProcedure(c,2)
+	QutryYgzw.AddSpProcedure(c,2)
 	c:EnableReviveLimit()
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--to grave / remove
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_REMOVE)

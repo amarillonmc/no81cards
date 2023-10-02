@@ -1,5 +1,5 @@
 --远古造物大灭绝
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910717.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -98,13 +98,13 @@ function c9910717.activate2(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910717.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
+		and Duel.IsExistingMatchingCard(QutryYgzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
 end
 function c9910717.setop(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if ft==0 then return end
 	if ft>3 then ft=3 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local sg=Duel.SelectMatchingCard(tp,Ygzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,ft,ft,nil,e,tp)
-	if sg:GetCount()>0 then Ygzw.Set2(sg,e,tp) end
+	local sg=Duel.SelectMatchingCard(tp,QutryYgzw.SetFilter,tp,LOCATION_MZONE,LOCATION_MZONE,ft,ft,nil,e,tp)
+	if sg:GetCount()>0 then QutryYgzw.Set2(sg,e,tp) end
 end

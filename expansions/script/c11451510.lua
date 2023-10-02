@@ -61,7 +61,7 @@ function cm.mfilter(c)
 	return c:IsSetCard(0x97d) and not c:IsType(TYPE_TOKEN)
 end
 function cm.xyzfilter(c,mg,tp)
-	return c:IsXyzSummonable(mg) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
+	return c:IsXyzSummonable(mg) --and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

@@ -80,6 +80,7 @@ function cm.initial_effect(c)
 		local _GetActivateSequence=Effect.GetActivateSequence
 		local _GetChainInfo=Duel.GetChainInfo
 		local _NegateActivation=Duel.NegateActivation
+		local _ChangeChainOperation=Duel.ChangeChainOperation
 		function Effect.GetActiveType(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
 				return TYPE_TRAP
@@ -108,7 +109,7 @@ function cm.initial_effect(c)
 			local re=_GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
 			if aux.GetValueType(re)=="Effect" then
 				local rc=re:GetHandler()
-				if re:GetDescription()==aux.Stringid(m,0) then
+				if rc and re:GetDescription()==aux.Stringid(m,0) then
 					local res={}
 					for _,ci in ipairs(ext_params) do
 						if ci==CHAININFO_TYPE or ci==CHAININFO_EXTTYPE then
@@ -126,17 +127,26 @@ function cm.initial_effect(c)
 			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
 			if aux.GetValueType(re)=="Effect" then
 				local rc=re:GetHandler()
-				if re:GetDescription()==aux.Stringid(m,0) then
+				if rc and rc:IsOnField() and re:GetDescription()==aux.Stringid(m,0) then
 					--tograve
 					local e1=Effect.CreateEffect(rc)
 					e1:SetType(EFFECT_TYPE_SINGLE)
 					e1:SetCode(EFFECT_CANNOT_TO_DECK)
 					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 					rc:RegisterEffect(e1)
-					return _NegateActivation(ev)
 				end
 			end
 			return _NegateActivation(ev)
+		end
+		function Duel.ChangeChainOperation(ev,...)
+			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			if aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if rc and rc:IsOnField() and re:GetDescription()==aux.Stringid(m,0) then
+					rc:CancelToGrave(false)
+				end
+			end
+			return _ChangeChainOperation(ev,...)
 		end
 	end
 end
@@ -180,7 +190,7 @@ function cm.tdfilter(c,lab)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--Debug.Message(Duel.GetChainInfo(0,CHAININFO_EXTTYPE))
-	--Debug.Message(Duel.GetChainInfo(0,CHAININFO_TRIGGERING_LOCATION))
+	--Debug.Message(Duel.GetChainInfo(0,CHAININFO_TRIGGERING_POSITION))
 	local c=e:GetHandler()
 	local g0=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	Duel.ConfirmCards(tp,g0)

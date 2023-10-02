@@ -1,8 +1,8 @@
 --远古造物收藏家
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910743.initial_effect(c)
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_ACTION)

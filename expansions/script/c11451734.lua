@@ -127,15 +127,19 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.mfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0x6977) and c:IsReason(REASON_DISCARD) and c:IsType(TYPE_MONSTER)
+	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsReason(REASON_DISCARD) and c:IsType(TYPE_MONSTER)
 end
 function cm.spfilter(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+end
+function cm.fcheck(tp,sg,fc)
+	return sg:IsExists(Card.IsSetCard,1,nil,0x6977)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg2=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+		aux.FCheckAdditional=cm.fcheck
 		local res=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg2,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -146,6 +150,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 				res=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg4,mf,chkf)
 			end
 		end
+		aux.FCheckAdditional=nil
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
@@ -153,6 +158,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg2=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	aux.FCheckAdditional=cm.fcheck
 	local sg1=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp,mg2,nil,chkf)
 	local mg4=nil
 	local sg3=nil
@@ -200,4 +206,5 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		tc:CompleteProcedure()
 	end
+	aux.FCheckAdditional=nil
 end

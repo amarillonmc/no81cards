@@ -65,6 +65,7 @@ function cm.initial_effect(c)
 		local _GetActivateLocation=Effect.GetActivateLocation
 		local _GetActivateSequence=Effect.GetActivateSequence
 		local _GetChainInfo=Duel.GetChainInfo
+		local _ChangeChainOperation=Duel.ChangeChainOperation
 		function Effect.GetActiveType(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
 				return TYPE_TRAP
@@ -93,7 +94,7 @@ function cm.initial_effect(c)
 			local re=_GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
 			if aux.GetValueType(re)=="Effect" then
 				local rc=re:GetHandler()
-				if re:GetDescription()==aux.Stringid(m,0) then
+				if rc and re:GetDescription()==aux.Stringid(m,0) then
 					local res={}
 					for _,ci in ipairs(ext_params) do
 						if ci==CHAININFO_TYPE or ci==CHAININFO_EXTTYPE then
@@ -106,6 +107,16 @@ function cm.initial_effect(c)
 				end
 			end
 			return _GetChainInfo(ev,...)
+		end
+		function Duel.ChangeChainOperation(ev,...)
+			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			if aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if rc and rc:IsOnField() and re:GetDescription()==aux.Stringid(m,0) then
+					rc:CancelToGrave(false)
+				end
+			end
+			return _ChangeChainOperation(ev,...)
 		end
 	end
 end
@@ -152,7 +163,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	local tc=g:GetFirst()
-	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
+	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA) then
 		local g2=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e,tp)
 		if #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()

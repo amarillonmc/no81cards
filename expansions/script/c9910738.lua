@@ -1,11 +1,11 @@
 --远古造物 印石板始祖鸟
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910738.initial_effect(c)
 	--special summon
-	Ygzw.AddSpProcedure(c,1)
+	QutryYgzw.AddSpProcedure(c,1)
 	c:EnableReviveLimit()
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--remove
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND)
@@ -51,11 +51,11 @@ function c9910738.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9910738.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Ygzw.SetFilter(e:GetHandler(),e,tp) end
+	if chk==0 then return QutryYgzw.SetFilter(e:GetHandler(),e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 end
 function c9910738.setop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then Ygzw.Set(c,e,tp) end
+	if c:IsRelateToEffect(e) then QutryYgzw.Set(c,e,tp) end
 end

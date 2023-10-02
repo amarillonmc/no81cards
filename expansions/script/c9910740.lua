@@ -1,11 +1,11 @@
 --未解的远古造物 原杉藻
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910740.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xc950),2)
 	c:EnableReviveLimit()
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910740,0))

@@ -4567,29 +4567,28 @@ end
 function cm.Tentuthop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT) end
 end
-function cm.ActivatedAsSpellorTrap(c,otyp)
+function cm.ActivatedAsSpellorTrap(c,otyp,loc)
 	local e1=Effect.CreateEffect(c)
-	--e1:SetDescription(aux.Stringid(m,0))
 	if otyp&TYPE_SPELL~=0 then e1:SetType(EFFECT_TYPE_IGNITION) elseif otyp&TYPE_TRAP~=0 then
 		e1:SetType(EFFECT_TYPE_QUICK_O)
 		e1:SetCode(EVENT_FREE_CHAIN)
 		e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	end
-	e1:SetRange(LOCATION_HAND)
+	e1:SetRange(loc)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	c:RegisterEffect(e1)
 	local e1_1=Effect.CreateEffect(c)
 	e1_1:SetType(EFFECT_TYPE_SINGLE)
 	e1_1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1_1:SetCode(53765098)
-	e1_1:SetRange(LOCATION_HAND)
+	e1_1:SetRange(loc)
 	e1_1:SetLabel(otyp)
 	e1_1:SetLabelObject(e1)
 	c:RegisterEffect(e1_1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_ADJUST)
-	e2:SetRange(LOCATION_HAND)
+	e2:SetRange(loc)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetLabelObject(e1)
 	e2:SetOperation(cm.AASTadjustop(otyp))
@@ -4597,7 +4596,7 @@ function cm.ActivatedAsSpellorTrap(c,otyp)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_ACTIVATE_COST)
-	e3:SetRange(LOCATION_HAND)
+	e3:SetRange(loc)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e3:SetTargetRange(1,1)
 	e3:SetLabelObject(e1)
@@ -4952,5 +4951,298 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			if b then re:GetHandler():CancelToGrave(false) end
 			return ADIMI_ChangeChainOperation(chainc,...)
 		end
+	end
+end
+function cm.HelltakerActivate(c,code)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e4:SetCode(53765000)
+	e4:SetRange(LOCATION_SZONE)
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetCode(53765000)
+	e5:SetRange(LOCATION_SZONE)
+	e5:SetTargetRange(1,0)
+	c:RegisterEffect(e5)
+	local ex=Effect.CreateEffect(c)
+	ex:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	ex:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	ex:SetCode(EVENT_MOVE)
+	ex:SetOperation(cm.HTAmvhint(code))
+	c:RegisterEffect(ex)
+	if not AD_Helltaker_Check then
+		AD_Helltaker_Check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_ADJUST)
+		ge1:SetOperation(cm.HTAmvop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		Duel.RegisterEffect(ge2,1)
+		ADHT_MoveToField=Duel.MoveToField
+		Duel.MoveToField=function(sc,mp,tp,dest,pos,bool,zone)
+			local czone=zone or 0xff
+			if ad_ht_fr then czone=ad_ht_fr end
+			return ADHT_MoveToField(sc,mp,tp,dest,pos,bool,czone)
+		end
+		ADHT_GetLocationCount=Duel.GetLocationCount
+		Duel.GetLocationCount=function(tp,loc,...)
+			local ct=ADHT_GetLocationCount(tp,loc,...)
+			if ad_ht_zc then ct=ct+ad_ht_zc end
+			return ct
+		end
+	end
+end
+function cm.HTAfactarget(e,te,tp)
+	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
+end
+function cm.HTAmvop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(aux.NOT(Card.IsStatus),tp,LOCATION_ONFIELD,0,nil,STATUS_CHAINING)
+	for c in aux.Next(g) do
+		local rse={c:IsHasEffect(53765050)}
+		for _,v in pairs(rse) do
+			if v:GetLabelObject():GetLabelObject() then v:GetLabelObject():GetLabelObject():Reset() end
+			if v:GetLabelObject() then v:GetLabelObject():Reset() end
+			v:Reset()
+		end
+	end
+	if not Duel.IsPlayerAffectedByEffect(tp,53765000) then return end
+	g=Duel.GetMatchingGroup(function(c)return c:GetActivateEffect() and not c:GetActivateEffect():IsActiveType(TYPE_FIELD)end,tp,LOCATION_HAND,0,nil)
+	for c in aux.Next(g) do
+		local le={c:GetActivateEffect()}
+		for _,te in pairs(le) do
+			local ale=nil
+			local rse={c:IsHasEffect(53765097)}
+			for k,v in pairs(rse) do
+				if te==v:GetLabelObject() then
+					ale=rse[k+1]
+					ale=ale:GetLabelObject()
+					break
+				end
+			end
+			if ale then
+				if te:GetCategory()~=ale:GetCategory() then ale:SetCategory(te:GetCategory()) end
+				local tecon=te:GetCondition() or aux.TRUE
+				local alecon=ale:GetCondition() or aux.TRUE
+				if tecon~=alecon then ale:SetCondition(tecon) end
+				local tecost=te:GetCost() or aux.TRUE
+				local alecost=ale:GetCost() or aux.TRUE
+				if tecost~=alecost then ale:SetCost(tecost) end
+				local tetg=te:GetTarget() or aux.TRUE
+				local aletg=ale:GetTarget() or aux.TRUE
+				if tetg~=aletg then ale:SetTarget(tetg) end
+				if te:GetOperation()~=ale:GetOperation() then ale:SetOperation(te:GetOperation()) end
+				if te:GetLabel()~=ale:GetLabel() then ale:SetLabel(te:GetLabel()) end
+				if te:GetValue()~=ale:GetValue() then ale:SetLabel(te:GetLabel()) end
+			elseif te:GetRange()&0x2~=0 then
+				local e1=te:Clone()
+				e1:SetDescription(aux.Stringid(53765000,14))
+				if te:GetCode()==EVENT_FREE_CHAIN then
+					if te:IsActiveType(TYPE_TRAP+TYPE_QUICKPLAY) then e1:SetType(EFFECT_TYPE_QUICK_O) else e1:SetType(EFFECT_TYPE_IGNITION) end
+				elseif te:GetCode()==EVENT_CHAINING and te:GetProperty()&EFFECT_FLAG_DELAY==0 then e1:SetType(EFFECT_TYPE_QUICK_O) elseif te:GetCode()~=0 then e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) else e1:SetType(EFFECT_TYPE_IGNITION) end
+				e1:SetRange(LOCATION_HAND)
+				local pro,pro2=te:GetProperty()
+				e1:SetProperty(pro|EFFECT_FLAG_UNCOPYABLE,pro2)
+				e1:SetReset(RESET_EVENT+0xff0000)
+				c:RegisterEffect(e1,true)
+				local pe={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
+				for _,v in pairs(pe) do
+					local val=v:GetValue()
+					if aux.GetValueType(val)=="number" then val=aux.TRUE end
+					v:SetValue(cm.bchval(val,e1))
+				end
+				local zone=0xff
+				if te:IsActiveType(TYPE_PENDULUM) then zone=0x11 end
+				if te:IsHasProperty(EFFECT_FLAG_LIMIT_ZONE) then
+					zone=te:GetValue()
+					if aux.GetValueType(zone)=="function" then zone=zone(te,tp,eg,ep,ev,re,r,rp) end
+				end
+				local fcheck=false
+				local fe={Duel.IsPlayerAffectedByEffect(0,53765050)}
+				for _,v in pairs(fe) do
+					local ae=v:GetLabelObject()
+					if ae:GetLabelObject() and ae:GetLabelObject()==te and ae:GetCode() and ae:GetCode()==EFFECT_ACTIVATE_COST and ae:GetRange()&LOCATION_HAND~=0 then
+						fcheck=true
+						local e2_1=ae:Clone()
+						e2_1:SetLabelObject(e1)
+						e2_1:SetTarget(cm.HTAfactarget)
+						local cost=ae:GetCost()
+						if not cost then cost=aux.TRUE end
+						e2_1:SetCost(cm.HTAfaccost(cost,te,zone))
+						local op=ae:GetOperation()
+						e2_1:SetOperation(cm.HTAfcostop(op,zone))
+						e2_1:SetReset(RESET_EVENT+0xff0000)
+						c:RegisterEffect(e2_1,true)
+						local e3_1=Effect.CreateEffect(c)
+						e3_1:SetType(EFFECT_TYPE_SINGLE)
+						e3_1:SetCode(53765050)
+						e3_1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+						e3_1:SetLabelObject(e2_1)
+						e3_1:SetReset(RESET_EVENT+0xff0000)
+						c:RegisterEffect(e3_1,true)
+					end
+				end
+				if not fcheck then
+					local e2=Effect.CreateEffect(c)
+					e2:SetType(EFFECT_TYPE_FIELD)
+					e2:SetCode(EFFECT_ACTIVATE_COST)
+					e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+					e2:SetRange(LOCATION_HAND)
+					e2:SetTargetRange(1,0)
+					e2:SetTarget(cm.HTAfactarget)
+					e2:SetCost(cm.HTAfaccost(aux.TRUE,te,zone))
+					e2:SetOperation(cm.HTAfcostop(cm.HTAmvcostop,zone))
+					e2:SetLabelObject(e1)
+					e2:SetReset(RESET_EVENT+0xff0000)
+					c:RegisterEffect(e2,true)
+					local e3=Effect.CreateEffect(c)
+					e3:SetType(EFFECT_TYPE_SINGLE)
+					e3:SetCode(53765050)
+					e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+					e3:SetLabelObject(e2)
+					e3:SetReset(RESET_EVENT+0xff0000)
+					c:RegisterEffect(e3,true)
+				end
+				local e4=Effect.CreateEffect(c)
+				e4:SetType(EFFECT_TYPE_SINGLE)
+				e4:SetCode(53765097)
+				e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+				e4:SetLabelObject(te)
+				e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+				c:RegisterEffect(e4,true)
+				local e5=e4:Clone()
+				e5:SetLabelObject(e1)
+				c:RegisterEffect(e5,true)
+				local e6=Effect.CreateEffect(c)
+				e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e6:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+				e6:SetCode(EVENT_CHAIN_SOLVING)
+				e6:SetCountLimit(1)
+				e6:SetLabelObject(e1)
+				e6:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re==e:GetLabelObject()end)
+				e6:SetOperation(cm.HTArsop)
+				Duel.RegisterEffect(e6,tp)
+				local e7=e6:Clone()
+				e7:SetCode(EVENT_CHAIN_NEGATED)
+				Duel.RegisterEffect(e7,tp)
+			end
+		end
+	end
+end
+function cm.HTArsop(e,tp,eg,ep,ev,re,r,rp)
+	local rse={re:GetHandler():IsHasEffect(53765050)}
+	for _,v in pairs(rse) do
+		if v:GetLabelObject():GetLabelObject() then v:GetLabelObject():GetLabelObject():Reset() end
+		if v:GetLabelObject() then v:GetLabelObject():Reset() end
+		v:Reset()
+	end
+	e:Reset()
+end
+function cm.HTAfaccost(_cost,fe,zone)
+	return function(e,te,tp)
+				ad_ht_zc=1
+				local fcost=fe:GetCost()
+				local ftg=fe:GetTarget()
+				local check=false
+				local code=fe:GetCode()
+				if code==0 or code==EVENT_FREE_CHAIN then
+					if (not fcost or fcost(fe,tp,nil,0,0,nil,0,0,0)) and (not ftg or ftg(fe,tp,nil,0,0,nil,0,0,0)) then check=true end
+				else
+					local cres,teg,tep,tev,tre,tr,trp=Duel.CheckEvent(code,true)
+					if cres and (not fcost or fcost(fe,tp,teg,tep,tev,tre,tr,trp,0)) and (not ftg or ftg(fe,tp,teg,tep,tev,tre,tr,trp,0)) then check=true end
+				end
+				local pe={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
+				for _,v in pairs(pe) do
+					local val=v:GetValue()
+					if aux.GetValueType(val)=="number" or val(v,fe,tp) then check=false end
+				end
+				if not fe:IsActivatable(tp) and not check then
+					ad_ht_zc=nil
+					return false
+				end
+				local c=e:GetHandler()
+				local xe={c:IsHasEffect(53765099)}
+				for _,v in pairs(xe) do v:Reset() end
+				if c:IsType(TYPE_QUICKPLAY) and Duel.GetTurnPlayer()~=tp and not c:IsHasEffect(EFFECT_QP_ACT_IN_NTPHAND) then return false end
+				if c:IsType(TYPE_TRAP) and not c:IsHasEffect(EFFECT_TRAP_ACT_IN_HAND) then return false end
+				if not c:CheckUniqueOnField(tp) then return false end
+				if not Duel.IsExistingMatchingCard(cm.HTAmvfilter,tp,LOCATION_SZONE,0,1,nil,e,tp,zone) then
+					ad_ht_zc=nil
+					return false
+				end
+				local res=false
+				if _cost(e,te,tp) then res=true end
+				ad_ht_zc=nil
+				return res
+			end
+end
+function cm.HTAfcostop(_op,zone)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(53765000,15))
+				local tc=Duel.SelectMatchingCard(tp,cm.HTAmvfilter,tp,LOCATION_SZONE,0,1,1,nil,e,tp,zone):GetFirst()
+				local seq=tc:GetSequence()
+				if seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1) then Duel.MoveSequence(tc,seq-1) else Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,1<<seq) end
+				ad_ht_fr=1<<seq
+				_op(e,tp,teg,tep,tev,tre,tr,trp)
+				ad_ht_fr=nil
+			end
+end
+function cm.HTAmvfilter(c,e,tp,zone)
+	local seq=c:GetSequence()
+	return c:IsHasEffect(53765000) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,1<<seq)) and (1<<seq)&zone~=0
+end
+function cm.HTAmvcostop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local c=te:GetHandler()
+	local typ=c:GetType()
+	local xe1=cm.AASTregi(c,te)
+	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	xe1:SetLabel(c:GetSequence()+1,typ)
+	c:CreateEffectRelation(te)
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return ev==ev0 end)
+	e1:SetOperation(cm.HTAmvrsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+	ad_ht_fr=nil
+end
+function cm.HTAmvrsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	local xe={rc:IsHasEffect(53765099)}
+	for _,v in pairs(xe) do v:Reset() end
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+		if not rc:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_PENDULUM) and not rc:IsHasEffect(EFFECT_REMAIN_FIELD) then rc:CancelToGrave(false) end
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+		rc:CancelToGrave(false)
+	end
+	if re then re:Reset() end
+end
+function cm.HTAmvhint(code)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not (c:IsLocation(LOCATION_SZONE) and c:IsPreviousLocation(LOCATION_SZONE) and (c:GetPreviousSequence()~=c:GetSequence() or c:GetPreviousControler()~=c:GetControler())) then return end
+	local flag=c:GetFlagEffectLabel(code+50)
+	if flag then
+		flag=flag+1
+		c:ResetFlagEffect(code+50)
+		local hflag=flag-1
+		if hflag>13 then hflag=13 end
+		c:RegisterFlagEffect(code+50,RESET_EVENT+0x7e0000,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(53765000,hflag))
+	else c:RegisterFlagEffect(code+50,RESET_EVENT+0x7e0000,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(53765000,0)) end
 	end
 end

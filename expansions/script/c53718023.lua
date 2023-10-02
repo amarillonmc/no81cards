@@ -110,7 +110,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thfilter(c)
-	return c:IsAbleToHand() and c:IsType(TYPE_FUSION)
+	return c:IsAbleToHand() and c:IsSetCard(0x353c)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

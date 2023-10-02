@@ -1,4 +1,19 @@
 --龙仪巧-天蝎流星＝SCO
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 local m=11612631
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
@@ -156,7 +171,7 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	c:AddCounter(0x1161,1,REASON_EFFECT)
 	local seq=c:GetSequence()
 	local dg=Duel.GetMatchingGroup(cm.desfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil,seq,c:GetControler())
-	if seq<5 and dg:GetCount()>0 then	 
+	if seq<5 and dg:GetCount()>0 then   
 		local dgc=dg:GetFirst()
 		while dgc do
 			if dgc:GetCounter(0x1161)<=0 then

@@ -1,11 +1,11 @@
 --远古造物 邓氏鱼
-require("expansions/script/c9910700")
+Duel.LoadScript("c9910700.lua")
 function c9910719.initial_effect(c)
 	--special summon
-	Ygzw.AddSpProcedure(c,2)
+	QutryYgzw.AddSpProcedure(c,2)
 	c:EnableReviveLimit()
 	--flag
-	Ygzw.AddTgFlag(c)
+	QutryYgzw.AddTgFlag(c)
 	--negate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_SEARCH+CATEGORY_TOHAND)
@@ -53,22 +53,6 @@ function c9910719.negop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,sg)
 		end
 	end
-end
-function c9910719.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local id=Duel.GetTurnCount()
-	if chk==0 then return c:GetTurnID()<id and not c:IsReason(REASON_RETURN)
-		and c:IsAbleToRemoveAsCost() end
-	Duel.Remove(c,POS_FACEUP,REASON_COST)
-end
-function c9910719.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Ygzw.SetFilter2,tp,LOCATION_DECK,0,1,nil,e,tp) end
-end
-function c9910719.setop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,Ygzw.SetFilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	local tc=g:GetFirst()
-	if tc then Ygzw.Set(tc,e,tp) end
 end
 function c9910719.descon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and e:GetHandler():IsPreviousControler(tp)

@@ -1,4 +1,19 @@
 --龙仪巧-水瓶流星=AQU
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 local m=11612611
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
@@ -30,7 +45,7 @@ function c11612611.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e2:SetCountLimit(1,m)
-	--e2:SetCondition(cm.spcon)
+	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)

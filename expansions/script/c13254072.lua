@@ -1,7 +1,7 @@
 --飞球造物·胸寄生球
 local m=13254072
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end)
 function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	local e1=Effect.CreateEffect(c)
@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_TRIGGER_O)
+	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_FIELD)
 	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1)

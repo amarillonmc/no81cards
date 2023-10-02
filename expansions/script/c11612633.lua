@@ -1,4 +1,19 @@
 --龙仪巧-摩羯流星＝CAP
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 local m=11612633
 local cm=_G["c"..m]
 if not pcall(function() require("expansions/script/11610000") end) then require("script/11610000") end
@@ -27,9 +42,9 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,0))
 	--e2:SetCategory(CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)	
+	e2:SetCode(EVENT_CHAINING)  
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,m)
+	--e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.activate)
@@ -470,8 +485,17 @@ end
 function cm.rfilter(c,id)
 	return c:GetFlagEffectLabel(11612632)==id
 end
+--
+function cm.cfilter(c)
+	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x154)
+end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(m)>0 and rp==1-tp
+	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)
+	local num=Duel.GetFlagEffect(tp,11612634)
+	--Debug.Message(g:GetCount())
+	local gc=g:GetClassCount(Card.GetCode)
+	Debug.Message(gc)
+	return num<gc  and e:GetHandler():GetFlagEffect(m)>0 and rp==1-tp
 end
 
 function cm.filter(c,ct,loc,cg)
@@ -512,6 +536,8 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	if chk==0 then return true end
+	--e:GetHandler():RegisterFlagEffect(11612634,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,11612634,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
