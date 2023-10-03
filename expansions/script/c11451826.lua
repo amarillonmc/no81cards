@@ -123,7 +123,7 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.xfilter(c,tp,g)
-	return c:IsFaceup() and c:IsControler(tp) and g:IsExists(Card.IsAttribute,1,nil,c:GetAttribute())
+	return c:IsFaceup() and c:IsControler(tp) and g:IsExists(Card.IsAttribute,1,c,c:GetAttribute())
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)

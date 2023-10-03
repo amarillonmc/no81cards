@@ -2,7 +2,6 @@
 local m=60002239
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableReviveLimit()
 	--negate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))

@@ -2,7 +2,7 @@
 local m=60002236
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableReviveLimit()
+
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

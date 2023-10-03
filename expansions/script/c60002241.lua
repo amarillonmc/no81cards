@@ -2,7 +2,6 @@
 local m=60002241
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableReviveLimit()
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DRAW)
