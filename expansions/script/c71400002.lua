@@ -1,5 +1,5 @@
 --异梦旅者-冰冻子
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400002.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)

@@ -1,5 +1,5 @@
 --幻异梦像-信号灯
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400047.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

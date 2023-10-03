@@ -1,5 +1,5 @@
 --异梦通路的边际鲜活工作者
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400008.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,yume.YumeCheck(c),4,3)

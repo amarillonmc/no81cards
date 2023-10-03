@@ -1,5 +1,5 @@
 --幻异梦境-梦幻图书馆
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400014.initial_effect(c)
 	--red remedy
 	local e1a=Effect.CreateEffect(c)

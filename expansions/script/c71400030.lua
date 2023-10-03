@@ -1,5 +1,5 @@
 --腐坏的异梦怪物
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400030.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,yume.YumeLMGFilterFunction(c))
@@ -51,10 +51,10 @@ function c71400030.op1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg1=g1:Select(tp,1,1,nil)
 		local mg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,aux.ExceptThisCard(e))
-		local g2=mg:Sub(sg1)
-		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400032,1)) then
+		mg:Sub(sg1)
+		if mg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71400032,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local sg2=g2:Select(tp,1,2,nil)
+			local sg2=mg:Select(tp,1,2,nil)
 			sg1:Merge(sg2)
 		end
 		Duel.HintSelection(sg1)

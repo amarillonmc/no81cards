@@ -1,5 +1,5 @@
 --蝶幻-「胧」
-xpcall(function() require("expansions/script/c71401001") end,function() require("script/c71401001") end)
+if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401008.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_SPELLCASTER),aux.NonTuner(Card.IsRace,RACE_SPELLCASTER),1)

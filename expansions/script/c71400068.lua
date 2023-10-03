@@ -1,5 +1,5 @@
 --异梦刺青妹妹
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400068.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,c71400068.matfilter,1,1,yume.YumeCheck(c))

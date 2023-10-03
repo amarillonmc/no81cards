@@ -1,5 +1,5 @@
 --异梦海底的潜水员-橘黄子
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400043.initial_effect(c)
 	c:SetSPSummonOnce(71400043)
 	--link summon

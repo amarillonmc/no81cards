@@ -1,5 +1,5 @@
 --蝶现-「像」
-xpcall(function() require("expansions/script/c71401001") end,function() require("script/c71401001") end)
+if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401004.initial_effect(c)
 	--same effect sends this card to grave or banishes it, and spsummon another card check
 	local e0=aux.AddThisCardInGraveAlreadyCheck(c)

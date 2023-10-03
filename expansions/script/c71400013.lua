@@ -1,5 +1,5 @@
 --梦坠
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400013.initial_effect(c)
 	--Activate(nofield)
 	local e1=Effect.CreateEffect(c)

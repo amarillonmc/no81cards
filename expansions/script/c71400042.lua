@@ -1,5 +1,5 @@
 --构异梦境-巡行病房
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400042.initial_effect(c)
 	yume.temp_card_field[c]=yume.temp_card_field[c] or {}
 	yume.temp_card_field[c].id=71400042
