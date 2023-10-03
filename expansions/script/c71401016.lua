@@ -1,4 +1,5 @@
 --蝶构-「逢」
+if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401016.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
@@ -81,7 +82,7 @@ function c71401016.op2(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(ctype+TYPE_CONTINUOUS)
 			tc:RegisterEffect(e1)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local rg=Duel.SelectMatchingCard(Card.IsAbleToRemove,tp,LOCATION_EXTRA,0,1,1,nil,tp,POS_FACEDOWN)
+			local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_EXTRA,0,1,1,nil,tp,POS_FACEDOWN)
 			if Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)>0 and c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 				and Duel.SelectYesNo(tp,aux.Stringid(71401016,4)) then
 				Duel.BreakEffect()
@@ -116,10 +117,10 @@ end
 function c71401016.op3(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=Duel.SelectMatchingCard(c71401016.filter3,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
+	local sg=Duel.SelectMatchingCard(tp,c71401016.filter3,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
 	if Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local rg=Duel.SelectMatchingCard(Card.IsAbleToRemove,tp,LOCATION_EXTRA,0,1,1,nil,tp,POS_FACEDOWN)
+		local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_EXTRA,0,1,1,nil,tp,POS_FACEDOWN)
 		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
 	end
 end

@@ -1,5 +1,5 @@
 --幻异梦像-猫
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400044.initial_effect(c)
 	--summon limit
 	yume.AddYumeSummonLimit(c)

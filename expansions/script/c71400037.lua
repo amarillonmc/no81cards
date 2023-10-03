@@ -1,5 +1,5 @@
 --幻异梦境-昭和胡同
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400037.initial_effect(c)
 	--Activate
 	--See AddYumeFieldGlobal

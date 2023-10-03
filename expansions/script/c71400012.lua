@@ -1,5 +1,5 @@
 --异梦迷宫的狐侍-师傅
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400012.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,yume.YumeCheck(c,true),aux.NonTuner(nil),1)

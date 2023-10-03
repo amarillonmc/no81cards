@@ -1,5 +1,5 @@
 --蚀异梦像-扫帚
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400062.initial_effect(c)
 	--Activate
 	local e0=Effect.CreateEffect(c)

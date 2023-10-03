@@ -1,5 +1,5 @@
 --蝶蚀-「巡」
-xpcall(function() require("expansions/script/c71401001") end,function() require("script/c71401001") end)
+if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401009.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_SPELLCASTER),4,2)

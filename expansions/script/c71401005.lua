@@ -1,5 +1,5 @@
 --蝶梦-「转」
-xpcall(function() require("expansions/script/c71401001") end,function() require("script/c71401001") end)
+if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401005.initial_effect(c)
 	yume.AddButterflySpell(c,71401005)
 	--spsummon

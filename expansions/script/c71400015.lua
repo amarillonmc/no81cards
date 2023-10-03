@@ -1,5 +1,5 @@
 --幻异梦境-梦湖回廊
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
+if not c71401001 then dofile("expansions/script/c71400001.lua") end
 function c71400015.initial_effect(c)
 	--Activate
 	--See AddYumeFieldGlobal

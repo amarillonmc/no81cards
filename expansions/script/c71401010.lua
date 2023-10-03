@@ -1,5 +1,5 @@
 --蝶境-「漫」
-xpcall(function() require("expansions/script/c71401001") end,function() require("script/c71401001") end)
+if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401010.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
