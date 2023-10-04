@@ -17,8 +17,10 @@ function cm.initial_effect(c)
 	
 end
 function c22348317.effcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and (re:IsActiveType(TYPE_MONSTER)
-		or (re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not re:IsHasType(EFFECT_TYPE_ACTIVATE)))
+	return (re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE
+		or ((re:GetActivateLocation()==LOCATION_FZONE or re:GetActivateLocation()==LOCATION_SZONE) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not re:IsHasType(EFFECT_TYPE_ACTIVATE)))
+
+
 end
 function c22348317.drfilter(c)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsDiscardable()

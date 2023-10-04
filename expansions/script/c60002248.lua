@@ -26,10 +26,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.spcon(e,c)
+	local tp=c:GetControler()
 	local num=Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_GRAVE,0,nil)
 	if c==nil then return true end
 	return num>=20
-		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.thfilter(c)
 	return c:IsCode(60002250)

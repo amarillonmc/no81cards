@@ -1,7 +1,8 @@
 --救世神龙 传承琉迩
 function c75000003.initial_effect(c)
+	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcMix(c,true,true,c75000003.fusfilter1,c75000003.fusfilter2,c75000003.fusfilter3) 
+	aux.AddFusionProcCode2FunRep(c,21159309,75000001,aux.FilterBoolFunction(Card.IsFusionSetCard,0x751),1,1,true,true)
 	--cannot disable spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -53,16 +54,7 @@ function c75000003.initial_effect(c)
 	e5:SetOperation(c75000003.fuop)
 	c:RegisterEffect(e5)
 end
-c75000003.material_setcode=75000001 
-function c75000003.fusfilter1(c)
-	return c:IsFusionCode(21159309) 
-end
-function c75000003.fusfilter2(c)
-	return c:IsFusionCode(75000001)
-end
-function c75000003.fusfilter3(c)
-	return c:IsFusionSetCard(0x751) 
-end
+c75000003.material_setcode=75000001   
 function c75000003.tddcost(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0x751) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost() end,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) end  
 	local g=Duel.SelectMatchingCard(tp,function(c) return c:IsSetCard(0x751) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost() end,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
