@@ -52,9 +52,9 @@ end
 function c22348121.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local phase=Duel.GetCurrentPhase()
 	local c=e:GetHandler()
-	local flaga=Duel.GetFlagEffect(e:GetHandler(),22348121)
-	local flagb=Duel.GetFlagEffect(e:GetHandler(),22349121)
-	local ct=Duel.GetFlagEffect(e:GetHandler(),22348121)-Duel.GetFlagEffect(e:GetHandler(),22349121)
+	local flaga=Duel.GetFlagEffect(tp,22348121)
+	local flagb=Duel.GetFlagEffect(tp,22349121)
+	local ct=Duel.GetFlagEffect(tp,22348121)-Duel.GetFlagEffect(tp,22349121)
 	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL then return end
 	if flaga and flagb then
 	Card.ResetFlagEffect(c,22350121)
@@ -78,7 +78,7 @@ end
 function c22348121.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		Duel.RegisterFlagEffect(e:GetHandler(),22348121,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(tc:GetPreviousControler(),22348121,RESET_PHASE+PHASE_END,0,1)
 		tc=eg:GetNext()
 	end
 end
@@ -104,11 +104,11 @@ function c22348121.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348121.descon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(e:GetHandler(),22348121)>Duel.GetFlagEffect(e:GetHandler(),22349121)
+	return Duel.GetFlagEffect(tp,22348121)>Duel.GetFlagEffect(tp,22349121)
 end
 function c22348121.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.RegisterFlagEffect(e:GetHandler(),22349121,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,22349121,RESET_PHASE+PHASE_END,0,1)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c22348121.destg(e,tp,eg,ep,ev,re,r,rp,chk)

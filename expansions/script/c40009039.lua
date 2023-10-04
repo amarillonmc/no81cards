@@ -81,10 +81,10 @@ function c40009039.eqlimit(e,c)
 end
 function c40009039.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsLocation(LOCATION_SZONE) then return end
-	if not c:IsRelateToEffect(e) or c:IsStatus(STATUS_LEAVE_CONFIRMED) then return end
 	local tc=Duel.GetFirstTarget()
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)~=0 and tc:IsRelateToEffect(e) and tc:IsFaceup() then
+	if not c:IsLocation(LOCATION_SZONE) then return end
+	if not c:IsRelateToEffect(e) or c:IsStatus(STATUS_LEAVE_CONFIRMED) then return end
 		Duel.BreakEffect()
 		Duel.Equip(tp,c,tc)
 		local e2=Effect.CreateEffect(c)

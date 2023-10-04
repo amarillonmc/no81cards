@@ -85,14 +85,16 @@ function c9910070.setfilter(c)
 end
 function c9910070.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c9910070.setfilter,tp,0,LOCATION_MZONE,nil)
-	local tg=g:GetMaxGroup(Card.GetDefense):Filter(Card.IsCanTurnSet,nil)
+	local tg=Group.CreateGroup()
+	if #g>0 then tg=g:GetMaxGroup(Card.GetDefense):Filter(Card.IsCanTurnSet,nil) end
 	if chk==0 then return #tg>0 end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,tg,1,0,0)
 end
 function c9910070.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9910070.setfilter,tp,0,LOCATION_MZONE,nil)
-	local tg=g:GetMaxGroup(Card.GetDefense):Filter(Card.IsCanTurnSet,nil)
+	local tg=Group.CreateGroup()
+	if #g>0 then tg=g:GetMaxGroup(Card.GetDefense):Filter(Card.IsCanTurnSet,nil) end
 	if #tg>0 then
 		if #tg>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)

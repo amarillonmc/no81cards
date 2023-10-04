@@ -139,7 +139,7 @@ end
 function s.filter2(c)
 	return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) 
 end
-function s.filter(c,tp)
+function s.filter(c,tp,e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local eff=Nekroz_discard_effect[c:GetOriginalCode()]
 	if not eff then return false end
 	local target=eff:GetTarget()
@@ -154,11 +154,11 @@ function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		local tg=te:GetTarget()
 		return tg and tg(e,tp,eg,ep,ev,re,r,rp,0,chkc)
 	end
-	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_GRAVE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_GRAVE,0,1,nil,tp,e,tp,eg,ep,ev,re,r,rp,chk,chkc) end
 	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e:SetCategory(0)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.filter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+	local g=Duel.SelectTarget(tp,s.filter,tp,LOCATION_GRAVE,0,1,1,nil,tp,e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local te=Nekroz_discard_effect[g:GetFirst():GetOriginalCode()]
 	Duel.ClearTargetCard()
 	e:SetProperty(te:GetProperty())

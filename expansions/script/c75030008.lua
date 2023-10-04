@@ -42,7 +42,7 @@ function c75030008.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c75030008.thfilter(c) 
-	return c:IsSetCard(0x753,0x751) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x753,0x75f) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c75030008.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75030008.thfilter,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():GetFlagEffect(75030008)==0 end

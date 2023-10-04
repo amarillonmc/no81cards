@@ -31,12 +31,15 @@ function cm.initial_effect(c)
 		Duel.SpecialSummon=function(tg,...)
 			tg=Group.__add(tg,tg)
 			local g=Duel.GetMatchingGroup(Card.IsHasEffect,0,LOCATION_EXTRA,LOCATION_EXTRA,nil,m)
-			if #g>0 and tg:IsExists(function(c)return c:GetFlagEffect(m)>0 and not c:IsType(TYPE_TOKEN)end,1,nil) then
+			local cg=tg:Filter(function(c)return c:GetFlagEffect(m)>0 and not c:IsType(TYPE_TOKEN)end,nil)
+			if #g>0 and #cg>0 then
 				local sg=g:RandomSelect(0,1)
 				Duel.ConfirmCards(0,sg)
 				Duel.ConfirmCards(1,sg)
-				return 0
-			else return cm[3](tg,...) end
+				tg:Sub(cg)
+			end
+			tg:ForEach(Card.ResetFlagEffect,m)
+			return cm[3](tg,...)
 		end
 		cm[4]=Duel.SpecialSummonStep
 		Duel.SpecialSummonStep=function(sc,...)
@@ -46,7 +49,10 @@ function cm.initial_effect(c)
 				Duel.ConfirmCards(0,sg)
 				Duel.ConfirmCards(1,sg)
 				return false
-			else return cm[4](sc,...) end
+			else
+			    sc:ResetFlagEffect(m)
+			    return cm[4](sc,...)
+			end
 		end
 		cm[5]=Duel.SendtoDeck
 		Duel.SendtoDeck=function(tg,...)

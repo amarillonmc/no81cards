@@ -96,7 +96,8 @@ function c40009021.rmop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCountLimit(1)
 		e1:SetCondition(c40009021.retcon)
 		e1:SetOperation(c40009021.retop)
-		local reset=0
+		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		--[[local reset=0
 		if tc:IsControler(tp) then
 			reset=RESET_OPPO_TURN
 		else
@@ -110,6 +111,15 @@ function c40009021.rmop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 			e1:SetValue(0)
 			tc:RegisterFlagEffect(40009021,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+reset,0,1)
+		end--]]
+		if Duel.GetTurnPlayer()==1-tp and Duel.GetCurrentPhase()==PHASE_END then
+			e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,2)
+			e1:SetValue(Duel.GetTurnCount())
+			tc:RegisterFlagEffect(40009021,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,2)
+		else
+			e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+			e1:SetValue(0)
+			tc:RegisterFlagEffect(40009021,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,1)
 		end
 		Duel.RegisterEffect(e1,tp)
 	end
