@@ -1,4 +1,19 @@
 --无尽镜界
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 if not pcall(require,"expansions/script/c65199999") then pcall(require,"script/c65199999") end
 local s,id,o=GetID()
 function s.initial_effect(c)

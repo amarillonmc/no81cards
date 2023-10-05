@@ -1,5 +1,20 @@
 --无尽镜界
 local s,id,o=GetID()
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 if not pcall(require,"expansions/script/c65199999") then pcall(require,"script/c65199999") end
 function s.initial_effect(c)
 	--spsummon
@@ -103,7 +118,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			if value==code then
 				table.remove(Mirrors_World_Card,i)
 				break
-			end		
+			end	 
 		end
 		
 		local cg=Group.CreateGroup()

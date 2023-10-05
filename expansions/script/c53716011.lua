@@ -1,54 +1,38 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53716011
 local cm=_G["c"..m]
 cm.name="断片折光 幻想魔裔"
 function cm.initial_effect(c)
+	c:EnableReviveLimit()
 	local e0=Effect.CreateEffect(c)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e0:SetValue(aux.FALSE)
 	c:RegisterEffect(e0)
-	local e1=Effect.CreateEffect(c)
+	local e1,e1_1,e2,e3=SNNM.ActivatedAsSpellorTrap(c,0x20004,LOCATION_EXTRA)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_RECOVER)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCost(cm.cost)
 	e1:SetOperation(cm.op)
-	c:RegisterEffect(e1)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_ACTIVATE_COST)
-	e3:SetRange(LOCATION_EXTRA)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetLabelObject(e1)
-	e3:SetTargetRange(1,1)
-	e3:SetTarget(cm.actarget)
-	e3:SetCost(cm.costchk)
-	e3:SetOperation(cm.costop)
-	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_ADJUST)
-	e4:SetRange(LOCATION_EXTRA)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetLabelObject(e1)
-	e4:SetOperation(cm.adjustop)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(m)
+	e4:SetRange(0xff)
 	c:RegisterEffect(e4)
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_SINGLE)
-	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
-	e6:SetCode(m)
-	e6:SetRange(LOCATION_EXTRA)
-	c:RegisterEffect(e6)
-	local e7=Effect.CreateEffect(c)
-	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e7:SetCode(EVENT_RELEASE)
-	e7:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)end)
-	e7:SetOperation(cm.effop)
-	c:RegisterEffect(e7)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_RELEASE)
+		ge1:SetOperation(cm.effop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_CHAIN_END)
+		ge2:SetOperation(cm.evchk)
+		Duel.RegisterEffect(ge2,0)
+	end
 	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
 end
 function cm.chainfilter(re,tp,cid)
@@ -80,97 +64,112 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Recover(tp,1800,REASON_EFFECT)
 	end
 end
-function cm.effop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,0)
-	local ct=Duel.GetFlagEffect(0,m)
-	local g=Duel.GetMatchingGroup(function(c)return c:GetOriginalType()&0x6~=0 end,0,0xff,0xff,nil)
-	local c=e:GetHandler()
-	local se=c:GetPreviousSequence()
-	if c:GetPreviousControler()~=tp then se=4-se end
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e0:SetRange(0xff)
-	e0:SetCode(EVENT_CUSTOM+m)
-	e0:SetLabel(ct)
-	e0:SetCondition(cm.regcon)
-	e0:SetOperation(cm.regop)
-	e0:SetReset(RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e0,true)
+function cm.effac(c,g,ct,se,p)
 	for tc in aux.Next(g) do
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(m,se+2))
 		e1:SetCategory(CATEGORY_TOHAND)
 		e1:SetType(EFFECT_TYPE_ACTIVATE)
-		e1:SetRange(0xff)
+		e1:SetRange(LOCATION_REMOVED)
 		e1:SetCode(EVENT_CUSTOM+(m+50*ct))
-		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CARD_TARGET)
-		e1:SetLabel(ct,se,tp)
-		e1:SetTarget(cm.actg)
+		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+		e1:SetTarget(cm.actg(ct,se,p))
 		e1:SetOperation(cm.acop)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1,true)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e2:SetCode(m)
-		e2:SetTargetRange(1,1)
-		e2:SetLabel(ct)
+		e2:SetCode(EFFECT_ACTIVATE_COST)
+		e2:SetRange(LOCATION_REMOVED)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_SET_AVAILABLE)
 		e2:SetLabelObject(e1)
+		e2:SetTargetRange(1,1)
+		e2:SetTarget(cm.actarget)
+		e2:SetCost(cm.costchk)
+		e2:SetOperation(cm.costop2)
 		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
+		tc:RegisterEffect(e2,true)
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_FIELD)
-		e3:SetCode(EFFECT_ACTIVATE_COST)
-		e3:SetRange(LOCATION_REMOVED)
-		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_SET_AVAILABLE)
-		e3:SetLabelObject(e1)
+		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e3:SetCode(m+50)
 		e3:SetTargetRange(1,1)
-		e3:SetTarget(cm.actarget)
-		e3:SetCost(cm.costchk)
-		e3:SetOperation(cm.costop2)
-		tc:RegisterEffect(e3,true)
+		e3:SetLabel(ct)
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e3,p)
 	end
-	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,re,r,rp,ep,ev)
 end
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetLabel()==Duel.GetFlagEffect(0,m)
+function cm.effop(e,tp,eg,ep,ev,re,r,rp)
+	local tg=eg:Filter(function(c)return c:IsHasEffect(m) and c:IsPreviousLocation(LOCATION_ONFIELD)end,nil)
+	if #tg==0 then return end
+	if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) then
+		local g=Duel.GetMatchingGroup(function(c)return c:GetType()&0x20004~=0 and c:IsFaceupEx()end,p,LOCATION_REMOVED,0,nil)
+		for c in aux.Next(tg) do
+			local p=c:GetControler()
+			local se=c:GetPreviousSequence()
+			if c:GetPreviousControler()~=p then se=4-se end
+			local ct=Duel.GetFlagEffect(0,m)
+			Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1)
+			cm.effac(c,g,ct,se,p)
+			Duel.RaiseEvent(g,EVENT_CUSTOM+(m+50*ct),re,r,rp,ep,ev)
+		end
+	else
+		for c in aux.Next(tg) do
+			local p=c:GetControler()
+			local se=c:GetPreviousSequence()
+			if c:GetPreviousControler()~=p then se=4-se end
+			local ct=Duel.GetFlagEffect(0,m)
+			Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetCode(m)
+			e1:SetTargetRange(1,1)
+			e1:SetLabel(ct,se,p)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,p)
+		end
+	end
 end
-function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+(m+50*e:GetLabel()),re,r,rp,ep,ev)
-	e:Reset()
+function cm.evchk(e,tp,eg,ep,ev,re,r,rp)
+	local le={Duel.IsPlayerAffectedByEffect(0,m)}
+	for _,v in pairs(le) do
+		local c=v:GetOwner()
+		local ct,se,p=v:GetLabel()
+		local g=Duel.GetMatchingGroup(function(c)return c:GetType()&0x20004~=0 and c:IsFaceupEx()end,p,LOCATION_REMOVED,0,nil)
+		cm.effac(c,g,ct,se,p)
+		Duel.RaiseEvent(g,EVENT_CUSTOM+(m+50*ct),re,r,rp,ep,ev)
+		v:Reset()
+	end
 end
-function cm.filter(c,e,tp)
-	local ct,se,p=e:GetLabel()
+function cm.filter(c,e,tp,se,p)
 	local seq=c:GetSequence()
 	if c:IsLocation(LOCATION_MZONE) then seq=aux.MZoneSequence(c:GetSequence()) end
 	if c:GetControler()~=tp then seq=math.abs(seq-4) end
 	return seq<5 and math.abs(se-seq)==1 and c:IsAbleToHand()
 end
-function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return cm.filter(chkc,e,tp) and chkc:IsOnField() end
-	local c=e:GetHandler()
-	local ct,se,p=e:GetLabel()
+function cm.actg(ct,se,p)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return cm.filter(chkc,e,tp,se,p) and chkc:IsOnField() end
 	if chk==0 then
 		local res=false
-		local le={Duel.IsPlayerAffectedByEffect(tp,m)}
-		for k,v in pairs(le) do
-			if v:GetLabel()==ct then
-				res=true
-				break
-			end
-		end
-		return res and Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler(),e,tp) and c:IsLocation(LOCATION_REMOVED) and c:GetType()&0x20004==0x20004 and c:GetControler()==p
+		local le={Duel.IsPlayerAffectedByEffect(tp,m+50)}
+		for k,v in pairs(le) do if v:GetLabel()==ct then res=true end end
+		return res and Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e,tp,se,p)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler(),e,tp)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler(),e,tp,se,p)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	local le={Duel.IsPlayerAffectedByEffect(tp,m)}
+	local le={Duel.IsPlayerAffectedByEffect(tp,m+50)}
 	for k,v in pairs(le) do
 		if v:GetLabel()==ct then
-			v:GetLabelObject():Reset()
+			if v:GetLabelObject() and v:GetLabelObject():GetLabelObject() then v:GetLabelObject():GetLabelObject():Reset() end
+			if v:GetLabelObject() then v:GetLabelObject():Reset() end
 			v:Reset()
 		end
+	end
 	end
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
@@ -192,47 +191,6 @@ function cm.costchk(e,te_or_c,tp)
 		e:SetLabel(fdzone)
 	end
 	return fdzone>0
-end
-function cm.costop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local te=e:GetLabelObject()
-	local zone=e:GetLabel()
-	if zone==0 then Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false) else
-		local flag=Duel.SelectDisableField(tp,1,LOCATION_SZONE,0,~zone&0x1f00)
-		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false,2^(math.log(flag,2)-8))
-	end
-	e:SetLabel(0)
-	c:CreateEffectRelation(te)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_CHANGE_TYPE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e0:SetValue(0x20004)
-	e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	c:RegisterEffect(e0,true)
-	local te2=te:Clone()
-	c:RegisterEffect(te2,true)
-	e:SetLabelObject(te2)
-	te:SetType(EFFECT_TYPE_ACTIVATE)
-	local ev0=Duel.GetCurrentChain()+1
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVED)
-	e1:SetCountLimit(1)
-	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
-	e1:SetOperation(cm.rsop)
-	e1:SetReset(RESET_CHAIN)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_CHAIN_NEGATED)
-	Duel.RegisterEffect(e2,tp)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_REMAIN_FIELD)
-	e3:SetProperty(EFFECT_FLAG_OATH+EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetReset(RESET_CHAIN)
-	c:RegisterEffect(e3)
 end
 function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -258,17 +216,6 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EVENT_CHAIN_NEGATED)
 	Duel.RegisterEffect(e2,tp)
 end
-function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
-		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
-	end
-	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
-		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
-		rc:CancelToGrave(false)
-	end
-	re:Reset()
-end
 function cm.rsop2(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
@@ -278,198 +225,4 @@ function cm.rsop2(e,tp,eg,ep,ev,re,r,rp)
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
 	end
-end
-function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local te=e:GetLabelObject()
-	local re1={c:IsHasEffect(EFFECT_CANNOT_TRIGGER)}
-	local re2={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
-	local re3={Duel.IsPlayerAffectedByEffect(tp,EFFECT_ACTIVATE_COST)}
-	local t1,t2={},{}
-	for _,te1 in pairs(re1) do
-		table.insert(t1,te1)
-		if te1:GetType()==EFFECT_TYPE_SINGLE then
-			table.insert(t2,1)
-		end
-		if te1:GetType()==EFFECT_TYPE_EQUIP then
-			table.insert(t2,2)
-		end
-		if te1:GetType()==EFFECT_TYPE_FIELD then
-			table.insert(t2,3)
-		end
-	end
-	for _,te2 in pairs(re2) do
-		local val=te2:GetValue()
-		if aux.GetValueType(val)=="number" or val(te2,te,tp) then
-			table.insert(t1,te2)
-			table.insert(t2,4)
-		end
-	end
-	--[[Waiting for further repair
-	for _,te3 in pairs(re3) do
-		if not te3:GetLabelObject() then
-			local cost=te3:GetCost()
-			if cost and not cost(te3,te,tp) then
-				local tg=te3:GetTarget()
-				if not tg or tg(te3,e,tp) then
-					table.insert(t1,te3)
-					table.insert(t2,5)
-				end
-			end
-		end
-	end--]]
-	local dc=Duel.CreateToken(tp,m+50)
-	local de=dc:GetActivateEffect()
-	de:SetCategory(CATEGORY_RECOVER)
-	local ae2={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
-	local ae3={Duel.IsPlayerAffectedByEffect(tp,EFFECT_ACTIVATE_COST)}
-	local t3,t4={},{}
-	for _,te2 in pairs(ae2) do
-		local val=te2:GetValue()
-		if aux.GetValueType(val)=="number" or val(te2,de,tp) then
-			table.insert(t3,te2)
-			table.insert(t4,4)
-		end
-	end
-	--[[Waiting for further repair
-	for _,te3 in pairs(ae3) do
-		if not te3:GetLabelObject() then
-			local cost=te3:GetCost()
-			if cost and not cost(te3,de,tp) then
-				local tg=te3:GetTarget()
-				if not tg or tg(te3,de,tp) then
-					table.insert(t3,te3)
-					table.insert(t4,5)
-				end
-			end
-		end
-	end--]]
-	local ret1,ret2={},{}
-	for k,v1 in pairs(t1) do
-		local equal=false
-		for k,v2 in pairs(t3) do
-			if v1==v2 then
-				equal=true
-				break
-			end
-		end
-		if not equal then
-			table.insert(ret1,v1)
-			table.insert(ret2,t2[k])
-		end
-	end
-	local ret3,ret4={},{}
-	for k,v1 in pairs(t3) do
-		local equal=false
-		for k,v2 in pairs(t1) do
-			if v1==v2 then
-				equal=true
-				break
-			end
-		end
-		if not equal then
-			table.insert(ret3,v1)
-			table.insert(ret4,t4[k])
-		end
-	end
-	for k,v in pairs(ret1) do
-		if ret2[k]==1 then
-			local con=v:GetCondition()
-			if not con then con=aux.TRUE end
-			v:SetCondition(cm.chcon(con,false))
-		end
-		if ret2[k]==2 then
-			local con=v:GetCondition()
-			if not con then con=aux.TRUE end
-			v:SetCondition(cm.chcon2(con,false))
-		end
-		if ret2[k]==3 then
-			local tg=v:GetTarget()
-			if not tg then
-				v:SetTarget(cm.chtg(aux.TRUE,false))
-			elseif tg(v,c)==true then
-				v:SetTarget(cm.chtg(tg,false))
-			end
-		end
-		if ret2[k]==4 then
-			local val=v:GetValue()
-			if aux.GetValueType(val)=="number" then val=aux.TRUE end
-			if val(v,te,tp) then
-				v:SetValue(cm.chval(val,false))
-			end
-		end
-		if ret2[k]==5 then
-			if not v:GetLabelObject() then
-				local cost=v:GetCost()
-				if cost and not cost(v,te,tp) then
-					local tg=v:GetTarget()
-					if not tg then
-						v:SetTarget(cm.chtg2(aux.TRUE,false))
-					elseif tg(v,te,tp) then
-						v:SetTarget(cm.chtg2(tg,false))
-					end
-				end
-			end
-		end
-	end
-	for k,v in pairs(ret3) do
-		if ret4[k]==4 then
-			local val=v:GetValue()
-			if aux.GetValueType(val)=="number" then val=aux.TRUE end
-			if val(v,de,tp) then
-				v:SetValue(cm.chval(val,true))
-			end
-		end
-		if ret4[k]==5 then
-			if not v:GetLabelObject() then
-				local cost=v:GetCost()
-				if cost and not cost(v,de,tp) then
-					local tg=v:GetTarget()
-					if not tg then
-						v:SetTarget(cm.chtg2(aux.TRUE,true))
-					elseif tg(v,de,tp) then
-						v:SetTarget(cm.chtg2(tg,true))
-					end
-				end
-			end
-		end
-	end
-end
-function cm.chcon(_con,res)
-	return function(e,...)
-				local x=e:GetHandler()
-				if x:IsHasEffect(m) then return res end
-				return _con(e,...)
-			end
-end
-function cm.chcon2(_con,res)
-	return function(e,...)
-				local x=e:GetHandler():GetEquipTarget()
-				if x:IsHasEffect(m) then return res end
-				return _con(e,...)
-			end
-end
-function cm.chtg(_tg,res)
-	return function(e,c,...)
-				if c:IsHasEffect(m) then return res end
-				return _tg(e,c,...)
-			end
-end
-function cm.chval(_val,res)
-	return function(e,re,...)
-				local x=nil
-				if aux.GetValueType(re)=="Effect" then x=re:GetHandler() elseif aux.GetValueType(re)=="Card" then
-					local rc=Duel.CreateToken(tp,m+50)
-					re=rc:GetActivateEffect()
-				else return res end
-				if x and x:IsHasEffect(m) then return res end
-				return _val(e,re,...)
-			end
-end
-function cm.chtg2(_tg,res)
-	return function(e,te,...)
-				local x=te:GetHandler()
-				if x:IsHasEffect(m) then return res end
-				return _tg(e,te,...)
-			end
 end

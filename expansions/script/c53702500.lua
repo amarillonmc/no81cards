@@ -5042,7 +5042,11 @@ function cm.HTAmvop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetDescription(aux.Stringid(53765000,14))
 				if te:GetCode()==EVENT_FREE_CHAIN then
 					if te:IsActiveType(TYPE_TRAP+TYPE_QUICKPLAY) then e1:SetType(EFFECT_TYPE_QUICK_O) else e1:SetType(EFFECT_TYPE_IGNITION) end
-				elseif te:GetCode()==EVENT_CHAINING and te:GetProperty()&EFFECT_FLAG_DELAY==0 then e1:SetType(EFFECT_TYPE_QUICK_O) elseif te:GetCode()~=0 then e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) else e1:SetType(EFFECT_TYPE_IGNITION) end
+				elseif te:GetCode()==EVENT_CHAINING and te:GetProperty()&EFFECT_FLAG_DELAY==0 then
+					if te:GetType()&EFFECT_TYPE_QUICK_F~=0 then e1:SetType(EFFECT_TYPE_QUICK_O) end
+				elseif te:GetCode()~=0 then
+					if te:GetType()&EFFECT_TYPE_TRIGGER_F~=0 then e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) end
+				else e1:SetType(EFFECT_TYPE_IGNITION) end
 				e1:SetRange(LOCATION_HAND)
 				local pro,pro2=te:GetProperty()
 				e1:SetProperty(pro|EFFECT_FLAG_UNCOPYABLE,pro2)
