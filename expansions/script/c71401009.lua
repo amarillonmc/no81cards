@@ -43,7 +43,7 @@ function c71401009.initial_effect(c)
 	yume.ButterflyCounter()
 end
 function c71401009.atkfilter(c)
-	return c:GetOriginalType()&TYPE_MONSTER~=0
+	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsFaceup()
 end
 function c71401009.atkval(e,c)
 	return Duel.GetMatchingGroupCount(c71401009.atkfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)*200

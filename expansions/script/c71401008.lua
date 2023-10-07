@@ -17,7 +17,7 @@ function c71401008.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401008,0))
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE+TIMING_EQUIP)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71401008)
@@ -39,7 +39,7 @@ function c71401008.initial_effect(c)
 	yume.ButterflyCounter()
 end
 function c71401008.indtg(e,c)
-	return c:GetOriginalType()&TYPE_MONSTER~=0
+	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsFaceup()
 end
 function c71401008.filterc2(c,tp)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()

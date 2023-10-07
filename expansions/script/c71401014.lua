@@ -44,16 +44,15 @@ function c71401014.mfilter(c)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsRank(4)
 end
 function c71401014.chainop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():GetOriginalType()&TYPE_MONSTER~=0 and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetActivateLocation()==LOCATION_SZONE then
+	if re:GetHandler():GetOriginalType()&TYPE_MONSTER~=0 and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetActivateLocation()==LOCATION_SZONE and c:IsFaceup() then
 		Duel.SetChainLimit(c71401014.chainlm)
 	end
 end
-function c71401014.chainlm(e,rp,tp)
-	local c=e:GetHandler()
-	return tp==rp or c:GetOriginalType()&TYPE_MONSTER==0 and c:IsLocation(LOCATION_ONFIELD)
+function c71401014.chainlm(re,rp,tp)
+	return tp==rp or not re:GetHandler():IsType(TYPE_MONSTER)
 end
 function c71401014.filter2(c,e,tp,ac)
-	return c:GetOriginalType()&TYPE_MONSTER~=0 and (c:IsFaceup() or c:IsLocation(LOCATION_MZONE)) and c:IsAbleToRemove(tp,POS_FACEDOWN) and not c:IsImmuneToEffect(e)
+	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsFaceup() and c:IsAbleToRemove(tp,POS_FACEDOWN) and not c:IsImmuneToEffect(e)
 		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,0,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,Group.FromCards(c,ac),tp,POS_FACEDOWN)
 end
 function c71401014.op2(e,tp,eg,ep,ev,re,r,rp)
@@ -86,7 +85,7 @@ function c71401014.con3(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
 end
 function c71401014.filter3(c,tp,ac)
-	return c:GetOriginalType()&TYPE_MONSTER~=0 and (c:IsFaceup() or c:IsLocation(LOCATION_MZONE)) and c:IsAbleToRemove(tp,POS_FACEDOWN)
+	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsFaceup() and c:IsAbleToRemove(tp,POS_FACEDOWN)
 		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,Group.FromCards(c,ac),tp,POS_FACEDOWN)
 end
 function c71401014.tg3(e,tp,eg,ep,ev,re,r,rp,chk)

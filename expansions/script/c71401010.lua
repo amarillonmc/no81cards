@@ -74,22 +74,19 @@ end
 function c71401010.filterc3(c)
 	return c:IsAbleToRemoveAsCost() and c:IsRace(RACE_SPELLCASTER)
 end
-function c71401010.fselect(g,tp)
-	return aux.dabcheck(g) and Duel.IsExistingMatchingCard(c71401010.filter3,tp,LOCATION_HAND,0,1,g,tp)
-end
 function c71401010.filter3(c,tp)
 	return c:IsType(TYPE_MONSTER) and not c:IsForbidden() and c:CheckUniqueOnField(tp,LOCATION_ONFIELD,nil)
 end
 function c71401010.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c71401010.filterc3,tp,LOCATION_HAND,0,nil)
-	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 and g:CheckSubGroup(c71401010.fselect,2,2,tp) end
+	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 and g:CheckSubGroup(aux.dabcheck,2,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=g:SelectSubGroup(tp,c71401010.fselect,false,2,2,tp)
+	local sg=g:SelectSubGroup(tp,aux.dabcheck,false,2,2)
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
 	yume.RegButterflyCostLimit(e,tp)
 end
 function c71401010.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(c71401010.filter3,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
 	if e:GetHandler():IsLocation(LOCATION_GRAVE) then
 		e:SetCategory(CATEGORY_GRAVE_SPSUMMON+CATEGORY_SPECIAL_SUMMON)
 	else
@@ -99,7 +96,7 @@ end
 function c71401010.op3(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tc=Duel.SelectMatchingCard(tp,c71401010.filter3,tp,LOCATION_HAND,0,1,1,nil,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c71401010.filter3,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp):GetFirst()
 	if tc then
 		local c=e:GetHandler()
 		local ctype=Duel.SelectOption(tp,aux.Stringid(71401010,2),aux.Stringid(71401010,3))==0 and TYPE_SPELL or TYPE_TRAP

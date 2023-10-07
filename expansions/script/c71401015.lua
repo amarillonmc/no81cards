@@ -43,8 +43,11 @@ function c71401015.initial_effect(c)
 	c:RegisterEffect(e3)
 	yume.ButterflyCounter()
 end
+function c71401015.filter1(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP)
+end
 function c71401015.aclimit(e,re,rp)
-	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.GetFieldGroupCount(rp,LOCATION_ONFIELD,0)==0
+	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not Duel.IsExistingMatchingCard(c71401015.filter1,rp,LOCATION_ONFIELD,0,1,nil)
 end
 function c71401015.filter2c(c)
 	return c:IsLevel(4) and c:IsAbleToRemoveAsCost()
@@ -91,7 +94,7 @@ function c71401015.filter3(c)
 	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_XYZ) and Duel.IsExistingMatchingCard(c71401015.filter3a,tp,LOCATION_ONFIELD,0,1,c)
 end
 function c71401015.filter3a(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_MZONE)) and c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsCanOverlay()
+	return c:IsFaceup() and c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsCanOverlay()
 end
 function c71401015.tg3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c71401015.filter3(chkc) end
