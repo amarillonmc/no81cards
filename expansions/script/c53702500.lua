@@ -3103,7 +3103,6 @@ function cm.ReturnLock(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local eval=0
 	if e:GetValue()==0 then eval=val(te) else eval=val end
-	--Debug.Message(res)
 	if zone~=eval or res then
 		te:SetValue(val)
 		e:Reset()
@@ -4572,7 +4571,7 @@ function cm.ActivatedAsSpellorTrap(c,otyp,loc)
 	if otyp&TYPE_SPELL~=0 then e1:SetType(EFFECT_TYPE_IGNITION) elseif otyp&TYPE_TRAP~=0 then
 		e1:SetType(EFFECT_TYPE_QUICK_O)
 		e1:SetCode(EVENT_FREE_CHAIN)
-		e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+		e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	end
 	e1:SetRange(loc)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
@@ -5017,7 +5016,7 @@ function cm.HTAmvop(e,tp,eg,ep,ev,re,r,rp)
 			local ale=nil
 			local rse={c:IsHasEffect(53765097)}
 			for k,v in pairs(rse) do
-				if te==v:GetLabelObject() then
+				if te==v:GetLabelObject() and k<#rse then
 					ale=rse[k+1]
 					ale=ale:GetLabelObject()
 					break
@@ -5036,16 +5035,16 @@ function cm.HTAmvop(e,tp,eg,ep,ev,re,r,rp)
 				if tetg~=aletg then ale:SetTarget(tetg) end
 				if te:GetOperation()~=ale:GetOperation() then ale:SetOperation(te:GetOperation()) end
 				if te:GetLabel()~=ale:GetLabel() then ale:SetLabel(te:GetLabel()) end
-				if te:GetValue()~=ale:GetValue() then ale:SetLabel(te:GetLabel()) end
+				if te:GetValue()~=ale:GetValue() then ale:SetValue(te:GetValue()) end
 			elseif te:GetRange()&0x2~=0 then
 				local e1=te:Clone()
 				e1:SetDescription(aux.Stringid(53765000,14))
 				if te:GetCode()==EVENT_FREE_CHAIN then
 					if te:IsActiveType(TYPE_TRAP+TYPE_QUICKPLAY) then e1:SetType(EFFECT_TYPE_QUICK_O) else e1:SetType(EFFECT_TYPE_IGNITION) end
 				elseif te:GetCode()==EVENT_CHAINING and te:GetProperty()&EFFECT_FLAG_DELAY==0 then
-					if te:GetType()&EFFECT_TYPE_QUICK_F~=0 then e1:SetType(EFFECT_TYPE_QUICK_O) end
+					if te:GetType()&EFFECT_TYPE_QUICK_F~=0 then e1:SetType(EFFECT_TYPE_QUICK_F) else e1:SetType(EFFECT_TYPE_QUICK_O) end
 				elseif te:GetCode()~=0 then
-					if te:GetType()&EFFECT_TYPE_TRIGGER_F~=0 then e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) end
+					if te:GetType()&EFFECT_TYPE_TRIGGER_F~=0 then e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F) else e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) end
 				else e1:SetType(EFFECT_TYPE_IGNITION) end
 				e1:SetRange(LOCATION_HAND)
 				local pro,pro2=te:GetProperty()
@@ -5156,14 +5155,14 @@ function cm.HTAfaccost(_cost,fe,zone)
 					if (not fcost or fcost(fe,tp,nil,0,0,nil,0,0,0)) and (not ftg or ftg(fe,tp,nil,0,0,nil,0,0,0)) then check=true end
 				else
 					local cres,teg,tep,tev,tre,tr,trp=Duel.CheckEvent(code,true)
-					if cres and (not fcost or fcost(fe,tp,teg,tep,tev,tre,tr,trp,0)) and (not ftg or ftg(fe,tp,teg,tep,tev,tre,tr,trp,0)) then check=true end
+					if (not fcost or fcost(fe,tp,teg,tep,tev,tre,tr,trp,0)) and (not ftg or ftg(fe,tp,teg,tep,tev,tre,tr,trp,0)) then check=true end
 				end
 				local pe={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
 				for _,v in pairs(pe) do
 					local val=v:GetValue()
 					if aux.GetValueType(val)=="number" or val(v,fe,tp) then check=false end
 				end
-				if not fe:IsActivatable(tp) and not check then
+				if not check then
 					ad_ht_zc=nil
 					return false
 				end

@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x3531) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsSetCard(0x3531) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_HAND)

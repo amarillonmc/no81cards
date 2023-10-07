@@ -56,8 +56,7 @@ function c9911303.spfilter(c,e,tp,pc)
 		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9911303.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9911303.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9911303.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local sc=Duel.SelectMatchingCard(tp,c9911303.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp):GetFirst()
 	Duel.ConfirmCards(1-tp,sc)
