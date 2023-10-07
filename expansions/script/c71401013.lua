@@ -42,14 +42,17 @@ function c71401013.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	yume.RegButterflyCostLimit(e,tp)
 end
+function c71401013.filter2a(c)
+	return c:IsFaceup() and (c:IsAttackAbove(0) or c:IsDefenseAbove(0))
+end
 function c71401013.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c71401013.filter2a,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 end
 function c71401013.filter2(c)
 	return c:IsFaceup() and c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS
 end
 function c71401013.op2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(c71401013.filter2a,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 		local c=e:GetHandler()
 		for sc in aux.Next(g) do
