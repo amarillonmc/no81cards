@@ -12,10 +12,10 @@ function c71401013.initial_effect(c)
 	e1:SetTarget(yume.ButterflyPlaceTg)
 	e1:SetOperation(yume.ButterflyTrapOp)
 	c:RegisterEffect(e1)
-	--atk down
+	--atk and def change
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401013,0))
-	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -55,10 +55,13 @@ function c71401013.op2(e,tp,eg,ep,ev,re,r,rp)
 		for sc in aux.Next(g) do
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			e1:SetValue(-2000)
+			e1:SetValue(0)
 			sc:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
+			sc:RegisterEffect(e2)
 		end
 		local dg=Duel.GetDecktopGroup(tp,5)
 		if Duel.IsExistingMatchingCard(c71401013.filter2,tp,LOCATION_ONFIELD,0,1,nil) and dg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)==5 and Duel.SelectYesNo(tp,aux.Stringid(71401013,1)) then
