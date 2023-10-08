@@ -1,6 +1,10 @@
 local m=22348310
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
+	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

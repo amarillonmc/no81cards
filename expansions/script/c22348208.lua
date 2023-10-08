@@ -101,7 +101,7 @@ function c22348208.fselect(g,tp)
 		and Duel.IsExistingMatchingCard(c22348208.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g,2,2)
 end
 function c22348208.xyzfilter(c,mg)
-	return c:IsRace(RACE_PLANT) and c:IsXyzSummonable(mg,2,2)
+	return c:IsXyzSummonable(mg,2,2)
 end
 function c22348208.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetMatchingGroup(c22348208.spfilter,tp,LOCATION_HAND,0,nil,e,tp)

@@ -82,7 +82,7 @@ end
 function c9910088.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local mg=Duel.GetMatchingGroup(c9910088.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
+		local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910088.filter),tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
 		if #mg>0 then
 			Duel.Overlay(tc,mg)
 		end

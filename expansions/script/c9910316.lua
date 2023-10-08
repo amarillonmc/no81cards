@@ -1,8 +1,8 @@
 --浴火战姬
 function c9910316.initial_effect(c)
-	aux.AddCodeList(c,9910316,9910624)
+	aux.AddCodeList(c,9910624)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2)
+	aux.AddLinkProcedure(c,nil,2)
 	c:EnableReviveLimit()
 	--search
 	local e1=Effect.CreateEffect(c)
@@ -30,23 +30,36 @@ function c9910316.initial_effect(c)
 	e3:SetOperation(c9910316.rmop)
 	c:RegisterEffect(e3)
 end
+function c9910316.thfilter(c)
+	return aux.IsCodeListed(c,9910624) and c:IsAbleToHand()
+end
 function c9910316.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
-end
-function c9910316.thfilter(c)
-	return (aux.IsCodeListed(c,9910316) or aux.IsCodeListed(c,9910624)) and c:IsAbleToHand()
+	local ct=0
+	local g=Duel.GetMatchingGroup(c9910316.thfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetClassCount(Card.GetCode)==0 then return false end
+	if g:GetClassCount(Card.GetCode)>=2 then
+		ct=Duel.DiscardHand(tp,Card.IsDiscardable,1,2,REASON_COST+REASON_DISCARD)
+	else
+		ct=Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	end
+	e:SetLabel(ct)
 end
 function c9910316.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910316.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	local ct=e:GetLabel()
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,ct,tp,LOCATION_DECK)
 end
 function c9910316.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910316.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.GetMatchingGroup(c9910316.thfilter,tp,LOCATION_DECK,0,nil)
 	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+		local ct=e:GetLabel()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:SelectSubGroup(tp,aux.dncheck,false,ct,ct)
+		if sg then
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
+		end
 	end
 	e:GetHandler():RegisterFlagEffect(9910316,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,0)
 end

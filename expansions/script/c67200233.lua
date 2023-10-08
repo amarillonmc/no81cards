@@ -45,7 +45,7 @@ function c67200233.pop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67200233.psfilter(c)
-	return c:IsSetCard(0x678) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsSetCard(0x3678) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c67200233.pstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))

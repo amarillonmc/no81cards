@@ -42,7 +42,7 @@ function c67200703.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsForbidden() and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function c67200703.spfilter(c,e,tp)
-	return c:IsSetCard(0x67f) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x5678) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c67200703.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -54,7 +54,7 @@ function c67200703.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67200703.atkfilter(c)
-	return c:IsSetCard(0x67f) and c:IsType(TYPE_PENDULUM) and c:IsFaceup()
+	return c:IsSetCard(0x5678) and c:IsType(TYPE_PENDULUM) and c:IsFaceup()
 end
 function c67200703.atkval(e,c)
 	local a=Duel.GetMatchingGroupCount(c67200703.atkfilter,c:GetControler(),LOCATION_EXTRA,0,nil)

@@ -1,7 +1,7 @@
 --播火巨人
 function c9910624.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),4)
+	aux.AddLinkProcedure(c,nil,4)
 	c:EnableReviveLimit()
 	--to graveyard
 	local e1=Effect.CreateEffect(c)

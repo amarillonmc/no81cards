@@ -107,18 +107,22 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	elseif op2 then
 		local sg=Group.CreateGroup()
-		for i,value in ipairs(Mirrors_World_Card) do
-			sg:AddCard(Duel.CreateToken(tp,value))
+		local afilter={Mirrors_World_Card[1],OPCODE_ISCODE}
+		if #Mirrors_World_Card>1 then
+			for i=2,#Mirrors_World_Card do
+				table.insert(afilter,Mirrors_World_Card[i])
+				table.insert(afilter,OPCODE_ISCODE)
+				table.insert(afilter,OPCODE_OR)
+			end
 		end
-		local tc=sg:Select(tp,1,1,nil):GetFirst()
-		sg:DeleteGroup()
-		Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		local code=tc:GetOriginalCode()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+		local code=Duel.AnnounceCard(tp,table.unpack(afilter))
+		Duel.SendtoDeck(Duel.CreateToken(tp,ac),nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		for i,value in ipairs(Mirrors_World_Card) do
 			if value==code then
 				table.remove(Mirrors_World_Card,i)
 				break
-			end	 
+			end  
 		end
 		
 		local cg=Group.CreateGroup()

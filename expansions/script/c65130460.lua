@@ -40,7 +40,6 @@ function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetParam(cnum)
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message(".")
 	local cnum=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	s.testop(e,1-tp,cnum,0)
 end
@@ -90,7 +89,7 @@ function s.testop(e,tp,cnum,count)
 				if ctype&TYPE_TOKEN==0 then
 					ac=real
 				end
-			end	  
+			end   
 		end
 		table.insert(tab1,ac)
 		ac=nil

@@ -12,7 +12,7 @@ function c67200235.initial_effect(c)
 	c:RegisterEffect(e1)	
 end
 function c67200235.scfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x678) and c:IsLevelBelow(4)
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3678) and c:IsLevelBelow(4)
 end
 function c67200235.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200235.scfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -22,7 +22,7 @@ function c67200235.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoExtraP(tc,tp,REASON_COST)
 end
 function c67200235.sumfilter(c)
-	return c:IsSetCard(0x678) and c:IsSummonable(true,nil)
+	return c:IsSetCard(0x3678) and c:IsSummonable(true,nil)
 end
 function c67200235.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200235.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end

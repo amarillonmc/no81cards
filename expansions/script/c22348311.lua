@@ -36,14 +36,17 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(22348311,11))
 	e4:SetCategory(CATEGORY_RECOVER)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1)
+	e4:SetCondition(c22348311.reccon)
 	e4:SetTarget(c22348311.rectg)
 	e4:SetOperation(c22348311.recop)
 	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e5)
 end
 function c22348311.cfilter(c,e)
 	local tp=e:GetHandler():GetControler()
@@ -93,30 +96,49 @@ function c22348311.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(1)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-		e2:SetValue(1)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 		tc:RegisterEffect(e2)
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+		e3:SetValue(1)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e3)
+		local e4=e3:Clone()
+		e4:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+		tc:RegisterEffect(e4)
+		local e5=e3:Clone()
+		e5:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+		e5:SetValue(c22348311.fuslimit)
+		tc:RegisterEffect(e5)
+		local e6=e3:Clone()
+		e6:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+		tc:RegisterEffect(e6)
 		tc=g:GetNext()
 	end
 	Duel.SpecialSummonComplete()
 	end
 end
+function c22348311.fuslimit(e,c,sumtype)
+	return sumtype==SUMMON_TYPE_FUSION
+end
+
 function c22348311.indtg(e,c)
 	local tc=e:GetHandler()
 	return c==tc or c==tc:GetBattleTarget()
 end
+function c22348311.reccon(e,tp,eg,ep,ev,re,r,rp)
+	return not eg:IsContains(e:GetHandler())
+end
 function c22348311.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE)>0 end
-	local rec=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE)*300
+	if chk==0 then return true end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(rec)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,rec)
+	Duel.SetTargetParam(300)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,300)
 end
 function c22348311.recop(e,tp,eg,ep,ev,re,r,rp)
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local rec=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE)*300
-	Duel.Recover(p,rec,REASON_EFFECT)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Recover(p,d,REASON_EFFECT)
 end
+

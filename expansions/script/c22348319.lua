@@ -45,7 +45,7 @@ function cm.initial_effect(c)
 	e5:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e5:SetCondition(c22348319.atkcon)
 	e5:SetCost(c22348319.spcost)
-	e5:SetCost(c22348319.sptg)
+	e5:SetTarget(c22348319.sptg)
 	e5:SetOperation(c22348319.spop)
 	c:RegisterEffect(e5)
 	--xyz
@@ -111,7 +111,18 @@ function c22348319.spop(e,tp,eg,ep,ev,re,r,rp)
 	local p=tp
 	if op>0 then p=1-tp end
 	local token=Duel.CreateToken(tp,22348320)
-	Duel.SpecialSummon(token,0,tp,p,false,false,POS_FACEUP_DEFENSE)
+	if token and Duel.SpecialSummonStep(token,0,tp,p,false,false,POS_FACEUP_DEFENSE) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(1)
+		token:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+		token:RegisterEffect(e2)
+		Duel.SpecialSummonComplete()
+	end
 end
 function c22348319.xylabel(c,tp)
 	local x=c:GetSequence()

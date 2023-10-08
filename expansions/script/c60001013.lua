@@ -4,13 +4,12 @@ function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 
+	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetCode(EFFECT_CANNOT_TO_GRAVE)
 	e1:SetRange(LOCATION_PZONE)
-	e1:SetTargetRange(0,1)
-	e1:SetValue(cm.aclimit)
+	e1:SetTargetRange(0,LOCATION_DECK)
 	c:RegisterEffect(e1)
 	
 	local e1=Effect.CreateEffect(c)

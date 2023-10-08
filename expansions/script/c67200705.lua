@@ -38,7 +38,7 @@ function c67200705.stcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoExtraP(c,tp,REASON_COST)
 end
 function c67200705.psfilter(c)
-	return c:IsSetCard(0x67f) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsSetCard(0x5678) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c67200705.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))

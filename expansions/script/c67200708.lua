@@ -17,7 +17,7 @@ function c67200708.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsFaceup()
 end
 function c67200708.psfilter(c)
-	return c:IsSetCard(0x67f) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsSetCard(0x5678) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c67200708.spop1(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) and Duel.IsExistingMatchingCard(c67200708.psfilter,tp,LOCATION_DECK,0,1,nil) then return end

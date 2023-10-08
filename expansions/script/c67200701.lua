@@ -19,7 +19,7 @@ function c67200701.initial_effect(c)
 end
 --
 function c67200701.scfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x67f)
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x5678)
 end
 function c67200701.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200701.scfilter,tp,LOCATION_DECK,0,1,nil) end

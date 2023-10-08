@@ -77,8 +77,8 @@ end
 function c9910646.xmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=e:GetLabel()-c:GetOverlayCount()
-	local loc=LOCATION_ONFIELD+LOCATION_GRAVE 
-	local g=Duel.GetMatchingGroup(c9910646.matfilter,tp,loc,loc,c,e)
+	local loc=LOCATION_ONFIELD+LOCATION_GRAVE
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910646.matfilter),tp,loc,loc,c,e)
 	if ct<=0 or ct>g:GetCount() or not c:IsType(TYPE_XYZ) or not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local sg=g:Select(tp,ct,ct,nil)

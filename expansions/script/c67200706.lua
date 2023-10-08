@@ -21,7 +21,7 @@ function c67200706.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ex and tg~=nil and tc+tg:FilterCount(Card.IsOnField,nil)-tg:GetCount()>0
 end
 function c67200706.thfilter2(c)
-	return c:IsSetCard(0x67f) and c:IsAbleToHand()
+	return c:IsSetCard(0x5678) and c:IsAbleToHand()
 end
 function c67200706.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

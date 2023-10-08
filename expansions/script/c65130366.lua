@@ -76,7 +76,7 @@ function s.spcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.atkval(e,c)
-	return c:GetOverlayCount()*500*math.max(1,c:GetFlagEffect(id))
+	return c:GetOverlayCount()*100*math.max(1,c:GetFlagEffect(id))
 end
 function s.addcon(e,tp,eg,ep,ev,re,r,rp)
 	return r&REASON_REPLACE==0

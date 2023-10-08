@@ -56,7 +56,7 @@ function c67200231.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(sg,REASON_COST)
 end
 function c67200231.thfilter(c)
-	return c:IsLevelAbove(5) and c:IsSetCard(0x678) and c:IsAbleToHand()
+	return c:IsLevelAbove(5) and c:IsSetCard(0x3678) and c:IsAbleToHand()
 end
 function c67200231.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200231.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -64,7 +64,7 @@ function c67200231.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,0,0,0)
 end
 function c67200231.sumfilter(c)
-	return c:IsSummonable(true,nil) and c:IsSetCard(0x678)
+	return c:IsSummonable(true,nil) and c:IsSetCard(0x3678)
 end
 function c67200231.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

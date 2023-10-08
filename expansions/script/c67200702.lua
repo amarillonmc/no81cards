@@ -16,7 +16,7 @@ function c67200702.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and Duel.IsChainDisablable(ev)
 end
 function c67200702.pcfilter(c)
-	return c:IsSetCard(0x67f) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsSetCard(0x5678) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c67200702.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(67200702,1)) then

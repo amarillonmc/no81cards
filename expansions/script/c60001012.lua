@@ -129,7 +129,7 @@ if not cm.lsy_change_operation then
 -----------------------------------------------------------------------------------------
 end
 function cm.aclimit(e,re,tp)
-	return re:GetActivateLocation()==LOCATION_GRAVE
+	return re:GetActivateLocation()==LOCATION_GRAVE and re:GetHandler():IsType(TYPE_SPELL)
 end
 function cm.cfilter(c,tp,seq,fid)
 	return aux.GetColumn(c,tp)==seq and c:GetFieldID()~=fid

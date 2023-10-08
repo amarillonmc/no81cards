@@ -62,7 +62,9 @@ function c9910327.synfilter1(c,e,tp)
 end
 function c9910327.synfilter2(c,e,tp,mc)
 	local mg=Group.FromCards(c,mc)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	local b1=c:IsLocation(LOCATION_HAND)
+	local b2=c:IsFaceup() and c:GetOriginalType()&TYPE_MONSTER>0 and c:GetSequence()<5
+	return (b1 or b2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,nil,mg)
 end
 function c9910327.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

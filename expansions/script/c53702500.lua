@@ -6375,8 +6375,8 @@ function cm.HTAfaccost(_cost,fe,zone)
 				local c=e:GetHandler()
 				local xe={c:IsHasEffect(53765099)}
 				for _,v in pairs(xe) do v:Reset() end
-				if c:IsType(TYPE_QUICKPLAY) and Duel.GetTurnPlayer()~=tp and not c:IsHasEffect(EFFECT_QP_ACT_IN_NTPHAND) then return false end
-				if c:IsType(TYPE_TRAP) and not c:IsHasEffect(EFFECT_TRAP_ACT_IN_HAND) then return false end
+				if te:IsActiveType(TYPE_QUICKPLAY) and Duel.GetTurnPlayer()~=tp and not c:IsHasEffect(EFFECT_QP_ACT_IN_NTPHAND) then return false end
+				if te:IsActiveType(TYPE_TRAP) and not c:IsHasEffect(EFFECT_TRAP_ACT_IN_HAND) then return false end
 				if not c:CheckUniqueOnField(tp) then return false end
 				if not Duel.IsExistingMatchingCard(cm.HTAmvfilter,tp,LOCATION_SZONE,0,1,nil,e,tp,zone) then
 					ad_ht_zc=nil
@@ -6385,6 +6385,7 @@ function cm.HTAfaccost(_cost,fe,zone)
 				local res=false
 				if _cost(e,te,tp) then res=true end
 				ad_ht_zc=nil
+				--Debug.Message(res)
 				return res
 			end
 end
