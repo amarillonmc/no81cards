@@ -137,9 +137,6 @@ function c9910976.chop(e,tp,eg,ep,ev,re,r,rp)
 		return Duel.ChangeChainOperation(ev,c9910976.repop)
 	end
 end
-function c9910976.desfilter(c)
-	return c:IsFacedown() and c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
 function c9910976.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910976)
 	local g=Duel.GetMatchingGroup(c9910976.lvfilter,tp,0,LOCATION_MZONE,nil)

@@ -77,7 +77,9 @@ function s.drcon(e,tp,eg,ep,ev,re)
 end
 function s.drop(e,tp)
 	Scl.HintCard(id)
-	if Duel.Draw(tp,1,REASON_EFFECT) > 0 then
-		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT,nil)
+	for i=0,1 do
+		if Duel.Draw(i,1,REASON_EFFECT) > 0 then
+			Duel.DiscardHand(i,nil,1,1,REASON_EFFECT,nil)
+		end
 	end
 end

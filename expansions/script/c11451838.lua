@@ -106,14 +106,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_REMOVED,0,1,1,aux.ExceptThisCard(e),e,tp)
 	if g:GetCount()>0 then
 		local tc=g:GetFirst()
+		local res=false
 		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (not tc:IsSSetable() or Duel.SelectYesNo(tp,Stringid(m,3))) then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+			res=Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 		else
-			Duel.SSet(tp,tc)
+			res=Duel.SSet(tp,tc)>0
 		end
-		if #Duel.GetOperatedGroup()>0 and c:IsRelateToEffect(e) then
+		if res and c:IsRelateToEffect(e) then
 			--Duel.BreakEffect()
-			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP)
 		end
+		Duel.SpecialSummonComplete()
 	end
 end

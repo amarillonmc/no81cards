@@ -40,7 +40,7 @@ function c75000810.posop(e,tp,eg,ep,ev,re,r,rp)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-			e1:SetValue(c:GetBaseAttack()*2)
+			e1:SetValue(tc:GetBaseAttack()*2)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1)
 		end

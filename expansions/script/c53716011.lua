@@ -21,6 +21,7 @@ function cm.initial_effect(c)
 	e4:SetCode(m)
 	e4:SetRange(0xff)
 	c:RegisterEffect(e4)
+	SNNM.ActivatedAsSpellorTrapCheck(c)
 	if not cm.global_check then
 		cm.global_check=true
 		local ge1=Effect.CreateEffect(c)

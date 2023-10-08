@@ -4566,43 +4566,79 @@ end
 function cm.Tentuthop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT) end
 end
-function cm.ActivatedAsSpellorTrap(c,otyp,loc)
+--1
+function cm.ActivatedAsSpellorTrap(c,otyp,loc,setava)
 	local e1=Effect.CreateEffect(c)
-	if otyp&TYPE_SPELL~=0 then e1:SetType(EFFECT_TYPE_IGNITION) elseif otyp&TYPE_TRAP~=0 then
+	if otyp&(TYPE_TRAP+TYPE_QUICKPLAY)~=0 then
 		e1:SetType(EFFECT_TYPE_QUICK_O)
 		e1:SetCode(EVENT_FREE_CHAIN)
 		e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	end
+	else e1:SetType(EFFECT_TYPE_IGNITION) end
 	e1:SetRange(loc)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	c:RegisterEffect(e1)
 	local e1_1=Effect.CreateEffect(c)
-	e1_1:SetType(EFFECT_TYPE_SINGLE)
-	e1_1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1_1:SetCode(53765098)
-	e1_1:SetRange(loc)
-	e1_1:SetLabel(otyp)
-	e1_1:SetLabelObject(e1)
-	c:RegisterEffect(e1_1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_ADJUST)
-	e2:SetRange(loc)
-	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetLabelObject(e1)
-	e2:SetOperation(cm.AASTadjustop(otyp))
-	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_ACTIVATE_COST)
-	e3:SetRange(loc)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e3:SetTargetRange(1,1)
-	e3:SetLabelObject(e1)
-	e3:SetTarget(cm.AASTactarget)
-	e3:SetCost(cm.AASTcostchk)
-	e3:SetOperation(cm.AASTcostop(otyp))
-	c:RegisterEffect(e3)
+	if not setava then
+		e1_1:SetType(EFFECT_TYPE_SINGLE)
+		e1_1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1_1:SetCode(53765098)
+		e1_1:SetRange(loc|LOCATION_ONFIELD)
+		e1_1:SetLabel(otyp)
+		e1_1:SetLabelObject(e1)
+		c:RegisterEffect(e1_1)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_ADJUST)
+		e2:SetRange(loc)
+		e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetLabelObject(e1)
+		e2:SetOperation(cm.AASTadjustop(otyp))
+		c:RegisterEffect(e2)
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetCode(EFFECT_ACTIVATE_COST)
+		e3:SetRange(loc)
+		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e3:SetTargetRange(1,1)
+		e3:SetLabelObject(e1)
+		e3:SetTarget(cm.AASTactarget)
+		e3:SetCost(cm.AASTcostchk)
+		e3:SetOperation(cm.AASTcostop(otyp))
+		c:RegisterEffect(e3)
+	else
+		e1_1:SetType(EFFECT_TYPE_SINGLE)
+		e1_1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1_1:SetCode(53765098)
+		e1_1:SetRange(loc|LOCATION_ONFIELD)
+		e1_1:SetLabel(otyp)
+		e1_1:SetLabelObject(e1)
+		c:RegisterEffect(e1_1)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_ADJUST)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+		e2:SetLabelObject(e1)
+		e2:SetOperation(cm.AASTadjustop(otyp))
+		Duel.RegisterEffect(e2,0)
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetCode(EFFECT_ACTIVATE_COST)
+		e3:SetLabel(loc)
+		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+		e3:SetTargetRange(1,1)
+		e3:SetLabelObject(e1)
+		e3:SetTarget(cm.AASTactarget)
+		e3:SetCost(cm.AASTcostchk)
+		e3:SetOperation(cm.AASTcostop(otyp))
+		Duel.RegisterEffect(e3,0)
+		--cm.Global_in_Initial_Reset(c,{e2,e3})
+	end
+	local e2_1=Effect.CreateEffect(c)
+	e2_1:SetType(EFFECT_TYPE_SINGLE)
+	e2_1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2_1:SetCode(53765096)
+	e2_1:SetRange(loc|LOCATION_ONFIELD)
+	e2_1:SetLabel(otyp)
+	e2_1:SetLabelObject(e2)
+	c:RegisterEffect(e2_1)
 	return e1,e1_1,e2,e3
 end
 function cm.AASTadjustop(otyp)
@@ -4610,8 +4646,10 @@ function cm.AASTadjustop(otyp)
 	function(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	local c=te:GetHandler()
-	local xe={c:IsHasEffect(53765099)}
-	for _,v in pairs(xe) do v:Reset() end
+	if not c:IsStatus(STATUS_CHAINING) then
+		local xe={c:IsHasEffect(53765099)}
+		for _,v in pairs(xe) do v:Reset() end
+	end
 	local p=te:GetHandlerPlayer()
 	local pe={Duel.IsPlayerAffectedByEffect(p,EFFECT_CANNOT_ACTIVATE)}
 	local ae={Duel.IsPlayerAffectedByEffect(p,EFFECT_ACTIVATE_COST)}
@@ -4746,7 +4784,10 @@ function cm.AASTchtg(_tg,res,te)
 			end
 end
 function cm.AASTactarget(e,te,tp)
-	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
+	if e:GetRange()==0 then
+		local ce=e:GetLabelObject()
+		return te:GetHandler()==e:GetOwner() and te==ce and ce:GetHandler():IsLocation(e:GetLabel())
+	else return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject() end
 end
 function cm.AASTcostchk(e,te,tp)
 	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
@@ -4757,16 +4798,43 @@ function cm.AASTcostop(otyp)
 	local te=e:GetLabelObject()
 	local c=te:GetHandler()
 	local xe1=cm.AASTregi(c,te)
+	if otyp&0x80000~=0 then
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		if fc then Duel.SendtoGrave(fc,REASON_RULE) end
+		if c:IsLocation(LOCATION_SZONE) then
+			Duel.MoveSequence(c,5)
+			if c:IsFacedown() then Duel.ChangePosition(c,POS_FACEUP) end
+			c:SetStatus(STATUS_EFFECT_ENABLED,false)
+		else
+			c:SetCardData(4,0x80002)
+			Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,false)
+			c:SetCardData(4,0x21)
+		end
+		if c:IsPreviousLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
+		if c:IsPreviousLocation(LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+	end
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_CHANGE_TYPE)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e0:SetValue(otyp)
 	c:RegisterEffect(e0,true)
-	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	if c:IsLocation(LOCATION_SZONE) and c:IsFacedown() then
+		Duel.ChangePosition(c,POS_FACEUP)
+		c:SetStatus(STATUS_EFFECT_ENABLED,false)
+	elseif not c:IsLocation(LOCATION_SZONE) then
+		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	end
 	xe1:SetLabel(c:GetSequence()+1,otyp)
 	e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 	c:CreateEffectRelation(te)
+	local te2=te:Clone()
+	c:RegisterEffect(te2,true)
+	e:SetLabelObject(te2)
+	local le1={c:IsHasEffect(53765098)}
+	for _,v in pairs(le1) do v:SetLabelObject(te2) end
+	local le2={c:IsHasEffect(53765096)}
+	for _,v in pairs(le2) do v:GetLabelObject():SetLabelObject(te2) end
 	local ev0=Duel.GetCurrentChain()+1
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -4780,7 +4848,7 @@ function cm.AASTcostop(otyp)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_CHAIN_NEGATED)
 	Duel.RegisterEffect(e2,tp)
-	if not c:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_PENDULUM) then return end
+	if not c:IsType(TYPE_FIELD+TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_PENDULUM) then return end
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_REMAIN_FIELD)
@@ -4799,51 +4867,528 @@ function cm.AASTrsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
 	end
-	local xe={rc:IsHasEffect(53765099)}
-	for _,v in pairs(xe) do if v:GetLabelObject()==re then v:Reset() end end
+	re:Reset()
+	--[[local e1=Effect.CreateEffect(rc)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetCountLimit(1)
+	e1:SetLabelObject(re)
+	e1:SetOperation(cm.AASTreset)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	e:Reset()
+end
+function cm.AASTreset(e,tp,eg,ep,ev,re,r,rp)
+	local xe={e:GetOwner():IsHasEffect(53765099)}
+	for _,v in pairs(xe) do if v:GetLabelObject()==e:GetLabelObject() then v:Reset() end end
+	e:Reset()]]
 end
 function cm.AASTregi(c,e)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(53765099)
 	e1:SetLabelObject(e)
 	c:RegisterEffect(e1,true)
 	return e1
 end
+function cm.MultipleGroupCheck(c)
+	if not AD_Multiple_Group_Check then
+		AD_Multiple_Group_Check=true
+		Duel.RegisterFlagEffect(0,53759000,0,0,0,0)
+		ADIMI_IsExistingMatchingCard=Duel.IsExistingMatchingCard
+		Duel.IsExistingMatchingCard=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			local b=ADIMI_IsExistingMatchingCard(...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			b=ADIMI_IsExistingMatchingCard(...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_SelectMatchingCard=Duel.SelectMatchingCard
+		Duel.SelectMatchingCard=function(sp,f,p,s,o,min,max,ex,...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			ADIMI_GetMatchingGroup(f,p,s,o,ex,...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			local b=ADIMI_SelectMatchingCard(sp,f,p,s,o,min,max,ex,...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_GetMatchingGroup=Duel.GetMatchingGroup
+		Duel.GetMatchingGroup=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			local b=ADIMI_GetMatchingGroup(...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			b=ADIMI_GetMatchingGroup(...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_GetMatchingGroupCount=Duel.GetMatchingGroupCount
+		Duel.GetMatchingGroupCount=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			local b=ADIMI_GetMatchingGroupCount(...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			b=ADIMI_GetMatchingGroupCount(...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_GetFirstMatchingCard=Duel.GetFirstMatchingCard
+		Duel.GetFirstMatchingCard=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			local b=ADIMI_GetFirstMatchingCard(...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			b=ADIMI_GetFirstMatchingCard(...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_IsExists=Group.IsExists
+		Group.IsExists=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			local b=ADIMI_IsExists(...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			b=ADIMI_IsExists(...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_Filter=Group.Filter
+		Group.Filter=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			local b=ADIMI_Filter(...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			b=ADIMI_Filter(...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_FilterCount=Group.FilterCount
+		Group.FilterCount=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			local b=ADIMI_FilterCount(...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			b=ADIMI_FilterCount(...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_Remove=Group.Remove
+		Group.Remove=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			local b=ADIMI_Remove(...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			b=ADIMI_Remove(...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_SearchCard=Group.SearchCard
+		Group.SearchCard=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			local b=ADIMI_SearchCard(...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			b=ADIMI_SearchCard(...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_FilterSelect=Group.FilterSelect
+		Group.FilterSelect=function(g,p,f,min,max,ex,...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			ADIMI_Filter(g,f,ex,...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			local b=ADIMI_FilterSelect(g,p,f,min,max,ex,...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_CheckSubGroup=Group.CheckSubGroup
+		Group.CheckSubGroup=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			local b=ADIMI_CheckSubGroup(...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			b=ADIMI_CheckSubGroup(...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_SelectSubGroup=Group.SelectSubGroup
+		Group.SelectSubGroup=function(g,p,f,bool,min,max,...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			ADIMI_CheckSubGroup(g,f,min,max,...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			local b=ADIMI_SelectSubGroup(g,p,f,bool,min,max,...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_IsExistingTarget=Duel.IsExistingTarget
+		Duel.IsExistingTarget=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local b=ADIMI_IsExistingTarget(...)
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_SelectTarget=Duel.SelectTarget
+		Duel.SelectTarget=function(...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local b=ADIMI_SelectTarget(...)
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_DiscardHand=Duel.DiscardHand
+		Duel.DiscardHand=function(p,f,min,max,reason,ex,...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			ADIMI_GetMatchingGroup(f,p,LOCATION_HAND,LOCATION_HAND,ex,...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			local b=ADIMI_DiscardHand(p,f,min,max,reason,ex,...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_SelectReleaseGroup=Duel.SelectReleaseGroup
+		Duel.SelectReleaseGroup=function(p,f,min,max,ex,...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			ADIMI_GetMatchingGroup(f,p,LOCATION_MZONE,LOCATION_MZONE,ex,...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			local b=ADIMI_SelectReleaseGroup(p,f,min,max,ex,...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+		ADIMI_SelectReleaseGroupEx=Duel.SelectReleaseGroupEx
+		Duel.SelectReleaseGroupEx=function(p,f,min,max,ex,...)
+			local lab=Duel.GetFlagEffectLabel(0,53759000)
+			Duel.SetFlagEffectLabel(0,53759000,lab+1)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i
+					break
+				end
+			end
+			cm["Card_Prophecy_Layer_"..ly]=true
+			cm["Card_Prophecy_L_Check_"..ly]=true
+			ADIMI_GetMatchingGroup(f,p,LOCATION_MZONE+LOCATION_HAND,LOCATION_MZONE+LOCATION_HAND,ex,...)
+			cm["Card_Prophecy_L_Check_"..ly]=false
+			local b=ADIMI_SelectReleaseGroupEx(p,f,min,max,ex,...)
+			cm["Card_Prophecy_Certain_SP_"..ly]=false
+			cm["Card_Prophecy_Certain_ACST_"..ly]=false
+			cm["Card_Prophecy_Layer_"..ly]=false
+			Duel.SetFlagEffectLabel(0,53759000,lab)
+			return b
+		end
+	end
+end
+--2
 function cm.ActivatedAsSpellorTrapCheck(c)
 	if not AD_ActivatedAsSpellorTrap_Check then
 		AD_ActivatedAsSpellorTrap_Check=true
+		cm.MultipleGroupCheck(c)
 		ADIMI_GetActivateEffect=Card.GetActivateEffect
 		Card.GetActivateEffect=function(ac)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res=true
+			if ac:GetFlagEffect(53757050)>0 then
+				res=false
+				ac:ResetFlagEffect(53757050)
+			end
 			local le={ADIMI_GetActivateEffect(ac)}
 			local xe={ac:IsHasEffect(53765098)}
 			local ae=nil
 			local typ=0
 			for _,v in pairs(xe) do ae=v:GetLabelObject() typ=v:GetLabel() end
-			if ae then
+			if ae and (ly>0 or Duel.GetFlagEffectLabel(0,53759000)==0) then
+				if #le>0 then
+					if res and ae:GetLabelObject() then
+						for k,v in pairs(le) do
+							if v==ae:GetLabelObject() then
+								table.insert(le,1,ae)
+								table.remove(le,k+1)
+								break
+							end
+						end
+					else le={ae} end
+				else le={ae} end
+				local xe1=cm.AASTregi(ac,ae)
+				xe1:SetLabel(ac:GetSequence(),typ)
+				if ly>0 then cm["Card_Prophecy_Certain_ACST_"..ly]=true end
+			end
+			return table.unpack(le)
+		end
+		ADIMI_CheckActivateEffect=Card.CheckActivateEffect
+		Card.CheckActivateEffect=function(ac,...)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local le={ADIMI_CheckActivateEffect(ac,...)}
+			local xe={ac:IsHasEffect(53765098)}
+			local ae=nil
+			local typ=0
+			for _,v in pairs(xe) do ae=v:GetLabelObject() typ=v:GetLabel() end
+			if ae and (ly>0 or Duel.GetFlagEffectLabel(0,53759000)==0) then
 				le={ae}
 				local xe1=cm.AASTregi(ac,ae)
 				xe1:SetLabel(ac:GetSequence(),typ)
+				if ly>0 then cm["Card_Prophecy_Certain_ACST_"..ly]=true end
 			end
 			return table.unpack(le)
+		end
+		ADIMI_IsActivatable=Effect.IsActivatable
+		Effect.IsActivatable=function(re,...)
+			if re then return ADIMI_IsActivatable(re,...) else return false end
 		end
 		ADIMI_IsType=Card.IsType
 		Card.IsType=function(rc,type)
 			local res=ADIMI_IsType(rc,type)
-			local xe={rc:IsHasEffect(53765099)}
-			local b=false
-			local seq,typ=0,0
-			for _,v in pairs(xe) do if rc==v:GetLabelObject():GetHandler() then b=true seq,typ=v:GetLabel() end end
-			if b and type&typ~=0 and rc:IsHasEffect(53765099) then return true else return res end
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local xe={rc:IsHasEffect(53765098)}
+			local ae=nil
+			local typ=0
+			for _,v in pairs(xe) do ae=v:GetLabelObject() typ=v:GetLabel() end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_ACST_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not rc:IsLocation(LOCATION_MZONE)
+			if ae and (res1 or res2) then res=(type&typ~=0) end
+			return res
 		end
 		ADIMI_CGetType=Card.GetType
 		Card.GetType=function(rc)
+			local res=ADIMI_CGetType(rc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local xe={rc:IsHasEffect(53765098)}
+			local ae=nil
+			local typ=0
+			for _,v in pairs(xe) do ae=v:GetLabelObject() typ=v:GetLabel() end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_ACST_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not rc:IsLocation(LOCATION_MZONE)
+			if ae and (res1 or res2) then res=typ end
+			return res
+		end
+		ADIMI_MoveToField=Duel.MoveToField
+		Duel.MoveToField=function(rc,...)
 			local xe={rc:IsHasEffect(53765099)}
 			local b=false
 			local seq,typ=0,0
 			for _,v in pairs(xe) do if rc==v:GetLabelObject():GetHandler() then b=true seq,typ=v:GetLabel() end end
-			if b then return typ else return ADIMI_CGetType(rc) end
+			if b and typ and typ~=0 and rc:IsHasEffect(53765098) then
+				local e1=Effect.CreateEffect(rc)
+				e1:SetCode(EFFECT_CHANGE_TYPE)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+				e1:SetReset(RESET_EVENT+0xfd0000)
+				e1:SetValue(typ)
+				rc:RegisterEffect(e1,true)
+			end
+			return ADIMI_MoveToField(rc,...)
 		end
 		ADIMI_IsHasType=Effect.IsHasType
 		Effect.IsHasType=function(re,type)
@@ -4894,9 +5439,14 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			local rc=re:GetHandler()
 			local xe={}
 			if rc then xe={rc:IsHasEffect(53765099)} end
-			local b=false
-			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
-			if b then return LOCATION_SZONE else return ADIMI_GetActivateLocation(re) end
+			local ls=0
+			for _,v in pairs(xe) do
+				if re==v:GetLabelObject() then
+					ls=v:GetLabel()
+					break
+				end
+			end
+			if ls>5 then return LOCATION_FZONE elseif ls>0 then return LOCATION_SZONE else return ADIMI_GetActivateLocation(re) end
 		end
 		ADIMI_GetActivateSequence=Effect.GetActivateSequence
 		Effect.GetActivateSequence=function(re)
@@ -4933,7 +5483,9 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 				for k,info in ipairs({...}) do
 					if info==CHAININFO_TYPE then t[k]=typ end
 					if info==CHAININFO_EXTTYPE then t[k]=typ end
-					if info==CHAININFO_TRIGGERING_LOCATION then t[k]=LOCATION_SZONE end
+					if info==CHAININFO_TRIGGERING_LOCATION then
+						if ls>5 then t[k]=LOCATION_FZONE else t[k]=LOCATION_SZONE end
+					end
 					if info==CHAININFO_TRIGGERING_SEQUENCE and ls>0 then t[k]=ls-1 end
 					if info==CHAININFO_TRIGGERING_POSITION then t[k]=POS_FACEUP end
 				end
@@ -4950,12 +5502,661 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			if b then re:GetHandler():CancelToGrave(false) end
 			return ADIMI_ChangeChainOperation(chainc,...)
 		end
+		ADIMI_IsCanBeEffectTarget=Card.IsCanBeEffectTarget
+		Card.IsCanBeEffectTarget=function(sc,se)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			if c:IsHasEffect(53765098) and cm["Card_Prophecy_Certain_ACST_"..ly] then b=false else b=ADIMI_IsCanBeEffectTarget(sc,se) end
+			return b
+		end
+	end
+end
+function cm.SpellorTrapSPable(c)
+	if not AD_SpellorTrapSPable_Check then
+		AD_SpellorTrapSPable_Check=true
+		ADSTSP_IsCanBeSpecialSummoned=Card.IsCanBeSpecialSummoned
+		Card.IsCanBeSpecialSummoned=function(sc,se,st,sp,bool1,bool2,spos,stp,sz)
+			if st==0 then st=SUMMON_TYPE_SPECIAL end
+			if not spos then spos=POS_FACEUP end
+			if not stp then stp=sp end
+			if not sz then sz=0xff end
+			local b=true
+			local res=ADSTSP_IsCanBeSpecialSummoned(sc,se,st,sp,bool1,bool2,spos,stp,sz)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			if sc.SpecialSummonableSpellorTrap and (ly>0 or Duel.GetFlagEffectLabel(0,53759000)==0) and not sc:IsLocation(LOCATION_MZONE) then
+				if sc:IsHasEffect(EFFECT_REVIVE_LIMIT) and not sc:IsStatus(STATUS_PROC_COMPLETE) and not bool1 then b=res end
+				local zcheck=false
+				for i=0,6 do
+					if sz&(1<<i)~=0 and Duel.CheckLocation(stp,LOCATION_MZONE,i) then zcheck=true end
+					if sz&(1<<(i+16))~=0 and Duel.CheckLocation(stp,LOCATION_MZONE,i+16) then zcheck=true end
+					if zcheck then break end
+				end
+				if not zcheck then b=res end
+				local sptype,sprace,spatt,splv,spatk,spdef=table.unpack(sc.SSST_Data)
+				local e1=Effect.CreateEffect(sc)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_CHANGE_TYPE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetValue(sptype|TYPE_MONSTER)
+				sc:RegisterEffect(e1,true)
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_CHANGE_RACE)
+				e2:SetValue(sprace)
+				sc:RegisterEffect(e2,true)
+				local e3=e1:Clone()
+				e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+				e3:SetValue(spatt)
+				sc:RegisterEffect(e3,true)
+				local e4=e1:Clone()
+				e4:SetCode(EFFECT_SET_BASE_ATTACK)
+				e4:SetValue(spatk)
+				sc:RegisterEffect(e4,true)
+				local e5=e1:Clone()
+				e5:SetCode(EFFECT_SET_BASE_DEFENSE)
+				e5:SetValue(spdef)
+				sc:RegisterEffect(e5,true)
+				local e6=e1:Clone()
+				e6:SetCode(EFFECT_CHANGE_LEVEL)
+				e6:SetValue(splv)
+				sc:RegisterEffect(e6,true)
+				if sc:IsHasEffect(EFFECT_CANNOT_SPECIAL_SUMMON) then b=res end
+				local re={sc:IsHasEffect(EFFECT_SPSUMMON_COST)}
+				for _,v in pairs(re) do
+					local tg=v:GetTarget()
+					if not tg or tg(v,sc,sp) then
+						local cost=v:GetCost()
+						if cost and not cost(v,sc,sp) then b=res end
+					end
+				end
+				re={Duel.IsPlayerAffectedByEffect(sp,EFFECT_CANNOT_SPECIAL_SUMMON)}
+				for _,v in pairs(re) do
+					local tg=v:GetTarget()
+					if not tg or tg(v,sc,sp,st,spos,stp,se) then b=res end
+				end
+				re={Duel.IsPlayerAffectedByEffect(sp,EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)}
+				for _,v in pairs(re) do
+					local tg=v:GetTarget()
+					if not tg or tg(v,sc,sp,st,spos,stp,se) then b=res end
+				end
+				local ct=99
+				re={Duel.IsPlayerAffectedByEffect(sp,EFFECT_SPSUMMON_COUNT_LIMIT)}
+				for _,v in pairs(re) do ct=math.min(ct,v:GetValue()) end
+				if Duel.GetActivityCount(sp,ACTIVITY_SPSUMMON)>=ct then b=res end
+				e1:Reset()
+				e2:Reset()
+				e3:Reset()
+				e4:Reset()
+				e5:Reset()
+				e6:Reset()
+				if ly>0 then cm["Card_Prophecy_Certain_SP_"..ly]=true end
+			else b=res end
+			return b
+		end
+		ADSTSP_SpecialSummon=Duel.SpecialSummon
+		Duel.SpecialSummon=function(tg,st,sp,stp,bool1,...)
+			tg=Group.__add(tg,tg)
+			local g=tg:Filter(function(c)return c.SpecialSummonableSpellorTrap end,nil)
+			if #g>0 then
+				bool1=true
+				for tc in aux.Next(g) do
+					local data=tc.SSST_Data
+					tc:AddMonsterAttribute(data[1])
+				end
+			end
+			return ADSTSP_SpecialSummon(tg,st,sp,stp,bool1,...)
+		end
+		ADSTSP_SpecialSummonStep=Duel.SpecialSummonStep
+		Duel.SpecialSummonStep=function(tc,st,sp,stp,bool1,...)
+			if tc.SpecialSummonableSpellorTrap then
+				bool1=true
+				local data=tc.SSST_Data
+				tc:AddMonsterAttribute(data[1])
+			end
+			return ADSTSP_SpecialSummonStep(tc,st,sp,stp,bool1,...)
+		end
+		ADSTSP_IsType=Card.IsType
+		Card.IsType=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsType(sc,int) end
+			return b
+		end
+		ADSTSP_IsSynchroType=Card.IsSynchroType
+		Card.IsSynchroType=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsSynchroType(sc,int) end
+			return b
+		end
+		ADSTSP_IsXyzType=Card.IsXyzType
+		Card.IsXyzType=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsXyzType(sc,int) end
+			return b
+		end
+		ADSTSP_IsLinkType=Card.IsLinkType
+		Card.IsLinkType=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsLinkType(sc,int) end
+			return b
+		end
+		ADSTSP_CGetType=Card.GetType
+		Card.GetType=function(sc)
+			local b=ADSTSP_CGetType(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
+			return b
+		end
+		ADSTSP_GetSynchroType=Card.GetSynchroType
+		Card.GetSynchroType=function(sc)
+			local b=ADSTSP_GetSynchroType(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
+			return b
+		end
+		ADSTSP_GetXyzType=Card.GetXyzType
+		Card.GetXyzType=function(sc)
+			local b=ADSTSP_GetXyzType(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
+			return b
+		end
+		ADSTSP_GetLinkType=Card.GetLinkType
+		Card.GetLinkType=function(sc)
+			local b=ADSTSP_GetLinkType(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
+			return b
+		end
+		ADSTSP_IsRace=Card.IsRace
+		Card.IsRace=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&data[2]~=0) else b=ADSTSP_IsRace(sc,int) end
+			return b
+		end
+		ADSTSP_GetRace=Card.GetRace
+		Card.GetRace=function(sc)
+			local b=ADSTSP_GetRace(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[2] end
+			return b
+		end
+		ADSTSP_GetOriginalRace=Card.GetOriginalRace
+		Card.GetOriginalRace=function(sc)
+			local b=ADSTSP_GetOriginalRace(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[2] end
+			return b
+		end
+		ADSTSP_GetLinkRace=Card.GetLinkRace
+		Card.GetLinkRace=function(sc)
+			local b=ADSTSP_GetLinkRace(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[2] end
+			return b
+		end
+		ADSTSP_IsAttribute=Card.IsAttribute
+		Card.IsAttribute=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&data[3]~=0) else b=ADSTSP_IsAttribute(sc,int) end
+			return b
+		end
+		ADSTSP_IsNonAttribute=Card.IsNonAttribute
+		Card.IsNonAttribute=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&data[3]==0) else b=ADSTSP_IsNonAttribute(sc,int) end
+			return b
+		end
+		ADSTSP_GetAttribute=Card.GetAttribute
+		Card.GetAttribute=function(sc)
+			local b=ADSTSP_GetAttribute(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[3] end
+			return b
+		end
+		ADSTSP_GetOriginalAttribute=Card.GetOriginalAttribute
+		Card.GetOriginalAttribute=function(sc)
+			local b=ADSTSP_GetOriginalAttribute(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[3] end
+			return b
+		end
+		ADSTSP_GetLinkAttribute=Card.GetLinkAttribute
+		Card.GetLinkAttribute=function(sc)
+			local b=ADSTSP_GetLinkAttribute(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[3] end
+			return b
+		end
+		ADSTSP_IsLevel=Card.IsLevel
+		Card.IsLevel=function(sc,int,...)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int==data[4]) else b=ADSTSP_IsLevel(sc,int,...) end
+			return b
+		end
+		ADSTSP_IsLevelAbove=Card.IsLevelAbove
+		Card.IsLevelAbove=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int<=data[4]) else b=ADSTSP_IsLevelAbove(sc,int) end
+			return b
+		end
+		ADSTSP_IsLevelBelow=Card.IsLevelBelow
+		Card.IsLevelBelow=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int>=data[4]) else b=ADSTSP_IsLevelBelow(sc,int) end
+			return b
+		end
+		ADSTSP_GetLevel=Card.GetLevel
+		Card.GetLevel=function(sc)
+			local b=ADSTSP_GetLevel(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[4] end
+			return b
+		end
+		ADSTSP_GetOriginalLevel=Card.GetOriginalLevel
+		Card.GetOriginalLevel=function(sc)
+			local b=ADSTSP_GetOriginalLevel(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[4] end
+			return b
+		end
+		ADSTSP_IsAttack=Card.IsAttack
+		Card.IsAttack=function(sc,int,...)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int==data[5]) else b=ADSTSP_IsAttack(sc,int,...) end
+			return b
+		end
+		ADSTSP_IsAttackAbove=Card.IsAttackAbove
+		Card.IsAttackAbove=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int<=data[5]) else b=ADSTSP_IsAttackAbove(sc,int) end
+			return b
+		end
+		ADSTSP_IsAttackBelow=Card.IsAttackBelow
+		Card.IsAttackBelow=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int>=data[5]) else b=ADSTSP_IsAttackBelow(sc,int) end
+			return b
+		end
+		ADSTSP_GetAttack=Card.GetAttack
+		Card.GetAttack=function(sc)
+			local b=ADSTSP_GetAttack(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[5] end
+			return b
+		end
+		ADSTSP_GetBaseAttack=Card.GetBaseAttack
+		Card.GetBaseAttack=function(sc)
+			local b=ADSTSP_GetBaseAttack(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[5] end
+			return b
+		end
+		ADSTSP_IsDefense=Card.IsDefense
+		Card.IsDefense=function(sc,int,...)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int==data[6]) else b=ADSTSP_IsDefense(sc,int,...) end
+			return b
+		end
+		ADSTSP_IsDefenseAbove=Card.IsDefenseAbove
+		Card.IsDefenseAbove=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int<=data[6]) else b=ADSTSP_IsDefenseAbove(sc,int) end
+			return b
+		end
+		ADSTSP_IsDefenseBelow=Card.IsDefenseBelow
+		Card.IsDefenseBelow=function(sc,int)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int>=data[6]) else b=ADSTSP_IsDefenseBelow(sc,int) end
+			return b
+		end
+		ADSTSP_GetDefense=Card.GetDefense
+		Card.GetDefense=function(sc)
+			local b=ADSTSP_GetDefense(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[6] end
+			return b
+		end
+		ADSTSP_GetBaseDefense=Card.GetBaseDefense
+		Card.GetBaseDefense=function(sc)
+			local b=ADSTSP_GetBaseDefense(sc)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
+			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
+			local data=sc.SSST_Data
+			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[6] end
+			return b
+		end
+		ADSTSP_IsCanBeEffectTarget=Card.IsCanBeEffectTarget
+		Card.IsCanBeEffectTarget=function(sc,se)
+			local b=true
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			if sc.SpecialSummonableSpellorTrap and cm["Card_Prophecy_Certain_SP_"..ly] then b=res else b=ADSTSP_IsCanBeEffectTarget(sc,se) end
+			return b
+		end
 	end
 end
 function cm.HelltakerActivate(c,code)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e4:SetCode(53765000)
 	e4:SetRange(LOCATION_SZONE)
 	c:RegisterEffect(e4)
@@ -5042,9 +6243,9 @@ function cm.HTAmvop(e,tp,eg,ep,ev,re,r,rp)
 				if te:GetCode()==EVENT_FREE_CHAIN then
 					if te:IsActiveType(TYPE_TRAP+TYPE_QUICKPLAY) then e1:SetType(EFFECT_TYPE_QUICK_O) else e1:SetType(EFFECT_TYPE_IGNITION) end
 				elseif te:GetCode()==EVENT_CHAINING and te:GetProperty()&EFFECT_FLAG_DELAY==0 then
-					if te:GetType()&EFFECT_TYPE_QUICK_F~=0 then e1:SetType(EFFECT_TYPE_QUICK_F) else e1:SetType(EFFECT_TYPE_QUICK_O) end
+					if ADIMI_EGetType(te)&EFFECT_TYPE_QUICK_F~=0 then e1:SetType(EFFECT_TYPE_QUICK_F) else e1:SetType(EFFECT_TYPE_QUICK_O) end
 				elseif te:GetCode()~=0 then
-					if te:GetType()&EFFECT_TYPE_TRIGGER_F~=0 then e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F) else e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) end
+					if ADIMI_EGetType(te)&EFFECT_TYPE_TRIGGER_F~=0 then e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F) else e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) end
 				else e1:SetType(EFFECT_TYPE_IGNITION) end
 				e1:SetRange(LOCATION_HAND)
 				local pro,pro2=te:GetProperty()
@@ -5070,6 +6271,11 @@ function cm.HTAmvop(e,tp,eg,ep,ev,re,r,rp)
 					if ae:GetLabelObject() and ae:GetLabelObject()==te and ae:GetCode() and ae:GetCode()==EFFECT_ACTIVATE_COST and ae:GetRange()&LOCATION_HAND~=0 then
 						fcheck=true
 						local e2_1=ae:Clone()
+						if ae:GetRange()==0 then
+							local lbrange=ae:GetLabel()
+							if lbrange==0 then lbrange=0xff end
+							e2_1:SetRange(lbrange)
+						end
 						e2_1:SetLabelObject(e1)
 						e2_1:SetTarget(cm.HTAfactarget)
 						local cost=ae:GetCost()
@@ -5222,8 +6428,6 @@ function cm.HTAmvcostop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.HTAmvrsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	local xe={rc:IsHasEffect(53765099)}
-	for _,v in pairs(xe) do v:Reset() end
 	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 		if not rc:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_PENDULUM) and not rc:IsHasEffect(EFFECT_REMAIN_FIELD) then rc:CancelToGrave(false) end
@@ -5233,6 +6437,16 @@ function cm.HTAmvrsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:CancelToGrave(false)
 	end
 	if re then re:Reset() end
+	--[[local e1=Effect.CreateEffect(rc)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetCountLimit(1)
+	e1:SetLabelObject(re)
+	e1:SetOperation(cm.AASTreset)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	e:Reset()--]]
 end
 function cm.HTAmvhint(code)
 	return
@@ -5247,5 +6461,419 @@ function cm.HTAmvhint(code)
 		if hflag>13 then hflag=13 end
 		c:RegisterFlagEffect(code+50,RESET_EVENT+0x7e0000,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(53765000,hflag))
 	else c:RegisterFlagEffect(code+50,RESET_EVENT+0x7e0000,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(53765000,0)) end
+	end
+end
+function cm.DragoronActivate(c)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EFFECT_SEND_REPLACE)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_SET_AVAILABLE)
+	e5:SetLabelObject(c)
+	e5:SetTarget(cm.ADGDreptarget)
+	e5:SetValue(cm.ADGDrepval)
+	e5:SetOperation(cm.ADGDrepoperation)
+	Duel.RegisterEffect(e5,0)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetCode(EFFECT_ACTIVATE_COST)
+	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e6:SetTargetRange(1,1)
+	e6:SetLabelObject(c)
+	e6:SetTarget(cm.ADGDactarget2)
+	e6:SetOperation(cm.ADGDrepoperation)
+	Duel.RegisterEffect(e6,0)
+	local e6_1=Effect.CreateEffect(c)
+	e6_1:SetType(EFFECT_TYPE_FIELD)
+	e6_1:SetCode(EFFECT_SSET_COST)
+	e6_1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e6_1:SetTargetRange(0xff,0xff)
+	e6_1:SetLabelObject(c)
+	e6_1:SetTarget(cm.ADGDactarget3)
+	e6_1:SetOperation(cm.ADGDrepoperation)
+	Duel.RegisterEffect(e6_1,0)
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e8:SetCode(53757000)
+	e8:SetCondition(function(e)
+		return e:GetHandler():IsLocation(LOCATION_SZONE)
+	end)
+	c:RegisterEffect(e8)
+	if not Goron_Dimension_Check then
+		Goron_Dimension_Check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAIN_SOLVING)
+		ge1:SetCondition(cm.ADGDaccon)
+		ge1:SetOperation(cm.ADGDacop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(4179255)
+		Duel.RegisterEffect(ge2,0)
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetProperty(EFFECT_FLAG_DELAY)
+		ge3:SetCode(EVENT_MOVE)
+		ge3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+			local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,nil)
+			g:ForEach(Card.ResetFlagEffect,53757050)
+		end)
+		Duel.RegisterEffect(ge3,0)
+		ADGD_SSet=Duel.SSet
+		Duel.SSet=function(tp,tg,tgp,...)
+			Dragoron_SSet_Check=true
+			if not tgp then tgp=tp end
+			tg=Group.__add(tg,tg)
+			if tg:IsExists(Card.IsType,1,nil,TYPE_FIELD) then
+				local fc=Duel.GetFieldCard(tgp,LOCATION_FZONE,0)
+				if fc and fc:IsHasEffect(53757000) and Duel.GetLocationCount(tgp,LOCATION_SZONE)-tg:FilterCount(aux.NOT(Card.IsType),nil,TYPE_FIELD)>0 then
+					Duel.Hint(HINT_SELECTMSG,tgp,HINTMSG_TOZONE)
+					local mv=Duel.SelectDisableField(tgp,1,LOCATION_SZONE,0,0)
+					Duel.MoveSequence(fc,math.log(mv,2)-8)
+					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
+					local e1=Effect.CreateEffect(fc)
+					e1:SetCode(EFFECT_CHANGE_TYPE)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+					fc:RegisterEffect(e1,true)
+				end
+			end
+			local ct=ADGD_SSet(tp,tg,tgp,...)
+			Dragoron_SSet_Check=false
+			return ct
+		end
+		ADGD_SendtoGrave=Duel.SendtoGrave
+		Duel.SendtoGrave=function(tg,reason)
+			tg=Group.__add(tg,tg)
+			local g=Group.__band(tg,Duel.GetFieldGroup(tp,LOCATION_FZONE,LOCATION_FZONE))
+			for fc in aux.Next(g) do
+				local p=fc:GetControler()
+				if fc and fc:IsHasEffect(53757000) and reason&REASON_RULE~=0 and Duel.GetLocationCount(p,LOCATION_SZONE)>0 then
+					Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOZONE)
+					local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
+					Duel.MoveSequence(fc,math.log(mv,2)-8)
+					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
+					local e1=Effect.CreateEffect(fc)
+					e1:SetCode(EFFECT_CHANGE_TYPE)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+					fc:RegisterEffect(e1)
+					tg:RemoveCard(fc)
+				end
+			end
+			return ADGD_SendtoGrave(tg,reason)
+		end
+		ADGD_Destroy=Duel.Destroy
+		Duel.Destroy=function(tg,reason,...)
+			tg=Group.__add(tg,tg)
+			local g=Group.__band(tg,Duel.GetFieldGroup(tp,LOCATION_FZONE,LOCATION_FZONE))
+			for fc in aux.Next(g) do
+				local p=fc:GetControler()
+				if fc and fc:IsHasEffect(53757000) and reason&REASON_RULE~=0 and Duel.GetLocationCount(p,LOCATION_SZONE)>0 then
+					Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOZONE)
+					local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
+					Duel.MoveSequence(fc,math.log(mv,2)-8)
+					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
+					local e1=Effect.CreateEffect(fc)
+					e1:SetCode(EFFECT_CHANGE_TYPE)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+					fc:RegisterEffect(e1)
+					tg:RemoveCard(fc)
+				end
+			end
+			return ADGD_Destroy(tg,reason,...)
+		end
+		ADGD_DRemove=Duel.Remove
+		Duel.Remove=function(tg,pos,reason)
+			tg=Group.__add(tg,tg)
+			local g=Group.__band(tg,Duel.GetFieldGroup(tp,LOCATION_FZONE,LOCATION_FZONE))
+			for fc in aux.Next(g) do
+				local p=fc:GetControler()
+				if fc and fc:IsHasEffect(53757000) and reason&REASON_RULE~=0 and Duel.GetLocationCount(p,LOCATION_SZONE)>0 then
+					Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOZONE)
+					local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
+					Duel.MoveSequence(fc,math.log(mv,2)-8)
+					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
+					local e1=Effect.CreateEffect(fc)
+					e1:SetCode(EFFECT_CHANGE_TYPE)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+					fc:RegisterEffect(e1)
+					tg:RemoveCard(fc)
+				end
+			end
+			return ADGD_DRemove(tg,pos,reason)
+		end
+		ADGD_SendtoHand=Duel.SendtoHand
+		Duel.SendtoHand=function(tg,tp,reason)
+			tg=Group.__add(tg,tg)
+			local g=Group.__band(tg,Duel.GetFieldGroup(tp,LOCATION_FZONE,LOCATION_FZONE))
+			for fc in aux.Next(g) do
+				local p=fc:GetControler()
+				if fc and fc:IsHasEffect(53757000) and reason&REASON_RULE~=0 and Duel.GetLocationCount(p,LOCATION_SZONE)>0 then
+					Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOZONE)
+					local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
+					Duel.MoveSequence(fc,math.log(mv,2)-8)
+					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
+					local e1=Effect.CreateEffect(fc)
+					e1:SetCode(EFFECT_CHANGE_TYPE)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+					fc:RegisterEffect(e1)
+					tg:RemoveCard(fc)
+				end
+			end
+			return ADGD_SendtoHand(tg,tp,reason)
+		end
+		ADGD_SendtoDeck=Duel.SendtoDeck
+		Duel.SendtoDeck=function(tg,tp,seq,reason)
+			tg=Group.__add(tg,tg)
+			local g=Group.__band(tg,Duel.GetFieldGroup(tp,LOCATION_FZONE,LOCATION_FZONE))
+			for fc in aux.Next(g) do
+				local p=fc:GetControler()
+				if fc and fc:IsHasEffect(53757000) and reason&REASON_RULE~=0 and Duel.GetLocationCount(p,LOCATION_SZONE)>0 then
+					Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOZONE)
+					local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
+					Duel.MoveSequence(fc,math.log(mv,2)-8)
+					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
+					local e1=Effect.CreateEffect(fc)
+					e1:SetCode(EFFECT_CHANGE_TYPE)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+					fc:RegisterEffect(e1)
+					tg:RemoveCard(fc)
+				end
+			end
+			return ADGD_SendtoDeck(tg,tp,seq,reason)
+		end
+		ADGD_SetReset=Effect.SetReset
+		Effect.SetReset=function(re,reset,...)
+			if reset&RESET_TOFIELD~=0 then Dragoron_Reset_Check=true end
+			return ADGD_SetReset(re,reset,...)
+		end
+		ADGD_CRegisterEffect=Card.RegisterEffect
+		Card.RegisterEffect=function(rc,re,...)
+			if Dragoron_Reset_Check then
+				local e1=Effect.CreateEffect(rc)
+				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e1:SetCode(EVENT_MOVE)
+				e1:SetLabelObject(re)
+				e1:SetCondition(cm.ADGDresetcon)
+				e1:SetOperation(cm.ADGDresetop)
+				Duel.RegisterEffect(e1,rp)
+				Dragoron_Reset_Check=false
+			end
+			return ADGD_CRegisterEffect(rc,re,...)
+		end
+		ADGD_DRegisterEffect=Duel.RegisterEffect
+		Duel.RegisterEffect=function(...)
+			Dragoron_Reset_Check=false
+			return ADGD_DRegisterEffect(...)
+		end
+		ADGD_MoveToField=Duel.MoveToField
+		Duel.MoveToField=function(mc,p,tgp,dest,...)
+			mc:ResetFlagEffect(53757050)
+			if dest==LOCATION_FZONE then mc:RegisterFlagEffect(53757050,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1) end
+			return ADGD_MoveToField(mc,p,tgp,dest,...)
+		end
+		ADGD_MoveSequence=Duel.MoveSequence
+		Duel.MoveSequence=function(mc,seq)
+			mc:ResetFlagEffect(53757050)
+			return ADGD_MoveSequence(mc,seq)
+		end
+	end
+	return e5,e6,e6_1
+end
+function cm.ADGDresetfil(c,tc)
+	return c==tc and ((c:IsPreviousLocation(LOCATION_FZONE) and not c:IsLocation(LOCATION_FZONE)) or (c:IsLocation(LOCATION_FZONE) and not c:IsPreviousLocation(LOCATION_FZONE)))
+end
+function cm.ADGDresetcon(e,tp,eg,ep,ev,re,r,rp)
+	local re=e:GetLabelObject()
+	if not re or aux.GetValueType(re)~="Effect" then
+		e:Reset()
+		return false
+	end
+	return eg:IsExists(cm.ADGDresetfil,1,nil,re:GetHandler())
+end
+function cm.ADGDresetop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetLabelObject():Reset()
+	e:Reset()
+end
+function cm.ADGDaccon(e,tp,eg,ep,ev,re,r,rp)
+	return re and re:IsActiveType(TYPE_FIELD) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function cm.ADGDacop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(rp,53757050)>0 then return end
+	Duel.RegisterFlagEffect(rp,53757050,RESET_CHAIN,0,1)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetLabel(Duel.GetCurrentChain())
+	e1:SetLabelObject(re)
+	e1:SetOperation(cm.ADGDregop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,rp)
+end
+function cm.ADGDregop(e,tp,eg,ep,ev,re,r,rp)
+	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+	if fc then Duel.RaiseSingleEvent(fc,EVENT_CUSTOM+53757099,e:GetLabelObject(),0,tp,tp,e:GetLabel()) end
+	e:Reset()
+end
+function cm.ADGDrepfilter(c,tc)
+	return c==tc and Duel.GetLocationCount(c:GetControler(),LOCATION_SZONE)>0 and c:IsLocation(LOCATION_FZONE)
+end
+function cm.ADGDreptarget(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetLabelObject()
+	if chk==0 then return eg:IsExists(cm.ADGDrepfilter,1,nil,c) end
+	return true
+end
+function cm.ADGDrepval(e,c)
+	return cm.ADGDrepfilter(c,e:GetLabelObject())
+end
+function cm.ADGDrepoperation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetLabelObject()
+	if not c:IsLocation(LOCATION_FZONE) then return end
+	local p=c:GetControler()
+	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOZONE)
+	local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
+	Duel.MoveSequence(c,math.log(mv,2)-8)
+	if c:IsFacedown() then Duel.ChangePosition(c,POS_FACEUP) end
+	local e1=Effect.CreateEffect(c)
+	e1:SetCode(EFFECT_CHANGE_TYPE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+	c:RegisterEffect(e1)
+end
+function cm.ADGDactarget2(e,te,tp)
+	local c=e:GetLabelObject()
+	local p=c:GetControler()
+	return Duel.GetLocationCount(p,LOCATION_SZONE)>0 and te:IsActiveType(TYPE_FIELD) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsLocation(LOCATION_FZONE) and c:IsControler(p) and p==tp and te:GetHandler()~=c
+end
+function cm.ADGDactarget3(e,tc,tp)
+	if Dragoron_SSet_Check then return false end
+	local c=e:GetLabelObject()
+	local p=c:GetControler()
+	return Duel.GetLocationCount(p,LOCATION_SZONE)>0 and tc:IsType(TYPE_FIELD) and c:IsLocation(LOCATION_FZONE) and c:IsControler(p) and tc:GetControler()==p and tc~=c
+end
+function cm.GoronDimensionCopy(c,cd,tab)
+	local cat,type,code,cost,con,tg,op,pro1,pro2=table.unpack(tab)
+	if type&EFFECT_TYPE_SINGLE~=0 then return end
+	if type&(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_QUICK_F)~=0 and code and code==EVENT_CHAINING then return end
+	if not con then con=aux.TRUE end
+	if not cost then cost=aux.TRUE end
+	if not tg then tg=aux.TRUE end
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_CUSTOM+53757099)
+	e0:SetRange(0xff)
+	e0:SetCountLimit(1)
+	e0:SetOperation(cm.ADGDtrop(cd))
+	e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(cd,1))
+	e1:SetCategory(cat)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_CUSTOM+cd)
+	e1:SetRange(0xff)
+	e1:SetProperty(pro1|EFFECT_FLAG_DELAY,pro2)
+	e1:SetCountLimit(1)
+	if type&EFFECT_TYPE_IGNITION==0 and code and code~=EVENT_FREE_CHAIN and code~=EVENT_CHAINING then
+		e1:SetCondition(cm.ADGDrecon(con,cd))
+		e1:SetCost(cm.ADGDrecost(cost,cd))
+		e1:SetTarget(cm.ADGDretg(tg,op,cd))
+		local g=Group.CreateGroup()
+		g:KeepAlive()
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e3:SetCode(code)
+		e3:SetLabelObject(g)
+		e3:SetOperation(cm.ADGDMergedDelayEventCheck1(cd))
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e3,0)
+		local e4=e3:Clone()
+		e4:SetCode(EVENT_CHAIN_END)
+		e4:SetOperation(cm.ADGDMergedDelayEventCheck2(cd))
+		Duel.RegisterEffect(e4,0)
+	else
+		e1:SetCondition(con)
+		e1:SetCost(cost)
+		e1:SetTarget(tg)
+		e1:SetOperation(op)
+	end
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e1)
+end
+function cm.ADGDtrop(cd)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsLocation(LOCATION_FZONE) then return end
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+cd,re,0,rp,ep,ev)
+	e:Reset()
+	end
+end
+function cm.ADGDrecon(_con,cd)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+				local res,teg,tep,tev,tre,tr,trp=Duel.CheckEvent(EVENT_CUSTOM+(cd+50),true)
+				if not res then return false end
+				return _con(e,tp,teg,tep,tev,tre,tr,trp)
+			end
+end
+function cm.ADGDrecost(_cost,cd)
+	return function(e,tp,eg,ep,ev,re,r,rp,chk)
+				local res,teg,tep,tev,tre,tr,trp=Duel.CheckEvent(EVENT_CUSTOM+(cd+50),true)
+				if not res then return false end
+				return _cost(e,tp,teg,tep,tev,tre,tr,trp)
+			end
+end
+function cm.ADGDretg(_tg,_op,cd)
+	return function(e,tp,eg,ep,ev,re,r,rp,...)
+				local res,teg,tep,tev,tre,tr,trp=Duel.CheckEvent(EVENT_CUSTOM+(cd+50),true)
+				if not res then return false end
+				e:SetOperation(cm.ADGDreop(_op,teg,tep,tev,tre,tr,trp))
+				return _tg(e,tp,teg,tep,tev,tre,tr,trp,...)
+			end
+end
+function cm.ADGDreop(_op,teg,tep,tev,tre,tr,trp)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+				_op(e,tp,teg,tep,tev,tre,tr,trp)
+			end
+end
+function cm.ADGDMergedDelayEventCheck1(cd)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	g:Merge(eg)
+	if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) then
+		local _eg=g:Clone()
+		Duel.RaiseEvent(_eg,EVENT_CUSTOM+(cd+50),re,r,rp,ep,ev)
+		g:Clear()
+	end
+	end
+end
+function cm.ADGDMergedDelayEventCheck2(cd)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	if #g>0 then
+		local _eg=g:Clone()
+		Duel.RaiseEvent(_eg,EVENT_CUSTOM+(cd+50),re,r,rp,ep,ev)
+		g:Clear()
+	end
 	end
 end
