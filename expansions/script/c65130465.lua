@@ -9,6 +9,8 @@ function s.initial_effect(c)
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Group.CreateGroup()
-	sg:AddCard(Duel.CreateToken(tp,id))
-	Duel.ConfirmCards(1-tp,sg)
+	sg:AddCard(Duel.CreateToken(1-tp,id))
+	--Duel.ConfirmCards(1-tp,sg)
+	local code=sg:Select(1-tp,1,1,nil):GetOriginalCode()
+	Duel.Hint(HINT_CARD,0,code)
 end
