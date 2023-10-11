@@ -2,13 +2,14 @@
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 	--pendulum summon
-	aux.EnablePendulumAttribute(c)
+	aux.EnablePendulumAttribute(c,true)
+	c:EnableReviveLimit()
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.sptg2)
 	e1:SetOperation(cm.spop2)
@@ -153,7 +154,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Draw(tp,1,REASON_EFFECT)
 		if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
 		local sc=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_HAND,0,1,1,nil,TYPE_PENDULUM):GetFirst()
-		if Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+		if Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 			local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,2,2,nil)
 			Duel.Destroy(dg,REASON_EFFECT)
 		end

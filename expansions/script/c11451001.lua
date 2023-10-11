@@ -401,3 +401,4 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if #ng1>0 then Duel.ConfirmCards(1-tp,ng1) end
 	if #ng2>0 then Duel.ConfirmCards(tp,ng2) end
 end
+pcall(dofile,"expansions/script/c11410000.lua")

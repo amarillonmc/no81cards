@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(cm.xyzcon)
+	e0:SetCondition(cm.XyzLevelFreeCondition(cm.mcfilter,cm.gfilter,3,3))
 	e0:SetTarget(aux.XyzLevelFreeTarget(cm.mcfilter,cm.gfilter,3,3))
 	--e0:SetOperation(cm.xyzop)
 	e0:SetOperation(cm.XyzLevelFreeOperation(cm.mcfilter,cm.gfilter,3,3))
@@ -87,6 +87,33 @@ function cm.gfilter(g)
 end
 function cm.xyzcon(e)
 	return Duel.GetFlagEffect(e:GetHandlerPlayer(),15000194)==0 and aux.XyzLevelFreeCondition(cm.mcfilter,cm.gfilter,3,3)
+end
+function cm.XyzLevelFreeCondition(f,gf,minct,maxct)
+	return  function(e,c,og,min,max)
+				if c==nil then return true end
+				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
+				local tp=c:GetControler()
+				local minc=minct
+				local maxc=maxct
+				if min then
+					minc=math.max(minc,min)
+					maxc=math.min(maxc,max)
+				end
+				if maxc<minc then return false end
+				local mg=nil
+				if og then
+					mg=og:Filter(aux.XyzLevelFreeFilter,nil,c,f)
+				else
+					mg=Duel.GetMatchingGroup(Auxiliary.XyzLevelFreeFilter,tp,LOCATION_MZONE,0,nil,c,f)
+				end
+				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
+				if sg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
+				Duel.SetSelectedCard(sg)
+				aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
+				local res=mg:CheckSubGroup(aux.XyzLevelFreeGoal,minc,maxc,tp,c,gf)
+				aux.GCheckAdditional=nil
+				return res and Duel.GetFlagEffect(e:GetHandlerPlayer(),15000194)==0
+			end
 end
 function cm.xyzop(e)
 	Duel.RegisterFlagEffect(e:GetHandlerPlayer(),15000194,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)

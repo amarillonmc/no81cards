@@ -2,13 +2,14 @@
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 	--pendulum summon
-	aux.EnablePendulumAttribute(c)
+	aux.EnablePendulumAttribute(c,true)
+	c:EnableReviveLimit()
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.sptg2)
 	e1:SetOperation(cm.spop2)

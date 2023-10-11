@@ -88,8 +88,11 @@ end
 function cm.filter(c)
 	return c.traveler_saga and c:IsAbleToDeckAsCost()
 end
+function cm.ssfilter(c)
+	return c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5
+end
 function cm.fselect(g)
-	return g:IsExists(Card.IsLocation,1,nil,LOCATION_SZONE)
+	return g:IsExists(cm.ssfilter,1,nil)
 end
 function cm.costchk(e,te,tp)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)

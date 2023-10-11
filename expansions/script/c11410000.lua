@@ -8,6 +8,10 @@ function cm.initial_effect(c)
 	e0:SetOperation(cm.op)
 	Duel.RegisterEffect(e0,0)
 end
+if not apricot_nightfall then
+	apricot_nightfall=true
+	--Debug.Message("Protocol Request Complete. 杏花宵®漏洞解决方案已上线。")
+end
 if not aux.GetMustMaterialGroup then
 	aux.GetMustMaterialGroup=Duel.GetMustMaterial
 	--[[function aux.GetMustMaterialGroup(tp,code)
@@ -73,7 +77,7 @@ if not require and loadfile then
 			else
 				require_list[str]=loadfile(str..".lua")
 			end
-			require_list[str]()
+			pcall(require_list[str])
 			return require_list[str]
 		end
 		return require_list[str]
@@ -92,11 +96,13 @@ if not require and Duel.LoadScript then
 		return require_list[str]
 	end
 end
-function cm.nnfilter(c)
-	return c:GetOriginalType()~=0x11 and c:GetOriginalType()~=0x1011 and not c.initial_effect
+function cm.nnfilter(c,ec)
+	if c:GetOriginalType()==0x11 or c:GetOriginalType()==0x1011 then return false end
+	if not c.initial_effect then return true end
+	return false
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)
+	--[[local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)
 	local _TGetID=GetID
 	for ac in aux.Next(ag) do
 		local int=ac:GetOriginalCode()
@@ -111,7 +117,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		local ini=ac.initial_effect
 		if ini then ac.initial_effect(ac) end
 	end
-	GetID=_TGetID
+	GetID=_TGetID--]]
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
