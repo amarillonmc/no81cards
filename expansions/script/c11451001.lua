@@ -148,7 +148,7 @@ function cm.initial_effect(c)
 				--Duel.SetFlagEffectLabel(sp,m,ct+1)
 				cm[sp]=cm[sp]+1
 				local tg=ng:RandomSelect(sp,1)
-				Duel.ConfirmCards(sp,tg)
+				if tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then Duel.ConfirmCards(sp,tg) end
 				return tg
 			else
 				return _Select(g,sp,min,max,nc)

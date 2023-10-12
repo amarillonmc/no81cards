@@ -1,5 +1,5 @@
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
-local m,cm=rscf.DefineCard(53724004)
+local m=53724004
+local cm=_G["c"..m]
 cm.name="迫真空手武神 AKYS"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()

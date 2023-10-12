@@ -72,13 +72,14 @@ function cm.dfilter(c)
 	return c:IsFaceup() and c:IsCode(40010230)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,40009560)==0 and not Duel.IsExistingMatchingCard(cm.dfilter,tp,LOCATION_MZONE,0,1,nil) then return false end
 	if Duel.GetFlagEffect(tp,m)>0 then return e:GetHandler():GetFlagEffect(m+1)<2
 	else return e:GetHandler():GetFlagEffect(m+1)<1 end
-	return Duel.GetFlagEffect(tp,40009560)>0 or Duel.IsExistingMatchingCard(cm.dfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
+	e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
@@ -110,7 +111,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e3)
 		end
 	end
-	e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 
 

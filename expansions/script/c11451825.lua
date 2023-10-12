@@ -50,24 +50,30 @@ function cm.initial_effect(c)
 	end
 end
 function cm.repfilter(c,tp)
-	return (not c:IsLocation(LOCATION_OVERLAY) and not c:IsType(TYPE_SPELL+TYPE_TRAP) and not (c:IsControler(tp) and c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5)) and c:GetDestination()==LOCATION_GRAVE
+	return (not c:IsLocation(LOCATION_OVERLAY) and not c:IsType(TYPE_SPELL+TYPE_TRAP) and not (c:IsControler(tp) and c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5)) and c:GetDestination()==LOCATION_GRAVE and not c:IsForbidden()
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local count=eg:FilterCount(cm.repfilter,e:GetHandler(),tp)
-		return count>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>=count
+		return count>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 	end
 	local g=eg:Filter(cm.repfilter,e:GetHandler(),tp)
-	if g:FilterCount(Card.IsLocation,nil,LOCATION_ONFIELD+LOCATION_GRAVE)==#g then
+	if g:FilterCount(Card.IsOnField,nil)==#g then
 		Duel.HintSelection(g)
 	else
 		Duel.ConfirmCards(tp,g)
 	end
-	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	local container=e:GetLabelObject()
+	container:Clear()
+	local res=false
+	for tc in aux.Next(g) do
+		if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectEffectYesNo(tp,tc,aux.Stringid(m,5)) then
+			res=true
+	--[[if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		local container=e:GetLabelObject()
 		container:Clear()
 		local tc=g:GetFirst()
-		while tc do
+		while tc do--]]
 			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -86,12 +92,10 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			--tc:RegisterEffect(e2,true)
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
-			tc=g:GetNext()
+			container:AddCard(tc)
 		end
-		container:Merge(g)
-		return true
 	end
-	return false
+	return res
 end
 function cm.repval(e,c)
 	return e:GetLabelObject():IsContains(c)
