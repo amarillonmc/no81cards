@@ -21,6 +21,23 @@ function c9910088.initial_effect(c)
 	e2:SetTarget(c9910088.sptg)
 	e2:SetOperation(c9910088.spop)
 	c:RegisterEffect(e2)
+	if not c9910088.global_check then
+		c9910088.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_RELEASE)
+		ge1:SetOperation(c9910088.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function c9910088.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsLocation(LOCATION_GRAVE) and tc:IsType(TYPE_MONSTER) then
+			tc:RegisterFlagEffect(9910550,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910088,1))
+		end
+		tc=eg:GetNext()
+	end
 end
 function c9910088.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
