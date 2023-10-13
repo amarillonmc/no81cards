@@ -28,8 +28,11 @@ end
 function c71401002.filter2(c,tp)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsLevel(4) and c:IsAttribute(ATTRIBUTE_DARK) and (c:IsAbleToHand() or not c:IsForbidden() and c:CheckUniqueOnField(tp))
 end
+function c71401002.filter2a(c)
+	return c:IsFaceup() and c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS
+end
 function c71401002.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71401002.filter2,tp,LOCATION_DECK,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c71401002.filter2a,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(c71401002.filter2,tp,LOCATION_DECK,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c71401002.op2(e,tp,eg,ep,ev,re,r,rp)
