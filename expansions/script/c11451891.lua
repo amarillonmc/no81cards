@@ -42,7 +42,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		local tc=g:GetFirst()
 		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (not tc:IsSSetable() or Duel.SelectYesNo(tp,Stringid(m,0))) then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 		else
 			Duel.SSet(tp,tc)
 		end

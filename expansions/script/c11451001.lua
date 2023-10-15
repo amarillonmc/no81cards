@@ -148,7 +148,7 @@ function cm.initial_effect(c)
 				--Duel.SetFlagEffectLabel(sp,m,ct+1)
 				cm[sp]=cm[sp]+1
 				local tg=ng:RandomSelect(sp,1)
-				if tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then Duel.ConfirmCards(sp,tg) end
+				if tg:GetFirst() and tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then Duel.ConfirmCards(sp,tg) end
 				return tg
 			else
 				return _Select(g,sp,min,max,nc)
@@ -401,4 +401,3 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if #ng1>0 then Duel.ConfirmCards(1-tp,ng1) end
 	if #ng2>0 then Duel.ConfirmCards(tp,ng2) end
 end
-pcall(dofile,"expansions/script/c11410000.lua")

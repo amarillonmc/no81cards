@@ -102,7 +102,7 @@ function cm.nnfilter(c,ec)
 	return false
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	--[[local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)
+	local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)
 	local _TGetID=GetID
 	for ac in aux.Next(ag) do
 		local int=ac:GetOriginalCode()
@@ -117,7 +117,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		local ini=ac.initial_effect
 		if ini then ac.initial_effect(ac) end
 	end
-	GetID=_TGetID--]]
+	GetID=_TGetID
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)

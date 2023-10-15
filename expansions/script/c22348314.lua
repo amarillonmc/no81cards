@@ -70,7 +70,7 @@ end
 
 
 function c22348314.mfilter(c,fc)
-	return c:IsReason(REASON_DESTROY) and c:IsLocation(LOCATION_GRAVE)
+	return c:IsReason(REASON_DESTROY) and c:IsLocation(LOCATION_GRAVE) and c:IsType(TYPE_MONSTER)
 end
 function c22348314.egfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
