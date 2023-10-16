@@ -330,7 +330,7 @@ function s.rstop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message("0")
+	--Debug.Message("0")
 	local c=e:GetLabelObject()
 	Duel.RaiseEvent(c,EVENT_SPSUMMON_SUCCESS,e,REASON_EFFECT,e:GetHandlerPlayer(),0,0)
 	--[[
