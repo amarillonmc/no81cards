@@ -51,11 +51,9 @@ function c9910479.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
 end
 function c9910479.penop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
 	local dg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
-	if dg:GetCount()<2 then return end
-	if Duel.Destroy(dg,REASON_EFFECT)~=2 or Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<2 then return end
+	if #dg==0 or Duel.Destroy(dg,REASON_EFFECT)==0 then return end
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<2 then return end
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,2)
 	Duel.ConfirmCards(tp,g)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

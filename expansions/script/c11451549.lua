@@ -36,28 +36,110 @@ end
 function cm.mzfilter(c)
 	return c:IsAbleToDeckOrExtraAsCost() and c:GetLevel()>=1 and c:IsRace(RACE_PSYCHO) and (c:IsLocation(LOCATION_GRAVE) or c:IsFacedown())
 end
-function cm.fselect(g)
-	return g:IsExists(Card.IsLocation,2,nil,LOCATION_GRAVE) and g:IsExists(Card.IsLocation,2,nil,LOCATION_REMOVED)
+function cm.CheckSubGroup(g,f,min,max,...)
+	local min=min or 1
+	local max=max or #g
+	if min>max then return false end
+	local ext_params={...}
+	local sg=Duel.GrabSelectedCard()
+	if #sg>max or #(g+sg)<min then return false end
+	if #sg==max and (not f(sg,...) or Auxiliary.GCheckAdditional and not Auxiliary.GCheckAdditional(sg,nil,g,f,min,max,ext_params)) then return false end
+	if #sg>=min and #sg<=max and f(sg,...) and (not Auxiliary.GCheckAdditional or Auxiliary.GCheckAdditional(sg,nil,g,f,min,max,ext_params)) then return true end
+	return cm.CheckGroupRecursive(sg,g,f,min,max,ext_params)
+end
+function cm.CheckGroupRecursive(sg,g,f,min,max,ext_params)
+	local eg=g:Clone()
+	for c in aux.Next(g-sg) do
+		sg:AddCard(c)
+		if not Auxiliary.GCheckAdditional or Auxiliary.GCheckAdditional(sg,c,eg,f,min,max,ext_params) then
+			if (#sg>=min and #sg<=max and f(sg,table.unpack(ext_params))) or (#sg<max and cm.CheckGroupRecursive(sg,eg,f,min,max,ext_params)) then return true end
+		end
+		sg:RemoveCard(c)
+		eg:RemoveCard(c)
+	end
+	return false
+end
+function cm.CheckGroupRecursiveCapture(bool,sg,g,f,min,max,ext_params)
+	local eg=g:Clone()
+	for c in aux.Next(g-sg) do
+		if not bool or not Auxiliary.SubGroupCaptured:IsContains(c) then
+			sg:AddCard(c)
+			if not Auxiliary.GCheckAdditional or Auxiliary.GCheckAdditional(sg,c,eg,f,min,max,ext_params) then
+				if (#sg>=min and #sg<=max and f(sg,table.unpack(ext_params))) or (#sg<max and cm.CheckGroupRecursiveCapture(false,sg,eg,f,min,max,ext_params)) then
+					--Debug.Message(cm[0])
+					Auxiliary.SubGroupCaptured:Merge(sg)
+				end
+			end
+			sg:RemoveCard(c)
+			eg:RemoveCard(c)
+		end
+	end
+end
+function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
+	Auxiliary.SubGroupCaptured=Group.CreateGroup()
+	local min=min or 1
+	local max=max or #g
+	local ext_params={...}
+	local sg=Group.CreateGroup()
+	local fg=Duel.GrabSelectedCard()
+	if #fg>max or min>max or #(g+fg)<min then return nil end
+	for tc in aux.Next(fg) do
+		fg:SelectUnselect(sg,tp,false,false,min,max)
+	end
+	sg:Merge(fg)
+	local finish=(#sg>=min and #sg<=max and f(sg,...))
+	while #sg<max do
+		cm.CheckGroupRecursiveCapture(true,sg,g,f,min,max,ext_params)
+		local cg=Auxiliary.SubGroupCaptured:Clone()
+		Auxiliary.SubGroupCaptured:Clear()
+		--Debug.Message(cm[0])
+		cg:Sub(sg)
+		finish=(#sg>=min and #sg<=max and f(sg,...))
+		if #cg==0 then break end
+		local cancel=not finish and cancelable
+		local tc=cg:SelectUnselect(sg,tp,finish,cancel,min,max)
+		if not tc then break end
+		if not fg:IsContains(tc) then
+			if not sg:IsContains(tc) then
+				sg:AddCard(tc)
+				if #sg==max then finish=true end
+			else
+				sg:RemoveCard(tc)
+			end
+		elseif cancelable then
+			return nil
+		end
+	end
+	if finish then
+		return sg
+	else
+		return nil
+	end
 end
 function cm.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local mg=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	local g=Group.CreateGroup()
-	return mg:IsExists(Card.IsLocation,2,nil,LOCATION_GRAVE) and mg:IsExists(Card.IsLocation,2,nil,LOCATION_REMOVED) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and mg:IsExists(cm.syncheck,1,g,g,mg)
+	--[[Auxiliary.SubGroupCaptured=Group.CreateGroup()
+	local sg=Group.CreateGroup()
+	cm.CheckGroupRecursiveCapture(true,sg,mg,cm.syngoal,4,#mg,{1})
+	Debug.Message(cm[0])--]]
+	return mg:IsExists(Card.IsLocation,2,nil,LOCATION_GRAVE) and mg:IsExists(Card.IsLocation,2,nil,LOCATION_REMOVED) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and cm.CheckSubGroup(mg,cm.syngoal)
 end
-function cm.syncheck(c,g,mg)
-	g:AddCard(c)
-	local res=cm.syngoal(g) or mg:IsExists(cm.syncheck,1,g,g,mg)
-	g:RemoveCard(c)
-	return res
-end
+--cm[0]=0
 function cm.syngoal(g)
+	--cm[0]=cm[0]+1
 	return #g>=4 and g:IsExists(Card.IsLocation,2,nil,LOCATION_GRAVE) and g:IsExists(Card.IsLocation,2,nil,LOCATION_REMOVED) and g:GetSum(Card.GetLevel)%5==0
 end
 function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local mg=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	local sg=Group.CreateGroup()
+	local sg=cm.SelectSubGroup(mg,tp,cm.syngoal,Duel.IsSummonCancelable(),4,#mg)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+	--[[local sg=Group.CreateGroup()
 	local cg=mg:Filter(cm.syncheck,sg,sg,mg)
 	local cg0=cg
 	local finish=cm.syngoal(sg)
@@ -67,7 +149,7 @@ function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 		finish=cm.syngoal(sg)
 		local cancel=not finish and Duel.IsSummonCancelable()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local tc=cg:SelectUnselect(sg,tp,finish,cancel,4,#cg)
+		local tc=cg:SelectUnselect(sg,tp,finish,cancel,4,#mg)
 		if not tc then break end
 		if not sg:IsContains(tc) then
 			sg:AddCard(tc)
@@ -80,14 +162,6 @@ function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 		sg:KeepAlive()
 		e:SetLabelObject(sg)
 		return true
-	else return false end
-	--[[local sg=g:SelectSubGroup(tp,cm.fselect,Duel.IsSummonCancelable(),4,#g)
-	if sg and sg:GetSum(Card.GetLevel)%5==0 then
-		sg:KeepAlive()
-		e:SetLabelObject(sg)
-		return true
-	elseif sg and sg:GetSum(Card.GetLevel)%5~=0 then
-		Debug.Message("选择的怪兽合计等级不是5的倍数")
 	else return false end--]]
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)

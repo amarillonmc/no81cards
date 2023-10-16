@@ -54,11 +54,8 @@ function c9910476.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c9910476.penop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
 	local dg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
-	if dg:GetCount()<2 then return end
-	if Duel.Destroy(dg,REASON_EFFECT)~=2 then return end
+	if #dg==0 or Duel.Destroy(dg,REASON_EFFECT)==0 then return end
 	local g=Duel.GetMatchingGroup(c9910476.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.BreakEffect()
