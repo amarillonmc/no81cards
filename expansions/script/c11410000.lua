@@ -1,6 +1,7 @@
 --杏花宵
 --23.09.08
-local cm,m=GetID()
+local m=11410000
+local cm=_G["c"..m]
 function cm.initial_effect(c)
 	local e0=Effect.CreateEffect(c) 
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

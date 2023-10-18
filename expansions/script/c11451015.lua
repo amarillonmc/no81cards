@@ -276,7 +276,6 @@ function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToDeckOrExtraAsCost() end
 	Duel.SendtoDeck(c,nil,2,REASON_COST)
-	Duel.ConfirmCards(1-tp,c)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

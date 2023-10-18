@@ -34,8 +34,8 @@ function c22021330.initial_effect(c)
 	e3:SetOperation(c22021330.desop)
 	c:RegisterEffect(e3)
 end
-function c22021330.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0xff9)
+function c22021330.lcheck(g,lc)
+	return g:GetClassCount(Card.GetLinkCode)==g:GetCount()
 end
 function c22021330.valcheck(e,c)
 	local g=c:GetMaterial()

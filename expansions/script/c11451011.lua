@@ -243,11 +243,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.distg(e,c)
 	local tp=e:GetHandlerPlayer()
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_TRAPMONSTER) and aux.GetColumn(c,tp)==aux.GetColumn(e:GetHandler(),tp)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_TRAPMONSTER) and aux.GetColumn(c,tp)==aux.GetColumn(e:GetHandler(),tp) and c~=e:GetHandler()
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
-	if loc&LOCATION_ONFIELD~=0 and seq<=4 and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and seq==aux.GetColumn(e:GetHandler(),rp) and not re:GetHandler():IsType(TYPE_TRAPMONSTER) then
+	if loc&LOCATION_ONFIELD~=0 and seq<=4 and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and seq==aux.GetColumn(e:GetHandler(),rp) and not re:GetHandler():IsType(TYPE_TRAPMONSTER) and re:GetHandler()~=e:GetHandler() then
 		Duel.NegateEffect(ev)
 	end
 end

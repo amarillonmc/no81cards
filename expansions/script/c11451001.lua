@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 		local _CRemoveOverlayCard=Card.RemoveOverlayCard
 		local _FilterSelect=Group.FilterSelect
 		local _Select=Group.Select
+		local _SelectUnselect=Group.SelectUnselect
 		local function Local_RandomSelect(g,tp,ct)
 			local cg=g:Clone()
 			local sg=Group.CreateGroup()
@@ -153,6 +154,10 @@ function cm.initial_effect(c)
 			else
 				return _Select(g,sp,min,max,nc)
 			end
+		end
+		function Group.SelectUnselect(cg,sg,sp,finish,cancel,...)
+			if Duel.GetFlagEffect(0,m)>0 then return _SelectUnselect(cg,sg,sp,finish,false,...) end
+			return _SelectUnselect(cg,sg,sp,finish,cancel,...)
 		end
 	end
 end
