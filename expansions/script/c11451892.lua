@@ -45,7 +45,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		local cg=tc:GetColumnGroup()
 		local dg=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,ac,cg)
 		if #dg>0 and Duel.Destroy(dg,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(cm.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) then
-			local g=Duel.GetOperatedGroup():Filter(Card.IsControler,nil,1-tp)
+			local g=Duel.GetOperatedGroup():Filter(Card.IsPreviousControler,nil,1-tp)
 			Duel.BreakEffect()
 			for tc in aux.Next(g) do
 				local e1=Effect.CreateEffect(c)
