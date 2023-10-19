@@ -1,6 +1,5 @@
 --闪刀信条-守护
-local m=11451428
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -60,5 +59,6 @@ function cm.atklimit(e,c)
 end
 function cm.efilter(e,re)
 	local c=e:GetLabelObject()
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and (c:GetRealFieldID()~=e:GetLabel() or not ((re:IsHasType(EFFECT_TYPE_ACTIONS) and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(re)) or re:IsHasCardTarget(c)))
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and (c:GetRealFieldID()~=e:GetLabel() or not (re:IsHasType(EFFECT_TYPE_ACTIONS) and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and g and g:IsContains(c)))
 end

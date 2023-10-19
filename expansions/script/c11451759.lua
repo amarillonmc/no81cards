@@ -74,7 +74,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tc=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil):GetFirst()
 	c:SetCardTarget(tc)
 	tc:SetUniqueOnField(1,1,cm.uqfilter,LOCATION_ONFIELD)
-	tc:RegisterFlagEffect(m-14,RESET_EVENT+RESETS_STANDARD,0,1,tc:GetRealFieldID())
+	tc:RegisterFlagEffect(m-14,RESET_EVENT+0x1fc0000,0,1)
 end
 function cm.uqfilter(c)
 	return Duel.IsExistingMatchingCard(cm.afilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c)
@@ -82,11 +82,11 @@ end
 function cm.afilter(c,tc)
 	local flag=c:GetFlagEffectLabel(m-13)
 	local flag2=tc:GetFlagEffectLabel(m-14)
-	return c:IsHasCardTarget(tc) and flag and flag==c:GetFieldID() and flag2 and flag2==tc:GetRealFieldID()
+	return c:IsHasCardTarget(tc) and flag and flag2
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	c:RegisterFlagEffect(m-13,RESET_EVENT+RESETS_STANDARD,0,1,c:GetFieldID())
+	c:RegisterFlagEffect(m-13,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 function cm.spfilter(c,se)
 	if not (se==nil or c:GetReasonEffect()~=se) then return false end

@@ -97,8 +97,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e7:SetCondition(cm.thcon)
 		e7:SetOperation(cm.thop)
 		Duel.RegisterEffect(e7,tp)
-		tc1:RegisterFlagEffect(m,RESET_EVENT+0x1de0000,0,1)
-		tc2:RegisterFlagEffect(m,RESET_EVENT+0x1de0000,0,1)
+		tc1:RegisterFlagEffect(m,RESET_EVENT+0x1de0000,0,1,tc1:GetRealFieldID())
+		tc2:RegisterFlagEffect(m,RESET_EVENT+0x1de0000,0,1,tc2:GetRealFieldID())
 	end
 end
 function cm.thfilter(c)
@@ -113,11 +113,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleHand(tp)
 end
 function cm.filter(c,fid,ac)
-	return c:GetRealFieldID()==fid and c:IsCanBeBattleTarget(ac)
+	local flag=c:GetFlagEffectLabel(m)
+	return flag and flag==fid and c:IsCanBeBattleTarget(ac)
 end
 function cm.macon(e)
 	return Duel.IsExistingMatchingCard(cm.filter,e:GetHandlerPlayer(),0,LOCATION_MZONE,1,e:GetHandler(),e:GetLabel(),e:GetHandler())
 end
 function cm.bttg(e,c)
-	return c:GetRealFieldID()==e:GetLabel()
+	local flag=c:GetFlagEffectLabel(m)
+	return flag and flag==e:GetLabel()
 end
