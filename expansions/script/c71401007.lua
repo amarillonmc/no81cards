@@ -3,7 +3,7 @@ if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401007.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(71401007,0))
+	e1:SetDescription(aux.Stringid(71401001,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -17,7 +17,7 @@ function c71401007.initial_effect(c)
 	c:RegisterEffect(e1)
 	--draw
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(71401007,1))
+	e2:SetDescription(aux.Stringid(71401007,0))
 	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_REMOVE)
@@ -68,7 +68,7 @@ function c71401007.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.BreakEffect()
 	if Duel.Draw(tp,g:GetCount(),REASON_EFFECT)>0 then
 		local sg=Duel.GetMatchingGroup(c71401007.filter2,tp,LOCATION_HAND,0,nil,e,tp)
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401007,2)) then
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401007,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local tg=sg:Select(tp,1,1,nil)

@@ -72,7 +72,7 @@ function c71401016.op2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,c71401016.filter2,tp,LOCATION_EXTRA,0,1,1,nil,tp):GetFirst()
 	if tc then
 		local c=e:GetHandler()
-		local ctype=Duel.SelectOption(tp,aux.Stringid(71401016,2),aux.Stringid(71401016,3))==0 and TYPE_SPELL or TYPE_TRAP
+		local ctype=Duel.SelectOption(tp,aux.Stringid(71401001,4),aux.Stringid(71401001,5))==0 and TYPE_SPELL or TYPE_TRAP
 		if Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -84,7 +84,7 @@ function c71401016.op2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_EXTRA,0,1,1,nil,tp,POS_FACEDOWN)
 			if Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)>0 and c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-				and Duel.SelectYesNo(tp,aux.Stringid(71401016,4)) then
+				and Duel.SelectYesNo(tp,aux.Stringid(71401016,2)) then
 				Duel.BreakEffect()
 				if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 					local e2=Effect.CreateEffect(c)
@@ -117,7 +117,7 @@ end
 function c71401016.op3(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=Duel.SelectMatchingCard(tp,c71401016.filter3,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
+	local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71401016.filter3),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
 	if Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_EXTRA,0,1,1,nil,tp,POS_FACEDOWN)

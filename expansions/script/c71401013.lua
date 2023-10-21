@@ -30,7 +30,7 @@ function c71401013.initial_effect(c)
 	yume.ButterflyCounter()
 end
 function c71401013.con2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
+	return Duel.GetTurnPlayer()~=tp and e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
 end
 function c71401013.filterc2(c)
 	return c:IsFaceup() and c:GetType() & 0x20004==0x20004 and c:IsAbleToRemoveAsCost()
@@ -68,6 +68,7 @@ function c71401013.op2(e,tp,eg,ep,ev,re,r,rp)
 		end
 		local dg=Duel.GetDecktopGroup(tp,5)
 		if Duel.IsExistingMatchingCard(c71401013.filter2,tp,LOCATION_ONFIELD,0,1,nil) and dg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)==5 and Duel.SelectYesNo(tp,aux.Stringid(71401013,1)) then
+			Duel.DisableShuffleCheck()
 			Duel.Remove(dg,POS_FACEUP,REASON_EFFECT)
 		end
 	end
