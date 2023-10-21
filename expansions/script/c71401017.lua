@@ -70,7 +70,7 @@ function c71401017.op2(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 			e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 			c:RegisterEffect(e1)
-			local mg=Duel.GetMatchingGroup(c71401017.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil,e,tp)
+			local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c71401017.filter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil,e,tp)
 			if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and mg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401017,0)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

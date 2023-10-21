@@ -77,7 +77,7 @@ function c71401015.op2(e,tp,eg,ep,ev,re,r,rp)
 			local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 			if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 			if ct>ft then ct=ft end
-			local mg=Duel.GetMatchingGroup(c71401015.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil,e,tp)
+			local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c71401015.filter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil,e,tp)
 			if ct>0 and mg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401015,0)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

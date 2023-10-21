@@ -43,13 +43,13 @@ function c71401003.filter2a(c)
 end
 function c71401003.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c71401003.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71401003.filter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
 		local b1=tc:IsAbleToHand()
 		local b2=not tc:IsForbidden() and tc:CheckUniqueOnField(tp)
 		local flag=0
-		if b1 and (not b2 or Duel.SelectOption(tp,1190,aux.Stringid(71401003,1))==0) then
+		if b1 and (not b2 or Duel.SelectOption(tp,1190,aux.Stringid(71401001,4))==0) then
 			flag=Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
 		else
@@ -65,7 +65,7 @@ function c71401003.op2(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		local rg=Duel.GetMatchingGroup(c71401003.filter2a,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-		if flag>0 and rg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401003,2)) then
+		if flag>0 and rg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401003,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local srg=rg:Select(tp,1,1,nil)

@@ -74,7 +74,7 @@ function c71401014.op2(e,tp,eg,ep,ev,re,r,rp)
 				local rg1=mg:Select(tp,1,1,c)
 				local rc1=rg1:GetFirst()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-				local rg2=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,0,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,ct,Group.FromCards(rc1,c),tp,POS_FACEDOWN)
+				local rg2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToRemove),0,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,ct,Group.FromCards(rc1,c),tp,POS_FACEDOWN)
 				rg2:AddCard(rc1)
 				Duel.Remove(rg2,POS_FACEDOWN,REASON_EFFECT)
 			end

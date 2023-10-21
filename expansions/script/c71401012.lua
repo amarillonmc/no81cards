@@ -32,7 +32,7 @@ function c71401012.con1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71401012.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and aux.NegateMonsterFilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS and Duel.IsExistingTarget(aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	Duel.SelectTarget(tp,aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
@@ -67,7 +67,7 @@ function c71401012.op2(e,tp,eg,ep,ev,re,r,rp)
 			if oc then
 				local b1=oc:IsAbleToHand()
 				local b2=not oc:IsForbidden() and oc:CheckUniqueOnField(tp)
-				if b1 and (not b2 or Duel.SelectOption(tp,1190,aux.Stringid(71401012,2))==0) then
+				if b1 and (not b2 or Duel.SelectOption(tp,1190,aux.Stringid(71401001,4))==0) then
 					Duel.SendtoHand(oc,nil,REASON_EFFECT)
 					Duel.ConfirmCards(1-tp,oc)
 				else
