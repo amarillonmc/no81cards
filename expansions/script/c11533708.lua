@@ -4,7 +4,8 @@ function c11533708.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCode(EVENT_FREE_CHAIN) 
+	e1:SetCountLimit(1,11533708) 
 	e1:SetTarget(c11533708.target)
 	e1:SetOperation(c11533708.activate)
 	c:RegisterEffect(e1) 
@@ -41,9 +42,9 @@ function c11533708.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsOnField,nil)   
 		local mg2=Duel.GetMatchingGroup(aux.RitualExtraFilter,tp,LOCATION_GRAVE,0,nil,c11533708.mfilter1) 
-		local mg3=Duel.GetMatchingGroup(aux.RitualExtraFilter,tp,0,LOCATION_MZONE,nil,c11533708.mfilter2) 
-		mg2:Merge(mg3)  
-		return Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,c11533708.filter,e,tp,mg,mg2,Card.GetLevel,"Equal") and Duel.GetFlagEffect(tp,11533708)==0 
+		local mg3=Duel.GetMatchingGroup(aux.RitualExtraFilter,tp,0,LOCATION_MZONE,nil,c11533708.mfilter2)  
+		mg2:Merge(mg3)
+		return Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,c11533708.filter,e,tp,mg,mg2,Card.GetLevel,"Equal") --and Duel.GetFlagEffect(tp,11533708)==0 
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE) 
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,tp,LOCATION_GRAVE)  
@@ -51,8 +52,8 @@ end
 function c11533708.activate(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsOnField,nil)   
 	local mg2=Duel.GetMatchingGroup(aux.RitualExtraFilter,tp,LOCATION_GRAVE,0,nil,c11533708.mfilter1) 
-	local mg3=Duel.GetMatchingGroup(aux.RitualExtraFilter,tp,0,LOCATION_MZONE,nil,c11533708.mfilter2) 
-	mg2:Merge(mg3)  
+	local mg3=Duel.GetMatchingGroup(aux.RitualExtraFilter,tp,0,LOCATION_MZONE,nil,c11533708.mfilter2)  
+	mg2:Merge(mg3)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tg=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,c11533708.filter,e,tp,mg,mg2,Card.GetLevel,"Equal")
 	local tc=tg:GetFirst()
@@ -76,10 +77,11 @@ function c11533708.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		tc:CompleteProcedure() 
-		if tc:IsLevelAbove(1) and Duel.SelectYesNo(tp,aux.Stringid(11533708,0)) then 
-			Duel.SetLP(tp,Duel.GetLP(tp)-tc:GetLevel()*300)   
-		else 
-			Duel.RegisterFlagEffect(tp,11533708,RESET_PHASE+PHASE_END,0,1)  
+		local batk=tc:GetBaseAttack()
+		if batk>0 then 
+			Duel.SetLP(tp,Duel.GetLP(tp)-batk)   
+		--else 
+			--Duel.RegisterFlagEffect(tp,11533708,RESET_PHASE+PHASE_END,0,1)  
 		end  
 	end
 end

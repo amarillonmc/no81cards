@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c,tp)
-	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) --and (c:GetActivateEffect():IsActivatable(tp,true,true) or c:CheckActivateEffect(false,false,false)~=nil)
+	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or (Duel.IsPlayerAffectedByEffect(tp,11451676) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0)) --and (c:GetActivateEffect():IsActivatable(tp,true,true) or c:CheckActivateEffect(false,false,false)~=nil)
 end
 function cm.filter0(c)
 	return c:IsCanBeFusionMaterial() --and (not c:IsLocation(LOCATION_REMOVED) or c:IsFaceup())
@@ -44,11 +44,14 @@ end
 function cm.gcheck(sg)
 	return sg:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=1
 end
+function cm.ccfilter(c)
+	return c:IsFaceup() and c:IsCode(11451631)
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,aux.ExceptThisCard(e))
-		if Duel.IsEnvironment(11451631) then
+		if Duel.IsExistingMatchingCard(cm.ccfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then
 			local mg2=Duel.GetMatchingGroup(cm.fexfilter,tp,LOCATION_DECK,0,nil)
 			if #mg2>0 then
 				mg1:Merge(mg2)
@@ -76,7 +79,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,aux.ExceptThisCard(e),e)
 	local exmat=false
-	if Duel.IsEnvironment(11451631) then
+	if Duel.IsExistingMatchingCard(cm.ccfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then
 		local mg2=Duel.GetMatchingGroup(cm.fexfilter,tp,LOCATION_DECK,0,nil)
 		if mg2:GetCount()>0 then
 			mg1:Merge(mg2)
@@ -173,12 +176,29 @@ function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
-		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-		if fc then
-			Duel.SendtoGrave(fc,REASON_RULE)
-			Duel.BreakEffect()
+		if not Duel.IsPlayerAffectedByEffect(tp,11451676) or (not tc:IsType(TYPE_FIELD) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)<=0) or Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0 then
+			if tc:IsType(TYPE_FIELD) then
+				local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+				if fc then
+					Duel.SendtoGrave(fc,REASON_RULE)
+					Duel.BreakEffect()
+				end
+				Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+			else
+				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+			end
+		else
+			if tc:IsType(TYPE_FIELD) then
+				local fc=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
+				if fc then
+					Duel.SendtoGrave(fc,REASON_RULE)
+					Duel.BreakEffect()
+				end
+				Duel.MoveToField(tc,tp,1-tp,LOCATION_FZONE,POS_FACEUP,true)
+			else
+				Duel.MoveToField(tc,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
+			end
 		end
-		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		--[[local te=tc:GetActivateEffect()
 		if te:IsActivatable(tp,true,true) and (not tc:CheckActivateEffect(false,false,false) or Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0) then
 			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)

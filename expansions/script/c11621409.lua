@@ -35,18 +35,8 @@ function c11621409.initial_effect(c)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3) 
 	cm[c]=e3	 
-	--
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_UNRELEASABLE_SUM)
-	e4:SetValue(cm.sumlimit)
-	c:RegisterEffect(e4)  
 end
 cm.SetCard_THY_PeachblossomCountry=true 
---
-function cm.sumlimit(e,c)
-	return not c:IsRace(RACE_ZOMBIE)
-end
 --
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -64,14 +54,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	--  local ag=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
 	--  if ag:GetCount()>0 then
-	--	Duel.HintSelection(ag)
-	--	Duel.BreakEffect()
-	--	local e1=Effect.CreateEffect(e:GetHandler())
-	--	e1:SetType(EFFECT_TYPE_SINGLE)
-	--	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	--	e1:SetValue(800)
-	--	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	--	ag:GetFirst():RegisterEffect(e1)
+	--  Duel.HintSelection(ag)
+	--  Duel.BreakEffect()
+	--  local e1=Effect.CreateEffect(e:GetHandler())
+	--  e1:SetType(EFFECT_TYPE_SINGLE)
+	--  e1:SetCode(EFFECT_UPDATE_ATTACK)
+	--  e1:SetValue(800)
+	--  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	--  ag:GetFirst():RegisterEffect(e1)
 	--  end
 	--end
 end

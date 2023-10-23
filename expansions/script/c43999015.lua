@@ -46,7 +46,7 @@ function c43999015.lpop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_REMOVED,0)
 	local ct=Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	if ct>0 then
-		Duel.Recover(tp,ct*600,REASON_EFFECT)
+		Duel.Recover(tp,ct*200,REASON_EFFECT)
 	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)

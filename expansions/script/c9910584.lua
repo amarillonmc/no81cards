@@ -39,33 +39,34 @@ function c9910584.operation(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.HintSelection(g)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		local chain=Duel.GetCurrentChain()
-		if chain==1 then return end
-		local te=Duel.GetChainInfo(chain-1,CHAININFO_TRIGGERING_EFFECT)
-		if te and te:GetHandler()==e:GetHandler() then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_CHAINING)
-			e1:SetReset(RESET_PHASE+PHASE_END)
-			e1:SetCondition(c9910584.discon)
-			e1:SetOperation(c9910584.disop)
-			Duel.RegisterEffect(e1,tp)
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetDescription(aux.Stringid(9910584,1))
-			e2:SetType(EFFECT_TYPE_FIELD)
-			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-			e2:SetTargetRange(1,1)
-			e2:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e2,tp)
-		end
+	end
+	local chain=Duel.GetCurrentChain()
+	if chain==1 then return end
+	local te=Duel.GetChainInfo(chain-1,CHAININFO_TRIGGERING_EFFECT)
+	if te and te:GetHandler()==e:GetHandler() then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_SOLVING)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetCondition(c9910584.discon)
+		e1:SetOperation(c9910584.disop)
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetDescription(aux.Stringid(9910584,1))
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e2:SetTargetRange(1,1)
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e2,tp)
 	end
 end
 function c9910584.discon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsChainNegatable(ev) and Duel.GetFlagEffect(tp,9910584)==0 and ep~=tp
+	return rp==1-tp and Duel.IsChainDisablable(ev) and Duel.GetFlagEffect(tp,9910584)<1
 end
 function c9910584.disop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
+	Duel.Hint(HINT_CARD,0,9910584)
 	Duel.RegisterFlagEffect(tp,9910584,RESET_PHASE+PHASE_END,0,1)
+	local rc=re:GetHandler()
 	if Duel.NegateEffect(ev) and rc:IsRelateToEffect(re) then
 		Duel.Destroy(rc,REASON_EFFECT)
 	end

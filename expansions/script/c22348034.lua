@@ -127,9 +127,9 @@ function c22348034.decon4(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c22348034.decost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348034.filter,tp,LOCATION_HAND,0,2,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348034.filter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,c22348034.filter,tp,LOCATION_HAND,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c22348034.filter,tp,LOCATION_HAND,0,1,1,nil)
 	local tc=g:GetFirst()
 	while tc do
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -173,6 +173,7 @@ function c22348034.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
 function c22348034.repcon(e)
+	local tp=e:GetHandlerPlayer()
 	local c=e:GetHandler()
 	return c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_DESTROY) and Duel.IsPlayerAffectedByEffect(tp,22348039)
 end

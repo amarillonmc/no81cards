@@ -98,7 +98,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetOperation(cm.recop)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e4)
-	else
+	--[[else
 		local e5=Effect.CreateEffect(c)
 		e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e5:SetCode(EVENT_ADJUST)
@@ -106,14 +106,17 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		e5:SetCondition(cm.spcon)
 		e5:SetOperation(cm.spop)
 		e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		c:RegisterEffect(e5,true)
+		c:RegisterEffect(e5,true)--]]
 	end
+end
+function cm.unicity_check(tp)
+	return not Duel.IsExistingMatchingCard(aux.NOT(Card.IsSetCard),tp,LOCATION_GRAVE,0,1,nil,0x3531)
 end
 function cm.cfilter1(c,tp)
 	return c:IsSetCard(0x3531) and c:IsPreviousLocation(LOCATION_HAND) and c:IsPreviousControler(tp) and c:GetAttribute()~=0
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter1,1,nil,tp)
+	return eg:IsExists(cm.cfilter1,1,nil,tp) and cm.unicity_check(tp)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
@@ -129,7 +132,7 @@ function cm.cfilter2(c,tp)
 	return c:IsSetCard(0x3531) and c:IsControler(tp)
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter2,1,nil,tp)
+	return eg:IsExists(cm.cfilter2,1,nil,tp) and cm.unicity_check(tp)
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
@@ -151,7 +154,7 @@ function cm.cfilter3(c,tp)
 	return c:IsSetCard(0x3531) and c:IsPreviousLocation(LOCATION_GRAVE) and c:IsPreviousControler(tp)
 end
 function cm.reccon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter3,1,nil,tp)
+	return eg:IsExists(cm.cfilter3,1,nil,tp) and cm.unicity_check(tp)
 end
 function cm.recop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)

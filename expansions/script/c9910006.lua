@@ -19,7 +19,7 @@ function c9910006.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,9910005)
 	e2:SetCondition(c9910006.sccon1)
 	e2:SetTarget(c9910006.sctg)
 	e2:SetOperation(c9910006.scop)
@@ -30,17 +30,6 @@ function c9910006.initial_effect(c)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCondition(c9910006.sccon2)
 	c:RegisterEffect(e3)
-end
-function c9910006.confilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5950)
-end
-function c9910006.sccon1(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetHandler():GetEquipGroup()
-	return not g or not g:IsExists(c9910006.confilter,1,nil)
-end
-function c9910006.sccon2(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetHandler():GetEquipGroup()
-	return g and g:IsExists(c9910006.confilter,1,nil)
 end
 function c9910006.rpcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
@@ -74,44 +63,72 @@ function c9910006.rpop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c9910006.scfilter1(c,e,tp,mc)
-	local mg=Group.FromCards(c,mc)
-	return c:IsCanBeSpecialSummoned(e,182,tp,false,false)
-		and Duel.IsExistingMatchingCard(c9910006.scfilter2,tp,LOCATION_EXTRA,0,1,nil,tp,mg)
+function c9910006.confilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x5950)
 end
-function c9910006.scfilter2(c,tp,mg)
-	return c:IsXyzSummonable(mg,2,2) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
+function c9910006.sccon1(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetHandler():GetEquipGroup()
+	return not g or not g:IsExists(c9910006.confilter,1,nil)
+end
+function c9910006.sccon2(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetHandler():GetEquipGroup()
+	return g and g:IsExists(c9910006.confilter,1,nil)
+end
+function c9910006.filter1(c,e,tp)
+	local mg=Duel.GetMatchingGroup(Card.IsCanBeXyzMaterial,tp,LOCATION_MZONE,0,nil,nil)
+	if not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return false end
+	mg:AddCard(c)
+	return mg:CheckSubGroup(c9910006.matfilter,1,#mg,tp,c)
+end
+function c9910006.matfilter(g,tp,mc)
+	if not g:IsContains(mc) then return false end
+	return Duel.IsExistingMatchingCard(c9910006.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g)
+end
+function c9910006.xyzfilter(c,mg)
+	return c:IsXyzSummonable(mg,#mg,#mg)
 end
 function c9910006.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_PZONE) and chkc:IsControler(tp) and c9910006.scfilter1(chkc,e,tp,c) end
-	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c9910006.scfilter1,tp,LOCATION_PZONE,0,1,nil,e,tp,c) end
+	if chkc then return chkc:IsLocation(LOCATION_PZONE) and chkc:IsControler(tp) and c9910006.filter1(chkc,e,tp) end
+	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c9910006.filter1,tp,LOCATION_PZONE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c9910006.scfilter1,tp,LOCATION_PZONE,0,1,1,nil,e,tp,c)
+	local g=Duel.SelectTarget(tp,c9910006.filter1,tp,LOCATION_PZONE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c9910006.scop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) or not Duel.SpecialSummonStep(tc,182,tp,tp,false,false,POS_FACEUP) then return end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	tc:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_DISABLE_EFFECT)
-	tc:RegisterEffect(e2)
-	Duel.SpecialSummonComplete()
-	if not c:IsRelateToEffect(e) then return end
-	local mg=Group.FromCards(c,tc)
-	local g=Duel.GetMatchingGroup(c9910006.scfilter2,tp,LOCATION_EXTRA,0,nil,tp,mg)
-	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.XyzSummon(tp,sg:GetFirst(),mg)
+	if tc:IsRelateToEffect(e) and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		tc:RegisterEffect(e2)
 	end
+	if Duel.SpecialSummonComplete()==0 then return end
+	Duel.AdjustAll()
+	if not tc:IsLocation(LOCATION_MZONE) then return end
+	local xyzg=Duel.GetMatchingGroup(c9910006.ovfilter,tp,LOCATION_EXTRA,0,nil,tp,tc)
+	if xyzg:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local xyz=xyzg:Select(tp,1,1,nil):GetFirst()
+		local fg=Duel.GetMatchingGroup(Card.IsCanBeXyzMaterial,tp,LOCATION_MZONE,0,nil,nil)
+		local sg=fg:SelectSubGroup(tp,c9910006.gselect,false,1,7,xyz,tc)
+		Duel.XyzSummon(tp,xyz,sg)
+	end
+end
+function c9910006.ovfilter(c,tp,mc)
+	local mg=Duel.GetMatchingGroup(Card.IsCanBeXyzMaterial,tp,LOCATION_MZONE,0,nil,nil)
+	mg:AddCard(mc)
+	return mg:CheckSubGroup(c9910006.gselect,1,#mg,c,mc)
+end
+function c9910006.gselect(g,c,mc)
+	if not g:IsContains(mc) then return false end
+	return c:IsXyzSummonable(g,#g,#g)
 end

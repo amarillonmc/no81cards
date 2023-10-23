@@ -164,6 +164,7 @@ function c22348030.drcon2(e)
 end
 
 function c22348030.repcon(e)
+	local tp=e:GetHandlerPlayer()
 	local c=e:GetHandler()
 	return c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_DESTROY) and Duel.IsPlayerAffectedByEffect(tp,22348039)
 end

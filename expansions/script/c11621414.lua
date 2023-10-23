@@ -36,19 +36,8 @@ function c11621414.initial_effect(c)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3) 
-	--cm[c]=e3  
-	--
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_UNRELEASABLE_SUM)
-	e4:SetValue(cm.sumlimit)
-	c:RegisterEffect(e4)  
 end
 cm.SetCard_THY_PeachblossomCountry=true 
---
-function cm.sumlimit(e,c)
-	return not c:IsRace(RACE_ZOMBIE)
-end
 --
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

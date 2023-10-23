@@ -33,18 +33,10 @@ function cm.initial_effect(c)
 	e3:SetCountLimit(1,m+10000)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
-	c:RegisterEffect(e3)
-	cm[c]=e3	  
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_UNRELEASABLE_SUM)
-	e4:SetValue(cm.sumlimit)
-	c:RegisterEffect(e4)  
+	c:RegisterEffect(e3) 
+	cm[c]=e3	
 end
 cm.SetCard_THY_PeachblossomCountry=true 
-function cm.sumlimit(e,c)
-	return not c:IsRace(RACE_ZOMBIE)
-end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,2000,0,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) end

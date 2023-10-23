@@ -36,18 +36,8 @@ function c11621410.initial_effect(c)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3) 
 	cm[c]=e3	 
-	--
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_UNRELEASABLE_SUM)
-	e4:SetValue(cm.sumlimit)
-	c:RegisterEffect(e4)  
 end
 cm.SetCard_THY_PeachblossomCountry=true 
---
-function cm.sumlimit(e,c)
-	return not c:IsRace(RACE_ZOMBIE)
-end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,700,0,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) end
@@ -67,9 +57,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
 	--  local ag=Duel.SelectTarget(tp,cm.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	--  if ag:GetCount()>0 then
-	--	Duel.HintSelection(ag)
-	--	Duel.BreakEffect()
-	--	Duel.ChangePosition(ag,POS_FACEDOWN_DEFENSE)
+	--  Duel.HintSelection(ag)
+	--  Duel.BreakEffect()
+	--  Duel.ChangePosition(ag,POS_FACEDOWN_DEFENSE)
 	--  end
 	--end
 end

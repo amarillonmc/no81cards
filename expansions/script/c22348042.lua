@@ -30,6 +30,15 @@ function cm.initial_effect(c)
 	e3:SetHintTiming(0,TIMING_END_PHASE)
 	e3:SetCondition(c22348042.spcon3)
 	c:RegisterEffect(e3)
+	--send replace
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_TO_GRAVE_REDIRECT_CB)
+	e8:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e8:SetCondition(c22348042.repcon)
+	e8:SetOperation(c22348042.repop)
+	c:RegisterEffect(e8)
+
 	
 end
 function c22348042.filter(c)
@@ -68,4 +77,20 @@ function c22348042.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g1:GetFirst()
 	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 end
+function c22348042.repcon(e)
+	local tp=e:GetHandlerPlayer()
+	local c=e:GetHandler()
+	return c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_DESTROY) and Duel.IsPlayerAffectedByEffect(tp,22348039)
+end
+function c22348042.repop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetCode(EFFECT_CHANGE_TYPE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+	c:RegisterEffect(e1)
+end
+
 

@@ -494,7 +494,6 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local num=Duel.GetFlagEffect(tp,11612634)
 	--Debug.Message(g:GetCount())
 	local gc=g:GetClassCount(Card.GetCode)
-	Debug.Message(gc)
 	return num<gc  and e:GetHandler():GetFlagEffect(m)>0 and rp==1-tp
 end
 
