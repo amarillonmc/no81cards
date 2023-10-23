@@ -1,6 +1,7 @@
 --忒提斯智能 KAI
 local s,id,o=GetID()
 function s.initial_effect(c)
+	Duel.EnableGlobalFlag(GLOBALFLAG_BRAINWASHING_CHECK)
 	--link summon
 	aux.AddLinkProcedure(c,s.mfilter,1,1)
 	c:EnableReviveLimit()
