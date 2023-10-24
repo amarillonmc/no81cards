@@ -50,6 +50,7 @@ function c67200827.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
 end
 function c67200827.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c67200827.xyzfilter,tp,LOCATION_EXTRA,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
