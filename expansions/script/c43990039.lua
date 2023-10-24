@@ -42,7 +42,7 @@ function c43990039.spfilter(c)
 	return c:IsSetCard(0x1514)
 end
 function c43990039.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c43990039.spfilter,1,nil)
+	return not eg:IsContains(e:GetHandler()) and eg:IsExists(c43990039.spfilter,1,nil)
 end
 function c43990039.thfilter(c)
 	return c:IsSetCard(0x1514) and c:IsAbleToHand()

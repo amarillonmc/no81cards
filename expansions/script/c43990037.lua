@@ -44,7 +44,7 @@ function c43990037.tdfilter(c)
 	return c:IsSetCard(0x1514)
 end
 function c43990037.tdcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c43990037.tdfilter,1,nil)
+	return not eg:IsContains(e:GetHandler()) and eg:IsExists(c43990037.tdfilter,1,nil)
 end
 function c43990037.tddfilter(c)
 	return c:IsAbleToDeck() and c:IsSetCard(0x1514) and c:IsType(TYPE_MONSTER)

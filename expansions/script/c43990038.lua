@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,43990038)
+	e2:SetCountLimit(1,43991038)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetTarget(c43990038.destg)
 	e2:SetOperation(c43990038.desop)
@@ -44,7 +44,7 @@ function c43990038.spfilter(c)
 	return c:IsSetCard(0x1514)
 end
 function c43990038.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c43990038.spfilter,1,nil)
+	return not eg:IsContains(e:GetHandler()) and eg:IsExists(c43990038.spfilter,1,nil)
 end
 function c43990038.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -100,8 +100,8 @@ function cm.XyzConditionAlter(f,lv,minc,maxc,alterf,alterdesc,alterop)
 				else
 					mg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
 				end
-				if c:IsLocation(LOCATION_GRAVE) and Duel.GetCurrentPhase()==PHASE_BATTLE then
-					return (not min or min<=1) and mg:IsExists(Auxiliary.XyzAlterFilter,1,nil,alterf,c,e,tp,alterop)
+				if c:IsLocation(LOCATION_GRAVE) then
+					return Duel.GetCurrentPhase()==PHASE_BATTLE and (not min or min<=1) and mg:IsExists(Auxiliary.XyzAlterFilter,1,nil,alterf,c,e,tp,alterop)
 				end
 				local minc=minc
 				local maxc=maxc

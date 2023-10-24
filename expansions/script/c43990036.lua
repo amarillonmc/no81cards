@@ -42,14 +42,14 @@ function c43990036.spfilter(c)
 	return c:IsSetCard(0x1514)
 end
 function c43990036.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c43990036.spfilter,1,nil)
+	return not eg:IsContains(e:GetHandler()) and eg:IsExists(c43990036.spfilter,1,nil)
 end
 function c43990036.sppfilter(c,e,tp)
 	return c:IsSetCard(0x1514) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c43990036.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
---	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c43990036.sppfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+--  if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c43990036.sppfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end

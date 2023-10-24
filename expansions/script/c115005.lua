@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	--negate
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e4:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -55,7 +55,7 @@ function cm.initial_effect(c)
 	end
 	KDlobal["Effects"]["c115002"]=e2
 end
-function cm.spfilter1(c,fc)
+function cm.spfilter1(c,fc,tp)
 	return c:IsCode(15000351) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,nil,fc,c:GetLocation())
 end
 function cm.spfilter2(c,fc,loc)
@@ -65,11 +65,11 @@ function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
-		and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,nil,c) 
+		and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,nil,c,tp) 
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g1=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,1,nil,c)
+	local g1=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,1,nil,c,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g2=Duel.SelectMatchingCard(tp,cm.spfilter2,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,1,nil,c,g1:GetFirst():GetLocation())
 	g1:Merge(g2)
@@ -120,7 +120,7 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
