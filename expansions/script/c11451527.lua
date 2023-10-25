@@ -264,7 +264,9 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 	for tc in aux.Next(g) do tc:CompleteProcedure() end--]]
 	local tc=g:GetFirst()
-	if not tc.pendulum_rule then
+	if not tc.pendulum_rule or not tc.pendulum_rule[tc] then
+		local tcm=getmetatable(tc)
+		tcm.pendulum_rule=tcm.pendulum_rule or {}
 		local e1=Effect.CreateEffect(tc)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -275,9 +277,9 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetTarget(function(e) e:SetLabel(0) return true end)
 		e1:SetValue(SUMMON_TYPE_PENDULUM)
 		tc:RegisterEffect(e1,true)
-		_G["c"..tc:GetOriginalCode()].pendulum_rule=e1
+		tcm.pendulum_rule[tc]=e1
 	else
-		tc.pendulum_rule:SetLabel(1)
+		tc.pendulum_rule[tc]:SetLabel(1)
 	end
 	Duel.SpecialSummonRule(tp,tc,SUMMON_TYPE_PENDULUM)
 end
