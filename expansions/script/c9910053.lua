@@ -86,7 +86,7 @@ function c9910053.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleDeck(tp)
 end
 function c9910053.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsChainNegatable(ev) and Duel.GetFlagEffect(tp,9910053)<2 and ep~=tp
+	return rp==1-tp and Duel.IsChainDisablable(ev) and Duel.GetFlagEffect(tp,9910053)<2
 end
 function c9910053.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910053)

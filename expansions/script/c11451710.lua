@@ -50,16 +50,16 @@ function cm.initial_effect(c)
 			if c:IsLocation(LOCATION_HAND) and e:GetCode()==EFFECT_PUBLIC and e:IsHasType(EFFECT_TYPE_SINGLE) and #extg>0 and Duel.IsPlayerCanDraw(tp,1) then
 				Duel.HintSelection(Group.FromCards(c))
 				if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 					local tc=extg:GetFirst()
 					if #extg>1 then tc=extg:Select(tp,1,1,nil):GetFirst() end
 					if tc then
 						Duel.Hint(HINT_CARD,0,m)
 						Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 						Duel.ConfirmCards(1-tp,c)
-						_RegisterEffect(tc,e,bool)
+						local eid=_RegisterEffect(tc,e,bool)
 						Duel.Draw(tp,1,REASON_EFFECT)
-						return
+						return eid
 					end
 				end
 			end

@@ -41,7 +41,7 @@ function c60002008.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
 	Duel.SendtoHand(tc,tp,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,tc)
-	if (tc:IsSummonable(true,nil) or tc:IsMSetable(true,nil)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(60002008,2)) then 
+	if (tc:IsSummonable(true,nil) or tc:IsMSetable(true,nil)) and Duel.SelectYesNo(tp,aux.Stringid(60002008,2)) then 
 		local s1=tc:IsSummonable(true,nil)
 		local s2=tc:IsMSetable(true,nil)
 		if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then

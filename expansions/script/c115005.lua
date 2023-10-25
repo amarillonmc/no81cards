@@ -56,10 +56,10 @@ function cm.initial_effect(c)
 	KDlobal["Effects"]["c115002"]=e2
 end
 function cm.spfilter1(c,fc,tp)
-	return c:IsCode(15000351) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,nil,fc,c:GetLocation())
+	return c:IsCode(15000351) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost() and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,nil,fc,c:GetLocation())
 end
 function cm.spfilter2(c,fc,loc)
-	return c:IsCode(115001) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckAsCost() and bit.band(loc,c:GetLocation())==0
+	return c:IsCode(115001) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost() and bit.band(loc,c:GetLocation())==0
 end
 function cm.spcon(e,c)
 	if c==nil then return true end

@@ -24,17 +24,18 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	if not cm.global_check then
 		cm.global_check=true
-		--[[local ge0=Effect.CreateEffect(c)
+		local ge0=Effect.CreateEffect(c)
 		ge0:SetType(EFFECT_TYPE_FIELD)
 		ge0:SetCode(EFFECT_ACTIVATE_COST)
 		ge0:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		ge0:SetTargetRange(1,1)
-		ge0:SetOperation(cm.clear0)
-		Duel.RegisterEffect(ge0,0)--]]
+		ge0:SetTarget(cm.chktg)
+		ge0:SetOperation(cm.check0)
+		Duel.RegisterEffect(ge0,0)
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_CHAINING)
-		ge1:SetOperation(cm.check0)
+		ge1:SetOperation(cm.check1)
 		Duel.RegisterEffect(ge1,0)
 		local ge5=Effect.CreateEffect(c)
 		ge5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -52,15 +53,28 @@ function cm.initial_effect(c)
 		ge6:SetLabelObject(cm[0])
 	end
 end
+local _IsCanBeSpecialSummoned=Card.IsCanBeSpecialSummoned
+function cm.chktg(e,te,tp)
+	e:SetLabelObject(te)
+	return true
+end
 function cm.check0(e,tp,eg,ep,ev,re,r,rp)
+	local re=e:GetLabelObject()
 	local tg=re:GetTarget()
 	if tg then
-		local _IsCanBeSpecialSummoned=Card.IsCanBeSpecialSummoned
 		function Card.IsCanBeSpecialSummoned(c,e,st,...)
 			if st&SUMMON_TYPE_RITUAL>0 then cm[1]=true end
 			return _IsCanBeSpecialSummoned(c,e,st,...)
 		end
-		tg(e,tp,eg,ep,ev,re,r,rp,0)
+		--tg(e,tp,eg,ep,ev,re,r,rp,0)
+		--Card.IsCanBeSpecialSummoned=_IsCanBeSpecialSummoned
+		if cm[1] then cm[re]=true end
+		cm[1]=nil
+	end
+end
+function cm.check1(e,tp,eg,ep,ev,re,r,rp)
+	local tg=re:GetTarget()
+	if tg then
 		Card.IsCanBeSpecialSummoned=_IsCanBeSpecialSummoned
 		if cm[1] then cm[re]=true end
 		cm[1]=nil
@@ -99,7 +113,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then
 		local sg=Group.CreateGroup()
 		for tc in aux.Next(cm[0]) do
 			local con=tc.condition3
@@ -109,6 +123,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if #sg==0 then return end
 		local tc=sg:Select(tp,1,1,nil):GetFirst()
 		tc.operation3(e,tp,eg,ep,ev,re,r,rp)
+		Duel.SpecialSummonComplete()
 	end
 end
 function cm.chcon(e,tp,eg,ep,ev,re,r,rp)

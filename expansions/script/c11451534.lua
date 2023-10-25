@@ -90,6 +90,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
 	e2:SetCountLimit(1)
+	e2:SetLabel(c:GetFieldID())
 	e2:SetCondition(cm.tgcon)
 	e2:SetOperation(cm.tgop)
 	if 1~=1 then
@@ -104,7 +105,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:GetFlagEffect(m)==0 or not c:IsLocation(LOCATION_HAND) or not c:IsPublic() or c:GetFlagEffectLabel(m)~=c:GetFieldID() then
+	if c:GetFlagEffect(m)==0 or not c:IsLocation(LOCATION_HAND) or not c:IsPublic() or c:GetFlagEffectLabel(m)~=e:GetLabel() then
 		e:Reset()
 		return false
 	else
