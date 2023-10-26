@@ -87,6 +87,9 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_QUICK_O)
 		e1:SetCode(EVENT_FREE_CHAIN)
 		e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+		local con=v:GetCondition()
+		if not con then con=aux.TRUE end
+		e1:SetCondition(s.recon(con))
 		e1:SetReset(RESET_EVENT+0xfe0000)
 		rc:RegisterEffect(e1,true)
 	end
@@ -100,6 +103,11 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_EVENT+0xfe0000)
 	rc:RegisterEffect(e2,true)
 	rc:RegisterFlagEffect(id,RESET_EVENT+0xfe0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,1))
+end
+function s.recon(_con)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
+				return Duel.GetTurnPlayer()~=tp and _con(e,tp,eg,ep,ev,re,r,rp)
+			end
 end
 function s.rdisop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(Card.IsPreviousControler,nil,1-tp)

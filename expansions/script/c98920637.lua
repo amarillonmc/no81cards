@@ -35,7 +35,7 @@ function c98920637.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c98920637.matfilter(c)
-	return c:IsLinkSetCard(0xc1) and not c:IsLinkCode(98920637)
+	return c:IsLinkRace(RACE_PSYCHO) and not c:IsLinkCode(98920637)
 end
 function c98920637.atkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xc1) and c:GetBaseAttack()>=0

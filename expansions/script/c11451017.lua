@@ -222,6 +222,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED then rc:ResetFlagEffect(m) end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
