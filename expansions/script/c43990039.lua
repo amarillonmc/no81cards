@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetTarget(c43990039.thtg)
+	e1:SetTarget(c43990039.tgtg)
 	e1:SetOperation(c43990039.tgop)
 	c:RegisterEffect(e1)
 	--Activate
@@ -23,16 +23,16 @@ function cm.initial_effect(c)
 	e2:SetOperation(c43990039.thop)
 	c:RegisterEffect(e2)
 end
-function c43990039.thfilter(c)
+function c43990039.tgfilter(c)
 	return c:IsSetCard(0x1514) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
-function c43990039.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c43990039.thfilter,tp,LOCATION_DECK,0,1,nil) end
+function c43990039.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c43990039.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c43990039.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c43990039.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c43990039.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
