@@ -116,7 +116,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		if not tc then return end
 		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
 			Duel.ConfirmCards(1-rp,tc)
-			Duel.HintSelection(Group.FromCards(tc))
+			--Duel.HintSelection(Group.FromCards(tc))
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 			local e2=Effect.CreateEffect(e:GetHandler())
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
