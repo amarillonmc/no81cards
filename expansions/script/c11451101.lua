@@ -19,6 +19,7 @@ function cm.costtg(e,te,tp)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local ac=Duel.AnnounceCard(e:GetHandlerPlayer())
+	e:GetHandler():SetHint(CHINT_CARD,ac)
 	if e:GetLabelObject():IsOriginalCodeRule(ac) then
 		if Duel.CheckLPCost(tp,3000) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.PayLPCost(tp,3000)
@@ -28,11 +29,14 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EVENT_CHAIN_SOLVING)
 			e1:SetOperation(cm.ngop)
 			e1:SetReset(RESET_CHAIN)
-			e1:SetLabel(ev+1)
+			e1:SetLabel(Duel.GetCurrentChain()+1)
 			Duel.RegisterEffect(e1,tp)
 		end
 	end
 end
 function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetLabel()==ev then Duel.NegateEffect(ev) end
+	if e:GetLabel()==ev then
+		Duel.Hint(HINT_CARD,0,m)
+		Duel.NegateEffect(ev)
+	end
 end

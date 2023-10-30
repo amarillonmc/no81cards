@@ -46,9 +46,8 @@ end
 function c22022090.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c22022090.spcfilter,tp,LOCATION_MZONE,0,nil)
-	local rg=Duel.GetReleaseGroup(tp)
-	return (g:GetCount()>0 or rg:GetCount()>0) and g:FilterCount(Card.IsReleasable,nil)==g:GetCount()
+	local rg=Duel.GetMatchingGroup(c22022090.spcfilter,tp,LOCATION_MZONE,0,nil,tp)
+	return rg:GetCount()>0 and rg:FilterCount(Card.IsReleasable,nil)==rg:GetCount() and aux.mzctcheck(rg,tp)
 end
 function c22022090.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(c22022090.spcfilter,tp,LOCATION_MZONE,0,nil)

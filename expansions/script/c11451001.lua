@@ -151,6 +151,18 @@ function cm.initial_effect(c)
 				local tg=ng:RandomSelect(sp,1)
 				if tg:GetFirst() and tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then Duel.ConfirmCards(sp,tg) end
 				return tg
+			elseif Duel.GetFlagEffect(0,m)>0 and min<=0 and max==1 then
+				local ng=g:Clone()
+				if aux.GetValueType(nc)=="Card" then ng:RemoveCard(nc) end
+				if aux.GetValueType(nc)=="Group" then ng:Sub(nc) end	
+				if not Duel.SelectYesNo(sp,aux.Stringid(m,2)) then return Group.CreateGroup() end
+				Duel.Hint(HINT_CARD,0,m)
+				--local ct=Duel.GetFlagEffectLabel(sp,m)
+				--Duel.SetFlagEffectLabel(sp,m,ct+1)
+				cm[sp]=cm[sp]+1
+				local tg=ng:RandomSelect(sp,1)
+				if tg:GetFirst() and tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then Duel.ConfirmCards(sp,tg) end
+				return tg
 			else
 				return _Select(g,sp,min,max,nc)
 			end
@@ -289,6 +301,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			ac=nil
 		end
 		for i=1,ct1 do
+			Duel.Hint(HINT_CARD,0,tab1[i])
 			g1:AddCard(Duel.CreateToken(tp,tab1[i]))
 		end
 		if #g1>0 then
@@ -366,6 +379,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			ac=nil
 		end
 		for i=1,ct2 do
+			Duel.Hint(HINT_CARD,0,tab2[i])
 			g2:AddCard(Duel.CreateToken(1-tp,tab2[i]))
 		end
 		if #g2>0 then
