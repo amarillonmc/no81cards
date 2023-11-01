@@ -122,7 +122,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tp=e:GetHandler():GetControler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) and e:GetHandler():GetEquipTarget() end
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,false) and e:GetHandler():GetEquipTarget() end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler():GetEquipTarget(),1,0,0)
 end
@@ -131,7 +131,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) and c:GetEquipTarget() then return end
 	local tc=c:GetEquipTarget()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)~=0 then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
 end

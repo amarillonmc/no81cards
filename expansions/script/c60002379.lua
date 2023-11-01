@@ -1,5 +1,5 @@
 --真纯的原型·阿纪尔
-Duel.LoadScript("c60002382.lua")
+Duel.LoadScript("c60000000.lua")
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 	--public
@@ -42,7 +42,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 	local num=Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0) 
 	if num>=20 then
-		FusionA.Change(c,m+1)
+		MerlinTC.Change(c,m+1)
 	else
 		local gm=60002238
 		local tc1=Duel.CreateToken(tp,gm)
