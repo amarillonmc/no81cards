@@ -104,6 +104,6 @@ function c71401014.op3(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,Group.FromCards(tc,c),tp,POS_FACEDOWN)
 		rg:AddCard(tc)
-		Duel.Remove(rg,POS_FACEUP,POS_FACEDOWN)
+		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
 	end
 end

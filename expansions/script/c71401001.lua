@@ -19,7 +19,7 @@ function c71401001.initial_effect(c)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401001,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -68,8 +68,10 @@ function c71401001.filter2(c,e,tp,check)
 		and (c:IsAbleToHand() or check and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
 function c71401001.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	if chk==0 then return Duel.IsExistingMatchingCard(c71401001.filter2ext,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c71401001.filter2,tp,LOCATION_DECK,0,1,nil,e,tp,check) end
+	if chk==0 then
+		local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		return Duel.IsExistingMatchingCard(c71401001.filter2ext,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c71401001.filter2,tp,LOCATION_DECK,0,1,nil,e,tp,check)
+	end
 end
 function c71401001.op2(e,tp,eg,ep,ev,re,r,rp)
 	local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0

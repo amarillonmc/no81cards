@@ -5,7 +5,7 @@ function c71401003.initial_effect(c)
 	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401003,0))
-	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -31,23 +31,26 @@ function c71401003.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	yume.RegButterflyCostLimit(e,tp)
 end
-function c71401003.filter2(c,tp)
-	return c:IsRace(RACE_SPELLCASTER) and c:IsAttribute(ATTRIBUTE_LIGHT) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and (c:IsAbleToHand() or not c:IsForbidden() and c:CheckUniqueOnField(tp))
+function c71401003.filter2(c,tp,check)
+	return c:IsRace(RACE_SPELLCASTER) and c:IsAttribute(ATTRIBUTE_LIGHT) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and (c:IsAbleToHand() or check and not c:IsForbidden() and c:CheckUniqueOnField(tp))
 end
 function c71401003.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71401003.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
+	if chk==0 then
+		local check=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		return Duel.IsExistingMatchingCard(c71401003.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp,check)
+	end
 end
 function c71401003.filter2a(c)
 	return c:IsAbleToRemove() and c:IsFaceup()
 end
 function c71401003.op2(e,tp,eg,ep,ev,re,r,rp)
+	local check=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71401003.filter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71401003.filter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp,check)
 	local tc=g:GetFirst()
 	if tc then
 		local b1=tc:IsAbleToHand()
-		local b2=not tc:IsForbidden() and tc:CheckUniqueOnField(tp)
+		local b2=check and not tc:IsForbidden() and tc:CheckUniqueOnField(tp)
 		local flag=0
 		if b1 and (not b2 or Duel.SelectOption(tp,1190,aux.Stringid(71401001,4))==0) then
 			flag=Duel.SendtoHand(tc,nil,REASON_EFFECT)

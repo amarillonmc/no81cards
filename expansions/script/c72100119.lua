@@ -39,10 +39,13 @@ end
 function c72100119.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and
-		Duel.GetMatchingGroupCount(Card.IsSetCard,c:GetControler(),LOCATION_REMOVED,0,nil,0x105)==4
+		Duel.GetMatchingGroupCount(c72100119.mmmfilter,c:GetControler(),LOCATION_REMOVED,0,nil)==4
 end
 function c72100119.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF
+end
+function c72100119.mmmfilter(c)
+	return c:IsSetCard(0x105) and c:IsType(TYPE_MONSTER)
 end
 function c72100119.filter(c)
 	return c:IsSetCard(0x105) and c:IsAbleToHand()
