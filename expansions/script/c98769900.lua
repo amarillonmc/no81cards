@@ -40,6 +40,7 @@ function c98769900.initial_effect(c)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_LEAVE_FIELD)
+	e4:SetCondition(c98769900.thcon3)
 	c:RegisterEffect(e4)
 end
 function c98769900.thcon1(e,tp,eg,ep,ev,re,r,rp)
@@ -126,4 +127,7 @@ function c98769900.thop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+end
+function c98769900.thcon3(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end

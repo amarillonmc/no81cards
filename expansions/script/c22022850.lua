@@ -6,7 +6,6 @@ function c22022850.initial_effect(c)
 	--synchro effect
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetDescription(aux.Stringid(22022850,0))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_CHAINING) 
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -30,23 +29,21 @@ function c22022850.initial_effect(c)
 	e2:SetOperation(c22022850.xyzop)
 	c:RegisterEffect(e2)
 end
+c22022850.material_type=TYPE_SYNCHRO 
 function c22022850.sccon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp and rp==tp and re:GetHandler():IsCode(22021730)
 end
 function c22022850.sctarg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler() 
 	local mg=Duel.GetMatchingGroup(function(c) return c:IsCanBeSynchroMaterial() and c:IsSetCard(0x2ff1) end,tp,LOCATION_MZONE,0,nil)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,mg,nil,1,99) end
+	if chk==0 then return e:GetHandler():IsSynchroSummonable(nil,mg,1,99) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c22022850.scop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local mg=Duel.GetMatchingGroup(function(c) return c:IsCanBeSynchroMaterial() and c:IsSetCard(0x2ff1) end,tp,LOCATION_MZONE,0,nil) 
-	local g=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,mg,nil,1,99)
-	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SynchroSummon(tp,sg:GetFirst(),nil,1,99)  
+	local mg=Duel.GetMatchingGroup(function(c) return c:IsCanBeSynchroMaterial() and c:IsSetCard(0x2ff1) end,tp,LOCATION_MZONE,0,nil)  
+	if c:IsSynchroSummonable(nil,mg,1,99) then 
+		Duel.SynchroSummon(tp,c,nil,mg,1,99)  
 	end
 end
 function c22022850.xyzfil(c,e,tp,mc) 

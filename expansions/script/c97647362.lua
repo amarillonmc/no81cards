@@ -33,6 +33,7 @@ function c97647362.initial_effect(c)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_LEAVE_FIELD)
+	e4:SetCondition(c97647362.thcon3)
 	c:RegisterEffect(e4)
 end
 function c97647362.eqfilter(c,tp)
@@ -104,4 +105,7 @@ function c97647362.thop2(e,tp,eg,ep,ev,re,r,rp)
 end
 function c97647362.splimit(e,c)
 	return not c:IsSetCard(0x13f)
+end
+function c97647362.thcon3(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end

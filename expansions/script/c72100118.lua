@@ -39,7 +39,7 @@ function c72100118.discon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
 end
 function c72100118.costfilter(c)
-	return c:IsSetCard(0x105) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x105) and c:IsAbleToGraveAsCost() and c:IsType(TYPE_MONSTER)
 end
 function c72100118.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

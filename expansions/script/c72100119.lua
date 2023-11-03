@@ -48,7 +48,7 @@ function c72100119.mmmfilter(c)
 	return c:IsSetCard(0x105) and c:IsType(TYPE_MONSTER)
 end
 function c72100119.filter(c)
-	return c:IsSetCard(0x105) and c:IsAbleToHand()
+	return c:IsSetCard(0x105) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c72100119.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c72100119.filter(chkc) end
