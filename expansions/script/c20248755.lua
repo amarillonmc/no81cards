@@ -10,7 +10,7 @@ function c20248755.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
-	e1:SetCountLimit(1,20248755)
+	e1:SetCountLimit(1,20248755*1)
 	e1:SetCost(c20248755.spcost)
 	e1:SetTarget(c20248755.sptg)
 	e1:SetOperation(c20248755.spop)
@@ -24,7 +24,7 @@ function c20248755.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCountLimit(1,20248756)
+	e2:SetCountLimit(1,20248755*2)
 	e2:SetTarget(c20248755.eqtg)
 	e2:SetOperation(c20248755.eqop)
 	c:RegisterEffect(e2)
@@ -48,8 +48,7 @@ function c20248755.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e4:SetCountLimit(1,20248757)
+	e4:SetCountLimit(1,20248755*3)
 	e4:SetCondition(c20248755.rmcon)
 	e4:SetCost(c20248755.rmcost)
 	e4:SetTarget(c20248755.rmtg)
@@ -149,12 +148,9 @@ end
 function c20248755.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==1-tp
 end
-function c20248755.costfilter2(c,g,tp)
-	return c:IsControler(tp) or c:IsOnField() and g:FilterCount(aux.TRUE,c)>0
-end
 function c20248755.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c20248755.costfilter2,1,e:GetHandler()) end
-	local g=Duel.SelectReleaseGroup(tp,c20248755.costfilter2,1,1,e:GetHandler())
+	if chk==0 then return Duel.CheckReleaseGroup(tp,nil,1,e:GetHandler()) end
+	local g=Duel.SelectReleaseGroup(tp,nil,1,1,e:GetHandler())
 	Duel.Release(g,REASON_COST)
 end
 function c20248755.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

@@ -1,5 +1,6 @@
 --人理之基 亚瑟·潘德拉贡
 function c22022000.initial_effect(c)
+	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22022000,0))

@@ -50,12 +50,9 @@ function c9910485.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
 end
 function c9910485.penop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
 	local dg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
-	if dg:GetCount()<2 then return end
-	if Duel.Destroy(dg,REASON_EFFECT)~=2 then return end
-	local e1=Effect.CreateEffect(c)
+	if #dg>0 then Duel.Destroy(dg,REASON_EFFECT) end
+	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCondition(c9910485.negcon)

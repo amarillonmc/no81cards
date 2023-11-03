@@ -16,30 +16,26 @@ function c9910476.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910476,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END+TIMING_END_PHASE)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,9910477)
-	e2:SetCondition(c9910476.spcon1)
+	e2:SetCondition(c9910476.spcon)
 	e2:SetCost(c9910476.spcost)
 	e2:SetTarget(c9910476.sptg)
 	e2:SetOperation(c9910476.spop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCondition(c9910476.spcon2)
-	c:RegisterEffect(e3)
 	--set
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e4:SetCode(EVENT_DESTROYED)
-	e4:SetCountLimit(1,9910477)
-	e4:SetCondition(c9910476.setcon)
-	e4:SetTarget(c9910476.settg)
-	e4:SetOperation(c9910476.setop)
-	c:RegisterEffect(e4)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e3:SetCode(EVENT_DESTROYED)
+	e3:SetCountLimit(1,9910477)
+	e3:SetCondition(c9910476.setcon)
+	e3:SetTarget(c9910476.settg)
+	e3:SetOperation(c9910476.setop)
+	c:RegisterEffect(e3)
 end
 function c9910476.pencon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,1,e:GetHandler(),0x3950)
@@ -54,11 +50,8 @@ function c9910476.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c9910476.penop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
 	local dg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
-	if dg:GetCount()<2 then return end
-	if Duel.Destroy(dg,REASON_EFFECT)~=2 then return end
+	if #dg==0 or Duel.Destroy(dg,REASON_EFFECT)==0 then return end
 	local g=Duel.GetMatchingGroup(c9910476.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.BreakEffect()
@@ -67,13 +60,11 @@ function c9910476.penop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c9910476.spcon1(e,tp,eg,ep,ev,re,r,rp)
+function c9910476.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return not c:IsPublic() or c:GetFlagEffect(9910001)==0
-end
-function c9910476.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPublic() and c:GetFlagEffect(9910001)~=0
+	local b1=Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+	local b2=c:IsLocation(LOCATION_HAND) and c:IsPublic() and c:GetFlagEffect(9910001)~=0
+	return b1 or b2
 end
 function c9910476.costfilter(c)
 	return c:IsSetCard(0x3950) and c:IsLevel(5) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()

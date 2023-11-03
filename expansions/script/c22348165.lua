@@ -37,7 +37,7 @@ function c22348165.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c22348165.filter(c)
-	return c:IsSetCard(0x705) and c:IsAbleToHand()
+	return aux.IsCodeListed(c,22348157) and c:IsType(TYPE_TUNER) and c:IsRace(RACE_MACHINE) and c:IsAbleToHand()
 end
 function c22348165.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348165.filter,tp,LOCATION_DECK,0,1,nil) end

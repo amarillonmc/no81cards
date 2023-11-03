@@ -148,7 +148,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thfilter(c,tp)
-	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect():IsActivatable(tp)
+	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect():IsActivatable(tp,false,true)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

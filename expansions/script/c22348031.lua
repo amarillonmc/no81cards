@@ -142,7 +142,7 @@ function c22348031.dacost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c22348031.dafilter(c)
-	return c:IsSetCard(0x700) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x700) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_MACHINE) and not c:IsForbidden()
 end
 function c22348031.datg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348031.dafilter,tp,LOCATION_DECK,0,1,nil)
@@ -182,6 +182,7 @@ function c22348031.actcon2(e)
 	return ((a and c22348031.cfilter(a,tp)) or (d and c22348031.cfilter(d,tp))) and c:IsPublic() and Duel.IsPlayerAffectedByEffect(tp,22348037)
 end
 function c22348031.repcon(e)
+	local tp=e:GetHandlerPlayer()
 	local c=e:GetHandler()
 	return c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_DESTROY) and Duel.IsPlayerAffectedByEffect(tp,22348039)
 end

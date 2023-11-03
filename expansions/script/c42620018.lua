@@ -238,6 +238,10 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,#g,0,LOCATION_SZONE)
 end
 
+function cm.optfilter(c,g)
+	return not g:IsExists(Card.IsCode,1,nil,c:GetCode())
+end
+
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
@@ -248,9 +252,14 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			if mlink>=10 then mlink=10 end
 			local gg=Duel.GetMatchingGroup(cm.eqfilter,tp,0x34,0x34,c)
 			local locc=Duel.GetLocationCount(tp,LOCATION_SZONE)+Duel.GetLocationCount(1-tp,LOCATION_SZONE)
-			if gg:GetCount()>0 and math.min(locc,mlink)>0 then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-				local sg=gg:SelectSubGroup(tp,aux.dncheck,false,1,math.min(#gg,locc,mlink))
+			local n=math.min(locc,mlink)
+			if n>0 and #gg>=n then
+				local sg=Group.CreateGroup()
+				while #sg<=n do
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+					local ssg=gg:FilterSelect(tp,cm.optfilter,1,1,sg,sg)
+					sg:Merge(ssg)
+				end
 				if sg:GetCount()>0 then
 					local sc=sg:GetFirst()
 					while sc do

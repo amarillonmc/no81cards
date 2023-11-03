@@ -5,7 +5,7 @@ function c9910905.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON+CATEGORY_REMOVE+CATEGORY_CONTROL)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_GRAVE)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,9910905)
 	e1:SetCondition(c9910905.condition1)
 	e1:SetCost(c9910905.cost)
@@ -30,14 +30,15 @@ function c9910905.condition2(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910905.cfilter(c,e,tp,mc)
 	local b1=mc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp,c)>0
-	local b2=mc:IsAbleToRemove() and Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil)
-	return aux.IsCodeListed(c,9910871) and c:IsAbleToHandAsCost() and (b1 or b2)
+	local b2=mc:IsAbleToRemove() and Duel.GetMZoneCount(tp,c,tp,LOCATION_REASON_CONTROL)>0
+		and Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil,true)
+	return c:IsFaceup() and aux.IsCodeListed(c,9910871) and c:IsAbleToHandAsCost() and (b1 or b2)
 end
 function c9910905.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910905.cfilter,tp,LOCATION_MZONE,0,1,nil,e,tp,c) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910905.cfilter,tp,LOCATION_ONFIELD,0,1,nil,e,tp,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910905.cfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp,c)
+	local g=Duel.SelectMatchingCard(tp,c9910905.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil,e,tp,c)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 function c9910905.target(e,tp,eg,ep,ev,re,r,rp,chk)

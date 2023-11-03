@@ -53,7 +53,7 @@ function s.cfilter(c,lg)
 end
 function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	local lg=e:GetHandler():GetLinkedGroup()
-	return eg:IsExists(s.cfilter,1,nil,lg)
+	return eg:IsExists(s.cfilter,1,nil,lg) and not eg:IsContains(e:GetHandler())
 end
 function s.tgfilter(c)
 	return c:IsSetCard(0x116) and c:IsAbleToGrave()

@@ -55,13 +55,12 @@ function c11533700.rrfil(c)
 	else return false end 
 end 
 function c11533700.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11533700.rrfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,e:GetHandler()) end 
-	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533700.rrfil,tp,LOCATION_HAND,0,1,e:GetHandler()) end 
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND) 
 end 
 function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(c11533700.rrfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil) 
+	local g=Duel.GetMatchingGroup(c11533700.rrfil,tp,LOCATION_HAND,0,nil) 
 	if g:GetCount()>0 then 
 		local tc=g:Select(tp,1,1,nil):GetFirst() 
 		local x=0
@@ -81,12 +80,12 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 			elseif op==1 then 
 			x=Duel.SendtoGrave(tc,REASON_EFFECT) 
 			end  
-		elseif tc:IsLocation(LOCATION_GRAVE) then 
-			x=Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		--elseif tc:IsLocation(LOCATION_GRAVE) then 
+			--x=Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		end 
 		if x>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11533700,0)) then 
 			Duel.BreakEffect() 
-			local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,5,nil) 
+			local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil) 
 			Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)   
 		end 
 	end 

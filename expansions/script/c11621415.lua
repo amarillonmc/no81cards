@@ -34,18 +34,8 @@ function c11621415.initial_effect(c)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
 	cm[c]=e3	  
-	--
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_UNRELEASABLE_SUM)
-	e4:SetValue(cm.sumlimit)
-	c:RegisterEffect(e4)  
 end
 cm.SetCard_THY_PeachblossomCountry=true 
---
-function cm.sumlimit(e,c)
-	return not c:IsRace(RACE_ZOMBIE)
-end
 --
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -67,21 +57,21 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	--  local ag=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	--  if ag:GetCount()>0 then
-	--	  Duel.HintSelection(ag)
-	--	  Duel.BreakEffect()
-	--	  --immune
-	--	  local e1=Effect.CreateEffect(e:GetHandler())
-	--	  e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	--	  e1:SetCode(EFFECT_DESTROY_REPLACE)
-	--	  e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	--	 e1:SetRange(LOCATION_MZONE)
-	--	  e1:SetTarget(cm.reptg)
-	--	  e1:SetValue(cm.repval)
-	--	  e1:SetLabel(p)
-	--	  e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	--	  --e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	--	  ag:GetFirst():RegisterEffect(e1,true)
-	--	  ag:GetFirst():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+	--	Duel.HintSelection(ag)
+	--	Duel.BreakEffect()
+	--	--immune
+	--	local e1=Effect.CreateEffect(e:GetHandler())
+	--	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	--	e1:SetCode(EFFECT_DESTROY_REPLACE)
+	--	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	--   e1:SetRange(LOCATION_MZONE)
+	--	e1:SetTarget(cm.reptg)
+	--	e1:SetValue(cm.repval)
+	--	e1:SetLabel(p)
+	--	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	--	--e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	--	ag:GetFirst():RegisterEffect(e1,true)
+	--	ag:GetFirst():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	--  end
 	--end
 end

@@ -77,12 +77,42 @@ end
 function c11533701.rmcon(e,tp,eg,ep,ev,re,r,rp) 
 	local mg=e:GetHandler():GetMaterial()
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and mg and mg:FilterCount(Card.IsSetCard,nil,0xb4)==mg:GetCount()  
-end 
+end
 function c11533701.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_DECK,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil) end 
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,PLAYER_ALL,LOCATION_DECK+LOCATION_EXTRA)
+end 
+function c11533701.rmop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler()   
+	local g1=Duel.GetDecktopGroup(tp,1) 
+	if g1:GetCount()>0 then 
+		Duel.ConfirmCards(1-tp,g1)  
+		Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)	
+	end 
+	local g2=Duel.GetDecktopGroup(1-tp,1) 
+	if g2:GetCount()>0 then 
+		Duel.ConfirmCards(tp,g2)  
+		Duel.Remove(g2,POS_FACEUP,REASON_EFFECT) 
+	end 
+	local g3=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
+	if g3:GetCount()>0 then 
+		Duel.ConfirmCards(tp,g3)  
+		local rg=g3:Select(tp,1,1,nil)
+		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)	
+	end 
+	local g4=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
+	if g4:GetCount()>0 then  
+		local rg=g4:Select(tp,1,1,nil)
+		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)	
+	end 
+end 
+
+
+function c11533701.xxrmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK+LOCATION_GRAVE,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_ONFIELD,1,nil) end 
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_ONFIELD)
 end 
-function c11533701.rmop(e,tp,eg,ep,ev,re,r,rp) 
+function c11533701.xxrmop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
 	local g1=Duel.GetDecktopGroup(tp,1) 
 	if g1:GetCount()>0 then 

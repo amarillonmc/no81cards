@@ -4,109 +4,140 @@ function c9910031.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE+CATEGORY_LEAVE_GRAVE+CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,9910031)
-	e1:SetTarget(c9910031.rptg)
-	e1:SetOperation(c9910031.rpop)
+	e1:SetTarget(c9910031.thtg)
+	e1:SetOperation(c9910031.thop)
 	c:RegisterEffect(e1)
-	--summon
+	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910031,0))
-	e2:SetCategory(CATEGORY_SUMMON)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_EQUIP)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetRange(LOCATION_HAND)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,9910049)
-	e2:SetCondition(c9910031.sumcon)
-	e2:SetTarget(c9910031.sumtg)
-	e2:SetOperation(c9910031.sumop)
+	e2:SetCondition(c9910031.spcon)
+	e2:SetTarget(c9910031.sptg)
+	e2:SetOperation(c9910031.spop)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_SUMMON_PROC)
-	e3:SetRange(LOCATION_HAND)
-	e3:SetCondition(c9910031.ntcon)
-	e3:SetValue(SUMMON_TYPE_NORMAL)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-	e2:SetLabelObject(e3)
 	--chain attack
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_BATTLE_DESTROYING)
-	e3:SetCondition(c9910031.atcon)
-	e3:SetOperation(c9910031.atop)
-	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_BATTLE_DESTROYING)
+	e4:SetCondition(c9910031.atcon)
+	e4:SetOperation(c9910031.atop)
+	c:RegisterEffect(e4)
+	if not c9910031.global_check then
+		c9910031.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(c9910031.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge2,0)
+	end
 end
-function c9910031.ntcon(e,c,minc)
-	if c==nil then return true end
-	return minc==0 and Duel.CheckTribute(c,0)
+function c9910031.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),9910031,RESET_PHASE+PHASE_END,0,2)
+		tc=eg:GetNext()
+	end
 end
-function c9910031.rmfilter(c)
-	if not (c:IsSetCard(0x5950) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
-	return c:IsAbleToRemove() or c:IsSSetable()
+function c9910031.desfilter(c)
+	return c:IsFaceup() and c:GetOriginalRace()&RACE_WARRIOR>0 and c:GetOriginalType()&TYPE_PENDULUM>0
 end
-function c9910031.rptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910031.rmfilter(chkc) end
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingTarget(c9910031.rmfilter,tp,LOCATION_GRAVE,0,1,nil)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c9910031.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+function c9910031.thfilter(c,code)
+	return c:IsCode(code) and c:IsAbleToHand()
 end
-function c9910031.rpop(e,tp,eg,ep,ev,re,r,rp)
+function c9910031.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910031.desfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910031.desfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
+		and Duel.IsExistingMatchingCard(c9910031.thfilter,tp,LOCATION_DECK,0,1,nil,9910046)
+		and Duel.IsExistingMatchingCard(c9910031.thfilter,tp,LOCATION_DECK,0,1,nil,9910043) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,c9910031.desfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	g:AddCard(e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK)
+end
+function c9910031.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Group.CreateGroup()
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-	if tc:IsRelateToEffect(e) then
-		if tc:IsAbleToRemove() and (not tc:IsSSetable() or Duel.SelectOption(tp,1192,1153)==0) then
-			if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_REMOVED)
-				and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil)
-				and Duel.SelectYesNo(tp,aux.Stringid(9910031,1)) then
-				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-				local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,1,nil)
-				Duel.HintSelection(tg)
-				Duel.SendtoGrave(tg,REASON_EFFECT)
-			end
-		else
-			Duel.SSet(tp,tc)
+	if c:IsRelateToEffect(e) then g:AddCard(c) end
+	if tc:IsRelateToEffect(e) then g:AddCard(tc) end
+	if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)>0 then
+		local g1=Duel.GetMatchingGroup(c9910031.thfilter,tp,LOCATION_DECK,0,nil,9910046)
+		local g2=Duel.GetMatchingGroup(c9910031.thfilter,tp,LOCATION_DECK,0,nil,9910043)
+		if g1:GetCount()>0 and g2:GetCount()>0 then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local sg1=g1:Select(tp,1,1,nil)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local sg2=g2:Select(tp,1,1,nil)
+			sg1:Merge(sg2)
+			Duel.SendtoHand(sg1,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg1)
 		end
 	end
 end
-function c9910031.sumcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)-Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>=2
+function c9910031.cfilter(c)
+	return c:IsFaceup() and c:IsRace(RACE_WARRIOR) and c:IsType(TYPE_PENDULUM)
 end
-function c9910031.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSummonable(true,e:GetLabelObject()) end
-	Duel.SetChainLimit(c9910031.chlimit)
+function c9910031.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c9910031.cfilter,1,nil)
 end
-function c9910031.chlimit(e,ep,tp)
+function c9910031.eqfilter(c,tp)
+	return c:IsFaceup() and (c:IsControler(tp) or c:IsAbleToChangeControler())
+end
+function c9910031.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.IsExistingMatchingCard(c9910031.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c9910031.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Group.FromCards(c)
-	g:Merge(c:GetColumnGroup())
-	return tp==ep or not c:IsType(TYPE_MONSTER) or not g:IsExists(Card.IsType,1,nil,TYPE_SPELL+TYPE_TRAP)
-end
-function c9910031.sumop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetTargetRange(0,LOCATION_MZONE)
-	e1:SetValue(-900)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_UPDATE_DEFENSE)
-	Duel.RegisterEffect(e2,tp)
-	local se=e:GetLabelObject()
-	if c:IsRelateToEffect(e) and c:IsSummonable(true,se) then
-		Duel.Summon(tp,c,true,se)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+		local g=Duel.SelectMatchingCard(tp,c9910031.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c,tp)
+		local tc=g:GetFirst()
+		if tc and Duel.Equip(tp,tc,c) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_EQUIP_LIMIT)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(c9910031.eqlimit)
+			e1:SetLabelObject(c)
+			tc:RegisterEffect(e1)
+			--atkup
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_EQUIP)
+			e2:SetCode(EFFECT_UPDATE_ATTACK)
+			e2:SetValue(c9910031.atkval)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+		end
 	end
+end
+function c9910031.eqlimit(e,c)
+	return e:GetOwner()==c
+end
+function c9910031.atkval(e,c)
+	local tp=c:GetControler()
+	return Duel.GetFlagEffect(1-tp,9910031)*300
 end
 function c9910031.atcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

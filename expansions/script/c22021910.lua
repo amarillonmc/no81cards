@@ -53,7 +53,7 @@ function c22021910.cecondition(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(Card.IsFaceup,0,LOCATION_FZONE,LOCATION_FZONE,1,nil)
 end
 function c22021910.thfilter(c)
-	return c:IsType(TYPE_MONSTER))
+	return c:IsType(TYPE_MONSTER)
 end
 function c22021910.cetarget(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22021910.thfilter,rp,0,LOCATION_MZONE,1,nil) end

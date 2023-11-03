@@ -35,18 +35,8 @@ function c11621412.initial_effect(c)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
 	cm[c]=e3  
-	--
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_UNRELEASABLE_SUM)
-	e4:SetValue(cm.sumlimit)
-	c:RegisterEffect(e4)  
 end
 cm.SetCard_THY_PeachblossomCountry=true 
---
-function cm.sumlimit(e,c)
-	return not c:IsRace(RACE_ZOMBIE)
-end
 --
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -64,9 +54,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEDOWN)
 	--  local ag=Duel.SelectMatchingCard(tp,Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	--  if ag:GetCount()>0 then
-	--	  Duel.HintSelection(ag)
-	--	  Duel.BreakEffect()
-	--	  Duel.Release(ag,REASON_EFFECT)
+	--	Duel.HintSelection(ag)
+	--	Duel.BreakEffect()
+	--	Duel.Release(ag,REASON_EFFECT)
 	--  end
 	--end
 end

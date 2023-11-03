@@ -105,37 +105,28 @@ end
 function c22348201.xyz1filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsRace(RACE_PLANT)
 end
-function c22348201.xyz2filter(c)
-	return c:IsSetCard(0x707) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
+function c22348201.xyz2filter(c,e)
+	return c:IsSetCard(0x707) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay() and not c:IsImmuneToEffect(e)
 end
 function c22348201.xyztg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c22348201.xyz2filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c22348201.xyz2filter,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(c22348201.xyz1filter,tp,LOCATION_MZONE,0,1,nil)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c22348201.xyz2filter(chkc,e) end
+	if chk==0 then return Duel.IsExistingTarget(c22348201.xyz2filter,tp,LOCATION_GRAVE,0,1,nil,e) and Duel.IsExistingMatchingCard(c22348201.xyz1filter,tp,LOCATION_MZONE,0,1,nil)
 		and c:IsCanOverlay() end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c22348201.xyz2filter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,c22348201.xyz2filter,tp,LOCATION_GRAVE,0,1,1,nil,e)
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
 end
 function c22348201.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and Duel.IsExistingMatchingCard(c22348201.xyz1filter,tp,LOCATION_MZONE,0,1,nil) then
 		local g=Group.FromCards(c,tc)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 		local sg=Duel.SelectMatchingCard(tp,c22348201.xyz1filter,tp,LOCATION_MZONE,0,1,1,nil)
 		Duel.Overlay(sg:GetFirst(),g)
 	end
 end
-
-
-	
-
-
-
-
-
-
 
 
 

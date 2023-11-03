@@ -2,10 +2,17 @@
 local m=22348206
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	--act in hand
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_SINGLE)
+	e10:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e10:SetCondition(c22348206.handcondition)
+	c:RegisterEffect(e10)
 	--activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetCost(c22348206.cost)
 	c:RegisterEffect(e0)
 	--activate (return)
 	local e1=Effect.CreateEffect(c)
@@ -15,7 +22,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_SZONE)
-	e1:SetCountLimit(1)
+	e1:SetCountLimit(1,22348206)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetTarget(c22348206.thtg)
 	e1:SetOperation(c22348206.thop)
@@ -34,6 +41,19 @@ function cm.initial_effect(c)
 	e2:SetOperation(c22348206.recop)
 	c:RegisterEffect(e2)
 	
+end
+function c22348206.handcondition(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandler():GetControler()
+	return Duel.GetTurnPlayer()==tp
+end
+function c22348206.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if c:IsStatus(STATUS_ACT_FROM_HAND) then
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,c) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	else
+	if chk==0 then return true end
+	end
 end
 function c22348206.thfilter(c)
 	return c:IsSetCard(0x707) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

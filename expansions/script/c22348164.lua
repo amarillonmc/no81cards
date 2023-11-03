@@ -15,17 +15,14 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22348164,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetCondition(c22348164.spcon)
 	e2:SetTarget(c22348164.sptg)
 	e2:SetOperation(c22348164.spop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_SUMMON_SUCCESS)
@@ -103,28 +100,28 @@ end
 function c22348164.indtg(e,c)
 	return c:IsFacedown()
 end
-function c22348164.spfilter(c,tp)
-	return c:IsFaceup() and c:IsCode(22348157) and c:IsControler(tp)
-end
 function c22348164.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22348164.spfilter,1,nil,tp)
+	local cl=e:GetHandler():GetFlagEffectLabel(22348164)
+	return cl and cl>0
 end
 function c22348164.desfilter(c,tp)
-	return Duel.GetMZoneCount(tp,c)>0 and c:IsCode(22348157) and c:IsFaceup()
+	return Duel.GetMZoneCount(tp,c)>0 and c:IsCode(22348157)
 end
 function c22348164.sppfilter(c,e,tp)
 	return c:IsCode(22348165) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c22348164.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c22348164.desfilter2(c,e,tp)
+	return Duel.GetMZoneCount(tp,c)>1 and c:IsCode(22348157) and 
+	Duel.IsExistingMatchingCard(c22348164.sppfilter,tp,LOCATION_DECK,0,1,nil,e,tp)
+end
+
+function c22348164.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local cl=e:GetHandler():GetFlagEffectLabel(22348164)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and chkc:IsFaceup() and c22348164.desfilter(chkc,tp) end
-	if chk==0 then return cl and cl>0 and not e:GetHandler():IsStatus(STATUS_CHAINING) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsExistingTarget(c22348164.desfilter,tp,LOCATION_ONFIELD,0,1,nil,tp) 
-		and (cl<3 or (Duel.IsExistingMatchingCard(c22348164.sppfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0))
+	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and (Duel.IsExistingMatchingCard(c22348164.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp) 
+		or (Duel.IsExistingMatchingCard(c22348164.desfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,e,tp) and cl>2))
 	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c22348164.desfilter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
 	if cl<3 then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
@@ -139,16 +136,26 @@ function c22348164.spppfilter(c,e,tp)
 end
 function c22348164.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
 	local cl=c:GetFlagEffectLabel(22348167)
-	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) then
+	if cl and cl>0 then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,c22348164.desfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,e,tp)
+	if #g>0 and Duel.Destroy(g,REASON_EFFECT)>0
+		and c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		if cl and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c22348164.spppfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	   local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348164.spppfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,e,tp)
+	   if tg:GetCount()>0 then
+		   Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
+	   end
 	end
-		end
+	else
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,c22348164.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,tp)
+	if #g>0 and Duel.Destroy(g,REASON_EFFECT)>0
+		and c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 	end
 end
+

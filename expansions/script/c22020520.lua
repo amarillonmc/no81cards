@@ -103,7 +103,7 @@ function c22020520.operation0(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22020520.cost10(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,10,REASON_COST) end
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0xfed,10,REASON_COST) end
 	Duel.RemoveCounter(tp,1,0,0xfed,10,REASON_COST)
 end
 function c22020520.damtg(e,tp,eg,ep,ev,re,r,rp,chk)

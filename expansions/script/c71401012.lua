@@ -32,7 +32,7 @@ function c71401012.con1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71401012.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and aux.NegateMonsterFilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS and Duel.IsExistingTarget(aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	Duel.SelectTarget(tp,aux.NegateMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
@@ -40,8 +40,8 @@ end
 function c71401012.filter2a(c)
 	return c:IsFaceup() and c:GetType() & 0x20004==0x20004
 end
-function c71401012.filter2b(c, tp)
-	return c:IsRace(RACE_SPELLCASTER) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsLevel(4) and (c:IsAbleToHand() or not c:IsForbidden() and c:CheckUniqueOnField(tp))
+function c71401012.filter2b(c,tp,check)
+	return c:IsRace(RACE_SPELLCASTER) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsLevel(4) and (c:IsAbleToHand() or check and not c:IsForbidden() and c:CheckUniqueOnField(tp))
 end
 function c71401012.op2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -59,15 +59,16 @@ function c71401012.op2(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(RESET_TURN_SET)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e2)
-		local og=Duel.GetMatchingGroup(c71401012.filter2b,tp,LOCATION_DECK,0,nil, tp)
+		local og=Duel.GetMatchingGroup(c71401012.filter2b,tp,LOCATION_DECK,0,nil,tp,check)
+		local check=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		if Duel.IsExistingMatchingCard(c71401012.filter2a,tp,LOCATION_ONFIELD,0,1,nil) and og:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401012,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 			local oc=og:Select(tp,1,1,nil):GetFirst()
 			if oc then
 				local b1=oc:IsAbleToHand()
-				local b2=not oc:IsForbidden() and oc:CheckUniqueOnField(tp)
-				if b1 and (not b2 or Duel.SelectOption(tp,1190,aux.Stringid(71401012,2))==0) then
+				local b2=check and not oc:IsForbidden() and oc:CheckUniqueOnField(tp)
+				if b1 and (not b2 or Duel.SelectOption(tp,1190,aux.Stringid(71401001,4))==0) then
 					Duel.SendtoHand(oc,nil,REASON_EFFECT)
 					Duel.ConfirmCards(1-tp,oc)
 				else

@@ -84,32 +84,22 @@ function cm.fselect(g,ng,goal,tp)
 		return true
 	end
 	aux.GCheckAdditional=cm.hspgcheck2
-	local tc=ng:CheckSubGroup(cm.hspcheck2,1,#ng,g,g:GetSum(cm.lvplus)-goal,tp)
+	local tc=ng:CheckSubGroup(cm.fselect3,1,#ng,g,g:GetSum(cm.lvplus)-goal,tp)
 	aux.GCheckAdditional=nil
 	return tc
 end
 function cm.fselect3(g,g1,lv,tp)
 	return g:GetSum(cm.lvplus)==lv and Duel.GetMZoneCount(tp,g+g1)>0
 end
-function cm.hspcheck(g,ng,goal,tp)
-	Duel.SetSelectedCard(g)
-	return g:CheckSubGroup(cm.fselect,1,#g,ng,goal,tp)
-end
 function cm.hspgcheck(g,c,mg,f,min,max,ext_params)
 	local ng,goal,tp=table.unpack(ext_params)
 	if g:GetSum(cm.lvplus)<=goal then return true end
-	Duel.SetSelectedCard(g)
-	return g:CheckSubGroup(cm.fselect,1,#g,ng,goal,tp)
-end
-function cm.hspcheck2(g,g1,lv,tp)
-	Duel.SetSelectedCard(g)
-	return g:CheckSubGroup(cm.fselect3,1,#g,g1,lv,tp)
+	return cm.fselect(g,ng,goal,tp)
 end
 function cm.hspgcheck2(g,c,mg,f,min,max,ext_params)
 	local g1,lv,tp=table.unpack(ext_params)
 	if g:GetSum(cm.lvplus)<=lv then return true end
-	Duel.SetSelectedCard(g)
-	return g:CheckSubGroup(cm.fselect3,1,#g,g1,lv,tp)
+	return cm.fselect3(g,g1,lv,tp)
 end
 function cm.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -142,9 +132,9 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local ng=mg-trg
 		local tg=Group.CreateGroup()
 		for sc in aux.Next(sg) do
-			aux.GCheckAdditional=cm.hspgcheck
+			--aux.GCheckAdditional=cm.hspgcheck
 			local tc=trg:CheckSubGroup(cm.fselect,1,#trg,ng,cm.lvplus(sc),tp)
-			aux.GCheckAdditional=nil
+			--aux.GCheckAdditional=nil
 			if tc then return true end
 		end
 		return false
@@ -160,9 +150,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ng=mg-trg
 	local tg=Group.CreateGroup()
 	for sc in aux.Next(sg) do
-		aux.GCheckAdditional=cm.hspgcheck
-		local tc=trg:CheckSubGroup(cm.hspcheck,1,#trg,ng,cm.lvplus(sc),tp)
-		aux.GCheckAdditional=nil
+		--aux.GCheckAdditional=cm.hspgcheck
+		local tc=trg:CheckSubGroup(cm.fselect,1,#trg,ng,cm.lvplus(sc),tp)
+		--aux.GCheckAdditional=nil
 		if tc then tg:AddCard(sc) end
 	end
 	if not tg or #tg==0 then return end
@@ -173,12 +163,13 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		tc=tg:Select(tp,1,1,nil):GetFirst()
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,6))
-		aux.GCheckAdditional=cm.hspgcheck
-		rg=trg:SelectSubGroup(tp,cm.hspcheck,true,1,#trg,ng,cm.lvplus(tc),tp)
+		--aux.GCheckAdditional=cm.hspgcheck
+		rg=trg:SelectSubGroup(tp,cm.fselect,true,1,#trg,ng,cm.lvplus(tc),tp)
 		if rg and #rg>0 and rg:GetSum(cm.lvplus)>cm.lvplus(tc) then
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,7))
 			aux.GCheckAdditional=cm.hspgcheck2
-			rg2=ng:SelectSubGroup(tp,cm.hspcheck2,true,1,#ng,rg,rg:GetSum(cm.lvplus)-cm.lvplus(tc),tp)
+			rg2=ng:SelectSubGroup(tp,cm.fselect3,true,1,#ng,rg,rg:GetSum(cm.lvplus)-cm.lvplus(tc),tp)
+			aux.GCheckAdditional=nil
 			if rg2 and #rg2>0 then
 				res=true
 				rg:Merge(rg2)
@@ -186,7 +177,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		elseif rg and #rg>0 and rg:GetSum(cm.lvplus)==cm.lvplus(tc) then
 			res=true
 		end
-		aux.GCheckAdditional=nil
 	end
 	local tg=rg:Filter(cm.filter5,nil)
 	if not tg or #tg==0 then

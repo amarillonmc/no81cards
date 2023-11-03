@@ -96,10 +96,10 @@ end
 function c71401010.op3(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tc=Duel.SelectMatchingCard(tp,c71401010.filter3,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71401010.filter3),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp):GetFirst()
 	if tc then
 		local c=e:GetHandler()
-		local ctype=Duel.SelectOption(tp,aux.Stringid(71401010,2),aux.Stringid(71401010,3))==0 and TYPE_SPELL or TYPE_TRAP
+		local ctype=Duel.SelectOption(tp,aux.Stringid(71401001,4),aux.Stringid(71401001,5))==0 and TYPE_SPELL or TYPE_TRAP
 		if Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -110,7 +110,7 @@ function c71401010.op3(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 			if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 				and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-				and Duel.SelectYesNo(tp,aux.Stringid(71401010,4)) then
+				and Duel.SelectYesNo(tp,aux.Stringid(71401010,2)) then
 				Duel.BreakEffect()
 				Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 			end

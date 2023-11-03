@@ -102,6 +102,14 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
+		if not e:GetHandler():IsLevel(1)  and Duel.SelectYesNo(tp,aux.Stringid(m,3))  then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_LEVEL)
+			e1:SetValue(1)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e:GetHandler():RegisterEffect(e1)
+		end
 	end
 end
 --03

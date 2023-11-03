@@ -94,8 +94,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0
 end
 function cm.lvfilter1(c)
-	return c:IsFaceup() and (c:IsType(TYPE_RITUAL) or c:IsSetCard(0x154))
-		and c:IsLevelAbove(1)
+	return c:IsFaceup() and  c:IsLevelAbove(1)-- (c:IsType(TYPE_RITUAL) or c:IsSetCard(0x154))
 end
 function cm.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.lvfilter(chkc) end

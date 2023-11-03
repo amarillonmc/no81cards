@@ -14,19 +14,19 @@ function cm.initial_effect(c)
     e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-    local e2=Effect.CreateEffect(c)
-    e2:SetDescription(aux.Stringid(m,2))
-	e2:SetCategory(CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_FIELD)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-    e2:SetProperty(EFFECT_FLAG_DELAY)
-    e2:SetRange(0x0c)
-	e2:SetCountLimit(1,m+1)
-    e2:SetCondition(cm.thcon)
-    e2:SetCost(cm.cost)
-    e2:SetTarget(cm.thtg)
-	e2:SetOperation(cm.thop)
-	c:RegisterEffect(e2)
+    -- local e2=Effect.CreateEffect(c)
+    -- e2:SetDescription(aux.Stringid(m,2))
+	-- e2:SetCategory(CATEGORY_SEARCH)
+	-- e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_FIELD)
+	-- e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+    -- e2:SetProperty(EFFECT_FLAG_DELAY)
+    -- e2:SetRange(0x0c)
+	-- e2:SetCountLimit(1,m+1)
+    -- e2:SetCondition(cm.thcon)
+    -- e2:SetCost(cm.cost)
+    -- e2:SetTarget(cm.thtg)
+	-- e2:SetOperation(cm.thop)
+	-- c:RegisterEffect(e2)
     local e3=Effect.CreateEffect(c)
     e3:SetDescription(aux.Stringid(m,3))
 	e3:SetCategory(CATEGORY_RECOVER)
@@ -145,31 +145,31 @@ function cm.eqlimit(e,c)
 	return e:GetLabelObject()==c
 end
 
-function cm.contfilter(c,tp)
-    return c:IsSetCard(0x12b) and c:IsFaceup() and not c:IsCode(m) and c:IsSummonPlayer(tp)
-end
+-- function cm.contfilter(c,tp)
+--     return c:IsSetCard(0x12b) and c:IsFaceup() and not c:IsCode(m) and c:IsSummonPlayer(tp)
+-- end
 
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-    return eg:IsExists(cm.contfilter,1,nil,tp)
-end
+-- function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+--     return eg:IsExists(cm.contfilter,1,nil,tp)
+-- end
 
-function cm.retfilter(c)
-	return c:IsSetCard(0x12b) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
-end
+-- function cm.retfilter(c)
+-- 	return c:IsSetCard(0x12b) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+-- end
 
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.retfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
+-- function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+-- 	if chk==0 then return Duel.IsExistingMatchingCard(cm.retfilter,tp,LOCATION_DECK,0,1,nil) end
+-- 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+-- end
 
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.retfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
-end
+-- function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+--     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+-- 	local g=Duel.SelectMatchingCard(tp,cm.retfilter,tp,LOCATION_DECK,0,1,1,nil)
+-- 	if g:GetCount()>0 then
+-- 		Duel.SendtoHand(g,nil,REASON_EFFECT)
+-- 		Duel.ConfirmCards(1-tp,g)
+-- 	end
+-- end
 
 function cm.conrfilter(c,tp)
     return c:IsSetCard(0x12b) and c:IsType(TYPE_MONSTER) and c:IsLocation(0x02) and c:IsControler(tp) and not c:IsPublic()

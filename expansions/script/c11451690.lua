@@ -1,6 +1,5 @@
 --天空漫步者-仰卧飞行
-local m=11451690
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -62,6 +61,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if sel==0 then
 		local tc=Duel.GetFirstTarget()
 		if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,tc:GetRealFieldID())
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_FIELD)
 			e2:SetCode(EFFECT_IMMUNE_EFFECT)
@@ -94,5 +94,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.efilter(e,re)
 	local c=e:GetLabelObject()
-	return c:GetRealFieldID()==e:GetLabel() and re:IsActivated() and re:GetOwner()==c
+	local flag=c:GetFlagEffectLabel(m)
+	return flag and flag==e:GetLabel() and re:IsActivated() and re:GetOwner()==c
 end

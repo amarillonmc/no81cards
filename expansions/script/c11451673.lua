@@ -41,7 +41,7 @@ function cm.tdcfop(c)
 			end
 end
 function cm.cfilter(c)
-	return (c:IsFusionCode(m-40) or c:IsType(TYPE_SPELL+TYPE_TRAP)) and c:IsAbleToDeckOrExtraAsCost()
+	return (c:IsFusionCode(m-40) or c:IsType(TYPE_SPELL+TYPE_TRAP)) and c:IsAbleToDeckAsCost() and c:IsFaceup()
 end
 function cm.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)

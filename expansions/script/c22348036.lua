@@ -199,6 +199,7 @@ function c22348036.drcon2(e)
 	return c:IsPublic() and Duel.IsPlayerAffectedByEffect(tp,22348037)
 end
 function c22348036.repcon(e)
+	local tp=e:GetHandlerPlayer()
 	local c=e:GetHandler()
 	return c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_DESTROY) and Duel.IsPlayerAffectedByEffect(tp,22348039)
 end

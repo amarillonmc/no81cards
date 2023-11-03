@@ -58,10 +58,10 @@ end
 function c71401008.op2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tc=Duel.SelectMatchingCard(tp,c71401008.filter2,tp,LOCATION_DECK,0,1,1,nil,nil,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71401008.filter2),tp,LOCATION_DECK,0,1,1,nil,nil,tp):GetFirst()
 	if tc then
 		local c=e:GetHandler()
-		local ctype=Duel.SelectOption(tp,aux.Stringid(71401008,2),aux.Stringid(71401008,3))==0 and TYPE_SPELL or TYPE_TRAP
+		local ctype=Duel.SelectOption(tp,aux.Stringid(71401001,4),aux.Stringid(71401001,5))==0 and TYPE_SPELL or TYPE_TRAP
 		if Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -105,7 +105,7 @@ function c71401008.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71401008.op3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil)
+	local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToHand),tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil)
 	if sg:GetCount()>0 then
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end

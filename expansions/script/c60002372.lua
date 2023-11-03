@@ -156,19 +156,11 @@ if not cm.enable_all_setname then
 	end
 end
 function cm.con(e,tp)
-	return Duel.GetFlagEffect(tp,m)==0
+	return Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(Card.IsCode,tp,0,LOCATION_EXTRA,1,nil,m)
 end
 function cm.op(e,tp)
 	local c=e:GetHandler()
 	DuelModeChange.TwoPick1(tp)
-		DuelModeChange.TwoPick1(1-tp)
-	if Duel.GetFlagEffect(1-tp,m+10000000)==0 then
-		Duel.RegisterFlagEffect(tp,m+10000000,RESET_PHASE+PHASE_END,0,1000)
-	else
-		DuelModeChange.TwoPick1(tp)
-		DuelModeChange.TwoPick1(1-tp)
-		
-	end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1000)
 end
 

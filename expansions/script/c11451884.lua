@@ -131,7 +131,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 									local sumg=Duel.GetMatchingGroup(Card.IsSummonable,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,true,nil)
 									local b1=(cm[tp]&0x1>0 and #thg>0)
 									local b2=(cm[tp]&0x2>0 and #spg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)
-									local b3=(cm[tp]&0x4>0 and #sumg>0)
+									local b3=(cm[tp]&0x4>0)
 									if not (b1 or b2 or b3) then return end
 									local off=1
 									local ops,opval={},{}
@@ -171,12 +171,13 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 												local e1=Effect.CreateEffect(sc)
 												e1:SetType(EFFECT_TYPE_SINGLE)
 												e1:SetCode(EFFECT_DUAL_SUMMONABLE)
+												e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
 												e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 												tc:RegisterEffect(e1,true)
 												local e2=Effect.CreateEffect(sc)
 												e2:SetType(EFFECT_TYPE_SINGLE)
 												e2:SetCode(EFFECT_REMOVE_TYPE)
-												e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+												e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
 												e2:SetRange(LOCATION_MZONE)
 												e2:SetCondition(aux.IsDualState)
 												e2:SetValue(TYPE_NORMAL)
@@ -229,7 +230,14 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 										end
 									elseif sel==2 then
 										cm[tp]=cm[tp]-4
-										Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+										local e1=Effect.CreateEffect(e:GetHandler())
+										e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+										e1:SetCode(EVENT_CHAIN_SOLVED)
+										e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return re:GetActiveType()==TYPE_SPELL and re:IsHasType(EFFECT_TYPE_ACTIVATE) and rp==tp end)
+										e1:SetOperation(cm.sumop2)
+										e1:SetReset(RESET_PHASE+PHASE_END,2)
+										Duel.RegisterEffect(e1,tp)
+										--[[Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
 										local tc=sumg:Select(tp,1,1,nil):GetFirst()
 										if tc then
 											local sc=e:GetHandler()
@@ -246,7 +254,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 											end
 											Duel.HintSelection(Group.FromCards(tc))
 											Duel.Summon(tp,tc,true,nil)
-										end
+										end--]]
 									end
 								end
 						te:SetOperation(op2)
@@ -255,7 +263,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 						e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 						e1:SetCode(EVENT_CHAIN_SOLVED)
 						e1:SetCountLimit(1)
-						e1:SetLabel(ev+1)
+						e1:SetLabel(Duel.GetCurrentChain()+1)
 						e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==e:GetLabel() end)
 						e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) re:SetOperation(op0) end)
 						e1:SetReset(RESET_CHAIN)
@@ -273,6 +281,17 @@ function cm.effcon2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	return tc:IsType(TYPE_NORMAL) and tc:IsSummonableCard()
 end
+function cm.sumop2(e,tp,eg,ep,ev,re,r,rp)
+	local sumg=Duel.GetMatchingGroup(Card.IsSummonable,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,true,nil)
+	if #sumg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+		local tc=sumg:Select(tp,1,1,nil):GetFirst()
+		if tc then
+			--Duel.HintSelection(Group.FromCards(tc))
+			Duel.Summon(tp,tc,true,nil)
+		end
+	end
+end
 function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 	local sc=e:GetLabelObject()
 	local code=sc:GetOriginalCode()
@@ -280,12 +299,13 @@ function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(sc)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_DUAL_SUMMONABLE)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	tc:RegisterEffect(e1,true)
 	local e2=Effect.CreateEffect(sc)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_REMOVE_TYPE)
-	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(aux.IsDualState)
 	e2:SetValue(TYPE_NORMAL)

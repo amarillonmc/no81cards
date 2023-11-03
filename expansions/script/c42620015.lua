@@ -41,7 +41,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.thfilter(c)
-	return c:IsSetCard(0x12b) and c:IsAbleToHand()
+	return c:IsSetCard(0x12b) and c:IsAbleToHand() and c:IsType(0x1)
 end
 
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

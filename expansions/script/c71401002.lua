@@ -25,24 +25,27 @@ function c71401002.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
 	yume.RegButterflyCostLimit(e,tp)
 end
-function c71401002.filter2(c,tp)
-	return c:IsRace(RACE_SPELLCASTER) and c:IsLevel(4) and c:IsAttribute(ATTRIBUTE_DARK) and (c:IsAbleToHand() or not c:IsForbidden() and c:CheckUniqueOnField(tp))
+function c71401002.filter2(c,tp,check)
+	return c:IsRace(RACE_SPELLCASTER) and c:IsLevel(4) and c:IsAttribute(ATTRIBUTE_DARK) and (c:IsAbleToHand() or check and not c:IsForbidden() and c:CheckUniqueOnField(tp))
 end
 function c71401002.filter2a(c)
 	return c:IsFaceup() and c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS
 end
 function c71401002.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71401002.filter2a,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(c71401002.filter2,tp,LOCATION_DECK,0,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then
+		local check=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		return Duel.IsExistingMatchingCard(c71401002.filter2a,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(c71401002.filter2,tp,LOCATION_DECK,0,1,nil,tp,check)
+	end
 end
 function c71401002.op2(e,tp,eg,ep,ev,re,r,rp)
+	local check=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c71401002.filter2,tp,LOCATION_DECK,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,c71401002.filter2,tp,LOCATION_DECK,0,1,1,nil,tp,check)
 	local tc=g:GetFirst()
 	if tc then
 		local b1=tc:IsAbleToHand()
-		local b2=not tc:IsForbidden() and tc:CheckUniqueOnField(tp)
-		if b1 and (not b2 or Duel.SelectOption(tp,1190,aux.Stringid(71401002,1))==0) then
+		local b2=check and not tc:IsForbidden() and tc:CheckUniqueOnField(tp)
+		if b1 and (not b2 or Duel.SelectOption(tp,1190,aux.Stringid(71401001,5))==0) then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
 		else

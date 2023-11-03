@@ -56,12 +56,14 @@ function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	local tf=re:GetHandler():IsRelateToEffect(re)
 	local cid=re:GetHandler():GetRealFieldID()
 	cm[ev]={re,tf,cid}
+	re:GetHandler():RegisterFlagEffect(m+2,RESET_EVENT+0x1fc0000+RESET_CHAIN,0,1)
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>1
 end
 function cm.reset(e,tp,eg,ep,ev,re,r,rp)
 	cm[ev]={re,false,0}
+	re:GetHandler():ResetFlagEffect(m+2)
 end
 function cm.clearcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()==1
@@ -108,7 +110,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	while type(cm[i])=="table" do
 		local te,tf,cid=table.unpack(cm[i])
 		local tc=te:GetHandler()
-		if ((i<=Duel.GetCurrentChain() and tc:IsRelateToEffect(te)) or (i>Duel.GetCurrentChain() and tf and tc:GetRealFieldID()==cid)) and tc:IsReleasableByEffect() then g:AddCard(tc) end
+		if ((i<=Duel.GetCurrentChain() and tc:IsRelateToEffect(te)) or (i>Duel.GetCurrentChain() and tf and tc:GetFlagEffect(m+2)>0)) and tc:IsReleasableByEffect() then g:AddCard(tc) end
 		i=i+1
 	end
 	local hg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil,#g*2)

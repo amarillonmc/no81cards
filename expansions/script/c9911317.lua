@@ -53,7 +53,7 @@ end
 function c9911317.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local b1=c:IsReleasableByEffect()
-	local b2=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+	local b2=Duel.GetLocationCount(tp,LOCATION_SZONE)>1
 		and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911317.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and (b1 or b2) end
 end

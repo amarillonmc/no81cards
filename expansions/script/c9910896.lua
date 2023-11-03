@@ -83,22 +83,44 @@ function c9910896.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910896.spfilter2(c,tp,mc)
+	if c:IsFacedown() or (c:IsControler(1-tp) and not aux.IsCodeListed(c,9910871)) then return false end
 	local mg=Group.FromCards(c,mc)
-	return c:IsFaceup() and not c:IsRace(RACE_MACHINE)
-		and Duel.IsExistingMatchingCard(c9910896.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,mg)
+	local e1=nil
+	local e2=nil
+	if c:IsLevelAbove(1) and mc:IsLevelAbove(1) then
+		e1=Effect.CreateEffect(mc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_XYZ_LEVEL)
+		e1:SetValue(c9910896.xyzlv)
+		e1:SetLabel(mc:GetLevel())
+		c:RegisterEffect(e1,true)
+		e2=Effect.CreateEffect(mc)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_XYZ_LEVEL)
+		e2:SetValue(c9910896.xyzlv)
+		e2:SetLabel(c:GetLevel())
+		mc:RegisterEffect(e2,true)
+	end
+	local res=Duel.IsExistingMatchingCard(c9910896.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,mg)
+	if e1 then e1:Reset() end
+	if e2 then e2:Reset() end
+	return res
+end
+function c9910896.xyzlv(e,c,rc)
+	return e:GetHandler():GetLevel()+e:GetLabel()*0x10000
 end
 function c9910896.xyzfilter(c,mg)
 	return c:IsXyzSummonable(mg,2,2) and c:IsRace(RACE_MACHINE)
 end
 function c9910896.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910896.spfilter2(chkc,tp,c) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9910896.spfilter2(chkc,tp,c) end
 	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsExistingTarget(c9910896.spfilter2,tp,LOCATION_MZONE,0,1,nil,tp,c) end
+		and Duel.IsExistingTarget(c9910896.spfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c9910896.spfilter2,tp,LOCATION_MZONE,0,1,1,nil,tp,c)
+	Duel.SelectTarget(tp,c9910896.spfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp,c)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,2,tp,LOCATION_EXTRA)
 end
 function c9910896.spop2(e,tp,eg,ep,ev,re,r,rp)
@@ -106,17 +128,36 @@ function c9910896.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) or tc:IsFacedown() then return end
-	local race=tc:GetRace()
-	Duel.RaiseEvent(c,EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
+	Duel.AdjustAll()
 	local mg=Group.FromCards(c,tc)
 	if mg:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)<2 then return end
-	local g=Duel.GetMatchingGroup(c9910896.xyzfilter,tp,LOCATION_EXTRA,0,nil,mg)
-	if g:GetCount()>0 then
+	local e5=nil
+	local e6=nil
+	if c:IsLevelAbove(1) and tc:IsLevelAbove(1) then
+		e5=Effect.CreateEffect(c)
+		e5:SetType(EFFECT_TYPE_SINGLE)
+		e5:SetCode(EFFECT_XYZ_LEVEL)
+		e5:SetValue(c9910896.xyzlv)
+		e5:SetLabel(tc:GetLevel())
+		e5:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e5,true)
+		e6=Effect.CreateEffect(c)
+		e6:SetType(EFFECT_TYPE_SINGLE)
+		e6:SetCode(EFFECT_XYZ_LEVEL)
+		e6:SetValue(c9910896.xyzlv)
+		e6:SetLabel(c:GetLevel())
+		e6:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e6,true)
+	end
+	local xyzg=Duel.GetMatchingGroup(c9910896.xyzfilter,tp,LOCATION_EXTRA,0,nil,mg)
+	if xyzg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
-		local sc=sg:GetFirst()
-		c:RegisterFlagEffect(9910896,0,0,1,race)
-		Duel.XyzSummon(tp,sc,mg)
+		local xyz=xyzg:Select(tp,1,1,nil):GetFirst()
+		c:RegisterFlagEffect(9910896,0,0,1,tc:GetRace())
+		Duel.XyzSummon(tp,xyz,mg)
+	else
+		if e5 then e5:Reset() end
+		if e6 then e5:Reset() end
 	end
 end
 function c9910896.racon(e,tp,eg,ep,ev,re,r,rp)

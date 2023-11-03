@@ -78,7 +78,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.setfilter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x9977) and ((c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or c:IsSSetable())
+	return c:IsFaceup() and c:IsSetCard(0x9977) and ((c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1) or c:IsSSetable())
 end
 function cm.spfilter(c,se)
 	if not (se==nil or c:GetReasonEffect()~=se) then return false end
@@ -107,7 +107,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		local tc=g:GetFirst()
 		local res=false
-		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (not tc:IsSSetable() or Duel.SelectYesNo(tp,Stringid(m,3))) then
+		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and (not tc:IsSSetable() or Duel.SelectYesNo(tp,Stringid(m,3))) then
 			res=Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 		else
 			res=Duel.SSet(tp,tc)>0

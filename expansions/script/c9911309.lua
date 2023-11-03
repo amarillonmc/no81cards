@@ -56,7 +56,6 @@ function c9911309.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tg=Group.CreateGroup()
 	if #g>0 then tg=g:GetMaxGroup(Card.GetAttack):Filter(Card.IsCanTurnSet,nil) end
 	if chk==0 then return #tg>0 end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,tg,1,0,0)
 end
 function c9911309.setop(e,tp,eg,ep,ev,re,r,rp)

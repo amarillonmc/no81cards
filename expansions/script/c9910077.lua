@@ -3,69 +3,72 @@ function c9910077.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),4,2)
 	c:EnableReviveLimit()
-	--cannot be target
+	--xyzmat to hand
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(c9910077.effcon)
-	e1:SetValue(c9910077.evalue)
+	e1:SetCountLimit(1,9910077)
+	e1:SetTarget(c9910077.thtg)
+	e1:SetOperation(c9910077.thop)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e2:SetCondition(c9910077.effcon)
-	e2:SetTarget(c9910077.tglimit)
-	e2:SetValue(c9910077.evalue)
-	c:RegisterEffect(e2)
-	--change attribute
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TODECK)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,9910077)
-	e3:SetCost(c9910077.attcost)
-	e3:SetTarget(c9910077.atttg)
-	e3:SetOperation(c9910077.attop)
-	c:RegisterEffect(e3)
 end
-function c9910077.effcon(e)
-	return e:GetHandler():GetOverlayCount()>0
+function c9910077.thfilter(c,tp)
+	return c:IsRace(RACE_FAIRY) and c:IsAbleToHand() and c:GetOwner()==tp
 end
-function c9910077.evalue(e,re,rp)
-	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and rp==1-e:GetHandlerPlayer()
+function c9910077.xfilter(c,tp)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:GetOverlayGroup():IsExists(c9910077.thfilter,2,nil,tp)
 end
-function c9910077.tglimit(e,c)
-	return c:IsAttribute(e:GetHandler():GetAttribute())
+function c9910077.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910077.xfilter(chkc,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c9910077.xfilter,tp,LOCATION_MZONE,0,1,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.SelectTarget(tp,c9910077.xfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_OVERLAY)
 end
-function c9910077.attcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+function c9910077.spfilter(c,e,tp)
+	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c9910077.atttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsFaceup() and not c:IsAttribute(ATTRIBUTE_LIGHT) end
+function c9910077.tdfilter(c)
+	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToDeck()
 end
-function c9910077.attop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
-		e1:SetValue(ATTRIBUTE_LIGHT)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1)
-		if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil)
-			and Duel.SelectYesNo(tp,aux.Stringid(9910077,0)) then
+function c9910077.thop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	local mg=tc:GetOverlayGroup():Filter(c9910077.thfilter,nil,tp)
+	if tc:IsRelateToEffect(e) and #mg>1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=mg:Select(tp,2,2,nil)
+		if Duel.SendtoHand(sg,nil,REASON_EFFECT)==0 then return end
+		Duel.ConfirmCards(1-tp,sg)
+		Duel.ShuffleHand(tp)
+		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_HAND)
+		local g1=og:Filter(c9910077.spfilter,nil,e,tp)
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g1>0 and Duel.SelectYesNo(tp,aux.Stringid(9910077,0)) then
 			Duel.BreakEffect()
+			if #g1>1 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+				g1=g1:Select(tp,1,1,nil)
+				Duel.HintSelection(g1)
+			end
+			Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
+			og:Sub(g1)
+		end
+		local g2=og:Filter(c9910077.tdfilter,nil)
+		if #g2>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(9910077,1)) then
+			Duel.BreakEffect()
+			if #g2>1 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+				g2=g2:Select(tp,1,1,nil)
+			end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
-			Duel.HintSelection(g)
-			Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+			local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
+			if #tg>0 then
+				g2:Merge(tg)
+				Duel.HintSelection(g2)
+				Duel.SendtoDeck(g2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			end
 		end
 	end
 end

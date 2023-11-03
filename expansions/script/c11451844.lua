@@ -50,7 +50,7 @@ function cm.fieldid(c)
 	return c:GetFlagEffectLabel(m) or -1
 end
 function cm.filter(c,ec)
-	return (c:GetType()&TYPE_QUICKPLAY>0 or c:GetType()==TYPE_TRAP) and not c:IsReason(REASON_RETURN) and c:GetRealFieldID()<ec:GetRealFieldID()
+	return (c:GetType()&TYPE_QUICKPLAY>0 or c:GetType()==TYPE_TRAP) and not c:IsReason(REASON_RETURN) and cm.fieldid(c)<cm.fieldid(ec)
 end
 function cm.filter2(c,ec,sc)
 	return cm.filter(c,ec) and cm.fieldid(c)==cm.fieldid(sc) and c:IsAbleToRemoveAsCost() and ((c:GetType()&TYPE_QUICKPLAY>0 and c:CheckActivateEffect(true,true,false)~=nil) or (c:GetType()==TYPE_TRAP>0 and c:CheckActivateEffect(false,true,false)~=nil))

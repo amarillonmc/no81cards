@@ -1,7 +1,7 @@
 --海造贼--新生之集结号
 function c67642779.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedureLevelFree(c,c67642779.mfilter,c67642779.xyzcheck,3,99)
+	aux.AddXyzProcedureLevelFree(c,c67642779.mfilter,c67642779.xyzcheck,2,99)
 	c:EnableReviveLimit()
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)
