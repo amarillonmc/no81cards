@@ -243,11 +243,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.distg(e,c)
 	local tp=e:GetHandlerPlayer()
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_TRAPMONSTER) and aux.GetColumn(c,tp)==aux.GetColumn(e:GetHandler(),tp)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_TRAPMONSTER) and aux.GetColumn(c,tp)==aux.GetColumn(e:GetHandler(),tp) and c~=e:GetHandler()
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
-	if loc&LOCATION_ONFIELD~=0 and seq<=4 and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and seq==aux.GetColumn(e:GetHandler(),rp) and not re:GetHandler():IsType(TYPE_TRAPMONSTER) then
+	if loc&LOCATION_ONFIELD~=0 and seq<=4 and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and seq==aux.GetColumn(e:GetHandler(),rp) and not re:GetHandler():IsType(TYPE_TRAPMONSTER) and re:GetHandler()~=e:GetHandler() then
 		Duel.NegateEffect(ev)
 	end
 end
@@ -284,15 +284,15 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EVENT_CHAIN_NEGATED)
 	Duel.RegisterEffect(e2,tp)
 	--control
+	c:RegisterFlagEffect(m+100,RESET_EVENT+RESETS_WITHOUT_TEMP_REMOVE,0,1,c:GetFieldID())
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_SET_CONTROL)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
 	e3:SetLabel(c:GetFieldID())
 	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e3:SetTarget(function(se,sc) return se:GetLabel()==sc:GetFieldID() end)
+	e3:SetTarget(function(se,sc) return sc:GetFlagEffect(m+100)>0 and se:GetLabel()==sc:GetFlagEffectLabel(m+100) end)
 	e3:SetValue(tp)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)

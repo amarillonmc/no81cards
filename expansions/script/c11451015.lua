@@ -247,15 +247,15 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EVENT_CHAIN_NEGATED)
 	Duel.RegisterEffect(e2,tp)
 	--control
+	c:RegisterFlagEffect(m+100,RESET_EVENT+RESETS_WITHOUT_TEMP_REMOVE,0,1,c:GetFieldID())
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_SET_CONTROL)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
 	e3:SetLabel(c:GetFieldID())
 	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e3:SetTarget(function(se,sc) return se:GetLabel()==sc:GetFieldID() end)
+	e3:SetTarget(function(se,sc) return sc:GetFlagEffect(m+100)>0 and se:GetLabel()==sc:GetFlagEffectLabel(m+100) end)
 	e3:SetValue(tp)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
@@ -276,7 +276,6 @@ function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToDeckOrExtraAsCost() end
 	Duel.SendtoDeck(c,nil,2,REASON_COST)
-	Duel.ConfirmCards(1-tp,c)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

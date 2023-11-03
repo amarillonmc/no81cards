@@ -5378,7 +5378,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			local xe={rc:IsHasEffect(53765099)}
 			local b=false
 			local seq,typ=0,0
-			for _,v in pairs(xe) do if rc==v:GetLabelObject():GetHandler() then b=true seq,typ=v:GetLabel() end end
+			for _,v in pairs(xe) do if v:GetLabelObject() and rc==v:GetLabelObject():GetHandler() then b=true seq,typ=v:GetLabel() end end
 			if b and typ and typ~=0 and rc:IsHasEffect(53765098) then
 				local e1=Effect.CreateEffect(rc)
 				e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -6189,13 +6189,13 @@ function cm.HelltakerActivate(c,code)
 			return ADHT_MoveToField(sc,mp,tp,dest,pos,bool,czone)
 		end
 		ADHT_GetLocationCount=Duel.GetLocationCount
-		Duel.GetLocationCount=function(tp,loc,...)
-			local ct=ADHT_GetLocationCount(tp,loc,...)
-			if ad_ht_zc then ct=ct+ad_ht_zc end
+		Duel.GetLocationCount=function(...)
+			local ct=ADHT_GetLocationCount(...)+ad_ht_zc
 			return ct
 		end
 	end
 end
+ad_ht_zc=0
 function cm.HTAfactarget(e,te,tp)
 	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
 end
@@ -6256,7 +6256,7 @@ function cm.HTAmvop(e,tp,eg,ep,ev,re,r,rp)
 				for _,v in pairs(pe) do
 					local val=v:GetValue()
 					if aux.GetValueType(val)=="number" then val=aux.TRUE end
-					v:SetValue(cm.bchval(val,e1))
+					v:SetValue(cm.AASTbchval(val,e1))
 				end
 				local zone=0xff
 				if te:IsActiveType(TYPE_PENDULUM) then zone=0x11 end
@@ -6369,22 +6369,24 @@ function cm.HTAfaccost(_cost,fe,zone)
 					if aux.GetValueType(val)=="number" or val(v,fe,tp) then check=false end
 				end
 				if not check then
-					ad_ht_zc=nil
+					ad_ht_zc=0
 					return false
 				end
+				ad_ht_zc=0
 				local c=e:GetHandler()
 				local xe={c:IsHasEffect(53765099)}
 				for _,v in pairs(xe) do v:Reset() end
 				if te:IsActiveType(TYPE_QUICKPLAY) and Duel.GetTurnPlayer()~=tp and not c:IsHasEffect(EFFECT_QP_ACT_IN_NTPHAND) then return false end
 				if te:IsActiveType(TYPE_TRAP) and not c:IsHasEffect(EFFECT_TRAP_ACT_IN_HAND) then return false end
 				if not c:CheckUniqueOnField(tp) then return false end
+				ad_ht_zc=1
 				if not Duel.IsExistingMatchingCard(cm.HTAmvfilter,tp,LOCATION_SZONE,0,1,nil,e,tp,zone) then
-					ad_ht_zc=nil
+					ad_ht_zc=0
 					return false
 				end
 				local res=false
 				if _cost(e,te,tp) then res=true end
-				ad_ht_zc=nil
+				ad_ht_zc=0
 				--Debug.Message(res)
 				return res
 			end
@@ -6408,6 +6410,7 @@ function cm.HTAmvcostop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	local c=te:GetHandler()
 	local typ=c:GetType()
+	if te:IsActiveType(TYPE_PENDULUM) then typ=TYPE_PENDULUM+TYPE_SPELL end
 	local xe1=cm.AASTregi(c,te)
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 	xe1:SetLabel(c:GetSequence()+1,typ)

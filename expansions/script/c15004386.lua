@@ -47,7 +47,7 @@ function cm.initial_effect(c)
 	--accumulate
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(0x10000000+15004387)
+	e5:SetCode(EFFECT_FLAG_EFFECT+15004387)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e5:SetTargetRange(0,1)
