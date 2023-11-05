@@ -27,7 +27,7 @@ function cm.limtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetChainLimit(cm.chainlm)
 end
 function cm.chainlm(re,rp,tp)
-	return re:GetHandler():IsOnField()
+	return not re:GetHandler():IsOnField()
 end
 function cm.limop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
