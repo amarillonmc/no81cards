@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
-	e2:SetCountLimit(1,13141383)
+	e2:SetCountLimit(1,13142383)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(c13131383.stcon)
 	e2:SetTarget(c13131383.sttg)
@@ -32,7 +32,7 @@ function c13131383.cecon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c13131383.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c13131383.cefilter(c)
-	return c:IsFaceup() and not c:IsCode(13131370) and c:IsSetCard(0x1112) and c:IsType(TYPE_EFFECT)
+	return c:IsFaceup() and not c:IsCode(13131370) and c:IsSetCard(0x3b00) and c:IsType(TYPE_EFFECT)
 end
 function c13131383.cetg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) end

@@ -1,93 +1,101 @@
 --神秘国王
-local m=60002118
-local cm=_G["c"..m]
-cm.name="神秘国王"
+Duel.LoadScript("c60000000.lua")
+local cm,m,o=GetID()
 function cm.initial_effect(c)
-	--immune
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetValue(1)
-	c:RegisterEffect(e1)
-	--atk
+	aux.AddCodeList(c,60002113)
+	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(cm.atktg)
-	e1:SetValue(1000)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
+	e1:SetCountLimit(1,m)
+	e1:SetCondition(cm.spcon)
+	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-	--atk
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_UPDATE_DEFENSE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(cm.atktg)
-	e1:SetValue(1000)
-	c:RegisterEffect(e1)
-	--destory
+	--tohand
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCost(cm.thcost)
+	e2:SetTarget(cm.thtg)
+	e2:SetOperation(cm.thop)
+	c:RegisterEffect(e2)
+	
+	--change effect type
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(60002113)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(MerlinTC.lc1)
+	e2:SetTargetRange(1,0)
+	c:RegisterEffect(e2)
+	--search
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_HAND)
-	e3:SetCost(cm.descost)
-	e3:SetTarget(cm.destg)
-	e3:SetOperation(cm.desop)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1)
+	e3:SetCondition(MerlinTC.lc3)
+	e3:SetTarget(cm.tg)
+	e3:SetOperation(cm.op)
 	c:RegisterEffect(e3)
-	--to hand
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetTarget(cm.thtg)
-	e1:SetOperation(cm.thop)
-	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	--Atk
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_UPDATE_ATTACK)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetCondition(MerlinTC.lc5)
+	e2:SetValue(1000)
+	c:RegisterEffect(e2)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_UPDATE_DEFENSE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetCondition(MerlinTC.lc5)
+	e2:SetValue(1000)
 	c:RegisterEffect(e2)
 end
-cm.named_with_chess=true 
-function cm.atktg(e,c)
-	return c:IsFaceup() and c:IsCode(m-5)
-end
-function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
-end
-function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x622,13,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x622,13,REASON_COST)
-end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	local tc=Duel.CreateToken(tp,m-5)
-	Duel.SendtoDeck(tc,tp,SEQ_DECKSHUFFLE,REASON_EFFECT)
-end
-function cm.filter(c,e,tp)
-	return c:IsCode(m-5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsDiscardable() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	 if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,2,nil,60002113) and Duel.GetMZoneCount(tp,g)>1 end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,99,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g2=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,2,2,nil,60002113)
+	if g2:GetCount()>0 then
+		Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
 	end
+end
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetMZoneCount(tp,g)>0 end
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local token=Duel.CreateToken(tp,60002113)
+	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+end
+function cm.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local num=13
+	if Duel.IsPlayerAffectedByEffect(tp,60002113) then
+		num=12
+	end
+	local nume=math.max(0,num-Duel.GetFlagEffect(tp,60002113))
+	return (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and num==0) or Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,nume,c,60002113)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND,0,1,1,c)
+	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end

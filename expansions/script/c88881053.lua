@@ -13,6 +13,7 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetCountLimit(1,m)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.tg)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
@@ -65,6 +66,10 @@ function cm.cop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.ovfilter(c)
 	return c:IsFaceup() and not c:IsCode(m) and c:GetOverlayCount()==0 and c:IsType(TYPE_XYZ) and c:IsSetCard(0x81)
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function cm.desfilter(c)
 	return not c:IsCode(m) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x81)

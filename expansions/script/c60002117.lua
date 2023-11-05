@@ -1,96 +1,80 @@
 --奇幻骑士
-local m=60002117
-local cm=_G["c"..m]
-cm.name="神秘骑士"
+Duel.LoadScript("c60000000.lua")
+local cm,m,o=GetID()
 function cm.initial_effect(c)
-	--destory
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,0))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_HAND)
-	e3:SetCost(cm.descost)
-	e3:SetTarget(cm.destg)
-	e3:SetOperation(cm.desop)
-	c:RegisterEffect(e3)
-	--to hand
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetTarget(cm.thtg)
-	e1:SetOperation(cm.thop)
-	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2)
-	--Special Summon
+	aux.AddCodeList(c,60002113)
+	MerlinTC.ChessSPSummon(c,m)
+	--tohand
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,3))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetCondition(cm.spcon)
-	e2:SetTarget(cm.sptg)
-	e2:SetOperation(cm.spop)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCost(cm.thcost)
+	e2:SetTarget(cm.thtg)
+	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
+	
+	--change effect type
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(60002113)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(MerlinTC.lc1)
+	e2:SetTargetRange(1,0)
+	c:RegisterEffect(e2)
+	--search
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(54631665,0))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1)
+	e3:SetCondition(MerlinTC.lc3)
+	e3:SetTarget(cm.tg)
+	e3:SetOperation(cm.op)
+	c:RegisterEffect(e3)
+	--direct attack
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DIRECT_ATTACK)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetCondition(MerlinTC.lc5)
+	e1:SetTarget(cm.datg)
+	c:RegisterEffect(e1)
 end
-cm.named_with_chess=true 
-function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
-end
-function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x622,6,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x622,6,REASON_COST)
-end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-end
-function cm.desfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
-end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,cm.desfilter,tp,0,LOCATION_MZONE,0,1,nil)
-	Duel.Destroy(g,REASON_EFFECT)
-end
-function cm.filter(c,e,tp)
-	return c:IsCode(m-4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsDiscardable() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	 if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,2,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_DECK+LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,60002113) and Duel.GetMZoneCount(tp,g)>0 end
+	Duel.SetTargetPlayer(1-tp)
+	Duel.SetTargetParam(800)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,800)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,2,2,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g2=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,60002113)
+	if g2:GetCount()>0 then
+		Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
 	end
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Damage(p,d,REASON_EFFECT)
 end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return ev==tp or ev==PLAYER_ALL
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return end
+	Duel.SetTargetPlayer(1-tp)
+	Duel.SetTargetParam(800)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,800)
 end
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Damage(p,d,REASON_EFFECT)
 end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+function cm.datg(e,c)
+	return c:IsPosition(POS_FACEUP)
 end
-
-
-

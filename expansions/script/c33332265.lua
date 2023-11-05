@@ -27,7 +27,7 @@ function c33332265.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c33332265.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,33332258,0x5552,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_FIRE) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,33332258,0xa552,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_FIRE) end
 	local dis=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0xe000e0)
 	Duel.SetTargetParam(dis)
 	Duel.Hint(HINT_ZONE,tp,dis)
@@ -39,7 +39,7 @@ end
 function c33332265.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local zone=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,33332258,0x5552,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_FIRE) then
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,33332258,0xa552,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_FIRE) then
 		local token=Duel.CreateToken(tp,33332258)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP,zone)
 	end

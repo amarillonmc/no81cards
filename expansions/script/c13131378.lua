@@ -39,7 +39,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,13141378)
+	e4:SetCountLimit(1,13142378)
 	e4:SetCondition(c13131378.spcon)
 	e4:SetTarget(c13131378.sptg)
 	e4:SetOperation(c13131378.spop)
@@ -47,10 +47,10 @@ function cm.initial_effect(c)
 	
 end
 function c13131378.lcheck(g,lc)
-	return g:IsExists(Card.IsSetCard,1,nil,0x1112)
+	return g:IsExists(Card.IsSetCard,1,nil,0x3b00)
 end
 function c13131378.dcfilter(c)
-	return c:IsSetCard(0x1112) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0x3b00) and c:IsAbleToDeckAsCost()
 end
 function c13131378.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c13131378.dcfilter,tp,LOCATION_GRAVE,0,1,nil) end
@@ -94,7 +94,7 @@ function c13131378.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function c13131378.spfilter(c,e,tp)
-	return c:IsSetCard(0x1112) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3b00) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c13131378.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c13131378.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end

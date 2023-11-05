@@ -1,6 +1,5 @@
 --虚诞赋格 升华的乐章
-local m=11451469
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -46,6 +45,25 @@ function cm.initial_effect(c)
 		ge1:SetCode(EVENT_CHAINING)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
+		local _MoveToField=Duel.MoveToField
+		function Duel.MoveToField(tc,...)
+			local res=_MoveToField(tc,...)
+			local te=tc:GetActivateEffect()
+			if te then
+				local fid=tc:GetFieldID()
+				local cost=te:GetCost() or aux.TRUE
+				local cost2=function(e,tp,eg,ep,ev,re,r,rp,chk)
+								if chk==0 then return cost(e,tp,eg,ep,ev,re,r,rp,0) end
+								cost(e,tp,eg,ep,ev,re,r,rp,1)
+								if fid==tc:GetFieldID() then
+									tc:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
+								end
+								e:SetCost(cost)
+							end
+				te:SetCost(cost2)
+			end
+			return res
+		end
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)

@@ -33,13 +33,13 @@ function c33332261.target(e,c)
 	return c:IsRace(RACE_FISH) and c:IsAttribute(ATTRIBUTE_FIRE)
 end
 function c33332261.tfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x5552)
+	return c:IsFaceup() and c:IsSetCard(0xa552)
 end
 function c33332261.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c33332261.tfilter,1,nil,tp)
 end
 function c33332261.thfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5552) and c:IsAbleToHand() and Duel.GetMZoneCount(tp,c)>0
+	return c:IsFaceup() and c:IsSetCard(0xa552) and c:IsAbleToHand() and Duel.GetMZoneCount(tp,c)>0
 end
 function c33332261.filter(c,e,tp)
 	return c:IsRace(RACE_FISH) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp,c)>0

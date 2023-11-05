@@ -1,0 +1,106 @@
+--核心硬币 鹰雀鹫联组
+function c32100005.initial_effect(c)
+	--spsummon
+	local e1=Effect.CreateEffect(c) 
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION) 
+	e1:SetRange(LOCATION_HAND) 
+	e1:SetCost(c32100005.spcost)
+	e1:SetTarget(c32100005.sptg)
+	e1:SetOperation(c32100005.spop)
+	c:RegisterEffect(e1) 
+	--indes
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE) 
+	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e2:SetLabelObject(e1) 
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(function(e,c) 
+	return c==e:GetHandler():GetEquipTarget() end) 
+	e2:SetCondition(function(e) 
+	local ec=e:GetHandler():GetEquipTarget()
+	return ec and ec:IsCode(32100002) and e:GetHandler():GetSequence()==1 end)
+	c:RegisterEffect(e2)
+	--atk  
+	local e1=Effect.CreateEffect(c)  
+	e1:SetType(EFFECT_TYPE_SINGLE)  
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetRange(LOCATION_MZONE) 
+	e1:SetValue(800)  
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e2:SetLabelObject(e1) 
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(function(e,c) 
+	return c==e:GetHandler():GetEquipTarget() end) 
+	e2:SetCondition(function(e) 
+	local ec=e:GetHandler():GetEquipTarget()
+	return ec and ec:IsCode(32100002) and e:GetHandler():GetSequence()==2 end)
+	c:RegisterEffect(e2) 
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET) 
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e2:SetLabelObject(e1) 
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(function(e,c) 
+	return c==e:GetHandler():GetEquipTarget() end) 
+	e2:SetCondition(function(e) 
+	local ec=e:GetHandler():GetEquipTarget()
+	return ec and ec:IsCode(32100002) and e:GetHandler():GetSequence()==2 end)
+	c:RegisterEffect(e2)  
+	--indes
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE) 
+	e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e2:SetLabelObject(e1) 
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(function(e,c) 
+	return c==e:GetHandler():GetEquipTarget() end) 
+	e2:SetCondition(function(e) 
+	local ec=e:GetHandler():GetEquipTarget()
+	return ec and ec:IsCode(32100002) and e:GetHandler():GetSequence()==3 end)
+	c:RegisterEffect(e2)
+end
+c32100005.SetCard_HR_Corecoin=true 
+function c32100005.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(function(c) return c:IsAbleToGraveAsCost() and c.SetCard_HR_Corecoin and c:IsType(TYPE_MONSTER) end,tp,LOCATION_HAND,0,2,e:GetHandler()) end
+	local g=Duel.SelectMatchingCard(tp,function(c) return c:IsAbleToGraveAsCost() and c.SetCard_HR_Corecoin and c:IsType(TYPE_MONSTER) end,tp,LOCATION_HAND,0,2,2,e:GetHandler()) 
+	g:AddCard(e:GetHandler()) 
+	Duel.SendtoGrave(g,REASON_COST) 
+end 
+function c32100005.spfilter(c,e,tp)
+	return c:IsCode(32100002) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c32100005.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c32100005.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+end
+function c32100005.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c32100005.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+end 
+
+
+
+

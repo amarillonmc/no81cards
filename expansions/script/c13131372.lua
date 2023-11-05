@@ -8,7 +8,6 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,13131372)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -28,7 +27,37 @@ function cm.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
+	--
+	local e5=Effect.CreateEffect(c)
+	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_TODECK)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetCode(EVENT_REMOVE)
+	e5:SetProperty(EFFECT_FLAG_DELAY) 
+	e5:SetRange(LOCATION_GRAVE)
+	e5:SetCountLimit(1,13131372)
+	e5:SetCondition(cm.thcon)
+	e5:SetTarget(cm.thtg)
+	e5:SetOperation(cm.thop)
+	c:RegisterEffect(e5)
 end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsCode,1,nil,13131370)
+end
+function cm.thgf(c)
+	return c:IsCode(0x3b00) and c:IsAbleToDeck()
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToHand() end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,tp,REASON_EFFECT)~=0 then
+		local g=Duel.GetMatchingGroup(cm.thgf,tp,LOCATION_REMOVED,0,nil)
+		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+	end
+end
+
 function cm.spfilter(c,e,tp)
 	return c:IsCode(13131370) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

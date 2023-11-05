@@ -1,15 +1,22 @@
 if fucg then return end
 fucg, fusf = { }, { }
 --------------------------------------"Support function"
-function fusf.CutString(str,cut,from)
-	str = str..cut
+function fusf.CutString(str,cut,dis,from)
+	if type(str) ~= "string" then Debug.Message(from) end
+	local str = str..cut
+	if dis and dis ~= "" then 
+		for _,D in ipairs(fusf.CutString(dis,cut,nil,"CutString1")) do
+			D = D .. cut
+			str = str:gsub(D,"",1)
+		end
+	end
 	local list, index, ch = {}, 1, ""
 	while index <= #str do
-		if string.match(string.sub(str, index, index), cut) then
+		if str:sub(index, index):match(cut) then
 			list[#list+1] = ch
 			ch = ""
 		else
-			_, index, ch = string.find(str, "^([^"..cut.."]+)", index)
+			_, index, ch = str:find("^([^"..cut.."]+)", index)
 		end
 		index = index + 1
 	end
@@ -19,21 +26,11 @@ function fusf.NotNil(val)   --table or string
 	if type(val) == "table" or type(val) == "string" then return #val>0 end
 	return val
 end
-function fusf.DeleteNil(list)
-	local setlist = {}
-	for _,set in ipairs(list) do
-		if not (type(set) == "table" and #set == 1) then
-			table.insert(setlist,set)
-		end
-	end
-	return setlist
-end
 function fusf.Loc(locs,chk,from)
 	local Loc = {0,0}
-	for i,l1 in ipairs(fusf.CutString(locs,"+","fusf.Loc")) do
-		for j = 1,#l1 do
-			local loc = string.sub(l1,j,j)
-			Loc[i] = Loc[i] + fucg.ran[string.upper(loc)]
+	for i,loc in ipairs(fusf.CutString(locs,"+",nil,"fusf.Loc")) do
+		for j = 1,#loc do
+			Loc[i] = Loc[i] + fucg.ran[loc:sub(j,j):upper()]
 		end
 	end
 	if chk then Loc = {Loc[1]} end
@@ -52,24 +49,12 @@ function fusf.GetCardTable(c)
 	end
 	return C 
 end
-function fusf.Func(func)
-	return function(e,val)
-		if not (fusf.NotNil(val) and func) then return end
-		if type(val) == "string" then val = (string.match(val,"%d") and tonumber(val)) or aux[val] or val end
-		Effect["Set"..func](e,val)
-	end
-end
-function fusf.res(v)
---return Reset
-	v = type(v) == "table" and v or { v }
-	return table.unpack(v)
-end
 function fusf.PostFix_Trans(str,val)
 	local tTrans, tStack, index = { }, { }, 1
 	while index <= #str do
-		local ch = string.sub(str, index, index)
-		if string.match(ch, "%a") then
-			_, index, ch = string.find(str, "^([%a]+)", index)
+		local ch = str:sub(index, index)
+		if ch:match("%a") then
+			_, index, ch = str:find("^([%a]+)", index)
 			table.insert(tTrans, ch)
 		elseif ch == "%" then
 			local chk = table.remove(val, 1)
@@ -96,7 +81,7 @@ function fusf.PostFix_Trans(str,val)
 			end
 			table.insert(tStack, ch)
 		end
-		if tStack[#tStack] == "~" and string.match(ch, "^[%a%)%%]") then
+		if tStack[#tStack] == "~" and ch:match("^[%a%)%%]") then
 			table.insert(tTrans, table.remove(tStack))
 		end
 		index = index + 1
@@ -106,35 +91,15 @@ function fusf.PostFix_Trans(str,val)
 	end
 	return tTrans
 end
-function fusf.CutDis(str,dis)
-	if Dis == "" then return fusf.CutString(str,",","CutDis1") end
-	local ch, Dis = "", fusf.CutString(dis,",","CutDis2")
-	for _,S in ipairs(fusf.CutString(str,",","CutDis3")) do
-		for i,D in ipairs(Dis) do
-			if S == D then 
-				table.remove(Dis,i)
-				S = ""
-			end
-		end
-		if S ~= "" then ch = ch..","..S end
-	end
-	return fusf.CutString(string.sub(ch,2),",","CutDis4")
-end
-function fusf.Value_Trans(val)
-	val = type(val) == "table" and val or { val }
-	local var = {}
-	for i,V in ipairs(val) do
-		if type(V) == "string" then
-			for _,ch in ipairs(fusf.CutString(V,",","Value_Trans")) do
-				if ch == "%" then 
-					ch = table.remove(val, i + 1)
-				elseif ch == "" then
-					ch = {}
-				end
-				table.insert(var, ch)
+function fusf.Value_Trans(...)
+	local vals,var = {...},{ }
+	for i,val in ipairs(vals) do
+		if type(val) == "string" then
+			for _,unit in ipairs(fusf.CutString(val,",",nil,"Value_Trans")) do
+				table.insert(var, unit == "%" and table.remove(vals, i + 1) or unit == "" and { } or unit)
 			end
 		else
-			table.insert(var, V or {})
+			table.insert(var, val or { })
 		end
 	end
 	return var
@@ -145,9 +110,9 @@ function fusf.Check_Constant(func,chktable)
 		local Cons, tStack = fusf.PostFix_Trans(cons), { }
 		local CalL, CalR
 		for _,val in ipairs(Cons) do
-			if string.match(val, "[%-%~]") then
+			if val:match("[%-%~]") then
 				tStack[#tStack] = not tStack[#tStack]
-			elseif string.match(val, "[%+%/]") then
+			elseif val:match("[%+%/]") then
 				CalR = table.remove(tStack)
 				CalL = table.remove(tStack)
 				local tCal = {
@@ -156,13 +121,79 @@ function fusf.Check_Constant(func,chktable)
 				}
 				table.insert(tStack, tCal[val])
 			else
-				table.insert(tStack, func(c,chktable[string.upper(val)]))
+				table.insert(tStack, func(c,chktable[val:upper()]))
 			end
 		end
 		return tStack[#tStack]
 	end
 end
+function fusf.Set_Constant(func,_constant)
+	return function(E,val)
+		if not fusf.NotNil(val) then return end
+		local var = type(val) == "string" and 0 or val
+		if func == "Code" and (val == "m" or type(val) == "string" and val:match("CUS")) then 
+			val = val == "m" and E.e:GetOwner():GetCode() or tonumber(val:sub(5,#val))
+			val = val < 19999999 and val + 20000000 or val
+			Effect["SetCode"](E.e,EVENT_CUSTOM + val)
+		else 
+			if type(val) == "string" then 
+				for _,V in ipairs(fusf.CutString(val,"+",nil,_constant:upper())) do
+					var = var + (fusf.NotNil(V) and fucg[_constant][V:upper()] or 0)
+				end
+			end
+			Effect["Set"..func](E.e,var)
+		end
+	end
+end
+function fusf.Set_Func(func)
+	return function(E,val)
+		if not (fusf.NotNil(val) and func) then return end
+		local var
+		if type(val) == "string" then 
+			local cm,lib = _G["c"..E.e:GetOwner():GetCode()],E.e:GetOwner().lib or {}
+			var = tonumber(val) or lib[val] or cm[val] or aux[val]
+			if not var and func == "Value" then var = fucg.val[val] or var end
+			if not var and val:match("*") then 
+				local _val = fusf.CutString(val,"*",nil,"Func") 
+				local _func = table.remove(_val,1)
+				if aux[_func] then var = aux[_func](table.unpack(_val)) end
+				if cm[_func] then var = cm[_func](table.unpack(_val)) end
+				if lib[_func] then var = lib[_func](table.unpack(_val)) end
+			end
+		end
+		Effect["Set"..func](E.e,var or val)
+	end
+end
 --------------------------------------"fucg constants"
+--Effect type Variable
+fucg.etyp = {
+	A   =EFFECT_TYPE_ACTIVATE,   
+	I   =EFFECT_TYPE_IGNITION,   
+	QO  =EFFECT_TYPE_QUICK_O,   
+	QF  =EFFECT_TYPE_QUICK_F,   
+	TO  =EFFECT_TYPE_TRIGGER_O,   
+	TF  =EFFECT_TYPE_TRIGGER_F,   
+	F   =EFFECT_TYPE_FIELD,   
+	S   =EFFECT_TYPE_SINGLE,   
+	C   =EFFECT_TYPE_CONTINUOUS,   
+	G   =EFFECT_TYPE_GRANT,   
+	E   =EFFECT_TYPE_EQUIP,   
+	X   =EFFECT_TYPE_XMATERIAL,
+}
+--summon type Variable
+fucg.styp = {
+	NO = SUMMON_TYPE_NORMAL,
+	FU  = SUMMON_TYPE_FUSION  , 
+	SY  = SUMMON_TYPE_SYNCHRO  , 
+	RI  = SUMMON_TYPE_RITUAL  , 
+	XYZ = SUMMON_TYPE_XYZ  ,  
+	LI  = SUMMON_TYPE_LINK  , 
+	PE  = SUMMON_TYPE_PENDULUM  , 
+	AD  = SUMMON_TYPE_ADVANCE  , 
+	SP  =SUMMON_TYPE_SPECIAL,
+	DU  =SUMMON_TYPE_DUAL, 
+	FL  =SUMMON_TYPE_FLIP, 
+}
 --Hint Variable
 fucg.des = {
 	--召唤
@@ -173,6 +204,7 @@ fucg.des = {
 	--
 	RE = 1192   ,  --除外
 	DES = 20099999*16   ,  --破坏
+	DR = 20099999*16+1   ,  --抽卡
 }
 --category Variable
 fucg.cat = {
@@ -228,16 +260,81 @@ fucg.cod = {
 	TG   = EVENT_TO_GRAVE  ,
 	TH   = EVENT_TO_HAND   ,
 	RE   = EVENT_REMOVE   ,
+	MO  = EVENT_MOVE,
+	--Change
+	RO   = EVENT_DETACH_MATERIAL,
 	PS   = EVENT_SUMMON   ,
-	SS   = EVENT_SUMMON_SUCCESS   ,
+	S   = EVENT_SUMMON_SUCCESS   ,
 	PSP  = EVENT_SPSUMMON   ,
 	SP   = EVENT_SPSUMMON_SUCCESS   ,
+	PF   = EVENT_FLIP_SUMMON   ,
+	F   = EVENT_FLIP_SUMMON_SUCCESS   ,
 	DES  = EVENT_DESTROYED   ,
+	PDES = EVENT_DESTROY   ,
+	LEA  = EVENT_LEAVE_FIELD,
+	PLEA  = EVENT_LEAVE_FIELD_P,
+	GLEA  = EVENT_LEAVE_GRAVE,
+	POS  = EVENT_CHANGE_POS,
+	REL  = EVENT_RELEASE,
+	BM   = EVENT_BE_MATERIAL,
+	PBM   = EVENT_BE_PRE_MATERIAL,
 	--negative
 	NEGA = EVENT_CHAIN_NEGATED   ,  --发动无效
 	NEGE = EVENT_CHAIN_DISABLED   , --效果无效
+	NEGS = EVENT_SUMMON_NEGATED,
+	NEGF = EVENT_FLIP_SUMMON_NEGATED,
+	NEGSP = EVENT_SPSUMMON_NEGATED,
 	--chain
 	CH   = EVENT_CHAINING   ,
+--[[
+EVENT_FLIP  =1001   --翻转时
+EVENT_DISCARD	 =1018   --丢弃手牌时
+EVENT_CHAIN_SOLVING =1020   --连锁处理开始时（EVENT_CHAIN_ACTIVATING之後）
+EVENT_CHAIN_ACTIVATING  =1021   --连锁处理准备中
+EVENT_CHAIN_SOLVED  =1022   --连锁处理结束时
+EVENT_CHAIN_ACTIVATED   =1023   --N/A
+EVENT_CHAIN_NEGATED =1024   --连锁发动无效时（EVENT_CHAIN_ACTIVATING之後）
+EVENT_CHAIN_DISABLED			=1025   --连锁效果无效时
+EVENT_CHAIN_END  =1026   --连锁串结束时
+EVENT_CHAINING  =1027   --效果发动时
+EVENT_BECOME_TARGET =1028   --成为效果对象时
+EVENT_BREAK_EFFECT  =1050   --Duel.BreakEffect()被调用时
+EVENT_MSET  =1106   --放置怪兽时
+EVENT_SSET  =1107   --放置魔陷时
+EVENT_DRAW  =1110   --抽卡时
+EVENT_DAMAGE					=1111   --造成战斗/效果伤害时
+EVENT_RECOVER	 =1112   --回复生命值时
+EVENT_PREDRAW	 =1113   --抽卡阶段通常抽卡前
+EVENT_CONTROL_CHANGED   =1120   --控制权变更
+EVENT_EQUIP   =1121   --装备卡装备时
+EVENT_ATTACK_ANNOUNCE   =1130   --攻击宣言时
+EVENT_BE_BATTLE_TARGET  =1131   --被选为攻击对象时
+EVENT_BATTLE_START  =1132   --伤害步骤开始时（反转前）
+EVENT_BATTLE_CONFIRM			=1133   --伤害计算前（反转後）
+EVENT_PRE_DAMAGE_CALCULATE  =1134   --伤害计算时（羽斬）
+EVENT_DAMAGE_CALCULATING		=1135   --N/A
+EVENT_PRE_BATTLE_DAMAGE   =1136   --即将产生战斗伤害(只能使用EFFECT_TYPE_CONTINUOUS)
+EVENT_BATTLE_END				=1137   --N/A
+EVENT_BATTLED	 =1138   --伤害计算后（异女、同反转效果时点）
+EVENT_BATTLE_DESTROYING   =1139   --以战斗破坏怪兽送去墓地时（BF-苍炎之修罗）
+EVENT_BATTLE_DESTROYED  =1140   --被战斗破坏送去墓地时（杀人番茄等）
+EVENT_DAMAGE_STEP_END   =1141   --伤害步骤结束时
+EVENT_ATTACK_DISABLED   =1142   --攻击无效时（翻倍机会）
+EVENT_BATTLE_DAMAGE =1143   --造成战斗伤害时
+EVENT_TOSS_DICE  =1150   --掷骰子的结果产生后
+EVENT_TOSS_COIN  =1151   --抛硬币的结果产生后
+EVENT_TOSS_COIN_NEGATE  =1152   --重新抛硬币
+EVENT_TOSS_DICE_NEGATE  =1153   --重新掷骰子
+EVENT_LEVEL_UP  =1200   --等级上升时
+EVENT_PAY_LPCOST				=1201   --支付生命值时
+EVENT_RETURN_TO_GRAVE   =1203   --回到墓地时
+EVENT_TURN_END  =1210   --回合结束时
+EVENT_PHASE   =0x1000 --阶段结束时
+EVENT_PHASE_START   =0x2000 --阶段开始时
+EVENT_ADD_COUNTER   =0x10000 --增加指示物时
+EVENT_REMOVE_COUNTER			=0x20000	--去除指示物时(A指示物)，Card.RemoveCounter()必須手動觸發此事件
+EVENT_CUSTOM					=0x10000000 --自訂事件
+--]]
 }
 --property Variable
 fucg.pro = { 
@@ -256,8 +353,8 @@ fucg.pro = {
 	SET   = EFFECT_FLAG_SET_AVAILABLE   ,
 	DAM   = EFFECT_FLAG_DAMAGE_STEP  ,
 	CAL   = EFFECT_FLAG_DAMAGE_CAL  ,
-
-	OE  = 17408   , --EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE(out effect)
+	OP   = EFFECT_FLAG_EVENT_PLAYER,
+	OE  = 0x40400   , --EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE(out effect)
 }
 --Location Variable
 fucg.ran = {
@@ -309,7 +406,8 @@ fucg.res = {
 	MSC  = RESET_MSCHANGE,
 	----组合时点
 	STD  = RESETS_STANDARD,
-	RED  = RESETS_REDIRECT,
+	RED  = RESETS_REDIRECT, 
+	_PH  = fucg.pha,
 }
 --count limit Variable
 fucg.ctl = {
@@ -333,7 +431,7 @@ fucg.rea = {
 	SY  = REASON_SYNCHRO  , 
 	RI  = REASON_RITUAL  , 
 	XYZ = REASON_XYZ  ,  
-	LINK = REASON_LINK  , 
+	LI  = REASON_LINK  , 
 	--特殊rea
 	COS = REASON_COST  ,  --用於代價或無法支付代價而破壞
 	REP = REASON_REPLACE  ,  --代替
@@ -404,7 +502,7 @@ fucg.typ = {
 	SY  =TYPE_SYNCHRO,   --同调
 	XYZ =TYPE_XYZ,   --超量
 	PE  =TYPE_PENDULUM,  --灵摆
-	LINK=TYPE_LINK,   --连接
+	LI  =TYPE_LINK,   --连接
 	--
 	SP  =TYPE_SPSUMMON,  --特殊召唤
 	SPI =TYPE_SPIRIT,   --灵魂
@@ -421,61 +519,67 @@ fucg.typ = {
 	COU =TYPE_COUNTER,   --反击
 	TM  =TYPE_TRAPMONSTER,   --陷阱怪兽
 }
+--Value Variable
+fucg.val = {
+	--Summon Type --召唤类型
+	NO  =SUMMON_TYPE_NORMAL,
+	AD  =SUMMON_TYPE_ADVANCE,
+	DU  =SUMMON_TYPE_DUAL,
+	FL  =SUMMON_TYPE_FLIP,
+	SP  =SUMMON_TYPE_SPECIAL,
+	FU  =SUMMON_TYPE_FUSION,
+	RI  =SUMMON_TYPE_RITUAL,
+	SY  =SUMMON_TYPE_SYNCHRO,
+	XYZ  =SUMMON_TYPE_XYZ,
+	PE  =SUMMON_TYPE_PENDULUM,
+	LI  =SUMMON_TYPE_LINK,
+	--Summon Value --特定的召唤方式
+	SELF  =SUMMON_VALUE_SELF,
+	SYM  =SUMMON_VALUE_SYNCHRO_MATERIAL,
+}
 --Effect Variable
 fucg.eff = {
 	CRE  = Effect.CreateEffect,
-	TYP  = Effect.SetType,
-	VAL  = fusf.Func("Value"),
-	CON  = fusf.Func("Condition"),
-	COS  = fusf.Func("Cost"),
-	TG   = fusf.Func("Target"),
-	OP   = fusf.Func("Operation"),
-	RES  = function(e,...) if #{...}>0 then Effect.SetReset(e,fusf.res({...})) end end,
-	LAB  = Effect.SetLabel,
+	TYP  = fusf.Set_Constant("Type","etyp"),
+	CAT  = fusf.Set_Constant("Category","cat"),
+	COD  = fusf.Set_Constant("Code","cod"),
+	PRO  = fusf.Set_Constant("Property","pro"),
+	VAL  = fusf.Set_Func("Value"),
+	CON  = fusf.Set_Func("Condition"),
+	COS  = fusf.Set_Func("Cost"),
+	TG   = fusf.Set_Func("Target"),
+	OP   = fusf.Set_Func("Operation"),
+	CLO  = Effect.Clone,
 }
-function fucg.eff.DES(e,val)
+function fucg.eff.DES(_fuef,val)
 	if not fusf.NotNil(val) then return end
 	if type(val) == "table" then
 		val = aux.Stringid(table.unpack(val))
 	elseif type(val) == "string" then
-		val = string.match(val,"%d") and tonumber(val) or fucg.des[val]
+		if val:match("+") then 
+			val = fusf.CutString(val,"+",nil,"DES")
+			val = aux.Stringid(tonumber(val[1])<19999999 and (tonumber(val[1])+20000000) or tonumber(val[1]), fusf.NotNil(val[2]) and tonumber(val[2]) or 0)
+		else
+			val = val:match("%d") and tonumber(val) or fucg.des[val]
+		end
 	elseif type(val) == "number" then
-		val = val<17 and aux.Stringid(e:GetOwner():GetOriginalCode(),val) or val
+		val = val<17 and aux.Stringid(_fuef.e:GetOwner():GetOriginalCode(),val) or val
 	end
-	e:SetDescription(val)
+	_fuef.e:SetDescription(val)
 end
-function fucg.eff.CAT(e,val)
-	if not fusf.NotNil(val) then return end
-	local cat = type(val) == "string" and 0 or val
-	if type(val) == "string" then
-		for _,V in ipairs(fusf.CutString(val,"+","CAT")) do
-			cat = cat + fucg.cat[string.upper(V)]
-		end
-	end
-	e:SetCategory(cat)
-end
-function fucg.eff.COD(e,val)
-	local cod = type(val) == "string" and fucg.cod[val] or val
-	e:SetCode(cod)
-end
-function fucg.eff.PRO(e,val)
-	if not fusf.NotNil(val) then return end
-	local pro = type(val) == "string" and 0 or val
-	if type(val) == "string" then
-		for _,V in ipairs(fusf.CutString(val,"+","PRO")) do
-			pro = pro + fucg.pro[string.upper(V)]
-		end
-	end
-	e:SetProperty(pro)
-end
-function fucg.eff.CTL(e,val)
+function fucg.eff.CTL(_fuef,val)
 	if not fusf.NotNil(val) then return end
 	local ctl = {nil,nil,0}
 	if type(val) == "string" then
-		for _,v in ipairs(fusf.CutString(val,"+","CTL")) do
-			ctl[3] = string.match(v,"[ODS]") and fucg.ctl[v] or ctl[3]
-			ctl[2] = string.match(v,"m") and e:GetOwner():GetOriginalCode() or ctl[2]
-			ctl[1] = string.match(v,"%d") and tonumber(v) or ctl[1]
+		for i,v in ipairs(fusf.CutString(val,"+",nil,"CTL")) do
+			if v:match("%d") then 
+				if i == 1 then ctl[1] = tonumber(v)
+				else ctl[2] = ctl[2] + tonumber(v) end
+			elseif v:match("m") then
+				ctl[2] = _fuef.e:GetOwner():GetOriginalCode()
+			elseif v:match("[ODS]") then
+				ctl[3] = fucg.ctl[v]
+			end
 		end
 	else
 		val = type(val) == "table" and val or { val }
@@ -485,26 +589,50 @@ function fucg.eff.CTL(e,val)
 			ctl[1] = type(val[i]) == "number" and val[i]<99 and val[i] or ctl[1]
 		end
 	end
-	if ctl[3] ~= 0 and not ctl[2] then ctl[2] = e:GetOwner():GetOriginalCode() end
+	if ctl[3] ~= 0 and not ctl[2] then ctl[2] = _fuef.e:GetOwner():GetOriginalCode() end
 	ctl[2] = (ctl[2] or 0) + table.remove(ctl)
 	ctl[1] = ctl[1] or 1
-	e:SetCountLimit(table.unpack(ctl))
+	_fuef.e:SetCountLimit(table.unpack(ctl))
 end
-function fucg.eff.RAN(e,val)
+function fucg.eff.RAN(_fuef,val)
 	if not fusf.NotNil(val) then return end
-	e:SetRange(fusf.Loc(val,nil,"RAN"))
+	_fuef.e:SetRange(fusf.Loc(val,nil,"RAN"))
 end
-function fucg.eff.TRAN(e,val)
+function fucg.eff.TRAN(_fuef,val)
 	if not fusf.NotNil(val) then return end
-	e:SetTargetRange(fusf.Loc(val,nil,"TRAN"))
+	_fuef.e:SetTargetRange(fusf.Loc(val,nil,"TRAN"))
 end
-function fucg.eff.OBJ(e,val)
+function fucg.eff.RES(_fuef,_val) -- a + b/b1/b2 + c |1
+	if not fusf.NotNil(_val) then return end
+	local res,val = type(_val) == "string" and 0 or _val
+	if type(_val) == "string" then
+		val = fusf.CutString(_val,"|",nil,"RES1")
+		for _,V1 in ipairs(fusf.CutString(val[1],"+",nil,"RES2")) do
+			V1 = fusf.CutString(V1,"/",nil,"RES3")
+			res = res + fucg.res[V1[1] ]
+			if V1[2] then
+				local _index = "_"..table.remove(V1,1)
+				for _,V2 in ipairs(V1) do
+					res = res + fucg.res[_index][V2:upper()]
+				end
+			end
+		end
+		val = val[2] and tonumber(val[2]) or 1
+	end
+	_fuef.e:SetReset(res,val)
+end
+function fucg.eff.LAB(_fuef,val)
+	if not fusf.NotNil(val) then return end
+	local n = type(val) == "string" and {} or val
+	if type(val) == "string" then 
+		for _,v in ipairs(fusf.CutString(val,"+",nil,"LAB")) do
+			n[#n+1] = tonumber(v)
+		end
+	end
+	_fuef.e:SetLabel(table.unpack(type(n) == "table" and n or { n }))
+end
+function fucg.eff.OBJ(_fuef,val)
 	if not fusf.NotNil(val) then return end
 	if type(val) == "table" then val = val[1] end
-	e:SetLabelObject(val)
-end
-function fucg.eff.CLO(e)
-	if not fusf.NotNil(e) then return end
-	if type(e) == "table" then e = e[1] end
-	return e:Clone()
+	_fuef.e:SetLabelObject(val)
 end

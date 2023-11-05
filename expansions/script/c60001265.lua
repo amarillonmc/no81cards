@@ -1,71 +1,92 @@
---辉谕学院 卡歌迪亚利斯
-local m=60001265
-local cm=_G["c"..m]
+--日暮猎人·黎昂和艾尔弗
+if not require and dofile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=dofile(str)
+			else
+				require_list[str]=dofile(str..".lua")
+			end
+		end
+		return require_list[str]
+	end
+end
+if not pcall(function() require("expansions/script/c60000000") end) then require("script/c60000000") end
+local cm,m,o=GetID()
 function cm.initial_effect(c)
-	--change effect type
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCode(m)
-	e2:SetRange(LOCATION_FZONE)
-	e2:SetTargetRange(1,0)
-	c:RegisterEffect(e2)
-	--Activate
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	c:RegisterEffect(e1)
-	--cannot be target
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e2:SetRange(LOCATION_FZONE)
-	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e2:SetTargetRange(LOCATION_ONFIELD,0)
-	e2:SetTarget(cm.tgtg)
-	e2:SetValue(aux.tgoval)
-	c:RegisterEffect(e2)
-	--atkup
+	c:EnableCounterPermit(0x624)
+	c:SetCounterLimit(0x624,1)
+	c:SetSPSummonOnce(m)
+	--fusion material
+	c:EnableReviveLimit()
+	aux.AddFusionProcFunRep(c,cm.ffilter,2,false)
+	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE,0,Duel.Release,REASON_COST+REASON_MATERIAL)
+	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,m)
-	e1:SetCost(cm.spcost2)
-	e1:SetTarget(cm.attg)
-	e1:SetOperation(cm.atop)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCondition(cm.thcon)
+	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
+	--spsm
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetCondition(cm.spcon)
+	e1:SetOperation(cm.spop)
+	c:RegisterEffect(e1)
+	--spsm
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetCondition(cm.spcon)
+	e1:SetOperation(cm.spop)
+	c:RegisterEffect(e1)
+	--attackup
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCode(EFFECT_UPDATE_ATTACK)
+	e3:SetCondition(cm.incon)
+	e3:SetValue(800)
+	c:RegisterEffect(e3)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCode(EFFECT_UPDATE_DEFENSE)
+	e3:SetCondition(cm.incon)
+	e3:SetValue(800)
+	c:RegisterEffect(e3)
 end
-function cm.tgtg(e,c)
-	return c:IsSetCard(0x6a7) and c~=e:GetHandler()
+function cm.ffilter(c)
+	return c:IsCanHaveCounter(0x624) and Duel.IsCanAddCounter(tp,0x624,1,c) and c:IsType(TYPE_MONSTER)
 end
-function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)==0 and e:GetHandler():IsAbleToRemoveAsCost() end
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(tp,60002148)>=7
 end
-function cm.bkfilter(c)
-	return c:IsSetCard(0x6a7) and c:IsAbleToDeck()
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	MerlinTC.Change(e:GetHandler(),m+1)
 end
-function cm.attg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and cm.bkfilter(chkc) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)
-		and Duel.IsExistingTarget(cm.bkfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,cm.bkfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,5,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+function cm.cfilter(c,tp)
+	return c:IsSummonPlayer(tp) and c:IsSetCard(0x6a9) and c:IsCanHaveCounter(0x624) and Duel.IsCanAddCounter(tp,0x624,1,c) and c:IsType(TYPE_MONSTER) and not c:IsCode(m)
 end
-function cm.atop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if not tg or tg:FilterCount(Card.IsRelateToEffect,nil,e)~=5 then return end
-	Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	local g=Duel.GetOperatedGroup()
-	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
-	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-	if ct==5 then
-		Duel.BreakEffect()
-		Duel.Draw(tp,2,REASON_EFFECT)
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.cfilter,1,nil,tp)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsRelateToEffect(e) then
+		e:GetHandler():AddCounter(0x624,1)
+		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 	end
+end
+function cm.incon(e)
+	return Card.GetCounter(e:GetHandler(),0x624)>=1
 end

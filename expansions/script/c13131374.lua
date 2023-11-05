@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,13131374)
+	e1:SetCountLimit(1,13131370)
 	e1:SetCost(c13131374.thcost)
 	e1:SetTarget(c13131374.thtg)
 	e1:SetOperation(c13131374.thop)
@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	
 end
 function c13131374.scfilter(c)
-	return c:IsSetCard(0x1112) and c:IsDiscardable()
+	return c:IsSetCard(0x3b00) and c:IsDiscardable()
 end
 function c13131374.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable()
@@ -38,7 +38,7 @@ function c13131374.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_DISCARD+REASON_COST)
 end
 function c13131374.thfilter(c)
-	return c:IsSetCard(0x1112) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x3b00) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c13131374.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c13131374.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -63,7 +63,7 @@ function c13131374.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c13131374.splimit(e,c)
-	return not c:IsSetCard(0x1112)
+	return not c:IsSetCard(0x3b00)
 end
 function c13131374.thsfilter(c,tp)
 	return c:IsPreviousPosition(POS_FACEUP) and c:IsReason(REASON_EFFECT) and c:GetPreviousCodeOnField()&13131370~=0
@@ -76,7 +76,7 @@ function c13131374.thstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
 function c13131374.spfilter(c,e,tp)
-	return c:IsSetCard(0x1112) and c:IsFaceupEx() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3b00) and c:IsFaceupEx() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c13131374.thsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

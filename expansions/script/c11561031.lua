@@ -188,7 +188,16 @@ function c11561031.xxcost3(e,tp,eg,ep,ev,re,r,rp,chk)
 		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ReturnToField(e:GetLabelObject()) end)  
 		e1:SetReset(RESET_PHASE+PHASE_END) 
-		Duel.RegisterEffect(e1,tp) 
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_PHASE_START+PHASE_END)
+		e2:SetLabelObject(e:GetHandler())
+		e2:SetCountLimit(1)
+		e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		Duel.ReturnToField(e:GetLabelObject()) end)  
+		e2:SetReset(RESET_PHASE+PHASE_END) 
+		Duel.RegisterEffect(e2,tp) 
 	end
 end
 function c11561031.xxcost4(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -296,14 +305,14 @@ function c11561031.cncon3(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN2 
 end 
 function c11561031.cntg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or (Duel.IsExistingMatchingCard(function(c) return c:IsFacedown() and Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToChangeControler,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler()) or (Duel.IsExistingMatchingCard(function(c) return Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)) end 
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,nil,1,tp,LOCATION_ONFIELD)
 end 
 function c11561031.cnop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
-	if not (Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil) or (Duel.IsExistingMatchingCard(function(c) return c:IsFacedown() and Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil))) then return end 
-	local g1=Duel.GetMatchingGroup(Card.IsControlerCanBeChanged,tp,LOCATION_MZONE,LOCATION_MZONE,nil) 
-	local g2=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,nil) 
+	if not (Duel.IsExistingMatchingCard(Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,1,nil) or (Duel.IsExistingMatchingCard(function(c) return Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil))) then return end 
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToChangeControler,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local g2=Duel.GetMatchingGroup(function(c) return Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,nil) 
 	g1:Merge(g2) 
 	if g1:GetCount()>0 then 
 		local tc=g1:Select(tp,1,1,nil):GetFirst() 
@@ -341,33 +350,39 @@ function c11561031.rmop(e,tp,eg,ep,ev,re,r,rp,chk)
 	end  
 end 
 function c11561031.ovcon1(e,tp,eg,ep,ev,re,r,rp)  
-	return e:GetHandler():GetOverlayCount()<Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) and Duel.GetCurrentPhase()==PHASE_DRAW 
+	return e:GetHandler():GetOverlayCount()==0 and Duel.GetCurrentPhase()==PHASE_DRAW 
 end 
 function c11561031.ovcon2(e,tp,eg,ep,ev,re,r,rp)  
-	return e:GetHandler():GetOverlayCount()<Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) and Duel.GetCurrentPhase()==PHASE_STANDBY 
+	return e:GetHandler():GetOverlayCount()==0 and Duel.GetCurrentPhase()==PHASE_STANDBY 
 end 
 function c11561031.ovcon3(e,tp,eg,ep,ev,re,r,rp)  
-	return e:GetHandler():GetOverlayCount()<Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) and Duel.GetCurrentPhase()==PHASE_MAIN1 
+	return e:GetHandler():GetOverlayCount()==0 and Duel.GetCurrentPhase()==PHASE_MAIN1 
 end 
 function c11561031.ovcon4(e,tp,eg,ep,ev,re,r,rp)  
-	return e:GetHandler():GetOverlayCount()<Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) and Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE 
+	return e:GetHandler():GetOverlayCount()==0 and Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE 
 end 
 function c11561031.ovcon5(e,tp,eg,ep,ev,re,r,rp)  
-	return e:GetHandler():GetOverlayCount()<Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) and Duel.GetCurrentPhase()==PHASE_MAIN2 
+	return e:GetHandler():GetOverlayCount()==0 and Duel.GetCurrentPhase()==PHASE_MAIN2 
 end 
 function c11561031.ovcon6(e,tp,eg,ep,ev,re,r,rp)  
-	return e:GetHandler():GetOverlayCount()<Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) and Duel.GetCurrentPhase()==PHASE_END 
+	return e:GetHandler():GetOverlayCount()==0 and Duel.GetCurrentPhase()==PHASE_END 
 end 
 function c11561031.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)  
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)~=0 end 
 end 
 function c11561031.ovop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil) 
-	if g:GetCount()>0 and c:IsRelateToEffect(e) then  
-		local og=g:Select(tp,1,1,nil) 
-		Duel.Overlay(c,og)  
+	if not c:IsRelateToEffect(e) then return true end
+	local ov=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)-c:GetOverlayCount()
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsCanOverlay),tp,LOCATION_GRAVE,LOCATION_GRAVE,nil) 
+	if g:GetCount()>0 then
+		if g:GetCount()<=ov then
+			ov=g:GetCount()
+		end
+		local og=g:Select(tp,1,ov,nil) 
+		Duel.Overlay(c,og)
+		if c:GetOverlayCount()<Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) then
+			Duel.Draw(tp,1,REASON_EFFECT)
+		end
 	end 
-end 
- 
-
+end

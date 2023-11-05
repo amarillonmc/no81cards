@@ -1,7 +1,6 @@
 --星系守护神 南十字星神
 --21.05.03
-local m=11451530
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--special summon condition
@@ -16,7 +15,7 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetCountLimit(1,m)
+	e2:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)

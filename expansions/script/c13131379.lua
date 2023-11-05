@@ -56,10 +56,10 @@ function cm.initial_effect(c)
 	
 end
 function c13131379.eqlimit(e,c)
-	return c:IsSetCard(0x1112)
+	return c:IsSetCard(0x3b00)
 end
 function c13131379.eqfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x1112)
+	return c:IsFaceup() and c:IsSetCard(0x3b00)
 end
 function c13131379.eqfilter2(c)
 	return c:IsFaceup() and c:IsCode(13131370)
@@ -82,7 +82,7 @@ function c13131379.spcon(e,tp,eg,ep,ev,re,r,rp)
 		and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c13131379.spfilter(c,e,tp)
-	return c:IsSetCard(0x1112) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3b00) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c13131379.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c13131379.spfilter(chkc,e,tp) end
@@ -101,7 +101,7 @@ function c13131379.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=eg:GetFirst()
 	return rc:IsRelateToBattle() and rc:IsStatus(STATUS_OPPO_BATTLE)
-		and rc:IsFaceup() and rc:IsSetCard(0x1112) and rc:IsControler(tp)
+		and rc:IsFaceup() and rc:IsSetCard(0x3b00) and rc:IsControler(tp)
 end
 function c13131379.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(c13131379.eqfilter2,tp,LOCATION_MZONE,0,1,nil) end

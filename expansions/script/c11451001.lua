@@ -301,7 +301,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			ac=nil
 		end
 		for i=1,ct1 do
-			Duel.Hint(HINT_CARD,0,tab1[i])
 			g1:AddCard(Duel.CreateToken(tp,tab1[i]))
 		end
 		if #g1>0 then
@@ -379,7 +378,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			ac=nil
 		end
 		for i=1,ct2 do
-			Duel.Hint(HINT_CARD,0,tab2[i])
 			g2:AddCard(Duel.CreateToken(1-tp,tab2[i]))
 		end
 		if #g2>0 then

@@ -79,20 +79,46 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 --除 外
 function cm.excost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,3,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,3,3,nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,2,2,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
+function cm.thfilter(c)
+	return c:IsAbleToHand()
+end
 function cm.extg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_EXTRA)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_REMOVED,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_REMOVED)
 end
 function cm.exop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
-	Duel.ConfirmCards(tp,g)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=g:FilterSelect(tp,Card.IsAbleToRemove,1,1,nil)
-	Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_REMOVED,0,2,2,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
+	if Duel.IsPlayerCanSpecialSummonMonster(tp,33330500,0,0x4011,-2,0,1,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then
+		local ct=1
+			local token=Duel.CreateToken(tp,33330500)
+			Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_SET_BASE_ATTACK)
+			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+			e1:SetRange(LOCATION_MZONE)
+			e1:SetValue(0)
+			token:RegisterEffect(e1,true)
+			local e3=Effect.CreateEffect(e:GetHandler())
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+			e3:SetValue(1)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			c:RegisterEffect(e3)
+			Duel.SpecialSummonComplete()
+	end
 end
+
 

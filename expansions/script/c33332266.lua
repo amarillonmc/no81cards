@@ -75,14 +75,14 @@ function c33332266.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33332266.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc,tk)
-	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,33332258,0x5552,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_FIRE) end
+	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,33332258,0xa552,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_FIRE) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	e:SetLabel(tk)
 end
 function c33332266.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local tk=e:GetLabel()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,33332258,0x5552,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_FIRE) then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,33332258,0xa552,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_FIRE) then
 		local ft=math.min((Duel.GetLocationCount(tp,LOCATION_MZONE)),tk)
 		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 		local ct=1

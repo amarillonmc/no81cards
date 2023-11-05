@@ -21,7 +21,7 @@ function c33332262.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c33332262.thfilter1(c,tp)
-	return c:IsSetCard(0x5552) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsAbleToHand(1-tp)
+	return c:IsSetCard(0xa552) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsAbleToHand(1-tp)
 end
 function c33332262.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33332262.thfilter1,tp,LOCATION_DECK,0,1,nil,tp) end

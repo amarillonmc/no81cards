@@ -55,13 +55,13 @@ function cm.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
 end
 function cm.thcfilter(c)
-	return c:IsCode(13131370) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x3b00) and c:IsReleasable() and c:IsType(TYPE_MONSTER)
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thcfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thcfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.thcfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST)
+	local g=Duel.SelectMatchingCard(tp,cm.thcfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.Release(g,REASON_COST)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

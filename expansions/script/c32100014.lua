@@ -48,7 +48,7 @@ end
 function c32100014.tdhop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
 	if Duel.IsExistingMatchingCard(function(c) return c.SetCard_HR_Corecoin and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() end,tp,LOCATION_GRAVE,0,3,nil) then 
-		local sg=Duel.SelectMatchingCard(tp,function(c) return c.SetCard_HR_Corecoin and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() end,tp,LOCATION_GRAVE,0,3,3,nil) 
+		local sg=Duel.SelectMatchingCard(tp,function(c) return c.SetCard_HR_Corecoin and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() end,tp,LOCATION_DECK,0,3,3,nil) 
 		if Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) then 
 			Duel.SendtoHand(c,nil,REASON_EFFECT) 
 		end 

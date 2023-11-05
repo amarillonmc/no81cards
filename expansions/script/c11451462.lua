@@ -36,7 +36,7 @@ function cm.lvplus(c)
 	if c:GetLevel()>=1 and c:IsType(TYPE_MONSTER) then return c:GetLevel() else return 2 end
 end
 function cm.filter(c,tp)
-	return c:IsSetCard(0x97a) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x97a) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:GetActivateEffect():IsActivatable(tp,false,true) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)))
 end
 function cm.filter2(c)
 	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove()
@@ -60,21 +60,42 @@ function cm.fselect(g,lv,tp)
 	return g:GetSum(cm.lvplus)==lv and g:IsExists(cm.filter4,1,nil) and Duel.GetMZoneCount(tp,g)>0
 end
 function cm.hspcheck(g,lv,tp)
-	Duel.SetSelectedCard(g)
-	return g:CheckSubGroup(cm.fselect,1,#g,lv,tp)
+	--Duel.SetSelectedCard(g)
+	return cm.fselect(g,lv,tp) --g:CheckSubGroup(cm.fselect,1,#g,lv,tp)
 end
 function cm.hspgcheck(g,c,mg,f,min,max,ext_params)
 	local lv,tp=table.unpack(ext_params)
 	if g:GetSum(cm.lvplus)<=lv then return true end
-	Duel.SetSelectedCard(g)
-	return g:CheckSubGroup(cm.fselect,1,#g,lv,tp)
+	--Duel.SetSelectedCard(g)
+	return cm.fselect(g,lv,tp) --g:CheckSubGroup(cm.fselect,1,#g,lv,tp)
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	local tc=g:GetFirst()
-	if tc then Duel.SSet(tp,tc) end
+	if tc then
+		if tc:IsType(TYPE_FIELD) then
+			local te=tc:GetActivateEffect()
+			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+			if fc then
+				Duel.SendtoGrave(fc,REASON_RULE)
+				Duel.BreakEffect()
+			end
+			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+			te:UseCountLimit(tp,1,true)
+			local tep=tc:GetControler()
+			local cost=te:GetCost()
+			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+			Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+		else
+			local te=tc:GetActivateEffect()
+			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+			te:UseCountLimit(tp,1,true)
+			local tep=tc:GetControler()
+			local cost=te:GetCost()
+			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+		end
+	end
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,800) end

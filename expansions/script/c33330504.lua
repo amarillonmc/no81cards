@@ -31,7 +31,7 @@ function c33330504.desfilter(c,e,tp)
 	return c:IsDestructable(e) and Duel.IsExistingMatchingCard(c33330504.resfilter,tp,LOCATION_ONFIELD,0,1,c)
 end
 function c33330504.resfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5552) and c:IsAbleToRemove()
+	return c:IsAbleToRemove()
 end
 function c33330504.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and c33330504.desfilter(chkc,e,tp) end

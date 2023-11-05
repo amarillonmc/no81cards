@@ -1,59 +1,79 @@
 --末氏空骨的暗日
 function c33330509.initial_effect(c)
-	--Activate
+	--activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
-	--token!
+	--tohand
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(33330509,1))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_SZONE)
-	e1:SetCode(EVENT_REMOVE)
-	e1:SetCountLimit(1)
-	e1:SetCondition(c33330509.con)
-	e1:SetTarget(c33330509.tg)
+	e1:SetCountLimit(1,33330509)
+	e1:SetCost(c33330509.cost)
 	e1:SetOperation(c33330509.op)
 	c:RegisterEffect(e1)
-	--remove
+	--tohand2
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-	e2:SetTarget(c33330509.retg)
-	e2:SetTargetRange(0xff,0xff)
-	e2:SetValue(LOCATION_REMOVED)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_REMOVE)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e2:SetCountLimit(1,33330513)
+	e2:SetTarget(c33330509.thtg)
+	e2:SetOperation(c33330509.thop)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_TO_GRAVE)
+	c:RegisterEffect(e3)
 end
-function c33330509.confil(c,tp)
-	return c:GetReasonPlayer()==tp and c:IsSetCard(0x5552)
+function c33330509.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeckAsCost,tp,LOCATION_REMOVED,0,1,nil) end
+	local num=Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,0)
+	Duel.ConfirmDecktop(tp,num)
+	local gc=Duel.GetDecktopGroup(tp,1):GetFirst()
+	e:SetLabel(num)
+	e:SetLabelObject(gc)
+	local sg=Duel.GetMatchingGroup(Card.IsAbleToDeckAsCost,tp,LOCATION_REMOVED,0,nil)
+	Duel.SendtoDeck(sg,nil,1,REASON_COST)
 end
-function c33330509.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c33330509.confil,1,nil,tp)
-end
-function c33330509.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,33330500,0,0x4011,-2,0,1,RACE_ZOMBIE,ATTRIBUTE_LIGHT,POS_FACEUP) end
-	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
+function c33330509.opfil(c)
+	return c:IsSetCard(0x5552) and c:IsAbleToHand()
 end
 function c33330509.op(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,33330500,0,0x4011,-2,0,1,RACE_ZOMBIE,ATTRIBUTE_LIGHT,POS_FACEUP) then return end
-	local token=Duel.CreateToken(tp,33330500)
-	local num=Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,0)
-	Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_SET_BASE_ATTACK)
-	e1:SetValue(num*100)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	token:RegisterEffect(e1)
-	Duel.SpecialSummonComplete()
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	local gc=e:GetLabelObject()
+	local num=e:GetLabel()
+	local sg=Duel.GetDecktopGroup(tp,num)
+	local sgc=Duel.GetDecktopGroup(tp,1):GetFirst()
+	if sgc~=gc then return end
+	if sg:IsExists(c33330509.opfil,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(33330509,0)) then
+		local thg=sg:FilterSelect(tp,c33330509.opfil,1,1,nil)
+		Duel.SendtoHand(thg,tp,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,thg)
+		sg:RemoveCard(thg:GetFirst())
+		Duel.SendtoGrave(sg,REASON_EFFECT)
+	else
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+		Duel.ShuffleDeck(tp)
+	end
 end
-function c33330509.retg(e,c)
-	return c:IsLocation(LOCATION_HAND+LOCATION_DECK) and not c:IsSetCard(0x5552)
+
+
+function c33330509.filter(c)
+	return c:IsSetCard(0x5552) and c:IsAbleToHand()
+end
+function c33330509.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c33330509.filter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c33330509.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c33330509.filter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end

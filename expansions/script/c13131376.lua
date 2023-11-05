@@ -45,7 +45,7 @@ function cm.initial_effect(c)
 end
 
 function c13131376.spcostfilter(c,e,tp)
-	return c:IsSetCard(0x1112) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(c13131376.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c,e,tp)
+	return c:IsSetCard(0x3b00) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(c13131376.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c,e,tp)
 end
 function c13131376.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c13131376.spcostfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
@@ -54,7 +54,7 @@ function c13131376.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c13131376.spfilter(c,e,tp)
-	return c:IsSetCard(0x1112) and c:IsLevel(3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsSetCard(0x3b00) and c:IsLevel(3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c13131376.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c13131376.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
@@ -79,7 +79,7 @@ function c13131376.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c13131376.splimit(e,c)
-	return not c:IsSetCard(0x1112)
+	return not c:IsSetCard(0x3b00)
 end
 function c13131376.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler()) and eg:IsExists(Card.IsCode,1,nil,13131370)

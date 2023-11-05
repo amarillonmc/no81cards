@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 	
 end
 function c13131382.matfilter(c)
-	return c:IsLinkSetCard(0x1112)
+	return c:IsLinkSetCard(0x3b00)
 end
 function c13131382.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
@@ -35,10 +35,10 @@ function c13131382.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function c13131374.splimit(e,c)
-	return not c:IsSetCard(0x1112)
+	return not c:IsSetCard(0x3b00)
 end
 function c13131382.spfilter(c,e,tp)
-	return c:IsSetCard(0x1112) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3b00) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c13131382.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1

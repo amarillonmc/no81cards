@@ -138,29 +138,6 @@ function c11561041.xxop(e,tp,eg,ep,ev,re,r,rp)
 			local e6=e1:Clone()
 			e6:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 			tc:RegisterEffect(e6) 
-		end  
-		if c:IsRelateToEffect(e) then 
-			local e1=Effect.CreateEffect(c) 
-			e1:SetType(EFFECT_TYPE_SINGLE) 
-			e1:SetCode(EFFECT_CANNOT_ATTACK) 
-			e1:SetRange(LOCATION_MZONE)  
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)   
-			c:RegisterEffect(e1)  
 		end   
 	end 
 end 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

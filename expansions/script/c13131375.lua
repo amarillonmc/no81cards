@@ -55,7 +55,7 @@ function c13131375.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c13131375.splimit(e,c)
-	return not c:IsSetCard(0x1112)
+	return not c:IsSetCard(0x3b00)
 end
 function c13131375.thsfilter(c,tp)
 	return c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousCodeOnField()==13131370

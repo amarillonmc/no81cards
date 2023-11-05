@@ -3,7 +3,7 @@ local m=13131377
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1,1)
 	c:EnableReviveLimit()
 	--Destroy
 	local e1=Effect.CreateEffect(c)
@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,13141377)
+	e4:SetCountLimit(1,13142377)
 	e4:SetTarget(c13131377.rectg)
 	e4:SetOperation(c13131377.recop)
 	c:RegisterEffect(e4)

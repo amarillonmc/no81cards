@@ -27,7 +27,7 @@ function c11500100.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetValue(function(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsFacedown,0,LOCATION_REMOVED,LOCATION_REMOVED,nil)*200 end)
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,0,LOCATION_REMOVED,LOCATION_REMOVED,nil)*300 end)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_SET_BASE_DEFENSE)
@@ -163,21 +163,6 @@ function c11500100.xovop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_MESSAGE,0,aux.Stringid(11500100,3))
 		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(11500100,3))
 	end 
-	local ph=Duel.GetCurrentPhase()
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SKIP_BP)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetTargetRange(1,0)
-	if Duel.GetTurnPlayer()==tp and ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then
-		e1:SetLabel(Duel.GetTurnCount())
-		e1:SetCondition(function (e)
-		return Duel.GetTurnCount()~=e:GetLabel() end)
-		e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN,2)
-	else
-		e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN,1)
-	end
-	Duel.RegisterEffect(e1,tp)
 end 
 
 

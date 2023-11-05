@@ -36,8 +36,11 @@ end
 function c50220015.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x116)
 end
+function c50220015.atkfilter(c)
+	return c:IsFaceup() and not c:IsCode(50220015)
+end
 function c50220015.atkval(e,c)
-	local g=e:GetHandler():GetLinkedGroup():Filter(Card.IsFaceup,nil)
+	local g=e:GetHandler():GetLinkedGroup():Filter(c50220015.atkfilter,nil)
 	return g:GetSum(Card.GetBaseAttack)+700
 end
 function c50220015.antg(e,c)

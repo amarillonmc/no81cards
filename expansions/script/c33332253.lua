@@ -25,7 +25,7 @@ function c33332253.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c33332253.filter(c)
-	return c:IsSetCard(0x5552) and c:IsAbleToHand()
+	return c:IsSetCard(0xa552) and c:IsAbleToHand()
 end
 function c33332253.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33332253.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -39,7 +39,7 @@ function c33332253.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c33332253.filter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT) then
-		if e:GetHandler():GetFlagEffect(33332257)~=0 and Duel.SelectYesNo(tp,aux.	  Stringid(33332253,2)) then
+		if e:GetHandler():GetFlagEffect(33332257)~=0 and Duel.SelectYesNo(tp,aux.	 Stringid(33332253,2)) then
 			Duel.ConfirmCards(1-tp,g)
 			Duel.ShuffleHand(tp)
 			Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
@@ -64,7 +64,7 @@ end
 function c33332253.spop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,33332253)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,33332253,0x5552,TYPES_TOKEN_MONSTER,0,0,1,RACE_FISH,ATTRIBUTE_FIRE) then
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,33332253,0xa552,TYPES_TOKEN_MONSTER,0,0,1,RACE_FISH,ATTRIBUTE_FIRE) then
 		local token=Duel.CreateToken(tp,33332253)
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -101,7 +101,7 @@ function c33332253.spcost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c33332253.spfilter(c,e,tp)
-	return c:IsSetCard(0x5552) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa552) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c33332253.sptg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0

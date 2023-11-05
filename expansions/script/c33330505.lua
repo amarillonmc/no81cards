@@ -48,15 +48,6 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
 		e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
-		if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_STANDBY then
-			e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
-			e1:SetValue(Duel.GetTurnCount())
-			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,2)
-		else
-			e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
-			e1:SetValue(0)
-			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,1)
-		end
 		e1:SetLabelObject(c)
 		e1:SetCountLimit(1)
 		e1:SetOperation(cm.retop)
@@ -65,8 +56,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetTurnPlayer()~=tp or Duel.GetTurnCount()==e:GetValue() then return false end
-	return e:GetLabelObject():GetFlagEffect(m)~=0
+	return Duel.GetTurnPlayer()==tp
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
