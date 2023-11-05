@@ -39,8 +39,13 @@ function c22021680.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SelectOption(tp,aux.Stringid(22021680,3))
 end
 function c22021680.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	if chk==0 then
+		local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+		g:RemoveCard(e:GetHandler())
+		return g:GetCount()>0 and g:FilterCount(Card.IsDiscardable,nil)==g:GetCount()
+	end
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function c22021680.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
