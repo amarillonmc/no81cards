@@ -51,7 +51,11 @@ if not cm.lblsz then
 			sol=1
 		else
 			cm._sset(tp,cg,...)
-			sol=cg:GetCount()
+			if aux.GetValueType(cg)=="Card" then
+				sol=1
+			elseif aux.GetValueType(cg)=="Group" then
+				sol=cg:GetCount()
+			end
 		end
 		return sol
 	end
