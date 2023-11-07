@@ -102,7 +102,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 		return false
 	end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
