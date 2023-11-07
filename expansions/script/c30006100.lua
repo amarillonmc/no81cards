@@ -220,21 +220,23 @@ function cm.cytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local mg=g:FilterSelect(tp,cm.copy,1,1,nil,e)
 	Duel.HintSelection(mg)
-	local te=mg:GetFirst():CheckActivateEffect(false,true,false)
-	e:SetLabelObject(te)
+	local te,ceg,cep,cev,cre,cr,crp=mg:GetFirst():CheckActivateEffect(false,true,true)
 	e:SetLabel(mg:GetFirst():GetCode())
 	e:SetCategory(te:GetCategory())
 	e:SetProperty(te:GetProperty())
 	e:GetHandler():RegisterFlagEffect(m+2,RESET_CHAIN,0,1)
 	e:GetHandler():RegisterFlagEffect(m+7,RESET_EVENT+RESETS_STANDARD,0,75)
 	local tg=te:GetTarget()
-	local re=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT)
-	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+	--local re=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT)
+	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
+	te:SetLabelObject(e:GetLabelObject())
+	e:SetLabelObject(te)
 	if Duel.GetCurrentPhase()==PHASE_STANDBY then
 		e:GetHandler():RegisterFlagEffect(m+3,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,EFFECT_FLAG_OATH,2,Duel.GetTurnCount())
 	else
 		e:GetHandler():RegisterFlagEffect(m+3,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,EFFECT_FLAG_OATH,1,0)
 	end
+	Duel.ClearOperationInfo(0)
 end
 function cm.dhlimit(e,c)
 	return c:IsCode(e:GetLabel())
@@ -243,13 +245,16 @@ function cm.cyop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=e:GetLabel()
 	local te=e:GetLabelObject()
-	local g=c:GetOverlayGroup():Filter(cm.copy,nil,e) 
-	if not te or g:GetCount()==0 then return end
-	if c:IsFaceup()  then
+	if not te then return end
+	e:SetLabelObject(te:GetLabelObject())
+	local g=c:GetOverlayGroup()
+Debug.Message(not te or not g:IsContains(te:GetHandler()))
+	if not te or not g:IsContains(te:GetHandler()) then return end
+	--if c:IsFaceup()  then
 		local op=te:GetOperation()
 		if op then
-			local re=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT)
-			if te:GetCode()==EVENT_CHAINING then ev=ev-1 end
+			--local re=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT)
+			--if te:GetCode()==EVENT_CHAINING then ev=ev-1 end
 			op(e,tp,eg,ep,ev,re,r,rp) 
 		end
 		local code=tc
@@ -263,7 +268,7 @@ function cm.cyop(e,tp,eg,ep,ev,re,r,rp)
 				tc1=mg:GetNext()
 			end
 		end
-	end
+	--end
 end
 function cm.name(c,code)
 	return c:IsCode(code)

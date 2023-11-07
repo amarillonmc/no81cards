@@ -149,9 +149,4 @@ function c12852010.copyop(e,tp,eg,ep,ev,re,r,rp)
 		--c:RegisterEffect(e1)
 		cid=c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
 	end
-endSetValue(code)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		--c:RegisterEffect(e1)
-		cid=c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
-	end
 end
