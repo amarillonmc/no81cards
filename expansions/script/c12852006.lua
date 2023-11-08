@@ -134,8 +134,4 @@ function c12852006.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c12852006.activate1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateActivation(ev)
-endSE+PHASE_END,0,1)
-end
-function c12852006.activate1(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateActivation(ev)
 end

@@ -10,9 +10,14 @@ function c9910077.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,9910077)
+	e1:SetCost(c9910077.thcost)
 	e1:SetTarget(c9910077.thtg)
 	e1:SetOperation(c9910077.thop)
 	c:RegisterEffect(e1)
+end
+function c9910077.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,2000) end
+	Duel.PayLPCost(tp,2000)
 end
 function c9910077.thfilter(c,tp)
 	return c:IsRace(RACE_FAIRY) and c:IsAbleToHand() and c:GetOwner()==tp

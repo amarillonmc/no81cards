@@ -70,8 +70,3 @@ function c12852002.seqop(e,tp,eg,ep,ev,re,r,rp)
 		end  
 	end
 end
-al tc2=sg:GetNext()
-			Duel.SwapSequence(tc1,tc2)
-		end  
-	end
-end

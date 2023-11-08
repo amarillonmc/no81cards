@@ -143,6 +143,3 @@ end
 function c12852003.eftg(e,c)
 	return c:IsType(TYPE_MONSTER) and c:GetEquipGroup():IsContains(e:GetHandler())
 end
-function c12852003.eftg(e,c)
-	return c:IsType(TYPE_MONSTER) and c:GetEquipGroup():IsContains(e:GetHandler())
-end

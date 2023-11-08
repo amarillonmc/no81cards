@@ -56,7 +56,4 @@ function c12852009.eqop(e,tp,eg,ep,ev,re,r,rp)
 		local ec=sg:GetFirst()
 		Duel.Equip(tp,ec,tc)
 	end
-end	local ec=sg:GetFirst()
-		Duel.Equip(tp,ec,tc)
-	end
 end

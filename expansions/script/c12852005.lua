@@ -118,7 +118,4 @@ function c12852005.pdop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToBattle() and tc:IsRelateToEffect(e) then
 		Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
 	end
-end) and tc:IsRelateToEffect(e) then
-		Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
-	end
 end
