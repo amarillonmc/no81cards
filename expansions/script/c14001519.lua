@@ -151,6 +151,8 @@ function cm.ssetcon(e,tp,eg,ep,ev,re,r,rp)
 		while tc do
 			local code=tc:GetOriginalCodeRule()
 			local ccode=_G["c"..code]
+			local catt=tc:GetOriginalAttribute()
+			if (catt==ATTRIBUTE_LIGHT and Duel.GetTurnPlayer()~=tp) or (catt==ATTRIBUTE_DARK and Duel.GetTurnPlayer()==tp) and not tc:IsExtraDeckMonster() then return end
 			if eg:IsContains(tc) and ccode.settg(e,tp,eg,ep,ev,re,r,rp,0) and Duel.GetFlagEffect(tp,code)==0 then
 				if Duel.GetCurrentChain()==0 then
 					if tc:IsFacedown() and Duel.SelectEffectYesNo(tp,tc) then

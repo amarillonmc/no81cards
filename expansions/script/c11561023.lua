@@ -59,21 +59,25 @@ function c11561023.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(tc,REASON_COST)
 end 
 function c11561023.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(c11561023.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end 
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,PLAYER_ALL,LOCATION_ONFIELD)
 end 
 function c11561023.setfil(c) 
 	if not (c:IsSetCard(0x116) and c:IsType(TYPE_SPELL)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
-function c11561023.fcheck(g)
-	return g:FilterCount(Card.IsControler,1,nil,tp)<=1 and g:FilterCount(Card.IsControler,1,nil,1-tp)<=1
+function c11561023.filter(c) 
+	return c:IsAbleToDeck()
+end
+function c11561023.fcheck(g,tp)
+	return g:FilterCount(Card.IsControler,nil,tp)<=1 and g:FilterCount(Card.IsControler,nil,1-tp)<=1
 end
 function c11561023.tdop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,nil)
-	if g:GetCount()>0 then 
-		local sg=g:FilterSelect(tp,c11561023.fcheck,1,2,nil) 
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c11561023.filter),tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,nil)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local sg=g:SelectSubGroup(tp,c11561023.fcheck,false,1,2,tp)
 		if Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)~=0 and e:GetLabel()==1 and Duel.IsExistingMatchingCard(c11561023.setfil,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11561023,0)) then 
 			local tc=Duel.SelectMatchingCard(tp,c11561023.setfil,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst() 
 			if tc:IsAbleToHand() and (not tc:IsSSetable() or Duel.SelectOption(tp,1190,1153)==0) then

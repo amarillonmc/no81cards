@@ -33,7 +33,7 @@ function c72100117.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c72100117.spfilter(c)
-	return c:IsSetCard(0x105) and c:IsAbleToRemoveAsCost() and (not c:IsLocation(LOCATION_MZONE) or c:IsFaceup())
+	return c:IsSetCard(0x105) and c:IsAbleToRemoveAsCost() and (not c:IsLocation(LOCATION_MZONE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER)
 end
 function c72100117.hspcon(e,c)
 	if c==nil then return true end
@@ -41,16 +41,16 @@ function c72100117.hspcon(e,c)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if ft<=-1 then return false end
 	if ft<=0 then
-		return Duel.IsExistingMatchingCard(c72100117.spfilter,tp,LOCATION_MZONE,0,1,nil)
-	else return Duel.IsExistingMatchingCard(c72100117.spfilter,tp,0x16,0,1,nil) end
+		return Duel.IsExistingMatchingCard(c72100117.spfilter,tp,LOCATION_MZONE,0,1,c)
+	else return Duel.IsExistingMatchingCard(c72100117.spfilter,tp,0x16,0,1,c) end
 end
 function c72100117.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then
-		local g=Duel.SelectMatchingCard(tp,c72100117.spfilter,tp,LOCATION_MZONE,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c72100117.spfilter,tp,LOCATION_MZONE,0,1,1,c)
 		Duel.Remove(g,POS_FACEUP,REASON_COST)
 	else
-		local g=Duel.SelectMatchingCard(tp,c72100117.spfilter,tp,0x16,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c72100117.spfilter,tp,0x16,0,1,1,c)
 		Duel.Remove(g,POS_FACEUP,REASON_COST)
 	end
 end

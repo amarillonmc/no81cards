@@ -6,7 +6,7 @@ function c88990205.initial_effect(c)
 	--炸卡
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(88990205,0))
-	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,12196875)
@@ -51,11 +51,13 @@ function c88990205.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88990205.cfilter,tp,LOCATION_REMOVED,0,1,nil)
 		and Duel.IsExistingMatchingCard(c88990205.filter,tp,0,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(c88990205.filter,tp,0,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c88990205.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local ct=Duel.GetMatchingGroupCount(c88990205.cfilter,tp,LOCATION_REMOVED,0,nil)
-	if ct==0 then return end
+	if ct==0 or not c:IsRelateToEffect(e) or Duel.Remove(c,POS_FACEUP,REASON_EFFECT) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,c88990205.filter,tp,0,LOCATION_ONFIELD,1,ct,nil)
 	Duel.Destroy(g,REASON_EFFECT)
