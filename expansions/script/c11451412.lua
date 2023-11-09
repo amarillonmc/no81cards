@@ -1,6 +1,5 @@
 --crab, soidier of dragon palace
-local m=11451412
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--effect1
@@ -93,7 +92,7 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and Duel.GetCurrentChain()~=0
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0xc780000+RESET_CHAIN,0,1)
 end
 function cm.condition4(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0 and Duel.GetCurrentChain()==1
@@ -125,5 +124,8 @@ function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then count1=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local hg=g:SelectSubGroup(tp,aux.dncheck,false,1,math.min(count1,count2))
-	Duel.SpecialSummon(hg,0,tp,tp,false,false,POS_FACEUP)
+	for hc in aux.Next(hg) do
+		Duel.SpecialSummonStep(hg,0,tp,tp,false,false,POS_FACEUP)
+	end
+	Duel.SpecialSummonComplete()
 end

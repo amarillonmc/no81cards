@@ -126,7 +126,8 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.check2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetAttacker()==nil then return end
-	table.insert(BATTLE_CARD_CHECK,Duel.GetAttacker():GetCode())
+	local code=Duel.GetAttacker():GetCode()
+	table.insert(BATTLE_CARD_CHECK,code)
 end
 function cm.clear2(e,tp,eg,ep,ev,re,r,rp)
 	BATTLE_CARD_CHECK={}

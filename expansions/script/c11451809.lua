@@ -36,7 +36,8 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(Card.IsFaceup,nil)
 	for tc in aux.Next(g) do
-		table.insert(cm.summon_code,tc:GetCode())
+		local code=tc:GetCode()
+		table.insert(cm.summon_code,code)
 	end
 end
 function cm.fcheck(tp,sg,fc)

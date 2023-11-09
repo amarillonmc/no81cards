@@ -107,7 +107,8 @@ function cm.reset(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.check2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetAttacker()==nil then return end
-	table.insert(BATTLE_ACT_CHECK,re:GetHandler():GetCode())
+	local code=re:GetHandler():GetCode()
+	table.insert(BATTLE_ACT_CHECK,code)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_NEGATED)

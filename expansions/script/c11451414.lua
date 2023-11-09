@@ -1,6 +1,5 @@
 --ao guang, king of dragon palace
-local m=11451414
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--effect1
@@ -92,7 +91,7 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and Duel.GetCurrentChain()~=0
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0xc780000+RESET_CHAIN,0,1)
 end
 function cm.condition4(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0 and Duel.GetCurrentChain()==1
