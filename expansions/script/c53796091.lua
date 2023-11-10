@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(function(c,re)return c:IsReason(REASON_COST) and re and re:IsActivated()end,1,nil,re) then Duel.RegisterFlagEffect(0,m,0,0,0) end
+	if eg:IsExists(function(c,re)return c:IsReason(REASON_COST) and re and re:IsActivated()end,1,nil,re) then Duel.RegisterFlagEffect(0,m,RESET_CHAIN,0,0) end
 end
 function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
 	local ex2,g2,gc2,dp2,dv2=Duel.GetOperationInfo(ev,CATEGORY_SPECIAL_SUMMON)

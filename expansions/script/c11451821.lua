@@ -105,7 +105,9 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			--local cn=_G["c"..code]
 			local con=tc.condition3
 			local op=tc.operation3
-			if con and op and con(e,tp,eg,ep,ev,re,r,rp) then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+			local ft=0
+			if tc:GetOriginalCode()==11451412 then ft=1 end
+			if con and op and con(e,tp,eg,ep,ev,re,r,rp) then return Duel.GetLocationCount(tp,LOCATION_MZONE)>ft and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 		end
 		return false
 	end

@@ -51,8 +51,8 @@ function cm.spsfilter(c,tp)
 end
 function cm.spscon(e,c)
 	if c==nil then return true end
-	local cg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_GRAVE,0,nil)
 	local tp=c:GetControler()
+	local cg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_GRAVE,0,nil)
 	return cg:GetClassCount(Card.GetCode)==cg:GetCount() and Duel.IsExistingMatchingCard(cm.spsfilter,tp,0,LOCATION_MZONE,1,nil,tp)
 end
 function cm.spsop(e,tp,eg,ep,ev,re,r,rp,c)
@@ -65,8 +65,8 @@ function cm.spsfilter1(c,tp)
 end
 function cm.spscon1(e,c)
 	if c==nil then return true end
-	local cg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_GRAVE,0,nil)
 	local tp=c:GetControler()
+	local cg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_GRAVE,0,nil)
 	return cg:GetClassCount(Card.GetCode)==cg:GetCount() and Duel.IsExistingMatchingCard(cm.spsfilter1,tp,LOCATION_MZONE,0,1,nil,tp)
 end
 function cm.spsop1(e,tp,eg,ep,ev,re,r,rp,c)
