@@ -65,15 +65,22 @@ function cm.CheckGroupRecursiveCapture(bool,sg,g,f,min,max,ext_params)
 		if not bool or not Auxiliary.SubGroupCaptured:IsContains(c) then
 			sg:AddCard(c)
 			if not Auxiliary.GCheckAdditional or Auxiliary.GCheckAdditional(sg,c,eg,f,min,max,ext_params) then
-				if (#sg>=min and #sg<=max and f(sg,table.unpack(ext_params))) or (#sg<max and cm.CheckGroupRecursiveCapture(false,sg,eg,f,min,max,ext_params)) then
+				if (#sg>=min and #sg<=max and f(sg,table.unpack(ext_params))) then -- or (#sg<max and cm.CheckGroupRecursiveCapture(false,sg,eg,f,min,max,ext_params)) then
 					--Debug.Message(cm[0])
-					Auxiliary.SubGroupCaptured:Merge(sg)
+					for sc in aux.Next(sg) do
+						Auxiliary.SubGroupCaptured:Merge(eg:Filter(cm.slfilter,nil,sc))
+					end
 				end
+				if #sg<max then cm.CheckGroupRecursiveCapture(false,sg,eg,f,min,max,ext_params) end
 			end
 			sg:RemoveCard(c)
-			eg:RemoveCard(c)
+			--eg:RemoveCard(c)
+			eg:Sub(eg:Filter(cm.slfilter,nil,c))
 		end
 	end
+end
+function cm.slfilter(c,sc)
+	return c:IsLocation(sc:GetLocation()) and c:IsLevel(sc:GetLevel())
 end
 function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 	Auxiliary.SubGroupCaptured=Group.CreateGroup()
@@ -92,7 +99,7 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 		cm.CheckGroupRecursiveCapture(true,sg,g,f,min,max,ext_params)
 		local cg=Auxiliary.SubGroupCaptured:Clone()
 		Auxiliary.SubGroupCaptured:Clear()
-		--Debug.Message(cm[0])
+			--Debug.Message(cm[0])
 		cg:Sub(sg)
 		finish=(#sg>=min and #sg<=max and f(sg,...))
 		if #cg==0 then break end

@@ -14,6 +14,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.destg)
 	e2:SetOperation(cm.desop)
 	c:RegisterEffect(e2)
+	cm.sorison_cost_effect=e2
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

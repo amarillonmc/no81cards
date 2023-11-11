@@ -21,15 +21,15 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e2:SetRange(LOCATION_MZONE)
+	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetCondition(cm.drcon)
 	e2:SetTarget(cm.drtg)
 	e2:SetOperation(cm.drop)
 	c:RegisterEffect(e2)
-	local e2=e3:Clone()
-	e2:SetCode(EVENT_FLIP)
-	c:RegisterEffect(e2)  
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_FLIP)
+	c:RegisterEffect(e3)  
 end
 function cm.thfilter(c)
 	return c:IsCode(40010592) and c:IsSSetable()
@@ -44,7 +44,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:GetFirst()
-	return eg:GetCount()==1 and tg~=e:GetHandler() 
+	return tg:IsType(TYPE_SPIRIT) and tg:GetSummonPlayer()==tp 
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) end

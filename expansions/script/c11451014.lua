@@ -65,6 +65,15 @@ function cm.initial_effect(c)
 		ge0:SetCode(EVENT_PHASE_START+PHASE_DRAW)
 		ge0:SetOperation(cm.geop)
 		Duel.RegisterEffect(ge0,0)
+		--disable
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_FIELD)
+		e0:SetCode(EFFECT_DISABLE)
+		e0:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+		e0:SetTarget(function(e,c) return c:IsOriginalSetCard(0x5977) and c:IsType(TYPE_TRAP) and c:IsHasEffect(EFFECT_DISABLE_TRAPMONSTER) and c:IsHasEffect(EFFECT_DISABLE_TRAPMONSTER):GetHandlerPlayer()==e:GetHandlerPlayer() end)
+		Duel.RegisterEffect(e0,0)
+		local e1=e0:Clone()
+		Duel.RegisterEffect(e1,1)
 		local _IsActiveType=Effect.IsActiveType
 		local _GetActiveType=Effect.GetActiveType
 		local _GetActivateLocation=Effect.GetActivateLocation
@@ -216,6 +225,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_ADD_TYPE)
 	e0:SetValue(TYPE_TRAP)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 	c:RegisterEffect(e0,true)
 	local te2=te:Clone()

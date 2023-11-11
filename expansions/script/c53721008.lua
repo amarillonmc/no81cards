@@ -14,6 +14,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.settg)
 	e2:SetOperation(cm.setop)
 	c:RegisterEffect(e2)
+	cm.sorison_cost_effect=e2
 end
 function cm.setfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()

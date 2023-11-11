@@ -14,6 +14,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.rmtg)
 	e2:SetOperation(cm.rmop)
 	c:RegisterEffect(e2)
+	cm.sorison_cost_effect=e2
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

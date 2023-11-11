@@ -14,11 +14,11 @@ function c67200624.condition(e,tp,eg,ep,ev,re,r,rp)
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE))
 end
 function c67200624.costfilter(c)
-	return c:IsSetCard(0x567b) and c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and c:IsAbleToHandAsCost() 
+	return c:IsSetCard(0x567b) and c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and c:IsAbleToHandAsCost() and c:IsFaceupEx()
 end
 function c67200624.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local b1=Duel.IsExistingMatchingCard(c67200624.costfilter,tp,LOCATION_ONFIELD,0,1,c) and Duel.IsChainNegatable(ev) and Duel.IsExistingMatchingCard(c67200624.thfilter,tp,LOCATION_GRAVE,0,2,nil)
+	local b1=Duel.IsExistingMatchingCard(c67200624.costfilter,tp,LOCATION_ONFIELD,0,1,c) and Duel.IsChainNegatable(ev)
 	local b2=Duel.IsExistingMatchingCard(c67200624.costfilter,tp,LOCATION_GRAVE,0,1,nil)
 	if chk==0 then return b1 or b2 end
 	local g=Group.CreateGroup()
@@ -34,7 +34,7 @@ function c67200624.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
 	if tc:IsLocation(LOCATION_ONFIELD) then
 		e:SetLabel(1)
-		e:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
+		e:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
 	end
 	if tc:IsLocation(LOCATION_GRAVE) then
 		e:SetLabel(2)

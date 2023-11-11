@@ -88,7 +88,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			local tc=c:GetEquipTarget()
 			if xg:GetCount()>0 then
 				local code=xg:GetFirst():GetOriginalCode()
-				tc:ReplaceEffect(code,0)
+				tc:ReplaceEffect(code,RESET_EVENT+RESETS_STANDARD)
 			end
 			--change setcard
 			local e0=Effect.CreateEffect(c)
