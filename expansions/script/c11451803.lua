@@ -163,11 +163,6 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 							c:SetEntityCode(m,false)
 							Duel.ShuffleHand(tp)
 							Duel.ConfirmCards(1-tp,c)
-							Effect.IsActiveType=_IsActiveType
-							Effect.GetActiveType=_GetActiveType
-							Card.IsType=_IsType
-							Card.GetType=_GetType
-							Card.GetOriginalType=_GetOriginalType
 						end)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)

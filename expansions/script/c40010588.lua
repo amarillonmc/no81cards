@@ -92,13 +92,13 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 		--Debug.Message(ct)
 
 		if ct>0 then
-			Duel.Damage(1-tp,ct*400,REASON_EFFECT,true)
+			Duel.Damage(1-tp,ct*400,REASON_EFFECT)
 		end
 	else
 		if Duel.IsPlayerAffectedByEffect(tp,40010592) and seq<3 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+2) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 			Duel.MoveSequence(c,seq+2)
 			if ct>0  then
-				Duel.Damage(1-tp,ct*400,REASON_EFFECT,true)
+				Duel.Damage(1-tp,ct*400,REASON_EFFECT)
 			end
 		else
 			Duel.SendtoHand(c,nil,REASON_EFFECT)

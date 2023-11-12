@@ -127,12 +127,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if op==2 then
 		local g=Duel.GetDecktopGroup(tp,5)
+		Duel.ConfirmDecktop(tp,5)
 		if Duel.SendtoDeck(g,1-tp,2,REASON_EFFECT)==5 then
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 	end
 	if op==3 then
 		local g=Duel.GetDecktopGroup(tp,10)
+		Duel.ConfirmDecktop(tp,10)
 		if Duel.SendtoDeck(g,1-tp,2,REASON_EFFECT)==10 then
 			Duel.Draw(tp,2,REASON_EFFECT)
 		end

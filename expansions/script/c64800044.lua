@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetTarget(cm.tgtg)
 	e1:SetOperation(cm.tgop)
@@ -88,7 +88,7 @@ function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 end
 --------
 function cm.cfilter2(c,tp)
-	return c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0 and c:IsType(TYPE_SYNCHRO)
+	return c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0 and c:IsType(TYPE_SYNCHRO) and c:IsType(TYPE_TUNER)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter2,tp,LOCATION_ONFIELD,0,1,nil,tp) end

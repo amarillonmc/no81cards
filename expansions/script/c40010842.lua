@@ -99,7 +99,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.ShuffleHand(tp)
 end
 function cm.counterfilter(c)
-	return not c:IsType(TYPE_SPIRIT)
+	return c:IsType(TYPE_SPIRIT)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
@@ -130,14 +130,33 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.Summon(tp,c,true,nil)~=0 then
-		local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=g:Select(tp,1,1,nil)
-			Duel.Summon(tp,sg,true,nil)
-		end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_SUMMON_SUCCESS)
+		e1:SetCountLimit(1)
+		e1:SetOperation(cm.adjustop)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+		local e2=e1:Clone()
+		e2:SetCode(EVENT_SUMMON_NEGATED)
+		e2:SetLabelObject(e1)
+		e2:SetOperation(cm.adjustop2)
+		Duel.RegisterEffect(e2,tp)
 	end
+end
+function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.Summon(tp,sg:GetFirst(),true,nil)
+	end
+end
+function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	if te and aux.GetValueType(te)=="Effect" then te:Reset() end
 end
 function cm.desfilter(c)
 	return c:IsType(TYPE_MONSTER)

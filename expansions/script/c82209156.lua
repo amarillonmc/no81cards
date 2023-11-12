@@ -113,13 +113,14 @@ if not cm.start then
 	while tc do
 		local code=tc:GetOriginalCode()
 		local ccode=_G["c"..code]
+		if not cm.initial_effect then cm.initial_effect=aux.TRUE end
 		tc:ReplaceEffect(82209156,0)
 		if ccode.initial_effect then ccode.initial_effect(tc) end
 		tc=g:GetNext()
 	end
-	Debug.Message("此卡会爆不明红字，但仍然可以正常使用")
-	Debug.Message("至少目前暂未发现实质性bug，无需反馈")
-	Debug.Message("如有能力进行修复也可联系作者")
+	--Debug.Message("此卡会爆不明红字，但仍然可以正常使用")
+	--Debug.Message("至少目前暂未发现实质性bug，无需反馈")
+	--Debug.Message("如有能力进行修复也可联系作者")
 end
 
 function cm.initial_effect(c)

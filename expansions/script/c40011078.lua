@@ -142,8 +142,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1) then
 		Duel.MoveSequence(c,seq+1)
 		if ct1>0 then
-			c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
-			c:RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2,1,ct1)
+			c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,2,0,aux.Stringid(m,2))
+			c:RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2,ct1)
 		end
 	else
 		if Duel.IsPlayerAffectedByEffect(tp,40010592) and seq<3 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+2) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
