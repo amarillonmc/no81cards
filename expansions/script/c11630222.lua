@@ -15,18 +15,16 @@ end
 cm.SetCard_xxj_Mirror=true
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	
+	e:SetLabel(c:GetSequence())
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
 	if chk==0 then return ct>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct end
-	e:SetLabel(c:GetSequence())
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		Duel.SetChainLimit(cm.chainlm(c))
+		Duel.SetChainLimit(cm.chainlm)
 	end
 end
-function cm.chainlm(c)
-	return function(e,ep,tp)
-		return tp==ep or not e:GetHandler():GetColumnGroup():IsContains(c)
-	end
+function cm.chainlm(e,rp,tp)
+	local seq=e:GetLabel()
+	return tp==rp or aux.GetColumn(c,tp)==seq
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)

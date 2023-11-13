@@ -34,7 +34,7 @@ function c11513042.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c11513042.mfilter(c) 
-	return c:IsLevelAbove(1)  
+	return not c:IsLinkType(TYPE_TOKEN) and c:IsLevelAbove(1)  
 end 
 function c11513042.lcheck(g)
 	return g:GetClassCount(Card.GetLevel)==1 
@@ -115,7 +115,7 @@ function c11513042.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(c11513042.splimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+--  Duel.RegisterEffect(e1,tp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CHANGE_DAMAGE)
@@ -123,11 +123,11 @@ function c11513042.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(0,1)
 	e1:SetValue(c11513042.damval1)
 	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+--  Duel.RegisterEffect(e1,tp)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
 	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
+--  Duel.RegisterEffect(e2,tp)
 end
 function c11513042.damval1(e,re,val,r,rp,rc)
 	if bit.band(r,REASON_EFFECT)~=0 then return 0
@@ -143,7 +143,8 @@ function c11513042.rcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_COST)~=0 and re:IsActivated() and re:IsActiveType(TYPE_XYZ) and ep==e:GetOwnerPlayer() and re:GetHandler():GetOverlayCount()>=ev-1
 end
 function c11513042.rop(e,tp,eg,ep,ev,re,r,rp) 
-	if Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)~=0 then 
+	local c=e:GetHandler() 
+	if Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_EFFECT)~=0 then 
 	return 1   
 	else return 0 end 
 end

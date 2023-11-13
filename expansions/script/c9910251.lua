@@ -1,6 +1,6 @@
 --幽鬼街
 function c9910251.initial_effect(c)
-	c:EnableCounterPermit(0x953)
+	c:EnableCounterPermit(0x956)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DICE+CATEGORY_COUNTER)
@@ -32,14 +32,14 @@ function c9910251.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9910251.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanAddCounter(tp,0x953,6,e:GetHandler()) end
+	if chk==0 then return Duel.IsCanAddCounter(tp,0x956,6,e:GetHandler()) end
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 function c9910251.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local d=Duel.TossDice(tp,1)
 	if c:IsRelateToEffect(e) then
-		c:AddCounter(0x953,d)
+		c:AddCounter(0x956,d)
 	end
 end
 function c9910251.thcon(e,tp,eg,ep,ev,re,r,rp)
@@ -47,7 +47,7 @@ function c9910251.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousControler()==tp and rp==1-tp
 end
 function c9910251.thfilter(c)
-	return c:IsSetCard(0x953) and c:IsAbleToHand()
+	return c:IsSetCard(0xa956) and c:IsAbleToHand()
 end
 function c9910251.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910251.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -65,15 +65,15 @@ function c9910251.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function c9910251.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanAddCounter(0x953,6) end
+	if chk==0 then return e:GetHandler():IsCanAddCounter(0x956,6) end
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 function c9910251.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local d=Duel.TossDice(tp,1)
-	c:AddCounter(0x953,d)
-	if Duel.GetCounter(e:GetHandlerPlayer(),1,0,0x953)<13 then return end
+	c:AddCounter(0x956,d)
+	if Duel.GetCounter(e:GetHandlerPlayer(),1,0,0x956)<13 then return end
 	Duel.BreakEffect()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -89,7 +89,7 @@ function c9910251.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.RegisterEffect(e1,tp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,9910252,0x953,0x4011,3000,0,8,RACE_ZOMBIE,ATTRIBUTE_DARK) then
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,9910252,0xa956,0x4011,3000,0,8,RACE_ZOMBIE,ATTRIBUTE_DARK) then
 		local token=Duel.CreateToken(tp,9910252)
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
 		local e2=Effect.CreateEffect(c)

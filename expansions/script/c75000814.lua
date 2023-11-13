@@ -13,18 +13,7 @@ function c75000814.initial_effect(c)
 	e1:SetTarget(c75000814.sptg)
 	e1:SetOperation(c75000814.spop)
 	c:RegisterEffect(e1) 
-	--spsummon
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(75000814,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_CHANGE_POS)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,75000815)
-	e2:SetTarget(c75000814.sptg1)
-	e2:SetOperation(c75000814.spop1)
-	c:RegisterEffect(e2)   
+ 
 end
 function c75000814.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) 
@@ -59,19 +48,3 @@ function c75000814.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-function c75000814.filter(c,e,tp)
-	return c:IsSetCard(0x755) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
-end
-function c75000814.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c75000814.filter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_HAND)
-end
-function c75000814.spop1(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c75000814.filter),tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	end
-end

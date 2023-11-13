@@ -34,7 +34,7 @@ function c9910272.rmop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x953))
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa956))
 	e1:SetValue(1)
 	Duel.RegisterEffect(e1,tp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -42,14 +42,14 @@ function c9910272.rmop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CANNOT_REMOVE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x953))
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa956))
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910272.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function c9910272.thfilter(c,tp)
-	return c:GetCounter(0x953)>0 and c:IsAbleToHand()
+	return c:GetCounter(0x956)>0 and c:IsAbleToHand()
 		and Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)
 end
 function c9910272.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -66,7 +66,7 @@ function c9910272.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	local ctable={}
 	for tc in aux.Next(g) do
-		ctable[tc]=tc:GetCounter(0x953)
+		ctable[tc]=tc:GetCounter(0x956)
 	end
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
 	local og=Duel.GetOperatedGroup()

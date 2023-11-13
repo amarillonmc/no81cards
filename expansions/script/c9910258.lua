@@ -42,9 +42,9 @@ function c9910258.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910258.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
-		and Duel.IsCanRemoveCounter(tp,1,0,0x953,4,REASON_COST) end
+		and Duel.IsCanRemoveCounter(tp,1,1,0x956,4,REASON_COST) end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
-	Duel.RemoveCounter(tp,1,0,0x953,4,REASON_COST)
+	Duel.RemoveCounter(tp,1,1,0x956,4,REASON_COST)
 end
 function c9910258.rmfilter(c)
 	return c:IsFaceup() and c:IsAbleToRemove()

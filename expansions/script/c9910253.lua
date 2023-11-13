@@ -1,6 +1,6 @@
 --幽鬼侍者 小坂井绫
 function c9910253.initial_effect(c)
-	c:EnableCounterPermit(0x953)
+	c:EnableCounterPermit(0x956)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -11,7 +11,7 @@ function c9910253.initial_effect(c)
 	e1:SetCondition(c9910253.spcon)
 	e1:SetOperation(c9910253.spop)
 	c:RegisterEffect(e1)
-	--add counter / set
+	--add counter & set
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_COUNTER+CATEGORY_LEAVE_GRAVE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -41,58 +41,41 @@ end
 function c9910253.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x953,3,REASON_COST)
+		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x956,3,REASON_COST)
 end
 function c9910253.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.RemoveCounter(tp,1,0,0x953,3,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x956,3,REASON_COST)
 end
 function c9910253.setfilter(c)
-	return c:IsSetCard(0x953) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0xa956) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function c9910253.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then
-		local sel=0
-		if c:IsCanAddCounter(0x953,2) then sel=sel+1 end
-		if Duel.IsExistingMatchingCard(c9910253.setfilter,tp,LOCATION_GRAVE,0,1,nil) then sel=sel+2 end
-		e:SetLabel(sel)
-		return sel~=0
-	end
-	local sel=e:GetLabel()
-	if sel==3 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910253,0))
-		sel=Duel.SelectOption(tp,aux.Stringid(9910253,1),aux.Stringid(9910253,2))+1
-	elseif sel==1 then
-		Duel.SelectOption(tp,aux.Stringid(9910253,1))
-	else
-		Duel.SelectOption(tp,aux.Stringid(9910253,2))
-	end
-	e:SetLabel(sel)
-	if sel==1 then
-		e:SetCategory(CATEGORY_COUNTER)
-		Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x953)
-	else
-		e:SetCategory(CATEGORY_LEAVE_GRAVE)
-		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE)
-	end
+	if chk==0 then return c:IsCanAddCounter(0x956,2)
+		or Duel.IsExistingMatchingCard(c9910253.setfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x956)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE)
 end
 function c9910253.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local sel=e:GetLabel()
-	if sel==1 then
-		if c:IsRelateToEffect(e) then c:AddCounter(0x953,2) end
-	else
+	local chk
+	if c:IsRelateToEffect(e) then
+		chk=c:AddCounter(0x956,2)
+	end
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910253.setfilter),tp,LOCATION_GRAVE,0,nil)
+	if #g>0 then
+		if chk then Duel.BreakEffect() end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910253.setfilter),tp,LOCATION_GRAVE,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SSet(tp,g)
-			Duel.ConfirmCards(1-tp,g)
+		local sg=g:Select(tp,1,1,nil)
+		if sg:GetCount()>0 then
+			Duel.SSet(tp,sg)
+			Duel.ConfirmCards(1-tp,sg)
 		end
 	end
 end
 function c9910253.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x953,2,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x953,2,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x956,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x956,2,REASON_COST)
 end
 function c9910253.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -111,8 +94,9 @@ function c9910253.desop(e,tp,eg,ep,ev,re,r,rp)
 	if tg:GetCount()>0 then
 		Duel.Destroy(tg,REASON_EFFECT)
 		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsPreviousPosition,nil,POS_FACEDOWN)
-		if ct<=0 then return end
-		Duel.BreakEffect()
-		Duel.Draw(tp,ct,REASON_EFFECT)
+		if ct>0 and Duel.IsPlayerCanDraw(tp,ct) and Duel.SelectYesNo(tp,aux.Stringid(9910253,0)) then
+			Duel.BreakEffect()
+			Duel.Draw(tp,ct,REASON_EFFECT)
+		end
 	end
 end

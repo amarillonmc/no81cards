@@ -66,13 +66,13 @@ function cm.initial_effect(c)
 	--c:RegisterEffect(e7)
 	if not cm.global_check then
 		cm.global_check=true
-		local _CheckTribute=Duel.CheckTribute
+		cm.CheckTribute=Duel.CheckTribute
 		local _SelectTribute=Duel.SelectTribute
 		local _Release=Duel.Release
 		function Duel.CheckTribute(c,mi,ma,mg,top,...)
 			local tp=c:GetControler()
 			local xg=Duel.GetMatchingGroup(cm.tcfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
-			if #xg==0 then return _CheckTribute(c,mi,ma,mg,top,...) end
+			if #xg==0 then return cm.CheckTribute(c,mi,ma,mg,top,...) end
 			local og=Group.CreateGroup()
 			for oc in aux.Next(xg) do og:Merge(oc:GetOverlayGroup()) end
 			og=og:Filter(Card.IsType,nil,TYPE_MONSTER)
@@ -291,7 +291,7 @@ function cm.otcon(e,c,minc)
 	if #og==0 then return false end
 	local tp=c:GetControler()
 	local mi,ma=c:GetTributeRequirement()
-	return ma>0 and minc<=ma and ((math.max(mi,minc)<=#og and Duel.GetMZoneCount(tp)>0) or _CheckTribute(c,math.max(1,math.max(mi,minc)-#og)))
+	return ma>0 and minc<=ma and ((math.max(mi,minc)<=#og and Duel.GetMZoneCount(tp)>0) or cm.CheckTribute(c,math.max(1,math.max(mi,minc)-#og)))
 end
 function cm.fselect(g)
 	return Duel.GetMZoneCount(tp,g)>0

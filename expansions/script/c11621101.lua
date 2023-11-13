@@ -1,7 +1,7 @@
 --大龙大神
-local m=11621101
+local m=116210101
 local cm=_G["c"..m]
-function c11621101.initial_effect(c)
+function c116210101.initial_effect(c)
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)

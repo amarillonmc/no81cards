@@ -26,7 +26,7 @@ function c9910269.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910269.cfilter(c)
-	return c:IsSetCard(0x953) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xa956) and c:IsAbleToRemoveAsCost()
 end
 function c9910269.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -102,20 +102,20 @@ function c9910269.retcon2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910269.ctfilter(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x953,2)
+	return c:IsFaceup() and c:IsCanAddCounter(0x956,2)
 end
 function c9910269.actg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910269.ctfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910269.ctfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c9910269.ctfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x953)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x956)
 end
 function c9910269.acop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		tc:AddCounter(0x953,2)
+		tc:AddCounter(0x956,2)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)

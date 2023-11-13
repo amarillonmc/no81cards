@@ -1,6 +1,6 @@
 --幽鬼公主 玉树樱
 function c9910263.initial_effect(c)
-	c:EnableCounterPermit(0x953)
+	c:EnableCounterPermit(0x956)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -49,7 +49,7 @@ function c9910263.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c9910263.cfilter(c)
-	return c:IsSetCard(0x953) and not c:IsPublic()
+	return c:IsSetCard(0xa956) and not c:IsPublic()
 end
 function c9910263.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910263.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
@@ -61,20 +61,20 @@ end
 function c9910263.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsCanAddCounter(tp,0x953,2,e:GetHandler()) end
+		and Duel.IsCanAddCounter(tp,0x956,2,e:GetHandler()) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9910263.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		c:AddCounter(0x953,2)
+		c:AddCounter(0x956,2)
 	end
 end
 function c9910263.atktg(e,c)
 	return c:IsStatus(STATUS_SPSUMMON_TURN) and c:GetSummonLocation()==LOCATION_EXTRA 
 end
 function c9910263.slcon(e)
-	return Duel.GetCounter(e:GetHandlerPlayer(),1,0,0x953)>0
+	return Duel.GetCounter(e:GetHandlerPlayer(),1,0,0x956)>0
 end
 function c9910263.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLocation(LOCATION_EXTRA)

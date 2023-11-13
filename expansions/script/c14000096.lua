@@ -73,15 +73,39 @@ end
 function cm.spfilter(c,e,tp)
 	return cm.BRAVE(c) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
+function cm.tgfilter(c)
+	return cm.BRAVE(c) and c:IsAbleToGrave() and c:GetOriginalType()&TYPE_MONSTER==TYPE_MONSTER
+end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_ONFIELD,0,2,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,tp,LOCATION_ONFIELD)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+	--if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ct<=0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,1,1,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g1=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+		g:Merge(g1)
+		if g:GetCount()>0 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+		end
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_ONFIELD,0,2,2,nil,e,tp)
+		if g:GetCount()>0 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+		end
+	end
+	local og=Duel.GetOperatedGroup()
+	if #og>1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		if g:GetCount()>0 then
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+		end
 	end
 end

@@ -1,6 +1,6 @@
 --幽鬼不良 东云希
 function c9910260.initial_effect(c)
-	c:EnableCounterPermit(0x953)
+	c:EnableCounterPermit(0x956)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -28,13 +28,13 @@ end
 function c9910260.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x953,1,REASON_COST)
+		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x956,1,REASON_COST)
 end
 function c9910260.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.RemoveCounter(tp,1,0,0x953,1,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x956,1,REASON_COST)
 end
 function c9910260.spfilter(c,e,tp)
-	return c:IsSetCard(0x953) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910260.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -43,7 +43,7 @@ function c9910260.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function c9910260.cfilter(c)
-	return c:IsSetCard(0x953) and c:IsFaceup()
+	return c:IsSetCard(0xa956) and c:IsFaceup()
 end
 function c9910260.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -51,7 +51,7 @@ function c9910260.ctop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9910260.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 	if g:GetCount()==0 or Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-	local b1=c:IsRelateToEffect(e) and c:IsCanAddCounter(0x953,1)
+	local b1=c:IsRelateToEffect(e) and c:IsCanAddCounter(0x956,1)
 	local b2=Duel.IsExistingTarget(c9910260.cfilter,tp,LOCATION_MZONE,0,1,nil)
 	local op=0
 	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(9910260,0),aux.Stringid(9910260,1))
@@ -60,7 +60,7 @@ function c9910260.ctop(e,tp,eg,ep,ev,re,r,rp)
 	else return end
 	if op==0 then
 		Duel.BreakEffect()
-		c:AddCounter(0x953,1)
+		c:AddCounter(0x956,1)
 	else
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)

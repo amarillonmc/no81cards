@@ -1,7 +1,7 @@
 --幽鬼派对
 function c9910265.initial_effect(c)
-	c:EnableCounterPermit(0x953)
-	c:SetCounterLimit(0x953,6)
+	c:EnableCounterPermit(0x956)
+	c:SetCounterLimit(0x956,6)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_COUNTER)
@@ -34,13 +34,13 @@ function c9910265.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9910265.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x953)
+	return c:IsFaceup() and c:IsSetCard(0xa956)
 end
 function c9910265.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local ct=Duel.GetMatchingGroupCount(c9910265.cfilter,tp,LOCATION_GRAVE,0,nil)
 	if ct>0 and Duel.SelectYesNo(tp,aux.Stringid(9910265,0)) then
-		e:GetHandler():AddCounter(0x953,ct,true)
+		e:GetHandler():AddCounter(0x956,ct,true)
 	end
 end
 function c9910265.sumlimit(e,c,sump,sumtype,sumpos,targetp)
@@ -48,17 +48,17 @@ function c9910265.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 end
 function c9910265.cfilter2(c,tp)
 	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)
-		and c:GetPreviousControler()==tp and c:IsSetCard(0x953)
+		and c:GetPreviousControler()==tp and c:IsSetCard(0xa956)
 end
 function c9910265.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c9910265.cfilter2,1,nil,tp)
 end
 function c9910265.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x953,2,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x953,2,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x956,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x956,2,REASON_COST)
 end
 function c9910265.spfilter(c,e,tp)
-	return c:IsSetCard(0x953) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910265.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -66,7 +66,7 @@ function c9910265.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
 function c9910265.tgfilter(c)
-	return c:IsSetCard(0x953) and c:IsAbleToGrave()
+	return c:IsSetCard(0xa956) and c:IsAbleToGrave()
 end
 function c9910265.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end

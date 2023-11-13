@@ -2,15 +2,26 @@
 function c9910261.initial_effect(c)
 	--add counter
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9910261,0))
 	e1:SetCategory(CATEGORY_COUNTER)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910261)
 	e1:SetCost(c9910261.cost)
-	e1:SetTarget(c9910261.target)
-	e1:SetOperation(c9910261.operation)
+	e1:SetTarget(c9910261.target1)
+	e1:SetOperation(c9910261.operation1)
 	c:RegisterEffect(e1)
+	--move field
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9910261,1))
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetCountLimit(1,9910261)
+	e2:SetCost(c9910261.cost)
+	e2:SetTarget(c9910261.target2)
+	e2:SetOperation(c9910261.activate2)
+	c:RegisterEffect(e2)
 end
 function c9910261.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -43,18 +54,36 @@ function c9910261.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(e:GetLabelObject(),tp,REASON_EFFECT)
 end
 function c9910261.ctfilter(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x953,3)
+	return c:IsFaceup() and c:IsCanAddCounter(0x956,3)
 end
-function c9910261.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9910261.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910261.ctfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910261.ctfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,c9910261.ctfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,3,0,0x953)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,3,0,0x956)
 end
-function c9910261.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9910261.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		tc:AddCounter(0x953,3)
+		tc:AddCounter(0x956,3)
+	end
+end
+function c9910261.pfilter(c,tp)
+	return c:IsCode(9910251) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
+end
+function c9910261.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910261.pfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+end
+function c9910261.activate2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910261.pfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
+	if tc then
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		if fc then
+			Duel.SendtoGrave(fc,REASON_RULE)
+			Duel.BreakEffect()
+		end
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 	end
 end

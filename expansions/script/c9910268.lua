@@ -1,6 +1,6 @@
 --幽鬼怀思
 function c9910268.initial_effect(c)
-	c:EnableCounterPermit(0x953)
+	c:EnableCounterPermit(0x956)
 	--add counter
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910268,0))
@@ -27,14 +27,14 @@ function c9910268.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910268.tgfilter(c)
-	return c:IsSetCard(0x953) and c:IsAbleToGrave()
+	return c:IsSetCard(0xa956) and c:IsAbleToGrave()
 end
 function c9910268.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910268.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c9910268.cfilter1(c)
-	return c:IsSetCard(0x953) and c:IsFaceup()
+	return c:IsSetCard(0xa956) and c:IsFaceup()
 end
 function c9910268.activate1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -46,12 +46,12 @@ function c9910268.activate1(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsFaceup() and c:IsRelateToEffect(e) and e:IsHasType(EFFECT_TYPE_ACTIVATE)
 		and Duel.IsExistingMatchingCard(c9910268.cfilter1,tp,LOCATION_MZONE,0,1,nil) then
 		c:CancelToGrave()
-		c:AddCounter(0x953,2)
+		c:AddCounter(0x956,2)
 	end
 end
 function c9910268.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x953,2,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x953,2,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x956,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x956,2,REASON_COST)
 end
 function c9910268.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and aux.disfilter1(chkc) end
@@ -60,7 +60,7 @@ function c9910268.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,aux.disfilter1,tp,0,LOCATION_ONFIELD,1,1,nil)
 end
 function c9910268.cfilter2(c)
-	return c:IsSetCard(0x953) and c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsSetCard(0xa956) and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c9910268.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

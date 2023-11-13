@@ -1,6 +1,6 @@
 --幽鬼王子 河野初雪
 function c9910256.initial_effect(c)
-	c:EnableCounterPermit(0x953)
+	c:EnableCounterPermit(0x956)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -27,24 +27,24 @@ end
 function c9910256.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x953,2,REASON_COST)
+		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x956,2,REASON_COST)
 end
 function c9910256.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.RemoveCounter(tp,1,0,0x953,2,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x956,2,REASON_COST)
 end
 function c9910256.thfilter(c)
-	return c:IsSetCard(0x953) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910256)
+	return c:IsSetCard(0xa956) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910256)
 end
 function c9910256.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local b1=c:IsCanAddCounter(0x953,3) and Duel.GetFlagEffect(tp,9910256)==0
+	local b1=c:IsCanAddCounter(0x956,3) and Duel.GetFlagEffect(tp,9910256)==0
 	local b2=Duel.IsExistingMatchingCard(c9910256.thfilter,tp,LOCATION_DECK,0,1,nil)
 		and Duel.GetFlagEffect(tp,9910257)==0
 	if chk==0 then return b1 or b2 end
 end
 function c9910256.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local b1=c:IsRelateToEffect(e) and c:IsCanAddCounter(0x953,3) and Duel.GetFlagEffect(tp,9910256)==0
+	local b1=c:IsRelateToEffect(e) and c:IsCanAddCounter(0x956,3) and Duel.GetFlagEffect(tp,9910256)==0
 	local b2=Duel.IsExistingMatchingCard(c9910256.thfilter,tp,LOCATION_DECK,0,1,nil)
 		and Duel.GetFlagEffect(tp,9910257)==0
 	local op=0
@@ -53,7 +53,7 @@ function c9910256.ctop(e,tp,eg,ep,ev,re,r,rp)
 	elseif b2 then op=Duel.SelectOption(tp,aux.Stringid(9910256,1))+1
 	else return end
 	if op==0 then
-		c:AddCounter(0x953,3)
+		c:AddCounter(0x956,3)
 		Duel.RegisterFlagEffect(tp,9910256,RESET_PHASE+PHASE_END,0,1)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
