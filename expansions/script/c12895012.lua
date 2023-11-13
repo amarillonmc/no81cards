@@ -2,21 +2,21 @@
 local m = 12895012
 local cm=_G["c"..m]
 function c12895012.initial_effect(c)
-    c:EnableReviveLimit()
-    c:SetSPSummonOnce(12895012)
-    aux.AddLinkProcedure(c,cm.matfilter,1,1)
-    local e1=Effect.CreateEffect(c)
+	c:EnableReviveLimit()
+	c:SetSPSummonOnce(12895012)
+	aux.AddLinkProcedure(c,cm.matfilter,1,1)
+	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e1:SetRange(LOCATION_GRAVE)
 	e1:SetCondition(cm.spcon)
-    e1:SetCost(aux.bfgcost)
+	e1:SetCost(aux.bfgcost)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-    local e4=Effect.CreateEffect(c)
+	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOEXTRA+CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e4:SetRange(LOCATION_MZONE)
@@ -36,11 +36,36 @@ function c12895012.initial_effect(c)
 		ge1:SetOperation(aux.sumreg)
 		Duel.RegisterEffect(ge1,0)
 	end
-    local e9=Effect.CreateEffect(c)
+	local e9=Effect.CreateEffect(c)
 	e9:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e9:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e9:SetOperation(cm.rcop)
 	c:RegisterEffect(e9)
+	--special summon cost
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetCode(EFFECT_SPSUMMON_COST)
+	e4:SetCost(cm.spcost)
+	e4:SetOperation(cm.spop2)
+	c:RegisterEffect(e4)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
+end
+function cm.counterfilter(c)
+	return c:IsSetCard(0xa74)
+end
+function cm.spcost(e,c,tp)
+	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0
+end
+function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 function cm.matfilter(c)
 	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsType(TYPE_MONSTER) 
@@ -71,8 +96,8 @@ end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-        Duel.SendtoGrave(c,REASON_EFFECT)  
-    else
+		Duel.SendtoGrave(c,REASON_EFFECT)  
+	else
 		Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end

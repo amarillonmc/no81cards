@@ -28,6 +28,7 @@ function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		e:SetCategory(CATEGORY_TODECK+CATEGORY_REMOVE)
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,tc,1,0,0)
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil),1,0,0)
+		e:SetLabelObject(tc)
 	elseif opt==2 then
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,tc,1,0,0)
 		Duel.ClearTargetCard()
