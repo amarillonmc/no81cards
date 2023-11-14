@@ -73,10 +73,16 @@ function c9910066.activate(e,tp,eg,ep,ev,re,r,rp)
 				if Duel.SSet(tp,tc1)~=0 then
 					local e1=Effect.CreateEffect(e:GetHandler())
 					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 					e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+					e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 					tc1:RegisterEffect(e1)
+					local e2=Effect.CreateEffect(e:GetHandler())
+					e2:SetType(EFFECT_TYPE_SINGLE)
+					e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+					e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+					e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc1:RegisterEffect(e2)
 				end
 			end
 		end
