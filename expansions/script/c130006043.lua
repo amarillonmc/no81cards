@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	--act limit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(c130006043.limcon)
 	e1:SetOperation(c130006043.limop)
@@ -140,7 +140,7 @@ end
 end
 
 function c130006043.limfilter(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSummonType(SUMMON_TYPE_SYNCHRO)
+	return c:IsSummonPlayer(tp) and c:IsType(TYPE_SYNCHRO)
 end
 function c130006043.limcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c130006043.limfilter,1,nil,tp)
@@ -149,7 +149,7 @@ function c130006043.limop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetCurrentChain()==0 then
 		Duel.SetChainLimitTillChainEnd(c130006043.chainlm)
 	elseif Duel.GetCurrentChain()==1 then
-		e:GetHandler():RegisterFlagEffect(130006043,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_CHAINING)
@@ -162,17 +162,15 @@ function c130006043.limop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c130006043.resetop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():ResetFlagEffect(130006043)
+	e:GetHandler():ResetFlagEffect(id)
 	e:Reset()
 end
 function c130006043.limop2(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():GetOverlayCount()>0 and e:GetHandler():GetFlagEffect(130006043)~=0 then
+	if e:GetHandler():GetFlagEffect(id)~=0 then
 		Duel.SetChainLimitTillChainEnd(c130006043.chainlm)
 	end
-	e:GetHandler():ResetFlagEffect(130006043)
+	e:GetHandler():ResetFlagEffect(id)
 end
 function c130006043.chainlm(e,rp,tp)
 	return tp==rp
 end
-
-

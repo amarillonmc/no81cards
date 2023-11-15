@@ -71,7 +71,7 @@ function cm.repcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==1-tp
 end
 function cm.repfilter(c,tp)
-	return not c:IsReason(REASON_REPLACE)
+	return c:IsOnField() and not c:IsReason(REASON_REPLACE)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

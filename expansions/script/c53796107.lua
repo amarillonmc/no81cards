@@ -382,7 +382,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp,c,minc)
 	if minc and mi<minc then mi=minc end
 	local g=Group.__add(Duel.GetTributeGroup(c),Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK,0,nil,m))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local sg=g:SelectSubGroup(tp,cm.fselect,true,mi,ma,c,tp)
+	local sg=g:SelectSubGroup(tp,cm.fselect,false,mi,ma,c,tp)
 	c:SetMaterial(sg)
 	if sg:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.RegisterFlagEffect(tp,m+2500,RESET_PHASE+PHASE_END,0,1) end
 	Duel.SendtoGrave(sg,REASON_RELEASE+REASON_SUMMON+REASON_MATERIAL)

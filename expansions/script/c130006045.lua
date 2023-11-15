@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	--act limit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(c130006045.limcon)
 	e1:SetOperation(c130006045.limop)
@@ -64,13 +64,13 @@ function c130006045.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c130006045.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,130006045,nil,TYPE_MONSTER+TYPE_EFFECT,2100,2800,7,RACE_AQUA,ATTRIBUTE_WATER) end
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c130006045.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,true,POS_FACEUP)
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 
 
@@ -93,11 +93,10 @@ function c130006045.btop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(sg,nil,REASON_RULE)
 	local tg=Duel.GetMatchingGroup(c130006045.mmfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local tc=tg:GetFirst()
-	
 	while tc and not tc:IsImmuneToEffect(e) do
 	local zone=1<<tc:GetSequence()
 	local ttp=tc:GetControler()
-	if Duel.MoveToField(tc,tp,ttp,LOCATION_SZONE,POS_FACEUP,true,zone) then
+	if tc:IsImmuneToEffect(e) and Duel.MoveToField(tc,tp,ttp,LOCATION_SZONE,POS_FACEUP,true,zone) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -107,13 +106,15 @@ function c130006045.btop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 	tc=tg:GetNext()
+	local tgg=Duel.GetMatchingGroup(c130006045.mmfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	Duel.SendtoHand(tgg,nil,REASON_RULE)
 	end
 end
 function c130006045.ffilter(c,fc,sub,mg,sg)
 	return c:IsFusionAttribute(ATTRIBUTE_WATER) and (not sg or not sg:IsExists(Card.IsRace,1,c,c:GetRace()))
 end
 function c130006045.limfilter(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSummonType(SUMMON_TYPE_LINK)
+	return c:IsSummonPlayer(tp) and c:IsType(TYPE_FUSION)
 end
 function c130006045.limcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c130006045.limfilter,1,nil,tp)
@@ -122,7 +123,7 @@ function c130006045.limop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetCurrentChain()==0 then
 		Duel.SetChainLimitTillChainEnd(c130006045.chainlm)
 	elseif Duel.GetCurrentChain()==1 then
-		e:GetHandler():RegisterFlagEffect(130006045,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_CHAINING)
@@ -135,16 +136,15 @@ function c130006045.limop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c130006045.resetop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():ResetFlagEffect(130006045)
+	e:GetHandler():ResetFlagEffect(id)
 	e:Reset()
 end
 function c130006045.limop2(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():GetOverlayCount()>0 and e:GetHandler():GetFlagEffect(130006045)~=0 then
+	if e:GetHandler():GetFlagEffect(id)~=0 then
 		Duel.SetChainLimitTillChainEnd(c130006045.chainlm)
 	end
-	e:GetHandler():ResetFlagEffect(130006045)
+	e:GetHandler():ResetFlagEffect(id)
 end
 function c130006045.chainlm(e,rp,tp)
 	return tp==rp
 end
-

@@ -3,7 +3,7 @@ local cm=_G["c"..m]
 cm.name="悚牢巨擘"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddSynchroMixProcedure(c,cm.matfilter,nil,nil,aux.NonTuner(nil),1,99)
+	aux.AddSynchroMixProcedure(c,cm.matfilter,nil,nil,cm.matfilter2,1,99)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -28,6 +28,9 @@ function cm.initial_effect(c)
 end
 function cm.matfilter(c,syncard)
 	return c:IsTuner(syncard) or c:IsRace(RACE_FISH)
+end
+function cm.matfilter2(c,syncard)
+	return c:IsNotTuner(syncard) and c:IsRace(RACE_FISH)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeckAsCost(tp,1) end

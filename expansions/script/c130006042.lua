@@ -144,8 +144,8 @@ function c130006042.drop(e,tp,eg,ep,ev,re,r,rp)
 			table.insert(codes,code)
 		end
 	end
-	if tg:GetCount()>0 then
 	local tgg=Duel.GetMatchingGroup(c130006042.thfilter3,tp,LOCATION_GRAVE+LOCATION_DECK,0,nil,codes)
+	if tgg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=tgg:SelectSubGroup(tp,c130006042.gcheck,false,2,2,e,tp)
 		if sg:GetCount()>0 then

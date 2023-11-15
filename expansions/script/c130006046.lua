@@ -99,8 +99,6 @@ function c130006046.geop(e,tp,eg,ep,ev,re,r,rp)
 	local tc2=g:GetNext()
 	if tc1 and tc2 and tc1:IsRelateToEffect(e) and tc2:IsRelateToEffect(e) then
 		tc1:SetCardTarget(tc2)
-		tc1:RegisterFlagEffect(130006046,RESET_EVENT+RESETS_STANDARD,0,1,1)
-		tc2:RegisterFlagEffect(130006046,RESET_EVENT+RESETS_STANDARD,0,1,1)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 		e1:SetRange(LOCATION_ONFIELD)
@@ -108,6 +106,7 @@ function c130006046.geop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetCondition(c130006046.descon)
 		e1:SetOperation(c130006046.desop)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc1:RegisterEffect(e1)
 		tc2:RegisterEffect(e1)
 	end
@@ -116,7 +115,7 @@ function c130006046.descon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tg=c:GetCardTarget()
 	local gc=Group.__band(eg,tg)
-	return gc:GetCount()>0 and c:GetFlagEffect(130006046)>0
+	return gc:GetCount()>0
 end
 function c130006046.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
