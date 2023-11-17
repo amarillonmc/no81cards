@@ -31,7 +31,7 @@ function c98941042.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c98941042.mfilter(c)
-	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,32274490) then
+	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,32274490) then
 	   return c:IsLevelBelow(4) and c:IsRace(RACE_ZOMBIE)
 	else
 	   return c:IsLevelBelow(4) and c:IsRace(RACE_ZOMBIE) and c:IsCode(32274490)
@@ -41,7 +41,7 @@ function c98941042.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c98941042.spfilter(c,e,tp)
-	return (aux.IsCodeListed(c,32274490) or c:IsCode(32274490)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return (aux.IsCodeListed(c,32274490) or c:IsCode(32274490)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c98941042.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -55,7 +55,7 @@ function c98941042.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c98941042.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then
-	   Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE) 
+	   Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) 
 	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

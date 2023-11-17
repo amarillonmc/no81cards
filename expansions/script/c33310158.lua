@@ -93,7 +93,7 @@ function c33310158.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c33310158.spfilter1(c)
-	return c:IsSetCard(0x55b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x55b) and c:IsAbleToHand()
 end
 function c33310158.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33310158.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

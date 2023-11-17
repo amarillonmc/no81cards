@@ -16,9 +16,12 @@ end
 function cm.cfilter(c,e,p)
 	return c:IsControler(p) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5 and c:IsCanBeEffectTarget(e)
 end
+function cm.cofilter(c,tc)
+	return c:GetSequence()-tc:GetSequence()<=1 and tc:GetSequence()-c:GetSequence()<=1
+end
 function cm.disfilter(c,e)
 	local p=c:GetControler()
-	return c:GetSequence()<5 and c:IsCanBeEffectTarget(e) and c:GetColumnGroup(1,1):Filter(cm.cfilter,nil,e,p):GetCount()>=3
+	return c:GetSequence()<5 and c:IsCanBeEffectTarget(e) and Duel.GetMatchingGroup(cm.cofilter,p,LOCATION_MZONE,0,nil,c):Filter(cm.cfilter,nil,e,p):GetCount()>=3
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) end
@@ -27,14 +30,14 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tg=Duel.SelectMatchingCard(tp,cm.disfilter,tp,0,LOCATION_MZONE,1,1,nil,e)
 	local tc=tg:GetFirst()
 	e:SetLabelObject(tc)
-	local g=tc:GetColumnGroup(1,1)
+	local g=Duel.GetMatchingGroup(cm.cofilter,tc:GetControler(),LOCATION_MZONE,0,nil,tc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local tg1=g:FilterSelect(tp,cm.cfilter,tp,0,LOCATION_MZONE,2,2,tc,e,1-tp)
 	tg:Merge(tg1)
 	Duel.SetTargetCard(tg)
 end
 function cm.filter1(c,p)
-	return c:IsControler(p) and c:GetSequence()<5 and c:GetColumnGroup(1,1):Filter(cm.filter2,nil,e,p):GetCount()>=3
+	return c:IsControler(p) and c:GetSequence()<5 and Duel.GetMatchingGroup(cm.cofilter,p,LOCATION_MZONE,0,nil,c):Filter(cm.filter2,nil,e,p):GetCount()>=3
 end
 function cm.filter2(c,p)
 	return c:IsControler(p) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5

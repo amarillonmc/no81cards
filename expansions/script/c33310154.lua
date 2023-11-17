@@ -78,6 +78,7 @@ function c33310154.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(33310154,0)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c33310154.filter,tp,LOCATION_HAND,0,1,1,nil)
-	Duel.Summon(tp,g:GetFirst(),true,nil)
 	Duel.RegisterFlagEffect(tp,33310154,RESET_PHASE+PHASE_END,0,1)
+	Duel.AdjustAll()
+	Duel.Summon(tp,g:GetFirst(),true,nil)
 end

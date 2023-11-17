@@ -43,12 +43,14 @@ function c33310155.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33310155.costfil,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():GetFlagEffect(33310155)>0 end
 	local g=Duel.SelectMatchingCard(tp,c33310155.costfil,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SendtoHand(g,nil,REASON_COST)
+	Debug.Message(e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false))
+	if not e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) then Duel.SendtoGrave(e:GetHandler(),0) Debug.Message(e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)) end
 end
 function c33310155.tgfil(c,e,tp)
 	return c:IsSetCard(0x55b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c33310155.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c33310155.tgfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(c33310155.tgfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c33310155.op(e,tp,eg,ep,ev,re,r,rp)
@@ -70,6 +72,7 @@ function c33310155.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(33310155,0)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c33310155.filter,tp,LOCATION_HAND,0,1,1,nil)
-	Duel.Summon(tp,g:GetFirst(),true,nil)
 	Duel.RegisterFlagEffect(tp,33310155,RESET_PHASE+PHASE_END,0,1)
+	Duel.AdjustAll()
+	Duel.Summon(tp,g:GetFirst(),true,nil)
 end
