@@ -80,10 +80,13 @@ function cm.CheckGroupRecursiveCapture(bool,sg,g,f,min,max,ext_params)
 	end
 end
 function cm.slfilter(c,sc)
-	return c:IsLocation(sc:GetLocation()) and c:IsLevel(sc:GetLevel())
+	return c:IsLocation(sc:GetLocation()) and (c:GetLevel()-sc:GetLevel())%5==0
+end
+function cm.srfilter(c)
+	return c:GetLevel()%5==0
 end
 function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
-	Auxiliary.SubGroupCaptured=Group.CreateGroup()
+	Auxiliary.SubGroupCaptured=g:Filter(cm.srfilter,nil)
 	local min=min or 1
 	local max=max or #g
 	local ext_params={...}
@@ -96,6 +99,7 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 	sg:Merge(fg)
 	local finish=(#sg>=min and #sg<=max and f(sg,...))
 	while #sg<max do
+		Auxiliary.SubGroupCaptured=(g-sg):Filter(cm.srfilter,nil)
 		cm.CheckGroupRecursiveCapture(true,sg,g,f,min,max,ext_params)
 		local cg=Auxiliary.SubGroupCaptured:Clone()
 		Auxiliary.SubGroupCaptured:Clear()

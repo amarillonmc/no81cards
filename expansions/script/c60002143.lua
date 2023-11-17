@@ -83,7 +83,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,cm.exfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 			if g:GetCount()>0 then
-				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+				Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 			end
 		elseif op==1 then
 			Duel.Draw(tp,1,REASON_EFFECT)
@@ -91,7 +91,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,cm.exfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 			if g:GetCount()>0 then
-				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+				Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 			end
 		elseif op==2 then
 			Duel.Recover(tp,2000,REASON_EFFECT)
@@ -99,7 +99,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,cm.exfilter3,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 			if g:GetCount()>0 then
-				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+				Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 			end
 		end
 	end
@@ -107,11 +107,11 @@ end
 
 
 function cm.exfilter1(c,e,tp)
-	return c:IsCode(60002144) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(60002144) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.exfilter2(c,e,tp)
-	return c:IsCode(60002145) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(60002145) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.exfilter3(c,e,tp)
-	return c:IsCode(60002146) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(60002146) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end

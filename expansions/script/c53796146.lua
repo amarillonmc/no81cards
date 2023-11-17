@@ -85,8 +85,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if ct~=0 and sg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE)
+			local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp):GetFirst()
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE)
+			if tc:IsFacedown() then Duel.ConfirmCards(1-tp,tc) end
 		end
 	end
 end
@@ -115,6 +116,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+		Duel.ConfirmCards(1-tp,sg)
 	end
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)

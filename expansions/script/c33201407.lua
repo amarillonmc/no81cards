@@ -1,4 +1,19 @@
 --晶导算使 逻辑或门
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 xpcall(function() require("expansions/script/c33201401") end,function() require("script/c33201401") end)
 function c33201407.initial_effect(c)
 	--pendulum summon
@@ -71,12 +86,12 @@ function c33201407.scop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UPDATE_LSCALE)
+	e1:SetCode(EFFECT_CHANGE_LSCALE)
 	e1:SetValue(0)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
-	e2:SetCode(EFFECT_UPDATE_RSCALE)
+	e2:SetCode(EFFECT_CHANGE_RSCALE)
 	c:RegisterEffect(e2)
 end
 --

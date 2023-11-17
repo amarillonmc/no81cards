@@ -93,10 +93,10 @@ function c130006045.btop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(sg,nil,REASON_RULE)
 	local tg=Duel.GetMatchingGroup(c130006045.mmfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local tc=tg:GetFirst()
-	while tc and not tc:IsImmuneToEffect(e) do
+	while tc do
 	local zone=1<<tc:GetSequence()
 	local ttp=tc:GetControler()
-	if tc:IsImmuneToEffect(e) and Duel.MoveToField(tc,tp,ttp,LOCATION_SZONE,POS_FACEUP,true,zone) then
+	if not tc:IsImmuneToEffect(e) and Duel.MoveToField(tc,tp,ttp,LOCATION_SZONE,POS_FACEUP,true,zone) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -106,9 +106,9 @@ function c130006045.btop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 	tc=tg:GetNext()
+	end
 	local tgg=Duel.GetMatchingGroup(c130006045.mmfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.SendtoHand(tgg,nil,REASON_RULE)
-	end
 end
 function c130006045.ffilter(c,fc,sub,mg,sg)
 	return c:IsFusionAttribute(ATTRIBUTE_WATER) and (not sg or not sg:IsExists(Card.IsRace,1,c,c:GetRace()))
