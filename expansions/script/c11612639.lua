@@ -38,7 +38,7 @@ function c11612639.initial_effect(c)
 	e2:SetTargetRange(0,1)
 	c:RegisterEffect(e2)
 --sucai
-	local e3=Effect.CreateEffect(c)
+	--[[local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(11612639,1))
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
@@ -49,7 +49,7 @@ function c11612639.initial_effect(c)
 	e3:SetCondition(c11612639.xyzcon)
 	e3:SetTarget(c11612639.xyztg)
 	e3:SetOperation(c11612639.xyzop)
-	c:RegisterEffect(e3)
+	c:RegisterEffect(e3)--]]
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -57,6 +57,17 @@ function c11612639.initial_effect(c)
 	e3:SetCondition(c11612639.matcon)
 	e3:SetOperation(c11612639.matop)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCode(EFFECT_SEND_REPLACE)
+	e4:SetCondition(c11612639.xyzcon)
+	e4:SetTarget(c11612639.reptg)
+	e4:SetValue(c11612639.repval)
+	c:RegisterEffect(e4)
+	local g=Group.CreateGroup()
+	g:KeepAlive()
+	e4:SetLabelObject(g)
 	e0:SetLabelObject(e3)
 --Activate
 	local e1=Effect.CreateEffect(c)
@@ -70,6 +81,72 @@ function c11612639.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 
+function c11612639.repfilter(c,tp)
+	return c:GetOwner()==1-tp and c:GetDestination()==LOCATION_GRAVE and c:GetLeaveFieldDest()==0 and c:IsReason(REASON_DESTROY)
+end
+function c11612639.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return eg:IsExists(c11612639.repfilter,1,nil,tp) end
+	if 1==1 then
+		local container=e:GetLabelObject()
+		container:Clear()
+		local g=eg:Filter(c11612639.repfilter,nil,tp)
+		local tc=g:GetFirst()
+		while tc do
+			tc:RegisterFlagEffect(11612639,RESET_EVENT+0x1fe0000-RESET_TOHAND-RESET_TODECK-RESET_LEAVE+RESET_PHASE+PHASE_END,0,1)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_ADD_SETCODE)
+			e1:SetValue(0x154)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOHAND-RESET_TODECK-RESET_LEAVE)
+			tc:RegisterEffect(e1)
+			tc=g:GetNext()
+		end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e1:SetCode(EVENT_TO_HAND)
+		e1:SetCountLimit(1)
+		e1:SetCondition(c11612639.thcon2)
+		e1:SetOperation(c11612639.thop2)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+		Duel.SendtoHand(g,tp,REASON_EFFECT)
+		container:Merge(g)
+		return true
+	else return false end
+end
+function c11612639.repval(e,c)
+	return e:GetLabelObject():IsContains(c)
+end
+function c11612639.thfilter2(c)
+	return c:GetFlagEffect(11612639)~=0
+end
+function c11612639.thcon2(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c11612639.thfilter2,1,nil)
+end
+function c11612639.thop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=eg:Filter(c11612639.thfilter2,nil)
+	Duel.ConfirmCards(1-tp,g)
+	g=g:Filter(Card.IsType,nil,TYPE_MONSTER)
+	local tc=g:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_LEVEL)
+		e1:SetValue(1)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_CHANGE_RACE)
+		e2:SetValue(RACE_MACHINE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
+		tc=g:GetNext()
+	end
+	Duel.ShuffleHand(tp)
+end
 function c11612639.rmlimit(e,c,p)
 	return c:IsControler(tp)
 end

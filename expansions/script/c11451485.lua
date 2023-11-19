@@ -170,7 +170,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:SelectSubGroup(tp,aux.dncheck,false,2,2)
 		Duel.ConfirmCards(1-tp,sg)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
-		local tg=sg:Select(1-tp,1,1,nil)
+		local tg=sg:RandomSelect(1-tp,1,1,nil)
 		sg:Sub(tg)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		if e:GetHandler():IsRelateToEffect(e) then Duel.Overlay(e:GetHandler(),sg) end

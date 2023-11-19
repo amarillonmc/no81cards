@@ -113,20 +113,21 @@ end
 function cm.ov2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local tp=c:GetControler()   
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsCanOverlay),tp,LOCATION_GRAVE+LOCATION_EXTRA,LOCATION_EXTRA,1,nil) end
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsCanOverlay),tp,LOCATION_GRAVE+LOCATION_EXTRA,LOCATION_EXTRA,nil)
-	if g:IsExists(Card.IsControler,1,nil,tp) and g:IsExists(Card.IsControler,1,nil,1-tp) then c:RegisterFlagEffect(15000339,RESET_CHAIN,0,1) end
-	if g:IsExists(Card.IsControler,1,nil,tp) and not g:IsExists(Card.IsControler,1,nil,1-tp) then c:RegisterFlagEffect(15010339,RESET_CHAIN,0,1) end
-	if g:IsExists(Card.IsControler,1,nil,1-tp) and not g:IsExists(Card.IsControler,1,nil,tp) then c:RegisterFlagEffect(15020339,RESET_CHAIN,0,1) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,LOCATION_GRAVE+LOCATION_EXTRA,LOCATION_EXTRA,1,nil) end
+	local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_GRAVE+LOCATION_EXTRA,LOCATION_EXTRA,nil)
+	if g:IsExists(Card.IsControler,1,nil,tp) and g:IsExists(Card.IsControler,1,nil,1-tp) then e:SetLabel(1) end
+	if g:IsExists(Card.IsControler,1,nil,tp) and not g:IsExists(Card.IsControler,1,nil,1-tp) then e:SetLabel(2) end
+	if g:IsExists(Card.IsControler,1,nil,1-tp) and not g:IsExists(Card.IsControler,1,nil,tp) then e:SetLabel(3) end
 end
 function cm.ov2op(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()  
 	local tp=c:GetControler() 
 	if not c:IsFaceup() then return end
+	if not (c:IsRelateToChain() and c:IsType(TYPE_XYZ)) then return end
 	local x=0
-	if c:GetFlagEffect(15000339)~=0 then x=1 end
-	if c:GetFlagEffect(15010339)~=0 then x=2 end
-	if c:GetFlagEffect(15020339)~=0 then x=3 end
+	if e:GetLabel()==1 then x=1 end
+	if e:GetLabel()==2 then x=2 end
+	if e:GetLabel()==3 then x=3 end
 	local p=tp
 	if x==1 then
 		local y=Duel.SelectOption(tp,aux.Stringid(m,3),aux.Stringid(m,4))
@@ -137,7 +138,7 @@ function cm.ov2op(e,tp,eg,ep,ev,re,r,rp)
 	if x==3 then p=1-tp end
 	if p==tp then
 		local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsCanOverlay),tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil):GetFirst()
-		if c:IsFaceup() and not tc:IsImmuneToEffect(e) then  
+		if tc and not tc:IsImmuneToEffect(e) then  
 			local og=tc:GetOverlayGroup()  
 			if og:GetCount()>0 then  
 				Duel.SendtoGrave(og,REASON_RULE)  
@@ -146,8 +147,8 @@ function cm.ov2op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if p==1-tp then
-		local tc=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsCanOverlay),tp,0,LOCATION_EXTRA,nil):RandomSelect(tp,1):GetFirst()
-		if c:IsFaceup() then  
+		local tc=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,0,LOCATION_EXTRA,nil):RandomSelect(tp,1):GetFirst()
+		if tc then
 			Duel.Overlay(c,Group.FromCards(tc))  
 			tc:CancelToGrave()
 		end

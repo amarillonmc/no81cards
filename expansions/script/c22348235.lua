@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	--draw
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22348235,2))
-	e2:SetCategory(CATEGORY_DRAW+CATEGORY_RECOVER)
+	e2:SetCategory(CATEGORY_RECOVER)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
@@ -61,8 +61,7 @@ function c22348235.sop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c22348235.recon(e,tp,eg,ep,ev,re,r,rp)
 	return (e:GetHandler():GetFlagEffect(m)>0 or e:GetCode()~=EVENT_CHAIN_NEGATED)
-end
--- Duel.GetCurrentChain()==1 and 
+end 
 function c22348235.reop(e,tp,eg,ep,ev,re,r,rp)
 	local ng=Group.CreateGroup()
 	for i=1,ev do
@@ -80,10 +79,10 @@ function c22348235.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
 end
 function c22348235.eftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and c22348235.filter(chkc) and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(c22348235.filter,tp,0,LOCATION_MZONE,1,nil) end
+	if chkc then return chkc:IsOnField() and c22348235.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c22348235.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c22348235.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,c22348235.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
 function c22348235.efop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -121,14 +120,10 @@ function c22348235.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c22348235.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local rec=c:GetBaseAttack()/2
+	local rec=c:GetAttack()/2
 	if rec>0 and Duel.Recover(1-tp,rec,REASON_EFFECT)>0 then
-		local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,nil)
-		if g:GetCount()==0 then return end
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.Destroy(sg,REASON_EFFECT)
+		Duel.Destroy(c,REASON_EFFECT)
 	end
 end
 function c22348235.costfilter(c)
@@ -144,10 +139,8 @@ function c22348235.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c22348235.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	Duel.Draw(p,1,REASON_EFFECT)
 	Duel.Recover(p,500,REASON_EFFECT)
 end

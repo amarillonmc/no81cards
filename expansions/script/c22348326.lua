@@ -43,7 +43,29 @@ function cm.initial_effect(c)
 	e4:SetTarget(c22348326.thctg)
 	e4:SetOperation(c22348326.thcop)
 	c:RegisterEffect(e4)
+	--count
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetCode(EVENT_ADJUST)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetOperation(c22348326.adjustop)
+	c:RegisterEffect(e5)
 	
+end
+function c22348326.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	local phase=Duel.GetCurrentPhase()
+	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL then return end
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(c22348326.thhfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,Duel.GetTurnCount())
+	local tc=g:GetFirst()
+	while tc do
+	Card.ResetFlagEffect(tc,22348326)
+	local ex=Effect.CreateEffect(tc)
+	ex:SetType(EFFECT_TYPE_SINGLE)
+	tc:RegisterFlagEffect(22348326,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(22348326,1))
+		tc=g:GetNext()
+	end
 end
 function c22348326.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -99,9 +121,6 @@ end
 function c22348326.spsfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsHasEffect(EFFECT_NECRO_VALLEY) and c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
 end
-function c22348326.xyzfilter(c,mg)
-	return c:IsXyzSummonable(mg,1,99)
-end
 function c22348326.spsop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabelObject():GetLabel()~=0 then return end
 	local g=e:GetHandler():GetCardTarget()
@@ -110,13 +129,6 @@ function c22348326.spsop(e,tp,eg,ep,ev,re,r,rp)
 	if tgc>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<tgc then return end
 	Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
-	Duel.AdjustAll()
-	local xyzg=Duel.GetMatchingGroup(c22348326.xyzfilter,tp,LOCATION_EXTRA,0,nil,g)
-	if xyzg:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local xyz=xyzg:Select(tp,1,1,nil):GetFirst()
-		Duel.XyzSummon(tp,xyz,tg)
-	end
 end
 
 

@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)  
 	local tp=e:GetHandler():GetControler()
-	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:GetHandler():IsSetCard(0xf39)
+	return e:GetHandler():IsReason(REASON_COST) and (re:GetHandler():IsSetCard(0xf39) or (re:GetHandler():IsRace(RACE_FIEND) and re:GetHandler():IsAttribute(ATTRIBUTE_DARK) and re:GetHandler():IsType(TYPE_MONSTER)))
 end  
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandler():GetControler()  

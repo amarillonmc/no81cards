@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetCountLimit(1,m)
+	e1:SetCost(cm.setcost)
 	e1:SetTarget(cm.settg)
 	e1:SetOperation(cm.setop)
 	c:RegisterEffect(e1)
@@ -47,6 +48,13 @@ end
 function cm.EoS(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_EoS
+end
+function cm.costfilter(c)
+	return cm.EoS(c) and c:IsType(TYPE_MONSTER) and c:IsDiscardable()
+end
+function cm.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,cm.costfilter,1,1,REASON_COST+REASON_DISCARD,nil)
 end
 function cm.filter(c)
 	return c:IsFaceup() and c:IsCanTurnSet() and not c:IsLocation(LOCATION_PZONE)

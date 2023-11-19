@@ -30,11 +30,11 @@ function cm.initial_effect(c)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)  
 	local tp=e:GetHandler():GetControler()
-	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:GetHandler():IsSetCard(0xf39) and Duel.IsExistingMatchingCard(cm.spfilter,tp,0,LOCATION_ONFIELD,1,nil,e,tp)
+	return e:GetHandler():IsReason(REASON_COST) and (re:GetHandler():IsSetCard(0xf39) or (re:GetHandler():IsRace(RACE_FIEND) and re:GetHandler():IsAttribute(ATTRIBUTE_DARK) and re:GetHandler():IsType(TYPE_MONSTER)))
 end  
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandler():GetControler()  
-	return (e:GetHandler():IsReason(REASON_BATTLE) or e:GetHandler():IsReason(REASON_EFFECT)) and Duel.IsExistingMatchingCard(cm.spfilter,tp,0,LOCATION_ONFIELD,1,nil,e,tp) and Duel.IsPlayerAffectedByEffect(tp,15000330)  
+	return (e:GetHandler():IsReason(REASON_BATTLE) or e:GetHandler():IsReason(REASON_EFFECT)) and Duel.IsPlayerAffectedByEffect(tp,15000330)  
 end
 function cm.spfilter(c)  
 	return c:IsAbleToGrave()
@@ -42,7 +42,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tp=e:GetHandler():GetControler()  
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(1-tp) and cm.spfilter(chkc,e,tp) end  
-	if chk==0 then return true end  
+	if chk==0 then return Duel.IsExistingTarget(cm.spfilter,tp,0,LOCATION_ONFIELD,1,nil,e,tp) end  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)  
 	local g=Duel.SelectTarget(tp,cm.spfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,1-tp,LOCATION_ONFIELD)  

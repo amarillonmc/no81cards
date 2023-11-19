@@ -163,7 +163,7 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.cfilter(c,tp)
-	return (c:IsType(TYPE_FIELD) or (c:GetType()&0x20004==0x20004 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0)) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
+	return (c:IsType(TYPE_FIELD) or ((c:IsType(TYPE_CONTINUOUS) or c:IsHasEffect(EFFECT_REMAIN_FIELD)) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0)) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function cm.costcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnCount()==e:GetLabel()+1

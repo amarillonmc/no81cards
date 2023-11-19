@@ -38,12 +38,12 @@ function c11612644.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(11612644,1))
 	e3:SetCategory(CATEGORY_ATKCHANGE)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_BATTLE_DESTROYING)
 	e3:SetCondition(c11612644.indcon)
 	e3:SetOperation(c11612644.atkop)
 	c:RegisterEffect(e3)
-	local e1=Effect.CreateEffect(c)
+	 --[[local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11612644,2))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
@@ -54,8 +54,8 @@ function c11612644.initial_effect(c)
 	e1:SetCondition(c11612644.thcon)
 	e1:SetTarget(c11612644.thtg)
 	e1:SetOperation(c11612644.thop)
-	c:RegisterEffect(e1)
-	 local e3=Effect.CreateEffect(c)
+	c:RegisterEffect(e1)--]]
+	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -63,6 +63,47 @@ function c11612644.initial_effect(c)
 	e3:SetOperation(c11612644.matop)
 	c:RegisterEffect(e3)
 	e0:SetLabelObject(e3)
+	
+	--add counter
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCondition(c11612644.thcon)
+	e3:SetOperation(c11612644.regop)
+	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_CHAIN_SOLVED)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCondition(c11612644.damcon)
+	e4:SetOperation(c11612644.damop)
+	c:RegisterEffect(e4)
+	if not c11612644.chkkkkk then
+		c11612644.chkkkkk=true
+		local e5=Effect.CreateEffect(c)
+		e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e5:SetCode(EVENT_LEAVE_FIELD_P)
+		--e5:SetRange(LOCATION_MZONE)
+		e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e5:SetOperation(c11612644.regop2)
+		Duel.RegisterEffect(e5,0)
+		local e51=e5:Clone()
+		Duel.RegisterEffect(e51,1)
+		local e6=Effect.CreateEffect(c)
+		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e6:SetCode(EVENT_TO_GRAVE)
+		e6:SetProperty(EFFECT_FLAG_DELAY)
+		--e6:SetRange(LOCATION_MZONE)
+		e6:SetCondition(c11612644.thcon2)
+		e6:SetOperation(c11612644.thop2)
+		e6:SetLabelObject(e5)
+		Duel.RegisterEffect(e6,0)
+		local e61=e6:Clone()
+		e61:SetLabelObject(e51)
+		Duel.RegisterEffect(e61,1)
+	end
  --token
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(11612644,3))
@@ -75,6 +116,56 @@ function c11612644.initial_effect(c)
 	e5:SetTarget(c11612644.sptg)
 	e5:SetOperation(c11612644.spop)
 	c:RegisterEffect(e5)
+end
+function c11612644.regop2(e,tp,eg,ep,ev,re,r,rp)
+	local sum=0
+	for c in aux.Next(eg) do
+		if c:GetDestination()==LOCATION_GRAVE and c:GetLeaveFieldDest()==0 or c:GetLeaveFieldDest()==LOCATION_GRAVE then
+			local ct=c:GetCounter(0x1162)
+			sum=sum+ct
+			if ct>0 then c:RegisterFlagEffect(116126440,RESET_EVENT+RESETS_STANDARD-RESET_LEAVE-RESET_TOGRAVE,0,1) end
+		end
+	end
+	e:SetLabel(sum)
+end
+function c11612644.chcc(c,tp)
+	return c:GetFlagEffect(116126440)>0 and c:IsPreviousControler(1-tp)
+end
+function c11612644.thcon2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ct=e:GetLabelObject():GetLabel()
+	return ct>0 and eg:IsExists(c11612644.chcc,1,nil,tp)
+end
+function c11612644.thfilter1(c)
+	return c:GetType()==TYPE_SPELL and c:IsAbleToHand()
+end
+function c11612644.thop2(e,tp,eg,ep,ev,re,r,rp)
+	for c in aux.Next(eg) do
+		c:ResetFlagEffect(116126440)
+	end
+	local c=e:GetHandler()
+	local ct=e:GetLabelObject():GetLabel()
+	if ct>=3 then Duel.DiscardDeck(1-tp,ct//3,REASON_EFFECT) end
+	if ct>=6 then local g=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP) if #g>0 then g=g:RandomSelect(tp,math.min(#g,ct//6)) Duel.Destroy(g,REASON_EFFECT) end end
+	if ct==Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) then Duel.Draw(tp,1,REASON_EFFECT) end
+end
+function c11612644.regop(e,tp,eg,ep,ev,re,r,rp)
+	if rp==1-tp then
+		e:GetHandler():RegisterFlagEffect(11612644,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
+	end
+end
+function c11612644.damcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return ep~=tp and c:GetFlagEffect(11612644)~=0
+end
+function c11612644.damop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,11612644)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil)
+	local tc=g:GetFirst()
+	while tc do
+		tc:AddCounter(0x1162,1)
+		tc=g:GetNext()
+	end
 end
 function c11612644.lvfilter(c,rc)
 	return c:GetRitualLevel(rc)>0

@@ -49,11 +49,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 end  
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)  
 	local tp=e:GetHandler():GetControler()
-	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:GetHandler():IsSetCard(0xf39) and Duel.IsPlayerCanDraw(tp,1)
+	return e:GetHandler():IsReason(REASON_COST) and (re:GetHandler():IsSetCard(0xf39) or (re:GetHandler():IsRace(RACE_FIEND) and re:GetHandler():IsAttribute(ATTRIBUTE_DARK) and re:GetHandler():IsType(TYPE_MONSTER)))
 end  
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandler():GetControler()  
-	return (e:GetHandler():IsReason(REASON_BATTLE) or e:GetHandler():IsReason(REASON_EFFECT)) and Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerAffectedByEffect(tp,15000330)  
+	return (e:GetHandler():IsReason(REASON_BATTLE) or e:GetHandler():IsReason(REASON_EFFECT)) and Duel.IsPlayerAffectedByEffect(tp,15000330)  
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tp=e:GetHandler():GetControler()  

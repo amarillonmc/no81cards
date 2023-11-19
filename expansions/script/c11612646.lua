@@ -44,7 +44,7 @@ function c11612646.initial_effect(c)
 	e6:SetDescription(aux.Stringid(11612646,1))
 	e6:SetCategory(CATEGORY_DECKDES)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e6:SetCode(EVENT_BATTLED)
+	e6:SetCode(EVENT_DAMAGE_STEP_END)
 	e6:SetRange(LOCATION_MZONE)
 	--e6:SetCountLimit(1,11612648)
 	e6:SetTarget(c11612646.detg)
@@ -120,27 +120,20 @@ function c11612646.detg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=c:GetBattledGroup()
 	local tc=g:GetFirst()
 	local p=tc:GetControler()
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(p,6) and Duel.GetAttackTarget()~=nil  end
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,p,6)
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(1-tp,4) end
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,1-tp,4)
 end
 function c11612646.deop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=c:GetBattledGroup()
-	local tc=g:GetFirst()
-	while tc do
-		if tc==c then tc=g:GetNext() end
-		local p=tc:GetControler()
-		Duel.DiscardDeck(p,6,REASON_EFFECT)
-		local og=Duel.GetOperatedGroup()
-		for oc in aux.Next(og) do
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_SINGLE)
-			e3:SetCode(EFFECT_CANNOT_TRIGGER)
-			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			oc:RegisterEffect(e3)
-		end
-		tc=g:GetNext()
-	end  
+	Duel.DiscardDeck(1-tp,4,REASON_EFFECT)
+	local og=Duel.GetOperatedGroup()
+	for oc in aux.Next(og) do
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_CANNOT_TRIGGER)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		oc:RegisterEffect(e3)
+	end
 end
 function c11612646.damval(e,re,val,r,rp,rc)
 	local val=Duel.GetBattleDamage(1)
@@ -162,7 +155,7 @@ function c11612646.bacon(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,11612647)>0 then
 		ct=2
 	end
-	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and e:GetHandler():GetFlagEffect(11612646)>0 and Duel.GetFlagEffect(tp,11612646)<ct	 
+	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and e:GetHandler():GetFlagEffect(11612646)>0 and Duel.GetFlagEffect(tp,11612646)<ct  
 end
 function c11612646.batg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

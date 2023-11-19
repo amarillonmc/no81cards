@@ -79,10 +79,10 @@ function c22348238.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
 end
 function c22348238.eftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and c22348238.filter(chkc) and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(c22348238.filter,tp,0,LOCATION_MZONE,1,nil) end
+	if chkc then return chkc:IsOnField() and c22348238.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c22348238.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c22348238.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,c22348238.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
 function c22348238.efop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

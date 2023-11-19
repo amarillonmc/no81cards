@@ -61,19 +61,20 @@ function cm.tnop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)  
 		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))  
 	end  
-	Debug.Message("被虚构的神啊！从深渊之暗中穿梭前来，逆转寂灭的虚饰吧！")
-	Debug.Message("超量召唤，如浮冰般纯净的内核，阶级1！内核主 欧翡拉·模因！")
+	--Debug.Message("被虚构的神啊！从深渊之暗中穿梭前来，逆转寂灭的虚饰吧！")
+	--Debug.Message("超量召唤，如浮冰般纯净的内核，阶级1！内核主 欧翡拉·模因！")
 end
 function cm.ovcost(e,tp,eg,ep,ev,re,r,rp,chk)  
-	if chk==0 then return Duel.IsExistingTarget(Card.IsCanOverlay,tp,LOCATION_MZONE+LOCATION_SZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_SZONE+LOCATION_GRAVE,1,c) and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end  
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end  
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function cm.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.ovtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	local tp=c:GetControler()   
-	if chk==0 then return Duel.IsExistingTarget(Card.IsCanOverlay,tp,LOCATION_MZONE+LOCATION_SZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_SZONE+LOCATION_GRAVE,1,c) end
+	local tp=c:GetControler() 
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) end	
+	if chk==0 then return Duel.IsExistingTarget(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectTarget(tp,Card.IsCanOverlay,tp,LOCATION_MZONE+LOCATION_SZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_SZONE+LOCATION_GRAVE,1,1,c)  
+	local g=Duel.SelectTarget(tp,Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,c)  
 	if g:GetFirst():IsLocation(LOCATION_GRAVE) then
 		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0) 
 	end

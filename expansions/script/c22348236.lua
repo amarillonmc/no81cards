@@ -75,10 +75,10 @@ function c22348236.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
 end
 function c22348236.eftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and c22348236.filter(chkc) and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(c22348236.filter,tp,0,LOCATION_MZONE,1,nil) end
+	if chkc then return chkc:IsOnField() and c22348236.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c22348236.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c22348236.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,c22348236.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
 function c22348236.efop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -113,33 +113,31 @@ function c22348236.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,1-tp,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,1-tp,1)
 end
 function c22348236.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rec=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)*200
 	if rec>0 and Duel.Recover(1-tp,rec,REASON_EFFECT)>0 then
 		Duel.BreakEffect()
-	if Duel.Draw(1-tp,1,REASON_EFFECT)==1 then
-		Duel.ShuffleHand(1-tp)
-		Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
-	end
+	Duel.Draw(1-tp,1,REASON_EFFECT)
 	end
 end
 function c22348236.thfilter(c)
-	return c:IsSetCard(0x709) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(22348236)
+	return c:IsSetCard(0x709) and c:IsAbleToHand() and not c:IsCode(22348236)
 end
 function c22348236.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348236.thfilter,tp,LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348236.thfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED+LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500)
 end
 function c22348236.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c22348236.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348236.thfilter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
 	Duel.Recover(tp,500,REASON_EFFECT)
 end
+
+

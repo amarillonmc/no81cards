@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,22349237)
 	e2:SetCost(aux.bfgcost)
-	e2:SetCondition(c22348237.reccon)
+--	e2:SetCondition(c22348237.reccon)
 	e2:SetTarget(c22348237.rectg)
 	e2:SetOperation(c22348237.recop)
 	c:RegisterEffect(e2)
@@ -88,10 +88,10 @@ function c22348237.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
 end
 function c22348237.eftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and c22348237.filter(chkc) and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(c22348237.filter,tp,0,LOCATION_MZONE,1,nil) end
+	if chkc then return chkc:IsOnField() and c22348237.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c22348237.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c22348237.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,c22348237.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
 function c22348237.efop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -156,7 +156,7 @@ function c22348237.recop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(p,d,REASON_EFFECT)
 end
 function c22348237.sppcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==tp
+	return ep==tp and Duel.IsExistingMatchingCard(c22348237.reccfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function c22348237.spptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

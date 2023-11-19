@@ -14,14 +14,22 @@ function cm.initial_effect(c)
 	e0:SetValue(POS_FACEUP_ATTACK)
 	c:RegisterEffect(e0)
 	--disable
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e1:SetCode(EFFECT_DISABLE)
-	e1:SetCondition(c22348224.dacon)
-	e1:SetTarget(c22348224.datg)
-	c:RegisterEffect(e1)
+--	local e1=Effect.CreateEffect(c)
+--	e1:SetType(EFFECT_TYPE_FIELD)
+--	e1:SetRange(LOCATION_MZONE)
+--	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+--	e1:SetCode(EFFECT_DISABLE)
+--	e1:SetCondition(c22348224.dacon)
+--	e1:SetTarget(c22348224.datg)
+--	c:RegisterEffect(e1)
+	--disable
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_CHAIN_SOLVING)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(c22348224.discon)
+	e5:SetOperation(c22348224.disop)
+	c:RegisterEffect(e5)
 	--spsm
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22348224,0))
@@ -49,6 +57,19 @@ end
 function c22348224.datg(e,c)
 	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsFaceup() and not c:IsAttack(c:GetBaseAttack())
 end
+
+function c22348224.discon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local rc=re:GetHandler()
+	return c:IsSummonType(SUMMON_TYPE_ADVANCE)
+		and rc:IsSummonType(SUMMON_TYPE_SPECIAL) and rc:IsFaceup() and not rc:IsAttack(rc:GetBaseAttack())
+end
+function c22348224.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
+end
+
+
+
 
 function c22348224.filter(c,e,tp)
 	return c:IsSetCard(0x708) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

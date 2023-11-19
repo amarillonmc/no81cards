@@ -2,14 +2,6 @@
 local m=22348195
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	--attribute
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_SET_AVAILABLE)
-	e1:SetCode(EFFECT_ADD_RACE)
-	e1:SetRange(0xff)
-	e1:SetValue(RACE_FAIRY)
-	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22348195,1))
@@ -30,6 +22,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e3:SetCode(EVENT_SUMMON_SUCCESS)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,22349195)
 	e3:SetTarget(c22348195.tg)
 	e3:SetOperation(c22348195.op)
 	c:RegisterEffect(e3)
@@ -52,7 +45,15 @@ end
 function c22348195.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+			e1:SetValue(LOCATION_DECKBOT)
+			c:RegisterEffect(e1)
+		end
 	end
 end
 function c22348195.tgfilter(c)
