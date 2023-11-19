@@ -1,4 +1,19 @@
 --殂世天魔 逆反之魔女
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 local m=33201312
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/c33201300") end,function() require("script/c33201300") end)
@@ -62,11 +77,11 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsPreviousPosition(POS_FACEUP)
 end
 function cm.spfilter1(c,e,tp)
-	return VHisc_Bh.ck(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
-		and Duel.IsExistingTarget(cm.spfilter2,tp,LOCATION_GRAVE,0,1,c,c:GetCode(),e,tp)
+	return VHisc_Bh.ck(c) and not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
+		and Duel.IsExistingTarget(cm.spfilter2,tp,LOCATION_GRAVE,0,1,c,c:GetCode(),e,tp) 
 end
 function cm.spfilter2(c,cd,e,tp)
-	return not c:IsCode(cd) and VHisc_Bh.ck(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
+	return not c:IsCode(cd) and not c:IsCode(m) and VHisc_Bh.ck(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

@@ -54,7 +54,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local tc=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil,e:GetLabel()):GetFirst()
 	if tc and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_REMOVED) and tc:GetLevel()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,m-9,0,TYPES_TOKEN_MONSTER,0,0,2,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then
-		Debug.Message(111)
 		local token=Duel.CreateToken(tp,m-9)
 		if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP) then
 			local lv=Duel.AnnounceLevel(tp,math.max(1,tc:GetLevel()-1),tc:GetLevel()+1)

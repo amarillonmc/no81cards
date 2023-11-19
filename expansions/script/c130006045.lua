@@ -48,9 +48,17 @@ function cm.initial_effect(c)
 	e5:SetTarget(c130006045.sptg)
 	e5:SetOperation(c130006045.spop)
 	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetCode(EFFECT_MUST_USE_MZONE)
+	e6:SetValue(c130006045.frcval)
+	c:RegisterEffect(e6)
 	
 end
 
+function c130006045.frcval(e,c,fp,rp,r)
+	return 0x1f001f
+end
 function c130006045.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
 end

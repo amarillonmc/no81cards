@@ -31,7 +31,7 @@ function cm.filter(c)
 	return c:IsRace(RACE_FAIRY) and c:IsAttribute(ATTRIBUTE_DARK)
 end
 function cm.spfilter(c,e,tp)
-	return c:GetTurnID()==Duel.GetTurnCount() and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	return c:GetTurnID()==Duel.GetTurnCount() --and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function cm.spfilter2(c,e,tp)
 	local pos=c:GetPreviousPosition()

@@ -1,9 +1,24 @@
 --炙炎龙契 剑圣科派尔
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 local m=33201262
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/c33201250") end,function() require("script/c33201250") end)
 function cm.initial_effect(c)
-	VHisc_Dragonk.xyzsm(c,m)	
+	VHisc_Dragonk.xyzsm(c,33201257) 
 	--Destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
