@@ -20,7 +20,7 @@ if not cm.jjygtwo then
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) and (c:IsLocation(LOCATION_DECK) or c:IsLocation(LOCATION_EXTRA)) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
 			cm._special_summon(ac,way,tp1,tp2,tf1,tf2,pos,...)
-			Duel.ResetFlagEffect(tp,m)
+			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
 		else
 			cm._special_summon(c,way,tp1,tp2,tf1,tf2,pos,...)
@@ -31,7 +31,7 @@ if not cm.jjygtwo then
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) and (c:IsLocation(LOCATION_DECK) or c:IsLocation(LOCATION_EXTRA)) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
 			cm._special_summon_step(ac,way,tp1,tp2,tf1,tf2,pos,...)
-			Duel.ResetFlagEffect(tp,m)
+			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
 		else
 			cm._special_summon_step(c,way,tp1,tp2,tf1,tf2,pos,...)

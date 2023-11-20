@@ -20,7 +20,7 @@ if not cm.jjygfour then
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
 			cm._destroy(ac,rea,...)
-			Duel.ResetFlagEffect(tp,m)
+			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
 		else
 			cm._destroy(c,rea,...)

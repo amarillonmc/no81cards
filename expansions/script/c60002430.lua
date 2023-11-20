@@ -20,7 +20,7 @@ if not cm.jjygseven then
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
 			cm._send_to_grave(ac,rea,...)
-			Duel.ResetFlagEffect(tp,m)
+			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
 		else
 			cm._send_to_grave(c,rea,...)
