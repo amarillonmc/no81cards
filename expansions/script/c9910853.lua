@@ -82,9 +82,12 @@ function c9910853.retcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHandAsCost() end
 	Duel.SendtoHand(e:GetHandler(),nil,REASON_COST)
 end
+function c9910853.cffilter(c)
+	return not c:IsPublic()
+end
 function c9910853.retop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil,1-tp)
+	local g=Duel.GetMatchingGroup(c9910853.cffilter,tp,0,LOCATION_HAND,nil)
 	local ct=g:GetCount()
 	if ct<=0 then return end
 	if ct>2 then ct=2 end
