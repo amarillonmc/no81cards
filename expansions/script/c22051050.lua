@@ -26,7 +26,7 @@ end
 function c22051050.costfilter(c)
 	return c:IsCode(22050001) and c:IsReleasable()
 end
-function c22051050.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c22051050.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22051050.costfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,c22051050.costfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp)
