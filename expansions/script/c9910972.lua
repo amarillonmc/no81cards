@@ -32,11 +32,12 @@ function c9910972.initial_effect(c)
 	e3:SetDescription(aux.Stringid(9910972,1))
 	e3:SetCategory(CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_LEAVE_DECK)
+	e3:SetCode(EVENT_MOVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e3:SetCost(c9910972.cost)
+	e3:SetCondition(c9910972.tdcon)
 	e3:SetTarget(c9910972.tdtg)
 	e3:SetOperation(c9910972.tdop)
 	c:RegisterEffect(e3)
@@ -82,6 +83,9 @@ function c9910972.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoGrave(tc,REASON_EFFECT)
 		end
 	end
+end
+function c9910972.tdcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA)
 end
 function c9910972.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) end

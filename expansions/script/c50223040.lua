@@ -47,7 +47,7 @@ end
 function c50223040.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
-function c50223040.thfilter(c,e)
+function c50223040.thfilter(c)
 	return c:IsLocation(LOCATION_EXTRA) and c:IsFaceup() and c:IsAbleToHand()
 end
 function c50223040.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
