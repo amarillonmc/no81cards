@@ -99,23 +99,23 @@ function c11612642.efilter(e,re)
   return not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function c11612642.tfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x154) and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
+	return c:IsFaceup() and c:IsSetCard(0x154) and c:IsControler(tp)
 end
 function c11612642.negcon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return g and g:IsExists(c11612642.tfilter,1,nil,tp)
+	return g:GetCount()>0 and rp==1-tp and g:FilterCount(c11612642.tfilter,nil,tp)==#g
 end
 function c11612642.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,true,false) end
+		and c:IsCanBeSpecialSummoned(e,0,tp,true,true) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c11612642.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_DEFENSE)>0 then
+	if Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_DEFENSE)>0 then
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SET_ATTACK_FINAL)

@@ -66,9 +66,7 @@ function c11612636.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c11612636.efilter(e,te)
-	local tc=te:GetOwner()
-	local c=e:GetHandler()
-	return not tc:IsLevelAbove(0) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
+	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:IsActiveType(0x1) and not te:GetHandler():IsLevelAbove(1)
 end
 function c11612636.lvfilter(c,rc)
 	return c:GetRitualLevel(rc)>0

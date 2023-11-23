@@ -18,9 +18,10 @@ function cm.initial_effect(c)
 end
 function c22348323.effcon(e,tp,eg,ep,ev,re,r,rp)
 	local ex2,g2,gc2,dp2,dv2=Duel.GetOperationInfo(ev,CATEGORY_SPECIAL_SUMMON)
+	local ex5,g5,gc5,dp5,dv5=Duel.GetOperationInfo(ev,CATEGORY_TOHAND)
 	local ex3=re:IsHasCategory(CATEGORY_DRAW)
 	local ex4=re:IsHasCategory(CATEGORY_SEARCH)
-	return (ex2 and bit.band(dv2,LOCATION_DECK)==LOCATION_DECK) or ex3 or ex4
+	return (ex2 and bit.band(dv2,LOCATION_DECK)==LOCATION_DECK) or ex3 or ex4 or (ex5 and bit.band(dv5,LOCATION_DECK)==LOCATION_DECK)
 end
 function c22348323.drfilter(c)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsDiscardable()
