@@ -42,9 +42,9 @@ function c76029027.initial_effect(c)
 end
 c76029027.named_with_Kazimierz=true 
 function c76029027.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	e:GetHandler():SetTurnCounter(0)
 	local sg=Duel.GetMatchingGroup(Card.IsFacedown,tp,0,LOCATION_MZONE,nil)
+	if chk==0 then return sg:GetCount()>0 end
+	e:GetHandler():SetTurnCounter(0)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,sg,sg:GetCount(),0,0)
 	--destroy
 	local e1=Effect.CreateEffect(e:GetHandler())

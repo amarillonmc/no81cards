@@ -97,6 +97,17 @@ if not require and Duel.LoadScript then
 		return require_list[str]
 	end
 end
+if not Duel.LoadScript and loadfile then
+	function Duel.LoadScript(str)
+		require_list=require_list or {}
+		str="expansions/script/"..str
+		if not require_list[str] then
+			require_list[str]=loadfile(str..".lua")
+			pcall(require_list[str])
+		end
+		return require_list[str]
+	end
+end
 function cm.nnfilter(c,ec)
 	if c:GetOriginalType()==0x11 or c:GetOriginalType()==0x1011 then return false end
 	if not c.initial_effect then return true end
