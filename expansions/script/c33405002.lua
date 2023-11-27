@@ -29,10 +29,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.ckfilter(c)
-	return c:IsSetCard(0x9da0)  and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x6410)  and c:IsType(TYPE_MONSTER)
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x9da0)  and c:IsAbleToGrave()
+	return c:IsSetCard(0x6410)  and c:IsAbleToGrave()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
@@ -50,7 +50,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.thfilter(c)
-	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x6410) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	  if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil)   end

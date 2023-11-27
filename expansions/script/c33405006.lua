@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 end
 
 function cm.refilter(c)
-	return c:IsReleasableByEffect() and c:IsSetCard(0x9da0)   and c:IsType(TYPE_MONSTER)
+	return c:IsReleasableByEffect() and c:IsSetCard(0x6410)   and c:IsType(TYPE_MONSTER)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) and Duel.CheckReleaseGroup(tp,cm.refilter,1,nil) end
@@ -36,7 +36,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x9da0) and c:IsLevel(6)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6410) and c:IsLevel(6)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
    if not Duel.CheckReleaseGroup(tp,cm.refilter,1,nil) then return end 
@@ -59,7 +59,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.cfilter(c,tp)
-	return c:IsControler(tp) and c:IsSetCard(0x9da0)  and not c:IsReason(REASON_DRAW)
+	return c:IsControler(tp) and c:IsSetCard(0x6410)  and not c:IsReason(REASON_DRAW)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp) 

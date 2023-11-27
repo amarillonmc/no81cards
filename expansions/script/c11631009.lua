@@ -3,24 +3,6 @@ local m=11631009
 local cm=_G["c"..m]
 --strings
 cm.zhiyaoshu=true 
-function cm.isYaojishi(card)  
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.yaojishi
-end
-function cm.isZhiyaoshu(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.zhiyaoshu
-end
-function cm.isTezhiyao(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.tezhiyao
-end
-
-
-
 function cm.initial_effect(c)
 	--Activate  
 	local e1=Effect.CreateEffect(c)  
@@ -51,13 +33,13 @@ end
 
 --search
 function cm.cfilter(c)
-	return cm.isYaojishi(c) and c:IsFaceup()
+	return c.yaojishi and c:IsFaceup()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.filter(c)
-	return cm.isTezhiyao(c) and c:IsAbleToHand()
+	return c.tezhiyao and c:IsAbleToHand()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -85,12 +67,12 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
 		end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
-		if sg:GetCount()>0 then
-			Duel.BreakEffect()
-			Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
-		end
+		--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		--local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+		--if sg:GetCount()>0 then
+			--Duel.BreakEffect()
+			--Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
+		--end
 	end
 end
 
@@ -99,10 +81,10 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return not cm.con(e,tp,eg,ep,ev,re,r,rp) 
 end
 function cm.filter2(c)
-	return cm.isYaojishi(c) and c:IsAbleToHand()
+	return c.yaojishi and c:IsAbleToHand()
 end
 function cm.filter22(c)
-	return cm.isYaojishi(c)
+	return c.yaojishi
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 end

@@ -3,24 +3,6 @@ local m=11631011
 local cm=_G["c"..m]
 --strings
 cm.tezhiyao=true 
-function cm.isYaojishi(card)  
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.yaojishi
-end
-function cm.isZhiyaoshu(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.zhiyaoshu
-end
-function cm.isTezhiyao(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.tezhiyao
-end
-
-
-
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -48,7 +30,7 @@ end
 
 --activate
 function cm.cfilter(c)
-	return cm.isYaojishi(c) and c:IsFaceup()
+	return c.yaojishi and c:IsFaceup()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
@@ -79,16 +61,16 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()<0 then return end
 	local tc=g:GetFirst()
 	if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE) then
-		local e1=Effect.CreateEffect(c)  
-		e1:SetType(EFFECT_TYPE_SINGLE)  
-		e1:SetCode(EFFECT_DISABLE)  
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)  
-		tc:RegisterEffect(e1)  
-		local e2=Effect.CreateEffect(c)  
-		e2:SetType(EFFECT_TYPE_SINGLE)  
-		e2:SetCode(EFFECT_DISABLE_EFFECT)  
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)  
-		tc:RegisterEffect(e2)  
+		--local e1=Effect.CreateEffect(c)  
+		--e1:SetType(EFFECT_TYPE_SINGLE)  
+		--e1:SetCode(EFFECT_DISABLE)  
+		--e1:SetReset(RESET_EVENT+RESETS_STANDARD)  
+		--tc:RegisterEffect(e1)  
+		--local e2=Effect.CreateEffect(c)  
+		--e2:SetType(EFFECT_TYPE_SINGLE)  
+		--e2:SetCode(EFFECT_DISABLE_EFFECT)  
+		--e2:SetReset(RESET_EVENT+RESETS_STANDARD)  
+		--tc:RegisterEffect(e2)  
 		Duel.SpecialSummonComplete()
 	end
 end

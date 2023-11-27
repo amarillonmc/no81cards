@@ -63,7 +63,7 @@ function cm.atktg(e,c)
 	return c:GetFlagEffect(m)==0
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x9da0) 
+	return c:IsFaceup() and c:IsSetCard(0x6410) 
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil) end
@@ -119,5 +119,5 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.indtg(e,c)
-	return c:IsSetCard(0x9da0) 
+	return c:IsSetCard(0x6410) 
 end

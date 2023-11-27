@@ -53,27 +53,18 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 end
 
 --e3
-function s.rmf0(c,e,tp)
-	return RMJ_02.rmf(c) and Duel.IsExistingMatchingCard(s.rmf1,tp,LOCATION_EXTRA,0,1,c,e,tp,c)
-end
 function s.rmf1(c,e,tp,rc1)
-	return RMJ_02.rmf(c) and Duel.IsExistingMatchingCard(s.rmf2,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp,rc1,c)
+	return RMJ_02.rmf(c) 
 end
-function s.rmf2(c,e,tp,rc1,rc2)
-	return c:IsSetCard(0x541a) and not (c:IsCode(rc1:GetCode()) or c:IsCode(rc2:GetCode())) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function s.spf(c,e,tp,code1,code2)
-	return c:IsSetCard(0x541a) and not (c:IsCode(code1) or c:IsCode(code2)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.spf(c,e,tp,code1)
+	return c:IsSetCard(0x541a) and not c:IsCode(code1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.rmf0,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.rmf1,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g1=Duel.SelectMatchingCard(tp,s.rmf0,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	local g1=Duel.SelectMatchingCard(tp,s.rmf1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	local rc1=g1:GetFirst()
-	local g2=Duel.SelectMatchingCard(tp,s.rmf1,tp,LOCATION_EXTRA,0,1,1,rc1,e,tp,rc1)
-	local rc2=g2:GetFirst()
-	e:SetLabel(rc1:GetCode(),rc2:GetCode())
-	g1:Merge(g2)
+	e:SetLabel(rc1:GetCode())
 	Duel.Remove(g1,POS_FACEUP,REASON_COST)
 end
 function s.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -81,12 +72,12 @@ function s.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
 end
 function s.tkop(e,tp,eg,ep,ev,re,r,rp)
-	local x,y=e:GetLabel()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsExistingMatchingCard(s.spf,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp,x,y) then return end
+	local x=e:GetLabel()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsExistingMatchingCard(s.spf,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp,x) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,s.spf,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp,x,y)
+	local g=Duel.SelectMatchingCard(tp,s.spf,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp,x)
 	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) then
+	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)

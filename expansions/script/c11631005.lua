@@ -3,24 +3,6 @@ local m=11631005
 local cm=_G["c"..m]
 --strings
 cm.tezhiyao=true 
-function cm.isYaojishi(card)  
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.yaojishi
-end
-function cm.isZhiyaoshu(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.zhiyaoshu
-end
-function cm.isTezhiyao(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.tezhiyao
-end
-
-
-
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -49,7 +31,7 @@ end
 
 --activate
 function cm.cfilter(c)
-	return cm.isYaojishi(c) and c:IsFaceup()
+	return c.yaojishi and c:IsFaceup()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)

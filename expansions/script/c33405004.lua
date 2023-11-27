@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,m)
@@ -37,14 +37,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)  
 end
-function cm.cfilter(c,re)
-	return (c:IsReason(REASON_BATTLE) and c:GetReasonCard():IsSetCard(0x9da0)) or  (c:IsReason(REASON_EFFECT) and re and re:GetOwner():IsSetCard(0x9da0))
+function cm.cfilter(c,r,re)
+	return (r&REASON_BATTLE~=0 and c:GetReasonCard():IsSetCard(0x6410)) or  (c:IsReason(REASON_EFFECT) and re and re:GetOwner():IsSetCard(0x6410))
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,m)>Duel.GetFlagEffect(tp,m+1) and eg:IsExists(cm.cfilter,1,nil,re)
+	return Duel.GetFlagEffect(tp,m)>Duel.GetFlagEffect(tp,m+1) and eg:IsExists(cm.cfilter,1,nil,r,re)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x6410) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:GetControler()==tp and chkc:GetLocation()==LOCATION_GRAVE+LOCATION_DECK and cm.filter(chkc) end
@@ -83,7 +83,7 @@ function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter2,1,nil,tp)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x9da0) and not c:IsCode(m) and c:IsAbleToHand()
+	return c:IsSetCard(0x6410) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and cm.thfilter(chkc) end

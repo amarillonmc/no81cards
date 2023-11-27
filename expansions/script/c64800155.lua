@@ -33,7 +33,7 @@ function s.rmf(c,code)
 	return RMJ_02.rmfe(c) and not c:IsCode(code) 
 end
 function s.spf(c,e,tp)
-	return c:IsSetCard(0x541a) and Duel.IsExistingMatchingCard(s.rmf,tp,LOCATION_EXTRA,0,2,nil,c:GetCode()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x541a) and Duel.IsExistingMatchingCard(s.rmf,tp,LOCATION_EXTRA,0,1,nil,c:GetCode()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and s.spf(chkc,e,tp) end
@@ -41,15 +41,15 @@ function s.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,s.spf,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,0,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_EXTRA)
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local c=e:GetHandler()
-	if tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.rmf,tp,LOCATION_EXTRA,0,2,nil,tc:GetCode()) then
+	if tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.rmf,tp,LOCATION_EXTRA,0,1,nil,tc:GetCode()) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,s.rmf,tp,LOCATION_EXTRA,0,2,2,nil,tc:GetCode())
-		if g:GetCount()>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)==2 then
+		local g=Duel.SelectMatchingCard(tp,s.rmf,tp,LOCATION_EXTRA,0,1,1,nil,tc:GetCode())
+		if g:GetCount()>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)==1 then
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end

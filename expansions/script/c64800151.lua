@@ -54,19 +54,11 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 end
 
 --e3
-function s.rmf1(c)
-	return RMJ_02.rmf(c) and Duel.IsExistingMatchingCard(s.rmf2,tp,LOCATION_EXTRA,0,1,c,c:GetLevel(),c:GetRace(),c:GetAttribute())
-end
-function s.rmf2(c,lv,ra,att)
-	return RMJ_02.rmf(c) and c:IsLevel(lv) and c:IsRace(ra) and c:IsAttribute(att)
-end
 function s.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.rmf1,tp,LOCATION_EXTRA,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(RMJ_02.rmf,tp,LOCATION_EXTRA,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.rmf1,tp,LOCATION_EXTRA,0,1,1,nil)  
+	local g=Duel.SelectMatchingCard(tp,RMJ_02.rmf,tp,LOCATION_EXTRA,0,1,1,nil)  
 	local tc=g:GetFirst()
-	local g2=Duel.SelectMatchingCard(tp,s.rmf2,tp,LOCATION_EXTRA,0,1,1,tc,tc:GetLevel(),tc:GetRace(),tc:GetAttribute())
-	g:Merge(g2)
 	e:SetLabel(tc:GetLevel(),tc:GetRace(),tc:GetAttribute())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end

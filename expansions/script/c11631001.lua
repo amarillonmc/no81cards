@@ -3,24 +3,6 @@ local m=11631001
 local cm=_G["c"..m]
 --strings
 cm.yaojishi=true 
-function cm.isYaojishi(card)  
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.yaojishi
-end
-function cm.isZhiyaoshu(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.zhiyaoshu
-end
-function cm.isTezhiyao(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.tezhiyao
-end
-
-
-
 function cm.initial_effect(c)
 	--search  
 	local e1=Effect.CreateEffect(c)  
@@ -64,7 +46,7 @@ end
 
 --search
 function cm.filter(c)  
-	return cm.isZhiyaoshu(c) and c:IsAbleToHand()  
+	return c.zhiyaoshu and c:IsAbleToHand()  
 end  
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end  
@@ -89,7 +71,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function cm.filter2(c)  
-	return cm.isTezhiyao(c) and c:IsAbleToHand()  
+	return c.tezhiyao and c:IsAbleToHand()  
 end 
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil) end  
@@ -117,5 +99,5 @@ end
 
 --act in hand
 function cm.actfilter(e,c)
-	return cm.isTezhiyao(c) and c:IsPublic()
+	return c.tezhiyao and c:IsPublic()
 end

@@ -1630,7 +1630,7 @@ function cm.OSReturnOperation(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function cm.SorisonFish(c)
-	local e0=Effect.CreateEffect(c)
+	--[[local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_SYNCHRO_MATERIAL_CUSTOM)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -1660,7 +1660,7 @@ function cm.SorisonFish(c)
 	--e04:SetCode(EVENT_ADJUST)
 	--e04:SetRange(LOCATION_HAND)
 	--e04:SetOperation(cm.SorisonAntiRepeat)
-	--c:RegisterEffect(e04)
+	--c:RegisterEffect(e04)--]]
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
@@ -4602,7 +4602,7 @@ function cm.ActivatedAsSpellorTrap(c,otyp,loc,setava)
 		e3:SetTargetRange(1,1)
 		e3:SetLabelObject(e1)
 		e3:SetTarget(cm.AASTactarget)
-		e3:SetCost(cm.AASTcostchk)
+		e3:SetCost(cm.AASTcostchk(otyp))
 		e3:SetOperation(cm.AASTcostop(otyp))
 		c:RegisterEffect(e3)
 	else
@@ -4626,7 +4626,7 @@ function cm.ActivatedAsSpellorTrap(c,otyp,loc,setava)
 		e3:SetTargetRange(1,1)
 		e3:SetLabelObject(e1)
 		e3:SetTarget(cm.AASTactarget)
-		e3:SetCost(cm.AASTcostchk)
+		e3:SetCost(cm.AASTcostchk(otyp))
 		e3:SetOperation(cm.AASTcostop(otyp))
 		Duel.RegisterEffect(e3,0)
 		--cm.Global_in_Initial_Reset(c,{e2,e3})
@@ -4641,10 +4641,16 @@ function cm.ActivatedAsSpellorTrap(c,otyp,loc,setava)
 	c:RegisterEffect(e2_1)
 	return e1,e1_1,e2,e3
 end
-function cm.AASTadjustop(otyp)
+function cm.AASTadjustop(otyp,ext)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp)
-	local te=e:GetLabelObject()
+	local adjt={}
+	if ext then adjt=ext else adjt={e:GetLabelObject()} end
+	for _,te in pairs(adjt) do
+	--local te=e:GetLabelObject()
+	--if not te then Debug.Message(e:GetLabel()) return else Debug.Message(555) return end
+	--if aux.GetValueType(te)~="Effect" then Debug.Message(aux.GetValueType(te)) return end
+	--Debug.Message(#te)
 	local c=te:GetHandler()
 	if not c:IsStatus(STATUS_CHAINING) then
 		local xe={c:IsHasEffect(53765099)}
@@ -4764,6 +4770,7 @@ function cm.AASTadjustop(otyp)
 	end
 	xe1:Reset()
 	end
+	end
 end
 function cm.AASTbchval(_val,te)
 	return function(e,re,...)
@@ -4789,8 +4796,11 @@ function cm.AASTactarget(e,te,tp)
 		return te:GetHandler()==e:GetOwner() and te==ce and ce:GetHandler():IsLocation(e:GetLabel())
 	else return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject() end
 end
-function cm.AASTcostchk(e,te,tp)
-	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+function cm.AASTcostchk(otyp)
+	return
+	function(e,te,tp)
+	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or otyp&0x80000~=0
+	end
 end
 function cm.AASTcostop(otyp)
 	return
@@ -5306,6 +5316,9 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 				local xe1=cm.AASTregi(ac,ae)
 				xe1:SetLabel(ac:GetSequence(),typ)
 				if ly>0 then cm["Card_Prophecy_Certain_ACST_"..ly]=true end
+			end
+			if not ae and Dimpthox_Imitation then
+				for _,v in pairs(Dimpthox_Imitation) do if v:GetOwner()==ac then table.insert(le,v) end end
 			end
 			return table.unpack(le)
 		end
@@ -6880,4 +6893,130 @@ function cm.ADGDMergedDelayEventCheck2(cd)
 		g:Clear()
 	end
 	end
+end
+function cm.Select_1(g,tp,msg)
+	local tc=g:GetFirst()
+	if #g>1 then
+		Duel.Hint(HINT_SELECTMSG,tp,msg)
+		tc=g:Select(tp,1,1,nil):GetFirst()
+	end
+	return tc
+end
+function cm.Act(c,e)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_ACTIVATE_COST)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetLabelObject(e)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.HTAfactarget)
+	e1:SetOperation(cm.BaseActOp)
+	return e1
+end
+function cm.BaseActOp(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local c=te:GetHandler()
+	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	c:CreateEffectRelation(te)
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return ev==ev0 end)
+	e1:SetOperation(cm.BaseActReset)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.BaseActReset(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+		if not rc:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_PENDULUM) and not rc:IsHasEffect(EFFECT_REMAIN_FIELD) then rc:CancelToGrave(false) end
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+		rc:CancelToGrave(false)
+	end
+end
+function cm.AdvancedActOp(ctype,op)
+	return
+	function(e,tp,eg,ep,ev,re,r,rp)
+	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+	local te=e:GetLabelObject()
+	local c=te:GetHandler()
+	local typ=c:GetType()
+	if te:IsActiveType(TYPE_PENDULUM) then typ=TYPE_PENDULUM+TYPE_SPELL end
+	local xe1=cm.AASTregi(c,te)
+	if ctype&0x80000~=0 then
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		if fc then Duel.SendtoGrave(fc,REASON_RULE) end
+		Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,false)
+	else
+		if c:IsLocation(LOCATION_SZONE) and c:IsFacedown() then
+			Duel.ChangePosition(c,POS_FACEUP)
+			c:SetStatus(STATUS_EFFECT_ENABLED,false)
+		elseif not c:IsLocation(LOCATION_SZONE) then
+			Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+		end
+	end
+	xe1:SetLabel(c:GetSequence()+1,typ)
+	c:CreateEffectRelation(te)
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return ev==ev0 end)
+	e1:SetOperation(cm.BaseActReset)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+	end
+end
+function cm.Excavated_Check(c)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_TO_HAND)
+	e0:SetCondition(cm.DimpthoxEregcon)
+	e0:SetOperation(cm.DimpthoxEregop)
+	c:RegisterEffect(e0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(53766099)
+	e1:SetRange(LOCATION_DECK)
+	c:RegisterEffect(e1)
+	if Dimpthox_Excavated_Check then return end
+	Dimpthox_Excavated_Check=true
+	local ge=Effect.GlobalEffect()
+	ge:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	ge:SetCode(EVENT_ADJUST)
+	ge:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)Dimpthox_E_Check=false end)
+	Duel.RegisterEffect(ge,tp)
+	cm.ConfirmDecktop=Duel.ConfirmDecktop
+	Duel.ConfirmDecktop=function(tp,ct)
+		local g=Duel.GetDecktopGroup(tp,ct)
+		if g:IsExists(Card.IsHasEffect,1,nil,53766099) then Dimpthox_E_Check=true end
+		return cm.ConfirmDecktop(tp,ct)
+	end
+end
+function cm.DimpthoxEregcon(e,tp,eg,ep,ev,re,r,rp)
+	return Dimpthox_E_Check
+end
+function cm.DimpthoxEregop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_PUBLIC)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e1)
+	c:RegisterFlagEffect(53766099,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,66)
 end

@@ -3,24 +3,6 @@ local m=11631007
 local cm=_G["c"..m]
 --strings
 cm.yaojishi=true 
-function cm.isYaojishi(card)  
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.yaojishi
-end
-function cm.isZhiyaoshu(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.zhiyaoshu
-end
-function cm.isTezhiyao(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.tezhiyao
-end
-
-
-
 function cm.initial_effect(c)
 	--spsummon  
 	local e1=Effect.CreateEffect(c)  
@@ -59,7 +41,7 @@ end
 
 --spsummon
 function cm.spfilter(c)
-	return cm.isYaojishi(c) and c:IsFaceup() and not c:IsCode(m)
+	return c.yaojishi and c:IsFaceup() and not c:IsCode(m)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -78,14 +60,14 @@ end
 
 --draw
 function cm.tdfilter(c)  
-	return (cm.isYaojishi(c) or cm.isZhiyaoshu(c) or cm.isTezhiyao(c)) and c:IsAbleToDeck()  
+	return (c.yaojishi or c.zhiyaoshu or c.tezhiyao) and c:IsAbleToDeck()  
 end  
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.tdfilter(chkc) end  
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)  
-		and Duel.IsExistingTarget(cm.tdfilter,tp,LOCATION_GRAVE,0,3,nil) end  
+		and Duel.IsExistingTarget(cm.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,nil) end  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)  
-	local g=Duel.SelectTarget(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,3,3,nil)  
+	local g=Duel.SelectTarget(tp,cm.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,3,nil)  
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)  
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)  
 end  
@@ -104,5 +86,5 @@ end
 
 --act in hand
 function cm.actfilter(e,c)
-	return cm.isTezhiyao(c) and c:IsPublic()
+	return c.tezhiyao and c:IsPublic()
 end

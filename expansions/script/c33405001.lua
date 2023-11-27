@@ -30,7 +30,7 @@ function cm.desfilter(c,tp)
 	return  Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_EXTRA,0,1,nil)
 end
 function cm.refilter(c)
-	return c:IsSetCard(0x9da0) and c:IsAbleToRemove()
+	return c:IsSetCard(0x6410) and c:IsAbleToRemove()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and cm.desfilter(chkc,tp) end
@@ -53,13 +53,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.filter0(c)
-	return c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
+	return c:IsSetCard(0x6410) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(cm.filter0,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x9da0) and c:IsAbleToGrave()
+	return c:IsSetCard(0x6410) and c:IsAbleToGrave()
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

@@ -3,24 +3,6 @@ local m=11631023
 local cm=_G["c"..m]
 --strings
 cm.yaojishi=true 
-function cm.isYaojishi(card)  
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.yaojishi
-end
-function cm.isZhiyaoshu(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.zhiyaoshu
-end
-function cm.isTezhiyao(card)
-	local code=card:GetCode()
-	local ccode=_G["c"..code]
-	return ccode.tezhiyao
-end
-
-
-
 function cm.initial_effect(c)
 	--synchro summon  
 	aux.AddSynchroProcedure(c,cm.matfilter,aux.NonTuner(cm.matfilter2),1,1)  
@@ -83,7 +65,7 @@ function cm.matfilter(c)
 	return c:IsCode(11631007)
 end  
 function cm.matfilter2(c)
-	return cm.isYaojishi(c)
+	return c.yaojishi
 end
 
 --show
@@ -120,10 +102,10 @@ end
 
 --search/negate
 function cm.cfilter1(c)
-	return cm.isYaojishi(c) and c:IsAttribute(ATTRIBUTE_LIGHT) and not c:IsType(TYPE_TUNER)
+	return c.yaojishi and c:IsAttribute(ATTRIBUTE_LIGHT) and not c:IsType(TYPE_TUNER)
 end
 function cm.cfilter2(c)
-	return cm.isYaojishi(c) and c:IsAttribute(ATTRIBUTE_DARK) and not c:IsType(TYPE_TUNER)
+	return c.yaojishi and c:IsAttribute(ATTRIBUTE_DARK) and not c:IsType(TYPE_TUNER)
 end
 function cm.matcheck1(c)
 	return c:IsSummonType(SUMMON_TYPE_SYNCHRO) and c:GetMaterial():IsExists(cm.cfilter1,1,nil)
@@ -137,7 +119,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and (cm.matcheck1(c) or Duel.IsChainNegatable(ev))
 end
 function cm.thfilter(c)
-	return c:IsAbleToHand() and (cm.isTezhiyao(c) or cm.isZhiyaoshu(c))
+	return c:IsAbleToHand() and (c.tezhiyao or c.zhiyaoshu)
 end
 function cm.tgf(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -169,7 +151,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then  
 			Duel.ConfirmCards(1-tp,g)  
 			local tc=Duel.GetOperatedGroup():GetFirst()
-			if tc and tc:IsLocation(LOCATION_HAND) and cm.isTezhiyao(tc) then
+			if tc and tc:IsLocation(LOCATION_HAND) and tc.tezhiyao then
 				Duel.ShuffleHand(tp)
 				local e1=Effect.CreateEffect(c) 
 				e1:SetDescription(aux.Stringid(m,1))
@@ -193,7 +175,7 @@ end
 --add attack
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()
-	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and rp==tp and cm.isTezhiyao(re:GetHandler()) and c:GetFlagEffect(1)>0 then  
+	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and rp==tp and re:GetHandler().tezhiyao and c:GetFlagEffect(1)>0 then  
 		Duel.Hint(HINT_CARD,0,m)
 		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 		local tc=g:GetFirst()
@@ -212,5 +194,5 @@ end
 
 --act in hand
 function cm.actfilter(e,c)
-	return cm.isTezhiyao(c) and c:IsPublic()
+	return c.tezhiyao and c:IsPublic()
 end

@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x9da0) and (((c:IsType(TYPE_FIELD) or c:IsType(TYPE_CONTINUOUS)) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or ((c:IsType(TYPE_QUICKPLAY) or c:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP) and c:CheckActivateEffect(false,true,false)~=nil ))
+	return c:IsSetCard(0x6410) and (((c:IsType(TYPE_FIELD) or c:IsType(TYPE_CONTINUOUS)) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or ((c:IsType(TYPE_QUICKPLAY) or c:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP) and c:CheckActivateEffect(false,true,false)~=nil ))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
    if chkc then
@@ -76,7 +76,7 @@ end
 end
 
 function cm.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x9da0) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x6410) and c:IsType(TYPE_MONSTER)
 end
 function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.atkfilter,tp,LOCATION_MZONE,0,1,nil) end

@@ -21,10 +21,10 @@ if not require and loadfile then
 end
 if not pcall(function() require("expansions/script/c15000000") end) then require("script/c15000000") end
 ]]--
-if Satl_Library_Switch then
-	return
-end
-Satl_Library_Switch=true
+--if Satl_Library_Switch then
+--  return
+--end
+--Satl_Library_Switch=true
 --为 卡 片 c添 加 裂 解 召 唤 手 续 ,mf为 裂 解 素 材 需 满 足 的 条 件
 function Satl.AddSplitProcedure(c,mf)
 	if not Satl.PendulumChecklist then

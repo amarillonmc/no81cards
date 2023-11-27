@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.refil(c)
-	return c:IsAbleToRemoveAsCost() and c:IsSetCard(0x9da0)
+	return c:IsAbleToRemoveAsCost() and c:IsSetCard(0x6410)
 end
 function cm.sumcon(e,c)
 	if c==nil then return true end
