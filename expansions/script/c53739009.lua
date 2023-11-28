@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetHandler():IsRace(RACE_ROCK) and re:GetHandler()~=e:GetHandler()
+	return re and re:GetHandler():IsRace(RACE_ROCK) and re:GetHandler()~=e:GetHandler() and re:IsHasType(EFFECT_TYPE_ACTIONS)
 end
 function cm.filter(c)
 	return c:IsAttack(1000) and c:IsRace(RACE_ROCK) and c:IsAbleToHand()

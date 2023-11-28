@@ -76,7 +76,7 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetTarget(s.reptg)
 		e1:SetOperation(s.repop)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1,true)
+		tc:RegisterEffect(e1)
 		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
 	end
 	if c:IsFaceup() and c:IsRelateToEffect(e) then

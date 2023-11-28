@@ -149,7 +149,7 @@ function s.imcop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(s.efilter)
 	e1:SetLabel(e:GetLabelObject():GetHandler():GetCode())
-	c:RegisterEffect(e1)
+	c:RegisterEffect(e1,true)
 	Duel.RaiseSingleEvent(c,EVENT_CUSTOM+id,e:GetLabelObject(),REASON_EFFECT,tp,tp,0)
 	e:Reset()
 end

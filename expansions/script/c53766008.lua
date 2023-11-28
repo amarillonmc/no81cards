@@ -99,10 +99,10 @@ end
 function s.count(e,tp,eg,ep,ev,re,r,rp)
 	local des=eg:GetFirst()
 	if des:IsReason(REASON_BATTLE) then
-		des:GetReasonCard():RegisterFlagEffect(id+33,RESET_EVENT+0x1fc0000+RESET_PHASE+PHASE_END,0,1)
+		des:GetReasonCard():RegisterFlagEffect(id+33,RESET_EVENT+0x1fc0000+RESET_PHASE+PHASE_DRAW,0,1)
 	elseif re then
 		local rc=re:GetHandler()
-		if eg:IsExists(Card.IsReason,1,nil,REASON_EFFECT) and rc then rc:RegisterFlagEffect(id+33,RESET_EVENT+0x1fc0000+RESET_PHASE+PHASE_END,0,1) end
+		if eg:IsExists(Card.IsReason,1,nil,REASON_EFFECT) and rc then rc:RegisterFlagEffect(id+33,RESET_EVENT+0x1fc0000+RESET_PHASE+PHASE_DRAW,0,1) end
 	end
 end
 function s.checkop2(e,tp,eg,ep,ev,re,r,rp)
