@@ -68,23 +68,6 @@ function cm.initial_effect(c)
 	e6:SetCode(EVENT_SPSUMMON)
 	c:RegisterEffect(e6)
 end
-function cm.SynMaterialFilter(c,syncard)
-	return c:IsFaceup() and c:IsCanBeSynchroMaterial(syncard)
-end
-function cm.SynLimitFilter(c,f,e,syncard)
-	return f and not f(e,c,syncard)
-end
-function cm.GetSynchroLevelFlowerCardian(c)
-	return 2
-end
-function cm.GetSynMaterials(tp,syncard)
-	local mg=Duel.GetMatchingGroup(cm.SynMaterialFilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,syncard)
-	if mg:IsExists(Card.GetHandSynchro,1,nil) then
-		local mg2=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_HAND,0,nil,syncard)
-		if mg2:GetCount()>0 then mg:Merge(mg2) end
-	end
-	return mg
-end
 function cm.SynMixCondition(f1,f2,f3,f4,minc,maxc,gc)
 	return  function(e,c,smat,mg1,min,max)
 				if c==nil then return true end
@@ -96,6 +79,7 @@ function cm.SynMixCondition(f1,f2,f3,f4,minc,maxc,gc)
 					if max<maxc then maxc=max end
 					if minc>maxc then return false end
 				end
+				if smat and not smat:IsCanBeSynchroMaterial(c) then return false end
 				local tp=c:GetControler()
 				local mg
 				local mgchk=false
@@ -103,7 +87,7 @@ function cm.SynMixCondition(f1,f2,f3,f4,minc,maxc,gc)
 					mg=mg1
 					mgchk=true
 				else
-					mg=cm.GetSynMaterials(tp,c)
+					mg=aux.GetSynMaterials(tp,c)
 				end
 				if smat~=nil then mg:AddCard(smat) end
 				return mg:IsExists(cm.SynMixFilter1,1,nil,f1,f2,f3,f4,minc,maxc,c,mg,smat,gc,mgchk)
@@ -118,6 +102,7 @@ function cm.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc)
 					if max<maxc then maxc=max end
 					if minc>maxc then return false end
 				end
+				::SynMixTargetSelectStart::
 				local g=Group.CreateGroup()
 				local mg
 				local mgchk=false
@@ -125,19 +110,28 @@ function cm.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc)
 					mg=mg1
 					mgchk=true
 				else
-					mg=cm.GetSynMaterials(tp,c)
+					mg=aux.GetSynMaterials(tp,c)
 				end
 				if smat~=nil then mg:AddCard(smat) end
+				local c1
+				local c2
+				local c3
+				local cancel=Duel.IsSummonCancelable()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-				local c1=mg:FilterSelect(tp,cm.SynMixFilter1,1,1,nil,f1,f2,f3,f4,minc,maxc,c,mg,smat,gc,mgchk):GetFirst()
+				c1=mg:Filter(cm.SynMixFilter1,nil,f1,f2,f3,f4,minc,maxc,c,mg,smat,gc,mgchk):SelectUnselect(g,tp,false,cancel,1,1)
+				if not c1 then return false end
 				g:AddCard(c1)
 				if f2 then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-					local c2=mg:FilterSelect(tp,cm.SynMixFilter2,1,1,c1,f2,f3,f4,minc,maxc,c,mg,smat,c1,gc,mgchk):GetFirst()
+					c2=mg:Filter(cm.SynMixFilter2,g,f2,f3,f4,minc,maxc,c,mg,smat,c1,gc,mgchk):SelectUnselect(g,tp,false,cancel,1,1)
+					if not c2 then return false end
+					if g:IsContains(c2) then goto SynMixTargetSelectStart end
 					g:AddCard(c2)
 					if f3 then
 						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-						local c3=mg:FilterSelect(tp,cm.SynMixFilter3,1,1,Group.FromCards(c1,c2),f3,f4,minc,maxc,c,mg,smat,c1,c2,gc,mgchk):GetFirst()
+						c3=mg:Filter(cm.SynMixFilter3,g,f3,f4,minc,maxc,c,mg,smat,c1,c2,gc,mgchk):SelectUnselect(g,tp,false,cancel,1,1)
+						if not c3 then return false end
+						if g:IsContains(c3) then goto SynMixTargetSelectStart end
 						g:AddCard(c3)
 					end
 				end
@@ -145,20 +139,21 @@ function cm.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc)
 				for i=0,maxc-1 do
 					local mg2=mg:Clone()
 					if f4 then
-						mg2=mg2:Filter(f4,g,c)
+						mg2=mg2:Filter(f4,g,c,c1,c2,c3)
 					else
 						mg2:Sub(g)
 					end
 					local cg=mg2:Filter(cm.SynMixCheckRecursive,g4,tp,g4,mg2,i,minc,maxc,c,g,smat,gc,mgchk)
 					if cg:GetCount()==0 then break end
-					local minct=1
-					if cm.SynMixCheckGoal(tp,g4,minc,i,c,g,smat,gc,mgchk) then
-						minct=0
-					end
+					local finish=cm.SynMixCheckGoal(tp,g4,minc,i,c,g,smat,gc,mgchk)
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-					local tg=cg:Select(tp,minct,1,nil)
-					if tg:GetCount()==0 then break end
-					g4:Merge(tg)
+					local c4=cg:SelectUnselect(g+g4,tp,finish,cancel,minc,maxc)
+					if not c4 then
+						if finish then break
+						else return false end
+					end
+					if g:IsContains(c4) or g4:IsContains(c4) then goto SynMixTargetSelectStart end
+					g4:AddCard(c4)
 				end
 				g:Merge(g4)
 				if g:GetCount()>0 then
@@ -205,7 +200,7 @@ function cm.SynMixFilter4(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc,mgchk)
 	if c3 then sg:AddCard(c3) end
 	local mg=mg1:Clone()
 	if f4 then
-		mg=mg:Filter(f4,sg,syncard)
+		mg=mg:Filter(f4,sg,syncard,c1,c2,c3)
 	else
 		mg:Sub(sg)
 	end
@@ -234,12 +229,12 @@ function cm.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
 	if Duel.GetLocationCountFromEx(tp,tp,g,syncard)<=0 then return false end
 	if gc and not gc(g) then return false end
 	if smat and not g:IsContains(smat) then return false end
-	if not cm.MustMaterialCheck(g,tp,EFFECT_MUST_BE_SMATERIAL) then return false end
+	if not aux.MustMaterialCheck(g,tp,EFFECT_MUST_BE_SMATERIAL) then return false end
 	if not g:CheckWithSumEqual(Card.GetSynchroLevel,8,g:GetCount(),g:GetCount(),syncard)
 		and (not g:IsExists(Card.IsHasEffect,1,nil,89818984)
-		or not g:CheckWithSumEqual(cm.GetSynchroLevelFlowerCardian,8,g:GetCount(),g:GetCount(),syncard))
+		or not g:CheckWithSumEqual(aux.GetSynchroLevelFlowerCardian,8,g:GetCount(),g:GetCount(),syncard))
 		then return false end
-	local hg=g:Filter(Card.IsLocation,nil,LOCATION_HAND)
+	local hg=g:Filter(aux.SynMixHandFilter,nil,tp,syncard)
 	local hct=hg:GetCount()
 	if hct>0 and not mgchk then
 		local found=false
@@ -247,7 +242,7 @@ function cm.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
 			local he,hf,hmin,hmax=c:GetHandSynchro()
 			if he then
 				found=true
-				if hf and hg:IsExists(cm.SynLimitFilter,1,c,hf,he,syncard) then return false end
+				if hf and hg:IsExists(aux.SynLimitFilter,1,c,hf,he,syncard) then return false end
 				if (hmin and hct<hmin) or (hmax and hct>hmax) then return false end
 			end
 		end
@@ -261,7 +256,7 @@ function cm.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
 				local llct=g:FilterCount(Card.IsLocation,c,lloc)
 				if llct~=lct then return false end
 			end
-			if lf and g:IsExists(cm.SynLimitFilter,1,c,lf,le,syncard) then return false end
+			if lf and g:IsExists(aux.SynLimitFilter,1,c,lf,le,syncard) then return false end
 			if (lmin and lct<lmin) or (lmax and lct>lmax) then return false end
 		end
 	end

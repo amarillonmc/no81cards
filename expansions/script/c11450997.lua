@@ -30,7 +30,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		g:AddCard(c)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		if tc~=c then
-			Debug.Message(tc:GetLocation())
+			--Debug.Message(tc:GetLocation())
 			for rc in aux.Next(g) do cm[rc]=2 end
 			cm[tc]=1
 			cm[c]=nil
@@ -41,6 +41,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,c)
 	if #g>0 then
 		cm[c]=nil
+		Duel.Hint(HINT_CARD,0,m)
 		Duel.ConfirmCards(1-tp,g)
 		Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
 		if KOISHI_CHECK then
@@ -54,6 +55,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 				c:ReplaceEffect(m,0)
 				cm.initial_effect=ini
 			end
+			Duel.ConfirmCards(1-tp,c)
+			Duel.ShuffleDeck(tp)
 		else
 			local loc=c:GetLocation()
 			Duel.SendtoGrave(c,REASON_EFFECT)
