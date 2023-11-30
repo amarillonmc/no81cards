@@ -109,7 +109,7 @@ function s.acop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(id)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetLabel(ac1,ac2)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+Duel.GetCurrentPhase())
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+SNNM.GetCurrentPhase())
 	c:RegisterEffect(e1,true)
 end
 function s.sumop(e,tp,eg,ep,ev,re,r,rp)

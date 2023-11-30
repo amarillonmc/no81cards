@@ -44,7 +44,7 @@ end
 function s.extg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(s.tdfilter,tp,0x70,0,1,nil) and c:GetFlagEffect(id)==0 end
-	c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+Duel.GetCurrentPhase(),0,1)
+	c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+SNNM.GetCurrentPhase(),0,1)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,0x70)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
@@ -141,7 +141,7 @@ end
 function s.val(e,re,r,rp)
 	local c=e:GetHandler()
 	if c:GetFlagEffect(id+33)==0 then
-		c:RegisterFlagEffect(id+33,RESET_EVENT+0x7e0000+RESET_PHASE+Duel.GetCurrentPhase(),0,1)
+		c:RegisterFlagEffect(id+33,RESET_EVENT+0x7e0000+RESET_PHASE+SNNM.GetCurrentPhase(),0,1)
 		return true
 	else return false end
 end

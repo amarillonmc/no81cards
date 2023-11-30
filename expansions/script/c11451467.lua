@@ -138,8 +138,19 @@ function cm.chop2(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			e1:SetValue(11451461)
 			sc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_CHAIN_NEGATED)
+			e2:SetLabel(ev)
+			e2:SetLabelObject(e1)
+			e2:SetReset(RESET_CHAIN)
+			e2:SetOperation(cm.resetop)
+			Duel.RegisterEffect(e2,tp)
 		end
 	end
+end
+function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
+	if ev==e:GetLabel() then e:GetLabelObject():Reset() end
 end
 function cm.chfilter(c,tc)
 	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule())

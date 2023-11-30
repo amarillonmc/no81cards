@@ -7020,3 +7020,8 @@ function cm.DimpthoxEregop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 	c:RegisterFlagEffect(53766099,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,66)
 end
+function cm.GetCurrentPhase()
+	local ph=Duel.GetCurrentPhase()
+	if ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE then ph=PHASE_BATTLE end
+	return ph
+end
