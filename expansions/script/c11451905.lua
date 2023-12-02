@@ -55,7 +55,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	for code=11451901,11451905 do
+	for code=11451900,11451905 do
 		if PNFL_DESTROY_CHECK[code] and c:GetFlagEffect(code+0xffffff)==0 then
 			c:RegisterFlagEffect(code+0xffffff,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(code,6))
 		end

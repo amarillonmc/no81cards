@@ -36,8 +36,6 @@ function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return false end
-	local ect=c29724053 and Duel.IsPlayerAffectedByEffect(tp,29724053) and c29724053[tp]
-	if ect and ect<2 then return false end
 	local bg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND,0,c,e,tp)
 	if #bg==0 then return false end
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
@@ -46,8 +44,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return false end
-	local ect=c29724053 and Duel.IsPlayerAffectedByEffect(tp,29724053) and c29724053[tp]
-	if ect and ect<2 then return false end
 	local bg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND,0,c,e,tp)
 	if #bg==0 then return false end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

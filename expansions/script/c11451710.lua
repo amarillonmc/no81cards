@@ -90,7 +90,7 @@ function cm.pfilter(c,tc)
 	return c:IsFaceup() and ((tc:IsCode(11451538) and attr&0x30>0) or (tc:IsCode(11451539) and attr&0x3>0) or (tc:IsCode(11451540) and attr&0xc>0))
 end
 function cm.setfilter(c,tp)
-	return c:IsSSetable() and Duel.IsExistingMatchingCard(cm.pfilter,tp,LOCATION_MZONE,0,1,nil,c)
+	return c:IsSSetable() and Duel.IsExistingMatchingCard(cm.pfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c)
 end
 function cm.tgfilter(c,attr)
 	return c:IsAttribute(attr) and c:IsLevel(10) and c:IsRace(RACE_MACHINE) and c:IsAbleToGrave()

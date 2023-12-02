@@ -209,7 +209,7 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		if code>=11451901 and code<=11451905 then
+		if code>=11451900 and code<=11451905 then
 			e1:SetDescription(aux.Stringid(code,5))
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
 		end
