@@ -125,7 +125,7 @@ function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local hg=g:SelectSubGroup(tp,aux.dncheck,false,1,math.min(count1,count2))
 	for hc in aux.Next(hg) do
-		Duel.SpecialSummonStep(hg,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummonStep(hc,0,tp,tp,false,false,POS_FACEUP)
 	end
 	Duel.SpecialSummonComplete()
 end

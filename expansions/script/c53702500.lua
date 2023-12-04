@@ -2672,6 +2672,7 @@ function cm.AllEffectReset(c)
 end
 function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(0,53702700)>0 then return end
+	--Debug.Message(99)
 	Duel.RegisterFlagEffect(0,53702700,0,0,0)
 	local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,nil)
 	local reg=Card.RegisterEffect
@@ -4651,6 +4652,7 @@ function cm.AASTadjustop(otyp,ext)
 	--if not te then Debug.Message(e:GetLabel()) return else Debug.Message(555) return end
 	--if aux.GetValueType(te)~="Effect" then Debug.Message(aux.GetValueType(te)) return end
 	--Debug.Message(#te)
+	--Debug.Message(te:GetOwner():GetCode())
 	local c=te:GetHandler()
 	if not c:IsStatus(STATUS_CHAINING) then
 		local xe={c:IsHasEffect(53765099)}
@@ -6212,6 +6214,7 @@ ad_ht_zc=0
 function cm.HTAfactarget(e,te,tp)
 	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
 end
+AD_Given_Effect={}
 function cm.HTAmvop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.NOT(Card.IsStatus),tp,LOCATION_ONFIELD,0,nil,STATUS_CHAINING)
 	for c in aux.Next(g) do
@@ -6265,6 +6268,7 @@ function cm.HTAmvop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetProperty(pro|EFFECT_FLAG_UNCOPYABLE,pro2)
 				e1:SetReset(RESET_EVENT+0xff0000)
 				c:RegisterEffect(e1,true)
+				--table.insert(AD_Given_Effect,e1)
 				local pe={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
 				for _,v in pairs(pe) do
 					local val=v:GetValue()
@@ -7024,4 +7028,61 @@ function cm.GetCurrentPhase()
 	local ph=Duel.GetCurrentPhase()
 	if ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE then ph=PHASE_BATTLE end
 	return ph
+end
+function cm.Not_Destroyed_Count(c)
+	local flag=c:GetFlagEffectLabel(53766008) or 0
+	if flag<15 then
+		flag=flag+1
+		c:ResetFlagEffect(53766008)
+		c:RegisterFlagEffect(53766008,RESET_EVENT+0x1fc0000,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(53766008,flag))
+	end
+end
+function cm.Not_Destroyed_Check(c)
+	if Dimpthox_Not_Destroyed_Check then return end
+	Dimpthox_Not_Destroyed_Check=true
+	local ge1=Effect.GlobalEffect()
+	ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	ge1:SetCode(EVENT_ADJUST)
+	ge1:SetOperation(cm.DimpthoxDcheckop)
+	Duel.RegisterEffect(ge1,0)
+	local _Destroy=Duel.Destroy
+	Duel.Destroy=function(g,rs,...)
+		local ct=_Destroy(g,rs,...)
+		if rs&0x60~=0 then Group.__add(g,g):ForEach(cm.Not_Destroyed_Count) Duel.RaiseEvent(Group.__add(g,g):Filter(Card.IsLocation,nil,LOCATION_MZONE),EVENT_CUSTOM+53766016,Effect.GlobalEffect(),0,0,0,0) end
+		return ct
+	end
+end
+cm.ndc_0=nil
+cm.ndc_1=nil
+cm.ndc_2=0
+function cm.DimpthoxDcheckop(e,tp,eg,ep,ev,re,r,rp)
+	if (Duel.GetCurrentPhase()~=PHASE_DAMAGE and Duel.GetCurrentPhase()~=PHASE_DAMAGE_CAL) or Duel.GetFlagEffect(0,53766098)>0 then return end
+	cm.ndc_0=Duel.GetAttacker()
+	cm.ndc_1=Duel.GetAttackTarget()
+	if not cm.ndc_0 or not cm.ndc_1 then return end
+	local at,bt=cm.ndc_0,cm.ndc_1
+	if Duel.IsDamageCalculated() then
+		if cm.ndc_2~=3 then
+			local g=Group.CreateGroup()
+			if cm.ndc_2~=0 then cm.Not_Destroyed_Count(at) g:AddCard(at) end
+			if cm.ndc_2~=1 then cm.Not_Destroyed_Count(bt) g:AddCard(bt) end
+			Duel.RaiseEvent(g:Filter(aux.NOT(Card.IsStatus),nil,STATUS_BATTLE_RESULT),EVENT_CUSTOM+53766016,Effect.GlobalEffect(),0,0,0,0)
+		end
+		Duel.RegisterFlagEffect(0,53766098,RESET_PHASE+PHASE_DAMAGE,0,1)
+	else
+		local atk=at:GetAttack()
+		local le={at:IsHasEffect(EFFECT_DEFENSE_ATTACK)}
+		local val=0
+		for _,v in pairs(le) do
+			val=v:GetValue()
+			if aux.GetValueType(val)=="function" then val=val(e) end
+		end
+		if val==1 then atk=at:GetDefense() end
+		if bt:IsAttackPos() then
+			if atk>bt:GetAttack() then cm.ndc_2=0 elseif bt:GetAttack()>atk then cm.ndc_2=1 else cm.ndc_2=2 end
+		elseif atk>bt:GetDefense() then cm.ndc_2=0 else cm.ndc_2=3 end
+	end
+end
+function cm.GetFlagEffectLabel(c,code)
+	return c:GetFlagEffectLabel(code) or 0
 end

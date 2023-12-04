@@ -60,7 +60,7 @@ function cm.indfilter(e,c)
 	return cm.Maelstrom(c)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return aux.dsercon(e) and Duel.GetAttacker()==e:GetHandler() and Duel.GetBattledCount(tp)>=4
+	return aux.dsercon(e) and Duel.GetAttacker()==e:GetHandler() and Duel.GetBattledCount(tp)>3
 end
 function cm.spfilter(c,e,tp)
 	return cm.Maelstrom(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

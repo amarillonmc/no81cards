@@ -23,7 +23,7 @@ function c25800060.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c25800060.cfilter(c)
-	return c:IsFaceup() and ((c:IsSetCard(0x6211) and not c:IsCode(25800060)) or c:IsType(TYPE_FUSION))
+	return c:IsFaceup() and (c:IsSetCard(0x6211) or c:IsType(TYPE_FUSION))
 end
 function c25800060.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c25800060.cfilter,tp,LOCATION_MZONE,0,1,nil)

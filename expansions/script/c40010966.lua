@@ -47,7 +47,7 @@ function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	c:RegisterEffect(e3)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetBattledCount(tp)<1
+	return Duel.GetBattledCount(tp)<2
 end
 function cm.filter(c)
 	return cm.Maelstrom(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(m)

@@ -2,6 +2,7 @@
 local m=40010505
 local cm=_G["c"..m]
 cm.named_with_Skyform=1
+cm.named_with_Youthberk=1
 function cm.initial_effect(c)
 	aux.AddCodeList(c,40010501)
 	--xyz summon
@@ -48,7 +49,7 @@ function cm.cfliter(c)
 	return c:IsCode(40010501) and c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,40010501)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and aux.NegateAnyFilter(chkc) end

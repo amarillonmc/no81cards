@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local s,id,o=GetID()
 function s.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_SELF_TOGRAVE)
@@ -44,13 +46,9 @@ function s.initial_effect(c)
 	e5:SetOperation(s.desop)
 	c:RegisterEffect(e5)
 	s.self_destroy_effect=e5
+	SNNM.Not_Destroyed_Check(c)
 	if not s.global_check then
 		s.global_check=true
-		local ge1=Effect.GlobalEffect()
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_ADJUST)
-		ge1:SetOperation(s.checkop)
-		Duel.RegisterEffect(ge1,0)
 		local ge2=Effect.GlobalEffect()
 		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge2:SetCode(EVENT_DESTROYED)
@@ -61,39 +59,6 @@ function s.initial_effect(c)
 		ge3:SetCode(EVENT_CHAIN_SOLVED)
 		ge3:SetOperation(s.checkop2)
 		Duel.RegisterEffect(ge3,0)
-		s.Destroy=Duel.Destroy
-		Duel.Destroy=function(g,rs,...)
-			if rs&0x60~=0 then Group.__add(g,g):ForEach(Card.RegisterFlagEffect,id,RESET_EVENT+0x1fc0000,0,1) end
-			return s.Destroy(g,rs,...)
-		end
-	end
-end
-s[0]=nil
-s[1]=nil
-s[2]=0
-function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if (Duel.GetCurrentPhase()~=PHASE_DAMAGE and Duel.GetCurrentPhase()~=PHASE_DAMAGE_CAL) or Duel.GetFlagEffect(0,id)>0 then return end
-	s[0]=Duel.GetAttacker()
-	s[1]=Duel.GetAttackTarget()
-	if not s[0] or not s[1] then return end
-	local at,bt=s[0],s[1]
-	if Duel.IsDamageCalculated() then
-		Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_DAMAGE,0,1)
-		if s[2]==3 then return end
-		if s[2]~=0 then at:RegisterFlagEffect(id,RESET_EVENT+0x1fc0000,0,1) end
-		if s[2]~=1 then bt:RegisterFlagEffect(id,RESET_EVENT+0x1fc0000,0,1) end
-	else
-		local atk=at:GetAttack()
-		local le={at:IsHasEffect(EFFECT_DEFENSE_ATTACK)}
-		local val=0
-		for _,v in pairs(le) do
-			val=v:GetValue()
-			if aux.GetValueType(val)=="function" then val=val(e) end
-		end
-		if val==1 then atk=at:GetDefense() end
-		if bt:IsAttackPos() then
-			if atk>bt:GetAttack() then s[2]=0 elseif bt:GetAttack()>atk then s[2]=1 else s[2]=2 end
-		elseif atk>bt:GetDefense() then s[2]=0 else s[2]=3 end
 	end
 end
 function s.count(e,tp,eg,ep,ev,re,r,rp)

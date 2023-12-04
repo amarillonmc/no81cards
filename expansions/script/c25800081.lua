@@ -1,9 +1,9 @@
---铁血-埃姆登
+--铁血-
 local m=25800081
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xc212),aux.FilterBoolFunction(Card.IsFusionType,TYPE_MONSTER),false)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xc212),aux.FilterBoolFunction(Card.IsFusionType,TYPE_MONSTER),true)
 
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -20,8 +20,8 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,m)
-	e3:SetTarget(cm.thtg2)
-	e3:SetOperation(cm.thop2)
+	e3:SetTarget(cm.sptg)
+	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 
 end
@@ -38,25 +38,24 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
-		Duel.SendtoGrave(g,REASON_EFFECT)
-		Duel.BreakEffect()
-		Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
+		if Duel.SendtoGrave(g,REASON_EFFECT)~=0 and c:IsLocation(LOCATION_ONFIELD)then
+		Duel.SendtoGrave(c,REASON_EFFECT)
+		end
 	end
 end
 ---
-function cm.thfilter2(c,e,tp)
-	return c:GetReason()&(REASON_FUSION+REASON_MATERIAL)==(REASON_FUSION+REASON_MATERIAL) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function cm.spfilter2(c,e,tp)
+	return c:GetReason()&(REASON_FUSION+REASON_MATERIAL)==(REASON_FUSION+REASON_MATERIAL) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
 end
-function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.thfilter2(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(cm.thfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,cm.thfilter2,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return  Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and
+		Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) end  
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
-function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter2),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+		if g:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+			 Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)	 
+		end
 end

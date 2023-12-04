@@ -1,6 +1,7 @@
 --朱斯贝克·天坠黎骑
 local m=40010501
 local cm=_G["c"..m]
+cm.named_with_Youthberk=1
 function cm.Rebellionform(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Rebellionform
@@ -17,6 +18,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_XYZ_LEVEL)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	--e1:SetRange(LOCATION_MZONE)
 	e1:SetValue(cm.xyzlv)
 	c:RegisterEffect(e1) 

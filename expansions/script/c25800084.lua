@@ -1,7 +1,7 @@
 --萨拉托加·改
 function c25800084.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,25800022,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6211),1,false,false)
+	aux.AddFusionProcCodeFun(c,25800022,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6211),1,true,true)
 	--destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(25800084,1))

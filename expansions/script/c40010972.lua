@@ -84,7 +84,7 @@ function cm.actcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function cm.actfilter(c,tp)
-	return cm.Maelstrom(c) and c:GetType()==0x20002
+	return cm.Maelstrom(c) and c:IsType(TYPE_CONTINUOUS)
 		and c:GetActivateEffect():IsActivatable(tp)
 end
 function cm.acttg(e,tp,eg,ep,ev,re,r,rp,chk)

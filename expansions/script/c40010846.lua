@@ -57,7 +57,7 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsPreviousLocation(LOCATION_OVERLAY)
 end
 function cm.thfilter2(c)
-	return (c:IsCode(40010499) or aux.IsCodeListed(c,40010499) and not c:IsCode( ))
+	return (c:IsCode(40010499) or aux.IsCodeListed(c,40010499) and not c:IsCode(m))
 		and c:IsAbleToHand()
 end
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)

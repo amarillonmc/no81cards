@@ -1,72 +1,64 @@
---舰娘-光辉·誓约
+--极巨金布里
 local m=25800089
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	--fusion material
+		--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCode3(c,25800037,25800010,25800156,true,true)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(aux.fuslimit)
-	c:RegisterEffect(e0)
-		--act limit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(0,1)
-	e1:SetValue(cm.limval)
-	c:RegisterEffect(e1)
-	--indes
+	aux.AddFusionProcCodeFunRep(c,25800047,aux.FilterBoolFunction(Card.IsFusionType,TYPE_MONSTER),1,3,true,true)
+	--destroy
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_ONFIELD,0)
-	e2:SetTarget(cm.indtg)
-	e2:SetValue(aux.indoval)
+	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCondition(cm.descon)
+	e2:SetTarget(cm.destg)
+	e2:SetOperation(cm.desop)
 	c:RegisterEffect(e2)
-	--to extra & Special summon
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(m,2))
-	e5:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_FIELD)
-	e5:SetCategory(CATEGORY_TOEXTRA+CATEGORY_SPECIAL_SUMMON)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e5:SetCountLimit(1)
-	e5:SetCode(EVENT_PHASE+PHASE_END)
-	e5:SetTarget(cm.sptg)
-	e5:SetOperation(cm.spop)
-	c:RegisterEffect(e5)
+	--spsummon success
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetCondition(cm.sumcon)
+	e3:SetOperation(cm.sucop)
+	c:RegisterEffect(e3)
 end
-function cm.limval(e,re,rp)
-	local rc=re:GetHandler()
-	return rc:IsLocation(LOCATION_MZONE) and re:IsActiveType(TYPE_MONSTER)
-		and rc:IsAttackPos() 
+function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
-function cm.indtg(e,c)
-	return c:IsSetCard(0x211) 
+function cm.desfilter(c)
+	return c:IsType(TYPE_FUSION) 
 end
-function cm.spfilter(c,e,tp)
-	return c:IsCode(25800037) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() end
+	local mat=e:GetHandler():GetMaterial()
+	local ct=mat:FilterCount(cm.desfilter,nil)+1
+	if chk==0 then return  Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)	
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.spfilter(chkc,e,tp) end
-	if chk==0 then return true end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,cm.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	Duel.Destroy(g,REASON_EFFECT)
 end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
+-----
+function cm.sumcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
+end
+function cm.sucop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsExtraDeckMonster() and Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_EFFECT)~=0
-		and c:IsLocation(LOCATION_EXTRA) and tc and tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	end
+	local mat=c:GetMaterial()
+	local ct=mat:FilterCount(cm.desfilter,nil)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(ct*2000)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e2)
 end
-
+------

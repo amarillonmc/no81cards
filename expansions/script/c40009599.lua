@@ -1,7 +1,6 @@
 --魔合之降灵术师
 local m=40009599
 local cm=_G["c"..m]
-cm.named_with_MagicCombine=1
 function cm.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
@@ -13,7 +12,6 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-	cm.MagicCombine_effect=e1
 	--negate
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))

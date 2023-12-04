@@ -2,6 +2,7 @@
 local m=40010503
 local cm=_G["c"..m]
 cm.named_with_Rebellionform=1
+cm.named_with_Youthberk=1
 function cm.initial_effect(c)
 	aux.AddCodeList(c,40010501)
 	--xyz summon

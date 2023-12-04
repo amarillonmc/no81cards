@@ -56,7 +56,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return aux.dsercon(e) and Duel.GetAttacker()==e:GetHandler() and (Duel.GetBattledCount(tp)==2 or Duel.GetBattledCount(tp)==3)
 end
 function cm.actfilter(c,tp)
-	return cm.Maelstrom(c) and c:GetType()==0x20002
+	return cm.Maelstrom(c) and c:IsType(TYPE_CONTINUOUS)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function cm.acttg(e,tp,eg,ep,ev,re,r,rp,chk)

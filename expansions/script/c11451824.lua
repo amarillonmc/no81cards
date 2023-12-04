@@ -6,15 +6,97 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
-	--negate
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DISABLE)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetOperation(cm.ngop)
+	local e2=e1:Clone()
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetRange(LOCATION_REMOVED)
+	e2:SetCost(cm.cost)
 	c:RegisterEffect(e2)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_ACTIVATE_COST)
+	e4:SetRange(LOCATION_REMOVED)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetTargetRange(1,0)
+	e4:SetTarget(cm.actarget)
+	e4:SetOperation(cm.costop)
+	c:RegisterEffect(e4)
+	--negate
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DISABLE)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetOperation(cm.ngop)
+	c:RegisterEffect(e3)
+	if not cm.global_check then
+		cm.global_check=true
+		cm.activate_sequence={}
+		local _GetActivateLocation=Effect.GetActivateLocation
+		local _GetActivateSequence=Effect.GetActivateSequence
+		function Effect.GetActivateLocation(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return LOCATION_FZONE
+			end
+			return _GetActivateLocation(e)
+		end
+		function Effect.GetActivateSequence(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return cm.activate_sequence[e]
+			end
+			return _GetActivateSequence(e)
+		end
+	end
+end
+function cm.rdfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local rg=Duel.GetMatchingGroup(cm.rdfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
+	if chk==0 then
+		return e:GetHandler():IsFaceup() and rg:GetClassCount(Card.GetAttribute)>=6
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=rg:SelectSubGroup(tp,aux.dabcheck,false,6,6)
+	Duel.SendtoDeck(g,nil,2,REASON_COST)
+end
+function cm.actarget(e,te,tp)
+	e:SetLabelObject(te)
+	return te:GetHandler()==e:GetHandler() and te:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local te=e:GetLabelObject()
+	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+	if fc then
+		Duel.SendtoGrave(fc,REASON_RULE)
+		Duel.BreakEffect()
+	end
+	Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,false)
+	cm.activate_sequence[te]=c:GetSequence()
+	c:CreateEffectRelation(te)
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+	e1:SetOperation(cm.rsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+	end
 end
 function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -26,12 +108,14 @@ function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
 	local off=1
 	local ops={}
 	local opval={}
-	if attr&ATTRIBUTE_WIND>0 then
+	local g1=Duel.GetMatchingGroup(cm.filter1,tp,0,LOCATION_ONFIELD,nil)
+	local g2=Duel.GetMatchingGroup(cm.filter2,tp,0,LOCATION_ONFIELD,nil)
+	if attr&ATTRIBUTE_WIND>0 and #g1>0 then
 		ops[off]=aux.Stringid(m,0)
 		opval[off-1]=1
 		off=off+1
 	end
-	if attr&ATTRIBUTE_EARTH>0 then
+	if attr&ATTRIBUTE_EARTH>0 and #g2>0 then
 		ops[off]=aux.Stringid(m,1)
 		opval[off-1]=2
 		off=off+1
@@ -46,6 +130,7 @@ function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
 		opval[off-1]=4
 		off=off+1
 	end
+	if off==1 then return end
 	ops[off]=aux.Stringid(m,4)
 	opval[off-1]=5
 	local op=Duel.SelectOption(tp,table.unpack(ops))

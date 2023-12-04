@@ -53,7 +53,7 @@ function s.initial_effect(c)
 		s.global_check=true
 		local ge0=Effect.CreateEffect(c)
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge0:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		ge0:SetCode(EVENT_ADJUST)
 		ge0:SetOperation(s.geop)
 		Duel.RegisterEffect(ge0,0)
 		local ge1=Effect.CreateEffect(c)
@@ -153,17 +153,32 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then Duel.SendtoHand(g,nil,REASON_EFFECT) end
 end
 function s.geop(e,tp,eg,ep,ev,re,r,rp)
-	--[[local tk=Duel.CreateToken(1,55144522)
+	--Debug.Message(1111)
+	if not s.Iyo_Check then
+	--[[Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+	local tk=Duel.CreateToken(1,55144522)
 	Duel.SendtoGrave(tk,REASON_EFFECT)
-	tk=Duel.CreateToken(1,403847)
+	tk=Duel.CreateToken(1,11429811)
 	Duel.SendtoGrave(tk,REASON_EFFECT)--]]
-	local g=Duel.GetMatchingGroup(function(c)return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:GetActivateEffect()end,0,0xff,0xff,nil)
+		s.Iyo_Check=true
+		s.OAe={}
+		s.CAe={}
+		s.GAe={}
+		s.AdAe={}
+		s.AcAe={}
+	end
+	--[[local wdc=true
+	while wdc do
+		wdc=false
+		for k,v in pairs(s.OAe) do if not v then table.remove(s.OAe,k) s.CAe[k]:Reset() s.GAe[k]:Reset() s.AdAe[k]:Reset() s.AcAe[k]:Reset() table.remove(s.CAe,k) table.remove(s.GAe,k) table.remove(s.AdAe,k) table.remove(s.AcAe,k) res=true break end end
+	end--]]
+	local g=Duel.GetMatchingGroup(function(c)return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:GetActivateEffect()end,0,LOCATION_GRAVE,LOCATION_GRAVE,nil)
 	local ct=0
 	for tc in aux.Next(g) do
 		local le={tc:GetActivateEffect()}
 		for i,v in pairs(le) do
-			--if tc:IsCode(53766016) then Debug.Message(i) end
-			if v:GetRange()&0x2~=0 then
+			if v:GetRange()&0x2~=0 and not SNNM.IsInTable(v,s.OAe) then
+			table.insert(s.OAe,v)
 			local ctype=tc:GetType()
 			local e1=v:Clone()
 			local cd=v:GetCode()
@@ -171,6 +186,7 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 			if cd==EVENT_FREE_CHAIN or cd==EVENT_SUMMON or cd==EVENT_FLIP_SUMMON or cd==EVENT_SPSUMMON or cd==EVENT_CHAINING then
 				if ctype&(TYPE_TRAP+TYPE_QUICKPLAY)~=0 then e1:SetType(EFFECT_TYPE_QUICK_O) else e1:SetType(EFFECT_TYPE_IGNITION) e1:SetCode(0) end
 				e1:SetProperty(pr1|EFFECT_FLAG_BOTH_SIDE,pr2)
+				table.insert(s.GAe,Effect.GlobalEffect())
 			else
 				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 				e1:SetCode(0x160000000+id+cd+ct*100000)
@@ -187,17 +203,11 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.RegisterEffect(ge1,0)
 				e1:SetProperty(pr1|EFFECT_FLAG_EVENT_PLAYER,pr2)
 				ct=ct+1
+				table.insert(s.GAe,ge1)
 			end
 			e1:SetRange(LOCATION_GRAVE)
 			tc:RegisterEffect(e1,true)
-			--[[local e1_1=Effect.CreateEffect(tc)
-			e1_1:SetType(EFFECT_TYPE_SINGLE)
-			e1_1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			e1_1:SetCode(53765098)
-			e1_1:SetRange(LOCATION_GRAVE+LOCATION_ONFIELD)
-			e1_1:SetLabel(ctype)
-			e1_1:SetLabelObject(e1)
-			tc:RegisterEffect(e1_1,true)-]]
+			table.insert(s.CAe,e1)
 			local e2=Effect.CreateEffect(tc)
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e2:SetCode(EVENT_ADJUST)
@@ -206,6 +216,7 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetLabelObject(e1)
 			e2:SetOperation(SNNM.AASTadjustop(ctype))
 			tc:RegisterEffect(e2,true)
+			table.insert(s.AdAe,e2)
 			local e3=Effect.CreateEffect(tc)
 			e3:SetType(EFFECT_TYPE_FIELD)
 			e3:SetCode(EFFECT_ACTIVATE_COST)
@@ -217,10 +228,10 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetCost(s.costchk(ctype))
 			e3:SetOperation(SNNM.AdvancedActOp(ctype,s.costop))
 			tc:RegisterEffect(e3,true)
+			table.insert(s.AcAe,e3)
 			end
 		end
 	end
-	e:Reset()
 end
 function s.chtg(tg)
 	return  function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

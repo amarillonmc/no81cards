@@ -3,7 +3,7 @@ local m=25800085
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,25800051,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6211),1,false,false)
+	aux.AddFusionProcCodeFun(c,25800051,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6211),1,true,true)
 
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -47,7 +47,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter2),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
 		if g:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-			 Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)						  
+			 Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)						 
 		end
 end
 ---2

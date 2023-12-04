@@ -39,7 +39,7 @@ function s.initial_effect(c)
 		s.global_check=true
 		local ge0=Effect.CreateEffect(c)
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge0:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		ge0:SetCode(EVENT_ADJUST)
 		ge0:SetOperation(s.geop)
 		Duel.RegisterEffect(ge0,0)
 		local ge1=Effect.CreateEffect(c)
@@ -142,15 +142,60 @@ function s.trop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(e:GetOwner(),EVENT_CUSTOM+id,re,r,rp,ep,ev)
 end
 function s.geop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(0,id,0,0,0,0)
-	Duel.RegisterFlagEffect(1,id,0,0,0,0)
-	local g=Duel.GetMatchingGroup(function(c)return c:IsType(TYPE_TRAP) and c:GetActivateEffect() and c:IsSetCard(0x5534)end,0,0xff,0xff,nil)
-	s.EvadeAe={}
+	if not s.Atori_Check then
+		s.Atori_Check=true
+		Duel.RegisterFlagEffect(0,id,0,0,0,0)
+		Duel.RegisterFlagEffect(1,id,0,0,0,0)
+		s.OAe={}
+		s.EvadeAe={}
+		s.AcAe={}
+		Atori_GetActivateEffect=Card.GetActivateEffect
+		Card.GetActivateEffect=function(ac)
+			local le={Atori_GetActivateEffect(ac)}
+			local res=true
+			while res do
+				res=false
+				for k,v in pairs(le) do if SNNM.IsInTable(v,s.EvadeAe) then table.remove(le,k) res=true break end end
+			end
+			return table.unpack(le)
+		end
+		Atori_CheckActivateEffect=Card.CheckActivateEffect
+		Card.CheckActivateEffect=function(ac,...)
+			local le={Atori_CheckActivateEffect(ac,...)}
+			local res=true
+			while res do
+				res=false
+				for k,v in pairs(le) do if SNNM.IsInTable(v,s.EvadeAe) then table.remove(le,k) res=true break end end
+			end
+			return table.unpack(le)
+		end
+	end
+	--[[local wdc=true
+	while wdc do
+		wdc=false
+		for k,v in pairs(s.OAe) do
+			if not v then
+				local re1=s.EvadeAe[k]
+				local re2=s.AcAe[k]
+				table.remove(s.OAe,k)
+				table.remove(s.EvadeAe,k)
+				table.remove(s.AcAe,k)
+				re1:Reset()
+				re2:Reset()
+				res=true
+				break
+			end
+		end
+	end--]]
+	local g=Duel.GetMatchingGroup(function(c)return c:IsType(TYPE_TRAP) and c:GetActivateEffect() and c:IsSetCard(0x5534)end,0,LOCATION_DECK,LOCATION_DECK,nil)
 	for tc in aux.Next(g) do
 		local le={tc:GetActivateEffect()}
 		--if ADIMI_GetActivateEffect then le={ADIMI_GetActivateEffect(tc)} end
 		for i,v in pairs(le) do
 			--if tc:IsCode(53766012) then Debug.Message(i) end
+			if not SNNM.IsInTable(v,s.OAe) then
+--Debug.Message(v:GetFieldID())
+			table.insert(s.OAe,v)
 			local e1=v:Clone()
 			e1:SetRange(LOCATION_DECK)
 			e1:SetHintTiming(TIMING_CHAIN_END)
@@ -161,29 +206,14 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetCost(s.costchk)
 			e2:SetOperation(s.costop)
 			tc:RegisterEffect(e2,true)
+			table.insert(s.AcAe,e2)
+			end
 		end
 	end
-	Atori_GetActivateEffect=Card.GetActivateEffect
-	Card.GetActivateEffect=function(ac)
-		local le={Atori_GetActivateEffect(ac)}
-		local res=true
-		while res do
-			res=false
-			for k,v in pairs(le) do if SNNM.IsInTable(v,s.EvadeAe) then table.remove(le,k) res=true break end end
-		end
-		return table.unpack(le)
-	end
-	Atori_CheckActivateEffect=Card.CheckActivateEffect
-	Card.CheckActivateEffect=function(ac,...)
-		local le={Atori_CheckActivateEffect(ac,...)}
-		local res=true
-		while res do
-			res=false
-			for k,v in pairs(le) do if SNNM.IsInTable(v,s.EvadeAe) then table.remove(le,k) res=true break end end
-		end
-		return table.unpack(le)
-	end
-	e:Reset()
+	--table.insert(s.OAe,Effect.GlobalEffect())
+--local oae=s.OAe
+--Debug.Message(#oae)
+	--e:Reset()
 end
 function s.cfilter(c,code)
 	return c:IsCode(code) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))

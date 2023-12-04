@@ -4,7 +4,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	SNNM.Excavated_Check(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_COUNTER)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_DRAW_PHASE+TIMING_STANDBY_PHASE+TIMINGS_CHECK_MONSTER+TIMING_MAIN_END+TIMING_BATTLE_PHASE+TIMING_END_PHASE)
@@ -31,22 +31,22 @@ end
 function s.desfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAttack(0)
 end
+function s.ctfilter(c)
+	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:GetBaseAttack()==0 and c:IsCanAddCounter(0x153f,1)
+end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetHandler():GetFlagEffect(53766099)>0 then e:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE) else e:SetProperty(0) end
-		return Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil)
+		return Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) and Duel.IsExistingMatchingCard(s.ctfilter,tp,LOCATION_ONFIELD,0,1,nil)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
-end
-function s.ctfilter(c)
-	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:GetBaseAttack()==0 and c:IsCanAddCounter(0x153f,1)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
 	if #g==0 or Duel.Destroy(g,REASON_EFFECT)==0 then return end
 	local cg=Duel.GetMatchingGroup(s.ctfilter,tp,LOCATION_ONFIELD,0,nil)
-	if #cg==0 or not Duel.SelectYesNo(tp,aux.Stringid(id,3)) then return end
+	if #cg==0 then return end
 	Duel.BreakEffect()
 	cg:ForEach(Card.AddCounter,0x153f,1)
 	for tc in aux.Next(cg) do

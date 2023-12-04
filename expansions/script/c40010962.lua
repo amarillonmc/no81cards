@@ -48,7 +48,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return aux.dsercon(e) and Duel.GetAttacker()==e:GetHandler() and Duel.GetBattledCount(tp)>=2
+	return aux.dsercon(e) and Duel.GetAttacker()==e:GetHandler() and Duel.GetBattledCount(tp)>1
 end
 function cm.filter(c,e,tp)
 	return cm.Maelstrom(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

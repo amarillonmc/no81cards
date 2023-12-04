@@ -1,7 +1,7 @@
 --皇家方舟改
 function c25800082.initial_effect(c)
 		c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,25800033,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6211),1,false,false)
+	aux.AddFusionProcCodeFun(c,25800033,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6211),1,true,true)
 	--act limit
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)

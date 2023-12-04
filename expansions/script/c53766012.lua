@@ -41,6 +41,7 @@ function s.initial_effect(c)
 	e3:SetCost(aux.bfgcost)
 	e3:SetOperation(s.spop)
 	c:RegisterEffect(e3)
+	SNNM.Not_Destroyed_Check(c)
 	if not s.global_check then
 		s.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -68,51 +69,13 @@ function s.initial_effect(c)
 		e4:SetTarget(s.actarget)
 		e4:SetOperation(SNNM.AdvancedActOp(0x4))
 		Duel.RegisterEffect(e4,0)
-		local ge5=Effect.GlobalEffect()
-		ge5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge5:SetCode(EVENT_ADJUST)
-		ge5:SetOperation(s.checkop)
-		Duel.RegisterEffect(ge5,0)
 		s.CRegisterEffect=Card.RegisterEffect
 		Card.RegisterEffect=function(rc,re,...)
 			if re and re:GetCode()==EVENT_CUSTOM+id and re:GetOwner() and re:GetOwner()==rc then table.insert(Dimpthox_Imitation,re) end
 			return s.CRegisterEffect(rc,re,...)
 		end
-		s.Destroy=Duel.Destroy
-		Duel.Destroy=function(g,rs,...)
-			if rs&0x60~=0 then Group.__add(g,g):ForEach(Card.RegisterFlagEffect,id+66,RESET_EVENT+0x1fc0000,0,1) end
-			return s.Destroy(g,rs,...)
-		end
 	end
 	SNNM.ActivatedAsSpellorTrapCheck(c)
-end
-s[0]=nil
-s[1]=nil
-s[2]=0
-function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if (Duel.GetCurrentPhase()~=PHASE_DAMAGE and Duel.GetCurrentPhase()~=PHASE_DAMAGE_CAL) or Duel.GetFlagEffect(0,id)>0 then return end
-	s[0]=Duel.GetAttacker()
-	s[1]=Duel.GetAttackTarget()
-	if not s[0] or not s[1] then return end
-	local at,bt=s[0],s[1]
-	if Duel.IsDamageCalculated() then
-		Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_DAMAGE,0,1)
-		if s[2]==3 then return end
-		if s[2]~=0 then at:RegisterFlagEffect(id+66,RESET_EVENT+0x1fc0000,0,1) end
-		if s[2]~=1 then bt:RegisterFlagEffect(id+66,RESET_EVENT+0x1fc0000,0,1) end
-	else
-		local atk=at:GetAttack()
-		local le={at:IsHasEffect(EFFECT_DEFENSE_ATTACK)}
-		local val=0
-		for _,v in pairs(le) do
-			val=v:GetValue()
-			if aux.GetValueType(val)=="function" then val=val(e) end
-		end
-		if val==1 then atk=at:GetDefense() end
-		if bt:IsAttackPos() then
-			if atk>bt:GetAttack() then s[2]=0 elseif bt:GetAttack()>atk then s[2]=1 else s[2]=2 end
-		elseif atk>bt:GetDefense() then s[2]=0 else s[2]=3 end
-	end
 end
 function s.actarget(e,te,tp)
 	e:SetLabelObject(te)
@@ -242,8 +205,8 @@ end
 function s.efilter(e,ct)
 	local te=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT)
 	local tc=te:GetHandler()
-	return tc:GetOriginalType()&TYPE_MONSTER~=0 and tc:GetFlagEffect(id+66)>0
+	return tc:GetOriginalType()&TYPE_MONSTER~=0 and tc:GetFlagEffect(53766008)>0
 end
 function s.indtg(e,c)
-	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:GetFlagEffect(id+66)>0
+	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:GetFlagEffect(53766008)>0
 end
