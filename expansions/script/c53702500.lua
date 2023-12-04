@@ -7031,7 +7031,7 @@ function cm.GetCurrentPhase()
 end
 function cm.Not_Destroyed_Count(c)
 	local flag=c:GetFlagEffectLabel(53766008) or 0
-	if flag<15 then
+	if flag<15 and c:IsLocation(LOCATION_ONFIELD) then
 		flag=flag+1
 		c:ResetFlagEffect(53766008)
 		c:RegisterFlagEffect(53766008,RESET_EVENT+0x1fc0000,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(53766008,flag))

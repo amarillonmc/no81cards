@@ -46,7 +46,7 @@ function cm.atkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xe08)
 end
 function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(cm.atkfilter,tp,LOCATION_EXTRA,0,nil)*-200
+	return Duel.GetMatchingGroupCount(cm.atkfilter,e:GetHandlerPlayer(),LOCATION_EXTRA,0,nil)*-200
 end
 function cm.penfilter(c)
 	return c:IsCode(13090003)

@@ -57,7 +57,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetHandler():IsRace(RACE_MACHINE)
+	return re and re:GetHandler():IsRace(RACE_MACHINE) and re:GetHandler():IsType(TYPE_MONSTER)
 end
 function cm.rmfilter(c)
 	return c:IsAbleToRemove() and c:IsType(TYPE_MONSTER)

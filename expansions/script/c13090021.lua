@@ -56,7 +56,7 @@ function s.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xe08) 
 end
 function s.con(e)
-return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_EXTRA,0,1,nil)
+return Duel.IsExistingMatchingCard(s.cfilter,e:GetHandlerPlayer(),LOCATION_EXTRA,0,1,nil)
 end
 function s.disfilter(c)
 	return aux.NegateAnyFilter and c:IsFaceup()

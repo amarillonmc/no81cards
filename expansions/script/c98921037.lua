@@ -1,5 +1,6 @@
 --彼岸的囚徒 教皇尼古拉
 function c98921037.initial_effect(c)
+	c:SetSPSummonOnce(98921037)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--pendulum set

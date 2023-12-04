@@ -53,7 +53,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.tfcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetHandler():IsRace(RACE_MACHINE)
+	return re and re:GetHandler():IsRace(RACE_MACHINE) and re:GetHandler():IsType(TYPE_MONSTER)
 end
 function cm.tffilter(c,tp)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_FIELD) and aux.IsCodeListed(c,15005130) and c:IsType(TYPE_CONTINUOUS)
