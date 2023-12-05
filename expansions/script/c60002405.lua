@@ -25,21 +25,25 @@ function cm.initial_effect(c)
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	--local tp=e:GetHandlerPlayer()
 	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
 end
-function cm.filter(c,e,tp,s)
+function cm.filter(c,tp)
 	local mg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,TYPE_MONSTER)
 	return c:IsSynchroSummonable(nil,mg)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local num=Duel.GetFlagEffect(tp,m)
+	local tp=e:GetHandlerPlayer()
+	local num=Duel.GetFlagEffect(0,m)
 	local g=Duel.GetDecktopGroup(tp,num)
-	local result=g:FilterCount(Card.IsAbleToHand,nil)
-	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil) and g:GetCount()>=num and result>0 and Duel.GetMZoneCount(tp)>0
+	--Debug.Message(tp)
+	--Debug.Message(g:IsExists(Card.IsAbleToHand,1,nil))
+	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,tp) and g:GetCount()>=num and g:IsExists(Card.IsAbleToHand,1,nil) and Duel.GetMZoneCount(tp)>0
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local num=Duel.GetFlagEffect(tp,m)
+	local tp=e:GetHandlerPlayer()
+	local num=Duel.GetFlagEffect(0,m)
 	if Duel.GetMZoneCount(tp)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		Duel.ConfirmDecktop(tp,num)
 		local g=Duel.GetDecktopGroup(tp,num):Filter(Card.IsSetCard,nil,0x62a)
@@ -67,5 +71,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.bkop(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
 	Duel.SendtoHand(e:GetHandler(),tp,REASON_EFFECT)
 end
