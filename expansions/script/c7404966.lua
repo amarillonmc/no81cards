@@ -62,7 +62,7 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	if not s.globle_check[tp] then
 		s.globle_check[tp]=true
 		--setcard mentioned
-		local g=Duel.GetMatchingGroup(aux.NOT(Card.IsCode),0,0xff,0,nil,id)
+		local g=Duel.GetMatchingGroup(aux.NOT(Card.IsCode),tp,0xff,0,nil,id)
 		cregister=Card.RegisterEffect
 		csetcard=Card.IsSetCard
 		disexistingtarget=Duel.IsExistingTarget
@@ -261,110 +261,110 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.change_card_function(table)
 	local i=1
-	Card.IsAbleToChangeControler=table[i]	i=i+1
-	Card.IsAbleToDeck=table[i]	i=i+1
+	Card.IsAbleToChangeControler=table[i]   i=i+1
+	Card.IsAbleToDeck=table[i]  i=i+1
 	Card.IsAbleToDeckAsCost=table[i]	i=i+1
-	Card.IsAbleToDeckOrExtraAsCost=table[i]	i=i+1
-	Card.IsAbleToDecreaseAttackAsCost=table[i]	i=i+1
-	Card.IsAbleToDecreaseDefenseAsCost=table[i]	i=i+1
-	Card.IsAbleToExtra=table[i]	i=i+1
-	Card.IsAbleToExtraAsCost=table[i]	i=i+1
-	Card.IsAbleToGrave=table[i]	i=i+1
-	Card.IsAbleToGraveAsCost=table[i]	i=i+1
-	Card.IsAbleToHand=table[i]	i=i+1
+	Card.IsAbleToDeckOrExtraAsCost=table[i] i=i+1
+	Card.IsAbleToDecreaseAttackAsCost=table[i]  i=i+1
+	Card.IsAbleToDecreaseDefenseAsCost=table[i] i=i+1
+	Card.IsAbleToExtra=table[i] i=i+1
+	Card.IsAbleToExtraAsCost=table[i]   i=i+1
+	Card.IsAbleToGrave=table[i] i=i+1
+	Card.IsAbleToGraveAsCost=table[i]   i=i+1
+	Card.IsAbleToHand=table[i]  i=i+1
 	Card.IsAbleToHandAsCost=table[i]	i=i+1
 	Card.IsAbleToRemove=table[i]	i=i+1
-	Card.IsAbleToRemoveAsCost=table[i]	i=i+1
-	Card.IsAllColumn=table[i]	i=i+1
-	Card.IsAttack=table[i]	i=i+1
-	Card.IsAttackable=table[i]	i=i+1
-	Card.IsAttackAbove=table[i]	i=i+1
-	Card.IsAttackAbove=table[i]	i=i+1
-	Card.IsAttackBelow=table[i]	i=i+1
-	Card.IsAttackPos=table[i]	i=i+1
-	Card.IsAttribute=table[i]	i=i+1
-	Card.IsCanAddCounter=table[i]	i=i+1
-	Card.IsCanBeBattleTarget=table[i]	i=i+1
-	Card.IsCanBeEffectTarget=table[i]	i=i+1
-	Card.IsCanBeFusionMaterial=table[i]	i=i+1
-	Card.IsCanBeLinkMaterial=table[i]	i=i+1
-	Card.IsCanBeRitualMaterial=table[i]	i=i+1
+	Card.IsAbleToRemoveAsCost=table[i]  i=i+1
+	Card.IsAllColumn=table[i]   i=i+1
+	Card.IsAttack=table[i]  i=i+1
+	Card.IsAttackable=table[i]  i=i+1
+	Card.IsAttackAbove=table[i] i=i+1
+	Card.IsAttackAbove=table[i] i=i+1
+	Card.IsAttackBelow=table[i] i=i+1
+	Card.IsAttackPos=table[i]   i=i+1
+	Card.IsAttribute=table[i]   i=i+1
+	Card.IsCanAddCounter=table[i]   i=i+1
+	Card.IsCanBeBattleTarget=table[i]   i=i+1
+	Card.IsCanBeEffectTarget=table[i]   i=i+1
+	Card.IsCanBeFusionMaterial=table[i] i=i+1
+	Card.IsCanBeLinkMaterial=table[i]   i=i+1
+	Card.IsCanBeRitualMaterial=table[i] i=i+1
 	Card.IsCanBeSpecialSummoned=table[i]	i=i+1
 	Card.IsCanBeSynchroMaterial=table[i]	i=i+1
 	Card.IsCanBeXyzMaterial=table[i]	i=i+1
-	Card.IsCanChangePosition=table[i]	i=i+1
+	Card.IsCanChangePosition=table[i]   i=i+1
 	Card.IsCanRemoveCounter=table[i]	i=i+1
-	Card.IsCanTurnSet=table[i]	i=i+1
-	Card.IsChainAttackable=table[i]	i=i+1
+	Card.IsCanTurnSet=table[i]  i=i+1
+	Card.IsChainAttackable=table[i] i=i+1
 	Card.IsCode=table[i]	i=i+1
-	Card.IsControler=table[i]	i=i+1
-	Card.IsControlerCanBeChanged=table[i]	i=i+1
-	Card.IsDefense=table[i]	i=i+1
+	Card.IsControler=table[i]   i=i+1
+	Card.IsControlerCanBeChanged=table[i]   i=i+1
+	Card.IsDefense=table[i] i=i+1
 	Card.IsDefenseAbove=table[i]	i=i+1
 	Card.IsDefenseBelow=table[i]	i=i+1
-	Card.IsDefensePos=table[i]	i=i+1
+	Card.IsDefensePos=table[i]  i=i+1
 	Card.IsDestructable=table[i]	i=i+1
-	Card.IsDirectAttacked=table[i]	i=i+1
+	Card.IsDirectAttacked=table[i]  i=i+1
 	Card.IsDisabled=table[i]	i=i+1
-	Card.IsDiscardable=table[i]	i=i+1
-	Card.IsDualState=table[i]	i=i+1
-	Card.IsExtraLinkState=table[i]	i=i+1
+	Card.IsDiscardable=table[i] i=i+1
+	Card.IsDualState=table[i]   i=i+1
+	Card.IsExtraLinkState=table[i]  i=i+1
 	Card.IsFacedown=table[i]	i=i+1
-	Card.IsFaceup=table[i]	i=i+1
-	Card.IsForbidden=table[i]	i=i+1
-	Card.IsFusionAttribute=table[i]	i=i+1
-	Card.IsFusionCode=table[i]	i=i+1
-	Card.IsFusionSetCard=table[i]	i=i+1
+	Card.IsFaceup=table[i]  i=i+1
+	Card.IsForbidden=table[i]   i=i+1
+	Card.IsFusionAttribute=table[i] i=i+1
+	Card.IsFusionCode=table[i]  i=i+1
+	Card.IsFusionSetCard=table[i]   i=i+1
 	Card.IsFusionSummonableCard=table[i]	i=i+1
-	Card.IsFusionType=table[i]	i=i+1
-	Card.IsHasCardTarget=table[i]	i=i+1
-	Card.IsImmuneToEffect=table[i]	i=i+1
-	Card.IsLevel=table[i]	i=i+1
-	Card.IsLevelAbove=table[i]	i=i+1
-	Card.IsLevelBelow=table[i]	i=i+1
+	Card.IsFusionType=table[i]  i=i+1
+	Card.IsHasCardTarget=table[i]   i=i+1
+	Card.IsImmuneToEffect=table[i]  i=i+1
+	Card.IsLevel=table[i]   i=i+1
+	Card.IsLevelAbove=table[i]  i=i+1
+	Card.IsLevelBelow=table[i]  i=i+1
 	Card.IsLink=table[i]	i=i+1
-	Card.IsLinkAbove=table[i]	i=i+1
-	Card.IsLinkAttribute=table[i]	i=i+1
-	Card.IsLinkBelow=table[i]	i=i+1
+	Card.IsLinkAbove=table[i]   i=i+1
+	Card.IsLinkAttribute=table[i]   i=i+1
+	Card.IsLinkBelow=table[i]   i=i+1
 	Card.IsLinkCode=table[i]	i=i+1
-	Card.IsLinkMarker=table[i]	i=i+1
+	Card.IsLinkMarker=table[i]  i=i+1
 	Card.IsLinkRace=table[i]	i=i+1
-	Card.IsLinkSetCard=table[i]	i=i+1
-	Card.IsLinkState=table[i]	i=i+1
+	Card.IsLinkSetCard=table[i] i=i+1
+	Card.IsLinkState=table[i]   i=i+1
 	Card.IsLinkType=table[i]	i=i+1
 	Card.IsLocation=table[i]	i=i+1
 	Card.IsMSetable=table[i]	i=i+1
 	Card.IsNotTuner=table[i]	i=i+1
-	Card.IsOnField=table[i]	i=i+1
+	Card.IsOnField=table[i] i=i+1
 	Card.IsPosition=table[i]	i=i+1
 	Card.IsPreviousLocation=table[i]	i=i+1
 	Card.IsPreviousPosition=table[i]	i=i+1
-	Card.IsPreviousSetCard=table[i]	i=i+1
-	Card.IsPublic=table[i]	i=i+1
+	Card.IsPreviousSetCard=table[i] i=i+1
+	Card.IsPublic=table[i]  i=i+1
 	Card.IsRace=table[i]	i=i+1
 	Card.IsRank=table[i]	i=i+1
-	Card.IsRankAbove=table[i]	i=i+1
-	Card.IsRankBelow=table[i]	i=i+1
-	Card.IsReason=table[i]	i=i+1
-	Card.IsRelateToBattle=table[i]	i=i+1
+	Card.IsRankAbove=table[i]   i=i+1
+	Card.IsRankBelow=table[i]   i=i+1
+	Card.IsReason=table[i]  i=i+1
+	Card.IsRelateToBattle=table[i]  i=i+1
 	Card.IsRelateToCard=table[i]	i=i+1
-	Card.IsRelateToChain=table[i]	i=i+1
-	Card.IsRelateToEffect=table[i]	i=i+1
-	Card.IsReleasable=table[i]	i=i+1
-	Card.IsReleasableByEffect=table[i]	i=i+1
-	Card.IsRitualType=table[i]	i=i+1
-	Card.IsSetCard=table[i]	i=i+1
-	Card.IsSpecialSummonable=table[i]	i=i+1
+	Card.IsRelateToChain=table[i]   i=i+1
+	Card.IsRelateToEffect=table[i]  i=i+1
+	Card.IsReleasable=table[i]  i=i+1
+	Card.IsReleasableByEffect=table[i]  i=i+1
+	Card.IsRitualType=table[i]  i=i+1
+	Card.IsSetCard=table[i] i=i+1
+	Card.IsSpecialSummonable=table[i]   i=i+1
 	Card.IsSSetable=table[i]	i=i+1
-	Card.IsStatus=table[i]	i=i+1
-	Card.IsSummonable=table[i]	i=i+1
-	Card.IsSummonableCard=table[i]	i=i+1
-	Card.IsSummonType=table[i]	i=i+1
-	Card.IsSynchroSummonable=table[i]	i=i+1
-	Card.IsSynchroType=table[i]	i=i+1
+	Card.IsStatus=table[i]  i=i+1
+	Card.IsSummonable=table[i]  i=i+1
+	Card.IsSummonableCard=table[i]  i=i+1
+	Card.IsSummonType=table[i]  i=i+1
+	Card.IsSynchroSummonable=table[i]   i=i+1
+	Card.IsSynchroType=table[i] i=i+1
 	Card.IsType=table[i]	i=i+1
 	Card.IsXyzLevel=table[i]	i=i+1
-	Card.IsXyzSummonable=table[i]	i=i+1
-	Card.IsXyzSummonableByRose=table[i]	i=i+1
-	Card.IsXyzType=table[i]	i=i+1
+	Card.IsXyzSummonable=table[i]   i=i+1
+	Card.IsXyzSummonableByRose=table[i] i=i+1
+	Card.IsXyzType=table[i] i=i+1
 end

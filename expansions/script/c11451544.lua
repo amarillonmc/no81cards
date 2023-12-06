@@ -90,29 +90,47 @@ function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil,tp)
 end
 function cm.adtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and (Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)>0 or Duel.IsExistingMatchingCard(cm.spfilter2,tp,0,LOCATION_GRAVE,1,nil,e,1-tp)) and Duel.IsPlayerCanSpecialSummon(1-tp) end
+	local att=ATTRIBUTE_ALL
+	if Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)==0 then
+		att=0
+		for i=1,7 do
+			if Duel.IsExistingMatchingCard(cm.spfilter2,tp,0,LOCATION_GRAVE,1,nil,e,1-tp,1<<i) then att=att|(1<<i) end
+		end
+	end
+	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and att>0 and Duel.IsPlayerCanSpecialSummon(1-tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTRIBUTE)
-	local aat=Duel.AnnounceAttribute(tp,1,ATTRIBUTE_ALL)
+	local aat=Duel.AnnounceAttribute(tp,1,att)
 	e:SetLabel(aat)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,1-tp,LOCATION_HAND)
 end
-function cm.spfilter2(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function cm.spfilter2(c,e,tp,att)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	e1:SetValue(att)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+	c:RegisterEffect(e1)
+	--Duel.AdjustAll()
+	local res=c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	e1:Reset()
+	return res
 end
 function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local att=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
-	local g=Duel.GetMatchingGroup(cm.spfilter2,tp,0,LOCATION_HAND,nil,e,1-tp)
-	if #g==0 then g=Duel.GetMatchingGroup(cm.spfilter2,tp,0,LOCATION_GRAVE,nil,e,1-tp) end
+	local g=Duel.GetMatchingGroup(cm.spfilter2,tp,0,LOCATION_HAND,nil,e,1-tp,att)
+	if #g==0 then g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter2),tp,0,LOCATION_GRAVE,nil,e,1-tp,att) end
 	local sg=g:Select(1-tp,1,1,nil)
-	if #sg>0 and Duel.SpecialSummon(sg,0,1-tp,1-tp,false,false,POS_FACEUP)>0 then
+	if #sg>0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
 		e1:SetValue(att)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 		sg:GetFirst():RegisterEffect(e1)
+		--Duel.AdjustAll()
+		Duel.SpecialSummon(sg,0,1-tp,1-tp,false,false,POS_FACEUP)
 	end
 end
 function cm.filter2(c,re,tp,r)

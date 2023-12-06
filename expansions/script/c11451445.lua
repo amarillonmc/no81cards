@@ -1,6 +1,5 @@
 --投身革命的战士
-local m=11451445
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,99518961)
 	--spsummon procedure
@@ -48,7 +47,16 @@ function cm.effectfilter(e,ct)
 	return aux.IsCodeListed(te:GetHandler(),99518961)
 end
 function cm.filter(c,e,tp)
-	return c:IsLevelBelow(3) and c:IsType(TYPE_NORMAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	if not (c:IsLevelBelow(3) and c:IsType(TYPE_NORMAL)) then return false end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CHANGE_RACE)
+	e1:SetValue(RACE_WARRIOR)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+	c:RegisterEffect(e1)
+	local res=c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	e1:Reset()
+	return res
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
@@ -64,13 +72,12 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CHANGE_RACE)
-			e1:SetValue(RACE_WARRIOR)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-		end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_RACE)
+		e1:SetValue(RACE_WARRIOR)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+		tc:RegisterEffect(e1)
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

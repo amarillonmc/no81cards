@@ -21,7 +21,6 @@ function cm.initial_effect(c)
 	e0:SetDescription(1165)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e0:SetCode(EVENT_PHASE+PHASE_BATTLE)
-	e0:SetCountLimit(1)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_GRAVE)
 	e0:SetCondition(cm.xyzcon)
@@ -162,9 +161,10 @@ function cm.xyzop2(e,tp,chk)
 	if chk==0 then return true end
 end
 function cm.xyzcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSpecialSummonable(SUMMON_TYPE_XYZ)
+	return e:GetHandler():IsSpecialSummonable(SUMMON_TYPE_XYZ) and e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1)
 	if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.SpecialSummonRule(tp,e:GetHandler(),SUMMON_TYPE_XYZ)
 	end
