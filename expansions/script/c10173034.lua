@@ -29,7 +29,7 @@ function c10173034.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c10173034.xyzcheck(g)
-	return g:GetClassCount(Card.GetOriginalLevel)==1
+	return g:GetClassCount(Card.GetOriginalLevel)==1 and g:IsExists(Card.IsLevelAbove,1,nil,1)
 end
 function c10173034.xmcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

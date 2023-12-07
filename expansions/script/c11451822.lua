@@ -27,7 +27,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	local mg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e,tp)
-	if chk==0 then return #mg>2 end
+	if chk==0 then return #mg>=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local sg1=mg:Select(tp,2,#mg,nil)
 	Duel.SetTargetCard(sg1)
@@ -49,7 +49,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e1:SetLabel(eid)
 	e1:SetLabelObject(e2)
-	e1:SetCondition(function(e) 
+	e1:SetCondition(function(e)
 						local eid=e:GetLabel()
 						local sg=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,nil,eid)
 						return #sg==ct
@@ -58,18 +58,22 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 					local eid=e:GetLabel()
 					local sg=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,nil,eid)
 					local res=sg:IsContains(c)
-					if res and Duel.GetFlagEffect(tp,m)>0 then
+					--[[if res and Duel.GetFlagEffect(tp,m)>0 then
 						local tab={e:GetLabelObject():GetLabel()}
 						for tc in aux.Next(sg) do table.insert(tab,tc:GetLevel()) end
 						e:GetLabelObject():SetLabel(table.unpack(tab))
-					end
+					end--]]
 					return res
 				end)
 	e1:SetValue(function(e,te)
 					local eid=e:GetLabel()
 					local res=te:IsActivated() and e:GetOwnerPlayer()~=te:GetOwnerPlayer()
+					local sg=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,nil,eid)
 					if res then
 						Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
+						local tab={}
+						for tc in aux.Next(sg) do table.insert(tab,tc:GetLevel()) end
+						e:GetLabelObject():SetLabel(table.unpack(tab))
 					end
 					return false
 				end)
