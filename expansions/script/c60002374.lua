@@ -61,7 +61,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local b1=false
 	local b2=false
 	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK,0,1,nil,68468459) then b1=true end
-	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,68468459)) then b2=true end
+	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,68468459) then b2=true end
 	local op=aux.SelectFromOptions(tp,
 	{b1,aux.Stringid(m,0)},
 	{b2,aux.Stringid(m,1)})

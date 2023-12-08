@@ -127,6 +127,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter1,tp,LOCATION_DECK,0,1,1,nil)
 	if #g>0 then
 		Duel.SendtoHand(g,tp,REASON_EFFECT)
+		 Duel.ConfirmCards(1-tp,g)
 	end
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
@@ -158,6 +159,7 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	local op=Duel.SelectOption(tp,table.unpack(ops))
 	if opval[op]==1 then
 		Duel.SendtoHand(g,tp,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	elseif opval[op]==2 then
 		Duel.SSet(tp,g)
 	end

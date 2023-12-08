@@ -100,7 +100,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --set rule
 function cm.costfilter(c)
-	return c:IsFaceup() and c:IsReleasable()
+	return c:IsReleasable()
 end
 function cm.cfilter1(c,g)
 	return c:IsSetCard(0xe08) and g:IsExists(Card.IsType,1,c,TYPE_SPELL)
