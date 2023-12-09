@@ -83,7 +83,8 @@ function c22348199.spop1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c22348199.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local ag=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	local g=ag:Filter(Card.IsType,nil,TYPE_MONSTER)
+	local tg=ag:Filter(Card.IsRelateToEffect,nil,re)
+	local g=tg:Filter(Card.IsType,nil,TYPE_MONSTER)
 	local gg=g:Filter(Card.IsAbleToHand,nil)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and g:GetCount()~=0 and Duel.SelectYesNo(tp,aux.Stringid(22348199,3)) then
