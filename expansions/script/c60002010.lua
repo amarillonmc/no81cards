@@ -83,7 +83,7 @@ function cm.cvop2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.filter(c)
+function cm.filter(c,e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
 end
 function cm.ofilter(c)
@@ -92,18 +92,25 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local t=Duel.GetFlagEffect(tp,60002009)
 	if Duel.GetTurnCount()+t>=2 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetTargetRange(LOCATION_MZONE,0)
-		e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x629))
-		e1:SetValue(cm.filter)
 		if Duel.GetCurrentPhase()==PHASE_MAIN1 then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_IMMUNE_EFFECT)
+			e1:SetTargetRange(LOCATION_MZONE,0)
+			e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x629))
+			e1:SetValue(cm.filter)
 			e1:SetReset(RESET_PHASE+PHASE_MAIN1)
 			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_MAIN1,0,1)
-		else
+		elseif Duel.GetCurrentPhase()==PHASE_MAIN2 then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_IMMUNE_EFFECT)
+			e1:SetTargetRange(LOCATION_MZONE,0)
+			e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x629))
+			e1:SetValue(cm.filter)
 			e1:SetReset(RESET_PHASE+PHASE_MAIN2)
 			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_MAIN2,0,1)
+		else   
 		end
 		Duel.RegisterEffect(e1,tp)
 	end

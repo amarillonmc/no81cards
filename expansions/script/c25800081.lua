@@ -34,6 +34,7 @@ function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler() 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	if g:GetCount()>0 then
@@ -56,6 +57,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter2),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 		if g:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-			 Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)	 
+			 Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)	
 		end
 end

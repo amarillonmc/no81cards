@@ -43,8 +43,9 @@ function cm.initial_effect(c)
 	
 end
 function c22348206.handcondition(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tp=e:GetHandler():GetControler()
-	return Duel.GetTurnPlayer()==tp
+	return Duel.GetTurnPlayer()==tp and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,c)
 end
 function c22348206.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

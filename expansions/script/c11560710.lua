@@ -149,8 +149,9 @@ end
 function c11560710.extg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
 end 
-function c11560710.exop(e,tp,eg,ep,ev,re,r,rp)  
-	local c=e:GetHandler() 
+function c11560710.exop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ChainAttack()
+	--[[local c=e:GetHandler() 
 	if c:IsRelateToEffect(e) then 
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
@@ -164,7 +165,7 @@ function c11560710.exop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetValue(1)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
 		c:RegisterEffect(e3)
-	end 
+	end--]]
 end 
 function c11560710.ovtg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler()) and e:GetHandler():GetFlagEffect(11560710)==0 end 
