@@ -7086,3 +7086,44 @@ end
 function cm.GetFlagEffectLabel(c,code)
 	return c:GetFlagEffectLabel(code) or 0
 end
+function cm.ATTSeries(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(53796175,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e1:SetCondition(cm.ATTSeriescondition)
+	e1:SetTarget(cm.ATTSeriestarget)
+	e1:SetOperation(cm.ATTSeriesoperation)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2)
+end
+function cm.ATTSeriescondition(e,tp,eg,ep,ev,re,r,rp)
+	if eg:GetCount()~=1 then return false end
+	local tc=eg:GetFirst()
+	if tc==e:GetHandler() or tc:IsFacedown() or tc:IsSummonPlayer(tp) then return false end
+	e:SetLabel(tc:GetAttribute())
+	return true
+end
+function cm.ATTSeriesfilter(c,e,tp,att)
+	return c:IsAttribute(att) and c:IsLevel(4) and c:IsRace(RACE_WYRM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.ATTSeriestarget(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.ATTSeriesfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp,e:GetLabel()) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
+end
+function cm.ATTSeriesoperation(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.ATTSeriesfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp,e:GetLabel())
+	if #g>0 then Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) end
+end
+function cm.ATTSerieslockcon(n,att)
+	return  function(e)
+				return Duel.IsExistingMatchingCard(function(c,att)return c:IsFaceup() and c:IsAttribute(att)end,math.abs(e:GetHandlerPlayer()-n),LOCATION_MZONE,0,1,nil,att)
+			end
+end

@@ -17,6 +17,7 @@ local e3=Effect.CreateEffect(c)
 	e3:SetRange(LOCATION_EXTRA)
 	e3:SetTargetRange(0,LOCATION_MZONE)
 	e3:SetTarget(aux.TargetBoolFunction(Card.IsFaceup))
+	e3:SetCondition(cm.con)
 	e3:SetValue(cm.atkval)
 	c:RegisterEffect(e3)
 local e1=Effect.CreateEffect(c)
@@ -27,6 +28,10 @@ local e1=Effect.CreateEffect(c)
 	e1:SetValue(cm.desrepval)
 	e1:SetOperation(cm.desrepop)
 	c:RegisterEffect(e1)
+end
+function cm.con(e,tp)
+	local c=e:GetHandler()
+	return Duel.IsExistingMatchingCard(cm.atkfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
 end
 function cm.repfilter(c,tp)
 	return c:IsControler(tp) and (c:IsLocation(LOCATION_EXTRA) or c:IsLocation(LOCATION_SZONE)) and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE) end
@@ -53,7 +58,7 @@ function cm.penfilter(c)
 end
 function cm.sccon(e,tp)
 	local c=e:GetHandler()
-	return (Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0xe08) end,tp,LOCATION_PZONE,0,1,c) or not Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,c)) and Duel.IsExistingMatchingCard(cm.penfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+	return (Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0xe08) end,e:GetHandlerPlayer(),LOCATION_PZONE,0,1,c) or not Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,c)) and Duel.IsExistingMatchingCard(cm.penfilter,e:GetHandlerPlayer(),LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)

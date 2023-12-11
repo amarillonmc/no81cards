@@ -34,16 +34,27 @@ function cm.filter3(c,e,tp,eg)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local sg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_GRAVE,0,nil,e,tp,eg)
+	local sg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_GRAVE,0,eg,e,tp,eg)
 	if chk==0 then
-		if #Group.__band(sg,eg)==0 and c~=sg:GetFirst() then return false end
+		--if cm[c]==2 then cm[c]=nil return false end
 		return sg:IsContains(c) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	end --and c==sg:GetFirst() end -- and Duel.GetFlagEffect(tp,m)==0 end
 	--Duel.HintSelection(Group.FromCards(c))
+	--Debug.Message(sg:IsContains(c))
+	if cm[c]~=1 then
+		if cm[c]==2 then cm[c]=nil return false end
+		sg:RemoveCard(c)
+		local desc=aux.Stringid(m,0)
+		if eg:IsContains(c) then desc=aux.Stringid(m,1) end
+		if not Duel.SelectYesNo(tp,desc) then
+			local dg=(not eg:IsContains(c) and Group.__sub(sg,eg)) or Group.__band(sg,eg)
+			for rc in aux.Next(dg) do cm[rc]=2 end
+			return false
+		end
+	end
+	cm[c]=nil
 	local g=eg:Filter(cm.filter,c,e,tp)
-	local desc=aux.Stringid(m,0)
-	if eg:IsContains(c) then desc=aux.Stringid(m,1) end
-	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,desc) then
+	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then --and Duel.SelectYesNo(tp,desc) then
 		--Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		if #g>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -58,16 +69,17 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1)
 		end
+		Duel.AdjustAll()
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		return true
 	else return false end
 end
 function cm.accon(e)
 	cm[0]=false
-	return true
+	return Duel.GetCurrentChain()==0
 end
 function cm.acfilter(c,tp)
-	return c:IsSetCard(0xc976) and c:IsAbleToGraveAsCost() and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,c:GetCode()) --and Duel.GetFlagEffect(tp,m+c:GetCode()+0xffffff)==0
+	return c:IsSetCard(0xc976) and c:IsAbleToGraveAsCost() and Duel.GetFlagEffect(tp,m+c:GetCode()+0xffffff)==0 --and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,c:GetCode())
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	if cm[0] then return end
@@ -76,7 +88,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.acfilter,tp,LOCATION_DECK,0,0,1,nil,tp)
 	if #g>0 then
-		--Duel.RegisterFlagEffect(tp,m+g:GetFirst():GetCode()+0xffffff,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(tp,m+g:GetFirst():GetCode()+0xffffff,RESET_PHASE+PHASE_END,0,1)
 		Duel.SendtoGrave(g,REASON_COST)
 	else
 		local cg=Duel.GetMatchingGroup(cm.cfilterx,tp,LOCATION_MZONE,0,nil)

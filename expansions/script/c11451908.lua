@@ -108,12 +108,12 @@ function cm.tdfilter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.IsPlayerCanDraw(tp,1)
+		return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.IsPlayerCanDraw(tp,1)
 	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g1=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND,0,nil)
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 	local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.tdfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 	local ct=math.min(#g1,#g2)
 	if ct>0 then
@@ -136,7 +136,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			sg1:RemoveCard(tc)
 			tg=sg1:GetMinGroup(Card.GetSequence)
 		end
-		Duel.Draw(tp,ct2,REASON_EFFECT)
+		Duel.Draw(tp,#sg2,REASON_EFFECT)
 	end
 	if c:IsRelateToEffect(e) then
 		Duel.BreakEffect()
@@ -166,6 +166,7 @@ function cm.cfilter(c,tp)
 	return (c:IsType(TYPE_FIELD) or ((c:IsType(TYPE_CONTINUOUS) or c:IsHasEffect(EFFECT_REMAIN_FIELD)) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0)) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function cm.costcon(e,tp,eg,ep,ev,re,r,rp)
+	cm[0]=false
 	return Duel.GetTurnCount()==e:GetLabel()+1
 end
 function cm.costchk(e,te_or_c,tp)
@@ -173,6 +174,9 @@ function cm.costchk(e,te_or_c,tp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil,tp)
 end
 function cm.costop1(e,tp,eg,ep,ev,re,r,rp)
+	e:Reset()
+	if cm[0] then return end
+	cm[0]=true
 	Duel.Hint(HINT_CARD,0,m)
 	local sg=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
 	if sg:GetFirst():IsType(TYPE_FIELD) then
@@ -185,5 +189,4 @@ function cm.costop1(e,tp,eg,ep,ev,re,r,rp)
 	else
 		Duel.MoveToField(sg:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	end
-	e:Reset()
 end

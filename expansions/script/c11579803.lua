@@ -1,55 +1,65 @@
---衔尾蛇
+--空泡碧水弹丸龙
 function c11579803.initial_effect(c)
-	--link summon
-	aux.AddLinkProcedure(c,nil,2,2,c11579803.lcheck)
-	c:EnableReviveLimit() 
-	--draw 
+	c:EnableReviveLimit()
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_DRAGON),2,2)   
+	--des dr td 
 	local e1=Effect.CreateEffect(c) 
-	e1:SetCategory(CATEGORY_DRAW+CATEGORY_TOGRAVE+CATEGORY_REMOVE+CATEGORY_TODECK) 
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN) 
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,11579803)  
-	e1:SetTarget(c11579803.xxtg) 
-	e1:SetOperation(c11579803.xxop) 
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW+CATEGORY_TODECK)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)  
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS) 
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET) 
+	e1:SetCountLimit(1,11579803) 
+	e1:SetTarget(c11579803.ddttg) 
+	e1:SetOperation(c11579803.ddtop) 
 	c:RegisterEffect(e1) 
+	--indes
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_BE_MATERIAL)
+	e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
+	e2:SetCondition(c11579803.indcon)
+	e2:SetOperation(c11579803.indop)
+	c:RegisterEffect(e2)
 end
-function c11579803.lcheck(g,lc)
-	return g:GetClassCount(Card.GetLinkRace)==1 
-end 
-function c11579803.setfil(c,e,tp) 
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) or ((c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and c:IsSSetable(true))  
-end 
-function c11579803.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(c11579803.setfil,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,nil) end 
+function c11579803.ddttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingTarget(function(c) return c:IsFaceup() and c:IsRace(RACE_DRAGON) end,tp,LOCATION_MZONE,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,1,nil) end 
+	local g=Duel.SelectTarget(tp,function(c) return c:IsFaceup() and c:IsRace(RACE_DRAGON) end,tp,LOCATION_MZONE,0,1,1,nil) 
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0) 
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1) 
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_ONFIELD) 
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE) 
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_REMOVED) 
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
 end 
-function c11579803.xxop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler() 
-	if Duel.IsPlayerCanDraw(tp,1) and Duel.Draw(tp,1,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(c11579803.setfil,tp,LOCATION_HAND,0,1,nil,e,tp) then 
-		local tc=Duel.SelectMatchingCard(tp,c11579803.setfil,tp,LOCATION_HAND,0,1,1,nil,e,tp):GetFirst() 
-		if tc:IsType(TYPE_MONSTER) then 
-			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
-			Duel.ConfirmCards(1-tp,tc)
-		else 
-			Duel.SSet(tp,tc)
-		end 
-		if Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,0,1,c) then 
-			local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,0,1,1,c) 
-			if Duel.SendtoGrave(sg,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil) then 
-				local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,1,nil) 
-				if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,nil) then  
-					local dg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,1,nil) 
-					Duel.SendtoDeck(dg,nil,SEQ_DECKTOP,REASON_EFFECT) 
-				end 
-			end 
-		end 
+function c11579803.ddtop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget() 
+	if tc:IsRelateToEffect(e) then
+		Duel.Destroy(tc,REASON_EFFECT)
+	end  
+	Duel.Draw(tp,1,REASON_EFFECT)
+	if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,1,nil) then  
+		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,1,1,nil) 
+		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) 
 	end 
 end 
+function c11579803.indcon(e,tp,eg,ep,ev,re,r,rp)
+	return r==REASON_LINK
+end
+function c11579803.indop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local rc=c:GetReasonCard()
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(11579803,1))
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_PIERCE)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)  
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	rc:RegisterEffect(e1,true)
+end 
+
+
+
+
+
+
 
 
 

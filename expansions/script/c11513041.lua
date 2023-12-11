@@ -2,7 +2,7 @@
 function c11513041.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit() 
-	aux.AddLinkProcedure(c,function(c) return not c:IsSummonableCard() end,4) 
+	aux.AddLinkProcedure(c,function(c) return not c:IsSummonableCard() end,3) 
 	--aux.AddLinkProcedure(c,c11513041.matfilter,3)
 	--extra material
 	local e1=Effect.CreateEffect(c)

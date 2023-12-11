@@ -3,7 +3,7 @@ local cm,m,o=GetID()
 cm.name = "圣印坏兽 宇宙泰坦"
 function cm.initial_effect(c)
 	--link summon
-	cm.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),8)
+	cm.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),1)
 	c:EnableReviveLimit()
 end
 function cm.LinkCondition(f,minc,maxc,gf)
