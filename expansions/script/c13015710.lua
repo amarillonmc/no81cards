@@ -29,8 +29,7 @@ end
 
 function c13015710.tdrcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end 
-	Duel.ConfirmCards(1-tp,e:GetHandler()) 
-	Duel.ShuffleHand(tp) 
+   
 end 
 function c13015710.thfil(c) 
 	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xe01) and not c:IsCode(13015710)  
@@ -52,7 +51,7 @@ function c13015710.tdrop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.BreakEffect() 
 				local dg=Duel.SelectMatchingCard(tp,function(c) return c:IsAbleToDeck() and c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil)  
 				if Duel.SendtoDeck(dg,nil,2,REASON_EFFECT)~=0 then  
-					Duel.Draw(tp,1,REASON_EFFECT)		
+					Duel.Draw(tp,1,REASON_EFFECT)	   
 				end 
 		   local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

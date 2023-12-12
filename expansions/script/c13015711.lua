@@ -27,8 +27,7 @@ function c13015711.initial_effect(c)
 end
 function c13015711.tdrcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end 
-	Duel.ConfirmCards(1-tp,e:GetHandler()) 
-	Duel.ShuffleHand(tp) 
+	
 end  
 function c13015711.tdrtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end 

@@ -2,7 +2,7 @@
 pnflpf=pnflpf or {}
 function pnfl_prophecy_flight_initial(c)
 	PNFL_PROPHECY_FLIGHT_CHECK=true
-	PNFL_PROPHECY_FLIGHT_DEBUG=true
+	PNFL_PROPHECY_FLIGHT_DEBUG=false
 	PNFL_PROPHECY_FLIGHT_OPERATION_PERMIT=true
 	PNFL_PROPHECY_FLIGHT_TACTIC_VIEW=false
 	PNFL_PROPHECY_FLIGHT_STONE_HAIL=false
@@ -60,7 +60,6 @@ function pnflpf.chkval(e,te)
 		local prop=0
 		if PNFL_PROPHECY_FLIGHT_STONE_HAIL then prop=EFFECT_FLAG_CLIENT_HINT end
 		e:GetHandler():RegisterFlagEffect(11451854,RESET_EVENT+RESETS_STANDARD,prop,1,0,aux.Stringid(11451854,2))
-		if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("influence"..e:GetHandler():GetCode()) end
 	end
 	return false
 end
@@ -131,7 +130,7 @@ function cm.initial_effect(c)
 	e3:SetDescription(aux.Stringid(m,3))
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(11451851)
-	e3:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	--e3:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 	e3:SetRange(LOCATION_DECK)
 	e3:SetCondition(function(e) return e:GetHandler():IsFaceup() end)
 	c:RegisterEffect(e3)
@@ -172,8 +171,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #g>0 then Duel.SSet(tp,g) end
 	if c:IsRelateToEffect(e) then
-		local res=Duel.TossCoin(tp,1) res=1
-		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) and res==1 then
+		local res=Duel.TossCoin(tp,1)
+		if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end
+		if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) and res==1 then
 			Duel.ShuffleDeck(c:GetControler())
 			c:ReverseInDeck()
 		end
@@ -244,7 +244,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	elseif tg:IsExists(cm.labseqfilter,1,nil,ct) then
 		if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("move"..c:GetCode()) end
 		for i=#tg,1,-1 do
-			local tc=tg:Filter(cm.labfilter,nil,ct-i):GetFirst()
+			local tc=tg:Filter(cm.labfilter,nil,i):GetFirst()
 			Duel.MoveSequence(tc,0)
 			tc:ReverseInDeck()
 		end

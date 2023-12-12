@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	e3:SetDescription(aux.Stringid(m,3))
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(11451851)
-	e3:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_SET_AVAILABLE)
+	--e3:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 	e3:SetRange(LOCATION_DECK)
 	e3:SetCondition(function(e) return e:GetHandler():IsFaceup() end)
 	c:RegisterEffect(e3)
@@ -80,8 +80,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if c:IsRelateToEffect(e) then
-		local res=Duel.TossCoin(tp,1) res=1
-		if Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) and res==1 then
+		local res=Duel.TossCoin(tp,1)
+		if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end
+		if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) and res==1 then
 			Duel.ShuffleDeck(c:GetControler())
 			c:ReverseInDeck()
 		end

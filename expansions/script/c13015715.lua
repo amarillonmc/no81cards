@@ -50,8 +50,7 @@ local lv=c:GetLevel()
 
 function c13015715.tdrcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end 
-	Duel.ConfirmCards(1-tp,e:GetHandler()) 
-	Duel.ShuffleHand(tp) 
+	
 end  
 function c13015715.tdrtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) or Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsCanChangePosition() end,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) end
