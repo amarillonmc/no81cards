@@ -50,7 +50,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.repfilter(c,tp)
-	return (not c:IsLocation(LOCATION_OVERLAY) and not c:IsType(TYPE_SPELL+TYPE_TRAP) and not (c:IsControler(tp) and c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5)) and c:GetDestination()==LOCATION_GRAVE and not c:IsForbidden()
+	return (not c:IsLocation(LOCATION_OVERLAY) and not c:IsType(TYPE_SPELL+TYPE_TRAP) and not (c:IsControler(tp) and c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5)) and c:GetDestination()==LOCATION_GRAVE and c:GetLeaveFieldDest()==0 and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and not c:IsForbidden()
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

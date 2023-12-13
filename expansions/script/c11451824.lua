@@ -57,7 +57,9 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		return e:GetHandler():IsFaceup() and rg:GetClassCount(Card.GetAttribute)>=6
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=rg:SelectSubGroup(tp,aux.dabcheck,false,6,6)
+	aux.GCheckAdditional=aux.dabcheck
+	local g=rg:SelectSubGroup(tp,aux.TRUE,false,6,6)
+	aux.GCheckAdditional=nil
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function cm.actarget(e,te,tp)

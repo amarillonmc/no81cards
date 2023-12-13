@@ -68,7 +68,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.filter(c,tp)
-	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and (c:IsAbleToHand() or c:IsStatus(STATUS_LEAVE_CONFIRMED)) and c:GetLeaveFieldDest()==0 and c:GetDestination()==LOCATION_GRAVE and c:IsReason(REASON_RELEASE) and not c:IsType(TYPE_TOKEN)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and (c:IsAbleToHand() or c:IsStatus(STATUS_LEAVE_CONFIRMED)) and c:GetDestination()==LOCATION_GRAVE and c:IsReason(REASON_RELEASE) --and c:GetLeaveFieldDest()==0 and not c:IsType(TYPE_TOKEN)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

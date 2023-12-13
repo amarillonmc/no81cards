@@ -34,7 +34,7 @@ function c11570004.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c11570004.rfilter(c)
-	return c:IsFaceupEx() and c:IsSetCard(0x810) and c:IsAbleToRemove()
+	return c:IsFaceupEx() and c:IsSetCard(0x810) and c:IsAbleToRemove() and c:IsType(TYPE_MONSTER)
 end
 function c11570004.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local dc=eg:GetFirst()
