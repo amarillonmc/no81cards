@@ -27,7 +27,8 @@ function c13015711.initial_effect(c)
 end
 function c13015711.tdrcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end 
-	
+	Duel.ConfirmCards(1-tp,e:GetHandler()) 
+	Duel.ShuffleHand(tp) 
 end  
 function c13015711.tdrtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end 
@@ -38,7 +39,7 @@ function c13015711.spfil(c,e,tp)
 end 
 function c13015711.tdrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
+	Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT+REASON_DISCARD)
 	Duel.Draw(tp,1,REASON_EFFECT)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

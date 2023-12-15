@@ -13,15 +13,7 @@ function c13015715.initial_effect(c)
 	c13015715.tdr_effect=e1   
 	c:RegisterEffect(e1) 
 	--splimit 
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e4:SetCode(EVENT_SUMMON_SUCCESS)
-	e4:SetCountLimit(1,33015715)
-	e4:SetOperation(c13015715.op)
-	c:RegisterEffect(e4)
-	local e2=e4:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2)
+   
 	--draw
 	local e3=Effect.CreateEffect(c) 
 	e3:SetCategory(CATEGORY_DRAW)
@@ -50,7 +42,8 @@ local lv=c:GetLevel()
 
 function c13015715.tdrcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end 
-	
+	Duel.ConfirmCards(1-tp,e:GetHandler()) 
+	Duel.ShuffleHand(tp) 
 end  
 function c13015715.tdrtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) or Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsCanChangePosition() end,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) end
@@ -64,7 +57,7 @@ return not (c:IsRace(RACE_AQUA) and c:IsAttribute(ATTRIBUTE_WATER))
 end
 function c13015715.tdrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	Duel.SendtoGrave(c,REASON_EFFECT)
+	Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)
 	 local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)

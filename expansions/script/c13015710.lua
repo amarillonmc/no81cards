@@ -29,7 +29,8 @@ end
 
 function c13015710.tdrcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end 
-   
+	Duel.ConfirmCards(1-tp,e:GetHandler()) 
+	Duel.ShuffleHand(tp) 
 end 
 function c13015710.thfil(c) 
 	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xe01) and not c:IsCode(13015710)  
@@ -41,7 +42,7 @@ function c13015710.tdrtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function c13015710.tdrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
+	Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)
 		local g=Duel.GetMatchingGroup(c13015710.thfil,tp,LOCATION_DECK,0,nil)   
 		if g:GetCount()>0 then  
 			local sg=g:Select(tp,1,1,nil) 

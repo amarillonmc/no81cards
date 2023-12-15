@@ -1,6 +1,5 @@
 --水精鳞-深渊海信使
-local m=11451689
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--effect1
 	local e1=Effect.CreateEffect(c)
@@ -35,7 +34,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	e:SetLabel(0)
 	local g=eg:Filter(cm.filter,nil)
 	if #g>0 then
-		if r&REASON_DISCARD>0 then e:SetLabel(1) end
+		--if r&REASON_DISCARD>0 then e:SetLabel(1) end
 		return true
 	else
 		return false
@@ -45,11 +44,11 @@ function cm.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.spfilter2(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsLocation(LOCATION_GRAVE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsLocation(LOCATION_GRAVE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsReason(REASON_DISCARD)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		if e:GetLabel()==1 then
+		if e:GetLabel()==0 then
 			local g=eg:Filter(cm.spfilter2,nil,e,tp)
 			return (Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) or #g>0) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
 		else
@@ -66,7 +65,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		local g=eg:Filter(aux.NecroValleyFilter(cm.spfilter2),nil,e,tp)
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		if e:GetLabel()==1 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
+		if e:GetLabel()==0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 			if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			if #g>ft then g=g:Select(tp,ft,ft,nil) end

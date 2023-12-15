@@ -28,6 +28,9 @@ end
 
 function c13015724.tdrcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end 
+	Duel.ConfirmCards(1-tp,e:GetHandler()) 
+	Duel.ShuffleHand(tp) 
+	
 end 
 function c13015724.setfil(c) 
 	return c:IsSSetable() and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0xe01) 
@@ -38,7 +41,7 @@ function c13015724.tdrtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function c13015724.tdrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	Duel.SendtoGrave(c,REASON_EFFECT)
+	Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
