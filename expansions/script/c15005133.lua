@@ -78,7 +78,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetHandler():IsRace(RACE_MACHINE) and re:GetHandler():IsType(TYPE_MONSTER)
+	return re and re:IsActiveType(TYPE_MONSTER) and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)&RACE_MACHINE~=0
 end
 function cm.filter(c,e,tp)
 	return c:IsCode(15005130) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

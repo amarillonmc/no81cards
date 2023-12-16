@@ -40,7 +40,7 @@ function cm.synclv(e,c)
 	return (6<<16)+lv
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetHandler():IsRace(RACE_MACHINE) and re:GetHandler():IsType(TYPE_MONSTER)
+	return re and re:IsActiveType(TYPE_MONSTER) and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)&RACE_MACHINE~=0
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.scfilter,tp,LOCATION_EXTRA,0,1,nil) or Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) end
