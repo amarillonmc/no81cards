@@ -13,7 +13,7 @@ function c13015715.initial_effect(c)
 	c13015715.tdr_effect=e1   
 	c:RegisterEffect(e1) 
 	--splimit 
-   
+	
 	--draw
 	local e3=Effect.CreateEffect(c) 
 	e3:SetCategory(CATEGORY_DRAW)
@@ -42,8 +42,7 @@ local lv=c:GetLevel()
 
 function c13015715.tdrcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end 
-	Duel.ConfirmCards(1-tp,e:GetHandler()) 
-	Duel.ShuffleHand(tp) 
+	
 end  
 function c13015715.tdrtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) or Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsCanChangePosition() end,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) end
@@ -57,7 +56,7 @@ return not (c:IsRace(RACE_AQUA) and c:IsAttribute(ATTRIBUTE_WATER))
 end
 function c13015715.tdrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)
+	Duel.SendtoGrave(c,REASON_EFFECT)
 	 local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)

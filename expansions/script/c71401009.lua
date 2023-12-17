@@ -83,7 +83,7 @@ function c71401009.op2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e1,1-tp)
 		--]]
 		if c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.SelectYesNo(tp,aux.Stringid(71401009,2)) then
+		and Duel.SelectYesNo(tp,aux.Stringid(71401001,7)) then
 			Duel.BreakEffect()
 			if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 				local e2=Effect.CreateEffect(c)

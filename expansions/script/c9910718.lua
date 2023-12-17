@@ -1,7 +1,6 @@
 --厮杀的远古造物
 Duel.LoadScript("c9910700.lua")
 function c9910718.initial_effect(c)
-	c:SetUniqueOnField(1,0,9910718)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -27,15 +26,16 @@ function c9910718.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_ONFIELD+LOCATION_GRAVE)
 end
 function c9910718.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910718,0)) then
+	if g:GetCount()>0 and Duel.SelectEffectYesNo(tp,c,aux.Stringid(9910718,0)) then
 		Duel.Hint(HINT_CARD,0,9910718)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.HintSelection(sg)
 		local sc=sg:GetFirst()
 		local preatk=sc:GetAttack()
-		local e1=Effect.CreateEffect(e:GetHandler())
+		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
@@ -66,5 +66,8 @@ function c9910718.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,QutryYgzw.SetFilter2,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
-	if tc and QutryYgzw.Set(tc,e,tp) then Duel.Draw(tp,1,REASON_EFFECT) end
+	if tc and QutryYgzw.Set(tc,e,tp) then
+		Duel.BreakEffect()
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
 end

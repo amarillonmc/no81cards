@@ -11,17 +11,7 @@ function c13015721.initial_effect(c)
 	e1:SetOperation(c13015721.acop) 
 	c:RegisterEffect(e1) 
 	--search 
-	local e2=Effect.CreateEffect(c)  
-	e2:SetCategory(CATEGORY_TOGRAVE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
-	e2:SetCode(EVENT_TO_GRAVE) 
-	e2:SetProperty(EFFECT_FLAG_DELAY) 
-	e2:SetCountLimit(1,23015721) 
-	e2:SetCondition(function(e) 
-	return e:GetHandler():IsReason(REASON_EFFECT) end) 
-	e2:SetTarget(c13015721.srtg) 
-	e2:SetOperation(c13015721.srop) 
-	c:RegisterEffect(e2) 
+  
 end
 function c13015721.espfil(c,e,tp,mg)  
 	return c:IsType(TYPE_SYNCHRO) and mg:FilterCount(Card.IsType,nil,TYPE_TUNER)==1 and mg:FilterCount(function(c) return not c:IsType(TYPE_TUNER) end,nil)>=1 and c:GetLevel()==mg:GetSum(Card.GetLevel) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SPECIAL,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0   
@@ -37,7 +27,7 @@ end
 function c13015721.acop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
 	local tc=Duel.GetFirstTarget() 
-	local g=Duel.GetMatchingGroup(function(c) return c:IsRace(RACE_AQUA) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsAbleToRemove() and c:IsCanBeSynchroMaterial() end,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)  
+	local g=Duel.GetMatchingGroup(function(c) return c:IsSetCard(0xe01) and c:IsAbleToRemove() and c:IsCanBeSynchroMaterial() end,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)  
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and g:CheckSubGroup(c13015721.matgck,1,99,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(13015721,0)) then 
 		local mg=g:SelectSubGroup(tp,c13015721.matgck,false,1,99,e,tp) 
 		local sc=Duel.SelectMatchingCard(tp,c13015721.espfil,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,mg):GetFirst() 

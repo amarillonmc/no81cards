@@ -95,6 +95,8 @@ function cm.labseqfilter(c,ct)
 	return c:GetFlagEffectLabel(11451851)+c:GetSequence()~=ct
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	local c=e:GetHandler()
 	if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("adjust"..c:GetCode()) end
 	c:ReverseInDeck()
@@ -152,6 +154,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			tc:ReverseInDeck()
 		end
 	end
+	pnfl_adjusting=false
 end
 function cm.tgfilter(c,e)
 	return c:IsRelateToEffect(e) and c:IsOnField()

@@ -84,7 +84,7 @@ function c71401016.op2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_EXTRA,0,1,1,nil,tp,POS_FACEDOWN)
 			if Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)>0 and c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-				and Duel.SelectYesNo(tp,aux.Stringid(71401016,2)) then
+				and Duel.SelectYesNo(tp,aux.Stringid(71401001,7)) then
 				Duel.BreakEffect()
 				if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 					local e2=Effect.CreateEffect(c)

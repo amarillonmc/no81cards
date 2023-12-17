@@ -1,6 +1,5 @@
 --秘仪伊甸
-local m=11451679
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -60,12 +59,12 @@ function cm.coinop(e,tp,eg,ep,ev,re,r,rp)
 		local ct2=c:GetFlagEffect(m+1)
 		c:ResetFlagEffect(m)
 		c:ResetFlagEffect(m+1)
-		if ct1>0 or ct2>0 then
+		if ct1>1 or ct2>1 then
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e2:SetCode(m)
 			e2:SetProperty(EFFECT_FLAG_DELAY)
-			e2:SetLabel(ct1,ct2)
+			e2:SetLabel(math.max(ct1,1)-1,math.max(ct2,1)-1)
 			e2:SetOperation(cm.drop)
 			Duel.RegisterEffect(e2,0)
 			Duel.RaiseEvent(c,m,e,0,0,0,0)
@@ -93,7 +92,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,c)
+	local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsAbleToHand),tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,c)
 	local res=Duel.TossCoin(tp,1)
 	if res and #tg>0 then
 		local sg=tg:Select(tp,1,1,nil)

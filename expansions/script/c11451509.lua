@@ -64,7 +64,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_SEND_REPLACE)
 	e1:SetTarget(cm.reptg)
 	e1:SetValue(function(e,c) e:SetLabel(100) return false end)
-	e1:SetReset(RESET_PHASE+PHASE_END)
+	--e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.filter(c,tp)

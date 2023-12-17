@@ -101,6 +101,8 @@ function cm.labseqfilter(c,ct)
 	return c:GetFlagEffectLabel(11451851)+c:GetSequence()~=ct
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	if not PNFL_PROPHECY_FLIGHT_STONE_HAIL then
 		PNFL_PROPHECY_FLIGHT_STONE_HAIL=true
 		local shg=Duel.GetMatchingGroup(cm.shfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
@@ -160,11 +162,12 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	elseif tg:IsExists(cm.labseqfilter,1,nil,ct) then
 		if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("move"..c:GetCode()) end
 		for i=#tg,1,-1 do
-			local tc=tg:Filter(cm.labfilter,nil,ct-i):GetFirst()
+			local tc=tg:Filter(cm.labfilter,nil,i):GetFirst()
 			Duel.MoveSequence(tc,0)
 			tc:ReverseInDeck()
 		end
 	end
+	pnfl_adjusting=false
 end
 function cm.shfilter(c)
 	return c:GetFlagEffect(11451854)>0

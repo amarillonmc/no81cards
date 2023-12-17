@@ -46,7 +46,7 @@ function c11570005.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11570005.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_REMOVED,0,1,nil,tp) and (b1 or b2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c11570005.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_REMOVED,0,1,1,nil,tp)
-	local b3=g:IsExists(Card.IsLocation,1,nil,LOCATION_ONFIELD) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
+	local b3=g:IsExists(Card.IsLocation,1,nil,LOCATION_ONFIELD) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	if not g:IsExists(Card.IsLocation,1,nil,LOCATION_REMOVED) then
 		Duel.SendtoGrave(g,REASON_COST)
 	else
@@ -99,6 +99,18 @@ function c11570005.effop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetValue(0x810)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e1)
+			local e4=Effect.CreateEffect(e:GetHandler())
+			e4:SetType(EFFECT_TYPE_SINGLE)
+			e4:SetCode(EFFECT_CHANGE_RACE)
+			e4:SetValue(RACE_DRAGON)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e4)
+			local e3=Effect.CreateEffect(e:GetHandler())
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+			e3:SetValue(ATTRIBUTE_DARK)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e3)
 				local fid=e:GetHandler():GetFieldID()
 				tc:RegisterFlagEffect(11570005,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 				local e2=Effect.CreateEffect(e:GetHandler())

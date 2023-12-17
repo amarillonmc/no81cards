@@ -24,6 +24,7 @@ c13090011.star_knight_spsummon_effect=e3
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_EXTRA)
+	e1:SetCountLimit(1,23090011)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(cm.setcon)
 	e1:SetOperation(cm.setop)
@@ -60,20 +61,17 @@ end
 function cm.f2(c)
 return c:IsType(TYPE_MONSTER) end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0 or Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)==0 then return end
-	local g1
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 or Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	if Duel.IsExistingMatchingCard(cm.f2,tp,LOCATION_HAND,0,1,nil) then
-	g1=Duel.SelectMatchingCard(tp,cm.f2,tp,LOCATION_HAND,0,1,1,nil)
-	else
-	g1=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,nil)
-	end
+	local g1=Duel.GetDecktopGroup(tp,1)
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CONFIRM)
-	local g2=Duel.SelectMatchingCard(1-tp,nil,1-tp,LOCATION_HAND,0,1,1,nil)
+	local g2=Duel.GetDecktopGroup(1-tp,1)
 	local atpsl=g1:GetFirst()
 	local ntpsl=g2:GetFirst()
 	Duel.ConfirmCards(1-tp,atpsl)
+	Duel.ConfirmCards(tp,atpsl)
 	Duel.ConfirmCards(tp,ntpsl)
+	Duel.ConfirmCards(1-tp,ntpsl)
 	local atplv=atpsl:IsType(TYPE_MONSTER) and atpsl:GetAttack() or 0
 	local ntplv=ntpsl:IsType(TYPE_MONSTER) and ntpsl:GetAttack() or 0
 	if atplv<=ntplv then

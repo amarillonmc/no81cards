@@ -18,7 +18,7 @@ function c9910391.filter1(c,code)
 	return c:IsSetCard(0x5951) and aux.IsCodeListed(c,code) and c:IsType(TYPE_FIELD) and c:IsAbleToHand()
 end
 function c9910391.filter2(c)
-	return c:IsCode(9910362) and c:IsAbleToHand()
+	return c:IsSetCard(0x5951) and c:IsLevel(1) and c:IsAbleToHand()
 end
 function c9910391.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910391.filter2,tp,LOCATION_DECK,0,1,nil)
@@ -53,38 +53,36 @@ function c9910391.activate(e,tp,eg,ep,ev,re,r,rp)
 		c:CancelToGrave()
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(9910391,0))
-		e1:SetCategory(CATEGORY_TOHAND)
-		e1:SetType(EFFECT_TYPE_QUICK_O)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-		e1:SetCode(EVENT_BECOME_TARGET)
+		e1:SetCode(EVENT_CHAIN_SOLVING)
 		e1:SetRange(LOCATION_SZONE)
-		e1:SetCountLimit(1)
 		e1:SetCondition(c9910391.thcon)
-		e1:SetTarget(c9910391.thtg)
 		e1:SetOperation(c9910391.thop)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e1)
 	end
 end
+function c9910391.thfilter(c)
+	return c:IsAbleToHand() and Duel.IsExistingMatchingCard(Card.IsAbleToHand,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)
+end
 function c9910391.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsContains(e:GetHandler())
-end
-function c9910391.thfilter1(c)
-	return c:IsAbleToHand()
-		and Duel.IsExistingMatchingCard(Card.IsAbleToHand,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)
-end
-function c9910391.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910391.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
+	local c=e:GetHandler()
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	return c:GetFlagEffect(9910391)==0 and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and g and g:IsContains(c)
+		and Duel.IsExistingMatchingCard(c9910391.thfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c9910391.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g1=Duel.SelectMatchingCard(tp,c9910391.thfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	if #g1==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,g1)
-	g1:Merge(g2)
-	Duel.HintSelection(g1)
-	Duel.SendtoHand(g1,nil,REASON_EFFECT)
+	local c=e:GetHandler()
+	if Duel.SelectEffectYesNo(tp,c,aux.Stringid(9910391,1)) then
+		Duel.Hint(HINT_CARD,0,9910391)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+		local g1=Duel.SelectMatchingCard(tp,c9910391.thfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+		local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,g1)
+		g1:Merge(g2)
+		Duel.HintSelection(g1)
+		Duel.SendtoHand(g1,nil,REASON_EFFECT)
+		c:RegisterFlagEffect(9910391,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910391,2))
+	end
 end

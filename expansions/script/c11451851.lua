@@ -8,6 +8,87 @@ function pnfl_prophecy_flight_initial(c)
 	PNFL_PROPHECY_FLIGHT_STONE_HAIL=false
 	pnflpf[0]=0
 	pnflpf[1]=0
+	pnflpf.coinsequence={}
+	_TossCoin=Duel.TossCoin
+	function Duel.TossCoin(p,ct)
+		local dic={}
+		local ct0=#pnflpf.coinsequence
+		for i=1,ct do table.insert(pnflpf.coinsequence,2) end
+		local res={_TossCoin(p,ct)}
+		local bool1,bool2=true,true
+		while bool1 or bool2 do
+			local s0,s1=false,false
+			for _,r in ipairs(res) do if r==0 then s0=true end end
+			for _,r in ipairs(res) do if r==1 then s1=true end end
+			local b1=Duel.IsCanRemoveCounter(p,1,0,0x1972,1,REASON_EFFECT) and s0
+			local b2=Duel.IsCanRemoveCounter(p,1,0,0x1971,1,REASON_EFFECT) and s1
+			local off=1
+			local ops,opval={},{}
+			if b1 then
+				ops[off]=aux.Stringid(11451856,0)
+				opval[off]=0
+				off=off+1
+			end
+			if b2 then
+				ops[off]=aux.Stringid(11451856,1)
+				opval[off]=1
+				off=off+1
+			end
+			ops[off]=aux.Stringid(11451856,2)
+			opval[off]=2
+			if off==1 then
+				bool1=false
+			else
+				local op=Duel.SelectOption(p,table.unpack(ops))+1
+				local sel=opval[op]
+				if sel==0 then
+					Duel.RemoveCounter(p,1,0,0x1972,1,REASON_EFFECT)
+					for i,r in ipairs(res) do res[i]=1 end
+				elseif sel==1 then
+					Duel.RemoveCounter(p,1,0,0x1971,1,REASON_EFFECT)
+					for i,r in ipairs(res) do res[i]=0 end
+				else
+					bool1=false
+				end
+			end
+			local s0,s1=false,false
+			for _,r in ipairs(res) do if r==0 then s0=true end end
+			for _,r in ipairs(res) do if r==1 then s1=true end end
+			local b1=Duel.IsCanRemoveCounter(1-p,1,0,0x1972,1,REASON_EFFECT) and s0
+			local b2=Duel.IsCanRemoveCounter(1-p,1,0,0x1971,1,REASON_EFFECT) and s1
+			local off=1
+			local ops,opval={},{}
+			if b1 then
+				ops[off]=aux.Stringid(11451856,0)
+				opval[off]=0
+				off=off+1
+			end
+			if b2 then
+				ops[off]=aux.Stringid(11451856,1)
+				opval[off]=1
+				off=off+1
+			end
+			ops[off]=aux.Stringid(11451856,2)
+			opval[off]=2
+			if off==1 then
+				bool2=false
+			else
+				local op=Duel.SelectOption(1-p,table.unpack(ops))+1
+				local sel=opval[op]
+				if sel==0 then
+					Duel.RemoveCounter(1-p,1,0,0x1972,1,REASON_EFFECT)
+					for i,r in ipairs(res) do res[i]=1 end
+				elseif sel==1 then
+					Duel.RemoveCounter(1-p,1,0,0x1971,1,REASON_EFFECT)
+					for i,r in ipairs(res) do res[i]=0 end
+				else
+					bool2=false
+				end
+			end
+		end
+		for i=1,ct do pnflpf.coinsequence[ct0+i]=res[i] end
+		return table.unpack(res)
+	end
 	--increase by Card.ReverseInDeck
 	local ge0=Effect.CreateEffect(c)
 	ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -56,10 +137,12 @@ function pnflpf.resetop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function pnflpf.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and e:GetHandler():GetFlagEffect(11451854)==0 then
-		local prop=0
-		if PNFL_PROPHECY_FLIGHT_STONE_HAIL then prop=EFFECT_FLAG_CLIENT_HINT end
-		e:GetHandler():RegisterFlagEffect(11451854,RESET_EVENT+RESETS_STANDARD,prop,1,0,aux.Stringid(11451854,2))
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
+		if e:GetHandler():GetFlagEffect(11451854)==0 then
+			local prop=0
+			if PNFL_PROPHECY_FLIGHT_STONE_HAIL then prop=EFFECT_FLAG_CLIENT_HINT end
+			e:GetHandler():RegisterFlagEffect(11451854,RESET_EVENT+RESETS_STANDARD,prop,1,0,aux.Stringid(11451854,2))
+		end
 	end
 	return false
 end
@@ -130,7 +213,6 @@ function cm.initial_effect(c)
 	e3:SetDescription(aux.Stringid(m,3))
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(11451851)
-	--e3:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 	e3:SetRange(LOCATION_DECK)
 	e3:SetCondition(function(e) return e:GetHandler():IsFaceup() end)
 	c:RegisterEffect(e3)
@@ -142,6 +224,7 @@ function cm.initial_effect(c)
 	e4:SetCondition(function(e,tp) return e:GetHandler():IsFaceup() and Duel.GetDecktopGroup(tp,1):IsContains(e:GetHandler()) end)
 	e4:SetOperation(cm.desop)
 	c:RegisterEffect(e4)
+	cm.highground=e4
 	local e5=e4:Clone()
 	e5:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
 	e5:SetCountLimit(1)
@@ -192,6 +275,8 @@ function cm.labseqfilter(c,ct)
 	return c:GetFlagEffectLabel(11451851)+c:GetSequence()~=ct
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	local c=e:GetHandler()
 	if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("adjust"..c:GetCode()) end
 	c:ReverseInDeck()
@@ -249,6 +334,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			tc:ReverseInDeck()
 		end
 	end
+	pnfl_adjusting=false
 	--[[if tc~=c and sg:IsContains(c) then
 		if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("move"..c:GetCode()) end
 		Duel.MoveSequence(c,0)

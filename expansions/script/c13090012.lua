@@ -32,6 +32,7 @@ local e1=Effect.CreateEffect(c)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_EXTRA)
+	e2:SetCountLimit(1,23090012)
 	e2:SetCondition(c13090012.espcon)
 	e2:SetOperation(c13090012.espop)
 	c:RegisterEffect(e2)
@@ -133,10 +134,26 @@ function cm.splimit1(e,c,sump,sumtype,sumpos,targetp,se)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateAttack()
+	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then 
+	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g1=Duel.GetDecktopGroup(tp,1)
+	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CONFIRM)
+	local g2=Duel.GetDecktopGroup(1-tp,1)
+	local atpsl=g1:GetFirst()
+	local ntpsl=g2:GetFirst()
+	Duel.ConfirmCards(1-tp,atpsl)
+	Duel.ConfirmCards(tp,atpsl)
+	Duel.ConfirmCards(tp,ntpsl)
+	Duel.ConfirmCards(1-tp,ntpsl)
+	local atplv=atpsl:IsType(TYPE_MONSTER) and atpsl:GetAttack() or 0
+	local ntplv=ntpsl:IsType(TYPE_MONSTER) and ntpsl:GetAttack() or 0
+	if atplv<=ntplv then
 	local tc=Duel.GetAttacker()
 	  if tc:IsAbleToDeck() then
 	  Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 	  end
+	 end
+   end
 end
 function cm.espcon(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()

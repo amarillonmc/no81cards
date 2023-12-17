@@ -23,7 +23,7 @@ function c13015714.initial_effect(c)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET) 
 	e2:SetRange(LOCATION_MZONE)   
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,23015714)
 	e2:SetTarget(c13015714.rdsptg) 
 	e2:SetOperation(c13015714.rdspop) 
 	c:RegisterEffect(e2) 
@@ -36,7 +36,7 @@ function c13015714.tddtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return g:GetCount()>0 end 
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)  
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,g:GetCount())
-	Duel.SetChainLimit(c13015714.chlimit)
+	
 end 
 function c13015714.tddop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
@@ -53,7 +53,7 @@ function c13015714.rdsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectTarget(tp,function(c) return c:IsAbleToRemove() and c:IsSetCard(0xe01) end,tp,LOCATION_GRAVE,0,1,1,nil)  
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0) 
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_ONFIELD)
-	Duel.SetChainLimit(c13015714.chlimit)
+  
 end
 function c13015714.chlimit(e,ep,tp)
 	return tp==ep

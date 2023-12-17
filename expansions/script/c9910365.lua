@@ -17,17 +17,46 @@ function c9910365.initial_effect(c)
 	e2:SetTargetRange(1,0)
 	e2:SetTarget(c9910365.sumlimit)
 	c:RegisterEffect(e2)
-	--double
+	--destroy
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_ADJUST)
 	e3:SetRange(LOCATION_FZONE)
-	e3:SetCountLimit(1)
-	e3:SetCondition(c9910365.dbcon)
-	e3:SetTarget(c9910365.dbtg)
-	e3:SetOperation(c9910365.dbop)
+	e3:SetCondition(c9910365.descon)
+	e3:SetOperation(c9910365.desop)
 	c:RegisterEffect(e3)
+	if not c9910365.global_check then
+		c9910365.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_BECOME_TARGET)
+		ge1:SetOperation(c9910365.checkop1)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_ADJUST)
+		ge2:SetOperation(c9910365.checkop2)
+		Duel.RegisterEffect(ge2,0)
+	end
+end
+function c9910365.checkop1(e,tp,eg,ep,ev,re,r,rp)
+	local tg=eg:Filter(Card.IsOnField,nil)
+	if #tg>0 then
+		for tc in aux.Next(tg) do
+			tc:RegisterFlagEffect(9910365,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910365,1))
+		end
+	end
+end
+function c9910365.checkop2(e,tp,eg,ep,ev,re,r,rp)
+	local tg=Duel.GetMatchingGroup(c9910365.ctgfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if #tg>0 then
+		for tc in aux.Next(tg) do
+			tc:RegisterFlagEffect(9910365,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910365,1))
+		end
+	end
+end
+function c9910365.ctgfilter(c)
+	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(9910365)==0
 end
 function c9910365.thfilter(c)
 	return c:IsCode(9910363) and c:IsAbleToHand()
@@ -45,63 +74,18 @@ end
 function c9910365.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLocation(LOCATION_EXTRA)
 end
-function c9910365.dbcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE 
+function c9910365.cfilter(c,tp)
+	return c:GetFlagEffect(9910365)~=0 and c:IsControler(tp)
 end
-function c9910365.dbfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5951)
+function c9910365.desfilter(c,tp)
+	return c:GetColumnGroup():IsExists(c9910365.cfilter,1,nil,tp)
 end
-function c9910365.dbtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910365.dbfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9910365.dbfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c9910365.dbfilter,tp,LOCATION_MZONE,0,1,1,nil)
+function c9910365.descon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c9910365.desfilter,tp,0,LOCATION_ONFIELD,1,nil,tp)
 end
-function c9910365.dbop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		local fid=c:GetFieldID()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		tc:RegisterFlagEffect(9910365,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_PHASE+PHASE_END)
-		e2:SetCountLimit(1)
-		e2:SetLabel(fid)
-		e2:SetLabelObject(tc)
-		e2:SetCondition(c9910365.atkcon)
-		e2:SetOperation(c9910365.atkop)
-		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
+function c9910365.desop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9910365.desfilter,tp,0,LOCATION_ONFIELD,nil,tp)
+	if #g>0 then
+		Duel.Destroy(g,REASON_EFFECT)
 	end
-end
-function c9910365.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc and tc:GetFlagEffectLabel(9910365)==e:GetLabel() then
-		return true
-	else
-		e:Reset()
-		return false
-	end
-end
-function c9910365.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	e1:SetValue(tc:GetBaseAttack()*2)
-	tc:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
-	e2:SetValue(tc:GetBaseDefense()*2)
-	tc:RegisterEffect(e2)
 end

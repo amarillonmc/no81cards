@@ -17,16 +17,13 @@ function c9910380.initial_effect(c)
 	e2:SetTargetRange(1,0)
 	e2:SetTarget(c9910380.sumlimit)
 	c:RegisterEffect(e2)
-	--remove
+	--set
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_REMOVE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_CHAINING)
+	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_FZONE)
 	e3:SetCountLimit(1,9910380)
-	e3:SetCondition(c9910380.rmcon)
-	e3:SetTarget(c9910380.rmtg)
-	e3:SetOperation(c9910380.rmop)
+	e3:SetTarget(c9910380.settg)
+	e3:SetOperation(c9910380.setop)
 	c:RegisterEffect(e3)
 end
 function c9910380.thfilter(c)
@@ -45,41 +42,55 @@ end
 function c9910380.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLocation(LOCATION_EXTRA)
 end
-function c9910380.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5951)
+function c9910380.setfilter(c)
+	return c:IsSetCard(0x5951) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
-function c9910380.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and re:IsActiveType(TYPE_MONSTER)
-		and Duel.IsExistingMatchingCard(c9910380.cfilter,tp,LOCATION_MZONE,0,1,nil)
+function c9910380.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910380.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 end
-function c9910380.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local rc=re:GetHandler()
-	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsAbleToRemove() and rc:GetOriginalLevel()>0 end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,rc,1,0,0)
+function c9910380.gselect(g)
+	return g:GetClassCount(Card.GetLocation)==#g
 end
-function c9910380.rmop(e,tp,eg,ep,ev,re,r,rp)
+function c9910380.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local rc=re:GetHandler()
-	if not c:IsRelateToEffect(e) or not rc:IsRelateToEffect(re) then return end
-	if Duel.Remove(rc,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)~=0 and rc:IsLocation(LOCATION_REMOVED) then
-		local lv=rc:GetOriginalLevel()
-		local lp=Duel.GetLP(tp)
-		Duel.SetLP(tp,lp-lv*300)
-		rc:RegisterFlagEffect(9910380,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	local fid=c:GetFieldID()
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	if ft==0 then return end
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910380.setfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local sg=g:SelectSubGroup(tp,c9910380.gselect,false,1,math.min(ft,2))
+	local tc=sg:GetFirst()
+	while tc do
+		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(rc)
-		e1:SetCountLimit(1)
-		e1:SetCondition(c9910380.retcon)
-		e1:SetOperation(c9910380.retop)
-		Duel.RegisterEffect(e1,tp)
+		e1:SetCode(EFFECT_CHANGE_TYPE)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+		tc:RegisterEffect(e1)
+		tc:RegisterFlagEffect(9910380,RESET_EVENT+RESET_TURN_SET+RESET_OVERLAY+RESET_MSCHANGE+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(9910380,1))
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_LEAVE_FIELD)
+		e2:SetLabel(fid)
+		e2:SetLabelObject(tc)
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		e2:SetOperation(c9910380.damop)
+		Duel.RegisterEffect(e2,tp)
+		tc=sg:GetNext()
 	end
 end
-function c9910380.retcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetLabelObject():GetFlagEffect(9910380)~=0
-end
-function c9910380.retop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ReturnToField(e:GetLabelObject())
+function c9910380.damop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if not eg:IsContains(tc) then return end
+	if tc:GetFlagEffectLabel(9910380)~=e:GetLabel() then
+		e:Reset()
+		return
+	end
+	Duel.Hint(HINT_CARD,0,9910380)
+	Duel.Damage(1-tp,600,REASON_EFFECT)
+	tc:ResetFlagEffect(9910380)
+	e:Reset()
 end

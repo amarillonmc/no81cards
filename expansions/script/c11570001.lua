@@ -70,7 +70,7 @@ function c11570001.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_MZONE)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,eg:GetCount(),0,0)
---	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,eg,eg:GetCount(),0,0)
+--  Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,eg,eg:GetCount(),0,0)
 end
 function c11570001.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -86,9 +86,11 @@ function c11570001.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(eg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		local tg=Duel.GetOperatedGroup()
 		if tg:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(1-tp) end
-		local sg=tg:Filter(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+		local ssg=tg:Filter(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+		local sg=ssg:Filter(Card.IsCanBeSpecialSummoned,nil,e,0,tp,true,false)
 		if sg:GetCount()>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-		if sg:GetCount()>ft and Duel.SelectYesNo(tp,aux.Stringid(11570001,3)) then
+		if Duel.SelectYesNo(tp,aux.Stringid(11570001,3)) then
+		if sg:GetCount()>ft then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			sg=sg:Select(tp,ft,ft,nil)
 		end
@@ -104,12 +106,24 @@ function c11570001.operation(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(0x810)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			sc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_CHANGE_RACE)
+			e2:SetValue(RACE_DRAGON)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			sc:RegisterEffect(e2)
+			local e3=Effect.CreateEffect(e:GetHandler())
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+			e3:SetValue(ATTRIBUTE_DARK)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			sc:RegisterEffect(e3)
 			sc:SetStatus(STATUS_SUMMON_DISABLED,false)
 			sc:SetStatus(STATUS_SUMMONING,true)
 			sc=sg:GetNext()
 		end
 		Duel.SpecialSummonComplete()
-	end
+	end end
 end
 function c11570001.cfilter2(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0x810) and c:IsControler(tp)

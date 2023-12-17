@@ -114,6 +114,8 @@ function cm.labseqfilter(c,ct)
 	return c:GetFlagEffectLabel(11451851)+c:GetSequence()~=ct
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	local c=e:GetHandler()
 	if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("adjust"..c:GetCode()) end
 	c:ReverseInDeck()
@@ -166,11 +168,12 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	elseif tg:IsExists(cm.labseqfilter,1,nil,ct) then
 		if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("move"..c:GetCode()) end
 		for i=#tg,1,-1 do
-			local tc=tg:Filter(cm.labfilter,nil,ct-i):GetFirst()
+			local tc=tg:Filter(cm.labfilter,nil,i):GetFirst()
 			Duel.MoveSequence(tc,0)
 			tc:ReverseInDeck()
 		end
 	end
+	pnfl_adjusting=false
 end
 function cm.tgfilter(c,e)
 	return c:IsRelateToEffect(e) and c:IsOnField()
