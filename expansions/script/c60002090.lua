@@ -3,6 +3,7 @@ local m=60002090
 local cm=_G["c"..m]
 cm.name="凶烙印"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,68468459)
 	--activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)

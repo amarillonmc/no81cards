@@ -1,6 +1,7 @@
 --阿不思的天启
 local cm,m,o=GetID()
 function cm.initial_effect(c)
+	aux.AddCodeList(c,68468459)
 	--change name
 	aux.EnableChangeCode(c,68468459,LOCATION_MZONE+LOCATION_GRAVE)
 	--draw

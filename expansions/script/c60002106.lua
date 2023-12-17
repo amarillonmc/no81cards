@@ -3,6 +3,7 @@ local m=60002106
 local cm=_G["c"..m]
 cm.name="烙印的终临"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,68468459)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
