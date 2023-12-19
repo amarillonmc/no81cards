@@ -46,7 +46,6 @@ end
 function c71401018.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetDecktopGroup(tp,2)
 	if chk==0 then return g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEUP)==2 and Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
-	Duel.DiscardDeck(tp,3,REASON_COST)
 	Duel.DisableShuffleCheck()
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	yume.RegButterflyCostLimit(e,tp)
@@ -67,6 +66,8 @@ function c71401018.filter2b(c,e,tp)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsAttribute(ATTRIBUTE_DARK) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or not c:IsForbidden() and c:CheckUniqueOnField(tp))
 end
 function c71401018.op2(e,tp,eg,ep,ev,re,r,rp)
+	local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	--有bug，两个操作缺少判断格子
 	local c=e:GetHandler()
 	local tg=Duel.GetDecktopGroup(1-tp,2)
 	if #tg==0 then return end
@@ -80,7 +81,7 @@ function c71401018.op2(e,tp,eg,ep,ev,re,r,rp)
 		local oc=og:Select(tp,1,1,nil):GetFirst()
 		if oc then
 			local b1=oc:IsCanBeSpecialSummoned(e,0,tp,false,false) 
-			local b2=not oc:IsForbidden() and oc:CheckUniqueOnField(tp)
+			local b2=Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not oc:IsForbidden() and oc:CheckUniqueOnField(tp)
 			if b1 and (not b2 or Duel.SelectOption(tp,1152,aux.Stringid(71401001,5))==0) then
 				Duel.SpecialSummon(oc,0,tp,tp,false,false,POS_FACEUP)
 			else
