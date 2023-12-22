@@ -7,7 +7,7 @@
 local Version_Number = "2022.11.02"
 
 
-if not pcall(function() require("expansions/script/c10100000") end) then require("script/c10100000") end
+if not pcall(function() dofile("expansions/script/c10100000.lua") end) then dofile("script/c10100000.lua") end
 if rsv then return end
 local s = {}
 rsv = { }  --"Base Function"
@@ -280,7 +280,7 @@ s.buff_code_list = {
 		["dsp~"] = "!NegateSpecialSummon", 
 		["dfp~"] = "!NegateFlipSummon", 
 		["rdam"] = "OpponentTakeDamageInstead", 
-		["rdamb"] = "OpponentTakeBattleDamageInstead", 
+		["rdamb"] = "OpponentTakesBattleDamageInstead", 
 		["dise~"] = "!NegateActivatedEffect", 
 		["neg~"] = "!NegateActivation", 
 		["mat"] = "SetMaterial", 
@@ -672,7 +672,7 @@ function rssf.SpecialSummonStep(sum_card, sum_typ, sum_pl, zone_pl, ignore_con, 
 	return res, sc
 end 
 function rssf.SpecialSummonEither(sum_card, sum_eff, sum_typ, sum_pl, loc_pl, ignore_con, ignore_revie, pos, sum_zone)
-	return Scl.SpecialSummon2EitherFieldStep(sum_card, sum_typ, sum_pl, ignore_con, ignore_revie, pos, sum_zone) 
+	return Scl.SpecialSummon2EitherField(sum_card, sum_typ, sum_pl, ignore_con, ignore_revie, pos, sum_zone) 
 end
 rsval.spconfe = scl.value_special_summon_from_extra("SpecialSummon")
 rsval.spconbe = scl.value_special_summon_by_card_effect

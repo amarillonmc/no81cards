@@ -223,7 +223,7 @@ function c98920279.op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if ct>=3 then
-		local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,aux.ExceptThisCard(e))
+		local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,aux.ExceptThisCard(e))
 		if g2:GetCount()>0 then
 		   Duel.Remove(g2,POS_FACEUP,REASON_EFFECT)
 		end

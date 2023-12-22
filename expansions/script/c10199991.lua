@@ -31,12 +31,12 @@ rscost.costinfo = { } --"Cost information, for record cost value"
 rsop.opinfo = { }  --"Operation information, for record something"
 rsef.relationinfo = { } --"Field,Pendulum,Continous leave field"
 rstg.targetlist = { } --"Target group list, for rstg.GetTargetAttribute"
-rsef.attacheffect = { } --"Effect information for attach effects"
-rsef.attacheffectf = { }
-rsef.solveeffect ={ }
-rsop.baseop = { }
-rscf.ssproce = { }
+rscf.proc_record = { }
 rstg.tk_list = { }
+rscf.fieldinfo = { }
+rsef.attach_before_arr = { } --"record attach effects, for 10170008 to repeat"
+rsef.attach_after_arr = { }
+rsef.attach_base_arr = { }
 
 rsef.effet_no_register = false 
 
@@ -73,9 +73,8 @@ rsrst.std_ep =   rsrst.std +  rsrst.ep
 rsrst.ret =   RESET_EVENT + RESETS_REDIRECT 
 
 --Code Variable 
-rscode.Extra_Effect_Activate   =   m + 100   --"Attach Effect"
-rscode.Extra_Effect_BSolve   =   m + 101 
-rscode.Extra_Effect_ASolve   =   m + 102 
+rscode.Attach_Effect   =   m + 100   --"Attach Effect"  
+rscode.Attach_Effect_2   =   m + 101 
 
 rscode.Phase_Leave_Flag   =   m + 200   --"Summon Flag for SummonBuff"
 rscode.Extra_Synchro_Material =  m + 300 --"Extra Synchro Material"
@@ -88,6 +87,8 @@ rscode.Special_Procedure = m + 900
 rscode.Summon_Count_Limit = m + 201 --"for rsop.SetSpecialSummonCount"
 
 rscode.Set  =   m + 800   --"EVENT_SET"
+
+
 
 --Hint Message Variable 
 
@@ -106,6 +107,12 @@ rshint.sdrct = aux.Stringid(m,5)  --"select draw number"
 rshint.darktuner = aux.Stringid(m,14)   --"treat as dark tuner"
 rshint.darksynchro = aux.Stringid(m,15) --"treat as dark synchro"
 
+rshint.scl_exproc = aux.Stringid(m,12) -- "special extra monster spsummon proc"
+
+rshint.attach_card = aux.Stringid(m, 8)
+rshint.attach_effect = aux.Stringid(m, 9)
+
+rshint.copy = aux.Stringid(m, 10)
 
 --Effect type Variable
 rsef.type_list = {
@@ -126,7 +133,7 @@ rsflag.list =   {
 	  , ["sp"] = EFFECT_FLAG_SPSUM_PARAM, ["ep"] = EFFECT_FLAG_EVENT_PLAYER, ["oa"] = EFFECT_FLAG_OATH , ["ntr"] = EFFECT_FLAG_NO_TURN_RESET 
 	  , ["neg~"] = EFFECT_FLAG_CANNOT_INACTIVATE 
 	  , ["cn"] = EFFECT_FLAG_CANNOT_NEGATE, ["dise~"] = EFFECT_FLAG_CANNOT_NEGATE 
-	  , ["cd"] = EFFECT_FLAG_CANNOT_DISABLE , ["dis~"] = EFFECT_FLAG_CANNOT_DISABLE,
+	  , ["cd"] = EFFECT_FLAG_CANNOT_DISABLE , ["dis~"] = EFFECT_FLAG_CANNOT_DISABLE 
 
 }   
 
@@ -202,7 +209,7 @@ function rsof.Get_Cate_Hint_Op_List()
 	  , ["ctrl"] = { "Get Control", CATEGORY_CONTROL, HINTMSG_CONTROL, { 4941482,0 }, nil, { rsop.GetControl, 5, sg, tp, 0, 0, 0xff  } }
 	  , ["sctrl"] = { "Switch Control", CATEGORY_CONTROL, HINTMSG_CONTROL, { 36331074,0 } }
 
-	  , ["dis"] = { "Disable Effect", CATEGORY_DISABLE, HINTMSG_DISABLE, { 39185163,1 }, { 25166510,2 } }
+	  , ["dis"] = { "Disable Effect", CATEGORY_DISABLE, HINTMSG_DISABLE, { 39185163,1 }, { 25166510,2 }, { rsop.DisableCards, 4, sg, e, false, rsrst.std } }
 	  , ["diss"] = { "Disable Summon", CATEGORY_DISABLE_SUMMON, 0, { m,1 } }
 	  , ["neg"] = { "Negate Activation", CATEGORY_NEGATE, 0, { 19502505,1 } }
 
@@ -250,6 +257,8 @@ function rsof.Get_Cate_Hint_Op_List()
 	  , ["ms"] = { "Move Sequence", 0, { m,3 }, { 25163979,1 } }
 
 	  , ["dum"] = { "Dummy Operate", 0, HINTMSG_OPERATECARD, 0, 0, { rsop.DummyOperate, 1, sg } }
+	  , ["self"] = { "Select Your Card(s)", 0, HINTMSG_OPERATECARD, 0, 0, { rsop.DummyOperate, 1, sg } }
+	  , ["oppo"] = { "Select Your Card(s)", 0, HINTMSG_OPERATECARD, 0, 0, { rsop.DummyOperate, 1, sg } }
 
 	}
 
@@ -293,6 +302,7 @@ rscf.sum_list = {
 
 --Location Variable
 rsloc.hd = LOCATION_HAND+LOCATION_DECK 
+rsloc.hm = LOCATION_HAND+LOCATION_MZONE 
 rsloc.ho = LOCATION_HAND+LOCATION_ONFIELD
 rsloc.hg = LOCATION_HAND+LOCATION_GRAVE  
 rsloc.dg = LOCATION_DECK+LOCATION_GRAVE 
@@ -308,7 +318,7 @@ rsloc.all = 0xff
 
 
 function rsef.Get_Value_Effect_Attribute_List()
-	--[string] = { eff_code, eff_val, eff_ctlimit, extra_flag_for_singel, extra_flag_for_field, extra_reset }
+	--[string] = { eff_code, eff_hint, eff_val, eff_ctlimit, extra_flag_for_singel, extra_flag_for_field, extra_reset }
 	local code_list = {
 		  ["atk"] = { EFFECT_SET_ATTACK }, ["def"] = { EFFECT_SET_DEFENSE }
 		, ["batk"] = { EFFECT_SET_BASE_ATTACK }, ["bdef"] = { EFFECT_SET_BASE_DEFENSE }
@@ -334,7 +344,7 @@ function rsef.Get_Value_Effect_Attribute_List()
 
 
 		, ["indb"] = { EFFECT_INDESTRUCTABLE_BATTLE }, ["inde"] = { EFFECT_INDESTRUCTABLE_EFFECT }
-		, ["indct"] = { EFFECT_INDESTRUCTABLE_COUNT, rsval.indct, nil, 1 }, ["ind"] = { EFFECT_INDESTRUCTABLE }
+		, ["indct"] = { EFFECT_INDESTRUCTABLE_COUNT, nil, rsval.indct, nil, 1 }, ["ind"] = { EFFECT_INDESTRUCTABLE }
 
 
 		, ["im"] = { EFFECT_IMMUNE_EFFECT, rsval.imes }
@@ -443,8 +453,11 @@ function rsof.Escape_Old_Functions()
 	rsrst.est_pend =   rsrst.std_ep
 	rsrst.ered  =   rsrst.ret 
 
-
-
+	--// rszsf.get
+	rszsf.GetUseAbleMZoneCount = function(c, p1, leave_val, p2, zone)
+		return rszsf.GetMZoneCount(p1, leave_val, p2, c, zone)
+	end
+	rszsf.GetUseAblePZoneCount = rszsf.GetPZoneCount
 	--//
 
 	rscf.FilterFaceUp =  rscf.fufilter
@@ -633,6 +646,15 @@ function rsof.Escape_Old_Functions()
 	end
 	--//
 
+	--Function: Select and solve 
+	function rsop.SelectOperate(sel_hint, sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, solve_arr, ...)
+		return rsop.OperateCards(sel_hint, sp, filter, tp, loc_self, loc_oppo, minct, maxct, except_obj, ...)(table.unpack(solve_arr))
+	end
+
+	function rsgf.SelectOperate(sel_hint, g, sp, filter, minct, maxct, except_obj, solve_arr, ...)
+		return rsgf.OperateCards(sel_hint, g, sp, filter, minct, maxct, except_obj, ...)(table.unpack(solve_arr))
+	end
+	--//
 end
 
 

@@ -2,7 +2,7 @@
 --the old library (c10199990.lua and c10199991.lua) has gone out of service, becuase it has become a SHIT MOUNTAIN, hard for reading.
 --any problems, you can call me: QQ/VX 852415212, PLZ note sth. about YGO while you add me, otherwise I will reject your friend request.
 
-local Version_Number = "2023.09.12"
+local Version_Number = "2023.10.14"
 
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 --<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constant <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -85,6 +85,8 @@ Scl.Effect_Zone_List = { }
 --Using for some functions that call the old library (c10199990.lua), like rsop.target2/rstg.target2/rscost.cost2/rsop.target3/rstg.target3/rscost.cost3
 Scl.Last_Selected_Group = Group.CreateGroup()
 Scl.Last_Selected_Group:KeepAlive()
+--Using for Scl.RecursionGroupCheck and Scl.RecursionGroupSelectManually
+Scl.Recursion_Group_Checked_Group_List = { }
 
 --Attach extra effect
 EFFECT_ADDITIONAL_EFFECT_SCL  =   id + 100 
@@ -139,7 +141,7 @@ HINTMSG_OPERATE_COUNT_SCL = aux.Stringid(id, 12)
 HINTMSG_WOULD_SET_SCL = aux.Stringid(id, 13)
 DESC_RESET_COPY_SCL = aux.Stringid(14017402, 1)
 HINTMSG_RETURN_TO_FIELD_SCL = aux.Stringid(80335817, 0)
-
+HINTMSG_ERROR_SELECT_SCL = aux.Stringid(id, 14)
 
 TYPEM_EXTRA_SCL = TYPE_FUSION + TYPE_SYNCHRO + TYPE_XYZ + TYPE_LINK 
 TYPEM_RFSXL_SCL = TYPEM_EXTRA_SCL + TYPE_RITUAL
@@ -226,7 +228,7 @@ Scl.Reason_List = {
 	["Return"] = REASON_RETURN, ["Draw"] = REASON_DRAW,
 	["Discard"] = REASON_DISCARD, ["SpecialSummon"] = REASON_SPSUMMON,
 	["Destroy"] = REASON_DESTROY, ["LoseTarget"] = REASON_LOST_TARGET,
-	["LostXyzTarget"] = REASON_LOST_OVERLAY
+	["LostXyzTarget"] = REASON_LOST_OVERLAY, ["Temporary"] = REASON_TEMPORARY
 
 }
 
@@ -479,6 +481,7 @@ function s.create_category_list()
 	["Banish"] = { "Banish Face-Up", CATEGORY_REMOVE, HINTMSG_REMOVE, { 612115, 0 }, { 93191801, 2 }, { Scl.Banish, 6, sg, POS_FACEUP, r } },
 	["BanishUntilEP"] = { "Banish Face-Up, until EP", CATEGORY_REMOVE, HINTMSG_REMOVE, { 612115, 0 }, { 93191801, 2 }, { Scl.Banish, 6, sg, POS_FACEUP, r, 1, 2, PHASE_END } },
 	["BanishFacedown"] = { "Banish Face-Down", CATEGORY_REMOVE, HINTMSG_REMOVE, { 612115, 0 }, { 93191801, 2 }, { Scl.Banish, 6, sg, POS_FACEDOWN, r } },
+	["BanishFromGY"] = { "Banish from GY", { CATEGORY_REMOVE, CATEGORY_GRAVE_ACTION }, HINTMSG_REMOVE, { 612115, 0 }, { 93191801, 2 }, { Scl.Banish, 6, sg, POS_FACEUP, r } },
 	["Search"] = { "Search", CATEGORY_SEARCH, 0, { 135598, 0 } },
 	["Add2Hand"] = { "Add to Hand", CATEGORY_TOHAND, HINTMSG_ATOHAND, { 1249315, 0 }, { 26118970, 1 }, { Scl.Send2Hand, 4, sg, nil, r } },
 	["AddFromDeck2Hand"] = { "Add from Deck to Hand", { CATEGORY_SEARCH, CATEGORY_TOHAND }, HINTMSG_ATOHAND, { 1249315, 0 }, { 26118970, 1 }, { Scl.Send2Hand, 4, sg, nil, r } },
@@ -2581,7 +2584,7 @@ end
 --//return effect
 --*1. Scl.CreateQuickOptionalEffect_NegateEffect(c, "Destroy", 1, LOCATION_MZONE)
 -->>create a quick optional effect that can negate any effect and destroy that effect's handler once per turn.
---*2. Scl.CreateQuickOptionalEffect_NegateEffect(c, "Dummy", 1, { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
+--*2. Scl.CreateQuickOptionalEffect_NegateEffect(c, "Dummy", 1, "MonsterZone", { "Monster" }, s.cost, "Return2Hand", "Target", s.tg, s.op)
 -->>create a quick optional effect that can negate monster effect, and can only activate once per turn. You must pay s.cost for its activation, and add the s.op ass the additional operation.
 function Scl.CreateQuickOptionalEffect_NegateEffect(reg_obj, op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
 	return Scl.CreateQuickOptionalEffect_Negate(reg_obj, "NegateEffect", op_str, lim_obj, rng, con, cost, ex_ctgy, ex_flag, ex_tg, ex_op, desc_obj, rst_obj)
@@ -4391,6 +4394,9 @@ function Scl.SetExtraSelectAndOperateParama(would_hint, need_break, sel_hint, no
 	Scl.Extra_Operate_Parama_Need_Break = need_break
 	Scl.Extra_Operate_Parama_Select_Hint = sel_hint
 	Scl.Extra_Operate_Parama_Target_Hint = target_hint
+	if type(target_hint) == "nil" then
+		Scl.Extra_Operate_Parama_Target_Hint = true
+	end
 	return true
 end
 --Nearly same as Duel.GetMatchingGroup.
@@ -4657,9 +4663,10 @@ end
 -->>shuffle obj into the Deck/Extra, and if you do, draw 2 cards.
 --*1. Scl.ShuffleIn2DeckAndDraw(g, nil, 2, REASON_EFFECT, tp, 2, true, 5)
 -->>shuffle all 5 obj into the Deck/Extra, then, draw 2 cards.
-function Scl.ShuffleIn2DeckAndDraw(obj, tp, seq, dp, dct, reason, need_break, chk_ct)
+function Scl.ShuffleIn2DeckAndDraw(obj, tp, seq, dp, dct, rsn, need_break, chk_ct)
 	local g = Group.CreateGroup()
-	if Scl.Send2Deck(obj, tp, seq, reason) == 0 then
+	rsn = Scl.GetNumFormatReason(rsn)
+	if Scl.Send2Deck(obj, tp, seq, rsn) == 0 then
 		return 0, g
 	end
 	if not Scl.IsCorrectlyOperated("Deck,Extra", chk_ct) then 
@@ -4674,20 +4681,21 @@ function Scl.ShuffleIn2DeckAndDraw(obj, tp, seq, dp, dct, reason, need_break, ch
 	if need_break then
 		Duel.BreakEffect()
 	end
-	return s.more_returns_operate(Duel.Draw, dp, dct, reason)
+	return s.more_returns_operate(Duel.Draw, dp, dct, rsn)
 end 
 function s.send_to_deck_check(c, dp)
 	return c:IsInZone("Deck") and c:IsControler(dp)
 end
 --Operation: Destroy
 --use same as Duel.Destroy 
-function Scl.Destroy(card_obj, reason, loc)
+function Scl.Destroy(card_obj, rsn, loc)
 	local sg = Scl.Mix2Group(card_obj)
+	rsn = Scl.GetNumFormatReason(rsn)
 	if Scl.Operate_Check == 0 then 
-		local f = reason & REASON_REPLACE ~= 0 and Scl.IsDestructableForReplace or Card.IsDestructable
+		local f = rsn & REASON_REPLACE ~= 0 and Scl.IsDestructableForReplace or Card.IsDestructable
 		return #sg >0 and sg:FilterCount(f, nil, Scl.Operate_Check_Effect) == #sg 
 	end
-	return s.more_returns_operate(Duel.Destroy, sg, reason, loc)
+	return s.more_returns_operate(Duel.Destroy, sg, rsn, loc)
 end
 --Filter: single `Scl.IsCanBeTributed`
 function s.is_can_be_tributed(c, p, rsn)
@@ -4732,8 +4740,8 @@ end
 ---@param rsn hex|string
 ---@return decimal tributed_count, Group tributed_cards, Card first_tributed_card
 function Scl.Tribute(card_obj, rsn)
-	rsn= rsn or REASON_EFFECT 
 	local sg = Scl.Mix2Group(card_obj)
+	rsn = Scl.GetNumFormatReason(rsn or REASON_EFFECT)
 	if Scl.Operate_Check == 0 then 
 		return Scl.IsCanBeTributed(card_obj, nil, nil, rsn)
 	end
@@ -4750,17 +4758,19 @@ end
 ---Filter: Is player `p` can banish `card_obj` in `pos` position with `rsn` reason.
 function Scl.IsCanBeBanished(card_obj, p, pos, rsn)
 	local sg = Scl.Mix2Group(card_obj)
+	rsn = Scl.GetNumFormatReason(rsn)
 	return sg:IsExists(Card.IsAbleToRemove, 1, nil, p, pos, rsn)
 end
 --Operation: Banish
 --use same as Duel.Remove 
-function Scl.Banish(card_obj, pos, reason, times, whos, phase)
-	pos = pos or POS_FACEUP 
+function Scl.Banish(card_obj, pos, rsn, times, whos, phase)
 	local sg = Scl.Mix2Group(card_obj)
+	pos = pos or POS_FACEUP 
+	rsn = Scl.GetNumFormatReason(rsn)
 	if Scl.Operate_Check == 0 then 
-		return #sg >0 and sg:FilterCount(Card.IsAbleToRemove, nil, Scl.Operate_Check_Player, pos, reason) == #sg
+		return #sg >0 and sg:FilterCount(Card.IsAbleToRemove, nil, Scl.Operate_Check_Player, pos, rsn) == #sg
 	end
-	local ct, og, tc = s.more_returns_operate(Duel.Remove, sg, pos, reason)
+	local ct, og, tc = s.more_returns_operate(Duel.Remove, sg, pos, rsn)
 	if #og > 0 and (times or whos or phase) then
 		local e, _, p = Scl.GetCurrentEffectInfo()
 		local e1 = Scl.CreateFieldTriggerContinousEffect_PhaseOpearte({ e:GetHandler(), p }, og, "TemporaryBanishReturn", times, whos, phase)
@@ -4818,16 +4828,16 @@ end
 --Operation: Send to hand and confirm 
 --use same as Duel.SendtoHand
 --if confirm (default == true) == true, means the added player should confirm the added card.
-function Scl.Send2Hand(card_obj, p, reason, confirm)
-	confirm = confirm or true
+function Scl.Send2Hand(card_obj, p, rsn, confirm)
 	local sg = Scl.Mix2Group(card_obj)
-	reason= reason or REASON_EFFECT 
+	rsn = Scl.GetNumFormatReason(rsn or REASON_EFFECT)
+	confirm = confirm or true
 	if Scl.Operate_Check == 0 then
 		if #sg <= 0 then return false end
-		local f = reason & REASON_COST ~= 0 and Card.IsAbleToHandAsCost or Card.IsAbleToHand 
+		local f = rsn & REASON_COST ~= 0 and Card.IsAbleToHandAsCost or Card.IsAbleToHand 
 		return sg:FilterCount(f, nil) == #sg or sg:Filter(Scl.IsInZone, nil, "Hand") == #sg
 	end
-	local ct, og, tc = s.more_returns_operate(Duel.SendtoHand, sg, p, reason)
+	local ct, og, tc = s.more_returns_operate(Duel.SendtoHand, sg, p, rsn)
 	local og2 = Duel.GetOperatedGroup():Filter(Scl.IsInZone, nil, "Hand")
 	if #og2 > 0 and confirm then
 		for cp = 0, 1 do
@@ -4841,76 +4851,82 @@ function Scl.Send2Hand(card_obj, p, reason, confirm)
 end
 --Operation: Send to deck
 --use same as Duel.SendtoDeck
-function Scl.Send2Deck(card_obj, tp, seq, reason)
-	seq = seq or SEQ_DECKSHUFFLE 
+function Scl.Send2Deck(card_obj, tp, seq, rsn)
 	local sg = Scl.Mix2Group(card_obj)
+	seq = seq or SEQ_DECKSHUFFLE 
+	rsn = Scl.GetNumFormatReason(rsn)
 	if Scl.Operate_Check == 0 then 
-		local f = reason & REASON_COST ~= 0 and Card.IsAbleToDeckAsCost or Card.IsAbleToDeck 
+		local f = rsn & REASON_COST ~= 0 and Card.IsAbleToDeckAsCost or Card.IsAbleToDeck 
 		return #sg >0 and sg:FilterCount(f, nil) == #sg
 	end
-	return s.more_returns_operate(Duel.SendtoDeck, sg, tp, seq, reason)
+	return s.more_returns_operate(Duel.SendtoDeck, sg, tp, seq, rsn)
 end
 --Operation: look and send to deck
 --for to deck cost
 --use same as Duel.SendtoDeck
-function Scl.LookAndSend2Deck(card_obj, tp, seq, reason)
-	seq = seq or SEQ_DECKSHUFFLE 
+function Scl.LookAndSend2Deck(card_obj, tp, seq, rsn)
 	local sg = Scl.Mix2Group(card_obj)
+	seq = seq or SEQ_DECKSHUFFLE 
+	rsn = Scl.GetNumFormatReason(rsn)
 	if Scl.Operate_Check == 0 then 
-		local f = reason & REASON_COST ~= 0 and Card.IsAbleToDeckAsCost or Card.IsAbleToDeck 
+		local f = rsn & REASON_COST ~= 0 and Card.IsAbleToDeckAsCost or Card.IsAbleToDeck 
 		return #sg >0 and sg:FilterCount(f, nil) == #sg
 	end
 	Scl.Look(sg)
-	return s.more_returns_operate(Duel.SendtoDeck, sg, tp, seq, reason)
+	return s.more_returns_operate(Duel.SendtoDeck, sg, tp, seq, rsn)
 end
 --Operation: Send to extra
 --use same as Duel.SendtoDeck
-function Scl.Send2Extra(card_obj, tp, seq, reason)
-	seq = seq or SEQ_DECKSHUFFLE 
+function Scl.Send2Extra(card_obj, tp, seq, rsn)
 	local sg = Scl.Mix2Group(card_obj)
+	seq = seq or SEQ_DECKSHUFFLE 
+	rsn = Scl.GetNumFormatReason(rsn)
 	if Scl.Operate_Check == 0 then 
-		local f = reason & REASON_COST ~= 0 and Card.IsAbleToExtraAsCost or Card.IsAbleToExtra
+		local f = rsn & REASON_COST ~= 0 and Card.IsAbleToExtraAsCost or Card.IsAbleToExtra
 		return #sg >0 and sg:FilterCount(f, nil) == #sg
 	end
-	return s.more_returns_operate(Duel.SendtoDeck, sg, tp, seq, reason)
+	return s.more_returns_operate(Duel.SendtoDeck, sg, tp, seq, rsn)
 end
 --Operation: Send to main and extra as cost
 --use same as Duel.SendtoDeck
-function Scl.Send2DeckOrExtraAsCost(card_obj, tp, seq, reason)
-	seq = seq or SEQ_DECKSHUFFLE 
+function Scl.Send2DeckOrExtraAsCost(card_obj, tp, seq, rsn)
 	local sg = Scl.Mix2Group(card_obj)
+	seq = seq or SEQ_DECKSHUFFLE 
+	rsn = Scl.GetNumFormatReason(rsn)
 	if Scl.Operate_Check == 0 then 
-		local f = reason & REASON_COST ~= 0 and Card.IsAbleToDeckOrExtraAsCost or Card.IsAbleToDeck
+		local f = rsn & REASON_COST ~= 0 and Card.IsAbleToDeckOrExtraAsCost or Card.IsAbleToDeck
 		return #sg >0 and sg:FilterCount(f, nil) == #sg
 	end
-	return s.more_returns_operate(Duel.SendtoDeck, sg, tp, seq, reason)
+	return s.more_returns_operate(Duel.SendtoDeck, sg, tp, seq, rsn)
 end
 --Operation: add pendulumn to extra faceup 
 --use same as Duel.SendtoExtraP
-function Scl.Send2ExtraP(card_obj, tp, reason)
+function Scl.Send2ExtraP(card_obj, tp, rsn)
 	local sg = Scl.Mix2Group(card_obj)
+	rsn = Scl.GetNumFormatReason(rsn)
 	if Scl.Operate_Check == 0 then
-		local f = reason & REASON_COST ~= 0 and aux.TRUE or Card.IsAbleToExtra
+		local f = rsn & REASON_COST ~= 0 and aux.TRUE or Card.IsAbleToExtra
 		return #sg >0 and sg:FilterCount(f, nil) == #sg and sg:FilterCount(Card.IsForbidden, nil) == 0
 	end
-	return s.more_returns_operate(Duel.SendtoDeck, sg, tp, seq, reason)
+	return s.more_returns_operate(Duel.SendtoDeck, sg, tp, seq, rsn)
 end
 --Operation: Send to grave
 --use same as Duel.SendtoGrave
-function Scl.Send2Grave(card_obj, reason)
+function Scl.Send2Grave(card_obj, rsn)
 	local sg = Scl.Mix2Group(card_obj)
+	rsn = Scl.GetNumFormatReason(rsn)
 	if Scl.Operate_Check == 0 then 
 		local f 
-		if reason & REASON_RETURN ~= 0 then return sg:FilterCount(Scl.IsInZone, nil, LOCATION_REMOVED) == #sg end
-		local f = reason & REASON_COST ~= 0 and Card.IsAbleToGraveAsCost or Card.IsAbleToGrave
+		if rsn & REASON_RETURN ~= 0 then return sg:FilterCount(Scl.IsInZone, nil, LOCATION_REMOVED) == #sg end
+		local f = rsn & REASON_COST ~= 0 and Card.IsAbleToGraveAsCost or Card.IsAbleToGrave
 		return #sg >0 and sg:FilterCount(f, nil) == #sg 
 	end
-	return s.more_returns_operate(Duel.SendtoGrave, sg, reason)
+	return s.more_returns_operate(Duel.SendtoGrave, sg, rsn)
 end
 --Discard card, using in scl.list_format_cost_or_target_or_operation 
 --selected_obj : { [0] = player 0's min count, [1] = player 1's min count, [2] = player 0's max count, [3] = player 1's max count } 
 --//return discarded count, discarded group, first discarded card
-function s.discard_hand_special(selected_obj, reason)
+function s.discard_hand_special(selected_obj, rsn)
 	if Scl.Operate_Check == 0 then 
 		for p = 0, 1 do 
 			if not Duel.IsPlayerCanDraw(p, selected_obj[p]) then 
@@ -4922,14 +4938,14 @@ function s.discard_hand_special(selected_obj, reason)
 	local og = Group.CreateGroup()
 	local ct = 0
 	for p = 0, 1 do 
-		ct = ct + Duel.DiscardHand(p, aux.TRUE, selected_obj[p], selected_obj[p + 2], reason, nil)
+		ct = ct + Duel.DiscardHand(p, aux.TRUE, selected_obj[p], selected_obj[p + 2], rsn, nil)
 		og:Merge(Duel.GetOperatedGroup())
 	end
 	return ct, og, og:GetFirst()
 end
 --draw, using in scl.list_format_cost_or_target_or_operation 
 --selected_obj : { [0] = player 0's min count, [1] = player 1's min count, [2] = player 0's max count, [3] = player 1's max count }
-function s.draw_special(selected_obj, reason)
+function s.draw_special(selected_obj, rsn)
 	if Scl.Operate_Check == 0 then 
 		for p = 0, 1 do 
 			if not Duel.IsPlayerCanDraw(p, selected_obj[p]) then 
@@ -4956,7 +4972,7 @@ function s.draw_special(selected_obj, reason)
 			dct = Duel.AnnounceNumber(p, table.unpack(ct_list))
 		end
 		if dct > 0 then
-			ct = ct + Duel.Draw(p, dct, reason)
+			ct = ct + Duel.Draw(p, dct, rsn)
 		end 
 		og:Merge(Duel.GetOperatedGroup())
 	end
@@ -4964,13 +4980,13 @@ function s.draw_special(selected_obj, reason)
 end
 --send deck top to graveyard, using in scl.list_format_cost_or_target_or_operation 
 --selected_obj : { [0] = player 0's min count, [1] = player 1's min count, [2] = player 0's max count, [3] = player 1's max count } 
-function s.discard_deck_special(selected_obj, reason)
+function s.discard_deck_special(selected_obj, rsn)
 	if Scl.Operate_Check == 0 then 
 		for p = 0, 1 do 
-			if reason == REASON_COST and not Duel.IsPlayerCanDiscardDeckAsCost(p, selected_obj[p]) then 
+			if rsn == REASON_COST and not Duel.IsPlayerCanDiscardDeckAsCost(p, selected_obj[p]) then 
 				return false 
 			end 
-			if reason ~= REASON_COST and not Duel.IsPlayerCanDiscardDeck(p, selected_obj[p]) then 
+			if rsn ~= REASON_COST and not Duel.IsPlayerCanDiscardDeck(p, selected_obj[p]) then 
 				return false 
 			end 
 		end
@@ -4986,8 +5002,8 @@ function s.discard_deck_special(selected_obj, reason)
 		if maxct > minct then 
 			local ct_list = { }
 			for i = minct, maxct do 
-				if ( reason == REASON_COST and Duel.IsPlayerCanDiscardDeckAsCost(p, i) ) 
-					or ( reason ~= REASON_COST and Duel.IsPlayerCanDiscardDeck(p, i) ) then
+				if ( rsn == REASON_COST and Duel.IsPlayerCanDiscardDeckAsCost(p, i) ) 
+					or ( rsn ~= REASON_COST and Duel.IsPlayerCanDiscardDeck(p, i) ) then
 					table.insert(ct_list, i)
 				end
 			end
@@ -4995,7 +5011,7 @@ function s.discard_deck_special(selected_obj, reason)
 			dct = Duel.AnnounceNumber(p, table.unpack(ct_list))
 		end
 		if dct > 0 then
-			ct = ct + Duel.DiscardDeck(p, dct, reason)
+			ct = ct + Duel.DiscardDeck(p, dct, rsn)
 			og:Merge(Duel.GetOperatedGroup())
 		end 
 	end
@@ -5668,38 +5684,108 @@ end
 --Using to replace function Scl.CheckSubGroup
 --If you want to check a few cards, Scl.CheckSubGroup is effective, but if you want to check more cards, use Scl.CheckSubGroup will stuck your ygopro, even crash it. 
 --Commonly using in a synchro/xyz/link summon that can use cards in hand/GY/Deck as materials.
---filter_obj can be follow formats: first_filter, {first_filter} or {first_filter, final_filter}
---first_filter: If the checking group don't suit first_filter(g, ...), it will directly return false 
+--not_filter: If the checking group don't suit not_filter(g, ...), it will directly return false 
 --final_filter (default == aux.TRUE): If the checking group don't suit final_filter(g, ...), it will continue add new cards into the checking group to do the next check.
+--maxct_obj can be those formats: maxct or { maxct } or { maxct, sub_obj1, sub_obj2, ... }, maxct means the max card count you can check.
+--sub_obj can be this format: { sub_filter, subct }, if you have checked subct × cards that meet sub_filter(card, ...), this function won't continue check other cards meet sub_filter(card, ...), sub_obj { sub_filter, sub_ct } means if pick a number of cards and match sub_filter(card, ...) == sub_ct, this function will 
 -->> return successfully
-function Scl.RecursionGroupCheck(card_obj, filter_obj, minct, maxct, ...)
-	filter_obj = type(filter_obj) == "table" and filter_obj or { filter_obj }
-	local first_filter, final_filter = table.unpack(filter_obj)
-	final_filter = final_filter or aux.TRUE
+function Scl.RecursionGroupCheck(record_idx, card_obj, final_filter, not_filter, minct, maxct_obj, ...)
+	if not Scl.Recursion_Group_Checked_Group_List[record_idx] then
+		Scl.Recursion_Group_Checked_Group_List[record_idx] = Group.CreateGroup()
+		Scl.Recursion_Group_Checked_Group_List[record_idx]:KeepAlive()
+	end
 	local mg = Scl.Mix2Group(card_obj)
-	return mg:IsExists(s.recursion_group_check_filter, 1, nil, { }, mg, first_filter, final_filter, minct, maxct, ...)
+	local maxct = maxct_obj
+	local max_filter_obj
+	if type(maxct_obj) == "function" then
+		local arr = { maxct_obj(mg, ...) }
+		maxct = arr[1]
+		table.remove(arr, 1)
+		max_filter_obj = arr
+	end
+	if minct == 0 and final_filter(Group.CreateGroup(), ...) then 
+		return true
+	end
+	--first check last checked successfully group, to reduce caculation
+	local lcg = Scl.Recursion_Group_Checked_Group_List[record_idx]
+	if #lcg > 0 and #(lcg - mg ) == 0 and s.recursion_group_check_group_filter(lcg, lcg, record_idx, final_filter, not_filter, minct, maxct, max_filter_obj, ...) then 
+		return true
+	end	
+	return mg:IsExists(s.recursion_group_check_filter, 1, nil, Group.CreateGroup(), mg, record_idx, final_filter, not_filter, minct, maxct, max_filter_obj, ...)
 end
-function s.recursion_group_check_filter(c, checked_cards, mg, first_filter, final_filter, minct, maxct, ...)
-	local sg = Scl.Mix2Group(c, checked_cards)
-	local checked_cards2 = Scl.Group2CardList(sg)
-	local res
-	--case0 not suit first_filter 
-	if not first_filter(sg, ...) then
+function s.recursion_group_check_filter(c, checked_cards, mg, record_idx, final_filter, not_filter, minct, maxct, max_filter_obj, ...)
+	local sg = c + checked_cards
+	local res = s.recursion_group_check_group_filter(sg, mg, record_idx, final_filter, not_filter, minct, maxct, max_filter_obj, ...)
+	--record success group to reduce caculation
+	if res then
+		Scl.Recursion_Group_Checked_Group_List[record_idx]:Clear()
+		Scl.Recursion_Group_Checked_Group_List[record_idx]:Merge(sg)
+	end
+	return res
+end
+function s.recursion_group_check_group_filter(sg, mg, record_idx, final_filter, not_filter, minct, maxct, max_filter_obj, ...)
+	--case1 not suit not_filter 
+	if not_filter and not not_filter(sg, ...) then
 		return false
 	end
-	--case1 more cards
+	--case2 more cards
 	if #sg > maxct then
 		return false
 	end
-	--case2 less cards
-	if #sg < minct then 
-		return mg:IsExists(s.recursion_group_check_filter, 1, sg, checked_cards2, mg, first_filter, final_filter, minct, maxct, ...)
+	--case3 check last checked group
+	if sg == mg then
+		return #sg >= minct and final_filter(sg, ...)
 	end
-	--case3 not suit final_filter
-	if not final_filter(sg, ...) then
-		return mg:IsExists(s.recursion_group_check_filter, 1, sg, checked_cards2, mg, first_filter, final_filter, minct, maxct, ...)
+	--case4 sub max_filter_obj
+	local max_filter_obj2
+	if max_filter_obj and not sg == mg then
+		max_filter_obj2 = { }
+		for _, max_filter_arr in pairs(max_filter_obj) do
+			local max_filter, max_ct = max_filter_arr[1], max_filter_arr[2]
+			if max_ct <= 0 or sg:IsExists(max_filter, max_ct, nil) then
+				mg:Remove(max_filter, nil)
+			else
+				table.insert(max_filter_obj2, max_filter_arr)
+			end
+		end
+	end
+	--case5 less cards or not suit final_filter
+	if #sg < minct or not final_filter(sg, ...) then 
+		return mg:IsExists(s.recursion_group_check_filter, 1, sg, sg, mg, record_idx, final_filter, not_filter, minct, maxct, max_filter_obj2, ...)
 	end
 	return true
+end
+function s.recursion_max_filter_check(sg, max_filter_obj)
+	for _, max_filter_arr in pairs(max_filter_obj) do
+		local max_filter, max_ct = max_filter_arr[1], max_filter_arr[2]
+		if max_ct > 0 and sg:IsExists(max_filter, max_ct + 1, nil) then
+			return false
+		end
+	end
+	return true
+end
+function Scl.RecursionGroupSelectManually(hint_obj, card_obj, tp, final_filter, not_filter, minct, maxct_obj, ...)
+	local mg = Scl.Mix2Group(card_obj)
+	local maxct = maxct_obj
+	local max_filter_obj
+	if type(maxct_obj) == "function" then
+		local arr = { maxct_obj(mg, ...) }
+		maxct = arr[1]
+		table.remove(arr, 1)
+		max_filter_obj = arr
+	end
+	local res = false
+	local sg = Group.CreateGroup()
+	repeat 
+		Scl.HintSelect(tp, hint_obj)
+		sg = mg:Select(tp, minct, maxct, nil)
+		if not sg or (not_filter and not_filter(sg)) or not s.recursion_max_filter_check(sg, max_filter_obj) or not final_filter(sg) then
+			Duel.Hint(HINT_MESSAGE, tp, HINTMSG_ERROR_SELECT_SCL)
+		else
+			res = true
+		end
+	until res
+	return sg
 end
 --Get the xyz materials attach on the obj before obj leaves the field.
 --//return xyz materials group
@@ -6169,7 +6255,6 @@ function s.SynMixOperation(f1, f2, f3, f4, minct, maxc, gc)
 				local res
 				--case 1,  Summon Effect Custom
 				if Scl.CustomSynchroMaterialAction then
-					Debug.Message("1231414")
 					res = Scl.CustomSynchroMaterialAction(mg, c, e, tp)
 					Scl.CustomSynchroMaterialAction = nil
 				--case 2,  Summon Procedure Custom 
@@ -6245,7 +6330,7 @@ end
 --speical "aux.AddXyzProcedureLevelFree"
 --can call some scl's custom functions in the procedure, like extra xyz material, custom xyz material action, utility xyz material, and so on
 --return summon effect
-function Scl.AddlXyzProcedure(c, f, gf, minc, maxc, alterf, desc, op)
+function Scl.AddXyzProcedure(c, f, gf, minc, maxc, alterf, desc, op)
 	c:EnableReviveLimit()
 	f = type(f) == "number" and aux.FilterBoolFunction(Card.IsXyzLevel, f) or f
 	gf = gf or aux.TRUE
@@ -6410,7 +6495,6 @@ function s.XyzLevelFreeOperationAlter(f, gf, minct, maxct, alterf, desc, op)
 			local mg = e:GetLabelObject()
 			mg = mg or og
 			s.XExtraMaterialCount(mg, c, tp)
-			Debug.Message(22333)
 			if not Scl.CustomXyzMaterialAction and not c.scl_custom_xyz_material_action then
 				res = aux.XyzLevelFreeOperationAlter(f, gf, 1, maxct, alterf, desc, op)(e, tp, eg, ep, ev, re, r, rp, c, og, min, max)
 			else
@@ -6673,7 +6757,7 @@ end
 function Scl.GetNumFormatReason(rsn_obj)
 	if type(rsn_obj) == "number" then 
 		return rsn_obj, Scl.SplitNumber2PowerOf2(rsn_obj)
-	else
+	elseif type(rsn_obj) == "string" then
 		local ctyp, ctyp2, ctyp_arr = 0, 0, { }
 		for _, chk_typ in pairs(Scl.SplitString(rsn_obj)) do 
 			ctyp2 = Scl.Reason_List[chk_typ]
@@ -6681,6 +6765,8 @@ function Scl.GetNumFormatReason(rsn_obj)
 			table.insert(ctyp_arr, zone2)
 		end
 		return ctyp, ctyp_arr
+	else
+		return 0, { }
 	end
 end
 --Filter
@@ -7390,7 +7476,7 @@ function Scl.CheckBoolean(chk_obj, bool)
 end 
 --Split a number to different power-of-2 number's sum. 
 --//return the splitted array.
---*1. Scl.SplitNumber2PowerOf2(3) 1111
+--*1. Scl.SplitNumber2PowerOf2(3)
 -->>return { 1, 2 }
 --*1. Scl.SplitNumber2PowerOf2(15)
 -->>return { 1, 2, 4, 8 }
