@@ -72,7 +72,7 @@ function c9910176.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910176.disop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) and rc:IsAbleToRemove()
+	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) and not rc:IsLocation(LOCATION_REMOVED) and rc:IsAbleToRemove()
 		and (Duel.GetCustomActivityCount(9910176,tp,ACTIVITY_CHAIN)~=0
 		or Duel.GetCustomActivityCount(9910176,1-tp,ACTIVITY_CHAIN)~=0)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910176,1)) then

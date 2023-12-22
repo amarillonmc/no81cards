@@ -11,10 +11,9 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
-	
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_EXTRA,0,1,nil)
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==1
 end
 function cm.spfilter(c,e,tp)
 	return c:IsFacedown() and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
@@ -38,5 +37,5 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not se:GetHandler():IsCode(e:GetOwner():GetCount()) and c:IsLocation(LOCATION_EXTRA)
+	return not se:GetHandler():IsCode(e:GetOwner():GetCode()) and c:IsLocation(LOCATION_EXTRA)
 end

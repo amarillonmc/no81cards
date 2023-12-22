@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsPlayerCanSSet(1-tp) end
 	local tg=Duel.SelectMatchingCard(1-tp,Card.IsSSetable,tp,0,LOCATION_HAND,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SET)
 	if #tg>0 then Duel.SSet(1-tp,tg,1-tp,false) end
@@ -79,7 +79,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		if not tc:IsOnField() then
-			if 1==1 then return end
+			if 1==1 then return tc:IsImmuneToEffect(e) end
 			local tg=Duel.GetMatchingGroup(nil,tc:GetControler(),tc:GetLocation(),0,nil)
 			local b1=tc:GetSequence()~=0
 			local b2=tc:GetSequence()~=#tg-1

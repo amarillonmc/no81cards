@@ -139,9 +139,9 @@ end
 function pnflpf.chkval(e,te)
 	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
 		if e:GetHandler():GetFlagEffect(11451854)==0 then
-			local prop=0
-			if PNFL_PROPHECY_FLIGHT_STONE_HAIL then prop=EFFECT_FLAG_CLIENT_HINT end
-			e:GetHandler():RegisterFlagEffect(11451854,RESET_EVENT+RESETS_STANDARD,prop,1,0,aux.Stringid(11451854,2))
+			local prop=EFFECT_FLAG_SET_AVAILABLE
+			if PNFL_PROPHECY_FLIGHT_STONE_HAIL then prop=prop|EFFECT_FLAG_CLIENT_HINT end
+			e:GetHandler():RegisterFlagEffect(11451854,RESET_EVENT+0x1fc0000,prop,1,0,aux.Stringid(11451854,2))
 		end
 	end
 	return false

@@ -71,7 +71,9 @@ function c50223005.op2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c50223005.con3(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_FUSION or r==REASON_XYZ
+	local c=e:GetHandler()
+	local rc=c:GetReasonCard()
+	return (r==REASON_FUSION or r==REASON_XYZ) and rc:IsSetCard(0x3b)
 end
 function c50223005.op3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

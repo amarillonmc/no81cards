@@ -67,13 +67,13 @@ if not Duel.GetMustMaterial then
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttackTarget()
-	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+	tc:RegisterFlagEffect(m,RESET_EVENT+0x1fc0000,0,1)
 end
 function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:Filter(Card.IsOnField,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+			tc:RegisterFlagEffect(m,RESET_EVENT+0x1fc0000,0,1)
 		end
 	end
 end
@@ -81,7 +81,7 @@ function cm.checkop6(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+			tc:RegisterFlagEffect(m,RESET_EVENT+0x1fc0000,0,1)
 		end
 	end
 end

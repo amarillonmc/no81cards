@@ -118,7 +118,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local tc=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst()
-		c:SetCardTarget(tc)
+		e:GetHandler():SetCardTarget(tc)
 		e:GetLabelObject():AddCard(tc)
 	end
 end

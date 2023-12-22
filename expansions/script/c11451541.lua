@@ -47,7 +47,7 @@ function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:Filter(Card.IsLocation,nil,LOCATION_MZONE)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1)
+			tc:RegisterFlagEffect(m+1,RESET_EVENT+0x1fc0000,0,1)
 		end
 	end
 end
@@ -55,7 +55,7 @@ function cm.checkop6(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1)
+			tc:RegisterFlagEffect(m+1,RESET_EVENT+0x1fc0000,0,1)
 		end
 	end
 end
