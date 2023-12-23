@@ -44,7 +44,7 @@ function c88800020.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c88800020.ffilter(c)
-	return c:IsSetCard(0xc01)
+	return c:IsSetCard(0xc01) and c:IsType(TYPE_MONSTER)
 end
 function c88800020.cfilter1(c,tp)
 	return c:IsSetCard(0xc01) and Duel.GetMZoneCount(tp,c)>0
