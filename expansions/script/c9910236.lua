@@ -47,7 +47,7 @@ function c9910236.activate(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetValue(1)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
-		if Duel.GetCurrentChain()>2 then
+		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.GetCurrentChain()>2 then
 			local e4=Effect.CreateEffect(c)
 			e4:SetType(EFFECT_TYPE_SINGLE)
 			e4:SetCode(EFFECT_IMMUNE_EFFECT)

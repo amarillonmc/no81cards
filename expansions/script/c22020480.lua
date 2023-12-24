@@ -7,8 +7,14 @@ function c22020480.initial_effect(c)
 	e1:SetCategory(CATEGORY_DAMAGE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,22020480+EFFECT_COUNT_CODE_OATH)
-	e1:SetOperation(c22020480.damop)
+	e1:SetCost(c22020480.cost)
+	e1:SetOperation(c22020480.op)
 	c:RegisterEffect(e1)
+end
+function c22020480.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local lp=Duel.GetLP(tp)
+	if chk==0 then return Duel.CheckLPCost(tp,lp-100) end
+	Duel.PayLPCost(tp,lp-100)
 end
 function c22020480.desfilter(c)
 	return c:IsType(TYPE_MONSTER)
@@ -16,7 +22,7 @@ end
 function c22020480.dfilter(c)
 	return c:IsFaceup() and c:IsCode(22020410)
 end
-function c22020480.lpop(e,tp,eg,ep,ev,re,r,rp)
+function c22020480.op(e,tp,eg,ep,ev,re,r,rp)
 	local dg=Duel.GetMatchingGroup(c22020480.desfilter,tp,0,LOCATION_MZONE,nil)
 	local dg1=Duel.GetMatchingGroup(c22020480.dfilter,tp,LOCATION_ONFIELD,0,nil)
 	Duel.SetLP(1-tp,math.ceil(Duel.GetLP(1-tp)/2))

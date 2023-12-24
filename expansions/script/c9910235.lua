@@ -54,7 +54,8 @@ function c9910235.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e2,tp)
 	end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,zone,zone,aux.ExceptThisCard(e))
-	if Duel.GetCurrentChain()>2 and #g>=link and Duel.SelectYesNo(tp,aux.Stringid(9910235,0)) then
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.GetCurrentChain()>2 and #g>=link
+		and Duel.SelectYesNo(tp,aux.Stringid(9910235,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg=g:Select(tp,link,link,nil)
 		Duel.HintSelection(sg)

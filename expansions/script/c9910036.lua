@@ -113,11 +113,11 @@ function c9910036.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.GetMatchingGroup(c9910036.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,LOCATION_MZONE)
 	end
-	if bit.band(sel,3)~=0 then
+	if bit.band(sel,4)~=0 then
 		local g=Duel.GetMatchingGroup(c9910036.filter3,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,LOCATION_SZONE)
 	end
-	if bit.band(sel,4)~=0 then
+	if bit.band(sel,8)~=0 then
 		local g=Duel.GetMatchingGroup(c9910036.filter4,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,LOCATION_SZONE)
 	end
