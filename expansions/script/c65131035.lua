@@ -21,6 +21,7 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
+	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetCondition(s.spcon2)
 	e3:SetTarget(s.sptg2)
@@ -68,11 +69,13 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local d=Duel.GetAttackTarget()
 	if Duel.Remove(d,0,REASON_EFFECT+REASON_TEMPORARY)>0 and d:IsLocation(LOCATION_REMOVED) then
 		d:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		local og=Group.FromCards(d)
+		og:KeepAlive()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(d)
+		e1:SetLabelObject(og)
 		e1:SetCountLimit(1)
 		e1:SetCondition(s.retcon)
 		e1:SetOperation(s.retop)
@@ -80,7 +83,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 			local num=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil):GetClassCount(s.ccfilter)
 			Duel.Recover(tp,num*1200,REASON_EFFECT)
-		end		
+		end	 
 	end
 end
 function s.cfilter(c,tp)
@@ -93,17 +96,17 @@ function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(s.cfilter,nil)
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(s.cfilter,nil,tp)
 	if chk==0 then
 		return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp,g)>0
-	end	
+	end 
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,0)
 end
 function s.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(s.cfilter,nil)
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(s.cfilter,nil,tp)
 	if Duel.Remove(g,0,REASON_EFFECT+REASON_TEMPORARY)>0 and g:IsExists(Card.IsLocation,1,nil,LOCATION_REMOVED) then
 		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
 		if og:GetCount()==0 then return end
@@ -115,7 +118,7 @@ function s.spop2(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(d)
+		e1:SetLabelObject(og)
 		e1:SetCountLimit(1)
 		e1:SetCondition(s.retcon)
 		e1:SetOperation(s.retop)

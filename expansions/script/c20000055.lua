@@ -1,0 +1,33 @@
+--无亘龙 赞米利亚登
+xpcall(function() dofile("expansions/script/c20000052.lua") end,function() dofile("script/c20000052.lua") end)
+local cm = self_table
+function cm.initial_effect(c)
+	fu_imm.give(cm,"TH","F",EFFECT_CHANGE_DAMAGE,",PTG,M,+1,val1")(c)
+	if cm.glo then return end
+	cm.glo={0,0}
+	fuef.FC(c,0,EVENT_PHASE_START+PHASE_DRAW,",,,,,op3*1")(EVENT_BATTLE_DAMAGE,0,"OP:op3*")
+end
+--e1
+function cm.val1(e,re,dam,r,rp,rc)
+	return r==REASON_BATTLE and cm.glo[2-rp]>dam and cm.glo[2-rp] or dam
+end
+--e2
+function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return #e:GetHandler():GetReasonCard():GetMaterial()>0 and fugf.GetFilter(tp,"GR","IsSet+AbleTo+IsPos","3fd0,H,FU",1) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetHandler():GetReasonCard():GetMaterial()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	g=fugf.SelectFilter(tp,"GR","IsSet+AbleTo+IsPos+GChk","3fd0,H,FU",nil,1,#g)
+	if #g==0 then return end
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,g)
+end
+--e3
+function cm.op3(chk)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+		if chk then cm.glo={0,0}
+		else cm.glo[ep+1]=ev>cm.glo[ep+1] and ev or cm.glo[ep+1] end
+	end
+end
