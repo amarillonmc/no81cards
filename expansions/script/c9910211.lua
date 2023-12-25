@@ -49,7 +49,6 @@ function c9910211.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND)
 		and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then
-		Duel.BreakEffect()
 		Duel.ShuffleHand(tp)
 		Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD,nil)
 	end
@@ -60,11 +59,10 @@ end
 function c9910211.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToRemoveAsCost() end
-	c:RegisterFlagEffect(9910211,RESET_EVENT+RESETS_STANDARD,0,1)
 	Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function c9910211.spfilter(c,e,tp,ec)
-	return c:IsLinkBelow(1) and c:IsLinkAbove(1) and c:IsSetCard(0x955)
+	return c:IsLink(1) and c:IsSetCard(0x955)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,ec,c)>0
 end
 function c9910211.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -73,9 +71,8 @@ function c9910211.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c9910211.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9910211.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,c)
+	local g=Duel.SelectMatchingCard(tp,c9910211.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,nil)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end

@@ -1,5 +1,6 @@
 --核心硬币 鹰雀鹫联组
 function c32100004.initial_effect(c)
+	aux.AddCodeList(c,32100002)
 	--spsummon
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

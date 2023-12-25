@@ -1,5 +1,6 @@
 --假面骑士 OOO
 function c32100012.initial_effect(c)
+	aux.AddCodeList(c,32100002)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFunRep(c,32100002,aux.FilterBoolFunction(Card.IsFusionCode,32100007),3,3,true,true) 
@@ -90,6 +91,7 @@ function c32100012.initial_effect(c)
 	e3:SetOperation(c32100012.spop)
 	c:RegisterEffect(e3)
 end 
+c32100012.SetCard_HR_Kmr000=true 
 function c32100012.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end 
@@ -125,7 +127,7 @@ function c32100012.fspop(e,tp,eg,ep,ev,re,r,rp)
 		mg2=fgroup(ce,e,tp)
 		local mf=ce:GetValue() 
 	end 
-	if c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(mg2,mf,chkf) then 
+	if c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(mg1,mf,chkf) then 
 		if (sg2==nil or not sg2:IsContains(c) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
 			local mat1=Duel.SelectFusionMaterial(tp,c,mg1,nil,chkf)
 			c:SetMaterial(mat1)

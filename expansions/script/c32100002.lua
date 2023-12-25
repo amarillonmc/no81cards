@@ -24,22 +24,25 @@ function c32100002.initial_effect(c)
 	e3:SetOperation(c32100002.eqop2) 
 	c:RegisterEffect(e3) 
 end
+c32100002.SetCard_HR_Kmr000=true 
 function c32100002.filter1(c)
-	return c.SetCard_HR_Corecoin and not c:IsForbidden()
+	return c.SetCard_HR_Corecoin and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
-function c32100002.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(c32100002.filter1,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+function c32100002.eqtg(e,tp,eg,ep,ev,re,r,rp,chk) 
+	local g=Duel.GetMatchingGroup(c32100002.filter1,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,nil)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and g:GetCount()>0 end
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK)
 end
 function c32100002.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or c:IsFacedown() or not c:IsRelateToEffect(e) then return end 
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE) 
 	if ft>3 then ft=3 end 
+	local g=Duel.GetMatchingGroup(c32100002.filter1,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP) 
-	local g=Duel.SelectMatchingCard(tp,c32100002.filter1,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,ft,nil)  
-	if g:GetCount()<=0 then return end 
-	local tc=g:GetFirst()
+	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,3) 
+	if sg:GetCount()<=0 then return end 
+	local tc=sg:GetFirst()
 	while tc do 
 		if Duel.Equip(tp,tc,c) then 
 			--Add Equip limit
@@ -51,14 +54,14 @@ function c32100002.eqop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(c32100002.eqlimit)
 			tc:RegisterEffect(e1)  
 		end 
-	tc=g:GetNext() 
+	tc=sg:GetNext() 
 	end
 end
 function c32100002.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function c32100002.filter2(c,e,tp)
-	return c.SetCard_HR_Corecoin and not c:IsForbidden() and Duel.GetFlagEffect(tp,32100002+c:GetOriginalCodeRule())==0 
+	return c.SetCard_HR_Corecoin and c:IsType(TYPE_MONSTER) and not c:IsForbidden() and Duel.GetFlagEffect(tp,32100002+c:GetOriginalCodeRule())==0 
 end
 function c32100002.eqgck(g,e,tp) 
 	return Duel.GetLocationCount(tp,LOCATION_SZONE)+g:FilterCount(Card.IsLocation,nil,LOCATION_SZONE)>=g:GetCount() and Duel.IsExistingMatchingCard(c32100002.filter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,g:GetCount(),nil,e,tp) 

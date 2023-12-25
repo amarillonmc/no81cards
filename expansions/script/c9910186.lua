@@ -2,11 +2,11 @@
 function c9910186.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_HANDES+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e1:SetCost(c9910186.cost)
+	e1:SetCountLimit(1,9910186)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetTarget(c9910186.target)
 	e1:SetOperation(c9910186.activate)
 	c:RegisterEffect(e1)
@@ -16,34 +16,43 @@ function c9910186.initial_effect(c)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(c9910186.handcon)
 	c:RegisterEffect(e2)
-end
-function c9910186.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	--to deck top
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,9910187)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(c9910186.dttg)
+	e3:SetOperation(c9910186.dtop)
+	c:RegisterEffect(e3)
 end
 function c9910186.thfilter(c)
 	return c:IsSetCard(0x3954) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c9910186.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910186.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler(),REASON_EFFECT)
+		and Duel.IsExistingMatchingCard(c9910186.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
-	e:SetCategory(0)
-	local ch=Duel.GetCurrentChain()
-	if ch>1 and Duel.GetChainInfo(ch-1,CHAININFO_TRIGGERING_PLAYER)==1-tp then
+	local tep=nil
+	if Duel.GetCurrentChain()>1 then tep=Duel.GetChainInfo(Duel.GetCurrentChain()-1,CHAININFO_TRIGGERING_PLAYER) end
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and tep and tep==1-tp then
 		e:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE)
+		e:SetLabel(1)
 	end
 end
 function c9910186.rmfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_WARRIOR) and c:IsAbleToRemove()
 end
 function c9910186.activate(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,nil,REASON_EFFECT)==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910186.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,g)
-		local ch=Duel.GetCurrentChain()
-		if ch>1 and Duel.GetChainInfo(ch-1,CHAININFO_TRIGGERING_PLAYER)==1-tp
-			and Duel.IsExistingMatchingCard(c9910186.rmfilter,tp,LOCATION_MZONE,0,1,nil)
+		if e:GetLabel()==1 and Duel.IsExistingMatchingCard(c9910186.rmfilter,tp,LOCATION_MZONE,0,1,nil)
 			and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil)
 			and Duel.SelectYesNo(tp,aux.Stringid(9910186,0)) then
 			Duel.BreakEffect()
@@ -61,4 +70,17 @@ function c9910186.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910186.handcon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
+end
+function c9910186.dttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x3954) end
+end
+function c9910186.dtop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910186,1))
+	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,nil,0x3954)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.ShuffleDeck(tp)
+		Duel.MoveSequence(tc,SEQ_DECKTOP)
+		Duel.ConfirmDecktop(tp,1)
+	end
 end

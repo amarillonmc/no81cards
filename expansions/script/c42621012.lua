@@ -1,108 +1,156 @@
---学园孤岛 佐仓慈
 local m=42621012
 local cm=_G["c"..m]
 
 function cm.initial_effect(c)
-	aux.EnablePendulumAttribute(c,false)
+	aux.EnablePendulumAttribute(c)
+	--release
 	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_ACTIVATE)
-	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetRange(LOCATION_HAND)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE)
-	e0:SetTarget(cm.target)
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EVENT_RELEASE)
+    e0:SetRange(0x03)
+    e0:SetCountLimit(1,m)
+    e0:SetCondition(cm.mvcon)
+	e0:SetOperation(cm.mvop)
 	c:RegisterEffect(e0)
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DISABLE+CATEGORY_NEGATE+CATEGORY_REMOVE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE)
-	e3:SetRange(LOCATION_PZONE)
-	e3:SetCountLimit(1,m)
-	e3:SetCondition(cm.spcon1)
-	e3:SetTarget(cm.sptg1)
-	e3:SetOperation(cm.spop1)
-	c:RegisterEffect(e3)
+	--pzone
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetRange(LOCATION_PZONE)
+	e1:SetCost(aux.bfgcost)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.operation)
+	c:RegisterEffect(e1)
+	--immune
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCondition(cm.descon2)
-	e2:SetTarget(cm.destg2)
-	e2:SetOperation(cm.desop2)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_UNRELEASABLE_SUM)
+	e2:SetRange(0x200)
+	e2:SetTargetRange(0x200,0x200)
+	e2:SetValue(1)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+	c:RegisterEffect(e3)
+	--remove
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,1))
+	e4:SetCategory(CATEGORY_TOHAND)
+	e4:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e4:SetCode(EVENT_REMOVE)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetTarget(cm.retg)
+	e4:SetOperation(cm.reop)
+	c:RegisterEffect(e4)
+end
+
+function cm.mvcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsPreviousLocation,1,nil,0x200)
+end
+
+function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local lpck0=Duel.GetLocationCount(tp,0x08,tp,0x1,0x11)>0
+	local lpck1=Duel.GetLocationCount(1-tp,0x08,tp,0x1,0x11)>0
+	local chdck=nil
+	if c:IsLocation(0x02) and not Duel.IsExistingMatchingCard(Card.IsCode,tp,0x03,0,1,c,m) then chdck=c end
+	local cck=(not c:IsForbidden()) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0x02,0,1,chdck) and (lpck0 or lpck1)
+	if cck and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		Duel.Hint(HINT_CARD,0,m)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0x02,0,1,1,chdck)
+		if #rg>0 and Duel.Remove(rg,POS_FACEUP,REASON_EFFECT) then
+			local g,gc=Duel.GetMatchingGroup(Card.IsCode,tp,0x03,0,1,nil,m),nil
+			if #g>0 then
+				if #g==1 then
+					gc=g:GetFirst()
+				else
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+					gc=g:Select(tp,1,1,nil):GetFirst()
+				end
+			end
+			if gc then
+				lpck0=Duel.GetLocationCount(tp,0x08,tp,0x1,0x01)>0 or Duel.GetLocationCount(tp,0x08,tp,0x1,0x10)>0
+				lpck1=Duel.GetLocationCount(1-tp,0x08,tp,0x1,0x01)>0 or Duel.GetLocationCount(1-tp,0x08,tp,0x1,0x10)>0
+				local lpck
+				if lpck0 and lpck1 then
+					lpck=math.abs(Duel.SelectOption(tp,aux.Stringid(m,3),aux.Stringid(m,4))-tp)
+				else
+					if lpck0 then
+						lpck=tp
+					else
+						lpck=1-tp
+					end
+				end
+				Duel.MoveToField(gc,tp,lpck,0x200,POS_FACEUP,true)
+			end
+		end
+	end
+end
+
+function cm.tgfilter(c)
+	return c:IsAbleToHand() and c:IsType(TYPE_PENDULUM)
 end
 
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetChainLimit(cm.chainlm)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,0x01,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,0x01)
 end
 
-function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsChainNegatable(ev)
+function cm.thop(c)
+	return c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
 end
 
-function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) and c:IsAbleToRemove() end
-	Duel.SetChainLimit(cm.chainlm)
-	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsAbleToRemove() and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
-	end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,c,1,0,0)
-end
-
-function cm.chainlm(e,ep,tp)
-	return tp==ep
-end
-
-function cm.opsfilter(c,e)
-	return not c:IsImmuneToEffect(e) and aux.NegateAnyFilter(c)
-end
-
-function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if (not c:IsRelateToEffect(e)) or (not Duel.Remove(c,POS_FACEUP,REASON_EFFECT)) then return false end
-	local g=Duel.GetMatchingGroup(cm.opsfilter,tp,0,LOCATION_ONFIELD,nil,e)
-	local tc=g:GetFirst()
-	if tc then
-		while tc do
-			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			e2:SetValue(RESET_TURN_SET)
-			tc:RegisterEffect(e2)
-			tc=g:GetNext()
-		end
-		if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
-			Duel.Remove(eg,POS_FACEDOWN,REASON_EFFECT)
-		end
-	end
-end
-
-function cm.descon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_PENDULUM)
-end
-
-function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_PZONE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_PZONE)
-end
-
-function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_PZONE,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thop,tp,0x01,0,1,1,nil)
+	if #g>0 and Duel.SendtoHand(g,nil,REASON_EFFECT) then
 		Duel.ConfirmCards(1-tp,g)
+		if Duel.GetFlagEffect(tp,m)==0 then
+			Duel.RegisterFlagEffect(tp,m,0,0,1)
+			local e3=Effect.CreateEffect(e:GetHandler())
+			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e3:SetCode(EVENT_CHAIN_SOLVING)
+			e3:SetCondition(cm.negcon)
+			e3:SetOperation(cm.negop)
+			Duel.RegisterEffect(e3,tp)
+		end
+	end
+end
+
+function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
+end
+
+function cm.negop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
+	Duel.ChangeTargetCard(ev,Group.CreateGroup())
+	Duel.ChangeChainOperation(ev,cm.repop)
+	e:Reset()
+	Duel.ResetFlagEffect(tp,m)
+end
+
+function cm.repop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Draw(tp,1,REASON_EFFECT)
+	Duel.Draw(1-tp,1,REASON_EFFECT)
+end
+
+function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0x200,0x200,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,PLAYER_ALL,0x200)
+end
+
+function cm.reop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0x200,0x200,1,1,nil)
+	if #g>0 then
+		Duel.HintSelection(g)
+		Duel.SendtoHand(g,tp,REASON_EFFECT)
+		if g:GetFirst():IsLocation(0x02) then
+			Duel.ConfirmCards(1-tp,g)
+		end
 	end
 end

@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 end
 
 function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsType,c:GetControler(),0,0x10,nil,TYPE_MONSTER)
+	return Duel.GetMatchingGroupCount(Card.IsType,e:GetHandlerPlayer(),0,0x10,nil,TYPE_MONSTER)*100
 end
 
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)

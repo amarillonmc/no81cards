@@ -24,8 +24,7 @@ function c75000821.initial_effect(c)
 	c:RegisterEffect(e2)	
 end
 function c75000821.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and c:IsSetCard(0x755) and c:IsLevel(4)
+	return ((c:IsType(TYPE_MONSTER) and c:IsSetCard(0x755) and c:IsLevel(4)) or c:IsCode(75000825)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c75000821.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c75000821.spfilter(chkc,e,tp) end
@@ -46,26 +45,13 @@ function c75000821.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-		if Duel.IsExistingMatchingCard(c75000821.synfilter,tp,LOCATION_EXTRA,0,1,nil,nil) and Duel.IsExistingMatchingCard(c75000821.filter,tp,LOCATION_MZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(75000821,1)) then   
+		if Duel.IsExistingMatchingCard(c75000821.synfilter,tp,LOCATION_EXTRA,0,1,nil,nil) and tc:IsCode(75000825) and Duel.IsPlayerCanSpecialSummonCount(tp,2) then   
 			local sg=Duel.GetMatchingGroup(c75000821.synfilter,tp,LOCATION_EXTRA,0,nil,nil)
 			if sg:GetCount()>0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 				local pg=sg:Select(tp,1,1,nil)
 				local tc=pg:GetFirst()
-				if Duel.SynchroSummon(tp,pg:GetFirst(),nil)~=0 then
-					local fid=c:GetFieldID()
-					c:RegisterFlagEffect(75000821,RESET_EVENT+RESETS_STANDARD,0,1,fid)
-					local e1=Effect.CreateEffect(c)
-					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-					e1:SetCode(EVENT_PHASE+PHASE_END)
-					e1:SetCountLimit(1)
-					e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-					e1:SetLabel(fid)
-					e1:SetLabelObject(c)
-					e1:SetCondition(c75000821.thcon1)
-					e1:SetOperation(c75000821.thop1)
-					Duel.RegisterEffect(e1,tp)
-				end
+				Duel.SynchroSummon(tp,pg:GetFirst(),nil)
 			end
 		end
 	end

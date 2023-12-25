@@ -1,6 +1,7 @@
 --纹章呼唤 烈火之剑
 function c75000801.initial_effect(c)
 	c:SetUniqueOnField(1,0,75000801)
+	aux.AddCodeList(c,75000812) 
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
@@ -77,7 +78,7 @@ function c75000801.drcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function c75000801.tdfilter(c,tp)
-	return (c:IsCode(75000821) or c:IsCode(75000824)) and c:IsAbleToDeck()
+	return (aux.IsCodeListed(c,75000812)) and c:IsAbleToDeck()
 		and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,4,c)
 end
 function c75000801.drtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

@@ -3,7 +3,7 @@ function c9911022.initial_effect(c)
 	c:EnableReviveLimit()
 	--set
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9911022)
@@ -56,27 +56,29 @@ function c9911022.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_RELEASE+REASON_COST)
 end
 function c9911022.setfilter(c)
-	return c:IsSetCard(0x6954) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_FIELD) and c:IsSSetable()
+	return c:IsSetCard(0x6954) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function c9911022.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911022.setfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
-end
-function c9911022.tgfilter(c)
-	return c:IsRace(RACE_AQUA) and c:IsAbleToGrave()
 end
 function c9911022.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,c9911022.setfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
 	if not tc or Duel.SSet(tp,tc)==0 then return end
-	local cg=tc:GetColumnGroup()
-	cg:AddCard(tc)
-	if tc:IsOnField() and cg:IsExists(Card.IsAbleToGrave,1,nil)
+	local g1=Group.CreateGroup()
+	if tc:IsOnField() and not tc:IsLocation(LOCATION_FZONE) then
+		g1:AddCard(tc)
+		local g2=tc:GetColumnGroup()
+		if #g2>0 then g1:Merge(g2) end
+	end
+	local g3=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,nil,0x6954)
+	if #g3>0 then g1:Merge(g3) end
+	if g1:IsExists(Card.IsAbleToGrave,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(9911022,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=cg:FilterSelect(tp,Card.IsAbleToGrave,1,1,nil)
-		Duel.HintSelection(sg)
+		local sg=g1:FilterSelect(tp,Card.IsAbleToGrave,1,1,nil)
 		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end
 end

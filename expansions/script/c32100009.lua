@@ -1,11 +1,8 @@
 --假面骑士 OOO
-function c32100008.initial_effect(c)
-	--fusion material
-	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFunRep(c,32100002,aux.FilterBoolFunction(Card.IsFusionSetCard,0xa9),3,3,true,true) 
+function c32100009.initial_effect(c) 
 
 end 
-
+c32100009.SetCard_HR_Kmr000=true 
 
 
 

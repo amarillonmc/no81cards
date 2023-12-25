@@ -1,5 +1,6 @@
 --驾驭贩卖号机械贩卖机模式
-function c32100000.initial_effect(c)
+function c32100000.initial_effect(c) 
+	aux.AddCodeList(c,32100002)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -30,6 +31,7 @@ function c32100000.initial_effect(c)
 	--
 	local e2=Effect.CreateEffect(c) 
 	e2:SetDescription(aux.Stringid(32100000,3)) 
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION) 
 	e2:SetRange(LOCATION_FZONE) 
 	e2:SetCost(c32100000.cost)
@@ -38,7 +40,7 @@ function c32100000.initial_effect(c)
 	c:RegisterEffect(e2)   
 	--to hand  
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TOHAND) 
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH) 
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_BATTLE_DESTROYING) 
 	e3:SetProperty(EFFECT_FLAG_DELAY)
@@ -48,8 +50,9 @@ function c32100000.initial_effect(c)
 	e3:SetOperation(c32100000.hdop)
 	c:RegisterEffect(e3)
 end
+c32100000.IsSetName_HR_Kmr000_Listed=true 
 function c32100000.thfilter(c)
-	return c:IsCode(32100001) and c:IsAbleToHand()
+	return (c:IsCode(32100001) or ((aux.IsCodeListed(c,32100002) or c.IsSetName_HR_Kmr000_Listed) and c:IsType(TYPE_SPELL+TYPE_TRAP))) and c:IsAbleToHand()
 end
 function c32100000.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c32100000.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
@@ -92,24 +95,48 @@ function c32100000.xxop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	local hg=Duel.GetMatchingGroup(c32100000.pbfil,tp,0,LOCATION_HAND,nil)
 	local fg=Duel.GetMatchingGroup(c32100000.pbfil,tp,0,LOCATION_ONFIELD,nil)
-	local g
-	if #hg>0 and (#fg==0 or Duel.SelectOption(tp,aux.Stringid(32100000,4),aux.Stringid(32100000,5))==0) then
-		g=hg:RandomSelect(tp,1)
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
-	end
-	if g:GetCount()~=0 then 
-		Duel.ConfirmCards(tp,g) 
-		if g:GetFirst():IsLocation(LOCATION_HAND) then 
-			Duel.ShuffleHand(1-tp) 
-		end 
+	hg:Merge(fg)
+	if #hg>0 then 
+		g=hg:RandomSelect(tp,1)  
+		if g:GetCount()~=0 then 
+			Duel.ConfirmCards(tp,g)  
+			if g:GetFirst():IsLocation(LOCATION_HAND) then 
+				Duel.ShuffleHand(1-tp) 
+			end 
+		end
 	end
 end
 function c32100000.xxtg3(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) end  
+	if chk==0 then return true end  
 end
 function c32100000.xxop3(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()  
+	local e1=Effect.CreateEffect(c) 
+	e1:SetType(EFFECT_TYPE_FIELD) 
+	e1:SetCode(EFFECT_UPDATE_ATTACK) 
+	e1:SetTargetRange(LOCATION_MZONE,0) 
+	e1:SetTarget(function(e,c) 
+	return c.SetCard_HR_Kmr000 end)
+	e1:SetValue(400) 
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp) 
+end 
+function c32100000.fxxtg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(function(c) return c:IsAbleToHand() and aux.IsCodeListed(c,32100002) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_DECK,0,1,nil) end   
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c32100000.fxxop3(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()  
+	if Duel.IsExistingMatchingCard(function(c) return c:IsAbleToHand() and aux.IsCodeListed(c,32100002) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_DECK,0,1,nil) then 
+		local sg=Duel.SelectMatchingCard(tp,function(c) return c:IsAbleToHand() and aux.IsCodeListed(c,32100002) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_DECK,0,1,1,nil) 
+		Duel.SendtoHand(sg,tp,REASON_EFFECT) 
+		Duel.ConfirmCards(1-tp,sg)
+	end 
+end 
+function c32100000.ffxxtg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) end  
+end
+function c32100000.ffxxop3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	if g:GetCount()>0 then 
@@ -131,13 +158,13 @@ function c32100000.hdcon(e,tp,eg,ep,ev,re,r,rp)
 	return tc and tc:IsControler(tp) and eg:GetFirst():IsStatus(STATUS_OPPO_BATTLE) 
 end
 function c32100000.hdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c32100000.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(function(c) return c:IsCode(32100001) and c:IsAbleToHand() end,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,1-tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c32100000.hdop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	if Duel.IsExistingMatchingCard(c32100000.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) then 
-		local sg=Duel.SelectMatchingCard(tp,c32100000.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil) 
+	if Duel.IsExistingMatchingCard(function(c) return c:IsCode(32100001) and c:IsAbleToHand() end,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nill) then 
+		local sg=Duel.SelectMatchingCard(tp,function(c) return c:IsCode(32100001) and c:IsAbleToHand() end,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil) 
 		Duel.SendtoHand(sg,tp,REASON_EFFECT) 
 		Duel.ConfirmCards(1-tp,sg) 
 	end 

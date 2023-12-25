@@ -28,6 +28,33 @@ local e1=Effect.CreateEffect(c)
 	e1:SetValue(cm.desrepval)
 	e1:SetOperation(cm.desrepop)
 	c:RegisterEffect(e1)
+ local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TOGRAVE)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+	e4:SetRange(LOCATION_EXTRA)
+	e4:SetCountLimit(1,m+100)
+	e4:SetCost(cm.cost)
+	e4:SetOperation(cm.grop)
+	c:RegisterEffect(e4)
+end
+function cm.exfilter(c)
+	return c:GetSummonLocation()==LOCATION_EXTRA
+end
+function cm.grop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(1-tp,function(c) return c:IsCode(13090004) end,1-tp,0,LOCATION_EXTRA,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
+	end
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.exfilter,1-tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
+	if Duel.SelectYesNo(1-tp,aux.Stringid(13090004,0)) then
+	Duel.SelectMatchingCard(1-tp,cm.exfilter,1-tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SendtoDeck(sg,nil,2,REASON_COST)
+	end
 end
 function cm.con(e,tp)
 	local c=e:GetHandler()
