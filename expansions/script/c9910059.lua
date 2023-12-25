@@ -38,9 +38,9 @@ function c9910059.spfilter(c,e,tp,mc)
 			or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0)
 end
 function c9910059.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9910059.rfilter,1,nil,e,tp) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,c9910059.rfilter,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(tp,c9910059.rfilter,1,1,nil,e,tp)
+	local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,c9910059.rfilter,1,1,nil,e,tp)
 	Duel.Release(g,REASON_COST)
 end
 function c9910059.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

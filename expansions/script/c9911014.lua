@@ -18,7 +18,7 @@ function c9911014.rlfilter(c,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect() and Duel.GetFieldGroupCount(tp,0,loc)>0
 end
 function c9911014.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9911014.rlfilter,1,nil,tp) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,c9911014.rlfilter,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,LOCATION_HAND+LOCATION_ONFIELD)
 end
 function c9911014.fselect(g)
@@ -37,7 +37,7 @@ function c9911014.disfilter(c)
 end
 function c9911014.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local rg=Duel.GetReleaseGroup(tp,true):Filter(c9911014.rlfilter,nil,tp)
+	local rg=Duel.GetReleaseGroup(tp,true,REASON_EFFECT):Filter(c9911014.rlfilter,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=rg:SelectSubGroup(tp,c9911014.fselect,false,1,2)
 	if #g==0 then return end

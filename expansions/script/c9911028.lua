@@ -41,7 +41,7 @@ function c9911028.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c9911028.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local rg=Duel.GetReleaseGroup(tp)
+	local rg=Duel.GetReleaseGroup(tp,false,REASON_COST)
 	if chk==0 then return rg:CheckSubGroup(aux.mzctcheckrel,2,2,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=rg:SelectSubGroup(tp,aux.mzctcheckrel,false,2,2,tp)

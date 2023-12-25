@@ -25,9 +25,9 @@ function c9910090.cfilter(c,tp)
 	return Duel.GetMZoneCount(tp,c)>0 and c:IsRace(RACE_FAIRY)
 end
 function c9910090.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c9910090.cfilter,1,nil,tp) end
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,c9910090.cfilter,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(tp,c9910090.cfilter,1,1,nil,tp)
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,c9910090.cfilter,1,1,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function c9910090.tgfilter(c)
