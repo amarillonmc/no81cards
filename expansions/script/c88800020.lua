@@ -47,16 +47,16 @@ function c88800020.ffilter(c)
 	return c:IsSetCard(0xc01) and c:IsType(TYPE_MONSTER)
 end
 function c88800020.cfilter1(c,tp)
-	return c:IsSetCard(0xc01) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsSetCard(0xc01) and Duel.IsExistingTarget(Card.IsReleasableByEffect,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)
 end
 function c88800020.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c88800020.cfilter1,1,nil,tp) end
-	local g=Duel.SelectReleaseGroup(tp,c88800020.cfilter1,1,1,nil,tp)
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,c88800020.cfilter1,1,nil,tp) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,c88800020.cfilter1,1,1,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function c88800020.rltg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsReleasableByEffect() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsReleasableByEffect,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return true end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectTarget(tp,Card.IsReleasableByEffect,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,1,0,0)

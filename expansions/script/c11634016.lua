@@ -71,11 +71,11 @@ function c11634016.cpfil(c)
 	return c:IsSetCard(0x145) and c:IsType(TYPE_SPELL) and c:IsAbleToDeckAsCost() and c:CheckActivateEffect(true,true,false)~=nil
 end
 function c11634016.cptg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(c11634016.cpfil,tp,LOCATION_GRAVE,0,1,nil) and e:GetHandler():IsAbleToDeckAsCost() end
+	if chk==0 then return Duel.IsExistingMatchingCard(c11634016.cpfil,tp,LOCATION_GRAVE,0,1,e:GetHandler()) and e:GetHandler():IsAbleToDeckAsCost() end
 	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e:SetCategory(0)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local tc=Duel.SelectMatchingCard(tp,c11634016.cpfil,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()  
+	local tc=Duel.SelectMatchingCard(tp,c11634016.cpfil,tp,LOCATION_GRAVE,0,1,1,e:GetHandler()):GetFirst()  
 	local sg=Group.FromCards(e:GetHandler(),tc)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	local te=tc:CheckActivateEffect(true,true,false)
