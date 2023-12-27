@@ -43,7 +43,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) or tc:IsFacedown() then return end
 	local ct1=Duel.GetMatchingGroupCount(cm.filter1,tp,LOCATION_MZONE,0,tc)
-	local rg=Duel.SelectReleaseGroup(tp,Card.IsReleasableByEffect,1,ct1,tc)
+	local rg=Duel.SelectReleaseGroup(REASON_EFFECT,tp,Card.IsReleasableByEffect,1,ct1,tc)
 	local lv=rg:GetSum(Card.GetLevel)
 	local ct2=Duel.Release(rg,REASON_EFFECT)
 	if ct2==0 or lv==0 then return end

@@ -41,12 +41,12 @@ function cm.hspfilter(c,tp,sc)
 end
 function cm.hspcon(e,c)
 	if c==nil then return true end
-	return Duel.CheckReleaseGroup(c:GetControler(),cm.hspfilter,1,nil,c:GetControler(),c)
+	return Duel.CheckReleaseGroup(REASON_SPSUMMON,c:GetControler(),cm.hspfilter,1,nil,c:GetControler(),c)
 end
 function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectReleaseGroup(tp,cm.hspfilter,1,1,nil,tp,c)
+	local g=Duel.SelectReleaseGroup(REASON_SPSUMMON,tp,cm.hspfilter,1,1,nil,tp,c)
 	c:SetMaterial(g)
-	Duel.Release(g,REASON_COST)
+	Duel.Release(g,REASON_SPSUMMON)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x304e,0x604e) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_EVOLTILE,tp,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE)

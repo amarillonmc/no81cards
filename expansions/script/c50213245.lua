@@ -77,5 +77,5 @@ function c50213245.cfilter(c)
 	return c:IsSetCard(0xcbf) and c:IsFaceup()
 end
 function c50213245.handcon(e)
-	return Duel.IsExistingMatchingCard(c50213245.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(c50213245.cfilter,e:GetOwnerPlayer(),LOCATION_MZONE,0,1,nil)
 end

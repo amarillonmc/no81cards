@@ -37,8 +37,8 @@ function cm.initial_effect(c)
 end
 function cm.actcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if not e:GetHandler():IsStatus(STATUS_SET_TURN) then return true end
-	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsSetCard,2,nil,0x5532) end
-	local g=Duel.SelectReleaseGroup(tp,Card.IsSetCard,2,2,nil,0x5532)
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,Card.IsSetCard,2,nil,0x5532) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,Card.IsSetCard,2,2,nil,0x5532)
 	Duel.Release(g,REASON_COST)
 end
 function cm.acttg(e,tp,eg,ep,ev,re,r,rp,chk)

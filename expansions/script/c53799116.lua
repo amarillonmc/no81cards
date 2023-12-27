@@ -44,8 +44,8 @@ function cm.cfilter(c)
 	return not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.cfilter,1,e:GetHandler()) end
-	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,e:GetHandler())
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,cm.cfilter,1,e:GetHandler()) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,cm.cfilter,1,1,e:GetHandler())
 	Duel.Release(g,REASON_COST)
 end
 function cm.rmfilter(c)

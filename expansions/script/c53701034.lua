@@ -29,8 +29,8 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and Duel.IsExistingMatchingCard(Card.IsCode,tp,0,LOCATION_GRAVE,1,nil,re:GetHandler():GetCode())
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsRace,1,nil,RACE_MACHINE) end
-	local g=Duel.SelectReleaseGroup(tp,Card.IsRace,1,1,nil,RACE_MACHINE)
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,Card.IsRace,1,nil,RACE_MACHINE) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,Card.IsRace,1,1,nil,RACE_MACHINE)
 	Duel.Release(g,REASON_COST)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)

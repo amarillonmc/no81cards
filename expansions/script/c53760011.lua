@@ -114,8 +114,8 @@ function cm.descon(e)
 	return not (c:GetColumnGroup():IsContains(tc) and tc:IsRelateToCard(c)) or tc:IsFacedown()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsType,1,nil,TYPE_NORMAL) end
-	local g=Duel.SelectReleaseGroup(tp,Card.IsType,1,1,nil,TYPE_NORMAL)
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,Card.IsType,1,nil,TYPE_NORMAL) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,Card.IsType,1,1,nil,TYPE_NORMAL)
 	Duel.Release(g,REASON_COST)
 end
 function cm.cfilter(c)

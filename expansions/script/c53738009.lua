@@ -44,11 +44,11 @@ function cm.spcon(e,c)
 	if c==nil then return true end
 	if c:GetFlagEffect(53738000)==0 and c:IsLocation(LOCATION_GRAVE) then return false end
 	local tp=c:GetControler()
-	local rg=Duel.GetReleaseGroup(tp):Filter(cm.rfilter,nil,tp)
+	local rg=Duel.GetReleaseGroup(tp,false,REASON_SPSUMMON):Filter(cm.rfilter,nil,tp)
 	return rg:CheckSubGroup(aux.mzctcheckrel,2,#rg,tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local rg=Duel.GetReleaseGroup(tp):Filter(cm.rfilter,nil,tp)
+	local rg=Duel.GetReleaseGroup(tp,false,REASON_SPSUMMON):Filter(cm.rfilter,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local sg=rg:SelectSubGroup(tp,aux.mzctcheckrel,true,2,#rg,tp)
 	if sg then

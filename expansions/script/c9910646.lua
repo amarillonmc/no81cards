@@ -83,12 +83,11 @@ function c9910646.xmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local sg=g:Select(tp,ct,ct,nil)
 	Duel.HintSelection(sg)
+	local og=Group.CreateGroup()
 	for tc in aux.Next(sg) do
-		local og=tc:GetOverlayGroup()
-		if og:GetCount()>0 then
-			Duel.SendtoGrave(og,REASON_RULE)
-		end
+		og:Merge(tc:GetOverlayGroup())
 		tc:CancelToGrave()
-		Duel.Overlay(c,Group.FromCards(tc))
 	end
+	if #og>0 then Duel.SendtoGrave(og,REASON_RULE) end
+	Duel.Overlay(c,sg)
 end

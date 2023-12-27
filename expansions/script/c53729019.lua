@@ -24,9 +24,9 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local res=c:IsLocation(LOCATION_MZONE)
-	if chk==0 then return c:IsReleasable() and Duel.CheckReleaseGroup(tp,cm.cfilter,1,c,res) end
+	if chk==0 then return c:IsReleasable() and Duel.CheckReleaseGroup(REASON_COST,tp,cm.cfilter,1,c,res) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local rg=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,c,res)
+	local rg=Duel.SelectReleaseGroup(REASON_COST,tp,cm.cfilter,1,1,c,res)
 	rg:AddCard(c)
 	Duel.Release(rg,REASON_COST)
 end

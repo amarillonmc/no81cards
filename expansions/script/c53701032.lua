@@ -40,9 +40,9 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsReleasable() and Duel.CheckReleaseGroup(tp,Card.IsSetCard,1,c,0x3530) end
+	if chk==0 then return c:IsReleasable() and Duel.CheckReleaseGroup(REASON_COST,tp,Card.IsSetCard,1,c,0x3530) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local rg=Duel.SelectReleaseGroup(tp,Card.IsSetCard,1,1,c,0x3530)
+	local rg=Duel.SelectReleaseGroup(REASON_COST,tp,Card.IsSetCard,1,1,c,0x3530)
 	rg:AddCard(c)
 	Duel.Release(rg,REASON_COST)
 end

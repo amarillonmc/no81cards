@@ -98,11 +98,11 @@ end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.CheckReleaseGroup(tp,cm.rfilter,1,nil,tp,c) and Duel.GetTurnCount()>9
+	return Duel.CheckReleaseGroup(REASON_SPSUMMON,tp,cm.rfilter,1,nil,tp,c) and Duel.GetTurnCount()>9
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectReleaseGroup(tp,cm.rfilter,1,1,nil,tp,c)
-	Duel.Release(g,REASON_COST)
+	local g=Duel.SelectReleaseGroup(REASON_SPSUMMON,tp,cm.rfilter,1,1,nil,tp,c)
+	Duel.Release(g,REASON_SPSUMMON)
 end
 function cm.imfilter(c)
 	return c:IsFaceup() and c:GetFlagEffect(53729099)>0 and (c:GetFlagEffect(m)==0 or c:GetFlagEffectLabel(m)~=c:GetOriginalCode()) and (c:IsType(TYPE_SPELL+TYPE_TRAP) or (c:IsSetCard(0x5533) and c:IsType(TYPE_FUSION)))

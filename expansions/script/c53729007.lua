@@ -70,11 +70,11 @@ function cm.spcon(e,c)
 	local tp=c:GetControler()
 	local att1=c:GetFlagEffectLabel(m)
 	local att2=c:GetFlagEffectLabel(m+50)
-	return Duel.CheckReleaseGroup(tp,cm.rfilter,1,nil,tp,c) and ((c:IsControler(c:GetOwner()) and att1 and att1&0x1f==0x1f) or (c:IsControler(1-c:GetOwner()) and att2 and att2&0x1f==0x1f))
+	return Duel.CheckReleaseGroup(REASON_SPSUMMON,tp,cm.rfilter,1,nil,tp,c) and ((c:IsControler(c:GetOwner()) and att1 and att1&0x1f==0x1f) or (c:IsControler(1-c:GetOwner()) and att2 and att2&0x1f==0x1f))
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectReleaseGroup(tp,cm.rfilter,1,1,nil,tp,c)
-	Duel.Release(g,REASON_COST)
+	local g=Duel.SelectReleaseGroup(REASON_SPSUMMON,tp,cm.rfilter,1,1,nil,tp,c)
+	Duel.Release(g,REASON_SPSUMMON)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m)>0 then return end

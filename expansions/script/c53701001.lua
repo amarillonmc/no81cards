@@ -55,8 +55,8 @@ function c53701001.aclimit(e,re,tp)
 	return re:GetActivateLocation()==LOCATION_GRAVE
 end
 function c53701001.immcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsSetCard,1,e:GetHandler(),0x3530) end
-	local g=Duel.SelectReleaseGroup(tp,Card.IsSetCard,1,1,e:GetHandler(),0x3530)
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,Card.IsSetCard,1,e:GetHandler(),0x3530) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,Card.IsSetCard,1,1,e:GetHandler(),0x3530)
 	Duel.Release(g,REASON_COST)
 end
 function c53701001.immop(e,tp,eg,ep,ev,re,r,rp)

@@ -75,7 +75,7 @@ function c53700000.fselect(g,tp)
 	return g:CheckWithSumGreater(Card.GetLevel,4) and aux.mzctcheckrel(g,tp)
 end
 function c53700000.skop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetReleaseGroup(tp):Filter(c53700000.rfilter,nil,tp)
+	local g=Duel.GetReleaseGroup(tp,false,REASON_EFFECT):Filter(c53700000.rfilter,nil,tp)
 	if Duel.SendtoDeck(e:GetHandler(),nil,0,REASON_EFFECT) and g:CheckSubGroup(c53700000.fselect,1,g:GetCount(),tp) and Duel.IsPlayerCanSpecialSummonMonster(tp,53700001,0,0x4011,0,0,2,RACE_ZOMBIE,ATTRIBUTE_LIGHT) and Duel.SelectYesNo(tp,aux.Stringid(53700000,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)

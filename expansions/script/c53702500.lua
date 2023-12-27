@@ -5234,7 +5234,7 @@ function cm.MultipleGroupCheck(c)
 			return b
 		end
 		ADIMI_SelectReleaseGroup=Duel.SelectReleaseGroup
-		Duel.SelectReleaseGroup=function(p,f,min,max,ex,...)
+		Duel.SelectReleaseGroup=function(r,p,f,min,max,ex,...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
 			local ly=0
@@ -5248,7 +5248,7 @@ function cm.MultipleGroupCheck(c)
 			cm["Card_Prophecy_L_Check_"..ly]=true
 			ADIMI_GetMatchingGroup(f,p,LOCATION_MZONE,LOCATION_MZONE,ex,...)
 			cm["Card_Prophecy_L_Check_"..ly]=false
-			local b=ADIMI_SelectReleaseGroup(p,f,min,max,ex,...)
+			local b=ADIMI_SelectReleaseGroup(r,p,f,min,max,ex,...)
 			cm["Card_Prophecy_Certain_SP_"..ly]=false
 			cm["Card_Prophecy_Certain_ACST_"..ly]=false
 			cm["Card_Prophecy_Layer_"..ly]=false
@@ -5256,7 +5256,7 @@ function cm.MultipleGroupCheck(c)
 			return b
 		end
 		ADIMI_SelectReleaseGroupEx=Duel.SelectReleaseGroupEx
-		Duel.SelectReleaseGroupEx=function(p,f,min,max,ex,...)
+		Duel.SelectReleaseGroupEx=function(r,p,f,min,max,ex,...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
 			local ly=0
@@ -5270,7 +5270,7 @@ function cm.MultipleGroupCheck(c)
 			cm["Card_Prophecy_L_Check_"..ly]=true
 			ADIMI_GetMatchingGroup(f,p,LOCATION_MZONE+LOCATION_HAND,LOCATION_MZONE+LOCATION_HAND,ex,...)
 			cm["Card_Prophecy_L_Check_"..ly]=false
-			local b=ADIMI_SelectReleaseGroupEx(p,f,min,max,ex,...)
+			local b=ADIMI_SelectReleaseGroupEx(r,p,f,min,max,ex,...)
 			cm["Card_Prophecy_Certain_SP_"..ly]=false
 			cm["Card_Prophecy_Certain_ACST_"..ly]=false
 			cm["Card_Prophecy_Layer_"..ly]=false
@@ -7126,4 +7126,59 @@ function cm.ATTSerieslockcon(n,att)
 	return  function(e)
 				return Duel.IsExistingMatchingCard(function(c,att)return c:IsFaceup() and c:IsAttribute(att)end,math.abs(e:GetHandlerPlayer()-n),LOCATION_MZONE,0,1,nil,att)
 			end
+end
+function cm.BlackLotus(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetRange(0xff)
+	e1:SetOperation(cm.BlackLotusop)
+	e1:SetCountLimit(1)
+	c:RegisterEffect(e1)
+end
+function cm.BlackLotusop(e,tp,eg,ep,ev,re,r,rp)
+	e:Reset()
+	if not Party_time_random_seed then
+		local result=0
+		local g=Duel.GetDecktopGroup(0,5)
+		local tc=g:GetFirst()
+		while tc do
+			local code=tc:GetCode()
+			if code==90846359 then code=53799000 end
+			result=result+code
+			tc=g:GetNext()
+		end
+		local g=Duel.GetDecktopGroup(1,5)
+		local tc=g:GetFirst()
+		while tc do
+			local code=tc:GetCode()
+			if code==90846359 then code=53799000 end
+			result=result+code
+			tc=g:GetNext()
+		end
+		g:DeleteGroup()
+		Party_time_random_seed=result
+		function Party_time_roll(min,max)
+			if min==max then return min end
+			min=tonumber(min)
+			max=tonumber(max)
+			Party_time_random_seed=(Party_time_random_seed*16807)%2147484647
+			if min~=nil then
+				if max==nil then
+					local random_number=Party_time_random_seed/2147484647
+					return (random_number*min)
+				else
+					local random_number=Party_time_random_seed/2147484647
+					if random_number<min then
+						Party_time_random_seed=(Party_time_random_seed*16807)%2147484647
+						random_number=Party_time_random_seed/2147484647
+					end
+					return ((max-min)*random_number)+min
+				end
+			end
+			return Party_time_random_seed
+		end
+		for i=1,100 do Debug.Message(Party_time_roll(0,1.5)) end
+	end
 end

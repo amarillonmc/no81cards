@@ -35,8 +35,8 @@ function c53700005.spfilter(c,tp)
 	return c:IsCode(53700001)
 end
 function c53700005.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c53700005.spfilter,1,nil,tp) end
-	local g=Duel.SelectReleaseGroup(tp,c53700005.spfilter,1,10,nil)
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,c53700005.spfilter,1,nil,tp) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,c53700005.spfilter,1,10,nil)
 	local lv=g:GetSum(Card.GetLevel)
 	Duel.Release(g,REASON_COST)
 	e:SetLabel(lv)

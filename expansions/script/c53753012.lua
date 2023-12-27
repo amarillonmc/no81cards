@@ -45,9 +45,9 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
-		return (Duel.IsPlayerCanDraw(tp,1) or Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil)) and Duel.CheckReleaseGroup(tp,cm.filter,1,nil,tp)
+		return (Duel.IsPlayerCanDraw(tp,1) or Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil)) and Duel.CheckReleaseGroup(REASON_COST,tp,cm.filter,1,nil,tp)
 	end
-	local rg=Duel.SelectReleaseGroup(tp,cm.filter,1,1,nil,tp)
+	local rg=Duel.SelectReleaseGroup(REASON_COST,tp,cm.filter,1,1,nil,tp)
 	e:SetLabel(SNNM.multi_summon_count(rg))
 	Duel.Release(rg,REASON_COST)
 end

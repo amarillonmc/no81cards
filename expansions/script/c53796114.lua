@@ -42,12 +42,12 @@ end
 function cm.spccon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.CheckReleaseGroup(tp,cm.cfilter,1,nil,tp)
+	return Duel.CheckReleaseGroup(REASON_SPSUMMON,tp,cm.cfilter,1,nil,tp)
 end
 function cm.spcop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,nil,tp)
-	Duel.Release(g,REASON_COST)
+	local g=Duel.SelectReleaseGroup(REASON_SPSUMMON,tp,cm.cfilter,1,1,nil,tp)
+	Duel.Release(g,REASON_SPSUMMON)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end
