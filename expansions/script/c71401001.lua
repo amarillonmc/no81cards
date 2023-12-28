@@ -3,6 +3,23 @@ yume=yume or {}
 if c71401001 then
 function c71401001.initial_effect(c)
 	--spsummon
+	--[[
+	Auxiliary effect to ensure this card in GY before effect cost for Magician's Rod.
+	In case of issues where this effect could activate when sent to GY because of effect cost,
+	such as tributed by Enemy Controller
+	or destroyed when Call of the Haunted was sent to GY by Forbidden Droplet.
+	Be informed that do not use this if the effect is a quick effect(Paleozoic)
+	or the trigger location is Hand according to game ruling.
+	]]
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_ACTIVATE_COST)
+	e0:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e0:SetTargetRange(1,0)
+	e0:SetTarget(c71401001.costtg)
+	e0:SetOperation(aux.chainreg)
+	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71401001,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -33,8 +50,12 @@ function c71401001.initial_effect(c)
 	c:RegisterEffect(e2a)
 	yume.ButterflyCounter()
 end
+function c71401001.costtg(e,te,tp)
+	return te:IsActiveType(TYPE_MONSTER)
+end
 function c71401001.con1(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER)
+	local c=e:GetHandler()
+	return c:GetFlagEffect(FLAG_ID_CHAINING)>0 or re:IsActiveType(TYPE_MONSTER) and c:IsLocation(LOCATION_HAND)
 end
 function c71401001.filterc1(c,tp)
 	return c:IsFaceup() and c:IsType(TYPE_CONTINUOUS) and c:IsAbleToRemoveAsCost()
