@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -24,18 +24,18 @@ function s.splimit(e,se,sp,st)
 	return se:IsActiveType(TYPE_MONSTER) and se:GetHandler():IsRace(RACE_FAIRY)
 end
 function s.thfilter(c)
-	return c:IsRace(RACE_FAIRY) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToHand()
+	return c:IsRace(RACE_FAIRY) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToDeck()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,0,LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,0,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_GRAVE,0,nil,tp)
+	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,tp)
 	if #g==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	Duel.SendtoHand(g:Select(tp,1,2,nil),nil,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	Duel.SendtoDeck(g:Select(tp,1,2,nil),nil,2,REASON_EFFECT)
 	local tg=Duel.GetOperatedGroup()
 	if #tg>0 and c:IsLocation(LOCATION_MZONE) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		local lv=tg:Select(tp,1,2,nil):GetSum(Card.GetLevel)

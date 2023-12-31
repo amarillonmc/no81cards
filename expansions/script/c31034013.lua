@@ -9,7 +9,7 @@ function c31034013.initial_effect(c)
 	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e1:SetValue(c31034013.batfilter)
 	c:RegisterEffect(e1)
-	--cannot be target
+	--cannot be target + cannot activate
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -55,4 +55,18 @@ function c31034013.tgop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(c31034013.tgfilter)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(0,1)
+	e2:SetValue(1)
+	e2:SetCondition(c31034013.actcon)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e2)
+end
+
+function c31034013.actcon(e)
+	return Duel.GetAttacker() == e:GetHandler()
 end

@@ -13,23 +13,19 @@ function s.initial_effect(c)
 	e1:SetOperation(s.disop)
 	c:RegisterEffect(e1)
 end
-function s.costfilter(c)
-	return c:IsRace(RACE_FAIRY) and c:IsAbleToGraveAsCost()
+function s.sgfil(c)
+	return c:IsCode(44665365) and c:IsFaceup()
 end
 function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost() and
-		Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND,0,1,c) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_HAND,0,1,1,c)
-	g:AddCard(c)
-	Duel.SendtoGrave(g,REASON_COST)
+	if chk==0 then return c:IsAbleToGraveAsCost() end
+	Duel.SendtoGrave(c,REASON_COST)
 end
 function s.filter(c,tp)
 	return c:IsSummonPlayer(tp)
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()==0 and rp==1-tp and eg:IsExists(s.filter,1,nil,1-tp)
+	return Duel.GetCurrentChain()==0 and rp==1-tp and eg:IsExists(s.filter,1,nil,1-tp) and Duel.IsExistingMatchingCard(s.sgfil,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

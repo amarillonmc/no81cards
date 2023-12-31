@@ -29,7 +29,7 @@ function c11560719.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(function(e) 
 	local tp=e:GetHandlerPlayer()
-	return math.abs(8000-Duel.GetLP(1-tp))/2 end)
+	return math.abs(8000-Duel.GetLP(1-tp)) end)
 	e2:SetCondition(function(e) 
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsType,1,nil,TYPE_XYZ) end)
 	c:RegisterEffect(e2) 
@@ -58,7 +58,7 @@ function c11560719.initial_effect(c)
 end 
 c11560719.SetCard_SR_Saier=true 
 function c11560719.mfilter(c,xyzc)
-	return c:IsXyzLevel(xyzc,2) or c:IsRank(2)
+	return c:IsXyzLevel(xyzc,2) or c:IsRank(2) or c:IsLink(2)
 end
 function c11560719.xyzcheck(g)
 	return true 

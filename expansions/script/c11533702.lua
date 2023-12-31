@@ -53,14 +53,41 @@ function c11533702.initial_effect(c)
 	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE) 
 	e3:SetRange(LOCATION_FZONE) 
 	e3:SetTargetRange(LOCATION_MZONE,0) 
-	e3:SetTarget(function(e,c) 
-	return c:IsSetCard(0xb4) and c:IsType(TYPE_RITUAL) end) 
-	e3:SetValue(function(e,c)
-	return c:IsSummonLocation(LOCATION_EXTRA) end) 
-	e3:SetCondition(function(e) 
-	local tp=e:GetHandlerPlayer() 
-	return Duel.GetMatchingGroupCount(function(c) return c:IsFaceup() and c:IsSetCard(0xb4) and c:IsType(TYPE_RITUAL) end,tp,LOCATION_MZONE,0,nil)>=3 end)
+	e3:SetTarget(
+		function(e,c) 
+		return c:IsType(TYPE_RITUAL) 
+		end) 
+	e3:SetValue(
+		function(e,c)
+		return c:IsSummonLocation(LOCATION_EXTRA) 
+		end)
+	e3:SetCondition(
+		function(e) 
+		local tp=e:GetHandlerPlayer() 
+		return Duel.GetMatchingGroupCount(function(c) return c:IsFaceup() and (c:IsSetCard(0xb4) or c:IsType(TYPE_RITUAL)) end,tp,LOCATION_MZONE,0,nil)>=3 
+		end)
 	c:RegisterEffect(e3)
+	--immune
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_IMMUNE_EFFECT)
+	e4:SetRange(LOCATION_FZONE)
+	e4:SetTarget(
+		function(e,c) 
+		return c:IsType(TYPE_RITUAL) 
+		end) 
+	e4:SetValue(
+		function(e,c)
+		return c:IsSummonLocation(LOCATION_EXTRA) 
+		end)
+	e4:SetCondition(
+		function(e) 
+		local tp=e:GetHandlerPlayer() 
+		return Duel.GetMatchingGroupCount(function(c) return c:IsFaceup() and (c:IsSetCard(0xb4) or c:IsType(TYPE_RITUAL)) end,tp,LOCATION_MZONE,0,nil)>=3 
+		end)
+	c:RegisterEffect(e4)
+
+
 end
 function c11533702.filter(c)
 	return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

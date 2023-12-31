@@ -2,7 +2,7 @@
 local m=40010334
 local cm=_G["c"..m]
 cm.named_with_DragWizard=1
-function cm.Crimsonmoon(c)
+function cm.DragWizard(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_DragWizard
 end
@@ -10,10 +10,11 @@ function cm.initial_effect(c)
 	--Effect 1
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.destg)
 	e1:SetOperation(cm.desop)
@@ -44,7 +45,7 @@ end
 --Effect 1
 function cm.desfilter(c,tp)
 	return Duel.GetMZoneCount(tp,c)>0 
-		and c:IsFaceup() and cm.Crimsonmoon(c) and c:IsAbleToGrave()
+		and c:IsFaceup() and cm.DragWizard(c) and c:IsAbleToRemove()
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and cm.desfilter(chkc,tp) end
@@ -52,7 +53,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		and Duel.IsExistingTarget(cm.desfilter,tp,LOCATION_MZONE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectTarget(tp,cm.desfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
@@ -60,7 +61,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e)  and c:IsRelateToEffect(e) then
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-			Duel.SendtoGrave(tc,REASON_EFFECT)
+			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		end
 	end
 end
@@ -72,7 +73,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spfilter2(c,e,tp)
 	return c:IsType(TYPE_MONSTER) 
-		and c:IsFaceup() and cm.Crimsonmoon(c) 
+		and c:IsFaceup() and cm.DragWizard(c) 
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

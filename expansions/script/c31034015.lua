@@ -4,7 +4,7 @@ function c31034015.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1, 31034015+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,31034015+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c31034015.condition)
 	e1:SetCost(c31034015.cost)
 	e1:SetTarget(c31034015.target)
@@ -58,10 +58,9 @@ function c31034015.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.IsExistingMatchingCard(c31034015.spfilter2, tp, LOCATION_DECK, 0, 1, nil, e, tp)
 	end
 	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, 3, tp, LOCATION_DECK+LOCATION_EXTRA)
-end
-
-function c31034015.splimit(e,c,tp,sumtp,sumpos)
-	return not c:IsAttribute(ATTRIBUTE_WIND)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.GetTurnPlayer() == tp then
+		Duel.SetChainLimit(aux.FALSE)
+	end
 end
 
 function c31034015.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -85,12 +84,4 @@ function c31034015.activate(e,tp,eg,ep,ev,re,r,rp)
 		local pg=sg:Select(tp, 1, 1, nil)
 		Duel.SynchroSummon(tp, pg:GetFirst(), nil, sg1)
 	end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1, 0)
-	e1:SetTarget(c31034015.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1, tp)
 end

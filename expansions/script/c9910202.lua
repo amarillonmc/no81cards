@@ -14,7 +14,7 @@ function c9910202.initial_effect(c)
 	c:RegisterEffect(e1)
 	--negate
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -62,8 +62,16 @@ end
 function c9910202.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 end
+function c9910202.locfilter(c)
+	return 
+end
 function c9910202.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	if re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and tg and #tg>0 then
+		e:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
+		e:SetLabel(1)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_REMOVED)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
@@ -71,18 +79,11 @@ function c9910202.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c9910202.spfilter(c,e,tp)
-	return c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c9910202.locfilter(c)
-	return c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE)
-		or c:IsPreviousLocation(LOCATION_ONFIELD+LOCATION_GRAVE)
+	return c:IsFaceup() and c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910202.disop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT)
-	end
-	if tg and tg:IsExists(c9910202.locfilter,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)>0
+		and e:GetLabel()==1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9910202.spfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910202,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

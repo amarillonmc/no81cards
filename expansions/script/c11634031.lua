@@ -9,9 +9,9 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_EXTRA)
 	if max==nil then max=c:GetLink() end
-	e1:SetCondition(cm.LinkCondition(function(c) return c:IsFaceup() and c:IsSetCard(0x10db) and not c:IsCode(11634031) end,1,1,nil))
-	e1:SetTarget(cm.LinkTarget(function(c) return c:IsFaceup() and c:IsSetCard(0x10db) and not c:IsCode(11634031) end,1,1,nil))
-	e1:SetOperation(cm.LinkOperation(function(c) return c:IsFaceup() and c:IsSetCard(0x10db) and not c:IsCode(11634031) end,1,1,nil))
+	e1:SetCondition(cm.LinkCondition(function(c) return c:IsFaceup() and c:IsSetCard(0x10db) and not c:IsCode(11634031) end,2,2,nil))
+	e1:SetTarget(cm.LinkTarget(function(c) return c:IsFaceup() and c:IsSetCard(0x10db) and not c:IsCode(11634031) end,2,2,nil))
+	e1:SetOperation(cm.LinkOperation(function(c) return c:IsFaceup() and c:IsSetCard(0x10db) and not c:IsCode(11634031) end,2,2,nil))
 	e1:SetValue(SUMMON_TYPE_LINK)
 	c:RegisterEffect(e1)  
 	--extra material

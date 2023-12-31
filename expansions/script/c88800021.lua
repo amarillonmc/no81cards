@@ -35,12 +35,25 @@ function cm.initial_effect(c)
 	e4:SetTargetRange(0,1)
 	e4:SetCondition(cm.costcon)
 	c:RegisterEffect(e4)
+	--release replace
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_EXTRA_RELEASE_NONSUM)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetTargetRange(0,LOCATION_MZONE)
+	e5:SetTarget(aux.TRUE)
+	e5:SetCountLimit(1)
+	e5:SetValue(cm.relval)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetCode(m)
+	c:RegisterEffect(e6)
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xc01) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0xc01)
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -65,4 +78,7 @@ function cm.costchk(e,te_or_c,tp)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.PayLPCost(tp,360)
+end
+function cm.relval(e,re,r,rp)
+	return re:IsActivated() and re:GetHandler():IsSetCard(0xc01) and bit.band(r,REASON_COST)~=0
 end

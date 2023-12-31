@@ -45,25 +45,36 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(re:GetHandler():GetControler(),id,RESET_PHASE+PHASE_END,0,1)
 end
 function s.filter(c)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_FAIRY) and (c:IsLevel(2) and c:IsAttack(300,500) or c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)) and c:IsAbleToHand()
+	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_FAIRY) and (c:IsLevel(2) and c:IsAttack(300) or c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)) and c:IsAbleToHand()
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_DECK,0,nil)
 	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local ct=1
-		if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-		and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 then ct=2 end
+		--if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+		--and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 then ct=2 end
 		local sg=g:Select(tp,1,ct,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg)
 	end
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetTargetRange(1,0)
+	e2:SetTarget(s.splimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+end
+function s.splimit(e,c)
+	return not (c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_FAIRY))
 end
 function s.atkfilter(c)
 	return c:IsFaceupEx() and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_FAIRY)
 end
 function s.val(e,c)
-	return Duel.GetMatchingGroupCount(s.atkfilter,c:GetControler(),LOCATION_MZONE+LOCATION_GRAVE,0,nil)*300
+	return Duel.GetMatchingGroupCount(s.atkfilter,c:GetControler(),LOCATION_MZONE+LOCATION_GRAVE,0,nil)*200
 end
 function s.thfilter(c)
 	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_FAIRY) and c:IsAbleToHand()

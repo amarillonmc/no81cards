@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCondition(s.handcondition)
 	c:RegisterEffect(e2)
 	--set
 	local e3=Effect.CreateEffect(c)
@@ -27,12 +28,19 @@ function s.initial_effect(c)
 	e3:SetCountLimit(1,id)
 	e3:SetHintTiming(0,TIMING_END_PHASE)
 	e3:SetCost(aux.bfgcost)
+	e3:SetCondition(s.handcondition)
 	e3:SetTarget(s.settg)
 	e3:SetOperation(s.setop)
 	c:RegisterEffect(e3)
 end
+-----
+function s.handcondition(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandler():GetControler()
+	return Duel.GetTurnPlayer()==tp
+end
+-----
 function s.cfilter(c)
-	return c:IsType(TYPE_TRAP) and c:IsDiscardable()
+	return c:GetType()==TYPE_TRAP and c:IsDiscardable()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (not e:GetHandler():IsLocation(LOCATION_HAND) or Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler())) end

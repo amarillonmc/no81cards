@@ -46,12 +46,14 @@ end
 function c88800020.ffilter(c)
 	return c:IsSetCard(0xc01) and c:IsType(TYPE_MONSTER)
 end
-function c88800020.cfilter1(c,tp)
-	return c:IsSetCard(0xc01) and Duel.IsExistingTarget(Card.IsReleasableByEffect,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)
+function c88800020.costfilter(c,tp)
+	return (c:IsControler(tp) or c:IsFaceup())
+		and ((c:IsSetCard(0xc01) and c:IsType(TYPE_MONSTER)) or c:IsHasEffect(88800021,tp) and c:IsControler(1-tp))
 end
 function c88800020.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,c88800020.cfilter1,1,nil,tp) end
-	local g=Duel.SelectReleaseGroup(REASON_COST,tp,c88800020.cfilter1,1,1,nil,tp)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,c88800020.costfilter,1,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectReleaseGroup(tp,c88800020.costfilter,1,1,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function c88800020.rltg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

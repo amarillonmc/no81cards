@@ -39,7 +39,7 @@ function c9910186.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tep=nil
 	if Duel.GetCurrentChain()>1 then tep=Duel.GetChainInfo(Duel.GetCurrentChain()-1,CHAININFO_TRIGGERING_PLAYER) end
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and tep and tep==1-tp then
-		e:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE)
+		e:SetCategory(CATEGORY_HANDES+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DESTROY+CATEGORY_REMOVE)
 		e:SetLabel(1)
 	end
 end

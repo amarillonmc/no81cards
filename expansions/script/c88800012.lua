@@ -2,7 +2,7 @@
 function c88800012.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_RELEASE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -11,6 +11,9 @@ function c88800012.initial_effect(c)
 	e1:SetTarget(c88800012.distg)
 	e1:SetOperation(c88800012.disop)
 	c:RegisterEffect(e1)
+	local e3=e1:Clone()
+	e3:SetCode(c88800012.condition1)
+	c:RegisterEffect(e3)
 	--spsummon1
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -24,12 +27,19 @@ function c88800012.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c88800012.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xc01) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_FUSION)
+	return c:IsFaceup() and c:IsSetCard(0xc01) and c:IsType(TYPE_MONSTER)
 end
 function c88800012.condition(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(c88800012.filter,tp,LOCATION_MZONE,0,1,nil) then return false end
 	if not Duel.IsChainNegatable(ev) then return false end
 	return re:IsActiveType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
+end
+function c88800012.pcfilter(c)
+	return c:IsFacedown() or not c:IsSetCard(0xc01)
+end
+function c88800012.condition1(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	return g:GetCount()>0 and not g:IsExists(s.pcfilter,1,nil)
 end
 function c88800012.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -44,25 +54,19 @@ function c88800012.disop(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c88800012.cfilter(c)
-	return c:IsSetCard(0xc01) and c:IsType(TYPE_TRAP) and c:IsDiscardable()
+	return c:IsSetCard(0xc01) and c:IsDiscardable()
 end
 function c88800012.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88800012.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
 	Duel.DiscardHand(tp,c88800012.cfilter,1,1,REASON_COST+REASON_DISCARD,e:GetHandler())
 end
-function c88800012.sfilter(c)
-	return c:IsSetCard(0xc01) and c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSSetable()
-end
 function c88800012.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(c88800012.sfilter,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(1-tp)
+	Duel.SetTargetParam(1200)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1200)
 end
 function c88800012.setop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,c88800012.sfilter,tp,LOCATION_HAND,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.SSet(tp,tc)
-	end
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Damage(p,d,REASON_EFFECT)
 end

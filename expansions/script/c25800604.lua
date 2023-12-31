@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCondition(s.handcondition)
 	c:RegisterEffect(e2)
 ----
 	local e3=Effect.CreateEffect(c)
@@ -27,13 +28,19 @@ function s.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e3:SetCountLimit(1,25800605)
 	e3:SetCountLimit(1,id+1)
 	e3:SetCost(aux.bfgcost)
+	e3:SetCondition(s.handcondition)
 	e3:SetTarget(c25800604.target2)
 	e3:SetOperation(c25800604.operation2)
 	c:RegisterEffect(e3)
 end
+-----
+function s.handcondition(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandler():GetControler()
+	return Duel.GetTurnPlayer()==tp
+end
+-----
 function s.cfilter(c)
 	return c:IsType(TYPE_TRAP) and c:IsDiscardable()
 end
@@ -65,22 +72,14 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 -----
-function s.filter(c)
-	return  c:IsType(TYPE_XYZ) and c:IsReleasableByEffect()
-end
 function c25800604.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,s.filter,1,nil) and Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return  Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
-function c25800604.operation2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.SelectReleaseGroupEx(tp,s.filter,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-	if   Duel.Release(g,REASON_EFFECT)~=0 then
-	
+function c25800604.operation2(e,tp,eg,ep,ev,re,r,rp)   
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanBeDisabledByEffect(e,false) then
@@ -106,7 +105,5 @@ function c25800604.operation2(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e3)
 		end
-	end
-	end
 	end
 end

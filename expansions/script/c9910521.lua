@@ -10,6 +10,7 @@ function c9910521.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9910521,2))
 	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
@@ -38,6 +39,7 @@ function c9910521.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910521.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c9910521.thfilter(c,cardtype)
 	return c:IsSetCard(0xa950) and c:IsType(cardtype) and c:IsAbleToHand()

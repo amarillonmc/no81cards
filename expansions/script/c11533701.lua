@@ -20,7 +20,7 @@ function c11533701.initial_effect(c)
 	c:RegisterEffect(e1)  
 	--remove
 	local e2=Effect.CreateEffect(c) 
-	e2:SetCategory(CATEGORY_REMOVE) 
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_TOGRAVE) 
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS) 
 	e2:SetProperty(EFFECT_FLAG_DELAY) 
@@ -79,34 +79,43 @@ function c11533701.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and mg and mg:FilterCount(Card.IsSetCard,nil,0xb4)==mg:GetCount()  
 end
 function c11533701.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_DECK,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil) end 
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,PLAYER_ALL,LOCATION_DECK+LOCATION_EXTRA)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_DECK,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_EXTRA,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_GRAVE,0,1,nil) end 
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,4,PLAYER_ALL,LOCATION_DECK+LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,3,PLAYER_ALL,LOCATION_GRAVE)
 end 
 function c11533701.rmop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()   
 	local g1=Duel.GetDecktopGroup(tp,1) 
+	local mn=0
 	if g1:GetCount()>0 then 
 		Duel.ConfirmCards(1-tp,g1)  
-		Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)	
+		if Duel.SendtoGrave(g1,REASON_EFFECT)>0 then mn=mn+1 end   
 	end 
 	local g2=Duel.GetDecktopGroup(1-tp,1) 
 	if g2:GetCount()>0 then 
 		Duel.ConfirmCards(tp,g2)  
-		Duel.Remove(g2,POS_FACEUP,REASON_EFFECT) 
+		if Duel.SendtoGrave(g2,REASON_EFFECT)>0 then mn=mn+1 end   
 	end 
 	local g3=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
 	if g3:GetCount()>0 then 
 		Duel.ConfirmCards(tp,g3)  
 		local rg=g3:Select(tp,1,1,nil)
-		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)	
+		if Duel.SendtoGrave(rg,REASON_EFFECT)>0 then mn=mn+1 end	 
 	end 
-	local g4=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
+	local g4=Duel.GetFieldGroup(tp,LOCATION_EXTRA,0)
 	if g4:GetCount()>0 then  
 		local rg=g4:Select(tp,1,1,nil)
-		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)	
+		if Duel.SendtoGrave(rg,REASON_EFFECT)>0 then mn=mn+1 end	
 	end 
-end 
-
+	if mn>0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,3,nil) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		Duel.BreakEffect()
+	local rrg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,3,3,nil)
+	if rrg:GetCount()>0 then
+		Duel.Remove(rrg,POS_FACEUP,REASON_EFFECT)
+	end
+	end
+end
 
 function c11533701.xxrmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK+LOCATION_GRAVE,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_ONFIELD,1,nil) end 

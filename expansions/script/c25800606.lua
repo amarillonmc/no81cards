@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCondition(s.handcondition)
 	c:RegisterEffect(e2)
 	 --
 	local e3=Effect.CreateEffect(c)
@@ -25,14 +26,22 @@ function s.initial_effect(c)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCountLimit(1,id+1)
 	e3:SetCost(aux.bfgcost)
-	e3:SetTarget(s.target2)
-	e3:SetOperation(s.activate2)
+	e3:SetCondition(s.handcondition)
+	e3:SetTarget(s.destg)
+	e3:SetOperation(s.desop)
 	c:RegisterEffect(e3)
 end
+-----
+function s.handcondition(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandler():GetControler()
+	return Duel.GetTurnPlayer()==tp
+end
+-----
 function s.cfilter(c)
-	return c:IsType(TYPE_TRAP) and c:IsDiscardable()
+	return c:GetType()==TYPE_TRAP and c:IsDiscardable()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (not e:GetHandler():IsLocation(LOCATION_HAND) or Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler())) end
@@ -62,34 +71,17 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 -----
-function s.filter(c)
-	return c:IsType(TYPE_NORMAL) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
+function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
-function s.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_ONFIELD,0,1,c) end
-	local g1=Duel.GetMatchingGroup(s.filter,tp,LOCATION_ONFIELD,0,c)
-	local g2=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
-	local ct1=g1:GetCount()
-	local ct2=g2:GetCount()
-	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,ct1+((ct1>ct2) and ct2 or ct1),0,0)
-end
-function s.activate2(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(s.filter,tp,LOCATION_ONFIELD,0,aux.ExceptThisCard(e))
-	local ct1=Duel.Destroy(g1,REASON_EFFECT)
-	if ct1==0 then return end
-	local g2=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
-	local ct2=g2:GetCount()
-	if ct2==0 then return end
-	Duel.BreakEffect()
-	if ct2<=ct1 then
-		Duel.Destroy(g2,REASON_EFFECT)
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g3=g2:Select(tp,ct1,ct1,nil)
-		Duel.HintSelection(g3)
-		Duel.Destroy(g3,REASON_EFFECT)
+function s.desop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
+	if tg:GetCount()>0 then
+		Duel.Destroy(tg,REASON_EFFECT)
 	end
 end
-

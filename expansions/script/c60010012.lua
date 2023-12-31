@@ -1,0 +1,53 @@
+--血煞天枢绝光之枪 镇守天海万古魔识
+local cm,m,o=GetID()
+function cm.initial_effect(c)
+	--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkAttribute,ATTRIBUTE_WATER+ATTRIBUTE_LIGHT),3,99)
+	c:EnableReviveLimit()
+	--battle
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	e1:SetValue(1)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e2:SetValue(1)
+	c:RegisterEffect(e2)
+	
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(1,1)
+	e2:SetValue(cm.aclimit)
+	c:RegisterEffect(e2)
+
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_LEAVE_FIELD)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetOperation(cm.thop)
+	c:RegisterEffect(e1)
+end
+function cm.aclimit(e,re,tp)
+	local rc=re:GetHandler()
+	return rc:IsLocation(LOCATION_HAND) and re:IsActiveType(TYPE_MONSTER)
+end
+function cm.aclimit2(e,re,tp)
+	local loc=re:GetActivateLocation()
+	return (loc==LOCATION_GRAVE or loc==LOCATION_REMOVED) and re:IsActiveType(TYPE_MONSTER)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e2:SetTargetRange(1,1)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	e2:SetValue(cm.aclimit)
+	Duel.RegisterEffect(e2,tp)
+end

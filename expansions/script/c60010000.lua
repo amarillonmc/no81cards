@@ -1,0 +1,228 @@
+--Hello World!
+
+--This is a library of mtc's cards.
+--You can add QQ1252425371 to feedback bugs.
+--The following functions are available.
+
+--MTC.LHini(c,tp)
+--MTC.LHnum(tp)
+--MTC.LHSpS(c,num)
+
+--MTC.filterEffectSetCode(c,tablename)
+--MTC.CheckEffectSetCode(tablename,ccode,excode,...)
+--MTC.GetGroupEffectSetcode(tp,tablename,fil,loc1,loc2,ex,...)
+--MTC.ApplyEffectSetCode(e,tp,c,tablename,...)
+
+--MTC.ActivateEffect(e,tp,oe)
+
+--MTC.CycleApplyOp(g,op,...)
+
+--You can view detailed usages below or in mtc's card.
+--A few annotations in Chinese are noted below.
+--Welcome to use mtc's library.
+
+MTC=MTC or {}
+MTC.loaded_metatable_list={}
+
+-------------------------------------------------------------------------------------------------------------------------------------
+--系列「传说天」相关函数
+--「传说天」次数检定初始化函数
+function MTC.LHini(c,tp)
+	if not LHini==true then
+		LHini=true
+		--spsm
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+		e1:SetCondition(MTC.LHcon1)
+		e1:SetOperation(MTC.LHop1)
+		Duel.RegisterEffect(e1,tp)
+		--spsm
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_SUMMON_SUCCESS)
+		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+		e1:SetCondition(MTC.LHcon1)
+		e1:SetOperation(MTC.LHop1)
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function MTC.LHfil1(c,tp)
+	return c:IsSummonPlayer(tp) and c:IsSetCard(0x630)
+end
+function MTC.LHcon1(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(MTC.LHfil1,1,nil,tp)
+end
+function MTC.LHop1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsSetCard(0x630) then
+			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60010002,RESET_PHASE+PHASE_END,0,1)
+			Duel.RaiseEvent(c,EVENT_CUSTOM+60010002,nil,0,tc:GetSummonPlayer(),tc:GetSummonPlayer(),0)
+		end
+		tc=eg:GetNext()
+	end
+end
+--这个回合，自己把「传说天」怪兽召唤·特殊召唤的次数每有3次，返回值+1
+function MTC.LHnum(tp)
+	local num=Duel.GetFlagEffect(tp,60010002)
+	local ti=0
+	while num>=3 do
+		num=num-3
+		ti=ti+1
+	end
+	return ti
+end
+-------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------
+--系列「传说天」怪兽通用特招效果
+--这张卡可以丢弃num张手卡从手卡特招
+function MTC.LHSpS(c,num)
+	--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetLabel(num)
+	e1:SetCondition(MTC.LHcon2)
+	e1:SetOperation(MTC.LHop2)
+	c:RegisterEffect(e1)
+end
+function MTC.LHcon2(e,tp,eg,ep,ev,re,r,rp)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local num=e:GetLabel()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND,0,num,c)
+end
+function MTC.LHop2(e,tp,eg,ep,ev,re,r,rp)
+	local num=e:GetLabel()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND,0,num,num,c)
+	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+end
+-------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------
+--塔隆·血魔类效果初始化
+--MTC.CheckEffectSetCode(所使用的表名称,所使用的识别名,不予记录的code,...) ...中记录所需记录效果的event
+function MTC.CheckEffectSetCode(tablename,ccode,excode,...)
+	local tablename=_G[tablename]
+	local ccode=_G[ccode]
+	if not ccode then
+		ccode=true
+		tablename={}
+		local events={...}
+		local MTCcode=Effect.SetCode --为函数Effect.SetCode增加一段适用前的记录
+		Effect.SetCode=function(ue,code,...) 
+			local tf=false
+			for i=1,#events do   --是否包含...中的某个event
+				if code==events[i] then
+					tf=true
+				end
+			end
+			if tf==true and ue:GetOwner():GetCode()~=excode then  --符合条件则记录
+				local uid=ue:GetOwner():GetCode()
+				tablename[uid]={}
+				local tf2=false
+				local u=1
+				while tf2==false do --使用循环记录寻找一个未记录的位置记录该效果
+					if not tablename[uid][u] then
+						tablename[uid][u]=ue
+						tf2=true
+					end
+					u=u+1
+				end
+			end
+			MTCcode(ue,code,...)
+		end
+		for tc in aux.Next(Duel.GetMatchingGroup(nil,tp,0x1ff,0x1ff,nil)) do --重载
+			local ini=MTC.initial_effect
+			MTC.initial_effect=function() end
+			tc:ReplaceEffect(m,0)
+			MTC.initial_effect=ini
+			if tc.initial_effect then tc.initial_effect(tc) end
+		end
+	end
+end
+
+function MTC.filterEffectSetCode(c,tablename)
+	local tablename=_G[tablename]
+	return tablename[c:GetCode()][1]~=nil
+end
+--获取区域内有某个event的组（必须先使用MTC.CheckEffectSetCode进行记录）
+--MTC.GetGroupEffectSetcode(tp,所使用的表名称,fil,loc1,loc2,除了xxx之外,...)
+function MTC.GetGroupEffectSetcode(tp,tablename,fil,loc1,loc2,ex,...) --获取符合条件的卡
+	local tablename=_G[tablename]
+	local g=Duel.GetMatchingGroup(fil,tp,loc1,loc2,ex,...) 
+	local ac=g:GetFirst()
+	for i=1,#g do
+		if tablename[ac:GetCode()][1]==nil then
+			g:RemoveCard(ac)
+		end
+		ac=g:GetNext()
+	end
+	return g
+end
+--适用某张卡的某个event的效果
+--MTC.ApplyEffectSetCode(调用该函数的e,调用该函数的tp,需要适用的c,所使用的表名称,...)
+function MTC.ApplyEffectSetCode(e,tp,c,tablename,...)
+	local tablename=_G[tablename]
+	local tf=false
+	local i=1
+	while tf==false do --利用循环把每一项适用
+		if tablename[c:GetCode()][i] then
+			MTC.ActivateEffect(tablename[c:GetCode()][i],tp,e)
+		end
+		if not tablename[c:GetCode()][i+1] then
+			tf=true
+		end
+		i=i+1
+	end
+end
+
+--MTC.ActivateEffect(需要适用的e,调用该函数的tp,调用该函数的e)
+--Thanks to lanpa
+function MTC.ActivateEffect(e,tp,oe)
+	local c=e:GetHandler()
+	local cos,tg,op=e:GetCost(),e:GetTarget(),e:GetOperation()
+	if e and (not cos or cos(e,tp,eg,ep,ev,re,r,rp,0)) and (not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)) then
+		oe:SetProperty(e:GetProperty())
+		local code=c:GetOriginalCode()
+		Duel.Hint(HINT_CARD,tp,code)
+		e:UseCountLimit(tp,1,true)
+		c:CreateEffectRelation(e)
+		if cos then cos(e,p,eg,ep,ev,re,r,rp,1) end
+		if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		if g and #g~=0 then
+			local tg=g:GetFirst()
+			while tg do
+				tg:CreateEffectRelation(e)
+				tg=g:GetNext()
+			end
+		end
+		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+		c:ReleaseEffectRelation(e)
+		if g then
+			tg=g:GetFirst()
+			while tg do
+				tg:ReleaseEffectRelation(e)
+				tg=g:GetNext()
+			end
+		end
+	end
+end
+-------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------
+--对于某个g里的每张卡片依次适用操作op
+function MTC.CycleApplyOp(g,op,...)
+	local ac=g:GetFirst()
+	for i=1,#g do
+		local c=ac
+		if op then op(...) end
+		ac=g:GetNext()
+	end
+end

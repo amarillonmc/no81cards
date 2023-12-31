@@ -12,9 +12,11 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,m)
+	e1:SetCondition(cm.drcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -33,24 +35,30 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCountLimit(1,m+1)
 	e2:SetCondition(cm.retcon)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 end
 --Effect 1
-function cm.spfilter(c,e,tp)
-	return c:IsRace(RACE_SPELLCASTER) and not c:IsPublic() and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)==0
+end
+function cm.pfilter(c)
+	return c:IsRace(RACE_SPELLCASTER) and not c:IsPublic()
+end
+function cm.sp1filter(c,e,tp)
+	return cm.DragWizard(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.sp1filter,tp,LOCATION_HAND,0,1,nil,e,tp)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and not c:IsPublic()
-		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,c,e,tp) end
+		and Duel.IsExistingMatchingCard(cm.pfilter,tp,LOCATION_HAND,0,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,c,e,tp)
+	local g=Duel.SelectMatchingCard(tp,cm.pfilter,tp,LOCATION_HAND,0,1,1,c)
 	local tc=g:GetFirst()
 	Duel.ConfirmCards(1-tp,g)
 	local e1=Effect.CreateEffect(c)
@@ -67,13 +75,8 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e2:SetLabel(Duel.GetCurrentChain())
 	e2:SetLabelObject(e1)
 	c:RegisterEffect(e2)
-	local e3=e1:Clone()
-	tc:RegisterEffect(e3)
-	local e4=e2:Clone()
-	e4:SetLabelObject(e3)
-	tc:RegisterEffect(e4)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND)
+	Duel.ShuffleHand(tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function cm.clearop(e,tp,eg,ep,ev,re,r,rp)
 	if ev~=e:GetLabel() then return end
@@ -81,16 +84,31 @@ function cm.clearop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
-		and c:IsRelateToEffect(e) and tc:IsRelateToEffect(e)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) then
-		Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
-		Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
-		Duel.SpecialSummonComplete()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.sp1filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --Effect 2
 --Effect 3 
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
