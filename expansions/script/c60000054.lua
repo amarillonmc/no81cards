@@ -2,7 +2,7 @@
 local m=60000054
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-    aux.AddCodeList(c,60000043)
+	aux.AddCodeList(c,60000043)
 	--Activate set
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -30,10 +30,6 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.antg)
 	e3:SetOperation(cm.anop)
 	c:RegisterEffect(e3)
-	if cm.Anounce_Check_for_Hai~=true then
-		cm.Anounce_Check_for_Hai=true
-		Anounce_Tab_for_Hai={0,0}
-	end
 end
 --Activate set
 function cm.setfilter(c)
@@ -78,9 +74,9 @@ end
 function cm.anop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(m,0))
 	Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(m,0))
-	Anounce_Tab_for_Hai[tp]=Anounce_Tab_for_Hai[tp]+1
-	Debug.Message(Anounce_Tab_for_Hai[tp])
-	if Anounce_Tab_for_Hai[tp]>127 then
+	if not haiiA then haiiA=0 end
+	Debug.Message(haiiA)
+	if haiiA>127 then
 		local lp=Duel.GetLP(1-tp)
 		if lp>8000 then
 			Duel.SetLP(1-tp,lp-8000)

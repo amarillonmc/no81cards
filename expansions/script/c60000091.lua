@@ -74,12 +74,14 @@ function cm.getfusionfilter(c,tp,tc)
 end
 
 function cm.sprcon(e,c)
+	local tp=e:GetHandlerPlayer()
 	if c==nil then return true end
 	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_ONFIELD,0,nil,tp,c)
 	return g:GetCount()>0
 end
 
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local tp=e:GetHandlerPlayer()
 	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_ONFIELD,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
@@ -120,7 +122,7 @@ function cm.costcfilter(c)
 end
 
 function cm.cacost(e,tp,eg,ep,ev,re,r,rp,chk)
-	Debug.Message(Duel.IsExistingMatchingCard(cm.costcfilter,tp,LOCATION_ONFIELD,0,1,nil))
+	--Debug.Message(Duel.IsExistingMatchingCard(cm.costcfilter,tp,LOCATION_ONFIELD,0,1,nil))
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costcfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	local g=Duel.GetMatchingGroup(cm.costcfilter,tp,LOCATION_ONFIELD,0,nil,m)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
@@ -134,7 +136,7 @@ function cm.tgcfilter(c)
 end
 
 function cm.catg(e,tp,eg,ep,ev,re,r,rp,chk)
-	Debug.Message(Duel.IsExistingMatchingCard(cm.tgcfilter,tp,LOCATION_EXTRA,0,1,nil))
+	--Debug.Message(Duel.IsExistingMatchingCard(cm.tgcfilter,tp,LOCATION_EXTRA,0,1,nil))
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgcfilter,tp,LOCATION_EXTRA,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_EXTRA)
 end

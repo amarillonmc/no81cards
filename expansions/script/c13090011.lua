@@ -53,9 +53,8 @@ function cm.setfilter(c,tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local h1=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
-		local h2=Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)
-		return (h1>0 and h2>0) and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		
+		return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 	end
 end
 function cm.f2(c)

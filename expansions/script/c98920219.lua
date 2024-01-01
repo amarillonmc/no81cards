@@ -1,5 +1,6 @@
 --化学结合-T2O
 function c98920219.initial_effect(c)
+	aux.AddCodeList(c,85066822,6022371,98920218,58071123,98920217)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

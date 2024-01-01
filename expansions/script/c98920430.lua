@@ -68,7 +68,7 @@ function c98920430.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c98920430.operation(e,tp,eg,ep,ev,re,r,rp)
 	local cc=e:GetLabelObject()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c98920430.filter2,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,cc,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g:GetFirst(),0,tp,tp,true,false,POS_FACEUP)

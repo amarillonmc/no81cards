@@ -75,6 +75,7 @@ function cm.sprcon(e,c)
 		and Duel.IsExistingMatchingCard(cm.sprfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,3,nil)
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local tp=c:GetControler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.sprfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,3,3,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)

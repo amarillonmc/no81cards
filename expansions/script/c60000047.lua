@@ -2,7 +2,7 @@
 local m=60000047
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-    aux.AddCodeList(c,60000043)
+	aux.AddCodeList(c,60000043)
 	c:EnableReviveLimit()
 	--spsummon limit 
 	local e1=Effect.CreateEffect(c)
@@ -98,6 +98,7 @@ function cm.hspcon(e,c)
 	return res
 end
 function cm.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(cm.hspfilter,tp,LOCATION_ONFIELD,0,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	aux.GCheckAdditional=cm.hspgcheck
@@ -110,6 +111,7 @@ function cm.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	else return false end
 end
 function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
+	local tp=c:GetControler()
 	local sg=e:GetLabelObject()
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
 	sg:DeleteGroup()
