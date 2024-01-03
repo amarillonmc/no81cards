@@ -55,7 +55,7 @@ function c9910028.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not tc:IsRelateToEffect(e) or Duel.Destroy(tc,REASON_EFFECT)==0 then return end
 	local lab=Duel.GetFlagEffectLabel(tp,9910048)
 	local g1=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
-	local g2=Duel.GetMatchingGroup(nil,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
+	local g2=Duel.GetMatchingGroup(nil,tp,LOCATION_REMOVED,0,nil)
 	local g3=Duel.GetMatchingGroup(c9910028.thfilter1,tp,0x70,0x70,nil,tp,Duel.GetTurnCount())
 	local off=1
 	local ops={}
