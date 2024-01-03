@@ -20,6 +20,7 @@ function s.initial_effect(c)
 	e_th:SetRange(LOCATION_GRAVE)
 	e_th:SetCode(EVENT_FREE_CHAIN)
 	e_th:SetCountLimit(1,id)
+	e_th:SetCondition(s.thcon)
 	e_th:SetCost(aux.bfgcost)
 	e_th:SetTarget(s.thtg)
 	e_th:SetOperation(s.thop)
@@ -72,6 +73,12 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local ct=math.floor(cg:GetSum(Card.GetAttack)/1000)
 	if ct>0 then Duel.Draw(tp,ct,REASON_EFFECT) end
+end
+function s.lfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x119) and c:IsSummonType(SUMMON_TYPE_LINK) and c:GetFlagEffect(id)~=0
+end
+function s.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.lfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.thfilter(c)
 	return c:IsSetCard(0x119) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
