@@ -24,56 +24,7 @@ function cm.initial_effect(c)
 	e3:SetCost(cm.cost)
 	e3:SetOperation(cm.operation)
 	c:RegisterEffect(e3)
-	if not Doremy_Adjust then
-		Doremy_Adjust=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD)
-		ge1:SetCode(EFFECT_SUMMON_COST)
-		ge1:SetTargetRange(0xff,0xff)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=ge1:Clone()
-		ge1:SetCode(EFFECT_SPSUMMON_COST)
-		Duel.RegisterEffect(ge2,0)
-		local ge3=Effect.CreateEffect(c)
-		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge3:SetCode(EVENT_SUMMON_SUCCESS)
-		ge3:SetOperation(cm.sreset)
-		Duel.RegisterEffect(ge3,0)
-		local ge4=ge3:Clone()
-		ge4:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(ge4,0)
-		local ge5=ge3:Clone()
-		ge5:SetCode(EVENT_SUMMON_NEGATED)
-		Duel.RegisterEffect(ge5,0)
-		local ge6=ge3:Clone()
-		ge6:SetCode(EVENT_SPSUMMON_NEGATED)
-		Duel.RegisterEffect(ge6,0)
-		local ge7=Effect.CreateEffect(c)
-		ge7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge7:SetCode(EVENT_CHAIN_SOLVING)
-		ge7:SetOperation(cm.count)
-		Duel.RegisterEffect(ge7,0)
-		local ge8=Effect.CreateEffect(c)
-		ge8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge8:SetCode(EVENT_CHAIN_SOLVED)
-		ge8:SetOperation(cm.creset)
-		Duel.RegisterEffect(ge8,0)
-	end
-end
-function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if Doremy_Token_Check then return end
-	Doremy_Summoning_Check=true
-end
-function cm.sreset(e,tp,eg,ep,ev,re,r,rp)
-	if Doremy_Token_Check then return end
-	Doremy_Summoning_Check=false
-end
-function cm.count(e,tp,eg,ep,ev,re,r,rp)
-	Doremy_Chain_Solving_Check=true
-end
-function cm.creset(e,tp,eg,ep,ev,re,r,rp)
-	Doremy_Chain_Solving_Check=false
+	SNNM.DressamAdjust(c)
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

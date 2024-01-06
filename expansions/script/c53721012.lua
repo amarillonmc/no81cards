@@ -58,6 +58,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.DisableShuffleCheck()
 	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
 		Duel.ConfirmCards(1-tp,g1)
+		Duel.ShuffleHand(tp)
 		Duel.ShuffleDeck(tp)
 		local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.tdfilter),tp,LOCATION_GRAVE,0,nil)
 		if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then

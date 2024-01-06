@@ -61,9 +61,9 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.srfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil)
-		if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
+		if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 and g:GetFirst():IsLocation(LOCATION_HAND) then
 			Duel.ConfirmCards(1-tp,g)
-			if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+			if Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CONTROL)
 				local sc=Duel.SelectMatchingCard(1-tp,cm.ctfilter,tp,LOCATION_ONFIELD,0,1,1,nil):GetFirst()

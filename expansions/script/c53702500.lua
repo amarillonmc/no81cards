@@ -4393,6 +4393,64 @@ function cm.Global_in_Initial_Reset(c,t)
 		Duel.RegisterEffect(e1,0)
 	end
 end
+function cm.DressamAdjust(c)
+	if not Doremy_Adjust then
+		Doremy_Adjust=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD)
+		ge1:SetCode(EFFECT_SUMMON_COST)
+		ge1:SetTargetRange(0xff,0xff)
+		ge1:SetOperation(cm.Dressamcheckop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EFFECT_SPSUMMON_COST)
+		Duel.RegisterEffect(ge2,0)
+		local ge2_1=ge1:Clone()
+		ge2_1:SetCode(EFFECT_MSET_COST)
+		Duel.RegisterEffect(ge2_1,0)
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetCode(EVENT_SUMMON_SUCCESS)
+		ge3:SetOperation(cm.Dressamsreset)
+		Duel.RegisterEffect(ge3,0)
+		local ge4=ge3:Clone()
+		ge4:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge4,0)
+		local ge4_1=ge3:Clone()
+		ge4_1:SetCode(EVENT_MSET)
+		Duel.RegisterEffect(ge4_1,0)
+		local ge5=ge3:Clone()
+		ge5:SetCode(EVENT_SUMMON_NEGATED)
+		Duel.RegisterEffect(ge5,0)
+		local ge6=ge3:Clone()
+		ge6:SetCode(EVENT_SPSUMMON_NEGATED)
+		Duel.RegisterEffect(ge6,0)
+		local ge7=Effect.CreateEffect(c)
+		ge7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge7:SetCode(EVENT_CHAIN_SOLVING)
+		ge7:SetOperation(cm.Dressamcount)
+		Duel.RegisterEffect(ge7,0)
+		local ge8=Effect.CreateEffect(c)
+		ge8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge8:SetCode(EVENT_CHAIN_SOLVED)
+		ge8:SetOperation(cm.Dressamcreset)
+		Duel.RegisterEffect(ge8,0)
+	end
+end
+function cm.Dressamcheckop(e,tp,eg,ep,ev,re,r,rp)
+	if Doremy_Token_Check then return end
+	Doremy_Summoning_Check=true
+end
+function cm.Dressamsreset(e,tp,eg,ep,ev,re,r,rp)
+	if Doremy_Token_Check then return end
+	Doremy_Summoning_Check=false
+end
+function cm.Dressamcount(e,tp,eg,ep,ev,re,r,rp)
+	Doremy_Chain_Solving_Check=true
+end
+function cm.Dressamcreset(e,tp,eg,ep,ev,re,r,rp)
+	Doremy_Chain_Solving_Check=false
+end
 function cm.DressamLocCheck(tp,usep,z)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE,usep,LOCATION_REASON_TOFIELD,z)>0 then return true end
 	if not Duel.IsPlayerAffectedByEffect(tp,53760022) then return false end
@@ -7070,17 +7128,39 @@ function cm.DimpthoxDcheckop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.RegisterFlagEffect(0,53766098,RESET_PHASE+PHASE_DAMAGE,0,1)
 	else
-		local atk=at:GetAttack()
+		local getatk=function(c)
+			local sete={c:IsHasEffect(EFFECT_SET_BATTLE_ATTACK)}
+			local val=c:GetAttack()
+			if #sete>0 then
+				sete=sete[#sete]
+				val=sete:GetValue()
+				if aux.GetValueType(val)=="function" then val=val(e) end
+			end
+			return val
+		end
+		local getdef=function(c)
+			local sete={c:IsHasEffect(EFFECT_SET_BATTLE_DEFENSE)}
+			local val=c:GetDefense()
+			if #sete>0 then
+				sete=sete[#sete]
+				val=sete:GetValue()
+				if aux.GetValueType(val)=="function" then val=val(e) end
+			end
+			return val
+		end
+		local atk=getatk(at)
 		local le={at:IsHasEffect(EFFECT_DEFENSE_ATTACK)}
 		local val=0
 		for _,v in pairs(le) do
 			val=v:GetValue()
 			if aux.GetValueType(val)=="function" then val=val(e) end
 		end
-		if val==1 then atk=at:GetDefense() end
+		if val==1 then
+			atk=getdef(at)
+		end
 		if bt:IsAttackPos() then
-			if atk>bt:GetAttack() then cm.ndc_2=0 elseif bt:GetAttack()>atk then cm.ndc_2=1 else cm.ndc_2=2 end
-		elseif atk>bt:GetDefense() then cm.ndc_2=0 else cm.ndc_2=3 end
+			if atk>getatk(bt) then cm.ndc_2=0 elseif getatk(bt)>atk then cm.ndc_2=1 else cm.ndc_2=2 end
+		elseif atk>getdef(bt) then cm.ndc_2=0 else cm.ndc_2=3 end
 	end
 end
 function cm.GetFlagEffectLabel(c,code)
@@ -7181,4 +7261,60 @@ function cm.BlackLotusop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		for i=1,100 do Debug.Message(Party_time_roll(0,1.5)) end
 	end
+end
+function cm.AozoraDisZoneGet(c)
+	Adzg_cid=_G["c"..c:GetOriginalCode()]
+	if not AozoraDisZoneGet_Check then
+		AozoraDisZoneGet_Check=true
+		local temp1=Duel.RegisterEffect
+		Duel.RegisterEffect=function(e,p)
+			if e:GetCode()==EFFECT_DISABLE_FIELD then
+				local pro,pro2=e:GetProperty()
+				pro=pro|EFFECT_FLAG_PLAYER_TARGET
+				e:SetProperty(pro,pro2)
+				e:SetTargetRange(1,1)
+			end
+			temp1(e,p)
+		end
+		local temp2=Card.RegisterEffect
+		Card.RegisterEffect=function(c,e,bool)
+			if e:GetCode()==EFFECT_DISABLE_FIELD then
+				local op,range,con=e:GetOperation(),0,0
+				if e:GetRange() then range=e:GetRange() end
+				if e:GetCondition() then con=e:GetCondition() end
+				if op then
+					local ex=Effect.CreateEffect(c)
+					ex:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+					ex:SetCode(EVENT_ADJUST)
+					ex:SetRange(range)
+					ex:SetOperation(cm.exop)
+					temp2(c,ex)
+					Adzg_cid[ex]={op,range,con}
+					e:SetOperation(nil)
+				else
+					local pro,pro2=e:GetProperty()
+					pro=pro|EFFECT_FLAG_PLAYER_TARGET
+					e:SetProperty(pro,pro2)
+					e:SetTargetRange(1,1)
+				end
+			end
+			temp2(c,e,bool)
+		end
+	end
+end
+function cm.exop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:GetFlagEffect(53734098)>0 then return end
+	c:RegisterFlagEffect(53734098,RESET_EVENT+RESETS_STANDARD+RESET_OVERLAY,0,0)
+	local op,range,con=Adzg_cid[e][1],Adzg_cid[e][2],Adzg_cid[e][3]
+	local val=op(e,tp)
+	if tp==1 then val=((val&0xffff)<<16)|((val>>16)&0xffff) end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DISABLE_FIELD)
+	if range~=0 then e1:SetRange(range) end
+	if con~=0 then e1:SetCondition(con) end
+	e1:SetValue(val)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_OVERLAY)
+	c:RegisterEffect(e1)
 end
