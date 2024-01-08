@@ -9,22 +9,20 @@ function c9910529.initial_effect(c)
 	e1:SetTarget(c9910529.target)
 	e1:SetOperation(c9910529.activate)
 	c:RegisterEffect(e1)
-	--to hand
+	--destroy
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,9910529)
-	e2:SetTarget(c9910529.thtg)
-	e2:SetOperation(c9910529.thop)
+	e2:SetCost(c9910529.descost)
+	e2:SetTarget(c9910529.destg)
+	e2:SetOperation(c9910529.desop)
 	c:RegisterEffect(e2)
 end
 function c9910529.atkfilter(c)
-	return c:IsSetCard(0xa950) and c:IsFaceup() and c:GetAttack()>c:GetBaseAttack()
+	return c:IsFaceup() and c:GetAttack()>c:GetBaseAttack()
 end
 function c9910529.atkfilter2(c,e)
-	return c:IsSetCard(0xa950) and c:IsFaceup() and c:GetAttack()>c:GetBaseAttack()
+	return c:IsFaceup() and c:GetAttack()>c:GetBaseAttack()
 		and not c:IsImmuneToEffect(e) and not c:IsHasEffect(EFFECT_REVERSE_UPDATE)
 end
 function c9910529.atkdiff(c,diff)
@@ -91,29 +89,45 @@ function c9910529.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 end
-function c9910529.cfilter(c)
-	return c:IsFaceup() and c:IsCode(9910507,9910515,9910527)
+function c9910529.descost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
+		and Duel.CheckReleaseGroupEx(REASON_COST,tp,nil,1,nil) end
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
+	local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,nil,1,1,nil)
+	Duel.Release(g,REASON_COST)
 end
-function c9910529.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910529.cfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9910529.cfilter,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():IsAbleToHand() end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,c9910529.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+function c9910529.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,9910529)==0 end
 end
-function c9910529.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetValue(600)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		if not tc:IsHasEffect(EFFECT_REVERSE_UPDATE) and c:IsRelateToEffect(e) then
-			Duel.SendtoHand(c,nil,REASON_EFFECT)
-		end
+function c9910529.desop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_ADJUST)
+	e1:SetCondition(c9910529.descon2)
+	e1:SetOperation(c9910529.desop2)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetDescription(aux.Stringid(9910529,2))
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+	e2:SetTargetRange(1,0)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+	Duel.RegisterFlagEffect(tp,9910529,RESET_PHASE+PHASE_END,0,1)
+end
+function c9910529.cfilter(c,tp)
+	return c:IsFaceup() and c:IsCode(9910507,9910515,9910527) and c:IsControler(tp)
+end
+function c9910529.desfilter2(c,tp)
+	return c:GetColumnGroup():IsExists(c9910529.cfilter,1,nil,tp)
+end
+function c9910529.descon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c9910529.desfilter2,tp,0,LOCATION_ONFIELD,1,nil,tp)
+end
+function c9910529.desop2(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9910529.desfilter2,tp,0,LOCATION_ONFIELD,nil,tp)
+	if #g>0 then
+		Duel.Destroy(g,REASON_EFFECT)
 	end
 end

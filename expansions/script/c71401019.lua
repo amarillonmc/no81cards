@@ -32,6 +32,7 @@ function c71401019.filterc2(c,tp,ec)
 	if not c:IsRace(RACE_SPELLCASTER) and c:IsLevel(4) and c:IsFaceup() and c:IsAbleToHandAsCost() then
 		return false
 	end
+	--[[
 	local e1=Effect.CreateEffect(ec)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -43,6 +44,8 @@ function c71401019.filterc2(c,tp,ec)
 	local res=Duel.IsExistingMatchingCard(c71401019.filter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,c:GetCode())
 	e1:Reset()
 	return res
+	]]
+	return true
 end
 function c71401019.filter2(c,code)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsLevel(4) and not c:IsCode(code) and c:IsSummonable(true,nil)
@@ -71,8 +74,16 @@ end
 function c71401019.op2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,71401019)~=0 then return end
 	local code=e:GetLabel()
+	local g=Duel.GetMatchingGroup(c71401019.filter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,code)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401019,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+		local tc=g:Select(tp,1,1,nil):GetFirst()
+		if tc then
+			Duel.Summon(tp,tc,true,nil)
+		end
+	end
 	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetDescription(aux.Stringid(71401019,1))
+	e1:SetDescription(aux.Stringid(71401019,2))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
 	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
@@ -80,11 +91,4 @@ function c71401019.op2(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	Duel.RegisterFlagEffect(tp,71401019,RESET_PHASE+PHASE_END,0,1)
-	Duel.BreakEffect()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-	local g=Duel.SelectMatchingCard(tp,c71401019.filter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,code)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.Summon(tp,tc,true,nil)
-	end
 end

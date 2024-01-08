@@ -3,7 +3,7 @@ local m=12812003
 local cm=_G["c"..m]
 function c12812003.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
-    local e1=Effect.CreateEffect(c)
+	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -12,7 +12,7 @@ function c12812003.initial_effect(c)
 	e1:SetTarget(cm.psplimit)
 	c:RegisterEffect(e1)
 	--special summon
-    local e2=Effect.CreateEffect(c)
+	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_PZONE)
@@ -22,7 +22,7 @@ function c12812003.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 	--move
-    local e3=Effect.CreateEffect(c)
+	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -31,6 +31,8 @@ function c12812003.initial_effect(c)
 	e3:SetTarget(cm.sptgd)
 	e3:SetOperation(cm.spopd)
 	c:RegisterEffect(e3)
+	--
+	cm.self_summon_effect=e3
 end
 function cm.psplimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xa73) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
@@ -46,9 +48,9 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-    if c:IsRelateToEffect(e) then
-        Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-    end
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 --效果2
 --灵摆效果

@@ -40,6 +40,9 @@ function c12812005.initial_effect(c)
 	e4:SetTarget(cm.pentg)
 	e4:SetOperation(cm.penop)
 	c:RegisterEffect(e4)
+
+	--
+	cm.self_summon_effect=e3
 end
 function cm.psplimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xa73) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM

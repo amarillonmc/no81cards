@@ -15,7 +15,7 @@ function c29003614.initial_effect(c)
 	--Activate
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29003614,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_COIN)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_COIN+CATEGORY_HANDES)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,29003615)
@@ -23,6 +23,7 @@ function c29003614.initial_effect(c)
 	e2:SetOperation(c29003614.activate)
 	c:RegisterEffect(e2)
 c29003614.toss_coin=true
+c29003614.kinkuaoi_Akscsst=true
 end
 function c29003614.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -37,16 +38,13 @@ function c29003614.tkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 end
 function c29003614.thfilter1(c)
-	return c:IsCode(29065532) and c:IsAbleToHand()
-end
-function c29003614.thfilter2(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_SPELLCASTER) and c:IsAbleToHand()
+	return (c:IsCode(29065532)) or ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_SPELLCASTER)) and c:IsAbleToHand()
 end
 function c29003614.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29003614.thfilter1,tp,LOCATION_DECK,0,1,nil)
-		or Duel.IsExistingMatchingCard(c29003614.thfilter2,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c29003614.thfilter1,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 end
 function c29003614.activate(e,tp,eg,ep,ev,re,r,rp)
 	local res
@@ -59,7 +57,7 @@ function c29003614.activate(e,tp,eg,ep,ev,re,r,rp)
 			opval[off-1]=0
 			off=off+1
 		end
-		if Duel.IsExistingMatchingCard(c29003614.thfilter2,tp,LOCATION_DECK,0,1,nil) then
+		if Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND,0,1,c) then
 			ops[off]=aux.Stringid(29003614,3)
 			opval[off-1]=1
 			off=off+1
@@ -78,11 +76,7 @@ function c29003614.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,g)
 		end
 	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c29003614.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 	end
 end

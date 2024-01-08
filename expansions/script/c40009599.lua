@@ -1,6 +1,7 @@
 --魔合之降灵术师
 local m=40009599
 local cm=_G["c"..m]
+cm.named_with_Spiritualist=1
 function cm.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)

@@ -21,8 +21,9 @@ function c11533711.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rg=g:RandomSelect(tp,x) 
 	e:SetLabel(Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT))   
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,PLAYER_ALL,LOCATION_ONFIELD)  
-	local b=Duel.GetFieldGroupCount(tp,0,LOCATION_EXTRA) 
-	if b<=x and e:IsHasType(EFFECT_TYPE_ACTIVATE) then  
+	local b=Duel.GetFieldGroupCount(tp,0,LOCATION_EXTRA)  
+	local bx=Duel.GetFieldGroupCount(1-tp,0,LOCATION_EXTRA) 
+	if bx<=b and e:IsHasType(EFFECT_TYPE_ACTIVATE) then  
 		Duel.SetChainLimit(c11533711.chlimit)
 	end 
 end

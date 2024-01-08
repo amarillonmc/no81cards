@@ -77,15 +77,15 @@ function c11533700.rrfil(c)
 	else return false end 
 end 
 function c11533700.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,3,nil)
-	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,0,LOCATION_GRAVE,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,5,nil)
+	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,5,nil)
+	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,0,LOCATION_GRAVE,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,3,nil)
 	if chk==0 then return b1 or b2 end 
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,LOCATION_GRAVE) 
 end 
 function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,3,nil)
-	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,LOCATION_GRAVE,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,5,nil)
+	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil)
+	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,LOCATION_GRAVE,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil)
 	local op=0
 			if b1 and b2 then  
 			op=Duel.SelectOption(tp,aux.Stringid(11533700,2),aux.Stringid(11533700,3))
@@ -99,9 +99,9 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 			if op==0 then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g1=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11533700.rrfil1),tp,LOCATION_HAND,0,1,1,c)
-	if g1:GetCount()>0 and Duel.Release(g1,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToRemove),tp,LOCATION_GRAVE,LOCATION_GRAVE,3,nil) then
+	if g1:GetCount()>0 and Duel.Release(g1,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local rrg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,3,3,nil)
+	local rrg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,5,nil)
 	if rrg:GetCount()>0 then
 		Duel.SendtoDeck(rrg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		Duel.ShuffleDeck(tp)
@@ -110,9 +110,9 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 			elseif op==1 then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g3=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11533700.rrfil2),tp,LOCATION_GRAVE,0,1,1,c)
-	if g3:GetCount()>0 and Duel.Remove(g3,POS_FACEUP,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToRemove),tp,LOCATION_GRAVE,LOCATION_GRAVE,5,nil) then
+	if g3:GetCount()>0 and Duel.Remove(g3,POS_FACEUP,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local rrg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,5,5,nil)
+	local rrg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,3,nil)
 	if rrg:GetCount()>0 then
 		Duel.SendtoDeck(rrg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		Duel.ShuffleDeck(tp)
@@ -121,7 +121,7 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end  
 function c11533700.rlfil(c)  
-	return c:IsSetCard(0xb4) and (c:IsReleasable() or c:IsAbleToGrave()) 
+	return c:IsReleasable() or c:IsAbleToGrave() 
 end 
 function c11533700.rdistg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533700.rlfil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end 

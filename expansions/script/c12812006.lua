@@ -3,8 +3,8 @@ local m=12812006
 local cm=_G["c"..m]
 function c12812006.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
-    c:SetSPSummonOnce(12812006)
-    local e1=Effect.CreateEffect(c)
+	c:SetSPSummonOnce(12812006)
+	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -13,18 +13,16 @@ function c12812006.initial_effect(c)
 	e1:SetTarget(cm.psplimit)
 	c:RegisterEffect(e1)
 	--special summon
-    local e2=Effect.CreateEffect(c)
+	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DISABLE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
+	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCountLimit(1,12812106)
-	e2:SetCondition(cm.discon)
 	e2:SetTarget(cm.distg)
 	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2)
-    local e3=Effect.CreateEffect(c)
+	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -36,23 +34,33 @@ function c12812006.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
+
+	--
+	cm.self_summon_effect=e3
 end
 function cm.psplimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xa73) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 --效果1
-function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and re:IsActiveType(TYPE_MONSTER) 
-    and Duel.IsChainDisablable(ev) and Duel.GetCurrentPhase()==PHASE_MAIN1 and Duel.GetTurnPlayer()==tp
-end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDestructable() end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+	if chk==0 then return e:GetHandler():IsDestructable()
+		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
+	e:SetLabel(Duel.AnnounceType(tp))
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Destroy(e:GetHandler(),REASON_EFFECT)~=0 then return end
-    Duel.NegateEffect(ev)
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)==0 then return end
+	Duel.ConfirmDecktop(tp,1)
+	local g=Duel.GetDecktopGroup(tp,1)
+	local tc=g:GetFirst()
+	local opt=e:GetLabel()
+	if Duel.Destroy(e:GetHandler(),REASON_EFFECT)~=0 and (opt==0 and tc:IsType(TYPE_MONSTER)) 	or (opt==1 and tc:IsType(TYPE_SPELL)) or (opt==2 and tc:IsType(TYPE_TRAP)) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
+	else
+		Duel.MoveSequence(tc,SEQ_DECKBOTTOM)
+	end
 end
 --效果2
 function cm.filter(c)

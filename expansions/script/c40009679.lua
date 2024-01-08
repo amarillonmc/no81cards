@@ -2,6 +2,10 @@
 local m=40009679
 local cm=_G["c"..m]
 cm.named_with_MagicCombineMagic=1
+function cm.Spiritualist(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Spiritualist
+end
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -25,7 +29,7 @@ function cm.MagicCombineDemon(c)
 	return m and m.named_with_MagicCombineDemon
 end
 function cm.cfilter1(c)
-	return c:IsFaceup() and cm.MagicCombineDemon(c)
+	return c:IsFaceup() and (cm.MagicCombineDemon(c) or cm.Spiritualist(c))
 end
 function cm.recon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_MZONE,0,1,nil)
@@ -33,10 +37,13 @@ end
 function cm.cfilter(c)
 	return c:GetType()==TYPE_SPELL and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(false,true,false)~=nil  
 end
+function cm.cfilter1(c)
+	return c:IsFaceup() and cm.Spiritualist(c)
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and Duel.IsPlayerAffectedByEffect(tp,40010330) then
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_MZONE,0,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg=g:Select(tp,1,1,nil):GetFirst() 
 		Duel.Remove(sg,POS_FACEUP,REASON_COST)

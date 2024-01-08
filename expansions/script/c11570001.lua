@@ -13,11 +13,12 @@ function c11570001.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11570001,0))
-	e2:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_SPSUMMON)
 	e2:SetCountLimit(1,11670001)
+	e2:SetCost(c11570001.cost)
 	e2:SetCondition(c11570001.condition)
 	e2:SetTarget(c11570001.target)
 	e2:SetOperation(c11570001.operation)
@@ -61,21 +62,27 @@ end
 function c11570001.condition(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=ep and Duel.GetCurrentChain()==0
 end
+function c11570001.cormfilter(c)
+	return c:IsSetCard(0x810) and c:IsAbleToRemoveAsCost()
+end
+function c11570001.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11570001.cormfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c11570001.cormfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
 function c11570001.filter(c)
 	return c:IsSetCard(0x810) and c:IsAbleToRemove()
 end
 function c11570001.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c11570001.filter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_MZONE)
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,eg:GetCount(),0,0)
 --  Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,eg,eg:GetCount(),0,0)
 end
 function c11570001.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c11570001.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if g:GetCount()<=0 then return end
 	local rc=g:GetFirst()
 	if Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)~=0 then

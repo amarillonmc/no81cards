@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
 end
+cm.kinkuaoi_recoveraks=true
 --e1
 function cm.conf1(c)
 	return c:IsAbleToDeck() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))

@@ -23,6 +23,7 @@ function c29002021.initial_effect(c)
 	e3:SetProperty(0)
 	c:RegisterEffect(e3)
 end
+c29002021.kinkuaoi_Akscsst=true
 function c29002021.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,29020211,0,TYPES_TOKEN_MONSTER,2400,2400,12,RACE_WYRM,ATTRIBUTE_WATER) end

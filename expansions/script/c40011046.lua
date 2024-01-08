@@ -2,6 +2,7 @@
 local m=40011046
 local cm=_G["c"..m]
 cm.named_with_Masques=1
+cm.named_with_Spiritualist=1
 function cm.MagicCombineDemon(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_MagicCombineDemon
@@ -24,14 +25,7 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.sprcon)
 	e2:SetOperation(cm.sprop)
 	c:RegisterEffect(e2)
-	--change effect type
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetCode(40010330)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(1,0)
-	c:RegisterEffect(e3)
+
 	--copy
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
@@ -47,13 +41,29 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	--damage
 	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetCode(EVENT_REMOVE)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_UPDATE_ATTACK)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1)
+	e5:SetTargetRange(LOCATION_MZONE,0)
 	e5:SetCondition(cm.atkcon)
-	e5:SetOperation(cm.atkop)
+	e5:SetValue(1000)
 	c:RegisterEffect(e5)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_REMOVE)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function cm.checkfilter(c)
+	return not c:IsType(TYPE_TOKEN)
+end
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	if eg:IsExists(cm.checkfilter,1,nil) then
+		Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1)
+	end
 end
 function cm.sprfilter(c,ft,tp)
 	return c:GetOriginalRace()==RACE_ZOMBIE and c:GetOriginalAttribute()==ATTRIBUTE_WATER 
@@ -63,11 +73,11 @@ function cm.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	return ft>-1 and Duel.CheckReleaseGroup(tp,cm.sprfilter,1,nil,ft,tp)
+	return ft>-1 and Duel.CheckReleaseGroup(REASON_COST,tp,cm.sprfilter,1,nil,ft,tp)
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local g=Duel.SelectReleaseGroup(tp,cm.sprfilter,1,1,nil,ft,tp)
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,cm.sprfilter,1,1,nil,ft,tp)
 	Duel.Release(g,REASON_COST)
 end
 function cm.cfilter(c)
@@ -119,18 +129,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 	end
 end
-function cm.atkfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_GRAVE) and c:IsPreviousControler(tp) and c:IsType(TYPE_SPELL)
-end
-function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.atkfilter,1,nil,tp)
-end
-function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetValue(1000)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+
+
+
+function cm.atkcon(e)
+	return Duel.GetFlagEffect(0,m)>0
 end

@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_SYNCHRO_LEVEL)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_MZONE)
+	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE+LOCATION_EXTRA+LOCATION_REMOVED)
 	e2:SetValue(cm.slevel)
 	c:RegisterEffect(e2)
 	--syn

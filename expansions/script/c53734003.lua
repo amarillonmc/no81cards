@@ -31,59 +31,7 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.thtg)
 	e4:SetOperation(cm.thop)
 	c:RegisterEffect(e4)
-	if not cm.Aozora_Check then
-		cm.Aozora_Check=true
-		cm[0]=Duel.RegisterEffect
-		Duel.RegisterEffect=function(e,p)
-			if e:GetCode()==EFFECT_DISABLE_FIELD then
-				local pro,pro2=e:GetProperty()
-				pro=pro|EFFECT_FLAG_PLAYER_TARGET
-				e:SetProperty(pro,pro2)
-				e:SetTargetRange(1,1)
-			end
-			cm[0](e,p)
-		end
-		cm[1]=Card.RegisterEffect
-		Card.RegisterEffect=function(c,e,bool)
-			if e:GetCode()==EFFECT_DISABLE_FIELD then
-				local op,range,con=e:GetOperation(),0,0
-				if e:GetRange() then range=e:GetRange() end
-				if e:GetCondition() then con=e:GetCondition() end
-				if op then
-					local ex=Effect.CreateEffect(c)
-					ex:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-					ex:SetCode(EVENT_ADJUST)
-					ex:SetRange(range)
-					ex:SetOperation(cm.exop)
-					cm[1](c,ex)
-					cm[ex]={op,range,con}
-					e:SetOperation(nil)
-				else
-					local pro,pro2=e:GetProperty()
-					pro=pro|EFFECT_FLAG_PLAYER_TARGET
-					e:SetProperty(pro,pro2)
-					e:SetTargetRange(1,1)
-				end
-			end
-			cm[1](c,e,bool)
-		end
-	end
-end
-function cm.exop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:GetFlagEffect(m)>0 then return end
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_OVERLAY,0,0)
-	local op,range,con=cm[e][1],cm[e][2],cm[e][3]
-	local val=op(e,tp)
-	if tp==1 then val=((val&0xffff)<<16)|((val>>16)&0xffff) end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_DISABLE_FIELD)
-	if range~=0 then e1:SetRange(range) end
-	if con~=0 then e1:SetCondition(con) end
-	e1:SetValue(val)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_OVERLAY)
-	c:RegisterEffect(e1)
+	SNNM.AozoraDisZoneGet(c)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

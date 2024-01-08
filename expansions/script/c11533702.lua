@@ -55,7 +55,7 @@ function c11533702.initial_effect(c)
 	e3:SetTargetRange(LOCATION_MZONE,0) 
 	e3:SetTarget(
 		function(e,c) 
-		return c:IsType(TYPE_RITUAL) 
+		return c:IsSetCard(0xb4) 
 		end) 
 	e3:SetValue(
 		function(e,c)

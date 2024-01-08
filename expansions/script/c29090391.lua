@@ -28,13 +28,6 @@ function cm.initial_effect(c)
 	e51:SetTarget(cm.postg)
 	e51:SetOperation(cm.posop)
 	c:RegisterEffect(e51)  
-	--Effect 2
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_BATTLE_START)
-	e1:SetCondition(cm.descon)
-	e1:SetOperation(cm.desop)
-	--c:RegisterEffect(e1)
 	--synchro level
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)

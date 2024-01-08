@@ -32,6 +32,7 @@ function c29065546.initial_effect(c)
 	e3:SetCondition(c29065546.xspcon2)
 	c:RegisterEffect(e3)
 end
+c29065546.kinkuaoi_Akscsst=true
 function c29065546.cfilter(c)
 	return c:IsFaceup() and c:IsCode(29065500,29065502)
 end

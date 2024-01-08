@@ -25,10 +25,11 @@ function c9910812.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.SelectMatchingCard(tp,c9910812.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g1:GetCount()>0 and Duel.SendtoHand(g1,nil,REASON_EFFECT)~=0 and g1:GetFirst():IsLocation(LOCATION_HAND) then
 		Duel.ConfirmCards(1-tp,g1)
-		if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(c9910812.plfilter,tp,LOCATION_HAND,0,1,nil)
+		if Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+			and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c9910812.plfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil)
 			and Duel.SelectYesNo(tp,aux.Stringid(9910812,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-			local g2=Duel.SelectMatchingCard(tp,c9910812.plfilter,tp,LOCATION_HAND,0,1,1,nil)
+			local g2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910812.plfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
 			local tc=g2:GetFirst()
 			if tc then
 				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)

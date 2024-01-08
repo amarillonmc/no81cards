@@ -1,7 +1,6 @@
 --桃绯创造主 绯弥之命
 function c9910510.initial_effect(c)
 	c:EnableReviveLimit()
-	c:SetUniqueOnField(1,0,9910510)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -39,7 +38,7 @@ function c9910510.initial_effect(c)
 	e5:SetCode(EVENT_CHAINING)
 	e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1)
+	e5:SetCountLimit(3)
 	e5:SetCondition(c9910510.discon)
 	e5:SetCost(c9910510.discost)
 	e5:SetTarget(c9910510.distg)
@@ -52,11 +51,19 @@ end
 function c9910510.atkop(e,tp,eg,ep,ev,re,r,rp)
 	if re:IsActiveType(TYPE_MONSTER) and e:GetHandler():GetFlagEffect(1)>0 then
 		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
-		if g:GetCount()>0 then
+		if #g>0 then
 			Duel.Hint(HINT_CARD,0,9910510)
-			local dg=Group.CreateGroup()
-			local sc=g:GetFirst()
-			while sc do
+			local sc=nil
+			local tg=g:GetMaxGroup(Card.GetAttack)
+			if #tg>1 then
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910510,0))
+				local sg=tg:Select(tp,1,1,nil)
+				Duel.HintSelection(sg)
+				sc=sg:GetFirst()
+			else
+				sc=tg:GetFirst()
+			end
+			if sc then
 				local preatk=sc:GetAttack()
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
@@ -64,15 +71,15 @@ function c9910510.atkop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				e1:SetValue(-800)
 				sc:RegisterEffect(e1)
-				if preatk~=0 and sc:IsAttack(0) then dg:AddCard(sc) end
-				sc=g:GetNext()
+				if preatk~=0 and sc:IsAttack(0) then Duel.SendtoGrave(sc,REASON_EFFECT) end
 			end
-			Duel.SendtoGrave(dg,REASON_EFFECT)
 		end
 	end
 end
 function c9910510.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+	local c=e:GetHandler()
+	if ep==tp or c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
+	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c9910510.costfilter(c)
 	return c:IsSetCard(0xa950) and c:IsType(TYPE_MONSTER) and c:IsReleasable()

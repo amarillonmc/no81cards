@@ -90,6 +90,7 @@ function c9910527.disop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetLabelObject(tc)
 		e4:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e4,tp)
+		return tc:GetOriginalCodeRule()
 	end
 end
 function c9910527.distg2(e,c)

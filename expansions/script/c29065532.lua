@@ -51,7 +51,7 @@ function cm.dfilter(c)
 	return c:IsReleasable() and c:GetOriginalLevel()>0
 end
 function cm.filter(c,e,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) --and c:IsRace(RACE_SPELLCASTER)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_SPELLCASTER)
 end
 function cm.gfilter(g,c)
 	local rg = g:Filter(cm.check,nil)
@@ -147,7 +147,7 @@ function cm.filterdo(c,lv,g)
 	return g:FilterCount(cm.flagcheck,c)<lv and c:IsLevelAbove(2)
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand() and Duel.IsExistingMatchingCard(cm.lvcheckc,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return e:GetHandler():IsAbleToHand() and Duel.IsExistingMatchingCard(cm.lvcheckc,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
 function cm.lvcheckc(c)
@@ -155,7 +155,7 @@ function cm.lvcheckc(c)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		local sg=Duel.SelectMatchingCard(tp,cm.lvcheckc,tp,LOCATION_MZONE,0,1,1,nil)
+		local sg=Duel.SelectMatchingCard(tp,cm.lvcheckc,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 		if sg:GetCount()>0 then
 			local tc = sg:GetFirst()
 			local e1=Effect.CreateEffect(e:GetHandler())

@@ -1,10 +1,12 @@
---方 舟 骑 士 -陈
+--方舟骑士-陈
 c29065508.named_with_Arknight=1
 function c29065508.initial_effect(c)
+	aux.AddCodeList(c,29065500) 
 	--xyz summon
 	aux.AddXyzProcedureLevelFree(c,c29065508.mfilter,aux.TRUE,2,2)
+--,c29065508.ovfilter,aux.Stringid(29065510,0),c29065508.xyzop)
 	c:EnableReviveLimit()
-	-- attack
+	--attack
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29065508,1))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -26,6 +28,17 @@ function c29065508.initial_effect(c)
 	e3:SetTarget(c29065508.settg)
 	e3:SetOperation(c29065508.setop)
 	c:RegisterEffect(e3)
+end
+function c29065508.ovfilter(c)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+end
+function c29065508.cfilter(c)
+	return c:IsDiscardable()
+end
+function c29065508.xyzop(e,tp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065508.cfilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerAffectedByEffect(tp,29065510) and Duel.GetFlagEffect(tp,29065511)==0 end
+	Duel.DiscardHand(tp,c29065508.cfilter,1,1,REASON_COST+REASON_DISCARD,nil)
+	Duel.RegisterFlagEffect(tp,29065511,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c29065508.ffilter(c,chk)
 	return c:IsCode(29065500) and c:IsFaceup()
@@ -51,17 +64,6 @@ function c29065508.mfilter(c,xyzc)
 	local b2=c:IsXyzLevel(xyzc,5)
 	local b3=c:IsXyzLevel(xyzc,6)
 	return b1 and (b2 or b3)
-end
-function c29065508.xyzop(e,tp,chk)
-	if chk==0 then return (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,1,REASON_COST))) and Duel.GetFlagEffect(tp,29065508)==0 end
-	if Duel.GetFlagEffect(tp,29096814)==1 then
-	Duel.ResetFlagEffect(tp,29096814)
-	Duel.RemoveCounter(tp,1,0,0x10ae,1,REASON_RULE)
-	Duel.RegisterFlagEffect(tp,29065508,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
-	else
-	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
-	Duel.RegisterFlagEffect(tp,29065508,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
-	end
 end
 function c29065508.btcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

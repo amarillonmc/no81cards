@@ -2,6 +2,10 @@
 local m=40009673
 local cm=_G["c"..m]
 cm.named_with_MagicCombineMagic=1
+function cm.Spiritualist(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Spiritualist
+end
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -22,10 +26,13 @@ end
 function cm.cfilter(c)
 	return c:GetType()==TYPE_SPELL and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(false,true,false)~=nil  
 end
+function cm.cfilter1(c)
+	return c:IsFaceup() and cm.Spiritualist(c)
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and Duel.IsPlayerAffectedByEffect(tp,40010330) then
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_MZONE,0,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg=g:Select(tp,1,1,nil):GetFirst() 
 		Duel.Remove(sg,POS_FACEUP,REASON_COST)
@@ -47,6 +54,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_REMOVED)
 end
 function cm.rfilter(c)
@@ -58,6 +66,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil)
 	if g:GetCount()>0 then
 		if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0 then
+			Duel.Damage(1-tp,1000,REASON_EFFECT)
 			Duel.BreakEffect()
 			if e:GetLabel()==1 then
 				local te=e:GetLabelObject()  

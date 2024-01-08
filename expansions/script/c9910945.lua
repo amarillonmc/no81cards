@@ -49,10 +49,13 @@ function c9910945.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
 end
+function c9910945.locfilter(c,e)
+	return c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and c:IsRelateToEffect(e)
+end
 function c9910945.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	return re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
-		and g and g:IsExists(Card.IsLocation,1,nil,LOCATION_ONFIELD+LOCATION_GRAVE) and Duel.IsChainDisablable(ev)
+		and g and g:IsExists(c9910945.locfilter,1,nil,re) and Duel.IsChainDisablable(ev)
 end
 function c9910945.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910945)
@@ -67,6 +70,7 @@ function c9910945.natg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910945.naop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateAttack() and Duel.Draw(tp,1,REASON_EFFECT)~=0 and (Duel.GetCustomActivityCount(9910945,tp,ACTIVITY_CHAIN)~=0 or Duel.GetCustomActivityCount(9910945,1-tp,ACTIVITY_CHAIN)~=0) then
+		Duel.BreakEffect()
 		local turnp=Duel.GetTurnPlayer()
 		Duel.SkipPhase(turnp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
 		Duel.SkipPhase(turnp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)

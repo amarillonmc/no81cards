@@ -38,7 +38,7 @@ function cm.xyzcheck(g)
 	return g:GetFirst():GetAttribute()&g:GetNext():GetAttribute()>0
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re:GetHandler():IsSetCard(0x97f) and re:GetValue()~=11451480
+	return not te:GetOwner():IsOriginalSetCard(0x97f) and re:GetValue()~=11451480
 end
 function cm.filter(c,re)
 	return c:IsCanOverlay() and c:IsRelateToEffect(re)

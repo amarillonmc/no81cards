@@ -33,13 +33,10 @@ function c11560704.initial_effect(c)
 	c:RegisterEffect(e4) 
 	--disable 
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DISABLE)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_PHASE+PHASE_BATTLE_START) 
-	e2:SetRange(LOCATION_MZONE) 
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,21560704) 
-	e2:SetCost(c11560704.discost)
-	e2:SetTarget(c11560704.distg)
 	e2:SetOperation(c11560704.disop)
 	c:RegisterEffect(e2) 
 	--Damage and atk 
@@ -123,15 +120,10 @@ function c11560704.xspop(e,tp,eg,ep,ev,re,r,rp)
 		end 
 	end 
 end 
-function c11560704.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end 
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST) 
-end 
-function c11560704.distg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return true end 
-end 
 function c11560704.disop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler() 
+	if c:CheckRemoveOverlayCard(tp,1,REASON_COST) then
+		if c:RemoveOverlayCard(tp,1,1,REASON_COST) then 
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
@@ -149,7 +141,7 @@ function c11560704.disop(e,tp,eg,ep,ev,re,r,rp,chk)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetLabel(c:GetFieldID())
 	Duel.RegisterEffect(e2,tp)
-	c:RegisterFlagEffect(11560704,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1,c:GetFieldID())
+	c:RegisterFlagEffect(11560704,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1,c:GetFieldID()) end end
 end 
 function c11560704.aclimit(e,re,tp)
 	local rc=re:GetHandler()

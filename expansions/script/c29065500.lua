@@ -2,14 +2,14 @@
 c29065500.named_with_Arknight=1
 function c29065500.initial_effect(c)
 	--summon
-	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(6616912,0))
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SUMMON_PROC)
-	e0:SetCondition(c29065500.ntcon)
-	e0:SetOperation(c29065500.ntop)
-	c:RegisterEffect(e0)
+	local e7=Effect.CreateEffect(c)
+	e7:SetDescription(aux.Stringid(6616912,0))
+	e7:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e7:SetType(EFFECT_TYPE_SINGLE)
+	e7:SetCode(EFFECT_SUMMON_PROC)
+	e7:SetCondition(c29065500.ntcon)
+	e7:SetOperation(c29065500.ntop)
+	c:RegisterEffect(e7)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29065500,0))
@@ -68,7 +68,7 @@ function c29065500.ntop(e,tp,eg,ep,ev,re,r,rp,c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SET_BASE_ATTACK)
-	e1:SetValue(1800)
+	e1:SetValue(1900)
 	e1:SetReset(RESET_EVENT+0xff0000)
 	c:RegisterEffect(e1)
 end
@@ -87,12 +87,6 @@ function c29065500.thandcon2(e)
 end
 function c29065500.thandop2(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(29065500,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1)
-end
-function c29065500.ntcon(e,c,minc)
-	if c==nil then return true end
-	return minc==0 and c:IsLevelAbove(5)
-		and Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0
-		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c29065500.thfilter(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()

@@ -7,7 +7,6 @@ function c29065511.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE) 
 	e1:SetCode(EVENT_FREE_CHAIN) 
-	e1:SetCountLimit(1,29065511) 
 	e1:SetTarget(c29065511.actg) 
 	e1:SetOperation(c29065511.acop) 
 	c:RegisterEffect(e1)
@@ -22,8 +21,8 @@ function c29065511.ckfil(c)
 	return c:IsFaceup() and c:IsCode(29065500) 
 end 
 function c29065511.actg(e,tp,eg,ep,ev,re,r,rp,chk)  
-	local b1=Duel.IsExistingMatchingCard(c29065511.spfil1,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-	local b2=Duel.IsExistingMatchingCard(c29065511.spfil2,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c29065511.ckfil,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+	local b1=Duel.IsExistingMatchingCard(c29065511.spfil1,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,29065511)==0
+	local b2=Duel.IsExistingMatchingCard(c29065511.spfil2,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c29065511.ckfil,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,29065512)==0
 	if chk==0 then return b1 or b2 end  
 	local op=0 
 	if b1 and b2 then 
@@ -36,8 +35,10 @@ function c29065511.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(op) 
 	if op==0 then 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+	Duel.RegisterFlagEffect(tp,29065511,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	elseif op==1 then 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK)
+	Duel.RegisterFlagEffect(tp,29065512,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	end 
 end 
 function c29065511.acop(e,tp,eg,ep,ev,re,r,rp)

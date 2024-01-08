@@ -36,33 +36,23 @@ function cm.thfilter(c)
 	return cm.SealDragon(c) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	local ct=g:GetClassCount(Card.GetCode)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,nil) 
-		and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and ct>0 and g:GetCount()>0 end
+		and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 	local dg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,ct,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,dg:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,dg:GetCount(),tp,LOCATION_DECK+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local dg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,nil)
-	local ct=dg:GetClassCount(Card.GetCode)
-	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	if ct>0 and g:GetCount()>0 then
-		Duel.Destroy(dg,REASON_EFFECT)
+	if dg:GetCount()>0 and Duel.Destroy(dg,REASON_EFFECT)>0 then
+		local og=Duel.GetOperatedGroup()
+		if #og==0 then return end
+		local ct=og:GetClassCount(Card.GetCode)
+		local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 		local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ct)
 		if sg:GetCount()>0 then
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg)
 		end
 	end
-
-
-	   
-	--if ct==0 or g:GetCount()==0 then return end
-	--if ct>g:GetClassCount(Card.GetCode) then return end
-	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	--local g1=g:SelectSubGroup(tp,aux.dncheck,false,ct,ct)
-	--Duel.SendtoHand(g1,nil,REASON_EFFECT)
-	--Duel.ConfirmCards(1-tp,g1)
 end

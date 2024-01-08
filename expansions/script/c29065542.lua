@@ -11,6 +11,11 @@ function c29065542.initial_effect(c)
 	e1:SetCondition(c29065542.cxyzcon)
 	e1:SetOperation(c29065542.cxyzop)
 	c:RegisterEffect(e1) 
+	--pierce
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_PIERCE)
+	c:RegisterEffect(e2)
 
 end
 function c29065542.mfilter(c,xyzc)
@@ -46,8 +51,12 @@ function c29065542.cxyzop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(1)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_IMMUNE_EFFECT)
+	e2:SetValue(c29065542.efilter)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e2:SetOwnerPlayer(tp)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -55,19 +64,6 @@ function c29065542.cxyzop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetValue(c29065542.atkval)
 	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
-	e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e4) 
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetCode(EVENT_ADJUST) 
-	e5:SetRange(LOCATION_MZONE) 
-	e5:SetCondition(c29065542.dscon) 
-	e5:SetOperation(c29065542.dsop) 
-	e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e5) 
 	local fid=e:GetHandler():GetFieldID()
 	c:RegisterFlagEffect(29065542,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(29065542,0))
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -82,7 +78,7 @@ function c29065542.cxyzop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c29065542.atkval(e,c)
-	return c:GetAttack()*3
+	return c:GetAttack()*2
 end
 function c29065542.retcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
@@ -105,17 +101,6 @@ end
 function c29065542.xdamop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeBattleDamage(ep,ev*3)
 end
-function c29065542.dscon(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler() 
-	local cg=c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp):Filter(Card.IsDestructable,nil)
-	return cg:GetCount()>0 
-end 
-function c29065542.dsop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler()
-	local cg=c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp):Filter(Card.IsDestructable,nil)
-	if cg:GetCount()>0 then 
-	Duel.Hint(HINT_CARD,0,29065542) 
-	Duel.Destroy(cg,REASON_EFFECT)
-	end 
-end  
-
+function c29065542.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+end

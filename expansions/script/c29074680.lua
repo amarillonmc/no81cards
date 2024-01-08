@@ -2,10 +2,10 @@
 c29074680.named_with_Arknight=1
 function c29074680.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,nil,2,2,c29074680.lcheck)
-	c:SetSPSummonOnce(29074680)
-	aux.AddCodeList(c,29065500)
+	aux.AddLinkProcedure(c,c29074680.mfilter,1,1)
 	c:EnableReviveLimit()
+	c:SetSPSummonOnce(29074680)
+	aux.AddCodeList(c,29065500,29065502)
 	--change name
 	aux.EnableChangeCode(c,29065500,LOCATION_MZONE+LOCATION_GRAVE)
 	--activate
@@ -48,9 +48,7 @@ function c29074680.actop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 	end
 end
-function c29074680.lcheck(g)
-	return g:IsExists(c29074680.mfilter,1,nil)
-end
+
 function c29074680.mfilter(c)
-	return c:IsLinkSetCard(0x87af) or (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+	return c:IsCode(29065500) or c:IsCode(29065502)
 end

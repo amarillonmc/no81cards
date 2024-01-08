@@ -23,6 +23,7 @@ function c29070796.initial_effect(c)
 	e2:SetOperation(c29070796.deop)
 	c:RegisterEffect(e2)
 end
+c29070796.kinkuaoi_Akscsst=true
 function c29070796.detg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAttackAbove(1400) and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end

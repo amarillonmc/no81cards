@@ -18,28 +18,40 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--pierce
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_PIERCE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
 	c:RegisterEffect(e2)
-	--actlimit
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(0,1)
-	e3:SetValue(1)
-	e3:SetCondition(cm.actcon)
-	--c:RegisterEffect(e3)
 	--synchro level
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_SYNCHRO_LEVEL)
 	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
+	e4:SetRange(LOCATION_MZONE+LOCATION_GRAVE+LOCATION_EXTRA+LOCATION_REMOVED)
 	e4:SetValue(cm.slevel)
 	c:RegisterEffect(e4)
+	--atk
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetTargetRange(LOCATION_MZONE,0)
+	e5:SetCode(EFFECT_UPDATE_ATTACK)
+	e5:SetCondition(cm.atkcon)
+	e5:SetTarget(cm.atktg)
+	e5:SetValue(700)
+	c:RegisterEffect(e5)
 end
+--
+function cm.atktg(e,c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_TUNER)
+end
+function cm.atkfilter(c)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+end
+function cm.atkcon(e)
+	return Duel.IsExistingMatchingCard(cm.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,e:GetHandler())
+end
+--
 function cm.slevel(e,c)
 	local lv=aux.GetCappedLevel(e:GetHandler())
 	return (6<<16)+lv

@@ -51,7 +51,7 @@ function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Group.CreateGroup()
 	for tc in aux.Next(eg) do
 		local te=tc:GetReasonEffect()
-		if te and (te:GetHandler():IsSetCard(0x97f) or te:GetValue()==11451480) and tc:IsReason(REASON_EFFECT) then return end
+		if te and (te:GetOwner():IsOriginalSetCard(0x97f) or te:GetValue()==11451480) and tc:IsReason(REASON_EFFECT) then return end
 		if tc:GetReasonPlayer()==0 and tc:GetControler()==0 then
 			g1:AddCard(tc)
 		elseif tc:GetReasonPlayer()==1 and tc:GetControler()==1 then

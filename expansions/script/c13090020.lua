@@ -138,7 +138,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	local rg1=Duel.GetDecktopGroup(1-tp,1)
-	local rg2=Duel.GetDecktopGroup(1-tp,ct)
+	local rg2=Duel.GetDecktopGroup(1-tp,1)
 	local b1=true
 	local b2=rg1:FilterCount(Card.IsAbleToRemove,nil)>=1
 	local off=1
@@ -156,7 +156,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local op=Duel.SelectOption(tp,table.unpack(ops))
 	if opval[op]==1 then
-		Duel.Damage(1-tp,math.floor(atk/2),REASON_EFFECT)
+		Duel.Damage(1-tp,200,REASON_EFFECT)
 	elseif opval[op]==2 then
 		Duel.BreakEffect()
 		local e1=Effect.CreateEffect(c)
@@ -176,7 +176,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetValue(s.actlimit)
 			e2:SetReset(RESET_PHASE+PHASE_END,2)
 			Duel.RegisterEffect(e2,tp)
-		Duel.Remove(rg2,POS_FACEUP,REASON_EFFECT)
+		Duel.Remove(1,POS_FACEUP,REASON_EFFECT)
 			--
 			
 	   

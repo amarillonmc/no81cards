@@ -20,6 +20,7 @@ function c13090021.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,id+100)
 	e2:SetTarget(s.settg)
+	e2:SetCost(s.thcost)
 	e2:SetCondition(s.con2)
 	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
@@ -56,7 +57,7 @@ function s.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xe08) 
 end
 function s.con(e)
-return Duel.IsExistingMatchingCard(s.cfilter,e:GetHandlerPlayer(),LOCATION_EXTRA,0,1,nil)
+return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_EXTRA,0,1,nil)
 end
 function s.disfilter(c)
 	return aux.NegateAnyFilter and c:IsFaceup()
@@ -95,16 +96,25 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
+end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsSSetable() end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SSet(tp,c)
+   local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	if Duel.Draw(p,d,REASON_EFFECT)==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.BreakEffect()
+		Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
 	end
 end
+
 
 
 

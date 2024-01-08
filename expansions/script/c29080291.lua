@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.op3)
 	c:RegisterEffect(e3)	
 end
+cm.kinkuaoi_recoveraks=true
 --e3
 function cm.tgf3(c,tp)
 	return c:IsControler(tp) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE) and c:IsLocation(LOCATION_MZONE) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))

@@ -1,157 +1,57 @@
 local m=53734016
 local cm=_G["c"..m]
-cm.name="青缀流逝的盛夏"
+cm.name="闻声而来的青缀"
 cm.Snnm_Ef_Rst=true
 if not require and dofile then function require(str) return dofile(str..".lua") end end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	SNNM.AllEffectReset(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(cm.thtg)
-	e2:SetOperation(cm.thop)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetCountLimit(1)
+	e2:SetTarget(cm.tg)
+	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
-	if not cm.Aozora_Check then
-		cm.Aozora_Check=true
-		cm[0]=Duel.RegisterEffect
-		Duel.RegisterEffect=function(e,p)
-			if e:GetCode()==EFFECT_DISABLE_FIELD then
-				local pro,pro2=e:GetProperty()
-				pro=pro|EFFECT_FLAG_PLAYER_TARGET
-				e:SetProperty(pro,pro2)
-				e:SetTargetRange(1,1)
-			end
-			cm[0](e,p)
-		end
-		cm[1]=Card.RegisterEffect
-		Card.RegisterEffect=function(c,e,bool)
-			if e:GetCode()==EFFECT_DISABLE_FIELD then
-				local op,range,con=e:GetOperation(),0,0
-				if e:GetRange() then range=e:GetRange() end
-				if e:GetCondition() then con=e:GetCondition() end
-				if op then
-					local ex=Effect.CreateEffect(c)
-					ex:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-					ex:SetCode(EVENT_ADJUST)
-					ex:SetRange(range)
-					ex:SetOperation(cm.exop)
-					cm[1](c,ex)
-					cm[ex]={op,range,con}
-					e:SetOperation(nil)
-				else
-					local pro,pro2=e:GetProperty()
-					pro=pro|EFFECT_FLAG_PLAYER_TARGET
-					e:SetProperty(pro,pro2)
-					e:SetTargetRange(1,1)
-				end
-			end
-			cm[1](c,e,bool)
-		end
-	end
+	cm.aozora_field_effect=e2
+	SNNM.AozoraDisZoneGet(c)
 end
-function cm.exop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:GetFlagEffect(m)>0 then return end
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_OVERLAY,0,0)
-	local op,range,con=cm[e][1],cm[e][2],cm[e][3]
-	local val=op(e,tp)
-	if tp==1 then val=((val&0xffff)<<16)|((val>>16)&0xffff) end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_DISABLE_FIELD)
-	if range~=0 then e1:SetRange(range) end
-	if con~=0 then e1:SetCondition(con) end
-	e1:SetValue(val)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_OVERLAY)
-	c:RegisterEffect(e1)
-end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return SNNM.DisMZone(tp)&0x1f>0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_MZONE)
+function cm.spfilter(c,e,sp)
+	return c:IsSetCard(0x3536) and c:IsCanBeSpecialSummoned(e,0,sp,false,false)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND,0,nil,e,tp)
+	if ft<=0 or #g==0 or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then return end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+	local tct=g:GetClassCount(Card.GetCode)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,math.min(ft,tct))
+	if sg and #sg>0 then
+		local ct=Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		Duel.Recover(tp,ct*700,REASON_EFFECT)
+	end
+end
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return SNNM.DisMZone(tp)&0x1f>0 end
 	local zone=SNNM.DisMZone(tp)
-	if zone&0x1f>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
-		local z=Duel.SelectField(tp,1,LOCATION_MZONE,0,(~zone)|0xe000e0)
-		Duel.Hint(HINT_ZONE,tp,z)
-		e:SetLabel(z)
-		SNNM.ReleaseMZone(e,tp,z)
-	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_END)
-	e1:SetCountLimit(1)
-	e1:SetOperation(cm.rmop)
-	Duel.RegisterEffect(e1,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
+	local z=Duel.SelectField(tp,1,LOCATION_MZONE,0,(~zone)|0xe000e0)
+	Duel.Hint(HINT_ZONE,tp,z)
+	e:SetLabel(z)
 end
-function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
-	e:Reset()
-	local ct=0
-	for i=0,4 do if SNNM.DisMZone(tp)&(1<<i)>0 then ct=ct+1 end end
-	if ct==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,ct,nil)
-	if g:GetCount()==0 then return end
-	if Duel.Remove(g,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
-		local og=Duel.GetOperatedGroup()
-		local oc=og:GetFirst()
-		while oc do
-			oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-			oc=og:GetNext()
-		end
-		og:KeepAlive()
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
-		e1:SetLabelObject(og)
-		e1:SetOperation(cm.retop)
-		Duel.RegisterEffect(e1,tp)
-	end
-end
-function cm.retfilter(c)
-	return c:GetFlagEffect(m)~=0
-end
-function cm.retop(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetLabelObject()
-	local sg=g:Filter(cm.retfilter,nil)
-	if sg:GetCount()>1 and Duel.GetLocationCount(1-tp,LOCATION_MZONE)==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,1))
-		local tc=sg:Select(tp,1,1,nil):GetFirst()
-		Duel.ReturnToField(tc)
-	else
-		local tc=sg:GetFirst()
-		while tc do
-			Duel.ReturnToField(tc)
-			tc=sg:GetNext()
-		end
-	end
-end
-function cm.thfilter(c)
-	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsSetCard(0x3536) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsCode(m) and (c:IsAbleToHand() or c:IsLocation(LOCATION_REMOVED))
-end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and cm.thfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,e:GetHandler())
-end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) then return end
-	if tc:IsLocation(LOCATION_GRAVE) then Duel.SendtoHand(tc,nil,REASON_EFFECT) elseif tc:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then Duel.SendtoHand(tc,nil,REASON_EFFECT) else Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN) end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local z=e:GetLabel()
+	local dis=SNNM.DisMZone(tp)
+	if z==0 or z&dis==0 then return end
+	SNNM.ReleaseMZone(e,tp,z)
 end

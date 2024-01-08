@@ -31,6 +31,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.chop)
 	c:RegisterEffect(e3)
 end
+cm.kinkuaoi_Akscsst=true
 cm.assault_name=29080291
 function cm.splimit(e,se,sp,st)
 	--if not se then return end 

@@ -1,7 +1,7 @@
 --方舟骑士-刻俄柏
 c29032490.named_with_Arknight=1
 function c29032490.initial_effect(c)
-	aux.AddCodeList(c,29032491,29065532)
+	aux.AddCodeList(c,29065532)
    c:EnableReviveLimit()
 	--token
 	local e1=Effect.CreateEffect(c)
@@ -23,12 +23,13 @@ function c29032490.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e2:SetCountLimit(1,29032491)
+	e2:SetCountLimit(1)
 	e2:SetCost(c29032490.cost)
 	e2:SetTarget(c29032490.target)
 	e2:SetOperation(c29032490.operation)
 	c:RegisterEffect(e2)
 end
+c29032490.kinkuaoi_Akscsst=true
 function c29032490.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsType,1,nil,TYPE_TOKEN) end
 	local g=Duel.SelectReleaseGroup(tp,Card.IsType,1,1,nil,TYPE_TOKEN)

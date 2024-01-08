@@ -19,32 +19,35 @@ function c9910520.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_EQUIP)
 	e3:SetCode(EFFECT_DIRECT_ATTACK)
-	e3:SetCondition(c9910520.dircon)
 	c:RegisterEffect(e3)
 	--Equip limit
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_EQUIP_LIMIT)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetValue(1)
+	e4:SetValue(c9910520.eqlimit)
 	c:RegisterEffect(e4)
-	--set
+	--remove overlay replace
 	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e5:SetCode(EVENT_BATTLE_DAMAGE)
+	e5:SetDescription(aux.Stringid(9910520,0))
+	e5:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_OVERLAY_REMOVE_REPLACE)
 	e5:SetRange(LOCATION_SZONE)
-	e5:SetCountLimit(1,9910520)
-	e5:SetCondition(c9910520.setcon)
-	e5:SetTarget(c9910520.settg)
-	e5:SetOperation(c9910520.setop)
+	e5:SetCondition(c9910520.rcon)
+	e5:SetOperation(c9910520.rop)
 	c:RegisterEffect(e5)
 end
+function c9910520.eqlimit(e,c)
+	return c:IsType(TYPE_XYZ) and c:IsRace(RACE_WARRIOR)
+end
+function c9910520.filter(c)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsRace(RACE_WARRIOR)
+end
 function c9910520.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9910520.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910520.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.SelectTarget(tp,c9910520.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
 end
 function c9910520.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -53,37 +56,13 @@ function c9910520.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Equip(tp,e:GetHandler(),tc)
 	end
 end
-function c9910520.val(e)
-	local c=e:GetHandler()
-	local tc=c:GetEquipTarget()
-	local atk=0
-	if tc:IsType(TYPE_XYZ) then
-		atk=tc:GetRank()*200
-	end
-	return atk
+function c9910520.val(e,c)
+	return c:GetRank()*250
 end
-function c9910520.dircon(e)
-	local c=e:GetHandler()
-	local tc=c:GetEquipTarget()
-	return tc:IsType(TYPE_XYZ)
+function c9910520.rcon(e,tp,eg,ep,ev,re,r,rp)
+	return bit.band(r,REASON_COST)~=0 and re:IsActivated() and re:IsActiveType(TYPE_XYZ)
+		and ep==e:GetOwnerPlayer() and e:GetHandler():GetEquipTarget()==re:GetHandler() and re:GetHandler():GetOverlayCount()>=ev-1
 end
-function c9910520.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and eg:GetFirst()==e:GetHandler():GetEquipTarget()
-end
-function c9910520.setfilter(c)
-	return c:IsSetCard(0xa950) and c:IsType(TYPE_SPELL) and c:IsSSetable()
-end
-function c9910520.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c9910520.setfilter(chkc) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingTarget(c9910520.setfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectTarget(tp,c9910520.setfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
-end
-function c9910520.setop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SSet(tp,tc)
-	end
+function c9910520.rop(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end

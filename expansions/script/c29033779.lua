@@ -2,6 +2,7 @@
 c29033779.named_with_Arknight=1
 function c29033779.initial_effect(c)
 	aux.AddCodeList(c,29033779,29065532)
+	c:EnableReviveLimit()
 	--token
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29033779,0))
@@ -41,6 +42,7 @@ function c29033779.initial_effect(c)
 	e3:SetCondition(c29033779.con)
 	c:RegisterEffect(e3)
 end
+c29033779.kinkuaoi_Akscsst=true
 function c29033779.recon(e,tp,eg,ep,ev,re,r,rp)
 	local a=Duel.GetAttacker()
 	local d=Duel.GetAttackTarget()

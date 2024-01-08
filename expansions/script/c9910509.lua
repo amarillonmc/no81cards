@@ -9,18 +9,16 @@ function c9910509.initial_effect(c)
 	e1:SetTarget(c9910509.target)
 	e1:SetOperation(c9910509.operation)
 	c:RegisterEffect(e1)
-	--Atk up
+	--atk,attribute
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_EQUIP)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetValue(c9910509.val)
 	c:RegisterEffect(e2)
-	--indes
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_EQUIP)
-	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e3:SetCondition(c9910509.indcon)
-	e3:SetValue(1)
+	e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	e3:SetValue(ATTRIBUTE_FIRE)
 	c:RegisterEffect(e3)
 	--Equip limit
 	local e4=Effect.CreateEffect(c)
@@ -29,16 +27,42 @@ function c9910509.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e4:SetValue(c9910509.eqlimit)
 	c:RegisterEffect(e4)
-	--Search
+	--atk down
 	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e5:SetRange(LOCATION_SZONE)
-	e5:SetCountLimit(1,9910509)
-	e5:SetCost(c9910509.thcost)
-	e5:SetTarget(c9910509.thtg)
-	e5:SetOperation(c9910509.thop)
+	e5:SetOperation(c9910509.atkop)
 	c:RegisterEffect(e5)
+	if c9910509.counter==nil then
+		c9910509.counter=true
+		c9910509[0]=0
+		c9910509[1]=0
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		e2:SetOperation(c9910509.resetcount)
+		Duel.RegisterEffect(e2,0)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e3:SetCode(EVENT_RELEASE)
+		e3:SetOperation(c9910509.addcount)
+		Duel.RegisterEffect(e3,0)
+	end
+end
+function c9910509.resetcount(e,tp,eg,ep,ev,re,r,rp)
+	c9910509[0]=0
+	c9910509[1]=0
+end
+function c9910509.addcount(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsPreviousLocation(LOCATION_MZONE) or (tc:IsPreviousLocation(LOCATION_HAND) and tc:IsType(TYPE_MONSTER)) then
+			local p=tc:GetPreviousControler()
+			c9910509[p]=c9910509[p]+1
+		end
+		tc=eg:GetNext()
+	end
 end
 function c9910509.eqlimit(e,c)
 	return c:IsType(TYPE_RITUAL) and c:IsRace(RACE_WARRIOR)
@@ -59,47 +83,31 @@ function c9910509.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Equip(tp,e:GetHandler(),tc)
 	end
 end
-function c9910509.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xa950) and c:IsType(TYPE_MONSTER)
+function c9910509.val(e,c)
+	return c9910509[e:GetHandlerPlayer()]*500
 end
-function c9910509.val(e)
+function c9910509.atkfilter(c,tp)
+	return c:GetEquipCount()>0 and c:IsControler(tp)
+end
+function c9910509.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=c:GetEquipTarget()
-	local ct=0
-	if tc:IsAttribute(ATTRIBUTE_FIRE) then
-		ct=Duel.GetMatchingGroupCount(c9910509.atkfilter,e:GetHandlerPlayer(),LOCATION_REMOVED,0,nil)
-	end
-	return ct*500
-end
-function c9910509.indcon(e)
-	local c=e:GetHandler()
-	local tc=c:GetEquipTarget()
-	return tc:IsAttribute(ATTRIBUTE_FIRE)
-end
-function c9910509.thcfilter(c,tp)
-	return c:IsSetCard(0xa950) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
-		and Duel.IsExistingMatchingCard(c9910509.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
-end
-function c9910509.thfilter(c,code)
-	return c:IsSetCard(0xa950) and c:IsType(TYPE_MONSTER) and not c:IsCode(code) and c:IsAbleToHand()
-end
-function c9910509.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910509.thcfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910509.thcfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
-	e:SetLabel(g:GetFirst():GetCode())
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-end
-function c9910509.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c9910509.thop(e,tp,eg,ep,ev,re,r,rp)
-	local code=e:GetLabel()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9910509.thfilter,tp,LOCATION_DECK,0,1,1,nil,code)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
+	local a=Duel.GetAttacker()
+	local d=Duel.GetAttackTarget()
+	if not a or not d then return end
+	if not c9910509.atkfilter(a,tp) then a,d=d,a end
+	if not c9910509.atkfilter(a,tp) or d:IsControler(tp) or not d:IsRelateToBattle() then return end
+	local atk=d:GetBaseAttack()
+	local def=d:GetBaseDefense()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SET_BATTLE_ATTACK)
+	e1:SetValue(math.ceil(atk/2))
+	e1:SetReset(RESET_PHASE+PHASE_DAMAGE)
+	d:RegisterEffect(e1,true)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_SET_BATTLE_DEFENSE)
+	e2:SetValue(math.ceil(def/2))
+	e2:SetReset(RESET_PHASE+PHASE_DAMAGE)
+	d:RegisterEffect(e2,true)
 end

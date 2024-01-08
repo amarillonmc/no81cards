@@ -5,7 +5,7 @@ function c29065521.initial_effect(c)
 	--Special Summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29065521,1))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_COUNTER)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,29065521)
@@ -13,17 +13,6 @@ function c29065521.initial_effect(c)
 	e1:SetTarget(c29065521.sptg)
 	e1:SetOperation(c29065521.spop)
 	c:RegisterEffect(e1)
-	--counter
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_COUNTER)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetTarget(c29065521.cttg)
-	e2:SetOperation(c29065521.ctop)
-	c:RegisterEffect(e2)
 end
 function c29065521.cfilter(c)
 	return c:IsFacedown() or not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
@@ -50,37 +39,6 @@ function c29065521.spop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		g:AddCard(c)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	end
-end
-
-
-function c29065521.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanAddCounter(0x10ae,1) end
-end
-function c29065521.ctop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if e:GetHandler():IsRelateToEffect(e) then  
-	local n=1 
-	--if Duel.IsPlayerAffectedByEffect(tp,29065580) then
-	--n=n+1
-	--end
-	e:GetHandler():AddCounter(0x10ae,n)
-	if Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(29065521,0)) then
-	Duel.BreakEffect()
-	local tc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
-		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(29065521,2))
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_TRIGGER)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e2)   
-	end
+		e:GetHandler():AddCounter(0x10ae,1)
 	end
 end

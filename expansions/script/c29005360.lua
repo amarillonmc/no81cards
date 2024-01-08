@@ -66,6 +66,7 @@ function cm.initial_effect(c)
 	e5:SetValue(LOCATION_HAND)
 	c:RegisterEffect(e5)
 end
+cm.kinkuaoi_Akscsst=true
 function cm.rethcon(e,tp)
 	local c=e:GetHandler()
 	return ((c:IsSummonType(SUMMON_TYPE_PENDULUM)) or (c:IsSummonType(SUMMON_TYPE_NORMAL))) and c:IsLocation(LOCATION_MZONE)

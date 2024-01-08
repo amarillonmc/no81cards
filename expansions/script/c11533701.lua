@@ -10,7 +10,7 @@ function c11533701.initial_effect(c)
 	c:RegisterEffect(e1) 
 	--rl rm td 
 	local e1=Effect.CreateEffect(c) 
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_RELEASE+CATEGORY_REMOVE) 
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_RELEASE) 
 	e1:SetType(EFFECT_TYPE_IGNITION) 
 	e1:SetRange(LOCATION_HAND) 
 	e1:SetCountLimit(1,11533701) 
@@ -52,8 +52,7 @@ end
 function c11533701.srfil(c)  
 	return c:IsAbleToHand() and c:IsSetCard(0xb4)   
 end 
-function c11533701.rrfil(c) 
-	if not c:IsSetCard(0xb4) then return false end  
+function c11533701.rrfil(c)
 	return c:IsReleasable() and c:IsType(TYPE_MONSTER) 
 end 
 function c11533701.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)

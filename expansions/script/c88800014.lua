@@ -61,13 +61,15 @@ function c88800014.activate(e,tp,eg,ep,ev,re,r,rp)
 	c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
 	Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
 		Duel.BreakEffect()
+		Duel.IsPlayerCanDraw(tp,1)
+		Duel.SelectYesNo(tp,aux.Stringid(88800014,3))
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 function c88800014.hcfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xc01)
 end
 function c88800014.handcon(e)
-	return Duel.IsExistingMatchingCard(c88800014.hcfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
+	return Duel.IsExistingMatchingCard(c88800014.hcfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 end
 function c88800014.rlcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88800014.costfilter,tp,LOCATION_GRAVE,0,1,nil) end

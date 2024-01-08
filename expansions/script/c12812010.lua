@@ -3,7 +3,7 @@ local m=12812010
 local cm=_G["c"..m]
 function c12812010.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
-    local e1=Effect.CreateEffect(c)
+	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -12,10 +12,10 @@ function c12812010.initial_effect(c)
 	e1:SetTarget(cm.psplimit)
 	c:RegisterEffect(e1)
 	--special summon
-    local e2=Effect.CreateEffect(c)
+	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetCategory(CATEGORY_TODECK)
-    e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCountLimit(1,12812110)
@@ -38,10 +38,12 @@ function c12812010.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,m)
 	e4:SetTarget(cm.tntg)
 	e4:SetOperation(cm.tnop)
 	c:RegisterEffect(e4)
+
+	--
+	cm.self_summon_effect=e4
 end
 function cm.psplimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xa73) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
@@ -51,8 +53,8 @@ function cm.copyfilter(c)
 	return c:IsType(TYPE_PENDULUM) and not c:IsType(TYPE_TOKEN) and c:IsFaceup() and c:IsSetCard(0xa73)
 end
 function cm.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chkc then return chkc:IsLocation(LOCATION_REMOVED) and cm.copyfilter(chkc) and chkc~=c end
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and cm.copyfilter(chkc) and chkc~=c end
 	if chk==0 then return Duel.IsExistingTarget(cm.copyfilter,tp,LOCATION_REMOVED,0,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,cm.copyfilter,tp,LOCATION_REMOVED,0,1,1,c)
@@ -61,8 +63,8 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc  and c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) 
-    and tc:IsFaceup()  and Duel.SendtoDeck(tc,tp,2,REASON_EFFECT)>0 then
-        local code=tc:GetOriginalCodeRule()
+	and tc:IsFaceup()  and Duel.SendtoDeck(tc,tp,2,REASON_EFFECT)>0 then
+		local code=tc:GetOriginalCodeRule()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_LSCALE)
@@ -73,14 +75,30 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_CHANGE_RSCALE)
 		e2:SetValue(tc:GetRightScale())
 		c:RegisterEffect(e2)
-        local e3=Effect.CreateEffect(c)
+		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_SINGLE)
 		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e3:SetCode(EFFECT_CHANGE_CODE)
 		e3:SetValue(code)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e3)
-        c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
+		if tc:IsType(TYPE_NORMAL) then
+			local cp={}
+			local temp=Card.RegisterEffect
+			Card.RegisterEffect=function(rc,e,f)
+				if (e:GetRange()&LOCATION_PZONE)>0 and not e:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
+					table.insert(cp,e:Clone())
+				end
+				return temp(rc,e,f)
+			end
+			Duel.CreateToken(tp,tc:GetOriginalCode())
+			for i,v in ipairs(cp) do
+				temp(c,v)
+				v:SetReset(RESET_EVENT+RESETS_STANDARD)
+			end 
+			Card.RegisterEffect=temp
+		end
+		c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
 	end
 end
 --效果2

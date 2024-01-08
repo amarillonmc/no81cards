@@ -2,7 +2,7 @@
 c29065509.named_with_Arknight=1
 function c29065509.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedureLevelFree(c,c29065509.mfilter,aux.TRUE,3,3)
+	aux.AddXyzProcedureLevelFree(c,c29065509.mfilter,aux.TRUE,2,99)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -33,7 +33,7 @@ function c29065509.mfilter(c,xyzc)
 end
 function c29065509.decost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
 end
 function c29065509.ovfilter(c)
 	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
