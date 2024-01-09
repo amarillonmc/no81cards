@@ -55,6 +55,13 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 			local token=Duel.CreateToken(tp,m+10)
 			Duel.SendtoDeck(token,nil,2,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,token)
+			--change code
+			local e3=Effect.CreateEffect(token)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_CHANGE_CODE)
+			e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+			e3:SetValue(m+10)
+			token:RegisterEffect(e3)
 		end
 	end
 end

@@ -94,10 +94,10 @@ function c67200280.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
-		return Duel.CheckReleaseGroup(tp,Card.IsSetCard,1,nil,0x674) and dg:GetCount()>0
+		return Duel.CheckReleaseGroup(REASON_COST,tp,Card.IsSetCard,1,nil,0x674) and dg:GetCount()>0
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local cg=Duel.SelectReleaseGroup(tp,Card.IsSetCard,1,dg:GetCount(),nil,0x674)
+	local cg=Duel.SelectReleaseGroup(REASON_COST,tp,Card.IsSetCard,1,dg:GetCount(),nil,0x674)
 	local tc=cg:GetFirst()
 	e:SetLabel(0,cg:GetCount())
 	Duel.Release(cg,REASON_COST)

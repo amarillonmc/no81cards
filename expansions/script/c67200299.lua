@@ -24,7 +24,7 @@ end
 function c67200299.link_mat_filter(c,lc)
 	local con=c:IsSetCard(0x674) and c:IsCanBeLinkMaterial(lc)
 	local con_mzone=c:IsLocation(LOCATION_MZONE) and c:IsFaceup()
-	local con_remove=c:IsLocation(LOCATION_SZONE) and c:IsReleasable() and c:IsType(TYPE_PENDULUM)
+	local con_remove=c:IsLocation(LOCATION_SZONE) and c:IsReleasable(REASON_MATERIAL) and c:IsType(TYPE_PENDULUM)
 	local con_extra=false
 	local tp=lc:GetControler()
 	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}

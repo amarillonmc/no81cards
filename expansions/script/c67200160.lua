@@ -105,7 +105,7 @@ function c67200160.pencon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsFaceup()
 end
 function c67200160.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local eeg=Duel.GetMatchingGroupCount(Card.IsReleasable,tp,LOCATION_PZONE,LOCATION_PZONE,nil)
+	local eeg=Duel.GetMatchingGroupCount(Card.IsReleasable,tp,LOCATION_PZONE,LOCATION_PZONE,nil,REASON_EFFECT)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_PZONE,LOCATION_PZONE)>0 and eeg>0 end
 	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,LOCATION_PZONE)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,g:GetCount(),0,0)

@@ -61,7 +61,7 @@ function c11526303.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c11526303.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
+	if chk==0 then return e:GetHandler():IsReleasable(REASON_COST) end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c11526303.spfilter(c,e,tp)

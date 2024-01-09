@@ -34,7 +34,7 @@ function c67200307.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoExtraP(tc,tp,REASON_COST)
 end
 function c67200307.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
+	if chk==0 then return e:GetHandler():IsReleasable(REASON_EFFECT) end
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,e:GetHandler(),1,tp,nil)
 end
 function c67200307.scop(e,tp,eg,ep,ev,re,r,rp)
