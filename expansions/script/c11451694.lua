@@ -1,6 +1,5 @@
 --猎龙者的挽歌
-local m=11451694
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -102,9 +101,9 @@ function cm.dfilter(c)
 end
 function cm.damcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,LOCATION_EXTRA,LOCATION_EXTRA)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.rfilter,1,nil) and #g>0 and not g:IsExists(cm.ncostfilter,1,nil) end
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,cm.rfilter,1,nil) and #g>0 and not g:IsExists(cm.ncostfilter,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local rg=Duel.SelectReleaseGroup(tp,cm.rfilter,1,1,nil)
+	local rg=Duel.SelectReleaseGroup(REASON_COST,tp,cm.rfilter,1,1,nil)
 	Duel.Release(rg,REASON_COST)
 	g=Duel.GetFieldGroup(tp,LOCATION_EXTRA,LOCATION_EXTRA)
 	Duel.SendtoGrave(g,REASON_COST)

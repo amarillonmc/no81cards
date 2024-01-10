@@ -13,17 +13,28 @@ if not apricot_nightfall then
 	apricot_nightfall=true
 	--Debug.Message("Protocol Request Complete. 杏花宵®漏洞解决方案已上线。")
 end
+--[[function aux.GetMustMaterialGroup(tp,code)
+	local g=Group.CreateGroup()
+	local ce={Duel.IsPlayerAffectedByEffect(tp,code)}
+	for _,te in ipairs(ce) do
+		local tc=te:GetHandler()
+		if tc then g:AddCard(tc) end
+	end
+	return g
+end--]]
 if not aux.GetMustMaterialGroup then
 	aux.GetMustMaterialGroup=Duel.GetMustMaterial
-	--[[function aux.GetMustMaterialGroup(tp,code)
-		local g=Group.CreateGroup()
-		local ce={Duel.IsPlayerAffectedByEffect(tp,code)}
-		for _,te in ipairs(ce) do
-			local tc=te:GetHandler()
-			if tc then g:AddCard(tc) end
-		end
-		return g
-	end--]]
+end
+local release_set={"CheckReleaseGroup","SelectReleaseGroup","CheckReleaseGroupEx","SelectReleaseGroupEx"}
+for i,fname in pairs(release_set) do
+	local temp_f=Duel[fname]
+	Duel[fname]=function(...)
+					local params={...}
+					local old_minc=params[3]
+					local typ=type(old_minc)
+					if typ=="number" then return temp_f(REASON_COST,...) end
+					return temp_f(...)
+				end
 end
 local _IsTuner=Card.IsTuner
 function Card.IsTuner(c,...)
@@ -53,7 +64,7 @@ local KOISHI_CHECK=false
 if Duel.Exile then KOISHI_CHECK=true end
 local A=1103515245
 local B=12345
-local M=1073741824
+local M=32767
 function cm.roll(min,max)
 	min=tonumber(min)
 	max=tonumber(max)
@@ -68,7 +79,7 @@ function cm.roll(min,max)
 	end
 	return cm.r
 end
-if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
+--if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
 if not require and loadfile then
 	function require(str)
 		require_list=require_list or {}

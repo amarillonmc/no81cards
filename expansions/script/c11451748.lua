@@ -24,9 +24,9 @@ function cm.kfilter(c)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.CheckReleaseGroup(tp,nil,1,c) end
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,nil,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(tp,nil,1,2,c)
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,nil,1,2,c)
 	Duel.Release(g,REASON_COST)
 	g=g:Filter(cm.kfilter,nil)
 	g:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))

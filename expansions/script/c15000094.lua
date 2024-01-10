@@ -52,11 +52,20 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_REMOVE)
 	c:RegisterEffect(e4)
 end
-function cm.ntfilter(c,sc,tp)  
-	return ((c:IsSynchroType(TYPE_TUNER) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup()) or (c:IsSetCard(0x103) and (c:IsLocation(LOCATION_HAND) or (c:IsLocation(LOCATION_MZONE) and c:IsFaceup())))) and c:GetLevel()~=0 and Duel.IsExistingMatchingCard(cm.dtfilter,tp,LOCATION_MZONE,0,1,c,c:GetSynchroLevel(sc),sc)
-end  
-function cm.dtfilter(c,x,sc)
-	return c:IsSetCard(0x103) and c:IsFaceup() and c:GetSynchroLevel(sc)==sc:GetLevel()-x
+function cm.matfilter(c,mc,sc,tp)
+	return c:IsCanBeSynchroMaterial(sc,mc) and not c:IsSynchroType(TYPE_TUNER) and c:IsSetCard(0x103) and c:IsFaceup() and c:GetSynchroLevel(sc)>0 and aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL)
+end
+function cm.getsynclevel(c,sc)
+	return c:GetSynchroLevel(sc)
+end
+function cm.slcheck(g,tp,mc,sc)
+	local synclevel=sc:GetLevel()-mc:GetSynchroLevel(sc)
+	return (Duel.GetLocationCountFromEx(tp,tp,g,sc)>0 or Duel.GetLocationCountFromEx(tp,tp,mc,sc)>0) and g:GetSum(cm.getsynclevel,sc)==synclevel
+end
+function cm.ntfilter(c,sc,tp)
+	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,c,c,sc,tp)
+	return ((c:IsSynchroType(TYPE_TUNER) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup()) or (c:IsSetCard(0x103) and (c:IsLocation(LOCATION_HAND) or (c:IsLocation(LOCATION_MZONE) and c:IsFaceup()))))
+	and c:GetSynchroLevel(sc)>0 and c:GetSynchroLevel(sc)<sc:GetLevel() and mg:CheckSubGroup(cm.slcheck,1,(sc:GetLevel()-1),tp,c,sc)
 end
 function cm.sprcon(e)
 	local c=e:GetHandler()
@@ -67,11 +76,12 @@ end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local c=e:GetHandler()
 	local tp=c:GetControler()  
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)  
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)  
 	local g1=Duel.SelectMatchingCard(tp,cm.ntfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,1,1,nil,c,tp)
-	local x=g1:GetFirst():GetLevel()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)  
-	local g2=Duel.SelectMatchingCard(tp,cm.dtfilter,tp,LOCATION_MZONE,0,1,1,nil,x,c)
+	local mc=g1:GetFirst()
+	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,mc,mc,c,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
+	local g2=mg:SelectSubGroup(tp,cm.slcheck,false,1,(c:GetLevel()-1),tp,mc,c)
 	g1:Merge(g2)
 	c:SetMaterial(g1) 
 	Duel.SendtoGrave(g1,REASON_MATERIAL+REASON_SYNCHRO+REASON_COST)

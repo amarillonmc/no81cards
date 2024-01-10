@@ -55,7 +55,7 @@ function cm.filter(c,e)
 	if e:GetCode()==EVENT_MOVE then
 		local b1,g1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
-		return (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c))
+		return not c:IsPreviousLocation(LOCATION_ONFIELD) and (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c))
 	end
 	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(m)>0)
 end
@@ -96,7 +96,7 @@ function cm.ntfilter(c,p)
 end
 local A=1103515245
 local B=12345
-local M=1073741824
+local M=32767
 function cm.roll(min,max)
 	min=tonumber(min)
 	max=tonumber(max)
@@ -111,7 +111,7 @@ function cm.roll(min,max)
 	end
 	return cm.r
 end
-if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
+--if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
 function cm.evoperation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=c:GetTurnCounter()

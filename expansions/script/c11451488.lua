@@ -1,6 +1,5 @@
 --魔人★双子使徒 小雪
-local m=11451488
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--effect1
 	local e1=Effect.CreateEffect(c)
@@ -38,10 +37,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function cm.recost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,Card.IsRace,2,nil,RACE_FAIRY) or (Duel.CheckReleaseGroupEx(tp,Card.IsRace,1,nil,RACE_FAIRY) and Duel.IsPlayerAffectedByEffect(tp,11451482)) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,Card.IsRace,2,nil,RACE_FAIRY) or (Duel.CheckReleaseGroupEx(REASON_COST,tp,Card.IsRace,1,nil,RACE_FAIRY) and Duel.IsPlayerAffectedByEffect(tp,11451482)) end
 	local op=0
 	if Duel.IsPlayerAffectedByEffect(tp,11451482) then
-		if Duel.CheckReleaseGroupEx(tp,Card.IsRace,2,nil,RACE_FAIRY) then
+		if Duel.CheckReleaseGroupEx(REASON_COST,tp,Card.IsRace,2,nil,RACE_FAIRY) then
 			op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))
 			Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451483,op+2))
 			if op==1 then
@@ -54,7 +53,7 @@ function cm.recost(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.ResetFlagEffect(tp,11451481)
 		end
 	end
-	local g=Duel.SelectReleaseGroupEx(tp,Card.IsRace,2-op,2-op,nil,RACE_FAIRY)
+	local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,Card.IsRace,2-op,2-op,nil,RACE_FAIRY)
 	aux.UseExtraReleaseCount(g,tp)
 	Duel.Release(g,REASON_COST)
 end

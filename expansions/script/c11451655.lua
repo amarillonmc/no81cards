@@ -164,8 +164,8 @@ function cm.thfilter(c,lv)
 	return c:GetOriginalLevel()<lv and c:IsRace(RACE_INSECT) and c:IsAbleToHand()
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.cfilter,1,nil,tp) end
-	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,nil,tp)
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,cm.cfilter,1,nil,tp) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,cm.cfilter,1,1,nil,tp)
 	local lv=g:GetFirst():GetOriginalLevel()
 	e:SetLabel(lv)
 	Duel.Release(g,REASON_COST)
