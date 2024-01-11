@@ -36,7 +36,8 @@ end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	local ac=g:GetFirst()
-	for i=1,#g do
+	local num=#g
+	for i=1,num do
 		if talon[ac:GetCode()]==nil then
 			g:RemoveCard(ac)
 		end

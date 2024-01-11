@@ -57,10 +57,11 @@ end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	local g=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_MZONE,0,nil)
-	for tc in aux.Next(g) do
-		if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)>0 and tc:IsLocation(LOCATION_REMOVED) then
-			local dis=1<<tc:GetPreviousSequence()
-			if dis&SNNM.DisMZone(tp)>0 then return end
+	if Duel.Remove(g,0,REASON_EFFECT+REASON_TEMPORARY)==0 then return end
+	local rg=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
+	for tc in aux.Next(rg) do
+		local dis=1<<tc:GetPreviousSequence()
+		if dis&SNNM.DisMZone(tp)==0 then
 			local zone=dis
 			if tc:GetPreviousControler()==1 then dis=((dis&0xffff)<<16)|((dis>>16)&0xffff) end
 			local e1=Effect.CreateEffect(e:GetHandler())
@@ -89,7 +90,7 @@ function s.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.ReturnToField(tc,tc:GetPreviousPosition(),e:GetLabel())
+	Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),false,e:GetLabel())
 	e:Reset()
 end
 function s.tffilter(c,tp)
