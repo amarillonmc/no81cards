@@ -84,6 +84,16 @@ function c9910953.setop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e3,tp)
 			e2:SetLabelObject(e3)
 			e3:SetLabelObject(tc)
+			--chk
+			local e0=Effect.CreateEffect(c)
+			e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			e0:SetCode(EVENT_LEAVE_FIELD_P)
+			e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+			e0:SetLabelObject(e2)
+			e0:SetOperation(c9910953.chk)
+			tc:RegisterEffect(e0)
+			tc:RegisterFlagEffect(9910953,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910953,1))
 		end
 	end
 end
@@ -97,4 +107,29 @@ function c9910953.effectfilter(e,ct)
 		tc=e:GetLabelObject()
 	end
 	return tc and tc==te:GetHandler()
+end
+function c9910953.chk(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e2=e:GetLabelObject()
+	local e3=e2:GetLabelObject()
+	local te=c:GetReasonEffect()
+	if c:GetFlagEffect(9910953)==0 or not te or not te:IsActivated() or te:GetHandler()~=c then
+		e2:Reset()
+		e3:Reset()
+	else
+		--reset
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e0:SetCode(EVENT_CHAIN_END)
+		e0:SetLabelObject(e3)
+		e0:SetOperation(c9910953.resetop)
+		Duel.RegisterEffect(e0,tp)
+	end
+end
+function c9910953.resetop(e,tp,eg,ep,ev,re,r,rp)
+	local e3=e:GetLabelObject()
+	local e4=e3:GetLabelObject()
+	e3:Reset()
+	e4:Reset()
+	e:Reset()
 end

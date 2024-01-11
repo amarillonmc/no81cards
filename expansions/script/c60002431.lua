@@ -36,29 +36,29 @@ end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	local ac=g:GetFirst()
-	local num=#g
-	for i=1,num do
-		if talon[ac:GetCode()]==nil then
-			g:RemoveCard(ac)
+	local ag=Group.CreateGroup()
+	for i=1,#g do
+		if talon[ac:GetCode()]~=nil then
+			ag:AddCard(ac)
 		end
 		ac=g:GetNext()
 	end
-	if chk==0 then return g:GetCount()>0 end
+	if chk==0 then return ag:GetCount()>0 end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	--Debug.Message("a")
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	local ac=g:GetFirst()
+	local ag=Group.CreateGroup()
 	for i=1,#g do
-		if talon[ac:GetCode()]==nil then
-			g:RemoveCard(ac)
+		if talon[ac:GetCode()]~=nil then
+			ag:AddCard(ac)
 		end
 		ac=g:GetNext()
 	end
-	--Debug.Message("b")
+	if ag:GetCount()==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	--Debug.Message("c")
-	local sg=g:Select(tp,1,1,nil)
+	local sg=ag:Select(tp,1,1,nil)
 	if sg:GetCount()>0 then
 		local ace=talon[sg:GetFirst():GetCode()]
 		cm.ActivateEffect(ace,tp,e)
