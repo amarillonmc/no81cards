@@ -56,7 +56,7 @@ function c50213130.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c50213130.spfilter(c,tp)
-	return c:IsSetCard(0xcbf) and c:IsFaceup() and c:IsAbleToHand() and c:IsLevel(4)
+	return c:IsSetCard(0xcbf) and c:IsFaceup() and c:IsAbleToHand() and c:IsLevelBelow(6)
 		and Duel.GetMZoneCount(tp,c)>0
 end
 function c50213130.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -109,6 +109,13 @@ function c50213130.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_UPDATE_DEFENSE)
+		e2:SetValue(1500)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
 		tc=g:GetNext()
 	end
 end

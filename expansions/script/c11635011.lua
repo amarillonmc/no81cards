@@ -18,56 +18,64 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.ctcon)
 	e2:SetOperation(cm.ctop)
 	c:RegisterEffect(e2) 
-	--
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_ATKCHANGE)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetCost(cm.plcost)
-	e4:SetTarget(cm.pltg)
-	e4:SetOperation(cm.plop)
-	c:RegisterEffect(e4)
+	--destroy replace
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_DESTROY_REPLACE)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetCountLimit(1)
+	e3:SetTarget(cm.reptg)
+	e3:SetValue(cm.repval)
+	e3:SetOperation(cm.repop)
+	c:RegisterEffect(e3)
 end
 cm.SetCard_shixianggui=true
 function cm.ctcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and  bit.band(r,REASON_EFFECT)~=0  and Duel.GetLP(1-tp)>0  and re:IsActiveType(TYPE_MONSTER)--and re:GetHandler().SetCard_shixianggui
+	return ep~=tp and  bit.band(r,REASON_EFFECT)~=0  and Duel.GetLP(1-tp)>0  and re:IsActiveType(TYPE_MONSTER)
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	e:GetHandler():AddCounter(0x1163,1)
 	Duel.Hint(HINT_CARD,0,m)
 	local ct=e:GetHandler():GetCounter(0x1163)
 	if ct>0 then
 		Duel.BreakEffect()
-		Duel.SetLP(1-tp,Duel.GetLP(1-tp)-ct*50)
+		Duel.SetLP(1-tp,Duel.GetLP(1-tp)-(ct*50))
+		local dg=Group.CreateGroup()	
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,1-tp,LOCATION_MZONE,0,nil)
+		local tc=g:GetFirst()
+		for tc in aux.Next(g) do
+			local preatk=tc:GetAttack()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(ct*-50)
+			tc:RegisterEffect(e1)			
+			if preatk~=0 and tc:IsAttack(0) then dg:AddCard(tc) end
+		end
+		Duel.Destroy(dg,REASON_EFFECT)
 	end
 end
-function cm.plcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	e:SetLabel(e:GetHandler():GetCounter(0x1163))
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+--
+function cm.repfilter(c,tp)
+	return c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD) and c:IsControler(tp) and c.SetCard_shixianggui
+		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
-function cm.pltg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local ct=e:GetHandler():GetCounter(0x1163)
-		return ct>0 and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil)
-	end
-end
-function cm.plop(e,tp,eg,ep,ev,re,r,rp)
-	local dg=Group.CreateGroup()
+function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local ft=e:GetLabel()
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-	local tc=g:GetFirst()
-	for tc in aux.Next(g) do
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(ft*-50)
-		tc:RegisterEffect(e1)
-		local preatk=tc:GetAttack()
-		if preatk~=0 and tc:IsAttack(0) then dg:AddCard(tc) end
-	end
-	Duel.Destroy(dg,REASON_EFFECT)
+	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp)
+		and (Duel.IsCanRemoveCounter(tp,1,0,0x1163,4,REASON_EFFECT) or c:IsAbleToGrave()) end
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+end
+function cm.repval(e,c)
+	return cm.repfilter(c,e:GetHandlerPlayer())
+end
+function cm.repop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsAbleToGrave() and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		Duel.SendtoGrave(c,REASON_EFFECT+REASON_REPLACE)
+	else
+		Duel.RemoveCounter(tp,1,0,0x1163,4,REASON_EFFECT)
+	end	
 end

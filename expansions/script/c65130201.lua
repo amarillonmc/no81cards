@@ -35,9 +35,9 @@ function c65130201.rfilter(c,tp)
 	return Duel.GetMZoneCount(tp,c)>0 and c:IsControler(tp) and c:IsAttribute(ATTRIBUTE_EARTH) 
 end
 function c65130201.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c65130201.rfilter,1,nil,tp) end
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,c65130201.rfilter,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(tp,c65130201.rfilter,1,1,nil,tp)
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,c65130201.rfilter,1,1,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function c65130201.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -59,7 +59,7 @@ function c65130201.spfilter(c,e,tp)
 	return c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c65130201.retg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(c65130201.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and e:GetHandler():IsAbleToRemove() end	
+	if chk==0 then return Duel.IsExistingTarget(c65130201.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and e:GetHandler():IsAbleToRemove() end  
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,0,1,0,0)
 end
 function c65130201.reop1(e,tp,eg,ep,ev,re,r,rp)

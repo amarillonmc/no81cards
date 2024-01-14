@@ -40,9 +40,9 @@ function cm.initial_effect(c)
 	e3:SetCondition(cm.con3)
 	e3:SetOperation(cm.op3)
 	c:RegisterEffect(e3)
-	local e31=e3:Clone()
-	e31:SetCode(EVENT_SSET)
-	c:RegisterEffect(e31)
+	--local e31=e3:Clone()
+	--e31:SetCode(EVENT_SSET)
+	--c:RegisterEffect(e31)
 	local e32=e3:Clone()
 	e32:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e32)
@@ -124,7 +124,7 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x0,TYPE_MONSTER+TYPE_EFFECT+TYPE_SPIRIT,100,100,1,RACE_FIEND,ATTRIBUTE_WIND) end
+	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x0,TYPE_MONSTER+TYPE_EFFECT+TYPE_SPIRIT,100,100,1,RACE_FIEND,ATTRIBUTE_WIND) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
@@ -137,7 +137,7 @@ function cm.adfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_SPIRIT)
 end
 function cm.filter(c,tp,tc)
-	if c:IsLocation(LOCATION_ONFIELD) and c:GetControler()==1-tp then
+	if c:IsLocation(LOCATION_MZONE) and c:GetControler()==1-tp and not c:IsLocation(LOCATION_FZONE) then
 		local seq=aux.GetColumn(c,tp)
 		local seq1=aux.GetColumn(tc,tp)
 		return math.abs(seq-seq1)<=1
@@ -148,7 +148,7 @@ function cm.filter(c,tp,tc)
 	--local seq1=c:GetSequence()
 	--local seq2=4-aux.MZoneSequence(seq1)
    -- return math.abs(seq-seq2)<=1 and seq<5 and seq1<5 and c:GetControler()==1-tp and c:IsLocation(LOCATION_ONFIELD)
-		--aux.GetColumn(c,tp)==seq --or (  c:IsPreviousLocation(loc) and math.abs(seq1-seq)==1 and seq<5 and seq1<5) --and c:IsControler(1-p)		   --sg:IsContains(c) and c:GetControler()==1-tp
+		--aux.GetColumn(c,tp)==seq --or (  c:IsPreviousLocation(loc) and math.abs(seq1-seq)==1 and seq<5 and seq1<5) --and c:IsControler(1-p)		  --sg:IsContains(c) and c:GetControler()==1-tp
 end
 function cm.con3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -190,25 +190,25 @@ function cm.op4(e,tp,eg,ep,ev,re,r,rp)
 			tc=g:GetNext()
 		end  
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-		Debug.Message('999')
-		local sg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_SZONE,0,nil,e,tp) 
+		local sg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 		if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local ssg=sg:Select(tp,1,1,nil)
-			Duel.SpecialSummon(ssg,0,tp,tp,false,false,POS_FACEUP)
-		end   
-	end
+			local ssg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
+			local tcc=ssg:GetFirst()
+			Duel.SpecialSummon(tcc,0,tp,tp,false,false,POS_FACEUP)
+		end
+	end   
 end
 function cm.spfilter(c,e,tp)
-	return c.SetCard_shixianggui  and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0 
+	return c.SetCard_shixianggui   and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.atkfilter(c)
-	return c.SetCard_shixianggui 
+	return   (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c.SetCard_shixianggui
 end
 function cm.atkval(e,c)
-	local ct=Duel.GetMatchingGroupCount(cm.atkfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,nil)
-	return ct*-300
+	local ct=Duel.GetMatchingGroupCount(cm.atkfilter,e:GetHandlerPlayer(),0,LOCATION_GRAVE+LOCATION_ONFIELD,nil)
+	return -ct*300
 end
 --
 function cm.con5(e,tp,eg,ep,ev,re,r,rp)

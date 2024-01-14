@@ -63,7 +63,7 @@ function c50213155.spop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function c50213155.retreg(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	c:RegisterFlagEffect(50213155,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_PHASE+PHASE_END,0,1)
+	c:RegisterFlagEffect(50213155,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_PHASE+PHASE_END,0,2)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
@@ -72,11 +72,11 @@ function c50213155.retreg(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCountLimit(1)
 	e1:SetCondition(c50213155.retcon)
 	e1:SetOperation(c50213155.retop)
-	e1:SetReset(RESET_PHASE+PHASE_END,1)
+	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,tp)
 end
 function c50213155.retcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()==e:GetLabel() and e:GetOwner():GetFlagEffect(50213155)~=0
+	return Duel.GetTurnCount()==e:GetLabel()+1 and e:GetOwner():GetFlagEffect(50213155)~=0
 end
 function c50213155.retop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetOwner()

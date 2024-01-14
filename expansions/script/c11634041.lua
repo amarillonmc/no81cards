@@ -1,7 +1,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkAttribute,ATTRIBUTE_FIRE),3)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkAttribute,ATTRIBUTE_FIRE),2)
 	local e_name=Effect.CreateEffect(c)
 	e_name:SetDescription(aux.Stringid(id,0))
 	e_name:SetCategory(CATEGORY_SPECIAL_SUMMON)

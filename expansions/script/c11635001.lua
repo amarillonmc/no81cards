@@ -132,7 +132,7 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x0,TYPE_MONSTER+TYPE_EFFECT+TYPE_SPIRIT,900,1300,1,RACE_FIEND,ATTRIBUTE_WIND) end
+	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x0,TYPE_MONSTER+TYPE_EFFECT+TYPE_SPIRIT,900,1300,1,RACE_FIEND,ATTRIBUTE_WIND) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
@@ -145,11 +145,12 @@ function cm.adfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_SPIRIT)
 end
 function cm.filter(c,tp,tc)
+	if c:IsPreviousLocation(LOCATION_FZONE) then return false end
 	local seq=tc:GetSequence()
 	local seq1=c:GetPreviousSequence()
 	local seq2=4-aux.MZoneSequence(seq1)
-	return math.abs(seq-seq2)<=1 and seq<5 and seq1<5 and c:GetControler()==1-tp  and c:IsPreviousLocation(LOCATION_ONFIELD)
-		--aux.GetColumn(c,tp)==seq --or (  c:IsPreviousLocation(loc) and math.abs(seq1-seq)==1 and seq<5 and seq1<5) --and c:IsControler(1-p)			  --sg:IsContains(c) and c:GetControler()==1-tp
+	return math.abs(seq-seq2)<=1 and c:GetControler()==1-tp  and c:IsPreviousLocation(LOCATION_ONFIELD)
+		--aux.GetColumn(c,tp)==seq --or (  c:IsPreviousLocation(loc) and math.abs(seq1-seq)==1 and seq<5 and seq1<5) --and c:IsControler(1-p)		   --sg:IsContains(c) and c:GetControler()==1-tp
 end
 function cm.con3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -19,18 +19,17 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.op)
 	c:RegisterEffect(e3) 
 	--
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,m+1)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetCost(cm.tdcost)
-	e2:SetTarget(cm.tdtg)
-	e2:SetOperation(cm.tdop)
-	c:RegisterEffect(e2)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,1))
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_MOVE)
+	e4:SetRange(LOCATION_GRAVE)
+	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e4:SetCountLimit(1,m+1)
+	e4:SetCondition(cm.thcon)
+	e4:SetTarget(cm.thtg)
+	e4:SetOperation(cm.thop)
+	c:RegisterEffect(e4) 
 	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
 end
 function cm.counterfilter(c)
@@ -73,30 +72,19 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetLP(tp,Duel.GetLP(tp)-ct)
 end
 --
-function cm.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.cfilter(c,tp)
+	return c:IsFaceup() and c.SetCard_shixianggui and c:IsControler(tp) and c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5 and c:IsPreviousLocation(LOCATION_MZONE)
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.cfilter,1,nil,tp) 
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsSSetable() end
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToDeckAsCost() end
-	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_COST)
-end
-function cm.filter(c)
-	return c.SetCard_shixianggui  and c:IsAbleToDeck()
-end
-function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,5,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,5,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.filter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,nil)
-	if g:GetCount()<5 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=g:Select(tp,5,5,nil)
-	Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	local og=Duel.GetOperatedGroup()
-	if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then Duel.ShuffleDeck(tp) end
-	local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-	if ct==5 then
-		Duel.Draw(tp,1,REASON_EFFECT)
+	if c:IsRelateToEffect(e) then
+		Duel.SSet(tp,c)
 	end
 end

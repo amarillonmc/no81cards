@@ -111,7 +111,7 @@ function s.changeop(e,tp,eg,ep,ev,re,r,rp)
 			if tc:IsType(TYPE_XYZ)then
 				Lk=9
 			end
-			if KOISHI_CHECK and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) then				
+			if KOISHI_CHECK and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) then			  
 				tc:SetCardData(CARDDATA_CODE,id+1+Lk)
 			end
 			if not tc:IsType(TYPE_EFFECT) then
@@ -138,7 +138,7 @@ function s.unchangeop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(code)
 	c:RegisterEffect(e1)
 	if KOISHI_CHECK then		
-		c:SetCardData(CARDDATA_CODE,code) 
+		c:SetCardData(CARDDATA_CODE,code)		
 	end
 	c:ResetEffect(id,RESET_COPY)
 	Duel.RaiseEvent(c,EVENT_CUSTOM+id+1,re,r,rp,ep,ev)
