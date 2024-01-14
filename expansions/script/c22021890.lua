@@ -1,5 +1,7 @@
 --人理之诗 银之键
 function c22021890.initial_effect(c)
+
+
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -11,12 +13,12 @@ function c22021890.initial_effect(c)
 	e1:SetOperation(c22021890.activate)
 	c:RegisterEffect(e1)
 end
-function c22021890.cfilter(c)
-	return not c:IsStatus(STATUS_BATTLE_DESTROYED)
+function c22021890.cfilter(c,tp)
+	return Duel.GetMZoneCount(tp,c)>0
 end
 function c22021890.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c22021890.cfilter,1,nil) end
-	local g=Duel.SelectReleaseGroup(tp,c22021890.cfilter,1,1,nil)
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,c22021890.cfilter,1,nil,tp) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,c22021890.cfilter,1,1,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function c22021890.target(e,tp,eg,ep,ev,re,r,rp,chk)
