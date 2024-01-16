@@ -28,24 +28,19 @@ function c74594972.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,84594972)
-	e3:SetCondition(c74594972.tdcon1)
-	e3:SetTarget(c74594972.tdtg1)
+	e3:SetTarget(c74594972.tdtg)
 	e3:SetOperation(c74594972.tdop)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCondition(c74594972.tdcon2)
-	e4:SetTarget(c74594972.tdtg2)
-	c:RegisterEffect(e4)
 	--ritual summon
-	local e5=aux.AddRitualProcEqual2(c,c74594972.rsfilter,LOCATION_HAND,nil,nil,true)
-	e5:SetDescription(aux.Stringid(74594972,2))
-	e5:SetType(EFFECT_TYPE_IGNITION)
-	e5:SetRange(LOCATION_SZONE)
-	e5:SetCountLimit(1,94594972)
-	c:RegisterEffect(e5)
+	local e4=aux.AddRitualProcEqual2(c,c74594972.rsfilter,LOCATION_HAND,nil,nil,true)
+	e4:SetDescription(aux.Stringid(74594972,2))
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetCountLimit(1,94594972)
+	c:RegisterEffect(e4)
 end
 function c74594972.filter(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_DUAL) and c:IsSetCard(0x745) and c:IsSummonable(true,nil) and (not e or c:IsRelateToEffect(e)) and not c:IsHasEffect(74594972)
+	return c:IsFaceup() and c:IsType(TYPE_DUAL) and c:IsSetCard(0x745) and c:IsSummonable(true,nil) and (not e or c:IsRelateToEffect(e)) and not c:IsHasEffect(74594972) and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
 end
 function c74594972.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(c74594972.filter,1,nil,nil,tp) end
@@ -63,35 +58,21 @@ end
 function c74594972.rfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
 end
-function c74594972.tdfilter(c)
-	return c:IsSetCard(0x745) and c:IsAbleToDeck()
+function c74594972.tdfilter(c,check)
+	return c:IsSetCard(0x745) and c:IsAbleToDeck() and (c:IsLocation(LOCATION_GRAVE) or (check and c:IsFaceup()))
 end
-function c74594972.tdcon1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c74594972.rfilter,tp,LOCATION_MZONE,0,1,nil)
-end
-function c74594972.tdcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c74594972.rfilter,tp,LOCATION_MZONE,0,1,nil)
-end
-function c74594972.tdtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c74594972.tdfilter(chkc) end
+function c74594972.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local check=Duel.IsExistingMatchingCard(c74594972.rfilter,tp,LOCATION_MZONE,0,1,nil)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c74594972.tdfilter(chkc,check) end
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(c74594972.tdfilter,tp,LOCATION_GRAVE,0,3,nil) end
+		and Duel.IsExistingTarget(c74594972.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,nil,check) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c74594972.tdfilter,tp,LOCATION_GRAVE,0,3,3,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,3,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function c74594972.tdtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return (chkc:IsLocation(LOCATION_GRAVE) or (chkc:IsLocation(LOCATION_REMOVED) and chkc:IsFaceup())) and chkc:IsControler(tp) and c74594972.tdfilter(chkc) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(c74594972.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c74594972.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,3,nil)
+	local g=Duel.SelectTarget(tp,c74594972.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,3,nil,check)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,3,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c74594972.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if not tg then return end
 	Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	local g=Duel.GetOperatedGroup()

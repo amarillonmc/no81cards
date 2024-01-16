@@ -70,9 +70,8 @@ function c50213185.chaincon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c50213185.chainop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if re:IsHasType(TYPE_MONSTER) and rc:IsSetCard(0xcbf) then
-		Duel.SetChainLimit(c50213185.chainlm)
-	end
+	if not re:IsActiveType(TYPE_MONSTER) or not rc:IsSetCard(0xcbf) then return false end
+	Duel.SetChainLimit(c50213185.chainlm)
 end
 function c50213185.chainlm(e,rp,tp)
 	return tp==rp
