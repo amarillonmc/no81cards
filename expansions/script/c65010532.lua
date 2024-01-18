@@ -60,19 +60,18 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabel()==0 then
-		if Duel.GetMZoneCount(tp)<=0 then return end
 		local tc=Duel.GetFirstTarget()
 		if tc:IsRelateToEffect(e) then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		end
 		local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit1)
-	Duel.RegisterEffect(e1,tp)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetTargetRange(1,0)
+		e1:SetTarget(cm.splimit1)
+		Duel.RegisterEffect(e1,tp)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_DECK,0,1,1,nil)
@@ -81,18 +80,18 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,g)
 		end
 		local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit2)
-	Duel.RegisterEffect(e1,tp)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetTargetRange(1,0)
+		e1:SetTarget(cm.splimit2)
+		Duel.RegisterEffect(e1,tp)
 	end
 end
 function cm.splimit1(e,c)
-	return not c:IsAttribute(ATTRIBUTE_DARK)
-end
-function cm.splimit2(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsType(TYPE_SYNCHRO) and c:IsLocation(LOCATION_EXTRA)
+end
+function cm.splimit2(e,c)
+	return not c:IsAttribute(ATTRIBUTE_DARK)
 end
