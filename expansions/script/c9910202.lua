@@ -86,6 +86,7 @@ function c9910202.disop(e,tp,eg,ep,ev,re,r,rp)
 		and e:GetLabel()==1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9910202.spfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910202,0)) then
+		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,c9910202.spfilter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then

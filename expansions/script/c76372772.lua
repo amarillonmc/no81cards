@@ -46,7 +46,7 @@ function c76372772.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c76372772.mfilter(c,tp,xyzc,re)
-	return Duel.GetLocationCountFromEx(tp,tp,c)>0 and not c:IsCode(76372772) and (re:GetHandler():IsSetCard(0x3a) or c:IsSetCard(0x3a))
+	return Duel.GetLocationCountFromEx(tp,tp,c,TYPE_XYZ)>0 and not c:IsCode(76372772) and (re:GetHandler():IsSetCard(0x3a) or c:IsSetCard(0x3a))
 end
 function c76372772.xyzcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c76372772.mfilter,1,nil,tp,e:GetHandler(),re) and e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) 
