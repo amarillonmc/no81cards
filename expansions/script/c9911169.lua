@@ -29,6 +29,8 @@ function c9911169.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if Duel.GetCurrentChain()>1 then tep=Duel.GetChainInfo(Duel.GetCurrentChain()-1,CHAININFO_TRIGGERING_PLAYER) end
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and tep and tep==1-tp then
 		e:SetLabel(1)
+	else
+		e:SetLabel(0)
 	end
 end
 function c9911169.activate(e,tp,eg,ep,ev,re,r,rp)

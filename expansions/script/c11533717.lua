@@ -82,7 +82,7 @@ function c11533717.atkop(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsType(TYPE_RITUAL) and c:IsAttribute(ATTRIBUTE_WATER) end) 
 	e1:SetValue(function(e) 
 	local tp=e:GetHandlerPlayer() 
-	return Duel.GetMatchingGroupCount(Card.IsAttribute,tp,LOCATION_GRAVE+LOCATION_MZONE,0,nil,ATTRIBUTE_WATER)*300 end)
+	return Duel.GetMatchingGroupCount(Card.IsAttribute,tp,LOCATION_GRAVE,0,nil,ATTRIBUTE_WATER)*300 end)
 	e1:SetReset(RESET_PHASE+PHASE_END) 
 	Duel.RegisterEffect(e1,tp) 
 end  

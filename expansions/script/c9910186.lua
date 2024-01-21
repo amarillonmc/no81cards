@@ -41,6 +41,9 @@ function c9910186.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and tep and tep==1-tp then
 		e:SetCategory(CATEGORY_HANDES+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DESTROY+CATEGORY_REMOVE)
 		e:SetLabel(1)
+	else
+		e:SetCategory(CATEGORY_HANDES+CATEGORY_TOHAND+CATEGORY_SEARCH)
+		e:SetLabel(0)
 	end
 end
 function c9910186.rmfilter(c)

@@ -36,6 +36,8 @@ function c9910744.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.SelectMatchingCard(tp,c9910744.cfilter,tp,LOCATION_ONFIELD,0,1,1,c)
 		Duel.SendtoGrave(g,REASON_COST)
 		e:SetLabel(1)
+	else
+		e:SetLabel(0)
 	end
 end
 function c9910744.target(e,tp,eg,ep,ev,re,r,rp,chk)

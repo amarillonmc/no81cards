@@ -71,6 +71,9 @@ function c9910202.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and tg and #tg>0 then
 		e:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 		e:SetLabel(1)
+	else
+		e:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+		e:SetLabel(0)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_REMOVED)
