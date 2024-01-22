@@ -40,28 +40,29 @@ function c9910452.activate(e,tp,eg,ep,ev,re,r,rp)
 	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and sc:IsCanBeSpecialSummoned(e,0,tp,false,false)
 	local op=0
 	if b1 and not b2 then
-		op=Duel.SelectOption(tp,1160)
+		op=Duel.SelectOption(tp,aux.Stringid(9910452,2))
 	end
 	if not b1 and b2 then
 		op=Duel.SelectOption(tp,1152)+1
 	end
 	if b1 and b2 then
-		op=Duel.SelectOption(tp,1160,1152)
+		op=Duel.SelectOption(tp,aux.Stringid(9910452,2),1152)
 	end
 	if op==0 then
-		res=Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+		if Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
+			local g=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e),0x1950,1)
+			local tc=g:GetFirst()
+			while tc do
+				tc:AddCounter(0x1950,1)
+				tc=g:GetNext()
+			end
+			res=true
+		end
 	end
 	if op==1 then
 		res=Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0
 	end
-	if not res then return end
-	local g=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e),0x1950,1)
-	local tc=g:GetFirst()
-	while tc do
-		tc:AddCounter(0x1950,1)
-		tc=g:GetNext()
-	end
-	if Duel.GetCounter(tp,1,1,0x1950)<5 then return end
+	if not res or Duel.GetCounter(tp,1,1,0x1950)<5 then return end
 	local c=e:GetHandler()
 	if c:IsFaceup() and c:IsRelateToEffect(e) and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		c:CancelToGrave()
@@ -96,6 +97,7 @@ function c9910452.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function c9910452.thop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local ct=Duel.GetMatchingGroupCount(c9910452.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.ConfirmDecktop(tp,ct)
 	local g=Duel.GetDecktopGroup(tp,ct)

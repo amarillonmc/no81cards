@@ -148,7 +148,7 @@ function cm.filter(c,tp,tc)
 	--local seq1=c:GetSequence()
 	--local seq2=4-aux.MZoneSequence(seq1)
    -- return math.abs(seq-seq2)<=1 and seq<5 and seq1<5 and c:GetControler()==1-tp and c:IsLocation(LOCATION_ONFIELD)
-		--aux.GetColumn(c,tp)==seq --or (  c:IsPreviousLocation(loc) and math.abs(seq1-seq)==1 and seq<5 and seq1<5) --and c:IsControler(1-p)		  --sg:IsContains(c) and c:GetControler()==1-tp
+		--aux.GetColumn(c,tp)==seq --or (  c:IsPreviousLocation(loc) and math.abs(seq1-seq)==1 and seq<5 and seq1<5) --and c:IsControler(1-p)		 --sg:IsContains(c) and c:GetControler()==1-tp
 end
 function cm.con3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -156,7 +156,7 @@ function cm.con3(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	Duel.Damage(1-tp,200,REASON_EFFECT)
+	Duel.Damage(1-tp,100,REASON_EFFECT)
 	local g=Duel.GetMatchingGroup(cm.adfilter,tp,LOCATION_MZONE,0,nil)
 	local tc=g:GetFirst()
 	while tc do

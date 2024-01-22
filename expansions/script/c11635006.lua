@@ -129,11 +129,11 @@ function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			if ct>=1 then 
 				
-				Duel.Damage(1-tp,#cg*300,REASON_EFFECT) 
+				Duel.Damage(1-tp,#cg*100,REASON_EFFECT) 
 			end
 			local hct=Duel.GetFieldGroupCount(tp,LOCATION_HAND,LOCATION_HAND)
 			if ct>=2 and hct>0 then 
-				Duel.Damage(1-tp,hct*200,REASON_EFFECT) 
+				Duel.Damage(1-tp,hct*100,REASON_EFFECT) 
 			end
 			if ct>=3 then 
 				local e1=Effect.CreateEffect(c)
@@ -171,7 +171,8 @@ function cm.dacon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.daop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	Duel.Damage(1-tp,100,REASON_EFFECT)
+	--Duel.Damage(1-tp,100,REASON_EFFECT)
+	Duel.SetLP(1-tp,Duel.GetLP(1-tp)-100)
 end
 --
 function cm.op4(e,tp,eg,ep,ev,re,r,rp)

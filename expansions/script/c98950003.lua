@@ -1,5 +1,6 @@
 --幻魔之眼
 function c98950003.initial_effect(c)
+	aux.AddCodeList(c,78371393)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -28,7 +29,7 @@ function c98950003.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c98950003.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c98950003.thfilter(c,tp)
-	return c:IsCode(4779091,78371393,98950001,98950004) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return (aux.IsCodeListed(c,78371393) or c:IsCode(78371393)) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c98950003.tgfilter(c)
 	return c:IsAttack(0) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_PLANT) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()

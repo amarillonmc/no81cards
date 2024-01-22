@@ -143,12 +143,12 @@ function c9910861.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910861.discon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsChainNegatable(ev) and Duel.GetFlagEffect(tp,9910865)==0 and ep~=tp
+	return Duel.GetFlagEffect(tp,9910865)==0 and ep~=tp
 end
 function c9910861.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910861)
 	Duel.RegisterFlagEffect(tp,9910865,RESET_PHASE+PHASE_END,0,1)
-	Duel.NegateEffect(ev)
+	Duel.NegateEffect(ev,true)
 	e:Reset()
 end
 function c9910861.sumcon(e,tp,eg,ep,ev,re,r,rp)

@@ -235,7 +235,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.cfilter),tp,LOCATION_GRAVE,0,1,ct,nil,tp,e)
 		if #g>0 then
-			local tc=g:GetFirst()	  
+			local tc=g:GetFirst()	 
 			if tc  and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and  Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (Duel.GetLocationCount(tp,LOCATION_SZONE)==0 or  e:GetHandler():IsForbidden() or Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))==0) then --
 				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 			else
@@ -341,7 +341,7 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(m,1)) then return end   
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local ct=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	local g=Duel.SelectMatchingCard(tp,cm.sfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,cm.sfilter,tp,LOCATION_HAND,0,1,ct,nil,e,tp)
 	if #g>0 then
 		local tc=g:GetFirst()
 		while tc do

@@ -1,5 +1,6 @@
 --不朽绝望蔷薇
 function c98950004.initial_effect(c)
+	aux.AddCodeList(c,78371393)
 --same effect send this card to grave and spsummon another card check
 	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
 	--search

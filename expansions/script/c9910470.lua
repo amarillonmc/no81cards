@@ -75,6 +75,7 @@ function c9910470.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910470,2))
 end
 function c9910470.spop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c9910470.filter1,nil,e)
 	local mg2=Duel.GetMatchingGroup(c9910470.filter3,tp,LOCATION_GRAVE,0,nil,e)

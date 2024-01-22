@@ -317,7 +317,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetTargetRange(0xff,0)
 		e3:SetTarget(cm.etarget)
 		e3:SetValue(cm.efilter)
-		e3:SetReset(RESET_CHAIN)
+		e3:SetReset(RESET_EVENT+RESET_CHAIN)
 		e3:SetLabel(tp)
 		e3:SetLabelObject(re)
 		Duel.RegisterEffect(e3,tp)
@@ -325,6 +325,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.etarget(e,c)
+	local tp=e:GetLabel()
 	return c:IsControler(tp)
 end
 function cm.efilter(e,re)

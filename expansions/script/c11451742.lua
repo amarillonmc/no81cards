@@ -1,6 +1,5 @@
 --烬墟染彻的终末论
-local m=11451742
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -67,7 +66,7 @@ end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local dg=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 	local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
-	if chk==0 then return #dg>0 and #rg>0 end
+	if chk==0 then return dg:FilterCount(Card.IsSetCard,nil,0x6977)>0 and #rg>0 end
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,#dg)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)

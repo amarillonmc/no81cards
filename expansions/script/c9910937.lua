@@ -50,14 +50,13 @@ function c9910937.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910937.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_GRAVE
-		and Duel.IsChainDisablable(ev) and Duel.GetFlagEffect(tp,9910937)==0
+	return ep~=tp and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_GRAVE and Duel.GetFlagEffect(tp,9910937)==0
 end
 function c9910937.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910937)
 	Duel.RegisterFlagEffect(tp,9910937,RESET_CHAIN,0,1)
 	local rc=re:GetHandler()
-	if Duel.NegateEffect(ev) and rc:IsRelateToEffect(re) then
+	if Duel.NegateEffect(ev,true) and rc:IsRelateToEffect(re) then
 		Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)
 	end
 	e:Reset()

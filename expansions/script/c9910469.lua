@@ -68,6 +68,7 @@ function c9910469.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) end
 end
 function c9910469.chop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Group.CreateGroup()
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,c9910469.repop)

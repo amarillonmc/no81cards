@@ -79,13 +79,13 @@ function c9910065.matop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c9910065.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and Duel.IsChainDisablable(ev) and Duel.GetFlagEffect(tp,9910065)<1
+	return rp==1-tp and Duel.GetFlagEffect(tp,9910065)<1
 end
 function c9910065.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910065)
 	Duel.RegisterFlagEffect(tp,9910065,RESET_PHASE+PHASE_END,0,1)
 	local rc=re:GetHandler()
-	if Duel.NegateEffect(ev) and rc:IsRelateToEffect(re) then
+	if Duel.NegateEffect(ev,true) and rc:IsRelateToEffect(re) then
 		Duel.Destroy(rc,REASON_EFFECT)
 	end
 	e:Reset()

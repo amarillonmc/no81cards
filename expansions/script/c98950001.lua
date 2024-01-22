@@ -1,5 +1,6 @@
 --于贝尔-罪恶的愉悦
 function c98950001.initial_effect(c)
+	aux.AddCodeList(c,78371393)
 	 --spsummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(98950001,0))
@@ -51,7 +52,7 @@ function c98950001.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function c98950001.filter(c)
-	return c:IsCode(98950003) and c:IsAbleToHand()
+	return aux.IsCodeListed(c,78371393) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c98950001.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c98950001.filter,tp,LOCATION_DECK,0,1,nil) end

@@ -51,7 +51,7 @@ function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e1:SetValue(ct*-50)
-			tc:RegisterEffect(e1)			
+			tc:RegisterEffect(e1)		   
 			if preatk~=0 and tc:IsAttack(0) then dg:AddCard(tc) end
 		end
 		Duel.Destroy(dg,REASON_EFFECT)
@@ -73,9 +73,9 @@ function cm.repval(e,c)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsAbleToGrave() and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if c:IsAbleToGrave() and ( not Duel.IsCanRemoveCounter(tp,1,0,0x1163,4,REASON_EFFECT) or Duel.SelectYesNo(tp,aux.Stringid(m,1))) then
 		Duel.SendtoGrave(c,REASON_EFFECT+REASON_REPLACE)
 	else
 		Duel.RemoveCounter(tp,1,0,0x1163,4,REASON_EFFECT)
-	end	
+	end 
 end
