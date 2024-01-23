@@ -51,7 +51,7 @@ function c9911461.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c9911461.cfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x3952) and c:IsControler(tp)
+	return c:IsFaceup() and c:IsSetCard(0x3952) and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
 end
 function c9911461.desfilter2(c,tp)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:GetColumnGroup():IsExists(c9911461.cfilter,1,nil,tp)
