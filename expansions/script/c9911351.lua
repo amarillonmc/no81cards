@@ -30,8 +30,9 @@ function c9911351.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9911351.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsOnField()
-		and (re:IsActiveType(TYPE_MONSTER) or (re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not re:IsHasType(EFFECT_TYPE_ACTIVATE)))
+	local b1=re:GetActivateLocation()==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER)
+	local b2=re:GetActivateLocation()==LOCATION_SZONE and not re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	return b1 or b2
 end
 function c9911351.thfilter(c)
 	return c:IsAbleToHand() and (c:IsOnField() or (c:IsLocation(LOCATION_GRAVE) and c:IsSetCard(0xc956)))
