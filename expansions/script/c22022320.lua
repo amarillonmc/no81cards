@@ -75,7 +75,7 @@ function c22022320.cost4(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,4,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,4,4,REASON_COST)
 end
-function 22022320.atkop(e,tp,eg,ep,ev,re,r,rp)
+function c22022320.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local e1=Effect.CreateEffect(c)

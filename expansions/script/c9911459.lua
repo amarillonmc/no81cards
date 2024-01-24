@@ -28,14 +28,17 @@ function c9911459.initial_effect(c)
 	e4:SetCode(EVENT_REMOVE)
 	c:RegisterEffect(e4)
 end
-function c9911459.rcfilter(c,e)
-	return c:IsFaceupEx() and c:IsCanBeEffectTarget(e) and (c:IsAbleToHand() or c:IsAbleToDeck())
+function c9911459.rcfilter1(c,e)
+	return c:IsCanBeEffectTarget(e) and (c:IsAbleToHand() or c:IsAbleToDeck())
+end
+function c9911459.rcfilter2(c)
+	return c:IsFaceupEx() and c:IsSetCard(0x3952)
 end
 function c9911459.fselect(g)
-	return g:IsExists(Card.IsSetCard,1,nil,0x3952) and g:IsExists(Card.IsAbleToHand,1,nil) and g:IsExists(Card.IsAbleToDeck,2,nil)
+	return g:IsExists(c9911459.rcfilter2,1,nil) and g:IsExists(Card.IsAbleToHand,1,nil) and g:IsExists(Card.IsAbleToDeck,2,nil)
 end
 function c9911459.rctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local dg=Duel.GetMatchingGroup(c9911459.rcfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil,e)
+	local dg=Duel.GetMatchingGroup(c9911459.rcfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil,e)
 	if chkc then return false end
 	if chk==0 then return dg:CheckSubGroup(c9911459.fselect,3,3) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
