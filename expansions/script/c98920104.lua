@@ -55,7 +55,7 @@ function c98920104.splimit(e,c,sump,sumtype,sumpos,targetp)
 	return not c:IsSetCard(0xaf) and bit.band(sumtype,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function c98920104.thfilter(c)
-	return c:IsSetCard(0xaf) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
+	return c:IsSetCard(0xaf) and c:IsAbleToHand()
 end
 function c98920104.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c98920104.thfilter,tp,LOCATION_DECK,0,1,nil) end

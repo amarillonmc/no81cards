@@ -11,7 +11,16 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.distg)
 	e1:SetOperation(cm.disop)
 	c:RegisterEffect(e1)
+	--act in hand
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCondition(cm.handcon)
+	c:RegisterEffect(e2)
 	
+end
+function cm.handcon(e)
+	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)==0
 end
 function cm.cfilter(c,e,p)
 	return c:IsControler(p) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5 and c:IsCanBeEffectTarget(e)
@@ -35,6 +44,9 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tg1=g:FilterSelect(tp,cm.cfilter,tp,0,LOCATION_MZONE,2,2,tc,e,1-tp)
 	tg:Merge(tg1)
 	Duel.SetTargetCard(tg)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)<Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_MZONE) then
+		Duel.SetChainLimit(aux.FALSE)
+	end
 end
 function cm.filter1(c,p)
 	return c:IsControler(p) and c:GetSequence()<5 and Duel.GetMatchingGroup(cm.cofilter,p,LOCATION_MZONE,0,nil,c):Filter(cm.filter2,nil,e,p):GetCount()>=3
