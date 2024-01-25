@@ -55,6 +55,7 @@ function cm.filter2(c,p)
 	return c:IsControler(p) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
 	if tg:GetCount()<=0 then return end
