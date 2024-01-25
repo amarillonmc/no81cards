@@ -8,6 +8,7 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,id)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTarget(s.tg)
@@ -56,7 +57,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 			e4:SetTarget(function(e,c)
 				return not c:IsType(TYPE_SYNCHRO) and c:IsLocation(LOCATION_EXTRA)
 			end)
-			e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e4)
 			
 			local lv1=c:GetLevel()
@@ -70,21 +71,16 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 			c:RegisterEffect(e1)
 		end
 end
-
-function s.distg(e,c)
-	return not c:IsType(TYPE_SYNCHRO)
-end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local tc=c:GetBattleTarget()
-	if chk==0 then return tc and tc:IsFaceup() and not tc:IsType(TYPE_TUNER) end
-	local g=Group.FromCards(c,tc)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
+	local tc=Duel.GetAttacker()
+	if tc==c then tc=Duel.GetAttackTarget() end
+	if chk==0 then return tc and tc:IsFaceup() and not tc:IsType(TYPE_SYNCHRO) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tc,1,0,0)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=c:GetBattleTarget()
-	if c:IsRelateToBattle() and tc:IsRelateToBattle() then
-		Duel.Destroy(tc,REASON_EFFECT)
-	end
+	local tc=Duel.GetAttacker()
+	if tc==c then tc=Duel.GetAttackTarget() end
+	if tc:IsRelateToBattle() then Duel.Destroy(tc,REASON_EFFECT) end
 end

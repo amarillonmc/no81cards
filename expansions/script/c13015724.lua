@@ -74,12 +74,15 @@ end
 function c13015724.splimit(e,c)
 return not (c:IsRace(RACE_AQUA) and c:IsAttribute(ATTRIBUTE_WATER))
 end
+function c13015724.spfilter(c,e)
+	return not c:IsImmuneToEffect(e)
+end
 function c13015724.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) 
 end 
 function c13015724.spcost(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end 
-	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)  
+	if chk==0 then return Duel.IsExistingMatchingCard(c13015724.spfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,e) end 
+	local g=Duel.SelectMatchingCard(tp,c13015724.spfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,e)  
 	Duel.Release(g,REASON_COST)
 end 
 function c13015724.cfilter(c)

@@ -5,7 +5,6 @@ function c13015713.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,13015713)
 	e1:SetOperation(c13015713.activate)
 	c:RegisterEffect(e1)
 	--change effect type
@@ -31,11 +30,12 @@ function c13015713.thfilter(c)
 end
 function c13015713.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c13015713.thfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(13015713,0)) then
+	if g:GetCount()>0 and Duel.GetFlagEffect(tp,13015713)==0 and Duel.SelectYesNo(tp,aux.Stringid(13015713,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg)
+		Duel.RegisterFlagEffect(tp,13015713,RESET_PHASE+PHASE_END,0,1)
 	end
 end 
 if not aux.sh_qh_qechk then

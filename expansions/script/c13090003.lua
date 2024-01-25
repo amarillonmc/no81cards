@@ -29,10 +29,13 @@ local e2=Effect.CreateEffect(c)
 	c:RegisterEffect(e3)
 c13090003.star_knight_summon_effect=e2   
 end
+function cm.spfilter(c,e)
+	return not c:IsImmuneToEffect(e)
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
-	local tc=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,e) end
+	local tc=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,e)
 	Duel.Release(tc,REASON_COST)
 end
 function cm.thfilter(c)
@@ -78,7 +81,7 @@ end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,cm.penfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.penfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc:IsType(TYPE_PENDULUM) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then
 		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
